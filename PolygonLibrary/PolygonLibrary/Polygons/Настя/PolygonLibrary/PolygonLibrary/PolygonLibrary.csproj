@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C80254BB-DDD9-44EB-9E9A-C6666E14FC4E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PolygonLibrary</RootNamespace>
+    <AssemblyName>PolygonLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Basics\CachyMatrix.cs" />
+    <Compile Include="Basics\Line2D.cs" />
+    <Compile Include="Basics\Matrices.cs" />
+    <Compile Include="Basics\Point.cs" />
+    <Compile Include="Basics\Point2D.cs" />
+    <Compile Include="Basics\Vector.cs" />
+    <Compile Include="Basics\Vector2D.cs" />
+    <Compile Include="Build\BuildResult.cs" />
+    <Compile Include="Marker\MarkerBasis.cs" />
+    <Compile Include="Marker\EdgeMarker.cs" />
+    <Compile Include="Marker\RegionMarker.cs" />
+    <Compile Include="Rearranging\Descriptor.cs" />
+    <Compile Include="Rearranging\Rearranging.cs" />
+    <Compile Include="Toolkit\Shuffle.cs" />
+    <Compile Include="Toolkit\Tools.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Segments\BentleyOttmannBasic.cs" />
+    <Compile Include="Segments\BentleyOttmannRealizations.cs" />
+    <Compile Include="Segments\Segment.cs" />
+    <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
+    <Compile Include="Toolkit\Convexification.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AVLUtils\AVLUtils\AVLUtils.csproj">
+      <Project>{d82523e4-4cef-4845-bb6c-8dd87cc02930}</Project>
+      <Name>AVLUtils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Polygons\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

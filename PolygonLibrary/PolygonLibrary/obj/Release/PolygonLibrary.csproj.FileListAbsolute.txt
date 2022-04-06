@@ -1,0 +1,8 @@
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Release\PolygonLibrary.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Release\PolygonLibrary.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Release\AVLUtils.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Release\AVLUtils.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Release\AVLUtils.xml
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Release\PolygonLibrary.csprojResolveAssemblyReference.cache
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Release\PolygonLibrary.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Release\PolygonLibrary.pdb

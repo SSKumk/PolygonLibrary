@@ -1,0 +1,10 @@
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\Tests.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\Tests.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\AVLUtils.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\PolygonLibrary.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\AVLUtils.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\AVLUtils.xml
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Release\PolygonLibrary.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Release\Tests.csprojResolveAssemblyReference.cache
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Release\Tests.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Release\Tests.pdb

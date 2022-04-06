@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Class1.cs" />
+      <Compile Remove="_\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="_\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="_\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="AVLUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\netcoreapp3.0\AVLUtils.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

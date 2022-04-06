@@ -1,0 +1,12 @@
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\Tests.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\Tests.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\AVLUtils.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\PolygonLibrary.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\AVLUtils.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\AVLUtils.xml
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\PolygonLibrary.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Debug\Tests.csprojResolveAssemblyReference.cache
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Debug\Tests.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\obj\Debug\Tests.pdb
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml

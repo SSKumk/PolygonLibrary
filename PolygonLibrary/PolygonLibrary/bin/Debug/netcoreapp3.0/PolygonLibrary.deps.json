@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "PolygonLibrary/1.0.0": {
+        "dependencies": {
+          "AVLUtils": "1.0.0.0"
+        },
+        "runtime": {
+          "PolygonLibrary.dll": {}
+        }
+      },
+      "AVLUtils/1.0.0.0": {
+        "runtime": {
+          "AVLUtils.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PolygonLibrary/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AVLUtils/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,23 @@
+﻿<Properties StartupItem="TreeTest/TreeTest.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="AVLUtils/AVLIterators.cs">
+    <Files>
+      <File FileName="AVLUtils/AVLCyclicIterators.cs" Line="1" Column="1" />
+      <File FileName="AVLUtils/AVLCyclicTree.cs" Line="1" Column="1" />
+      <File FileName="AVLUtils/AVLCyclicStorage.cs" Line="1" Column="1" />
+      <File FileName="AVLUtils/AVLTree.cs" Line="6" Column="1" />
+      <File FileName="AVLUtils/AVLIterators.cs" Line="38" Column="7" />
+      <File FileName="AVLUtils/AVLStorage.cs" Line="14" Column="66" />
+      <File FileName="AVLUtils/AVLBasicStorage.cs" Line="10" Column="16" />
+      <File FileName="AVLUtils/IAVLTree.cs" Line="13" Column="4" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/Program.cs" line="51" column="24" />
+      <Breakpoint file="/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/Program.cs" line="45" column="30" />
+      <Breakpoint file="/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/Program.cs" line="58" column="13" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
