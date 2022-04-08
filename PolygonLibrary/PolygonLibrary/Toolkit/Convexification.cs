@@ -21,7 +21,7 @@ namespace PolygonLibrary.Toolkit
     /// </summary>
     /// <param name="swarm">List of the original swarm</param>
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
-    static public List<Point2D> QuickHull2D(List<Point2D> swarm)
+    public static List<Point2D> QuickHull2D(List<Point2D> swarm)
     {
       List<Point2D> res;
       if (swarm.Count <= 1)
@@ -73,7 +73,7 @@ namespace PolygonLibrary.Toolkit
     /// <param name="pMin">The "left" base point</param>
     /// <param name="pMax">The "right" base point</param>
     /// <returns></returns>
-    static private List<Point2D> QuickHullIter(List<Point2D> ps, Line2D line, Point2D pMin, Point2D pMax)
+    private static List<Point2D> QuickHullIter(List<Point2D> ps, Line2D line, Point2D pMin, Point2D pMax)
     {
       // If the list is empty, return empty list
       if (ps.Count == 0)
@@ -123,7 +123,7 @@ namespace PolygonLibrary.Toolkit
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
 		/// <remarks>It is guaranteed that the resultant list contains references
 		/// to some of the original objects; no new points are created during work of the method</remarks>
-    static public List<Point2D> ArcHull2D(List<Point2D> swarmOrig)
+    public static List<Point2D> ArcHull2D(List<Point2D> swarmOrig)
     {
       if (swarmOrig.Count <= 1)
       {

@@ -23,7 +23,7 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Dimension of the point
     /// </summary>
-    public int Dim { get { return _p.Length; } }
+    public int Dim { get => _p.Length; }
 
     /// <summary>
     /// Indexer access
@@ -55,27 +55,21 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="p">The point to be converted</param>
     /// <returns>The resultant array</returns>
-    public static implicit operator double[](Point v) { return v._p; }
+    public static implicit operator double[](Point v) => v._p;
 
     /// <summary>
     /// Converting a one-dimensional array to a point
     /// </summary>
     /// <param name="p">Array to be converted</param>
     /// <returns>The resultant point</returns>
-    public static explicit operator Point(double[] p)
-    {
-      return new Point(p);
-    }
+    public static explicit operator Point(double[] p) => new Point(p);
 
     /// <summary>
     /// Explicit convertor to the point from a vector
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The point, which is the endpoint of the given vector</returns>
-    static public explicit operator Point(Vector v)
-    {
-      return new Point((double[])v);
-    }
+    public static explicit operator Point(Vector v) => new Point((double[])v);
     #endregion
 
     #region Comparing
@@ -106,7 +100,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if the points coincide; false, otherwise</returns>
-    static public bool operator ==(Point p1, Point p2)
+    public static bool operator ==(Point p1, Point p2)
     {
       int d = p1.Dim, res;
 #if DEBUG
@@ -128,7 +122,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first points</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if the points do not coincide; false, otherwise</returns>
-    static public bool operator !=(Point p1, Point p2)
+    public static bool operator !=(Point p1, Point p2)
     {
       int d = p1.Dim, res;
 #if DEBUG
@@ -150,10 +144,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &gt; p2; false, otherwise</returns>
-    static public bool operator >(Point p1, Point p2)
-    {
-      return p1.CompareTo(p2) > 0;
-    }
+    public static bool operator >(Point p1, Point p2) => p1.CompareTo(p2) > 0;
 
     /// <summary>
     /// Check whether one point is greater or equal than another (in lexicographic order)
@@ -161,10 +152,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &gt;= p2; false, otherwise</returns>
-    static public bool operator >=(Point p1, Point p2)
-    {
-      return p1.CompareTo(p2) >= 0;
-    }
+    public static bool operator >=(Point p1, Point p2) => p1.CompareTo(p2) >= 0;
 
     /// <summary>
     /// Check whether one point is less than another (in lexicographic order)
@@ -172,10 +160,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &lt; p2; false, otherwise</returns>
-    static public bool operator <(Point p1, Point p2)
-    {
-      return p1.CompareTo(p2) < 0;
-    }
+    public static bool operator <(Point p1, Point p2) => p1.CompareTo(p2) < 0;
 
     /// <summary>
     /// Check whether one point is less or equal than another (in lexicographic order)
@@ -183,10 +168,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &lt;= p2; false, otherwise</returns>
-    static public bool operator <=(Point p1, Point p2)
-    {
-      return p1.CompareTo(p2) <= 0;
-    }
+    public static bool operator <=(Point p1, Point p2) => p1.CompareTo(p2) <= 0;
     #endregion
 
     #region Miscellaneous procedures
@@ -210,7 +192,7 @@ namespace PolygonLibrary.Basics
 		/// </summary>
 		/// <param name="n">The dimension of the point</param>
 		/// <returns>The zero point</returns>
-		static public Point GetOrigin(int n)
+		public static Point GetOrigin(int n)
 		{
 			double[] orig = new double[n];
 			return new Point(orig);
@@ -323,11 +305,7 @@ namespace PolygonLibrary.Basics
     /// Copying constructor from a vector
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Point(Vector v)
-    {
-      _p = (double[])v;
-    }
-
+    public Point(Vector v) => _p = (double[])v;
 
     /// <summary>
     /// Copying constructor from a two-dimensional vector
@@ -335,7 +313,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector to be copied</param>
     public Point(Vector2D v)
     {
-      _p = new double[2] {v.x, v.y};
+      _p = new double[2] {v.X, v.Y};
     }
     #endregion
 
@@ -395,7 +373,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="p">The point to be reversed</param>
     /// <returns>The opposite point</returns>
-    static public Point operator -(Point p)
+    public static Point operator -(Point p)
     {
       int d = p.Dim, i;
       double[] np = new double[d];
@@ -410,7 +388,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The first point summand</param>
     /// <param name="v">The second vector summand</param>
     /// <returns>The point, which is shift of the original point to the direction of the vector</returns>
-    static public Point operator +(Point p, Vector v)
+    public static Point operator +(Point p, Vector v)
     {
       int d = p.Dim, i;
 #if DEBUG
@@ -429,7 +407,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The point minuend</param>
     /// <param name="v">The vector subtrahend</param>
     /// <returns>The point, which is shift of the original point to the opposite direction of the vector</returns>
-    static public Point operator -(Point p, Vector v)
+    public static Point operator -(Point p, Vector v)
     {
       int d = p.Dim, i;
 #if DEBUG
@@ -448,7 +426,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The point minuend</param>
     /// <param name="p2">The point subtrahend</param>
     /// <returns>The vector directed from the second point to the first one</returns>
-    static public Vector operator -(Point p1, Point p2)
+    public static Vector operator -(Point p1, Point p2)
     {
       int d = p1.Dim, i;
 #if DEBUG
@@ -467,7 +445,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The numeric factor</param>
     /// <param name="p">The point factor</param>
     /// <returns>The product</returns>
-    static public Point operator *(double a, Point p)
+    public static Point operator *(double a, Point p)
     {
       int d = p.Dim, i;
       double[] np = new double[d];
@@ -482,10 +460,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The point factor</param>
     /// <param name="a">The numeric factor</param>
     /// <returns>The product</returns>
-    static public Point operator *(Point p, double a)
-    {
-      return a * p;
-    }
+    public static Point operator *(Point p, double a) => a * p;
 
     /// <summary>
     /// Division of a point by a number
@@ -493,7 +468,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The vector dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The quotient</returns>
-    static public Point operator /(Point p, double a)
+    public static Point operator /(Point p, double a)
     {
 #if DEBUG
       if (Tools.EQ(a))

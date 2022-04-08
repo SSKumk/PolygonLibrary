@@ -10,7 +10,7 @@ namespace PolygonLibrary.Segments
     /// <summary>
     /// Subsidiary class for storing a segment with some additional data
     /// </summary>
-    internal protected class InnerSegment : Segment, IComparable<InnerSegment>
+    protected internal class InnerSegment : Segment, IComparable<InnerSegment>
     {
 #region Global counters and IDs
       /// <summary>
@@ -28,7 +28,7 @@ namespace PolygonLibrary.Segments
       /// </summary>
       public int ID
       {
-        get { return myID; }
+        get => myID;
       }
 #endregion
 
@@ -126,21 +126,15 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Static constructor to initialize the global counter of segments
       /// </summary>
-      static InnerSegment()
-      {
-        curID = 0;
-      }
-#endregion
+      static InnerSegment() => curID = 0;
+      #endregion
 
 #region Overrided procedures
       /// <summary>
       /// String representation of the inner segment
       /// </summary>
       /// <returns>The string representation</returns>
-      public override string ToString()
-      {
-        return base.ToString() + ", ID = " + myID;
-      }
+      public override string ToString() => base.ToString() + ", ID = " + myID;
 
       /// <summary>
       /// Comparison with other inner segment. 

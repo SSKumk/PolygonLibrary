@@ -38,9 +38,6 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is inside the polygon; false, otherwise</returns>
-    public override bool Contains (Point2D p)
-    {
-      throw new NotImplementedException();
-    }
+    public override bool Contains (Point2D p) => throw new NotImplementedException();
   }
 }

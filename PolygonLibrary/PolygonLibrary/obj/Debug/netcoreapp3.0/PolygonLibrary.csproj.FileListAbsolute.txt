@@ -10,3 +10,5 @@
 /home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.csproj.CopyComplete
 /home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.dll
 /home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.pdb
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.csproj.AssemblyReference.cache
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.GeneratedMSBuildEditorConfig.editorconfig

@@ -44,10 +44,7 @@ namespace PolygonLibrary.Polygons
           ComputeContours();
         return _contours;
       }
-      protected set
-      {
-        _contours = value;
-      }
+      protected set => _contours = value;
     }
 
     /// <summary>
@@ -62,10 +59,7 @@ namespace PolygonLibrary.Polygons
           ComputeVertices();
         return _vertices;
       }
-      protected set
-      {
-        _vertices = value;
-      }
+      protected set => _vertices = value;
     }
 
     /// <summary>
@@ -80,10 +74,7 @@ namespace PolygonLibrary.Polygons
           ComputeEdges();
         return _edges;
       }
-      protected set
-      {
-        _edges = value;
-      }
+      protected set => _edges = value;
     }
     #endregion
 
@@ -126,7 +117,7 @@ namespace PolygonLibrary.Polygons
     /// On demand computation of sorted list of vertices on the basis of the array of contours.
     /// If the array of contours is not initializaed, an exception is thrown
     /// </summary>
-    virtual protected void ComputeVertices()
+    protected virtual void ComputeVertices()
     {
       if (_vertices == null)
       {
@@ -146,7 +137,7 @@ namespace PolygonLibrary.Polygons
     /// On demand computation of sorted list of edges on the basis of the array of contours.
     /// If the array of contours is not initializaed, an exception is thrown
     /// </summary>
-    virtual protected void ComputeEdges()
+    protected virtual void ComputeEdges()
     {
       if (_edges == null)
       {
@@ -166,7 +157,7 @@ namespace PolygonLibrary.Polygons
     /// On demand computation of a single contoured convex polygon on the basis of the array 
     /// of vertices. If the array of vertices is not initializaed, an exception is thrown
     /// </summary>
-    virtual protected void ComputeContours()
+    protected virtual void ComputeContours()
     {
       if (_contours == null)
       {

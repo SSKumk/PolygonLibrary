@@ -132,10 +132,7 @@ namespace PolygonLibrary.Polygons
 		/// String representation of the pair
 		/// </summary>
 		/// <returns></returns>
-		public override string ToString()
-		{
-			return "[" + Normal.ToString() + ";" + Value + "]";
-		}
+		public override string ToString() => "[" + Normal.ToString() + ";" + Value + "]";
 
 		/// <summary>
 		/// Computing the point, which is intersection of lines defined by two pairs.
@@ -144,17 +141,17 @@ namespace PolygonLibrary.Polygons
 		/// <param name="g1">The first pair</param>
 		/// <param name="g2">The second pair</param>
 		/// <returns>The corresponding point</returns>
-		static public Point2D CrossPairs(GammaPair g1, GammaPair g2)
+		public static Point2D CrossPairs(GammaPair g1, GammaPair g2)
 		{
 #if DEBUG
 			if (Vector2D.AreParallel(g1.Normal, g2.Normal))
 				throw new ArgumentException("Cannot cross lines defined by pairs with parallel normals");
 #endif
-			// g1.g = g1.v * r = g1.v.x * x + g1.v.y * y,  g2.g = g2.v * r = g2.v.x * x + g2.v.y * y
+			// g1.g = g1.v * r = g1.v.X * X + g1.v.Y * Y,  g2.g = g2.v * r = g2.v.X * X + g2.v.Y * Y
 			double
-				d = g1.Normal.x * g2.Normal.y - g2.Normal.x * g1.Normal.y,
-				d1 = g1.Value * g2.Normal.y - g2.Value * g1.Normal.y,
-				d2 = g1.Normal.x * g2.Value - g2.Normal.x * g1.Value;
+				d = g1.Normal.X * g2.Normal.Y - g2.Normal.X * g1.Normal.Y,
+				d1 = g1.Value * g2.Normal.Y - g2.Value * g1.Normal.Y,
+				d2 = g1.Normal.X * g2.Value - g2.Normal.X * g1.Value;
 			return new Point2D(d1 / d, d2 / d);
 		}
 	}
@@ -229,10 +226,10 @@ namespace PolygonLibrary.Polygons
 			else
 			{
 				Vector2D p = (Vector2D)ps1[0];
-				this.Add(new GammaPair(Vector2D.e1, Vector2D.e1 * p));
-				this.Add(new GammaPair(Vector2D.e2, Vector2D.e2 * p));
-				this.Add(new GammaPair(-Vector2D.e1, -Vector2D.e1 * p));
-				this.Add(new GammaPair(-Vector2D.e2, -Vector2D.e2 * p));
+				this.Add(new GammaPair(Vector2D.E1, Vector2D.E1 * p));
+				this.Add(new GammaPair(Vector2D.E2, Vector2D.E2 * p));
+				this.Add(new GammaPair(-Vector2D.E1, -Vector2D.E1 * p));
+				this.Add(new GammaPair(-Vector2D.E2, -Vector2D.E2 * p));
 			}
 
 			this.Sort();
@@ -303,11 +300,11 @@ namespace PolygonLibrary.Polygons
 			// Computing coefficients of the conic combinations
 			double
 				// v = alpha * vi + beta * vj
-				//  alpha * vi.x + beta * vj.x = v.x
-				//  alpha * vi.y + beta * vj.y = v.y
-				d = this[i].Normal.x * this[j].Normal.y - this[i].Normal.y * this[j].Normal.x,
-				d1 = v.x * this[j].Normal.y - v.y * this[j].Normal.x,
-				d2 = this[i].Normal.x * v.y - this[i].Normal.y * v.x;
+				//  alpha * vi.X + beta * vj.X = v.X
+				//  alpha * vi.Y + beta * vj.Y = v.Y
+				d = this[i].Normal.X * this[j].Normal.Y - this[i].Normal.Y * this[j].Normal.X,
+				d1 = v.X * this[j].Normal.Y - v.Y * this[j].Normal.X,
+				d2 = this[i].Normal.X * v.Y - this[i].Normal.Y * v.X;
 			a = d1 / d;
 			b = d2 / d;
 		}
@@ -351,7 +348,7 @@ namespace PolygonLibrary.Polygons
 		/// <param name="suspVectors">Array of vectorsof the second function; 
 		/// if null, then this information does not accumulated</param>
 		/// <returns>The desired linear combination of the original functions</returns>
-		static public SupportFunction CombineFunctions(SupportFunction fa, SupportFunction fb,
+		public static SupportFunction CombineFunctions(SupportFunction fa, SupportFunction fb,
 			double ca, double cb, List<int> suspIndices = null, List<Vector2D> suspVectors = null)
 		{
 			List<GammaPair> res = new List<GammaPair>();
@@ -442,10 +439,7 @@ namespace PolygonLibrary.Polygons
 		/// <param name="lc">Index of the pair to be checked</param>
 		/// <param name="lp">Index of the counterclockwise neighbor</param>
 		/// <returns>true, if the central pair is valid; false, otherwise</returns>
-		protected bool CheckTriple(int lm, int lc, int lp)
-		{
-			return SupportFunction.CheckTriple(this[lm], this[lc], this[lp]);
-		}
+		protected bool CheckTriple(int lm, int lc, int lp) => SupportFunction.CheckTriple(this[lm], this[lc], this[lp]);
 
 		/// <summary>
 		/// Method supplement for the convexification procedure, which checks a triple of pairs
@@ -466,9 +460,9 @@ namespace PolygonLibrary.Polygons
 		///  - to allow to the middle element to be valid, the point should strictly belong
 		///    to the semiplane defined by the third element of the triple
 		///</remarks>
-		static protected bool CheckTriple(GammaPair pm, GammaPair pc, GammaPair pp)
+		protected static bool CheckTriple(GammaPair pm, GammaPair pc, GammaPair pp)
 		{
-			if (Tools.EQ(pm.Normal.x, -pp.Normal.x) && Tools.EQ(pm.Normal.y, -pp.Normal.y))
+			if (Tools.EQ(pm.Normal.X, -pp.Normal.X) && Tools.EQ(pm.Normal.Y, -pp.Normal.Y))
 				return Tools.GE(pm.Value, -pp.Value);
 
 			Point2D p = GammaPair.CrossPairs(pm, pc);
@@ -564,10 +558,7 @@ namespace PolygonLibrary.Polygons
 					ComputeSF();
 				return _sf;
 			}
-			protected set
-			{
-				_sf = value;
-			}
+			protected set => _sf = value;
 		}
 
 		/// <summary>
@@ -607,10 +598,8 @@ namespace PolygonLibrary.Polygons
 		/// Constructor on the basis of list of vertices represented as two-dimensional points
 		/// </summary>
 		public ConvexPolygon(IEnumerable<Point2D> vs, bool ToConvexify = false)
-			: base(ToConvexify ? Convexification.ArcHull2D(vs.ToList()) : vs.ToList())
-		{
+			: base(ToConvexify ? Convexification.ArcHull2D(vs.ToList()) : vs.ToList()) =>
 			_sf = null;
-		}
 
 		/// <summary>
 		/// Constructor on the basis of list of vertices represented as multidimensional points
@@ -618,10 +607,8 @@ namespace PolygonLibrary.Polygons
 		public ConvexPolygon(IEnumerable<Point> vs, bool ToConvexify = false)
 			: base(ToConvexify ?
 								Convexification.ArcHull2D(vs.Select(p => (Point2D)p).ToList()) :
-								vs.Select(p => (Point2D)p).ToList())
-		{
+								vs.Select(p => (Point2D)p).ToList()) =>
 			_sf = null;
-		}
 
 		/// <summary>
 		/// Constructor on the basis of the support function. 
@@ -629,10 +616,8 @@ namespace PolygonLibrary.Polygons
 		/// </summary>
 		/// <param name="sf">The support function</param>
 		public ConvexPolygon(SupportFunction sf)
-			: base()
-		{
+			: base() =>
 			_sf = sf;
-		}
 		#endregion
 
 		#region Internal methods
@@ -657,7 +642,7 @@ namespace PolygonLibrary.Polygons
 		/// <summary>
 		/// Compute the contour on the basis of either list of vertices, or the dual description
 		/// </summary>
-		override protected void ComputeContours()
+		protected override void ComputeContours()
 		{
 			if (_sf != null)
 			{
@@ -851,10 +836,7 @@ namespace PolygonLibrary.Polygons
 		/// </summary>
 		/// <param name="p">The given point</param>
 		/// <returns>The nearest point of the polygon</returns>
-		public Point2D NearestPoint(Point2D p)
-		{
-			throw new NotImplementedException();
-		}
+		public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
 		#endregion
 
 		#region Operators
@@ -864,7 +846,7 @@ namespace PolygonLibrary.Polygons
 		/// <param name="cp1">The first polygon summand</param>
 		/// <param name="cp2">The second polygon summand</param>
 		/// <returns>The polygon sum</returns>
-		static public ConvexPolygon operator +(ConvexPolygon cp1, ConvexPolygon cp2)
+		public static ConvexPolygon operator +(ConvexPolygon cp1, ConvexPolygon cp2)
 		{
 			SupportFunction sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, 1);
 			return new ConvexPolygon(sf);
@@ -876,7 +858,7 @@ namespace PolygonLibrary.Polygons
 		/// <param name="cp1">The polygon minuend</param>
 		/// <param name="cp2">The polygon subtrahend</param>
 		/// <returns>The polygon difference; if the difference is empty, null is returned</returns>
-		static public ConvexPolygon operator -(ConvexPolygon cp1, ConvexPolygon cp2)
+		public static ConvexPolygon operator -(ConvexPolygon cp1, ConvexPolygon cp2)
 		{
 			List<int> suspInds = new List<int>();
 			SupportFunction sf =

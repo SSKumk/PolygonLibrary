@@ -14,7 +14,7 @@ namespace PolygonLibrary.Segments
     ///   - in declared segment order
     ///   - descently sorted by their "right" ends 
     /// </summary>
-    internal protected class SegmentGroup : IMultiEnumerable<InnerSegment>, IComparable<SegmentGroup>
+    protected internal class SegmentGroup : IMultiEnumerable<InnerSegment>, IComparable<SegmentGroup>
     {
 #region Storages and the reverse comparer       
       /// <summary>
@@ -70,7 +70,7 @@ namespace PolygonLibrary.Segments
       /// </summary>
       public int count
       {
-        get { return accOrdered.Count; }
+        get => accOrdered.Count;
       }
 
       /// <summary>
@@ -78,7 +78,7 @@ namespace PolygonLibrary.Segments
       /// </summary>
       public bool isEmpty
       {
-        get { return accOrdered.Count == 0; }
+        get => accOrdered.Count == 0;
       }
 
       /// <summary>
@@ -116,18 +116,12 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Return the minimal (in the sense of direct order) segment of the group
       /// </summary>
-      public InnerSegment Min()
-      {
-        return accOrdered.Min();
-      }
+      public InnerSegment Min() => accOrdered.Min();
 
       /// <summary>
       /// Return the maximal (minimal in the sense of "reverse" order) segment of the group
       /// </summary>
-      public InnerSegment Max()
-      {
-        return decOrdered.Min();
-      }
+      public InnerSegment Max() => decOrdered.Min();
 
       /// <summary>
       /// Adding a segment to the group
@@ -181,10 +175,7 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="s">The given segment</param>
       /// <returns>true, if the given segment is in the structure; false, otherwise</returns>
-      public bool Contains(InnerSegment s)
-      {
-        return accOrdered.Contains(s);
-      }
+      public bool Contains(InnerSegment s) => accOrdered.Contains(s);
 
       /// <summary>
       /// Intersecting two groups in the sense of intersecting two segments
@@ -208,19 +199,13 @@ namespace PolygonLibrary.Segments
       /// Returns an enumerator that directly iterates through the collection.
       /// </summary>
       /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-      public IEnumerator<InnerSegment> GetEnumerator()
-      {
-        return accOrdered.GetEnumerator();
-      }
+      public IEnumerator<InnerSegment> GetEnumerator() => accOrdered.GetEnumerator();
 
       /// <summary>
       /// Returns an untyped enumerator that directly iterates through the collection.
       /// </summary>
       /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return GetEnumerator();
-      }
+      IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
       /// <summary>
       /// Returns an enumerator that iterates through the collection put at the given value or after it 
@@ -228,19 +213,13 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="v">The value the enymerator to be put on</param>
       /// <returns>An enumerator that can be used to iterate through the collection</returns>
-      public IEnumerator<InnerSegment> GetEnumerator(InnerSegment v)
-      {
-        return accOrdered.GetEnumerator(v);
-      }
+      public IEnumerator<InnerSegment> GetEnumerator(InnerSegment v) => accOrdered.GetEnumerator(v);
 
       /// <summary>
       /// Returns an enumerator that reversely iterates through the collection.
       /// </summary>
       /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-      public IEnumerator<InnerSegment> GetReverseEnumerator()
-      {
-        return accOrdered.GetReverseEnumerator();
-      }
+      public IEnumerator<InnerSegment> GetReverseEnumerator() => accOrdered.GetReverseEnumerator();
 
       /// <summary>
       /// Returns an enumerator that reversely iterates through the collection put at the given value or before it 
@@ -248,19 +227,13 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="v">The value the enymerator to be put on</param>
       /// <returns>An enumerator that can be used to iterate through the collection</returns>
-      public IEnumerator<InnerSegment> GetReverseEnumerator(InnerSegment v)
-      {
-        return accOrdered.GetReverseEnumerator(v);
-      }
+      public IEnumerator<InnerSegment> GetReverseEnumerator(InnerSegment v) => accOrdered.GetReverseEnumerator(v);
 
       /// <summary>
       /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one
       /// </summary>
       /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-      public IEnumerator<InnerSegment> GetCyclicEnumerator()
-      {
-        return accOrdered.GetCyclicEnumerator();
-      }
+      public IEnumerator<InnerSegment> GetCyclicEnumerator() => accOrdered.GetCyclicEnumerator();
 
       /// <summary>
       /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one;
@@ -269,19 +242,13 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="v">The value the enymerator to be put on</param>
       /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-      public IEnumerator<InnerSegment> GetCyclicEnumerator(InnerSegment v)
-      {
-        return accOrdered.GetCyclicEnumerator(v);
-      }
+      public IEnumerator<InnerSegment> GetCyclicEnumerator(InnerSegment v) => accOrdered.GetCyclicEnumerator(v);
 
       /// <summary>
       /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one
       /// </summary>
       /// <returns>An enumerator that reversely iterates through the collection regarding it as a cycled one</returns>
-      public IEnumerator<InnerSegment> GetCyclicReverseEnumerator()
-      {
-        return accOrdered.GetCyclicReverseEnumerator();
-      }
+      public IEnumerator<InnerSegment> GetCyclicReverseEnumerator() => accOrdered.GetCyclicReverseEnumerator();
 
       /// <summary>
       /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one;
@@ -290,18 +257,12 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="v">The value the enymerator to be put on</param>
       /// <returns>An enumerator that iterates reversely through the collection regarding it as a cycled one</returns>
-      public IEnumerator<InnerSegment> GetCyclicReverseEnumerator(InnerSegment v)
-      {
-        return accOrdered.GetCyclicReverseEnumerator(v);
-      }
-#endregion
+      public IEnumerator<InnerSegment> GetCyclicReverseEnumerator(InnerSegment v) => accOrdered.GetCyclicReverseEnumerator(v);
+      #endregion
 
 #region Comparation
-      public int CompareTo(SegmentGroup that)
-      {
-        return this.polarAngle.CompareTo(that.polarAngle);
-      }
-#endregion
+      public int CompareTo(SegmentGroup that) => this.polarAngle.CompareTo(that.polarAngle);
+      #endregion
 
 #region Miscellaneous procedures
       /// <summary>

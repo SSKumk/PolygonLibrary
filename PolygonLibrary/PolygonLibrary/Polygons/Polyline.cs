@@ -45,12 +45,12 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Number of vertices
     /// </summary>
-    public int Count { get { return _vertices.Count; } }
+    public int Count { get => _vertices.Count; }
 
     /// <summary>
     /// List of vertices
     /// </summary>
-    public List<Point2D> Vertices { get { return _vertices; } }
+    public List<Point2D> Vertices { get => _vertices; }
 
     /// <summary>
     /// List of edges. Is computed on demand
@@ -167,7 +167,7 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Check whether the line is actually empty, that is, it does not contain any vertex
     /// </summary>
-    public bool IsEmpty { get { return Count == 0; } }
+    public bool IsEmpty { get => Count == 0; }
 
     /// <summary>
     /// Compute square of the current polyline
@@ -187,20 +187,14 @@ namespace PolygonLibrary.Polygons
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is in the polygon (inside or at the boundary); 
     /// false, otherwise</returns>
-    public bool ContainsPoint(Point2D p)
-    {
-      return Tools.NE(ComputeAngleVariation(p));
-    }
+    public bool ContainsPoint(Point2D p) => Tools.NE(ComputeAngleVariation(p));
 
     /// <summary>
     /// Method that checks whether a point is located strictly inside the polygon
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is strictly inside the polygon</returns>
-    public bool ContainsPointInside(Point2D p)
-    {
-      return Tools.EQ(Math.Abs(ComputeAngleVariation(p)), 2 * Math.PI);
-    }
+    public bool ContainsPointInside(Point2D p) => Tools.EQ(Math.Abs(ComputeAngleVariation(p)), 2 * Math.PI);
 
     /// <summary>
     /// A suplementary method for the ones that check whether the polygon contains a point.

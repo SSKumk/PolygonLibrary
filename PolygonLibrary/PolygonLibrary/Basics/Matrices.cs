@@ -66,11 +66,8 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="m">Array to be converted</param>
     /// <returns>The resultant matrix</returns>
-    public static explicit operator Matrix(double[,] m)
-    {
-      return new Matrix(m);
-    }
-#endregion
+    public static explicit operator Matrix(double[,] m) => new Matrix(m);
+    #endregion
     
 #region Constructors
     /// <summary>
@@ -211,7 +208,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="m">The matrix to be reversed</param>
     /// <returns>The opposite vector</returns>
-    static public Matrix operator -(Matrix m)
+    public static Matrix operator -(Matrix m)
     {
       int d = m.Rows * m.Cols, i;
       double[] nv = new double[d];
@@ -226,7 +223,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m1">The first matrix summand</param>
     /// <param name="m2">The second matrix summand</param>
     /// <returns>The sum</returns>
-    static public Matrix operator +(Matrix m1, Matrix m2)
+    public static Matrix operator +(Matrix m1, Matrix m2)
     {
 #if DEBUG
       if (m1.Rows != m2.Rows || m1.Cols != m2.Cols)
@@ -245,7 +242,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m1">The matrix minuend</param>
     /// <param name="m2">The matrix subtrahend</param>
     /// <returns>The differece</returns>
-    static public Matrix operator -(Matrix m1, Matrix m2)
+    public static Matrix operator -(Matrix m1, Matrix m2)
     {
 #if DEBUG
       if (m1.Rows != m2.Rows || m1.Cols != m2.Cols)
@@ -264,7 +261,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The numeric factor</param>
     /// <param name="m">The matrix factor</param>
     /// <returns>The product</returns>
-    static public Matrix operator *(double a, Matrix m)
+    public static Matrix operator *(double a, Matrix m)
     {
       int d = m.Rows * m.Cols, i;
       double[] nv = new double[d];
@@ -279,10 +276,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m">The matrix factor</param>
     /// <param name="a">The numeric factor</param>
     /// <returns>The product</returns>
-    static public Matrix operator *(Matrix m, double a)
-    {
-      return a * m;
-    }
+    public static Matrix operator *(Matrix m, double a) => a * m;
 
     /// <summary>
     /// Division of a matrix by a number
@@ -290,7 +284,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m">The matrix dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
-    static public Matrix operator /(Matrix m, double a)
+    public static Matrix operator /(Matrix m, double a)
     {
 #if DEBUG
       if (Tools.EQ(a))
@@ -310,7 +304,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m">The matrix (first) factor</param>
     /// <param name="v">The vector (second) factor</param>
     /// <returns>The resultant vector</returns>
-    static public Vector operator *(Matrix m, Vector v)
+    public static Vector operator *(Matrix m, Vector v)
     {
 #if DEBUG
       if (m.Cols != v.Dim)
@@ -334,7 +328,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector (first) factor</param>
     /// <param name="m">The matrix (second) factor</param>
     /// <returns>The resultant vector</returns>
-    static public Vector operator *(Vector v, Matrix m)
+    public static Vector operator *(Vector v, Matrix m)
     {
 #if DEBUG
       if (m.Rows != v.Dim)
@@ -357,7 +351,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m1">The first matrix factor</param>
     /// <param name="m2">The second matrix factor</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix operator *(Matrix m1, Matrix m2)
+    public static Matrix operator *(Matrix m1, Matrix m2)
     {
 #if DEBUG
       if (m1.Cols != m2.Rows)
@@ -384,7 +378,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m1">The left concatenated matrix</param>
     /// <param name="m2">The right concatenated matrix</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix hcat(Matrix m1, Matrix m2)
+    public static Matrix hcat(Matrix m1, Matrix m2)
     {
 #if DEBUG
       if (m1.Rows != m2.Rows)
@@ -409,7 +403,7 @@ namespace PolygonLibrary.Basics
     /// <param name="m1">The upper concatenated matrix</param>
     /// <param name="m2">The lower concatenated matrix</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix vcat(Matrix m1, Matrix m2)
+    public static Matrix vcat(Matrix m1, Matrix m2)
     {
 #if DEBUG
       if (m1.Cols != m2.Cols)
@@ -514,10 +508,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix Zero(int n)
-    {
-      return new Matrix(n, n);
-    }
+    public static Matrix Zero(int n) => new Matrix(n, n);
 
     /// <summary>
     /// Return zero recatngular matrix n-by-m
@@ -525,17 +516,14 @@ namespace PolygonLibrary.Basics
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix Zero(int n, int m)
-    {
-      return new Matrix(n, m);
-    }
+    public static Matrix Zero(int n, int m) => new Matrix(n, m);
 
     /// <summary>
     /// Return zero matrix n-by-n containing units
     /// </summary>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix One(int n)
+    public static Matrix One(int n)
     {
 #if DEBUG
       if (n <= 0)
@@ -550,7 +538,7 @@ namespace PolygonLibrary.Basics
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix One(int n, int m)
+    public static Matrix One(int n, int m)
     {
 #if DEBUG
       if (n <= 0)
@@ -570,7 +558,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix Eye(int n)
+    public static Matrix Eye(int n)
     {
 #if DEBUG
       if (n <= 0)
@@ -585,7 +573,7 @@ namespace PolygonLibrary.Basics
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
-    static public Matrix Eye(int n, int m)
+    public static Matrix Eye(int n, int m)
     {
 #if DEBUG
       if (n <= 0)

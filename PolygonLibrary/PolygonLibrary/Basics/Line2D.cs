@@ -119,10 +119,10 @@ namespace PolygonLibrary.Basics
     {
       Direct = new Vector2D(v).Normalize();
 
-      Normal = new Vector2D(-Direct.y, Direct.x);
+      Normal = new Vector2D(-Direct.Y, Direct.X);
 
-      A = Normal.x;
-      B = Normal.y;
+      A = Normal.X;
+      B = Normal.Y;
       C = -Normal * (Vector2D)p;
     }
 
@@ -164,9 +164,9 @@ namespace PolygonLibrary.Basics
       Line2D res = new Line2D();
       res.Normal = new Vector2D(v).Normalize();
 
-      res.Direct = new Vector2D(res.Normal.y, -res.Normal.x);
-      res.A = res.Normal.x;
-      res.B = res.Normal.y;
+      res.Direct = new Vector2D(res.Normal.Y, -res.Normal.X);
+      res.A = res.Normal.X;
+      res.B = res.Normal.Y;
       res.C = -res.Normal * (Vector2D)p;
 
       return res;
@@ -201,7 +201,7 @@ namespace PolygonLibrary.Basics
     /// <returns>The computed value</returns>
     public double this[Point2D p]
     {
-      get { return A * p.x + B * p.y + C; }
+      get => A * p.x + B * p.y + C;
     }
 
     /// <summary>
@@ -209,10 +209,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="p">The given point</param>
     /// <returns>true, if passes; false, otherwise</returns>
-    public bool PassesThrough (Point2D p)
-    {
-      return Tools.EQ(this[p]);
-    }
+    public bool PassesThrough (Point2D p) => Tools.EQ(this[p]);
 
     /// <summary>
     /// A function that generates a new line that coincides with the current one, 
@@ -260,7 +257,7 @@ namespace PolygonLibrary.Basics
     /// <param name="l2">The second line</param>
     /// <param name="res">The intersection point (if exists and unique)</param>
     /// <returns>The type of imposition of the lines (crossing, parallel, overlapping) </returns>
-    static public LineCrossType Intersect (Line2D l1, Line2D l2, out Point2D res)
+    public static LineCrossType Intersect (Line2D l1, Line2D l2, out Point2D res)
     {
       double
         d = l1.A * l2.B - l1.B * l2.A,

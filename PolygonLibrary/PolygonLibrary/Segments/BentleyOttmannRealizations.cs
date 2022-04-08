@@ -35,7 +35,7 @@ namespace PolygonLibrary.Segments
     /// </summary>
     /// <param name="p">The crossing point</param>
     /// <param name="segs">The enumerable structure containing all segment</param>
-    override protected void AddToResult(Vector2D p, IEnumerable<InnerSegment> segs)
+    protected override void AddToResult(Vector2D p, IEnumerable<InnerSegment> segs)
     {
       if (!crossPoints.ContainsKey(p))
         crossPoints[p] = new SortedSet<int>();
@@ -156,7 +156,7 @@ namespace PolygonLibrary.Segments
     /// </summary>
     /// <param name="p">The crossing point</param>
     /// <param name="segs">The enumerable structure containing all segment</param>
-    override protected void AddToResult(Vector2D p, IEnumerable<InnerSegment> segs)
+    protected override void AddToResult(Vector2D p, IEnumerable<InnerSegment> segs)
     {
       List<InnerSegment> res = segs.ToList();
 

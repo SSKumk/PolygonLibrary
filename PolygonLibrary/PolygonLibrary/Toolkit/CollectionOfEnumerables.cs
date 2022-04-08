@@ -119,7 +119,7 @@ namespace PolygonLibrary.Toolkit
       /// </summary>
       public bool IsValid
       {
-        get { return curEnumerable != -1 && curEnumerable < parent._coll.Count; }
+        get => curEnumerable != -1 && curEnumerable < parent._coll.Count;
       }
 
       /// <summary>
@@ -139,7 +139,7 @@ namespace PolygonLibrary.Toolkit
       /// <summary>
       /// Getting property of non-generic interface
       /// </summary>
-      object IEnumerator.Current { get { return Current; } }
+      object IEnumerator.Current { get => Current; }
 
       /// <summary>
       /// Dispose method (for the aim of compatability)
@@ -192,10 +192,7 @@ namespace PolygonLibrary.Toolkit
     /// Returns an enumerator that is set before the beginning of the collection and iterates through it
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<T> GetEnumerator()
-    {
-      return new EnumeratorOverCollection (this);
-    }
+    public IEnumerator<T> GetEnumerator() => new EnumeratorOverCollection (this);
 
     /// <summary>
     /// Returns an enumerator that is set to the first occurence of the given element in the collection.
@@ -203,19 +200,13 @@ namespace PolygonLibrary.Toolkit
     /// </summary>
     /// <param name="val">The element, to which the enumerator should be put</param>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<T> GetEnumerator (T val)
-    {
-      return new EnumeratorOverCollection (this, val);
-    }
+    public IEnumerator<T> GetEnumerator (T val) => new EnumeratorOverCollection (this, val);
 
     /// <summary>
     /// Getting a non-generic enumerator
     /// </summary>
     /// <returns>A non-generic enumerator set to the beginning of the collection</returns>
-    IEnumerator IEnumerable.GetEnumerator ()
-    {
-      return GetEnumerator ();
-    }
+    IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
     #endregion
 
     #region Methods
@@ -246,10 +237,7 @@ namespace PolygonLibrary.Toolkit
     /// Converting the collection to an array
     /// </summary>
     /// <returns>The array of all elements in the collection</returns>
-    public T[] ToArray()
-    {
-      return ToList().ToArray();
-    }
+    public T[] ToArray() => ToList().ToArray();
     #endregion
   }
 }

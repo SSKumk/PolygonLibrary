@@ -53,8 +53,8 @@ namespace PolygonLibrary.Segments
     /// </summary>
     private Vector2D p_sweep
     {
-      get { return yStruct.comparer.p_sweep; }
-      set { yStruct.comparer.p_sweep = value; }
+      get => yStruct.comparer.p_sweep;
+      set => yStruct.comparer.p_sweep = value;
     }
 
 #region Subsidiary procedures
@@ -64,10 +64,7 @@ namespace PolygonLibrary.Segments
     /// <param name="s1">The first segment</param>
     /// <param name="s2">The second segment</param>
     /// <returns>true, if they are incident; false, otherwise</returns>
-    private bool AreIncident(InnerSegment s1, InnerSegment s2)
-    {
-      return incidents.Contains(new SegmentPair(s1.Origin, s2.Origin));
-    }
+    private bool AreIncident(InnerSegment s1, InnerSegment s2) => incidents.Contains(new SegmentPair(s1.Origin, s2.Origin));
 
     /// <summary>
     /// Taking the next event from the queue and processing it
@@ -116,10 +113,10 @@ namespace PolygonLibrary.Segments
       List<InnerSegment> vertSegs = yStruct.GetVerticalSegments().ToList();
       if (vertSegs.Count > 0)
       {
-        SegmentGroup next = yStruct.UpperGroup(evPoint.y);
+        SegmentGroup next = yStruct.UpperGroup(evPoint.Y);
         if (next != null)
         {
-          double nextOrdinate = next.ComputeAtPoint(evPoint.x);
+          double nextOrdinate = next.ComputeAtPoint(evPoint.X);
           
         }
       }

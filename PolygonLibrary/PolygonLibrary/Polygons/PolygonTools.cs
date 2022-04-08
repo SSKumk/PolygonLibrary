@@ -21,10 +21,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="v1">One vertex from a pair of opposite vertices</param>
     /// <param name="v2">Another vertex from a pair of opposite vertices</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon RectangleParallel(Point2D v1, Point2D v2)
-    {
-      return RectangleParallel(v1.x, v1.y, v2.x, v2.y);
-    }
+    public static ConvexPolygon RectangleParallel(Point2D v1, Point2D v2) => RectangleParallel(v1.x, v1.y, v2.x, v2.y);
 
     /// <summary>
     /// Method for generating a convex polygon representing a rectangle with sides parallel 
@@ -37,7 +34,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="x2o">The abscissa of the second vertex</param>
     /// <param name="y2o">The ordinate of the second vertex</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon RectangleParallel(double x1o, double y1o, double x2o, double y2o)
+    public static ConvexPolygon RectangleParallel(double x1o, double y1o, double x2o, double y2o)
     {
       double
         x1 = Math.Min(x1o, x2o),
@@ -76,10 +73,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="alpha">Turn angle (in radians): angle between the Ox or Oy axis and 
     /// the rectangle sides</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon RectangleTurned(Point2D p1, Point2D p2, double alpha)
-    {
-      return RectangleTurned(p1.x, p1.y, p2.x, p2.y, alpha);
-    }
+    public static ConvexPolygon RectangleTurned(Point2D p1, Point2D p2, double alpha) => RectangleTurned(p1.x, p1.y, p2.x, p2.y, alpha);
 
     /// <summary>
     /// Method for generating a convex polygon representing a rectangle with sides parallel to the 
@@ -94,7 +88,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="alpha">Turn angle (in radians): angle between the Ox or Oy axis and 
     /// the rectangle sides</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon RectangleTurned(double x1o, double y1o, double x2o, double y2o, double alpha)
+    public static ConvexPolygon RectangleTurned(double x1o, double y1o, double x2o, double y2o, double alpha)
     {
       // If the points coincide, return a single-pointed polygon
       if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o))
@@ -142,10 +136,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="n">Number of vertices in the resultant polygon</param>
     /// <param name="a0">The additional turn angle</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon Circle(Point2D center, double R, int n, double a0 = 0)
-    {
-      return Circle(center.x, center.y, R, n, a0);
-    }
+    public static ConvexPolygon Circle(Point2D center, double R, int n, double a0 = 0) => Circle(center.x, center.y, R, n, a0);
 
     /// <summary>
     /// Method for generating an approximation for the circle as a right n-polygon.
@@ -158,7 +149,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="n">Number of vertices in the resultant polygon</param>
     /// <param name="a0">The additional turn angle</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon Circle(double x, double y, double R, int n, double a0 = 0)
+    public static ConvexPolygon Circle(double x, double y, double R, int n, double a0 = 0)
     {
       if (Tools.EQ(R))
         return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
@@ -184,7 +175,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="phi">The angle of turn of the entire ellipse</param>
     /// <param name="a0">THe additional angle for turn of the zeroth vertex</param>
     /// <returns>The appropriate polygon</returns>
-    static public ConvexPolygon Ellipse(double x, double y, double a, double b, int n, double phi = 0, double a0 = 0)
+    public static ConvexPolygon Ellipse(double x, double y, double a, double b, int n, double phi = 0, double a0 = 0)
     {
       if (Tools.EQ(a))
       {

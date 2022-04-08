@@ -24,10 +24,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     protected class TimeComparer : IComparer<double>
     {
-      public int Compare(double a, double b)
-      {
-        return Tools.CMP(a, b);
-      }
+      public int Compare(double a, double b) => Tools.CMP(a, b);
     }
 
     #region Internal data
@@ -83,7 +80,7 @@ namespace PolygonLibrary.Basics
     /// <returns>The Cauchy matrix at the given instant</returns>
     public Matrix this[double t]
     {
-      get { return GetAt(t); }
+      get => GetAt(t);
     }
 
     /// <summary>

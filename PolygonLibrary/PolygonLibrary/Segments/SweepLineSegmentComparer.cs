@@ -41,8 +41,8 @@ namespace PolygonLibrary.Segments
 #endif
 
         double
-          y1 = g1.ComputeAtPoint(p_sweep.x),
-          y2 = g2.ComputeAtPoint(p_sweep.x);
+          y1 = g1.ComputeAtPoint(p_sweep.X),
+          y2 = g2.ComputeAtPoint(p_sweep.X);
 
         if (Tools.NE(y1, y2))
         {
@@ -70,7 +70,7 @@ namespace PolygonLibrary.Segments
             res = +1;
 
           // If they are lower than the sweeping point, change the order
-          if (Tools.GT(y1, p_sweep.y))
+          if (Tools.GT(y1, p_sweep.Y))
             res = -res;
 
           return res;

@@ -1,25 +1,23 @@
 ﻿using System;
 
-namespace PolygonLibrary.Basics
-{
+namespace PolygonLibrary.Basics{
   /// <summary>
   /// Class of vectors in the plane
   /// </summary>
-  public class Vector2D : IComparable<Vector2D>
-  {
-#region Comparing
+  public class Vector2D : IComparable<Vector2D>{
+    #region Comparing
     /// <summary>
     /// Vector comparer realizing the lexicographic order
     /// </summary>
     /// <param name="v">The vector to be compared with</param>
     /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-    public int CompareTo(Vector2D v)
-    {
-      int xRes = Tools.CMP(x, v.x);
-      if (xRes != 0)
+    public int CompareTo(Vector2D v) {
+      int xRes = Tools.CMP(X, v.X);
+      if (xRes != 0) {
         return xRes;
-      else
-        return Tools.CMP(y, v.y);
+      } else {
+        return Tools.CMP(Y, v.Y);
+      }
     }
 
     /// <summary>
@@ -28,10 +26,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
-    static public bool operator ==(Vector2D v1, Vector2D v2)
-    {
-      return Tools.EQ(v1.x, v2.x) && Tools.EQ(v1.y, v2.y);
-    }
+    public static bool operator ==(Vector2D v1, Vector2D v2) => Tools.EQ(v1.X, v2.X) && Tools.EQ(v1.Y, v2.Y);
 
     /// <summary>
     /// Non-equality of vectors
@@ -39,10 +34,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors do not coincide; false, otherwise</returns>
-    static public bool operator !=(Vector2D v1, Vector2D v2)
-    {
-      return !(v1 == v2);
-    }
+    public static bool operator !=(Vector2D v1, Vector2D v2) => !(v1 == v2);
 
     /// <summary>
     /// Check whether one vector is greater than another (in lexicographic order)
@@ -50,10 +42,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 > v2; false, otherwise</returns>
-    static public bool operator >(Vector2D v1, Vector2D v2)
-    {
-      return v1.CompareTo(v2) > 0;
-    }
+    public static bool operator >(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) > 0;
 
     /// <summary>
     /// Check whether one vector is greater or equal than another (in lexicographic order)
@@ -61,10 +50,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 >= v2; false, otherwise</returns>
-    static public bool operator >=(Vector2D v1, Vector2D v2)
-    {
-      return v1.CompareTo(v2) >= 0;
-    }
+    public static bool operator >=(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) >= 0;
 
     /// <summary>
     /// Check whether one vector is less than another (in lexicographic order)
@@ -72,10 +58,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 is less than v2; false, otherwise</returns>
-    static public bool operator <(Vector2D v1, Vector2D v2)
-    {
-      return v1.CompareTo(v2) < 0;
-    }
+    public static bool operator <(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) < 0;
 
     /// <summary>
     /// Check whether one vector is less or equal than another (in lexicographic order)
@@ -83,70 +66,58 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 is less than or equal to v2; false, otherwise</returns>
-    static public bool operator <=(Vector2D v1, Vector2D v2)
-    {
-      return v1.CompareTo(v2) <= 0;
-    }
-#endregion
-    
-#region Access properties
+    public static bool operator <=(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) <= 0;
+    #endregion
+
+    #region Access properties
     /// <summary>
     /// The abscissa
     /// </summary>
-    public double x { get; }
+    public double X { get; }
 
     /// <summary>
     /// The ordinate
     /// </summary>
-    public double y { get; }
+    public double Y { get; }
 
     /// <summary>
     /// Indexer access
     /// </summary>
     /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
     /// <returns>The value of the corresponding component</returns>
-    public double this[int i]
-    {
-      get
-      {
-#if DEBUG
-        if (i == 0)
-          return x;
-        else if (i == 1)
-          return y;
-        else
+    public double this[int i] {
+      get {
+        if (i == 0) {
+          return X;
+        }  else if (i == 1) {
+          return Y;
+        } else {
           throw new IndexOutOfRangeException();
-#else
-        if (i == 0)
-          return x;
-        else 
-          return y;
-#endif
+        }
       }
     }
 
     /// <summary>
     /// length of the vector
     /// </summary>
-    public double Length { get; private set;  }
+    public double Length { get; private set; }
 
     /// <summary>
     /// The polar angle of the vector
     /// </summary>
-    public double PolarAngle { get; private set;  }
-#endregion
-    
-#region Miscellaneous procedures
+    public double PolarAngle { get; private set; }
+    #endregion
+
+    #region Miscellaneous procedures
     /// <summary>
     /// Normalization of the vector
     /// </summary>
-    public Vector2D Normalize()
-    {
+    public Vector2D Normalize() {
 #if DEBUG
       if (Tools.EQ(Length))
         throw new DivideByZeroException();
 #endif
-      return new Vector2D (x / Length, y / Length);
+      return new Vector2D(X / Length, Y / Length);
     }
 
     /// <summary>
@@ -156,16 +127,12 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
-    public static double Angle(Vector2D v1, Vector2D v2)
-    {
+    public static double Angle(Vector2D v1, Vector2D v2) {
       if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length))
         return 0;
-      else
-      {
+      else {
         double
-          l = v1.Length * v2.Length,
-          s = (v1 ^ v2) / l,
-          c = (v1 * v2) / l;
+          l = v1.Length * v2.Length, s = (v1 ^ v2) / l, c = (v1 * v2) / l;
         return Math.Atan2(s, c);
       }
     }
@@ -176,46 +143,38 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
-    public static double Angle2PI(Vector2D v1, Vector2D v2)
-    {
+    public static double Angle2PI(Vector2D v1, Vector2D v2) {
       double a = Angle(v1, v2);
       if (a < 0)
         return a + 2 * Math.PI;
       else
         return a;
     }
-#endregion
-    
-#region Overrides
-    public override bool Equals(object obj)
-    {
+    #endregion
+
+    #region Overrides
+    public override bool Equals(object obj) {
+      Vector2D v = obj as Vector2D;
 #if DEBUG
-      if (!(obj is Vector2D))
+      if (v is null) {
         throw new ArgumentException();
+      }
 #endif
-      Vector2D v = (Vector2D)obj;
-      return this.CompareTo(v) == 0;
+      return CompareTo(v) == 0;
     }
 
-    public override string ToString()
-    {
-      return "(" + x + ";" + y + ")";
-    }
+    public override string ToString() => "(" + X + ";" + Y + ")";
 
-    public override int GetHashCode()
-    {
-      return x.GetHashCode() + y.GetHashCode();
-    }
-#endregion
-    
-#region Constructors
+    public override int GetHashCode() => X.GetHashCode() + Y.GetHashCode();
+    #endregion
+
+    #region Constructors
     /// <summary>
     /// The default construct producing the zero vector
     /// </summary>
-    public Vector2D()
-    {
-      x = 0;
-      y = 0;
+    public Vector2D() {
+      X = 0;
+      Y = 0;
 
       ComputeParameters();
     }
@@ -225,10 +184,9 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="nx">The new abscissa</param>
     /// <param name="ny">The new ordinate</param>
-    public Vector2D(double nx, double ny)
-    {
-      x = nx;
-      y = ny;
+    public Vector2D(double nx, double ny) {
+      X = nx;
+      Y = ny;
 
       ComputeParameters();
     }
@@ -237,10 +195,9 @@ namespace PolygonLibrary.Basics
     /// Copying constructor
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Vector2D(Vector2D v)
-    {
-      x = v.x;
-      y = v.y;
+    public Vector2D(Vector2D v) {
+      X = v.X;
+      Y = v.Y;
 
       ComputeParameters();
     }
@@ -248,23 +205,19 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Computing parameters of the vector for future usage
     /// </summary>
-    private void ComputeParameters()
-    {
-      Length = Math.Sqrt(x * x + y * y);
-      PolarAngle = Math.Atan2(y, x);
+    private void ComputeParameters() {
+      Length = Math.Sqrt(X * X + Y * Y);
+      PolarAngle = Math.Atan2(Y, X);
     }
-#endregion
-    
-#region Operators
+    #endregion
+
+    #region Operators
     /// <summary>
     /// Unary minus - the opposite vector
     /// </summary>
     /// <param name="v">The vector to be reversed</param>
     /// <returns>The opposite vector</returns>
-    static public Vector2D operator -(Vector2D v)
-    {
-      return new Vector2D(-v.x, -v.y);
-    }
+    public static Vector2D operator -(Vector2D v) => new Vector2D(-v.X, -v.Y);
 
     /// <summary>
     /// Sum of two vectors
@@ -272,21 +225,15 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector summand</param>
     /// <param name="v2">The second vector summand</param>
     /// <returns>The sum</returns>
-    static public Vector2D operator +(Vector2D v1, Vector2D v2)
-    {
-      return new Vector2D(v1.x + v2.x, v1.y + v2.y);
-    }
+    public static Vector2D operator +(Vector2D v1, Vector2D v2) => new Vector2D(v1.X + v2.X, v1.Y + v2.Y);
 
     /// <summary>
     /// Difference of two vectors
     /// </summary>
     /// <param name="v1">The vector minuend</param>
     /// <param name="v2">The vector subtrahend</param>
-    /// <returns>The differece</returns>
-    static public Vector2D operator -(Vector2D v1, Vector2D v2)
-    {
-      return new Vector2D(v1.x - v2.x, v1.y - v2.y);
-    }
+    /// <returns>The difference</returns>
+    public static Vector2D operator -(Vector2D v1, Vector2D v2) => new Vector2D(v1.X - v2.X, v1.Y - v2.Y);
 
     /// <summary>
     /// Left multiplication of a vector by a number
@@ -294,10 +241,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The numeric factor</param>
     /// <param name="v">The vector factor</param>
     /// <returns>The product</returns>
-    static public Vector2D operator *(double a, Vector2D v)
-    {
-      return new Vector2D(a * v.x, a * v.y);
-    }
+    public static Vector2D operator *(double a, Vector2D v) => new Vector2D(a * v.X, a * v.Y);
 
     /// <summary>
     /// Right multiplication of a vector by a number
@@ -305,10 +249,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector factor</param>
     /// <param name="a">The numeric factor</param>
     /// <returns>The product</returns>
-    static public Vector2D operator *(Vector2D v, double a)
-    {
-      return new Vector2D(a * v.x, a * v.y);
-    }
+    public static Vector2D operator *(Vector2D v, double a) => new Vector2D(a * v.X, a * v.Y);
 
     /// <summary>
     /// Division of a vector by a number
@@ -316,13 +257,13 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
-    static public Vector2D operator /(Vector2D v, double a)
-    {
+    public static Vector2D operator /(Vector2D v, double a) {
 #if DEBUG
-      if (Tools.EQ(a))
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
+      }
 #endif
-      return new Vector2D(v.x / a, v.y / a);
+      return new Vector2D(v.X / a, v.Y / a);
     }
 
     /// <summary>
@@ -331,10 +272,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector factor</param>
     /// <param name="v2">The first vector factor</param>
     /// <returns>The product</returns>
-    static public double operator *(Vector2D v1, Vector2D v2)
-    {
-      return v1.x * v2.x + v1.y * v2.y;
-    }
+    public static double operator *(Vector2D v1, Vector2D v2) => v1.X * v2.X + v1.Y * v2.Y;
 
     /// <summary>
     /// Pseudoscalar product (z-component of outer product) 
@@ -342,21 +280,15 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector factor</param>
     /// <param name="v2">The first vector factor</param>
     /// <returns>The z-component of the product</returns>
-    static public double operator ^(Vector2D v1, Vector2D v2)
-    {
-      return v1.x * v2.y - v1.y * v2.x;
-    }
+    public static double operator ^(Vector2D v1, Vector2D v2) => v1.X * v2.Y - v1.Y * v2.X;
 
     /// <summary>
-    /// Parallelity of vectors
+    /// Parallelism of vectors
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are parallel; false, otherwise</returns>
-    static public bool AreParallel(Vector2D v1, Vector2D v2)
-    {
-      return Tools.EQ(Math.Abs(v1 * v2), v1.Length * v2.Length);
-    }
+    public static bool AreParallel(Vector2D v1, Vector2D v2) => Tools.EQ(Math.Abs(v1 * v2), v1.Length * v2.Length);
 
     /// <summary>
     /// Codirectionality of vectors
@@ -364,10 +296,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are codirected; false, otherwise</returns>
-    static public bool AreCodirected(Vector2D v1, Vector2D v2)
-    {
-      return Tools.EQ(v1 * v2, v1.Length * v2.Length);
-    }
+    public static bool AreCodirected(Vector2D v1, Vector2D v2) => Tools.EQ(v1 * v2, v1.Length * v2.Length);
 
     /// <summary>
     /// Counterdirectionality of vectors
@@ -375,39 +304,34 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
-    static public bool AreCounterdirected(Vector2D v1, Vector2D v2)
-    {
-      return Tools.EQ(v1 * v2, -v1.Length * v2.Length);
-    }
+    public static bool AreCounterdirected(Vector2D v1, Vector2D v2) => Tools.EQ(v1 * v2, -v1.Length * v2.Length);
 
     /// <summary>
     /// Orthogonality of vectors
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
-    static public bool AreOrthogonal(Vector2D v1, Vector2D v2)
-    {
-      return Tools.EQ(v1.Length) || Tools.EQ(v2.Length) || 
-             Tools.EQ(Math.Abs(v1 * v2 / v1.Length / v1.Length));
-    }
-#endregion
-    
-#region Vector constants
+    /// <returns>true, if the vectors are orthogonal; false, otherwise</returns>
+    public static bool AreOrthogonal(Vector2D v1, Vector2D v2) =>
+      Tools.EQ(v1.Length) || Tools.EQ(v2.Length) ||
+      Tools.EQ(Math.Abs(v1 * v2 / v1.Length / v1.Length));
+    #endregion
+
+    #region Vector constants
     /// <summary>
     /// The zero vector
     /// </summary>
     public static readonly Vector2D Zero = new Vector2D(0, 0);
 
     /// <summary>
-    /// The first orth
+    /// The first unit vector
     /// </summary>
-    public static readonly Vector2D e1 = new Vector2D(1, 0);
+    public static readonly Vector2D E1 = new Vector2D(1, 0);
 
     /// <summary>
-    /// The second orth
+    /// The second unit vector
     /// </summary>
-    public static readonly Vector2D e2 = new Vector2D(0, 1);
-#endregion
+    public static readonly Vector2D E2 = new Vector2D(0, 1);
+    #endregion
   }
 }

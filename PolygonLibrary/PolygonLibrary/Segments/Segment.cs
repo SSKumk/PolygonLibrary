@@ -160,10 +160,7 @@ namespace PolygonLibrary.Segments
 #endregion
     
 #region Overrides
-    public override string ToString()
-    {
-      return "[" + p1 + ";" + p2 + "]";
-    }
+    public override string ToString() => "[" + p1 + ";" + p2 + "]";
 
     public override bool Equals(object obj)
     {
@@ -175,11 +172,8 @@ namespace PolygonLibrary.Segments
       return p1 == s.p1 && p2 == s.p2;
     }
 
-    public override int GetHashCode()
-    {
-      return p1.GetHashCode() + p2.GetHashCode();
-    }
-#endregion
+    public override int GetHashCode() => p1.GetHashCode() + p2.GetHashCode();
+    #endregion
     
 #region Constructors
     /// <summary>
@@ -252,11 +246,11 @@ namespace PolygonLibrary.Segments
     /// </summary>
     protected void ComputeParameters()
     {
-      normal = new Vector2D(p2.y - p1.y, p1.x - p2.x);
+      normal = new Vector2D(p2.Y - p1.Y, p1.X - p2.X);
       directional = p2 - p1;
       length = directional.Length;
       polarAngle = directional.PolarAngle;
-      isVertical = Tools.EQ(p1.x, p2.x);
+      isVertical = Tools.EQ(p1.X, p2.X);
     }
 
     /// <summary>
@@ -264,30 +258,21 @@ namespace PolygonLibrary.Segments
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is an endpoint; false, otherwise</returns>
-    public bool IsEndPoint(Vector2D p)
-    {
-      return p == p1 || p == p2;
-    }
+    public bool IsEndPoint(Vector2D p) => p == p1 || p == p2;
 
     /// <summary>
     /// Checking that a point is an inner point of this segment
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is an inner point; false, otherwise</returns>
-    public bool IsInnerPoint(Vector2D p)
-    {
-      return ContainsPoint(p) && !IsEndPoint(p);
-    }
+    public bool IsInnerPoint(Vector2D p) => ContainsPoint(p) && !IsEndPoint(p);
 
     /// <summary>
     /// Check whether a point belongs to the segment
     /// </summary>
     /// <param name="v">The point to be checked</param>
     /// <returns>true, if the point belongs to the segment; false, otherwise</returns>
-    public bool ContainsPoint(Vector2D v)
-    {
-      return Vector2D.AreCounterdirected(p1 - v, p2 - v);
-    }
+    public bool ContainsPoint(Vector2D v) => Vector2D.AreCounterdirected(p1 - v, p2 - v);
 
     /// <summary>
     /// Compute the ordinate of the line passing through the segment at the given abscissa;
@@ -302,7 +287,7 @@ namespace PolygonLibrary.Segments
         throw new InvalidOperationException("Cannot compute ordinate for a vertical segment!");
 #endif
       
-      return p1.y + (x - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
+      return p1.Y + (x - p1.X) * (p2.Y - p1.Y) / (p2.X - p1.X);
     }
 
     /// <summary>
@@ -319,11 +304,11 @@ namespace PolygonLibrary.Segments
       /*
         Computational formulas:
         s1.p1 + a1*d1 = s2.p1 + a2*d2  =>
-        =>  { a1*d1.x - a2*d2.x = s2.p1.x - s1.p1.x = ds.x
-            { a1*d1.y - a2*d2.y = s2.p1.y - s1.p1.y = ds.y =>
-        => Delta = -(d1.x*d2.y - d1.y*d2.x) = - (d1 ^ d2),
-            Delta1 = -(ds.x*d2.y - ds.y*d2.x) = - (ds ^ d2),
-            Delta2 = -(d1.x*ds.y - dx.y*ds.x) = - (d1 ^ ds),
+        =>  { a1*d1.X - a2*d2.X = s2.p1.X - s1.p1.X = ds.X
+            { a1*d1.Y - a2*d2.Y = s2.p1.Y - s1.p1.Y = ds.Y =>
+        => Delta = -(d1.X*d2.Y - d1.Y*d2.X) = - (d1 ^ d2),
+            Delta1 = -(ds.X*d2.Y - ds.Y*d2.X) = - (ds ^ d2),
+            Delta2 = -(d1.X*ds.Y - dx.Y*ds.X) = - (d1 ^ ds),
             a1* = Delta1 / Delta = (ds ^ d2) / (d1 ^ d2),
             a2* = -Delta2 / Delta = -(d1 ^ ds) / (d1 ^ d2)
       */

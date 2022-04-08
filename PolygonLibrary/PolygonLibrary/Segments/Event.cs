@@ -43,11 +43,8 @@ namespace PolygonLibrary.Segments
         /// </summary>
         /// <param name="s">The given segment</param>
         /// <returns>true, if the segment is in the structure; false, otherwise</returns>
-        public bool Contains(InnerSegment s)
-        {
-          return ContainsKey(s.polarAngle) && this[s.polarAngle].Contains(s);
-        }
-#endregion
+        public bool Contains(InnerSegment s) => ContainsKey(s.polarAngle) && this[s.polarAngle].Contains(s);
+        #endregion
         
 #region Iterating over segments
         /// <summary>
@@ -200,7 +197,7 @@ namespace PolygonLibrary.Segments
         /// </summary>
         public bool IsValid
         {
-          get { return state != State.Before && state != State.After; }
+          get => state != State.Before && state != State.After;
         }
 
         /// <summary>
@@ -223,7 +220,7 @@ namespace PolygonLibrary.Segments
         /// </summary>
         object IEnumerator.Current
         {
-          get { return Current; }
+          get => Current;
         }
 
         /// <summary>
@@ -292,19 +289,13 @@ namespace PolygonLibrary.Segments
       /// Getting iterator over all segments put into the event
       /// </summary>
       /// <returns>The iterator set to the beginning of the collection</returns>
-      public IEnumerator<InnerSegment> GetEnumerator()
-      {
-        return new EventSegmentIterator(this);
-      }
+      public IEnumerator<InnerSegment> GetEnumerator() => new EventSegmentIterator(this);
 
       /// <summary>
       /// Getting a non-generic enumerator over all segments put into the event
       /// </summary>
       /// <returns>A non-generic enumerator set to the beginning of the collection</returns>
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return GetEnumerator();
-      }
+      IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
       /// <summary>
       /// Get enumerator set to the first occurence of the given segment in the collection 
@@ -314,11 +305,8 @@ namespace PolygonLibrary.Segments
       /// <param name="s">A segment to which the enumerator should be set to</param>
       /// <returns>An enumerator set to the given segment, if the segment is in the collection;
       /// or to the beginning of the collection, otherwise</returns>
-      public IEnumerator<InnerSegment> GetEnumerator(InnerSegment s)
-      {
-        return new EventSegmentIterator(this, s);
-      }
-#endregion
+      public IEnumerator<InnerSegment> GetEnumerator(InnerSegment s) => new EventSegmentIterator(this, s);
+      #endregion
     }
   }
 }

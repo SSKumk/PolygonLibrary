@@ -30,7 +30,7 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     public int Count
     {
-      get { return _ls.Count; }
+      get => _ls.Count;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     public Polyline OuterContour
     {
-      get { return _ls[0]; }
+      get => _ls[0];
     }
 
     /// <summary>

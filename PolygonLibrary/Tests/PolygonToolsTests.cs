@@ -164,8 +164,8 @@ namespace ToolsTests
               e1 = e1o.Normalize(),
               e2 = e2o.Normalize();
 
-            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                           Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                           Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                            "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
             Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
               " and " + e2o + " are not orthogonal");
@@ -207,8 +207,8 @@ namespace ToolsTests
               e1 = e1o.Normalize(),
               e2 = e2o.Normalize();
 
-            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                           Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                           Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                            "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
             Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
               " and " + e2o + " are not orthogonal");
@@ -250,8 +250,8 @@ namespace ToolsTests
               e1 = e1o.Normalize(),
               e2 = e2o.Normalize();
 
-            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                           Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                           Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                            "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
             Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
               " and " + e2o + " are not orthogonal");
@@ -293,8 +293,8 @@ namespace ToolsTests
               e1 = e1o.Normalize(),
               e2 = e2o.Normalize();
 
-            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                           Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+            Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                           Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                            "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
             Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
               " and " + e2o + " are not orthogonal");
@@ -335,8 +335,8 @@ namespace ToolsTests
             e1 = e1o.Normalize(),
             e2 = e2o.Normalize();
 
-          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                         Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                         Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                          "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
           Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
             " and " + e2o + " are not orthogonal");
@@ -373,8 +373,8 @@ namespace ToolsTests
             e1 = e1o.Normalize(),
             e2 = e2o.Normalize();
 
-          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                         Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                         Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                          "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
           Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
             " and " + e2o + " are not orthogonal");
@@ -411,8 +411,8 @@ namespace ToolsTests
             e1 = e1o.Normalize(),
             e2 = e2o.Normalize();
 
-          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                         Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                         Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                          "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
           Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
             " and " + e2o + " are not orthogonal");
@@ -449,8 +449,8 @@ namespace ToolsTests
             e1 = e1o.Normalize(),
             e2 = e2o.Normalize();
 
-          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.e1), cos) ||
-                         Tools.EQ(Math.Abs(e1 * Vector2D.e2), cos),
+          Assert.IsTrue(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) ||
+                         Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
                          "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
           Assert.IsTrue(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
             " and " + e2o + " are not orthogonal");

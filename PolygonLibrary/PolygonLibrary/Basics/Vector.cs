@@ -18,7 +18,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     public int Dim
     {
-      get { return _v.Length; }
+      get => _v.Length;
     }
 
     /// <summary>
@@ -48,21 +48,15 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant array</returns>
-    public static implicit operator double[](Vector v)
-    {
-      return v._v;
-    }
+    public static implicit operator double[](Vector v) => v._v;
 
     /// <summary>
     /// Converting a one-dimensional array to a vector
     /// </summary>
     /// <param name="v">Array to be converted</param>
     /// <returns>The resultant vector</returns>
-    public static explicit operator Vector(double[] v)
-    {
-      return new Vector(v);
-    }
-#endregion
+    public static explicit operator Vector(double[] v) => new Vector(v);
+    #endregion
     
 #region Comparing
     /// <summary>
@@ -93,7 +87,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
-    static public bool operator ==(Vector v1, Vector v2)
+    public static bool operator ==(Vector v1, Vector v2)
     {
       int d = v1.Dim, res;
 #if DEBUG
@@ -116,7 +110,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors do not coincide; false, otherwise</returns>
-    static public bool operator !=(Vector v1, Vector v2)
+    public static bool operator !=(Vector v1, Vector v2)
     {
       int d = v1.Dim, res;
 #if DEBUG
@@ -139,10 +133,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 > v2; false, otherwise</returns>
-    static public bool operator >(Vector v1, Vector v2)
-    {
-      return v1.CompareTo(v2) > 0;
-    }
+    public static bool operator >(Vector v1, Vector v2) => v1.CompareTo(v2) > 0;
 
     /// <summary>
     /// Check whether one vector is greater or equal than another (in lexicographic order)
@@ -150,10 +141,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 >= v2; false, otherwise</returns>
-    static public bool operator >=(Vector v1, Vector v2)
-    {
-      return v1.CompareTo(v2) >= 0;
-    }
+    public static bool operator >=(Vector v1, Vector v2) => v1.CompareTo(v2) >= 0;
 
     /// <summary>
     /// Check whether one vector is less than another (in lexicographic order)
@@ -161,10 +149,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 is less than v2; false, otherwise</returns>
-    static public bool operator <(Vector v1, Vector v2)
-    {
-      return v1.CompareTo(v2) < 0;
-    }
+    public static bool operator <(Vector v1, Vector v2) => v1.CompareTo(v2) < 0;
 
     /// <summary>
     /// Check whether one vector is less or equal than another (in lexicographic order)
@@ -172,11 +157,8 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if v1 is less than or equal to v2; false, otherwise</returns>
-    static public bool operator <=(Vector v1, Vector v2)
-    {
-      return v1.CompareTo(v2) <= 0;
-    }
-#endregion
+    public static bool operator <=(Vector v1, Vector v2) => v1.CompareTo(v2) <= 0;
+    #endregion
     
 #region Miscellaneous procedures
     /// <summary>
@@ -304,7 +286,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v">The vector to be reversed</param>
     /// <returns>The opposite vector</returns>
-    static public Vector operator -(Vector v)
+    public static Vector operator -(Vector v)
     {
       int d = v.Dim, i;
       double[] nv = new double[d];
@@ -319,7 +301,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector summand</param>
     /// <param name="v2">The second vector summand</param>
     /// <returns>The sum</returns>
-    static public Vector operator +(Vector v1, Vector v2)
+    public static Vector operator +(Vector v1, Vector v2)
     {
       int d = v1.Dim, i;
 #if DEBUG
@@ -338,7 +320,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The vector minuend</param>
     /// <param name="v2">The vector subtrahend</param>
     /// <returns>The differece</returns>
-    static public Vector operator -(Vector v1, Vector v2)
+    public static Vector operator -(Vector v1, Vector v2)
     {
       int d = v1.Dim, i;
 #if DEBUG
@@ -357,7 +339,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The numeric factor</param>
     /// <param name="v">The vector factor</param>
     /// <returns>The product</returns>
-    static public Vector operator *(double a, Vector v)
+    public static Vector operator *(double a, Vector v)
     {
       int d = v.Dim, i;
       double[] nv = new double[d];
@@ -372,10 +354,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector factor</param>
     /// <param name="a">The numeric factor</param>
     /// <returns>The product</returns>
-    static public Vector operator *(Vector v, double a)
-    {
-      return a * v;
-    }
+    public static Vector operator *(Vector v, double a) => a * v;
 
     /// <summary>
     /// Division of a vector by a number
@@ -383,7 +362,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
-    static public Vector operator /(Vector v, double a)
+    public static Vector operator /(Vector v, double a)
     {
 #if DEBUG
       if (Tools.EQ(a))
@@ -402,7 +381,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector factor</param>
     /// <param name="v2">The first vector factor</param>
     /// <returns>The product</returns>
-    static public double operator *(Vector v1, Vector v2)
+    public static double operator *(Vector v1, Vector v2)
     {
       int d = v1.Dim, i;
 #if DEBUG
@@ -421,7 +400,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are parallel; false, otherwise</returns>
-    static public bool AreParallel(Vector v1, Vector v2)
+    public static bool AreParallel(Vector v1, Vector v2)
     {
       double l1 = v1.Length, l2 = v2.Length;
       return Tools.EQ(Math.Abs(v1 * v2), l1 * l2);
@@ -433,7 +412,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are codirected; false, otherwise</returns>
-    static public bool AreCodirected(Vector v1, Vector v2)
+    public static bool AreCodirected(Vector v1, Vector v2)
     {
       double l1 = v1.Length, l2 = v2.Length;
       return Tools.EQ(v1 * v2, l1 * l2);
@@ -445,7 +424,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
-    static public bool AreCounterdirected(Vector v1, Vector v2)
+    public static bool AreCounterdirected(Vector v1, Vector v2)
     {
       double l1 = v1.Length, l2 = v2.Length;
       return Tools.EQ(v1 * v2, -l1 * l2);
@@ -457,7 +436,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
-    static public bool AreOrthogonal(Vector v1, Vector v2)
+    public static bool AreOrthogonal(Vector v1, Vector v2)
     {
       double l1 = v1.Length, l2 = v2.Length;
       return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(Math.Abs(v1 * v2 / (l1 * l2)));

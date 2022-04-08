@@ -11,12 +11,12 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    static private double _eps = 1e-8;
+    private static double _eps = 1e-8;
 
     /// <summary>
     /// Property to deal with the accuracy
     /// </summary>
-    static public double Eps
+    public static double Eps
     {
       get { return _eps; }
       set
@@ -35,7 +35,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>+1, if a &gt; b; -1, if a &lt; b; 0, otherwise</returns>
-    static public int CMP(double a, double b = 0)
+    public static int CMP(double a, double b = 0)
     {
       if (Tools.EQ(a, b))
         return 0;
@@ -51,10 +51,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if |a-b| &lt; eps; false, otherwise</returns>
-    static public bool EQ(double a, double b = 0)
-    {
-      return Math.Abs(a - b) < _eps;
-    }
+    public static bool EQ(double a, double b = 0) => Math.Abs(a - b) < _eps;
 
     /// <summary>
     /// Non-equality of two doubles
@@ -62,10 +59,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if |a-b| &gt;= eps; false, otherwise</returns>
-    static public bool NE(double a, double b = 0)
-    {
-      return !EQ(a, b);
-    }
+    public static bool NE(double a, double b = 0) => !EQ(a, b);
 
     /// <summary>
     /// "Greater" comparison
@@ -73,10 +67,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if a &gt;= b+eps; false, otherwise</returns>
-    static public bool GT(double a, double b = 0)
-    {
-      return a >= b + _eps;
-    }
+    public static bool GT(double a, double b = 0) => a >= b + _eps;
 
     /// <summary>
     /// "Greater or equal" comparison
@@ -84,10 +75,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if a &gt;= b-eps; false, otherwise</returns>
-    static public bool GE(double a, double b = 0)
-    {
-      return a > b - _eps;
-    }
+    public static bool GE(double a, double b = 0) => a > b - _eps;
 
     /// <summary>
     /// "Less" comparison
@@ -95,10 +83,7 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if a &lt;= b-eps; false, otherwise</returns>
-    static public bool LT(double a, double b = 0)
-    {
-      return a <= b - _eps;
-    }
+    public static bool LT(double a, double b = 0) => a <= b - _eps;
 
     /// <summary>
     /// "Less or equal" comparison
@@ -106,18 +91,15 @@ namespace PolygonLibrary.Basics
     /// <param name="a">The first number</param>
     /// <param name="b">The second number</param>
     /// <returns>true, if a &lt; b+eps; false, otherwise</returns>
-    static public bool LE(double a, double b = 0)
-    {
-      return a < b + _eps;
-    }
-#endregion
+    public static bool LE(double a, double b = 0) => a < b + _eps;
+    #endregion
     
 #region Common procedures
     /// <summary>
     /// Signum function based of approximate comparison of doubles
     /// </summary>
     /// <param name="x">The value which sign should be found</param>
-    /// <returns>The sign of x</returns>
+    /// <returns>The sign of X</returns>
     public static int Sign(double x)
     {
       if (Tools.EQ(x))

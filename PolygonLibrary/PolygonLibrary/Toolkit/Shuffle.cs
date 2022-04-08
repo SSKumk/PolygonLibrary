@@ -19,7 +19,7 @@ namespace PolygonLibrary.Toolkit
     /// <typeparam name="T">Array element type</typeparam>
     /// <param name="array">Array to shuffle</param>
     /// <param name="ownRnd">A random generator. If is not passed, some internal generator will be used</param>
-    static public void Shuffle<T>(List<T> array, Random ownRnd = null)
+    public static void Shuffle<T>(List<T> array, Random ownRnd = null)
     {
       int n = array.Count;
       Random rnd = ownRnd == null ? _random : ownRnd;

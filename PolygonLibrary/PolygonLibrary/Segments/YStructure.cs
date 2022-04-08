@@ -58,9 +58,9 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Getting comparer as a SweepLineSegmentComparer object
       /// </summary>
-      new public SweepLineSegmentComparer comparer
+      public new SweepLineSegmentComparer comparer
       {
-        get { return (SweepLineSegmentComparer) base.comparer; }
+        get => (SweepLineSegmentComparer) base.comparer;
       }
 
       /// <summary>
@@ -68,8 +68,8 @@ namespace PolygonLibrary.Segments
       /// </summary>
       public Vector2D SweepPoint
       {
-        get { return comparer.p_sweep; }
-        set { comparer.p_sweep = value; }
+        get => comparer.p_sweep;
+        set => comparer.p_sweep = value;
       }
 #endregion
 
@@ -80,10 +80,7 @@ namespace PolygonLibrary.Segments
       /// </summary>
       /// <param name="angle">The given angle (in radians)</param>
       /// <returns>The group, if there is such; null, otherwise</returns>
-      public SegmentGroup FindByAngle(double angle)
-      {
-        return FindByAngle(new InnerSegment(0, 0, Math.Cos(angle), Math.Sin(angle)));
-      }
+      public SegmentGroup FindByAngle(double angle) => FindByAngle(new InnerSegment(0, 0, Math.Cos(angle), Math.Sin(angle)));
 
       /// <summary>
       /// Search a group parallel to the given segment in the structure
@@ -161,7 +158,7 @@ namespace PolygonLibrary.Segments
         if (IsEmpty) return null;
 
         // The abscissa where to test
-        double testX = SweepPoint.x;
+        double testX = SweepPoint.X;
 
         // If the lowest group in the structure is not lower than the given ordinate,
         // then no group can be found
@@ -201,7 +198,7 @@ namespace PolygonLibrary.Segments
         if (IsEmpty) return null;
 
         // The abscissa where to test
-        double testX = SweepPoint.x;
+        double testX = SweepPoint.X;
 
         // If the most upper group in the structure is not upper than the given ordinate,
         // then no group can be found
