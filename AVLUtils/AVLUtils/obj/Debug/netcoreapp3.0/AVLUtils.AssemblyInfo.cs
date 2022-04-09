@@ -6,7 +6,7 @@
 
 using System;
 using System.Reflection;
-
+/*
 [assembly: System.Reflection.AssemblyCompanyAttribute("AVLUtils")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
@@ -14,3 +14,4 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyProductAttribute("AVLUtils")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AVLUtils")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+*/

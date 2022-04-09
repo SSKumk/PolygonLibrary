@@ -7,6 +7,7 @@
 using System;
 using System.Reflection;
 
+/*
 [assembly: System.Reflection.AssemblyCompanyAttribute("PolygonLibrary")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
@@ -14,3 +15,4 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyProductAttribute("PolygonLibrary")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PolygonLibrary")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+*/

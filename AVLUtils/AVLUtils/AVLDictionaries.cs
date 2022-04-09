@@ -43,7 +43,7 @@ namespace AVLUtils
     /// <summary>
     /// Getting the key comparer
     /// </summary>
-    public IComparer<TKey> comparer { get { return (_tree.comparer as MyComparer).keyComp; } }
+    public IComparer<TKey> comparer => (_tree.comparer as MyComparer).keyComp;
 
     /// <summary>
     /// Comparer for pairs that compares keys only
@@ -305,12 +305,12 @@ namespace AVLUtils
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count { get { return _tree.Count; } }
+    public int Count => _tree.Count;
 
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly => false;
 
     /// <summary>
     /// Adds a pair key-value to the dictionary. If there is an element with the given key, nothing changes
@@ -395,7 +395,7 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
-    public bool IsEmpty { get { return Count == 0; } }
+    public bool IsEmpty => Count == 0;
 
     /// <summary>
     /// Take the minimal pair key-value in the dictionary
@@ -567,13 +567,14 @@ namespace AVLUtils
     /// Gets an ICollection object containing the keys of the dictionary.
     /// The order of keys is the same as in the dictionary
     /// </summary>
-    public ICollection<TKey> Keys { get { return new KeyCollection (this); } }
+    public ICollection<TKey> Keys => new KeyCollection (this);
 
     /// <summary>
     /// Gets an ICollection object containing the values of the dictionary.
     /// The order of values is the same as in the dictionary
     /// </summary>
-    public ICollection<TValue> Values { get { return new ValueCollection (this); } }
+    public ICollection<TValue> Values => new ValueCollection (this);
+
     #endregion
 
     #region Auxiliary enumerator class for the keys and values collection classes
@@ -612,7 +613,7 @@ namespace AVLUtils
       /// <summary>
       /// Getting the current key
       /// </summary>
-      object IEnumerator.Current { get { return Current; } }
+      object IEnumerator.Current => Current;
 
       /// <summary>
       /// Resetting the enumerator
@@ -641,7 +642,7 @@ namespace AVLUtils
         /// <summary>
         /// Getting key of the current pair in the dictionary
         /// </summary>
-        override public TKey Current { get { return _dictEnum.Current.Key; } }
+        override public TKey Current => _dictEnum.Current.Key;
       }
 
       /// <summary>
@@ -751,12 +752,12 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of keys in the collection
       /// </summary>
-      public int Count { get { return _dict.Count; } }
+      public int Count => _dict.Count;
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
-      bool ICollection<TKey>.IsReadOnly { get { return true; } }
+      bool ICollection<TKey>.IsReadOnly => true;
 
       /// <summary>
       /// A stub for Add method
@@ -812,7 +813,7 @@ namespace AVLUtils
         /// <summary>
         /// Getting value of the current pair in the dictionary
         /// </summary>
-        override public TValue Current { get { return _dictEnum.Current.Value; } }
+        override public TValue Current => _dictEnum.Current.Value;
       }
 
       /// <summary>
@@ -935,12 +936,12 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of values in the collection
       /// </summary>
-      public int Count { get { return _dict.Count; } }
+      public int Count => _dict.Count;
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
-      bool ICollection<TValue>.IsReadOnly { get { return true; } }
+      bool ICollection<TValue>.IsReadOnly => true;
 
       /// <summary>
       /// A stub for Add method

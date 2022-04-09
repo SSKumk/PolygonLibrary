@@ -1,4 +1,3 @@
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csprojAssemblyReference.cache
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.CoreCompileInputs.cache
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.AssemblyInfoInputs.cache
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.AssemblyInfo.cs
@@ -13,3 +12,6 @@
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.CopyComplete
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.dll
 /home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.pdb
+/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.AssemblyReference.cache
+/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.GeneratedMSBuildEditorConfig.editorconfig
+/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.genruntimeconfig.cache

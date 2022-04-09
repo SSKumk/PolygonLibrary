@@ -28,7 +28,7 @@ namespace AVLUtils
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
     public IEnumerator<TValue> GetEnumerator (TValue v) { return new AVLEnumerator (this, v); }
 
@@ -42,7 +42,7 @@ namespace AVLUtils
     /// Returns an enumerator that iterates reversely through the collection put at the given value or before it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate reversely through the collection</returns>
     public IEnumerator<TValue> GetReverseEnumerator (TValue v) { return new AVLReverseEnumerator (this, v); }
 
@@ -57,7 +57,7 @@ namespace AVLUtils
     /// initially the enumerator is put to the given value or (if it is absent) to minimal value cyclicly 
     /// greater than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
     public IEnumerator<TValue> GetCyclicEnumerator (TValue v) { return new AVLCyclicEnumerator (this, v); }
 
@@ -72,7 +72,7 @@ namespace AVLUtils
     /// initially the enumerator is put to the given value or (if it is absent) to maximal value cyclicly 
     /// less than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that iterates reversely through the collection regarding it as a cycled one</returns>
     public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) { return new AVLCyclicReverseEnumerator (this, v); }
     #endregion
@@ -81,7 +81,7 @@ namespace AVLUtils
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly => false;
 
     /// <summary>
     /// Number of elements in the tree
@@ -137,7 +137,7 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
-    public bool IsEmpty { get { return Count == 0; } }
+    public bool IsEmpty => Count == 0;
 
     /// <summary>
     /// Default constructor. Sets default comparer
@@ -169,8 +169,8 @@ namespace AVLUtils
     private TValue GetByIndexIter (AVLNode node, int i, int l, int r)
     {
       int
-      l1 = (node.left == null ? l : l + node.left.subtreeQnt) - 1,
-      r1 = (node.right == null ? r : r - node.right.subtreeQnt) + 1;
+      l1 = (l + node.left?.subtreeQnt ?? l) - 1,
+      r1 = (r - node.right?.subtreeQnt ?? r) + 1;
       if (i <= l1)
         return GetByIndexIter (node.left, i, l, l1);
       else if (i >= r1)
@@ -190,7 +190,7 @@ namespace AVLUtils
       {
         int l = 0, r = Count - 1;
         if (i < l || i > r)
-          throw new IndexOutOfRangeException ("Errorous index in AVLBaseTree");
+          throw new IndexOutOfRangeException ("Erroneous index in AVLBaseTree");
 
         return GetByIndexIter (_top, i, l, r);
       }
@@ -232,7 +232,7 @@ namespace AVLUtils
     /// <summary>
     /// Take the minimal value in the tree
     /// </summary>
-    /// <returns>The minmal value</returns>
+    /// <returns>The minimal value</returns>
     public TValue Min ()
     {
       if (_top == null)
@@ -369,6 +369,7 @@ namespace AVLUtils
     /// Converts  the tree to a list of corresponding values according to the current tree structure
     /// </summary>
     /// <returns>The resultant list</returns>
+    // ReSharper disable once MemberCanBeProtected.Global
     public List<TValue> ToList ()
     {
       List<TValue> l = new List<TValue> ();

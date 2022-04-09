@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "EMsmzbQZWQVhsUHzqjoKpOHbVbAVQ5R38OFJdzRG/KHrRDBBL6uUuGLblp6IVTOeibDHEECdMd7Upo8Q3KOQZQ==",
+  "dgSpecHash": "04ngwvMbxl0TszXU2N0UABkW3A3FQ66rBMKQ7afpPaIJmsEuYMEuFuF3Q5b8zrkGiIcQEsTOtBWbVYyA3zKeQg==",
   "success": true,
   "projectFilePath": "/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/PolygonLibrary.csproj",
-  "expectedPackageFiles": [
-    "/home/serge/.nuget/packages/microsoft.netcore.app.ref/3.0.0/microsoft.netcore.app.ref.3.0.0.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

@@ -1,0 +1,5 @@
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.1/PolygonLibrary.csproj.AssemblyReference.cache
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.1/PolygonLibrary.GeneratedMSBuildEditorConfig.editorconfig
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.1/PolygonLibrary.AssemblyInfoInputs.cache
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.1/PolygonLibrary.AssemblyInfo.cs
+/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.1/PolygonLibrary.csproj.CoreCompileInputs.cache

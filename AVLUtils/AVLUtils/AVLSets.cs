@@ -31,12 +31,12 @@ namespace AVLUtils
     /// </summary>
     /// <param name="i">Index</param>
     /// <returns>The value with the index i</returns>
-    public TValue this[int i] { get { return _tree[i]; } }
+    public TValue this[int i] => _tree[i];
 
     /// <summary>
     /// Getting the set comparer
     /// </summary>
-    public IComparer<TValue> comparer { get { return _tree.comparer; } }
+    public IComparer<TValue> comparer => _tree.comparer;
 
     #region IMultiEnumerable<TValue> and related methods
     /// <summary>
@@ -108,12 +108,12 @@ namespace AVLUtils
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly => false;
 
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count { get { return _tree.Count; } }
+    public int Count => _tree.Count;
 
     /// <summary>
     /// Adds an item to the collection

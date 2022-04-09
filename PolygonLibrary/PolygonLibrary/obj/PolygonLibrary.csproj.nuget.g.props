@@ -13,7 +13,4 @@
     <SourceRoot Include="/home/serge/.nuget/packages/" />
     <SourceRoot Include="/usr/share/dotnet/sdk/NuGetFallbackFolder/" />
   </ItemGroup>
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
 </Project>
