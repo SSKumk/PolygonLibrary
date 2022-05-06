@@ -8,18 +8,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/TreeTest.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/TreeTest.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/PolygonLibrary.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/PolygonLibrary.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/Tests/Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/Tests/Tests.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,16 +38,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils.sln&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.environmentSetup&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils.sln",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="TreeTest" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -87,6 +79,8 @@
       <workItem from="1651824151460" duration="3077000" />
       <workItem from="1651827557972" duration="1482000" />
       <workItem from="1651830665105" duration="603000" />
+      <workItem from="1651831329250" duration="174000" />
+      <workItem from="1651831765218" duration="377000" />
     </task>
     <servers />
   </component>

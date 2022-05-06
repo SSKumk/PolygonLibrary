@@ -390,10 +390,6 @@ namespace AVLUtils
     /// <summary>
     /// Clearing the tree
     /// </summary>
-    public void Clear ()
-    {
-      _top = null;
-    }
-
+    public void Clear () => _top = null;
   }
 }

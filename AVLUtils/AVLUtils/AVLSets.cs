@@ -116,18 +116,18 @@ namespace AVLUtils
     /// Adds an item to the collection
     /// </summary>
     /// <param name="v">The value to be added</param>
-    void ICollection<TValue>.Add (TValue v) { _tree.Add (v); }
+    void ICollection<TValue>.Add (TValue v) => _tree.Add (v);
 
     /// <summary>
     /// Adding a collection to the tree
     /// </summary>
     /// <param name="other">The collection to be added</param>
-    public void AddRange (IEnumerable<TValue> other) { _tree.AddRange (other); }
+    public void AddRange (IEnumerable<TValue> other) => _tree.AddRange (other);
 
     /// <summary>
     /// Removes all items from the collection
     /// </summary>
-    public void Clear () { _tree.Clear (); }
+    public void Clear () => _tree.Clear ();
 
     /// <summary>
     /// Determines whether the collection contains a specific value
@@ -141,10 +141,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="array">The one-dimensional array that is the destination of the elements copied from collection. The array must have zero-based indexing</param>
     /// <param name="arrayIndex">The zero-based index in array at which copying begins</param>
-    public void CopyTo (TValue[] array, int arrayIndex)
-    {
-      _tree.CopyTo (array, arrayIndex);
-    }
+    public void CopyTo (TValue[] array, int arrayIndex) => _tree.CopyTo (array, arrayIndex);
 
     /// <summary>
     /// Removes the first occurrence of a specific object from the collection
@@ -501,10 +498,7 @@ namespace AVLUtils
     /// <summary>
     /// Rebuild the tree according to the current comparer
     /// </summary>
-    public void Rebuild ()
-    {
-      _tree.Rebuild ();
-    }
+    public void Rebuild () => _tree.Rebuild ();
 
     /// <summary>
     /// Set a new comparer for the tree. It can be unsafe. 
@@ -516,10 +510,7 @@ namespace AVLUtils
     /// <param name="newComp">The new comparer to be set</param>
     /// <param name="checkAfter">Flag showing whether to check the consistency of the tree
     /// with the new comparer (in release mode only!)</param>
-    public void SetComparer (IComparer<TValue> newComp, bool checkAfter = false)
-    {
-      _tree.SetComparer (newComp, checkAfter);
-    }
+    public void SetComparer (IComparer<TValue> newComp, bool checkAfter = false) => _tree.SetComparer (newComp, checkAfter);
     #endregion
   }
 }

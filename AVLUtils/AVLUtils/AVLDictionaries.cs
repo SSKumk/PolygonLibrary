@@ -290,12 +290,12 @@ namespace AVLUtils
     /// Adds a pair key-value to the dictionary. If there is an element with the given key, nothing changes
     /// </summary>
     /// <param name="pair">The pair to be added</param>
-    public void Add (KeyValuePair<TKey, TValue> pair) { _tree.Add (pair); }
+    public void Add (KeyValuePair<TKey, TValue> pair) => _tree.Add (pair);
 
     /// <summary>
     /// Removes all items from the dictionary
     /// </summary>
-    public void Clear () { _tree.Clear (); }
+    public void Clear () => _tree.Clear ();
 
     /// <summary>
     /// Determines whether the dictionary contains a specific pair key-value
@@ -557,7 +557,7 @@ namespace AVLUtils
       /// <summary>
       /// Disposition of the enumerator
       /// </summary>
-      public void Dispose () { _dictEnum.Dispose (); }
+      public void Dispose () => _dictEnum.Dispose ();
 
       /// <summary>
       /// Moving the enumerator
@@ -578,7 +578,7 @@ namespace AVLUtils
       /// <summary>
       /// Resetting the enumerator
       /// </summary>
-      void IEnumerator.Reset () { _dictEnum.Reset (); }
+      void IEnumerator.Reset () => _dictEnum.Reset ();
     }
     #endregion
 
@@ -602,7 +602,7 @@ namespace AVLUtils
         /// <summary>
         /// Getting key of the current pair in the dictionary
         /// </summary>
-        override public TKey Current => _dictEnum.Current.Key;
+        public override TKey Current => _dictEnum.Current.Key;
       }
 
       /// <summary>
@@ -726,12 +726,12 @@ namespace AVLUtils
       /// A stub for Add method
       /// </summary>
       /// <param name="item">The item to be added</param>
-      void ICollection<TKey>.Add (TKey item) { throw new NotSupportedException ("KeyCollection"); }
+      void ICollection<TKey>.Add (TKey item) => throw new NotSupportedException ("KeyCollection");
 
       /// <summary>
       /// A stub for Clear method
       /// </summary>
-      void ICollection<TKey>.Clear () { throw new NotSupportedException ("KeyCollection"); }
+      void ICollection<TKey>.Clear () => throw new NotSupportedException ("KeyCollection");
 
       /// <summary>
       /// Checking presence of a key in the collection
@@ -899,12 +899,12 @@ namespace AVLUtils
       /// A stub for Add method
       /// </summary>
       /// <param name="item">The item to be added</param>
-      void ICollection<TValue>.Add (TValue item) { throw new NotSupportedException ("ValueCollection"); }
+      void ICollection<TValue>.Add (TValue item) => throw new NotSupportedException ("ValueCollection");
 
       /// <summary>
       /// A stub for Clear method
       /// </summary>
-      void ICollection<TValue>.Clear () { throw new NotSupportedException ("ValueCollection"); }
+      void ICollection<TValue>.Clear () => throw new NotSupportedException ("ValueCollection");
 
       /// <summary>
       /// Checking presence of a value in the collection
@@ -972,7 +972,7 @@ namespace AVLUtils
     /// <summary>
     /// Rebuild the tree according to the current comparer
     /// </summary>
-    public void Rebuild () { _tree.Rebuild (); }
+    public void Rebuild () => _tree.Rebuild ();
 
     /// <summary>
     /// Set a new comparer for the tree. It can be unsafe. 
@@ -984,10 +984,7 @@ namespace AVLUtils
     /// <param name="newComp">The new comparer to be set</param>
     /// <param name="checkAfter">Flag showing whether to check the consistency of the tree
     /// with the new comparer (in release mode only!)</param>
-    public void SetComparer (IComparer<TKey> newComp, bool checkAfter = false)
-    {
-      _tree.SetComparer (new MyComparer (newComp), checkAfter);
-    }
+    public void SetComparer (IComparer<TKey> newComp, bool checkAfter = false) => _tree.SetComparer (new MyComparer (newComp), checkAfter);
     #endregion
   }
 }

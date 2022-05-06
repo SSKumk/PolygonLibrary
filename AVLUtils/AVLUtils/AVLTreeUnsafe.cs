@@ -69,8 +69,9 @@ namespace AVLUtils
         throw new ArgumentException ();
       }
 #else
-      if (checkAfter && !CheckConsistency ())
+      if (checkAfter && !CheckConsistency ()) {
         throw new ArgumentException ();
+      }
 #endif
     }
     #endregion
