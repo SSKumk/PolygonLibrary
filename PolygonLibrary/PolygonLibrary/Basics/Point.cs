@@ -313,7 +313,7 @@ namespace PolygonLibrary.Basics
     /// <param name="v">The vector to be copied</param>
     public Point(Vector2D v)
     {
-      _p = new double[2] {v.X, v.Y};
+      _p = new double[2] {v.x, v.y};
     }
     #endregion
 

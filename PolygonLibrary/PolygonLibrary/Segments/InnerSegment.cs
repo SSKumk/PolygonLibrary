@@ -66,24 +66,24 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Constructing a segment with two given ends without the original segment
       /// </summary>
-      /// <param name="v1">The point of one end</param>
-      /// <param name="v2">The point of another end</param>
-      public InnerSegment(Vector2D v1, Vector2D v2)
+      /// <param name="p1">The point of one end</param>
+      /// <param name="p2">The point of another end</param>
+      public InnerSegment(Vector2D p1, Vector2D p2)
       {
         myID = curID;
         curID++;
 
         Origin = null;  
         
-        if (v1 < v2)
+        if (p1 < p2)
         {
-          p1 = v1;
-          p2 = v2;
+          base.p1 = p1;
+          base.p2 = p2;
         }
         else
         {
-          p1 = v2;
-          p2 = v1;
+          base.p1 = p2;
+          base.p2 = p1;
         }
       }
 

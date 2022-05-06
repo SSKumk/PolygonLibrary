@@ -24,26 +24,20 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor
     /// </summary>
-    public AVLBaseDictionary()
-    {
-      _tree = null;
-    }
+    public AVLBaseDictionary() => _tree = null;
 
     /// <summary>
     /// Take a dictionary element by integer index
     /// </summary>
     /// <param name="i">The index</param>
     /// <returns>The key-value pair at the given index</returns>
-    public KeyValuePair<TKey, TValue> GetAt (int i)
-    {
-      return _tree[i];
-    }
+    public KeyValuePair<TKey, TValue> GetAt (int i) => _tree[i];
 
     #region Comparer for the tree that takes into account keys only
     /// <summary>
     /// Getting the key comparer
     /// </summary>
-    public IComparer<TKey> comparer { get { return (_tree.comparer as MyComparer).keyComp; } }
+    public IComparer<TKey> comparer { get => (_tree.comparer as MyComparer).keyComp; }
 
     /// <summary>
     /// Comparer for pairs that compares keys only
@@ -58,13 +52,13 @@ namespace AVLUtils
       /// <summary>
       /// Default constructor that takes the default comparer of keys
       /// </summary>
-      public MyComparer () { keyComp = Comparer<TKey>.Default; }
+      public MyComparer () => keyComp = Comparer<TKey>.Default;
 
       /// <summary>
       /// Constructor for the pair comparer on the basis of key comparer
       /// </summary>
       /// <param name="newComp">The basic key comparer</param>
-      public MyComparer (IComparer<TKey> newComp) { keyComp = newComp; }
+      public MyComparer (IComparer<TKey> newComp) => keyComp = newComp;
 
       /// <summary>
       /// Compares two pairs and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -72,10 +66,7 @@ namespace AVLUtils
       /// <param name="p1">The first pair</param>
       /// <param name="p2">The second pair</param>
       /// <returns>-1, if the first key is less than the second key; 0, if keys are equal; +1, otherwise</returns>
-      public int Compare (KeyValuePair<TKey, TValue> p1, KeyValuePair<TKey, TValue> p2)
-      {
-        return keyComp.Compare (p1.Key, p2.Key);
-      }
+      public int Compare (KeyValuePair<TKey, TValue> p1, KeyValuePair<TKey, TValue> p2) => keyComp.Compare (p1.Key, p2.Key);
     }
     #endregion
 
@@ -84,13 +75,13 @@ namespace AVLUtils
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator () { return _tree.GetEnumerator (); }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator () => _tree.GetEnumerator ();
 
     /// <summary>
     /// Returns an untyped enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    IEnumerator IEnumerable.GetEnumerator () { return GetEnumerator (); }
+    IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
@@ -98,10 +89,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (TKey key)
-    {
-      return _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default (TValue)));
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (TKey key) => _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default));
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
@@ -109,16 +97,13 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (KeyValuePair<TKey, TValue> pair)
-    {
-      return _tree.GetEnumerator (pair);
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetEnumerator (pair);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator () { return _tree.GetReverseEnumerator (); }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator () => _tree.GetReverseEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection put at the given value or before it 
@@ -126,10 +111,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (TKey key)
-    {
-      return _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default (TValue)));
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (TKey key) => _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default));
 
     /// <summary>
     /// Returns an enumerator that iterates reversely through the collection put at the given value or before it 
@@ -137,16 +119,13 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (KeyValuePair<TKey, TValue> pair)
-    {
-      return _tree.GetReverseEnumerator (pair);
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetReverseEnumerator (pair);
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator () { return _tree.GetCyclicEnumerator (); }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator () => _tree.GetCyclicEnumerator ();
 
     /// <summary>
     /// Returns a cyclic enumerator that iterates through the collection put at the given value or after it 
@@ -154,10 +133,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (TKey key)
-    {
-      return _tree.GetCyclicEnumerator (new KeyValuePair<TKey, TValue> (key, default (TValue)));
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (TKey key) => _tree.GetCyclicEnumerator (new KeyValuePair<TKey, TValue> (key, default));
 
     /// <summary>
     /// Returns a cyclic enumerator that iterates through the collection put at the given value or after it 
@@ -165,19 +141,13 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (KeyValuePair<TKey, TValue> pair)
-    {
-      return _tree.GetCyclicEnumerator (pair);
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetCyclicEnumerator (pair);
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator ()
-    {
-      return _tree.GetCyclicReverseEnumerator ();
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator () => _tree.GetCyclicReverseEnumerator ();
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection put at the given value or before it 
@@ -185,10 +155,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (TKey key)
-    {
-      return _tree.GetCyclicReverseEnumerator (new KeyValuePair<TKey, TValue> (key, default (TValue)));
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (TKey key) => _tree.GetCyclicReverseEnumerator (new KeyValuePair<TKey, TValue> (key, default));
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection put at the given value or before it 
@@ -196,10 +163,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (KeyValuePair<TKey, TValue> pair)
-    {
-      return _tree.GetCyclicReverseEnumerator (pair);
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetCyclicReverseEnumerator (pair);
     #endregion
 
     #region IDictionary<T> methods
@@ -212,22 +176,28 @@ namespace AVLUtils
     {
       get
       {
-        if (key == null)
-          throw new ArgumentNullException (nameof(key));
+        if (key == null) {
+          throw new ArgumentNullException(nameof(key));
+        }
 
         KeyValuePair<TKey, TValue> res;
-        if (!_tree.Find (new KeyValuePair<TKey, TValue> (key, default (TValue)), out res))
-          throw new KeyNotFoundException ();
+        if (!_tree.Find(new KeyValuePair<TKey, TValue>(key, default), out res)) {
+          throw new KeyNotFoundException();
+        }
+
         return res.Value;
       }
       set
       {
-        if (key == null)
-          throw new ArgumentNullException (nameof(key));
+        if (key == null) {
+          throw new ArgumentNullException(nameof(key));
+        }
 
         KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, value);
-        if (_tree.Contains (temp))
-          _tree.Remove (temp);
+        if (_tree.Contains(temp)) {
+          _tree.Remove(temp);
+        }
+
         _tree.Add (temp);
       }
     }
@@ -240,12 +210,15 @@ namespace AVLUtils
     /// <param name="value">The object to use as the value of the element to add.</param>
     public void Add (TKey key, TValue value)
     {
-      if (key == null)
-        throw new ArgumentNullException (nameof(key));
+      if (key == null) {
+        throw new ArgumentNullException(nameof(key));
+      }
 
       KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, value);
-      if (_tree.Contains (temp))
+      if (_tree.Contains(temp)) {
         return;
+      }
+
       _tree.Add (temp);
     }
 
@@ -256,10 +229,11 @@ namespace AVLUtils
     /// <returns>true if the dictionary contains an element with the key; false otherwise. </returns>
     public bool ContainsKey (TKey key)
     {
-      if (key == null)
-        throw new ArgumentNullException (nameof(key));
+      if (key == null) {
+        throw new ArgumentNullException(nameof(key));
+      }
 
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default (TValue));
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default);
       return _tree.Contains (temp);
     }
 
@@ -270,7 +244,7 @@ namespace AVLUtils
     /// <returns>true, if there was such an element and it has been removed successfully; false, otherwise</returns>
     public bool Remove (TKey key)
     {
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default (TValue));
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default);
       return _tree.Remove (temp);
     }
 
@@ -282,7 +256,7 @@ namespace AVLUtils
     /// <returns>true if the dictionary contains an element with the specified key; false, otherwise</returns>
     public bool TryGetValue (TKey key, out TValue value)
     {
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default (TValue)), res;
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default), res;
 
       // Check whether there is an element in the dictionary with the given key
       if (_tree.Find (temp, out res))
@@ -294,7 +268,7 @@ namespace AVLUtils
       else
       {
         // If no, return false and the default value
-        value = default (TValue);
+        value = default;
         return false;
       }
     }
@@ -305,12 +279,12 @@ namespace AVLUtils
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count { get { return _tree.Count; } }
+    public int Count { get => _tree.Count; }
 
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly { get => false; }
 
     /// <summary>
     /// Adds a pair key-value to the dictionary. If there is an element with the given key, nothing changes
@@ -333,9 +307,10 @@ namespace AVLUtils
       KeyValuePair<TKey, TValue> temp;
 
       // Check whether there is an element in the dictionary with the given key
-      if (!_tree.Find (pair, out temp))
+      if (!_tree.Find(pair, out temp)) {
         // If no, do nothing
         return false;
+      }
 
       // If there is such a key, check whether the value is just the given one
       return Comparer<TValue>.Default.Compare (pair.Value, temp.Value) == 0;
@@ -349,12 +324,19 @@ namespace AVLUtils
     /// <param name="arrayIndex">The zero-based index in array at which copying begins</param>
     public void CopyTo (KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-      if (array == null)
-        throw new ArgumentNullException (nameof(array));
-      if (arrayIndex < 0)
-        throw new ArgumentOutOfRangeException (nameof(array));
-      if (array.Length - arrayIndex < Count)
-        throw new ArgumentException ("array too small");
+#if DEBUG      
+      if (array == null) {
+        throw new ArgumentNullException(nameof(array));
+      }
+
+      if (arrayIndex < 0) {
+        throw new ArgumentOutOfRangeException(nameof(array));
+      }
+
+      if (array.Length - arrayIndex < Count) {
+        throw new ArgumentException("array too small");
+      }
+#endif      
 
       IEnumerator<KeyValuePair<TKey, TValue>> en = _tree.GetEnumerator ();
       for (int i = 0; i < Count; i++)
@@ -376,14 +358,16 @@ namespace AVLUtils
       KeyValuePair<TKey, TValue> temp;
 
       // Check whether there is an element in the dictionary with the given key
-      if (!_tree.Find (pair, out temp))
+      if (!_tree.Find(pair, out temp)) {
         // If no, do nothing
         return false;
+      }
 
       // If there is such a key, check whether the value is just the given one
-      if (Comparer<TValue>.Default.Compare (pair.Value, temp.Value) != 0)
+      if (Comparer<TValue>.Default.Compare(pair.Value, temp.Value) != 0) {
         // It the values do not coincide, do nothing
         return false;
+      }
 
       return _tree.Remove (pair);
     }
@@ -395,79 +379,79 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
-    public bool IsEmpty { get { return Count == 0; } }
+    public bool IsEmpty { get => Count == 0; }
 
     /// <summary>
     /// Take the minimal pair key-value in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public KeyValuePair<TKey, TValue> Min () { return _tree.Min (); }
+    /// <returns>The minimal value</returns>
+    public KeyValuePair<TKey, TValue> Min () => _tree.Min ();
 
     /// <summary>
     /// Take the minimal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TKey MinKey () { return _tree.Min ().Key; }
+    /// <returns>The minimal value</returns>
+    public TKey MinKey () => _tree.Min ().Key;
 
     /// <summary>
     /// Take the value with the minimal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TValue MinValue () { return _tree.Min ().Value; }
+    /// <returns>The minimal value</returns>
+    public TValue MinValue () => _tree.Min ().Value;
 
     /// <summary>
     /// Take the maximal pair key-value in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public KeyValuePair<TKey, TValue> Max () { return _tree.Max (); }
+    /// <returns>The minimal value</returns>
+    public KeyValuePair<TKey, TValue> Max () => _tree.Max ();
 
     /// <summary>
     /// Take the maximal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TKey MaxKey () { return _tree.Max ().Key; }
+    /// <returns>The minimal value</returns>
+    public TKey MaxKey () => _tree.Max ().Key;
 
     /// <summary>
     /// Take the value with the maximal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TValue MaxValue () { return _tree.Max ().Value; }
+    /// <returns>The minimal value</returns>
+    public TValue MaxValue () => _tree.Max ().Value;
 
     /// <summary>
     /// Remove and return the minimal pair key-value in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public KeyValuePair<TKey, TValue> Pop () { return _tree.Pop (); }
+    /// <returns>The minimal value</returns>
+    public KeyValuePair<TKey, TValue> Pop () => _tree.Pop ();
 
     /// <summary>
     /// Remove and return the minimal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TKey PopKey () { return _tree.Pop ().Key; }
+    /// <returns>The minimal value</returns>
+    public TKey PopKey () => _tree.Pop ().Key;
 
     /// <summary>
     /// Remove and return the value with the minimal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TValue PopValue () { return _tree.Pop ().Value; }
+    /// <returns>The minimal value</returns>
+    public TValue PopValue () => _tree.Pop ().Value;
 
     /// <summary>
     /// Remove and return the maximal pair key-value in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public KeyValuePair<TKey, TValue> Pop_Back () { return _tree.Pop_Back (); }
+    /// <returns>The minimal value</returns>
+    public KeyValuePair<TKey, TValue> Pop_Back () => _tree.Pop_Back ();
 
     /// <summary>
     /// Remove and return the maximal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TKey PopKey_Back () { return _tree.Pop_Back ().Key; }
+    /// <returns>The minimal value</returns>
+    public TKey PopKey_Back () => _tree.Pop_Back ().Key;
 
     /// <summary>
     /// Remove and return the value with the maximal key in the dictionary
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TValue PopValue_Back () { return _tree.Pop_Back ().Value; }
+    /// <returns>The minimal value</returns>
+    public TValue PopValue_Back () => _tree.Pop_Back ().Value;
 
     /// <summary>
     /// Take the pair key-value following after the given pair (only the key is taken into account)
@@ -476,10 +460,7 @@ namespace AVLUtils
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return _tree.Next (pair, out nextPair);
-    }
+    public bool Next (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.Next (pair, out nextPair);
 
     /// <summary>
     /// Take the pair key-value following after the given pair in cyclic order (only the key is taken into account)
@@ -487,10 +468,7 @@ namespace AVLUtils
     /// <param name="pair">The given pair</param>
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return _tree.CyclicNext (pair, out nextPair);
-    }
+    public bool CyclicNext (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.CyclicNext (pair, out nextPair);
 
     /// <summary>
     /// Take the pair key-value following after the pair with given key 
@@ -499,10 +477,7 @@ namespace AVLUtils
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TKey key, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return Next (new KeyValuePair<TKey, TValue> (key, default (TValue)), out nextPair);
-    }
+    public bool Next (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Next (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
 
     /// <summary>
     /// Take the pair key-value following after the pair with given key in the cyclic order
@@ -510,56 +485,41 @@ namespace AVLUtils
     /// <param name="key">The given key</param>
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (TKey key, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return CyclicNext (new KeyValuePair<TKey, TValue> (key, default (TValue)), out nextPair);
-    }
+    public bool CyclicNext (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicNext (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
 
     /// <summary>
-    /// Take the pair key-value preceeding the given pair (only the key is taken into account)
+    /// Take the pair key-value preceding the given pair (only the key is taken into account)
     /// </summary>
     /// <param name="pair">The given pair</param>
     /// <param name="nextPair">The previous pair</param>
-    /// <returns>true, if the previuos value is taken successfully; 
+    /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return _tree.Prev (pair, out nextPair);
-    }
+    public bool Prev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.Prev (pair, out nextPair);
 
     /// <summary>
-    /// Take the pair key-value preceeding the given pair in the cyclic order (only the key is taken into account)
+    /// Take the pair key-value preceding the given pair in the cyclic order (only the key is taken into account)
     /// </summary>
     /// <param name="pair">The given pair</param>
     /// <param name="nextPair">The previous pair</param>
-    /// <returns>true, if the previuos value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return _tree.CyclicPrev (pair, out nextPair);
-    }
+    /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
+    public bool CyclicPrev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.CyclicPrev (pair, out nextPair);
 
     /// <summary>
-    /// Take the pair key-value preceeding the pair with given key 
+    /// Take the pair key-value preceding the pair with given key 
     /// </summary>
     /// <param name="key">The given key</param>
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TKey key, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return Prev (new KeyValuePair<TKey, TValue> (key, default (TValue)), out nextPair);
-    }
+    public bool Prev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Prev (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
 
     /// <summary>
-    /// Take the pair key-value preceeding the pair with given key in the cyclic order
+    /// Take the pair key-value preceding the pair with given key in the cyclic order
     /// </summary>
     /// <param name="key">The given key</param>
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TKey key, out KeyValuePair<TKey, TValue> nextPair)
-    {
-      return CyclicPrev (new KeyValuePair<TKey, TValue> (key, default (TValue)), out nextPair);
-    }
+    public bool CyclicPrev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicPrev (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
     #endregion
 
     #region Keys and Values properties
@@ -567,13 +527,13 @@ namespace AVLUtils
     /// Gets an ICollection object containing the keys of the dictionary.
     /// The order of keys is the same as in the dictionary
     /// </summary>
-    public ICollection<TKey> Keys { get { return new KeyCollection (this); } }
+    public ICollection<TKey> Keys { get => new KeyCollection (this); }
 
     /// <summary>
     /// Gets an ICollection object containing the values of the dictionary.
     /// The order of values is the same as in the dictionary
     /// </summary>
-    public ICollection<TValue> Values { get { return new ValueCollection (this); } }
+    public ICollection<TValue> Values { get => new ValueCollection (this); }
     #endregion
 
     #region Auxiliary enumerator class for the keys and values collection classes
@@ -585,16 +545,17 @@ namespace AVLUtils
       /// <summary>
       /// Internal reference to a parent dictionary enumerator
       /// </summary>
+      // ReSharper disable once FieldCanBeMadeReadOnly.Global
       protected IEnumerator<KeyValuePair<TKey, TValue>> _dictEnum;
 
       /// <summary>
       /// Constructor of an enumerator that connects it to the parent dictionary
       /// </summary>
       /// <param name="en">Reference to the enumerator to be used</param>
-      internal BasicKeyValueEnumerator (IEnumerator<KeyValuePair<TKey, TValue>> en) { _dictEnum = en; }
+      internal BasicKeyValueEnumerator (IEnumerator<KeyValuePair<TKey, TValue>> en) => _dictEnum = en;
 
       /// <summary>
-      /// Disposition of the enumertor
+      /// Disposition of the enumerator
       /// </summary>
       public void Dispose () { _dictEnum.Dispose (); }
 
@@ -602,17 +563,17 @@ namespace AVLUtils
       /// Moving the enumerator
       /// </summary>
       /// <returns>true if the enumerator was moved, false otherwise</returns>
-      public bool MoveNext () { return _dictEnum.MoveNext (); }
+      public bool MoveNext () => _dictEnum.MoveNext ();
 
       /// <summary>
       /// Getting the current key
       /// </summary>
-      abstract public T Current { get; }
+      public abstract T Current { get; }
 
       /// <summary>
       /// Getting the current key
       /// </summary>
-      object IEnumerator.Current { get { return Current; } }
+      object IEnumerator.Current { get => Current; }
 
       /// <summary>
       /// Resetting the enumerator
@@ -633,7 +594,7 @@ namespace AVLUtils
       internal class KeyEnumerator : BasicKeyValueEnumerator<TKey>
       {
         /// <summary>
-        /// COnstructor that takes an enumerator in the parent dictionary
+        /// Constructor that takes an enumerator in the parent dictionary
         /// </summary>
         /// <param name="en">An enumerator in the parent dictionary</param>
         public KeyEnumerator (IEnumerator<KeyValuePair<TKey, TValue>> en) : base (en) { }
@@ -641,86 +602,80 @@ namespace AVLUtils
         /// <summary>
         /// Getting key of the current pair in the dictionary
         /// </summary>
-        override public TKey Current { get { return _dictEnum.Current.Key; } }
+        public override TKey Current { get => _dictEnum.Current.Key; }
       }
 
       /// <summary>
       /// Internal reference to the parent dictionary
       /// </summary>
+      // ReSharper disable once FieldCanBeMadeReadOnly.Local
       private AVLBaseDictionary<TKey, TValue, TTree> _dict;
 
       /// <summary>
       /// Constructor that creates the key collection and connects it to the given dictionary
       /// </summary>
       /// <param name="newDict">The dictionary to which the created collection should be connected</param>
-      public KeyCollection (AVLBaseDictionary<TKey, TValue, TTree> newDict)
-      {
-        if (newDict == null)
-          throw new ArgumentNullException (nameof(newDict));
-        this._dict = newDict;
-      }
+      public KeyCollection (AVLBaseDictionary<TKey, TValue, TTree> newDict) => 
+        _dict = newDict ?? throw new ArgumentNullException (nameof(newDict));
 
       #region IMultiEnumerable<T> and related methods
       /// <summary>
       /// Getting enumerator for key collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetEnumerator () { return new KeyEnumerator (_dict.GetEnumerator ()); }
+      public IEnumerator<TKey> GetEnumerator () => new KeyEnumerator (_dict.GetEnumerator ());
 
       /// <summary>
       /// Getting enumerator for key collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      IEnumerator IEnumerable.GetEnumerator () { return GetEnumerator (); }
+      IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
       /// <summary>
       /// Getting enumerator for key collection set to the given value (or after it) 
       /// </summary>
       /// <param name="key">The key to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetEnumerator (TKey key) { return new KeyEnumerator (_dict.GetEnumerator (key)); }
+      public IEnumerator<TKey> GetEnumerator (TKey key) => new KeyEnumerator (_dict.GetEnumerator (key));
 
       /// <summary>
       /// Getting enumerator for key collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetCyclicEnumerator () { return new KeyEnumerator (_dict.GetCyclicEnumerator ()); }
+      public IEnumerator<TKey> GetCyclicEnumerator () => new KeyEnumerator (_dict.GetCyclicEnumerator ());
 
       /// <summary>
       /// Getting enumerator for key collection set to the given value (or after it) regarding it as a cyclic container
       /// </summary>
       /// <param name="key">The key to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetCyclicEnumerator (TKey key) { return new KeyEnumerator (_dict.GetCyclicEnumerator (key)); }
+      public IEnumerator<TKey> GetCyclicEnumerator (TKey key) => new KeyEnumerator (_dict.GetCyclicEnumerator (key));
 
       /// <summary>
       /// Getting reverse enumerator for key collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetReverseEnumerator () { return new KeyEnumerator (_dict.GetReverseEnumerator ()); }
+      public IEnumerator<TKey> GetReverseEnumerator () => new KeyEnumerator (_dict.GetReverseEnumerator ());
 
       /// <summary>
       /// Getting reverse enumerator for key collection set to the given value (or before it)
       /// </summary>
       /// <param name="key">The key to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetReverseEnumerator (TKey key) { return new KeyEnumerator (_dict.GetReverseEnumerator (key)); }
+      public IEnumerator<TKey> GetReverseEnumerator (TKey key) => new KeyEnumerator (_dict.GetReverseEnumerator (key));
 
       /// <summary>
       /// Getting reverse enumerator for key collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetCyclicReverseEnumerator () { return new KeyEnumerator (_dict.GetCyclicReverseEnumerator ()); }
+      public IEnumerator<TKey> GetCyclicReverseEnumerator () => new KeyEnumerator (_dict.GetCyclicReverseEnumerator ());
 
       /// <summary>
       /// Getting reverse enumerator for key collection set to the given value (or before it) regarding it as a cyclic container
       /// </summary>
       /// <param name="key">The key to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TKey> GetCyclicReverseEnumerator (TKey key)
-      {
-        return new KeyEnumerator (_dict.GetCyclicReverseEnumerator (key));
-      }
+      public IEnumerator<TKey> GetCyclicReverseEnumerator (TKey key) => new KeyEnumerator (_dict.GetCyclicReverseEnumerator (key));
       #endregion
 
       #region ICollection<T> methods
@@ -731,14 +686,23 @@ namespace AVLUtils
       /// <param name="index">The zero-based index in array at which copying begins</param>            
       public void CopyTo (TKey[] array, int index)
       {
-        if (array == null)
-          throw new ArgumentNullException (nameof(array));
-        if (array.Rank != 1)
-          throw new ArgumentException ("array should be one-dimensional");
-        if (index < 0)
-          throw new ArgumentOutOfRangeException (nameof(index));
-        if (array.Length - index < Count)
-          throw new ArgumentException ("array too small");
+#if DEBUG        
+        if (array == null) {
+          throw new ArgumentNullException(nameof(array));
+        }
+
+        if (array.Rank != 1) {
+          throw new ArgumentException("array should be one-dimensional");
+        }
+
+        if (index < 0) {
+          throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        if (array.Length - index < Count) {
+          throw new ArgumentException("array too small");
+        }
+#endif        
 
         for (int i = 0; i < Count; i++)
         {
@@ -751,12 +715,12 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of keys in the collection
       /// </summary>
-      public int Count { get { return _dict.Count; } }
+      public int Count { get => _dict.Count; }
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
-      bool ICollection<TKey>.IsReadOnly { get { return true; } }
+      bool ICollection<TKey>.IsReadOnly { get => true; }
 
       /// <summary>
       /// A stub for Add method
@@ -774,20 +738,14 @@ namespace AVLUtils
       /// </summary>
       /// <param name="item">The to be checked</param>
       /// <returns>true if the key is present, false otherwise</returns>
-      bool ICollection<TKey>.Contains (TKey item)
-      {
-        return _dict.ContainsKey (item);
-      }
+      bool ICollection<TKey>.Contains (TKey item) => item != null && _dict.ContainsKey (item);
 
       /// <summary>
       /// A stub for Remove method
       /// </summary>
       /// <param name="item">The item to be removed</param>
       /// <returns>Actually, no return value</returns>
-      bool ICollection<TKey>.Remove (TKey item)
-      {
-        throw new NotSupportedException ("KeyCollection");
-      }
+      bool ICollection<TKey>.Remove (TKey item) => throw new NotSupportedException ("KeyCollection");
       #endregion
     }
     #endregion
@@ -812,37 +770,34 @@ namespace AVLUtils
         /// <summary>
         /// Getting value of the current pair in the dictionary
         /// </summary>
-        override public TValue Current { get { return _dictEnum.Current.Value; } }
+        public override TValue Current { get => _dictEnum.Current.Value; }
       }
 
       /// <summary>
       /// Internal reference to the parent dictionary
       /// </summary>
+      // ReSharper disable once FieldCanBeMadeReadOnly.Local
       private AVLBaseDictionary<TKey, TValue, TTree> _dict;
 
       /// <summary>
       /// Constructor that creates the value collection and connects it to the given dictionary
       /// </summary>
       /// <param name="newDict">The dictionary to which the created collection should be connected</param>
-      public ValueCollection (AVLBaseDictionary<TKey, TValue, TTree> newDict)
-      {
-        if (newDict == null)
-          throw new ArgumentNullException (nameof(newDict));
-        this._dict = newDict;
-      }
+      public ValueCollection (AVLBaseDictionary<TKey, TValue, TTree> newDict) => 
+        _dict = newDict ?? throw new ArgumentNullException(nameof(newDict));
 
       #region IMultiEnumerable<T> and related methods
       /// <summary>
       /// Getting enumerator for value collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetEnumerator () { return new ValueEnumerator (_dict.GetEnumerator ()); }
+      public IEnumerator<TValue> GetEnumerator () => new ValueEnumerator (_dict.GetEnumerator ());
 
       /// <summary>
       /// Getting enumerator for value collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      IEnumerator IEnumerable.GetEnumerator () { return GetEnumerator (); }
+      IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
       /// <summary>
       /// Getting enumerator for value collection set to the given value (or after it).
@@ -850,16 +805,13 @@ namespace AVLUtils
       /// </summary>
       /// <param name="val">The val to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetEnumerator (TValue val)
-      {
-        throw new NotSupportedException ("ValueCollection");
-      }
+      public IEnumerator<TValue> GetEnumerator (TValue val) => throw new NotSupportedException ("ValueCollection");
 
       /// <summary>
       /// Getting enumerator for value collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetCyclicEnumerator () { return new ValueEnumerator (_dict.GetCyclicEnumerator ()); }
+      public IEnumerator<TValue> GetCyclicEnumerator () => new ValueEnumerator (_dict.GetCyclicEnumerator ());
 
       /// <summary>
       /// Getting enumerator for value collection set to the given value (or after it) regarding it as a cyclic container
@@ -867,16 +819,13 @@ namespace AVLUtils
       /// </summary>
       /// <param name="val">The val to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetCyclicEnumerator (TValue val)
-      {
-        throw new NotSupportedException ("ValueCollection");
-      }
+      public IEnumerator<TValue> GetCyclicEnumerator (TValue val) => throw new NotSupportedException ("ValueCollection");
 
       /// <summary>
       /// Getting reverse enumerator for value collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetReverseEnumerator () { return new ValueEnumerator (_dict.GetReverseEnumerator ()); }
+      public IEnumerator<TValue> GetReverseEnumerator () => new ValueEnumerator (_dict.GetReverseEnumerator ());
 
       /// <summary>
       /// Getting reverse enumerator for value collection set to the given value (or before it)
@@ -884,16 +833,13 @@ namespace AVLUtils
       /// </summary>
       /// <param name="val">The val to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetReverseEnumerator (TValue val)
-      {
-        throw new NotSupportedException ("ValueCollection");
-      }
+      public IEnumerator<TValue> GetReverseEnumerator (TValue val) => throw new NotSupportedException ("ValueCollection");
 
       /// <summary>
       /// Getting reverse enumerator for value collection
       /// </summary>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetCyclicReverseEnumerator () { return new ValueEnumerator (_dict.GetCyclicReverseEnumerator ()); }
+      public IEnumerator<TValue> GetCyclicReverseEnumerator () => new ValueEnumerator (_dict.GetCyclicReverseEnumerator ());
 
       /// <summary>
       /// Getting reverse enumerator for value collection set to the given value (or before it) regarding it as a cyclic container
@@ -901,28 +847,35 @@ namespace AVLUtils
       /// </summary>
       /// <param name="val">The val to which or after which the enumerator should be put</param>
       /// <returns>An enumerator to access the collection</returns>
-      public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue val)
-      {
-        throw new NotSupportedException ("ValueCollection");
-      }
+      public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue val) => throw new NotSupportedException ("ValueCollection");
       #endregion
 
       #region ICollection<T> methods
       /// <summary>
       /// Copies the elements of the collection to an array, starting at a particular index
       /// </summary>
-      /// <param name="array">The one-dimensional array that is the destination of the elements copied from collection. The array must have zero-based indexing</param>
+      /// <param name="array">The one-dimensional array that is the destination of the elements copied from collection.
+      /// The array must have zero-based indexing</param>
       /// <param name="index">The zero-based index in array at which copying begins</param>            
       public void CopyTo (TValue[] array, int index)
       {
-        if (array == null)
-          throw new ArgumentNullException (nameof(array));
-        if (array.Rank != 1)
-          throw new ArgumentException ("array should be one-dimensional");
-        if (index < 0)
-          throw new ArgumentOutOfRangeException (nameof(index));
-        if (array.Length - index < Count)
-          throw new ArgumentException ("array too small");
+#if DEBUG        
+        if (array == null) {
+          throw new ArgumentNullException(nameof(array));
+        }
+
+        if (array.Rank != 1) {
+          throw new ArgumentException("array should be one-dimensional");
+        }
+
+        if (index < 0) {
+          throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        if (array.Length - index < Count) {
+          throw new ArgumentException("array too small");
+        }
+#endif        
 
         for (int i = 0; i < Count; i++)
         {
@@ -935,12 +888,12 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of values in the collection
       /// </summary>
-      public int Count { get { return _dict.Count; } }
+      public int Count { get => _dict.Count; }
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
-      bool ICollection<TValue>.IsReadOnly { get { return true; } }
+      bool ICollection<TValue>.IsReadOnly { get => true; }
 
       /// <summary>
       /// A stub for Add method
@@ -958,20 +911,14 @@ namespace AVLUtils
       /// </summary>
       /// <param name="item">The to be checked</param>
       /// <returns>true if the value is present, false otherwise</returns>
-      bool ICollection<TValue>.Contains (TValue item)
-      {
-        return this.Contains (item);
-      }
+      bool ICollection<TValue>.Contains (TValue item) => this.Contains (item);
 
       /// <summary>
       /// A stub for Remove method
       /// </summary>
       /// <param name="item">The item to be removed</param>
       /// <returns>Actually, no return value</returns>
-      bool ICollection<TValue>.Remove (TValue item)
-      {
-        throw new NotSupportedException ("ValueCollection");
-      }
+      bool ICollection<TValue>.Remove (TValue item) => throw new NotSupportedException ("ValueCollection");
       #endregion
     }
     #endregion
@@ -988,18 +935,12 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor that use the default key order
     /// </summary>
-    public AVLDictionary ()
-    {
-      _tree = new AVLTree<KeyValuePair<TKey, TValue>> (new MyComparer ());
-    }
+    public AVLDictionary () => _tree = new AVLTree<KeyValuePair<TKey, TValue>> (new MyComparer ());
 
     /// <summary>
     /// Constructor that use the key order given by user
     /// </summary>
-    public AVLDictionary (IComparer<TKey> comp)
-    {
-      _tree = new AVLTree<KeyValuePair<TKey, TValue>> (new MyComparer (comp));
-    }
+    public AVLDictionary (IComparer<TKey> comp) => _tree = new AVLTree<KeyValuePair<TKey, TValue>> (new MyComparer (comp));
   }
 
   /// <summary>
@@ -1014,25 +955,19 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor that use the default key order
     /// </summary>
-    public AVLDictionaryUnsafe ()
-    {
-      _tree = new AVLTreeUnsafe<KeyValuePair<TKey, TValue>> (new MyComparer ());
-    }
+    public AVLDictionaryUnsafe () => _tree = new AVLTreeUnsafe<KeyValuePair<TKey, TValue>> (new MyComparer ());
 
     /// <summary>
     /// Constructor that use the key order given by user
     /// </summary>
-    public AVLDictionaryUnsafe (IComparer<TKey> comp)
-    {
-      _tree = new AVLTreeUnsafe<KeyValuePair<TKey, TValue>> (new MyComparer (comp));
-    }
+    public AVLDictionaryUnsafe (IComparer<TKey> comp) => _tree = new AVLTreeUnsafe<KeyValuePair<TKey, TValue>> (new MyComparer (comp));
 
     #region Methods for work with comparer
     /// <summary>
-    /// Checks cosistency of the current structure of the tree
+    /// Checks consistency of the current structure of the tree
     /// </summary>
     /// <returns>true, if the order</returns>
-    public bool CheckConsistency () { return _tree.CheckConsistency (); }
+    public bool CheckConsistency () => _tree.CheckConsistency ();
 
     /// <summary>
     /// Rebuild the tree according to the current comparer

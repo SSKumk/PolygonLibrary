@@ -16,72 +16,72 @@ namespace AVLUtils
     /// Returns an enumerator that iterates through the collection from the beginning
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetEnumerator () { return new AVLEnumerator (this); }
+    public IEnumerator<TValue> GetEnumerator () => new AVLEnumerator (this);
 
     /// <summary>
     /// Returns an enumerator that iterates through a collection form the beginning (typeless version)
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    IEnumerator IEnumerable.GetEnumerator () { return GetEnumerator (); }
+    IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetEnumerator (TValue v) { return new AVLEnumerator (this, v); }
+    public IEnumerator<TValue> GetEnumerator (TValue v) => new AVLEnumerator (this, v);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection from the end
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetReverseEnumerator () { return new AVLReverseEnumerator (this); }
+    public IEnumerator<TValue> GetReverseEnumerator () => new AVLReverseEnumerator (this);
 
     /// <summary>
     /// Returns an enumerator that iterates reversely through the collection put at the given value or before it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate reversely through the collection</returns>
-    public IEnumerator<TValue> GetReverseEnumerator (TValue v) { return new AVLReverseEnumerator (this, v); }
+    public IEnumerator<TValue> GetReverseEnumerator (TValue v) => new AVLReverseEnumerator (this, v);
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator () { return new AVLCyclicEnumerator (this); }
+    public IEnumerator<TValue> GetCyclicEnumerator () => new AVLCyclicEnumerator (this);
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one;
-    /// initially the enumerator is put to the given value or (if it is absent) to minimal value cyclicly 
+    /// initially the enumerator is put to the given value or (if it is absent) to minimal value cyclically 
     /// greater than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) { return new AVLCyclicEnumerator (this, v); }
+    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) => new AVLCyclicEnumerator (this, v);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that reversely iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator () { return new AVLCyclicReverseEnumerator (this); }
+    public IEnumerator<TValue> GetCyclicReverseEnumerator () => new AVLCyclicReverseEnumerator (this);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one;
-    /// initially the enumerator is put to the given value or (if it is absent) to maximal value cyclicly 
+    /// initially the enumerator is put to the given value or (if it is absent) to maximal value cyclically 
     /// less than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that iterates reversely through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) { return new AVLCyclicReverseEnumerator (this, v); }
+    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) => new AVLCyclicReverseEnumerator (this, v);
     #endregion
 
     #region ICollection<T> methods (patially here)
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly { get => false; }
 
     /// <summary>
     /// Number of elements in the tree
@@ -90,10 +90,11 @@ namespace AVLUtils
     {
       get
       {
-        if (_top == null)
+        if (_top == null) {
           return 0;
-        else
+        } else {
           return _top.subtreeQnt;
+        }
       }
     }
 
@@ -104,12 +105,17 @@ namespace AVLUtils
     /// <param name="arrayIndex">The zero-based index in array at which copying begins</param>
     public void CopyTo (TValue[] array, int arrayIndex)
     {
-      if (array == null)
+      if (array == null) {
         throw new ArgumentNullException (nameof(array));
-      if (arrayIndex < 0)
+      }
+
+      if (arrayIndex < 0) {
         throw new ArgumentOutOfRangeException (nameof(array));
-      if (array.Length - arrayIndex < Count)
+      }
+
+      if (array.Length - arrayIndex < Count) {
         throw new ArgumentException ("array too small");
+      }
 
       int qnt = this.Count;
       IEnumerator<TValue> en = GetEnumerator ();
@@ -137,7 +143,7 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
-    public bool IsEmpty { get { return Count == 0; } }
+    public bool IsEmpty { get => Count == 0; }
 
     /// <summary>
     /// Default constructor. Sets default comparer
@@ -169,14 +175,15 @@ namespace AVLUtils
     private TValue GetByIndexIter (AVLNode node, int i, int l, int r)
     {
       int
-      l1 = (node.left == null ? l : l + node.left.subtreeQnt) - 1,
-      r1 = (node.right == null ? r : r - node.right.subtreeQnt) + 1;
-      if (i <= l1)
+      l1 = (l + node.left?.subtreeQnt ?? l) - 1,
+      r1 = (r - node.right?.subtreeQnt ?? r) + 1;
+      if (i <= l1) {
         return GetByIndexIter (node.left, i, l, l1);
-      else if (i >= r1)
+      } else if (i >= r1) {
         return GetByIndexIter (node.right, i, r1, r);
-      else
+      } else {
         return node.val;
+      }
     }
 
     /// <summary>
@@ -189,8 +196,9 @@ namespace AVLUtils
       get
       {
         int l = 0, r = Count - 1;
-        if (i < l || i > r)
-          throw new IndexOutOfRangeException ("Errorous index in AVLBaseTree");
+        if (i < l || i > r) {
+          throw new IndexOutOfRangeException ("Erroneous index in AVLBaseTree");
+        }
 
         return GetByIndexIter (_top, i, l, r);
       }
@@ -218,7 +226,7 @@ namespace AVLUtils
       AVLNode node = GetNode (v);
       if (node == null)
       {
-        res = default (TValue);
+        res = default;
         return false;
       }
       else
@@ -232,15 +240,17 @@ namespace AVLUtils
     /// <summary>
     /// Take the minimal value in the tree
     /// </summary>
-    /// <returns>The minmal value</returns>
+    /// <returns>The minimal value</returns>
     public TValue Min ()
     {
-      if (_top == null)
+      if (_top == null) {
         throw new InvalidOperationException ("The AVLBaseTree is empty!");
+      }
 
       AVLNode cur = _top;
-      while (cur.left != null)
+      while (cur.left != null) {
         cur = cur.left;
+      }
 
       return cur.val;
     }
@@ -251,12 +261,14 @@ namespace AVLUtils
     /// <returns>The maximal value</returns>
     public TValue Max ()
     {
-      if (_top == null)
+      if (_top == null) {
         throw new InvalidOperationException ("The AVLBaseTree is empty!");
+      }
 
       AVLNode cur = _top;
-      while (cur.right != null)
+      while (cur.right != null) {
         cur = cur.right;
+      }
 
       return cur.val;
     }
@@ -267,8 +279,10 @@ namespace AVLUtils
     /// <returns>The value</returns>
     public TValue Pop ()
     {
-      if (_top == null)
+      if (_top == null) {
         throw new InvalidOperationException ("The AVLBaseTree is empty!");
+      }
+
       TValue res = Min ();
       Remove (res);
       return res;
@@ -280,8 +294,10 @@ namespace AVLUtils
     /// <returns>The value</returns>
     public TValue Pop_Back ()
     {
-      if (_top == null)
+      if (_top == null) {
         throw new InvalidOperationException ("The AVLBaseTree is empty!");
+      }
+
       TValue res = Max ();
       Remove (res);
       return res;
@@ -302,7 +318,7 @@ namespace AVLUtils
         {
           if (!en.MoveNext ())
           {
-            next = default (TValue);
+            next = default;
             return false;
           }
         }
@@ -311,7 +327,7 @@ namespace AVLUtils
       }
       else
       {
-        next = default (TValue);
+        next = default;
         return false;
       }
     }
@@ -323,22 +339,16 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TValue v, out TValue next)
-    {
-      return NextInternal (v, out next, GetEnumerator (v) as AVLBaseEnumerator);
-    }
+    public bool Next (TValue v, out TValue next) => NextInternal (v, out next, GetEnumerator (v) as AVLBaseEnumerator);
 
     /// <summary>
-    /// Take the value cyclicly following after the given one
+    /// Take the value cyclically following after the given one
     /// </summary>
     /// <param name="v">The given value</param>
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool CyclicNext (TValue v, out TValue next)
-    {
-      return NextInternal (v, out next, GetCyclicEnumerator (v) as AVLBaseEnumerator);
-    }
+    public bool CyclicNext (TValue v, out TValue next) => NextInternal (v, out next, GetCyclicEnumerator (v) as AVLBaseEnumerator);
 
     /// <summary>
     /// Take the value previous to the given one
@@ -347,21 +357,15 @@ namespace AVLUtils
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TValue v, out TValue prev)
-    {
-      return NextInternal (v, out prev, GetReverseEnumerator (v) as AVLBaseEnumerator);
-    }
+    public bool Prev (TValue v, out TValue prev) => NextInternal (v, out prev, GetReverseEnumerator (v) as AVLBaseEnumerator);
 
     /// <summary>
-    /// Take the value cyclicly previous to the given one
+    /// Take the value cyclically previous to the given one
     /// </summary>
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TValue v, out TValue prev)
-    {
-      return NextInternal (v, out prev, GetCyclicReverseEnumerator (v) as AVLBaseEnumerator);
-    }
+    public bool CyclicPrev (TValue v, out TValue prev) => NextInternal (v, out prev, GetCyclicReverseEnumerator (v) as AVLBaseEnumerator);
     #endregion
 
     #region Convertors
@@ -373,8 +377,10 @@ namespace AVLUtils
     {
       List<TValue> l = new List<TValue> ();
       IEnumerator<TValue> en = GetEnumerator ();
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         l.Add (en.Current);
+      }
+
       en.Dispose();
       return l;
     }

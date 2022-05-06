@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using PolygonLibrary.Toolkit;
 using PolygonLibrary.Segments;
 
 namespace PolygonLibrary.Basics
@@ -119,10 +114,10 @@ namespace PolygonLibrary.Basics
     {
       Direct = new Vector2D(v).Normalize();
 
-      Normal = new Vector2D(-Direct.Y, Direct.X);
+      Normal = new Vector2D(-Direct.y, Direct.x);
 
-      A = Normal.X;
-      B = Normal.Y;
+      A = Normal.x;
+      B = Normal.y;
       C = -Normal * (Vector2D)p;
     }
 
@@ -139,8 +134,9 @@ namespace PolygonLibrary.Basics
       PointAndDirect (p, v);
 
       double val = this[p1];
-      if (Tools.EQ(val))
+      if (Tools.EQ(val)) {
         throw new ArgumentException("The point that should define the positive halfplane belongs to the line");
+      }
 
       if (Tools.LT(val))
       {
@@ -164,9 +160,9 @@ namespace PolygonLibrary.Basics
       Line2D res = new Line2D();
       res.Normal = new Vector2D(v).Normalize();
 
-      res.Direct = new Vector2D(res.Normal.Y, -res.Normal.X);
-      res.A = res.Normal.X;
-      res.B = res.Normal.Y;
+      res.Direct = new Vector2D(res.Normal.y, -res.Normal.x);
+      res.A = res.Normal.x;
+      res.B = res.Normal.y;
       res.C = -res.Normal * (Vector2D)p;
 
       return res;
@@ -249,7 +245,7 @@ namespace PolygonLibrary.Basics
     }
 
     /// <summary>
-    /// Intersectio of two lines.
+    /// Intersection of two lines.
     /// Returns the intersection type (single point, parallel, overlap) and
     /// the intersection point (if it exists and is single) 
     /// </summary>
@@ -271,10 +267,11 @@ namespace PolygonLibrary.Basics
       else
       {
         res = null;
-        if (Tools.EQ(d1))
+        if (Tools.EQ(d1)) {
           return LineCrossType.Overlap;
-        else
+        } else {
           return LineCrossType.Parallel;
+        }
       }
     }
     #endregion

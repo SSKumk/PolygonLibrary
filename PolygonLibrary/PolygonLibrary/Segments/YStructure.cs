@@ -6,7 +6,7 @@ using PolygonLibrary.Basics;
 namespace PolygonLibrary.Segments
 {
   // Part of the SegmentCrosserBasic class containing the definition of a subsidiary
-  // class describing the Y-structure
+  // class describing the y-structure
   public abstract partial class SegmentCrosserBasic
   {
     /// <summary>
@@ -158,7 +158,7 @@ namespace PolygonLibrary.Segments
         if (IsEmpty) return null;
 
         // The abscissa where to test
-        double testX = SweepPoint.X;
+        double testX = SweepPoint.x;
 
         // If the lowest group in the structure is not lower than the given ordinate,
         // then no group can be found
@@ -198,7 +198,7 @@ namespace PolygonLibrary.Segments
         if (IsEmpty) return null;
 
         // The abscissa where to test
-        double testX = SweepPoint.X;
+        double testX = SweepPoint.x;
 
         // If the most upper group in the structure is not upper than the given ordinate,
         // then no group can be found

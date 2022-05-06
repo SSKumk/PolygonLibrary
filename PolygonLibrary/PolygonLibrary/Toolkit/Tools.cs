@@ -117,7 +117,7 @@ namespace PolygonLibrary.Toolkit
     /// Signum function based of approximate comparison of doubles
     /// </summary>
     /// <param name="x">The value which sign should be found</param>
-    /// <returns>The sign of X</returns>
+    /// <returns>The sign of x</returns>
     public static int Sign(double x)
     {
       if (Tools.EQ(x))
@@ -142,7 +142,7 @@ namespace PolygonLibrary.Toolkit
     }
 
     /// <summary>
-    /// Projecting a set of n-dimensional points to the plane by means of a matrix 2 X n
+    /// Projecting a set of n-dimensional points to the plane by means of a matrix 2 x n
     /// </summary>
     /// <param name="m">The projection matrix</param>
     /// <param name="ps">The set of multidimensional points</param>

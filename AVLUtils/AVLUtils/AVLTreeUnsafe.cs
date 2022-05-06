@@ -14,13 +14,14 @@ namespace AVLUtils
   {
     #region Unsafe trees methods
     /// <summary>
-    /// Checks cosistency of the current structure of the tree
+    /// Checks consistency of the current structure of the tree
     /// </summary>
     /// <returns>true, if the order</returns>
     public bool CheckConsistency ()
     {
-      if (Count <= 1)
+      if (Count <= 1) {
         return true;
+      }
 
       IEnumerator<TValue> en = GetEnumerator ();
       TValue prev = en.Current;
@@ -64,8 +65,9 @@ namespace AVLUtils
     {
       comparer = newComp;
 #if DEBUG
-      if (!CheckConsistency ())
+      if (!CheckConsistency ()) {
         throw new ArgumentException ();
+      }
 #else
       if (checkAfter && !CheckConsistency ())
         throw new ArgumentException ();
@@ -82,7 +84,7 @@ namespace AVLUtils
     /// <summary>
     /// Constructor that sets given order in the tree
     /// </summary>
-    /// <param name="newComp">The comparer that defines the oreder in the tree</param>
+    /// <param name="newComp">The comparer that defines the order in the tree</param>
     public AVLTreeUnsafe (IComparer<TValue> newComp) : base (newComp) { }
     #endregion 
   }

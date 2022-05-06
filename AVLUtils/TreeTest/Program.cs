@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AVLUtils;
 
 namespace TreeTest
@@ -10,12 +9,10 @@ namespace TreeTest
   {
     public class MyPoint : IComparable<MyPoint>
     {
-      public int x, y;
+      public readonly int x;
+      public readonly int y;
 
-      public MyPoint ()
-      {
-        x = y = 0;
-      }
+      public MyPoint () => x = y = 0;
 
       public MyPoint (int nx, int ny)
       {
@@ -23,28 +20,27 @@ namespace TreeTest
         y = ny;
       }
 
-      public override string ToString ()
-      {
-        return "(" + x + ";" + y + ")";
-      }
+      public override string ToString () => "(" + x + ";" + y + ")";
 
       public int CompareTo (MyPoint other)
       {
         int res = x.CompareTo (other.x);
-        if (res != 0)
+        if (res != 0) {
           return res;
-        else
+        } else {
           return y.CompareTo (other.y);
+        }
       }
     }
 
     private static void ClrScr()
     {
-      for (int i = 0; i < 30; i++)
+      for (int i = 0; i < 30; i++) {
         Console.WriteLine ();
+      }
     }
 
-    private static void Main (string[] args)
+    private static void Main ()
     {
       ConsoleKeyInfo ans;
       do
@@ -76,7 +72,7 @@ namespace TreeTest
 
     private static void SetTest()
     {
-      Console.WriteLine ("\nSet test isn't implemeted yet...");
+      Console.WriteLine ("\nSet test isn't implemented yet...");
       Console.ReadKey();
     }
 
@@ -86,61 +82,75 @@ namespace TreeTest
       AVLTree<int> tr = new AVLTree<int> ();
 
       int i;
-      for (i = 1; i < 16; i++)
+      for (i = 1; i < 16; i++) {
         tr.Add (2 * i);
+      }
 
       IEnumerator<int> ien = tr.GetEnumerator (100);
 
       int n, n1;
 
-      foreach (int k in tr)
+      foreach (int k in tr) {
         Console.WriteLine (k);
+      }
 
       n = 6;
-      if (tr.Next (n, out n1))
+      if (tr.Next (n, out n1)) {
         Console.WriteLine ("Next to " + n + " is " + n1);
-      else
+      } else {
         Console.WriteLine ("Next to " + n + " is absent");
+      }
 
       n = 7;
-      if (tr.Next (n, out n1))
+      if (tr.Next (n, out n1)) {
         Console.WriteLine ("Next to " + n + " is " + n1);
-      else
+      } else {
         Console.WriteLine ("Next to " + n + " is absent");
+      }
 
       n = 30;
-      if (tr.Next (n, out n1))
+      if (tr.Next (n, out n1)) {
         Console.WriteLine ("Next to " + n + " is " + n1);
-      else
+      } else {
         Console.WriteLine ("Next to " + n + " is absent");
+      }
 
       n = 36;
-      if (tr.Next (n, out n1))
+      if (tr.Next (n, out n1)) {
         Console.WriteLine ("Next to " + n + " is " + n1);
-      else
+      } else {
         Console.WriteLine ("Next to " + n + " is absent");
+      }
 
       n = 6;
-      if (tr.Prev (n, out n1))
+      if (tr.Prev (n, out n1)) {
         Console.WriteLine ("Previous to " + n + " is " + n1);
-      else
+      } else {
         Console.WriteLine ("Previous to " + n + " is absent");
-      n = 5;
-      if (tr.Prev (n, out n1))
-        Console.WriteLine ("Previous to " + n + " is " + n1);
-      else
-        Console.WriteLine ("Previous to " + n + " is absent");
-      n = 2;
-      if (tr.Prev (n, out n1))
-        Console.WriteLine ("Previous to " + n + " is " + n1);
-      else
-        Console.WriteLine ("Previous to " + n + " is absent");
-      n = -2;
-      if (tr.Prev (n, out n1))
-        Console.WriteLine ("Previous to " + n + " is " + n1);
-      else
-        Console.WriteLine ("Previous to " + n + " is absent");
+      }
 
+      n = 5;
+      if (tr.Prev (n, out n1)) {
+        Console.WriteLine ("Previous to " + n + " is " + n1);
+      } else {
+        Console.WriteLine ("Previous to " + n + " is absent");
+      }
+
+      n = 2;
+      if (tr.Prev (n, out n1)) {
+        Console.WriteLine ("Previous to " + n + " is " + n1);
+      } else {
+        Console.WriteLine ("Previous to " + n + " is absent");
+      }
+
+      n = -2;
+      if (tr.Prev (n, out n1)) {
+        Console.WriteLine ("Previous to " + n + " is " + n1);
+      } else {
+        Console.WriteLine ("Previous to " + n + " is absent");
+      }
+
+      ien.Dispose();
       Console.WriteLine ("---------------------");
 
       Console.ReadKey (true);
@@ -154,33 +164,38 @@ namespace TreeTest
       for (i = 1; i < 16; i++)
       {
         p = new MyPoint (r.Next (10), r.Next (10));
-        Console.WriteLine (String.Format ("{0,2}: adding ", i) + p);
+        Console.WriteLine ($"{i,2}: adding " + p);
         ptr.Add (p);
-        if (i == 10)
+        if (i == 10) {
           p1 = p;
+        }
       }
 
       Console.WriteLine ("-----------------");
-      foreach (MyPoint pp in ptr)
+      foreach (MyPoint pp in ptr) {
         Console.WriteLine (pp);
+      }
 
       Console.WriteLine ("-----------------");
 
-      IEnumerator<MyPoint> en = ptr.GetEnumerator (p1);
+      IEnumerator<MyPoint> en;
+      
+      en = ptr.GetEnumerator (p1);
       do
       {
         Console.WriteLine (en.Current);
       } while (en.MoveNext());
 
-
+      en.Dispose();
       Console.WriteLine ("-----------------");
 
       Console.Write ("Next to " + p1 + " is ");
       MyPoint p2;
-      if (ptr.Next (p1, out p2))
+      if (ptr.Next (p1, out p2)) {
         Console.WriteLine (p2);
-      else
+      } else {
         Console.WriteLine ("absent");
+      }
 
       Console.WriteLine ("-----------------");
 
@@ -190,6 +205,8 @@ namespace TreeTest
         Console.WriteLine (en.Current);
       }
 
+      en.Dispose();
+      
       Console.WriteLine ("-----------------");
 
       en = ptr.GetReverseEnumerator (p1);
@@ -198,6 +215,8 @@ namespace TreeTest
       {
         Console.WriteLine (en.Current);
       }
+      
+      en.Dispose();
 
       Console.ReadKey (true);
       #endregion
@@ -252,12 +271,14 @@ namespace TreeTest
       Console.WriteLine ("-----------------");
       Console.WriteLine ("Adding range:");
 
-      foreach (int k in ar)
+      foreach (int k in ar) {
         Console.WriteLine (k);
+      }
 
       Console.WriteLine ("Resulting tree:");
-      foreach (int k in trInt)
+      foreach (int k in trInt) {
         Console.WriteLine (k);
+      }
 
       Console.WriteLine ("-----------------");
       Console.ReadKey (true);
@@ -265,25 +286,32 @@ namespace TreeTest
 
       #region CopyTo test
       int[] arr = new int[20];
-      for (i = 0; i < 20; i++)
+      for (i = 0; i < 20; i++) {
         arr[i] = 100 * (i - 10);
+      }
 
       Console.Write ("The tree: ");
-      foreach (int k in trInt)
+      foreach (int k in trInt) {
         Console.Write (k + " ");
+      }
+
       Console.WriteLine ();
 
       Console.Write ("The array before: ");
-      foreach (int k in arr)
+      foreach (int k in arr) {
         Console.Write (k + " ");
+      }
+
       Console.WriteLine ();
 
       Console.WriteLine ("CopyTo from the 5th position");
       trInt.CopyTo (arr, 5);
 
       Console.Write ("The array after: ");
-      foreach (int k in arr)
+      foreach (int k in arr) {
         Console.Write (k + " ");
+      }
+
       Console.WriteLine ();
 
       Console.WriteLine ("-----------------");
@@ -386,18 +414,27 @@ namespace TreeTest
       {
         int num = rnd.Next(10,99);
         string str = Int2Str (k);
-        if (i < 3)
-          d.Add (str, num);
-        else if (i < 5)
-          d.Add (new KeyValuePair<string, int> (str, num));
-        else
-          d[str] = num;
+        switch (i) {
+          case < 3:
+            d.Add (str, num);
+            break;
+
+          case < 5:
+            d.Add (new KeyValuePair<string, int> (str, num));
+            break;
+
+          default:
+            d[str] = num;
+            break;
+        }
       }
 
       // Printing dictionary through foreach
       Console.WriteLine ("Printing using foreach: ");
-      foreach (KeyValuePair<string, int> p in d)
+      foreach (KeyValuePair<string, int> p in d) {
         Console.Write ("('" + p.Key + "';" + p.Value + ") ");
+      }
+
       Console.WriteLine ();
 
       // Printing dictionary through indexer
@@ -408,6 +445,8 @@ namespace TreeTest
         Console.Write ("('" + str + "';" + d[str] + ") ");
       }
       Console.WriteLine ();
+      
+      
 
       // Change the first element and print through keys and values collections
       d["baa"] = -10;
@@ -420,6 +459,9 @@ namespace TreeTest
         Console.Write ("('" + keyEn.Current + "';" + valEn.Current + ") ");
       }
       Console.WriteLine ();
+      
+      keyEn.Dispose();
+      valEn.Dispose();
 
       string str1 = Int2Str (kInit + 50);
       KeyValuePair<string,int> pp;
@@ -429,16 +471,18 @@ namespace TreeTest
       Console.WriteLine ("('" + str1 + "';" + d[str1] + ") -prev-> " + "('" + pp.Key + "';" + pp.Value + ") ");
 
       str1 = d.Keys.Min();
-      if (d.Prev (str1, out pp))
+      if (d.Prev (str1, out pp)) {
         Console.WriteLine ("There is a predecessor of '" + str1 + "'");
-      else
+      } else {
         Console.WriteLine ("There is no predecessor of '" + str1 + "'");
+      }
 
       str1 = d.Keys.Max ();
-      if (d.Next (str1, out pp))
-        Console.WriteLine ("There is a succecessor of '" + str1 + "'");
-      else
-        Console.WriteLine ("There is no succecessor of '" + str1 + "'");
+      if (d.Next (str1, out pp)) {
+        Console.WriteLine ("There is a successor of '" + str1 + "'");
+      } else {
+        Console.WriteLine ("There is no successor of '" + str1 + "'");
+      }
 
       // Cyclic enumerators
       str1 = Int2Str (kInit + 50);
@@ -446,14 +490,18 @@ namespace TreeTest
       IEnumerator<KeyValuePair<string, int>> en;
       en = d.GetCyclicEnumerator (pp);
       Console.WriteLine ("Direct cyclic enumerator:");
-      for (i = 0; i < 15; i++, en.MoveNext())
+      for (i = 0; i < 15; i++, en.MoveNext()) {
         Console.Write ("('" + en.Current.Key + "';" + en.Current.Value + ") ");
+      }
+
       Console.WriteLine ();
 
       en = d.GetCyclicReverseEnumerator (pp);
       Console.WriteLine ("Reverse cyclic enumerator:");
-      for (i = 0; i < 15; i++, en.MoveNext ())
+      for (i = 0; i < 15; i++, en.MoveNext ()) {
         Console.Write ("('" + en.Current.Key + "';" + en.Current.Value + ") ");
+      }
+
       Console.WriteLine ();
 
       Console.ReadKey ();
@@ -461,10 +509,11 @@ namespace TreeTest
 
     private static string Int2Str (int n)
     {
-      if (n == 0)
+      if (n == 0) {
         return "";
-      else
+      } else {
         return Int2Str (n / 26) + (char)(n % 26 + 'a');
+      }
     }
 
   }

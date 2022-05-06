@@ -16,12 +16,12 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Number of rows of the matrix
     /// </summary>
-    public int Rows { get; }
+    public readonly int Rows;
 
     /// <summary>
     /// Number of columns of the matrix
     /// </summary>
-    public int Cols { get; }
+    public readonly int Cols;
 
     /// <summary>
     /// Indexer access
@@ -34,10 +34,12 @@ namespace PolygonLibrary.Basics
       get
       {
 #if DEBUG
-        if (i < 0 || i >= Rows)
+        if (i < 0 || i >= Rows) {
           throw new IndexOutOfRangeException("The first index is out of range");
-        if (j < 0 || j >= Cols)
+        }
+        if (j < 0 || j >= Cols) {
           throw new IndexOutOfRangeException("The second index is out of range");
+        }
 #endif
         return _m[i * Cols + j];
       }
@@ -54,8 +56,9 @@ namespace PolygonLibrary.Basics
       double[,] res = new double[r, c];
       for (i = 0; i < r; i++)
       {
-        for (j = 0; j < c; j++, k++)
+        for (j = 0; j < c; j++, k++) {
           res[i, j] = m._m[k];
+        }
       }
 
       return res;
@@ -78,8 +81,9 @@ namespace PolygonLibrary.Basics
     public Matrix(int n, int m)
     {
 #if DEBUG
-      if (n <= 0 || m <= 0)
+      if (n <= 0 || m <= 0) {
         throw new ArgumentException("Dimension of a matrix cannot be non-positive");
+      }
 #endif
       _m = new double[n * m];
       Rows = n;
@@ -96,14 +100,18 @@ namespace PolygonLibrary.Basics
     public Matrix(int n, int m, double[] ar)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Number of rows should be positive");
-      if (m <= 0)
+      }
+      if (m <= 0) {
         throw new ArgumentException("Number of columns should be positive");
-      if (n * m != ar.Length)
+      }
+      if (n * m != ar.Length) {
         throw new ArgumentException("Product of sizes does not equal to number of elements in the array");
-      if (ar.Rank != 1)
+      }
+      if (ar.Rank != 1) {
         throw new ArgumentException("The array is not one-dimensional");
+      }
 #endif
       Rows = n;
       Cols = m;
@@ -117,18 +125,22 @@ namespace PolygonLibrary.Basics
     public Matrix(double[,] nm)
     {
 #if DEBUG
-      if (nm.Length <= 0)
+      if (nm.Length <= 0) {
         throw new ArgumentException("Number of matrix elements should be positive");
-      if (nm.Rank != 2)
+      }
+      if (nm.Rank != 2) {
         throw new ArgumentException("Cannot initialize a matrix by a array that is not two-dimensional");
+      }
 #endif
       Rows = nm.GetLength(0);
       Cols = nm.GetLength(1);
 #if DEBUG
-      if (Rows <= 0)
+      if (Rows <= 0) {
         throw new ArgumentException("Matrix cannot have a non-positive number of rows");
-      if (Cols <= 0)
+      }
+      if (Cols <= 0) {
         throw new ArgumentException("Matrix cannot have a non-positive number of columns");
+      }
 #endif
       _m = new double[Rows * Cols];
       int k = 0;
@@ -160,13 +172,16 @@ namespace PolygonLibrary.Basics
 #region Overrides
     public bool Equals(Matrix m)
     {
-      if (Rows != m.Rows || Cols != m.Cols)
+      if (Rows != m.Rows || Cols != m.Cols) {
         return false;
+      }
+
       int k, kMax = Rows * Cols;
       for (k = 0; k < kMax; k++)
       {
-        if (Tools.NE(_m[k], m._m[k]))
+        if (Tools.NE(_m[k], m._m[k])) {
           return false;
+        }
       }
 
       return true;
@@ -196,8 +211,10 @@ namespace PolygonLibrary.Basics
     public override int GetHashCode()
     {
       int res = (Rows * Cols).GetHashCode() + Rows.GetHashCode() + Cols.GetHashCode();
-      foreach (double el in _m)
+      foreach (double el in _m) {
         res += el.GetHashCode();
+      }
+
       return res;
     }
 #endregion
@@ -212,8 +229,10 @@ namespace PolygonLibrary.Basics
     {
       int d = m.Rows * m.Cols, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = -m._m[i];
+      }
+
       return new Matrix(m.Rows, m.Cols, nv);
     }
 
@@ -226,13 +245,16 @@ namespace PolygonLibrary.Basics
     public static Matrix operator +(Matrix m1, Matrix m2)
     {
 #if DEBUG
-      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols)
+      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols) {
         throw new ArgumentException("Cannot add two matrices of different sizes");
+      }
 #endif
       int d = m1.Rows * m1.Cols, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = m1._m[i] + m2._m[i];
+      }
+
       return new Matrix(m1.Rows, m1.Cols, nv);
     }
 
@@ -241,17 +263,20 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="m1">The matrix minuend</param>
     /// <param name="m2">The matrix subtrahend</param>
-    /// <returns>The differece</returns>
+    /// <returns>The difference</returns>
     public static Matrix operator -(Matrix m1, Matrix m2)
     {
 #if DEBUG
-      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols)
+      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols) {
         throw new ArgumentException("Cannot subtract two matrices of different sizes");
+      }
 #endif
       int d = m1.Rows * m1.Cols, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = m1._m[i] - m2._m[i];
+      }
+
       return new Matrix(m1.Rows, m1.Cols, nv);
     }
 
@@ -265,8 +290,10 @@ namespace PolygonLibrary.Basics
     {
       int d = m.Rows * m.Cols, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = a * m._m[i];
+      }
+
       return new Matrix(m.Rows, m.Cols, nv);
     }
 
@@ -287,19 +314,22 @@ namespace PolygonLibrary.Basics
     public static Matrix operator /(Matrix m, double a)
     {
 #if DEBUG
-      if (Tools.EQ(a))
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
+      }
 #endif
       int d = m.Rows * m.Cols, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = m._m[i] / a;
+      }
+
       return new Matrix(m.Rows, m.Cols, nv);
     }
 
     /// <summary>
     /// Multiplication of a matrix by a vector at right. The vector factor and the result
-    /// are concidered as column vectors
+    /// are considered as column vectors
     /// </summary>
     /// <param name="m">The matrix (first) factor</param>
     /// <param name="v">The vector (second) factor</param>
@@ -307,15 +337,17 @@ namespace PolygonLibrary.Basics
     public static Vector operator *(Matrix m, Vector v)
     {
 #if DEBUG
-      if (m.Cols != v.Dim)
-        throw new ArgumentException("Cannot mutliply a matrix and a vector of unproper dimensions");
+      if (m.Cols != v.Dim) {
+        throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
+      }
 #endif
       double[] res = new double[m.Rows];
       int r = m.Rows, c = m.Cols, i, j, k = 0;
       for (i = 0; i < r; i++)
       {
-        for (j = 0; j < c; j++, k++)
+        for (j = 0; j < c; j++, k++) {
           res[i] += m._m[k] * v[j];
+        }
       }
 
       return new Vector(res);
@@ -323,7 +355,7 @@ namespace PolygonLibrary.Basics
 
     /// <summary>
     /// Multiplication of a matrix by a vector at left. The vector factor and the result
-    /// are concidered as row vectors
+    /// are considered as row vectors
     /// </summary>
     /// <param name="v">The vector (first) factor</param>
     /// <param name="m">The matrix (second) factor</param>
@@ -331,15 +363,17 @@ namespace PolygonLibrary.Basics
     public static Vector operator *(Vector v, Matrix m)
     {
 #if DEBUG
-      if (m.Rows != v.Dim)
-        throw new ArgumentException("Cannot mutliply a matrix and a vector of unproper dimensions");
+      if (m.Rows != v.Dim) {
+        throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
+      }
 #endif
       double[] res = new double[m.Cols];
-      int r = m.Rows, c = m.Cols, i, j, k = 0;
+      int r = m.Rows, c = m.Cols, i, j, k;
       for (i = 0; i < c; i++)
       {
-        for (j = 0, k = i; j < r; j++, k += c)
+        for (j = 0, k = i; j < r; j++, k += c) {
           res[i] += m._m[k] * v[j];
+        }
       }
 
       return new Vector(res);
@@ -354,8 +388,9 @@ namespace PolygonLibrary.Basics
     public static Matrix operator *(Matrix m1, Matrix m2)
     {
 #if DEBUG
-      if (m1.Cols != m2.Rows)
-        throw new ArgumentException("Cannot mutliply two matrices of unproper dimensions");
+      if (m1.Cols != m2.Rows) {
+        throw new ArgumentException("Cannot multiply two matrices of improper dimensions");
+      }
 #endif
       int r = m1.Rows, c = m2.Cols, d = r * c, temp = m1.Cols, i, j, k, m1Ind, m1Start, m2Ind, resInd = 0;
       double[] res = new double[d];
@@ -364,8 +399,9 @@ namespace PolygonLibrary.Basics
       {
         for (j = 0; j < c; j++, resInd++)
         {
-          for (k = 0, m1Ind = m1Start, m2Ind = j; k < temp; k++, m1Ind++, m2Ind += c)
+          for (k = 0, m1Ind = m1Start, m2Ind = j; k < temp; k++, m1Ind++, m2Ind += c) {
             res[resInd] += m1._m[m1Ind] * m2._m[m2Ind];
+          }
         }
       }
 
@@ -373,7 +409,7 @@ namespace PolygonLibrary.Basics
     }
 
     /// <summary>
-    /// Horizontal concatenation of two matrces (with equal number of rows)
+    /// Horizontal concatenation of two matrices (with equal number of rows)
     /// </summary>
     /// <param name="m1">The left concatenated matrix</param>
     /// <param name="m2">The right concatenated matrix</param>
@@ -381,24 +417,28 @@ namespace PolygonLibrary.Basics
     public static Matrix hcat(Matrix m1, Matrix m2)
     {
 #if DEBUG
-      if (m1.Rows != m2.Rows)
+      if (m1.Rows != m2.Rows) {
         throw new ArgumentException("Cannot concatenate horizontally matrices with different number of rows");
+      }
 #endif
       int r = m1.Rows, c1 = m1.Cols, c2 = m2.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
       double[] nv = new double[d];
       for (i = 0; i < r; i++)
       {
-        for (j = 0; j < c1; j++, k++, k1++)
+        for (j = 0; j < c1; j++, k++, k1++) {
           nv[k] = m1._m[k1];
-        for (j = 0; j < c1; j++, k++, k2++)
+        }
+
+        for (j = 0; j < c1; j++, k++, k2++) {
           nv[k] = m2._m[k2];
+        }
       }
 
       return new Matrix(r, c, nv);
     }
 
     /// <summary>
-    /// Vertical concatenation of two matrces (with equal number of columns)
+    /// Vertical concatenation of two matrices (with equal number of columns)
     /// </summary>
     /// <param name="m1">The upper concatenated matrix</param>
     /// <param name="m2">The lower concatenated matrix</param>
@@ -406,8 +446,9 @@ namespace PolygonLibrary.Basics
     public static Matrix vcat(Matrix m1, Matrix m2)
     {
 #if DEBUG
-      if (m1.Cols != m2.Cols)
+      if (m1.Cols != m2.Cols) {
         throw new ArgumentException("Cannot concatenate vertically matrices with different number of columns");
+      }
 #endif
       int d = (m1.Rows + m2.Rows) * m1.Cols, k = 0;
       double[] nv = new double[d];
@@ -429,7 +470,7 @@ namespace PolygonLibrary.Basics
     
 #region Taking submatrices
     /// <summary>
-    /// Construct a submatrix consisting of given rows of the orignal matrix
+    /// Construct a submatrix consisting of given rows of the original matrix
     /// </summary>
     /// <param name="rows">List of row indices to be taken</param>
     /// <returns>The resultant matrix</returns>
@@ -437,22 +478,24 @@ namespace PolygonLibrary.Basics
     {
       int r = rows.Length;
 #if DEBUG
-      if (r <= 0)
+      if (r <= 0) {
         throw new ArgumentException("Wrong number of rows to be taken");
+      }
 #endif
       int c = Cols, d = r * c, k = 0, ind, i, j;
       double[] res = new double[d];
       for (i = 0; i < rows.Length; i++)
       {
-        for (j = 0, ind = rows[i] * c; j < c; j++, ind++, k++)
+        for (j = 0, ind = rows[i] * c; j < c; j++, ind++, k++) {
           res[k] = _m[ind];
+        }
       }
 
       return new Matrix(r, c, res);
     }
 
     /// <summary>
-    /// Construct a submatrix consisting of given columns of the orignal matrix
+    /// Construct a submatrix consisting of given columns of the original matrix
     /// </summary>
     /// <param name="cols">List of column indices to be taken</param>
     /// <returns>The resultant matrix</returns>
@@ -460,22 +503,24 @@ namespace PolygonLibrary.Basics
     {
       int c = cols.Length;
 #if DEBUG
-      if (c <= 0)
+      if (c <= 0) {
         throw new ArgumentException("Wrong number of columns to be taken");
+      }
 #endif
       int r = Rows, d = r * c, k = 0, start, i, j;
       double[] res = new double[d];
       for (i = 0, start = 0; i < r; i++, start += Cols)
       {
-        for (j = 0; j < c; j++, k++)
+        for (j = 0; j < c; j++, k++) {
           res[k] = _m[start + cols[j]];
+        }
       }
 
       return new Matrix(r, c, res);
     }
 
     /// <summary>
-    /// Construct a submatrix consisting of elements at crossing of given rows and columns of the orignal matrix
+    /// Construct a submatrix consisting of elements at crossing of given rows and columns of the original matrix
     /// </summary>
     /// <param name="rows">List of row indices to be taken</param>
     /// <param name="cols">List of column indices to be taken</param>
@@ -484,18 +529,21 @@ namespace PolygonLibrary.Basics
     {
       int r = rows.Length, c = cols.Length;
 #if DEBUG
-      if (r <= 0)
+      if (r <= 0) {
         throw new ArgumentException("Wrong number of rows to be taken");
-      if (c <= 0)
+      }
+      if (c <= 0) {
         throw new ArgumentException("Wrong number of columns to be taken");
+      }
 #endif
       int d = r * c, k = 0, start, i, j;
       double[] res = new double[d];
       for (i = 0; i < r; i++)
       {
         start = rows[i] * Cols;
-        for (j = 0; j < c; j++, k++)
+        for (j = 0; j < c; j++, k++) {
           res[k] = _m[start + cols[j]];
+        }
       }
 
       return new Matrix(r, c, res);
@@ -511,29 +559,40 @@ namespace PolygonLibrary.Basics
     public static Matrix Zero(int n) => new Matrix(n, n);
 
     /// <summary>
-    /// Return zero recatngular matrix n-by-m
+    /// Return zero rectangular matrix n-by-m
     /// </summary>
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
-    public static Matrix Zero(int n, int m) => new Matrix(n, m);
+    public static Matrix Zero(int n, int m) {
+#if DEBUG
+      if (n <= 0) {
+        throw new ArgumentException("Number of rows of a matrix should be positive");
+      }
+
+      if (m <= 0) {
+        throw new ArgumentException("Number of columns of a matrix should be positive");
+      }
+#endif      
+      return new Matrix(n, m);
+    }
 
     /// <summary>
     /// Return zero matrix n-by-n containing units
     /// </summary>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
-    public static Matrix One(int n)
-    {
+    public static Matrix One(int n) {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Size of a square matrix should be positive");
+      }
 #endif
-      return Matrix.One(n, n);
+      return One(n, n);
     }
 
     /// <summary>
-    /// Return recatngular matrix n-by-m containing units
+    /// Return rectangular matrix n-by-m containing units
     /// </summary>
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
@@ -541,15 +600,20 @@ namespace PolygonLibrary.Basics
     public static Matrix One(int n, int m)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Number of rows of a matrix should be positive");
-      if (m <= 0)
+      }
+
+      if (m <= 0) {
         throw new ArgumentException("Number of columns of a matrix should be positive");
+      }
 #endif
       int d = n * m, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = 1;
+      }
+
       return new Matrix(n, m, nv);
     }
 
@@ -561,14 +625,15 @@ namespace PolygonLibrary.Basics
     public static Matrix Eye(int n)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Size of a square matrix should be positive");
+      }
 #endif
-      return Matrix.Eye(n, n);
+      return Eye(n, n);
     }
 
     /// <summary>
-    /// Return recatngular unite matrix n-by-m 
+    /// Return rectangular unite matrix n-by-m 
     /// </summary>
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
@@ -576,10 +641,13 @@ namespace PolygonLibrary.Basics
     public static Matrix Eye(int n, int m)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Number of rows of a matrix should be positive");
-      if (m <= 0)
+      }
+
+      if (m <= 0) {
         throw new ArgumentException("Number of columns of a matrix should be positive");
+      }
 #endif
       int d = n * m, i, j, k = 0;
       double[] nv = new double[d];
@@ -587,10 +655,11 @@ namespace PolygonLibrary.Basics
       {
         for (j = 0; j < m; j++, k++)
         {
-          if (i == j)
+          if (i == j) {
             nv[k] = 1;
-          else
+          } else {
             nv[k] = 0;
+          }
         }
       }
 

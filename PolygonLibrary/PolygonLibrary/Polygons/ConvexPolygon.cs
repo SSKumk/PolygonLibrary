@@ -147,11 +147,11 @@ namespace PolygonLibrary.Polygons
 			if (Vector2D.AreParallel(g1.Normal, g2.Normal))
 				throw new ArgumentException("Cannot cross lines defined by pairs with parallel normals");
 #endif
-			// g1.g = g1.v * r = g1.v.X * X + g1.v.Y * Y,  g2.g = g2.v * r = g2.v.X * X + g2.v.Y * Y
+			// g1.g = g1.v * r = g1.v.x * x + g1.v.y * y,  g2.g = g2.v * r = g2.v.x * x + g2.v.y * y
 			double
-				d = g1.Normal.X * g2.Normal.Y - g2.Normal.X * g1.Normal.Y,
-				d1 = g1.Value * g2.Normal.Y - g2.Value * g1.Normal.Y,
-				d2 = g1.Normal.X * g2.Value - g2.Normal.X * g1.Value;
+				d = g1.Normal.x * g2.Normal.y - g2.Normal.x * g1.Normal.y,
+				d1 = g1.Value * g2.Normal.y - g2.Value * g1.Normal.y,
+				d2 = g1.Normal.x * g2.Value - g2.Normal.x * g1.Value;
 			return new Point2D(d1 / d, d2 / d);
 		}
 	}
@@ -300,11 +300,11 @@ namespace PolygonLibrary.Polygons
 			// Computing coefficients of the conic combinations
 			double
 				// v = alpha * vi + beta * vj
-				//  alpha * vi.X + beta * vj.X = v.X
-				//  alpha * vi.Y + beta * vj.Y = v.Y
-				d = this[i].Normal.X * this[j].Normal.Y - this[i].Normal.Y * this[j].Normal.X,
-				d1 = v.X * this[j].Normal.Y - v.Y * this[j].Normal.X,
-				d2 = this[i].Normal.X * v.Y - this[i].Normal.Y * v.X;
+				//  alpha * vi.x + beta * vj.x = v.x
+				//  alpha * vi.y + beta * vj.y = v.y
+				d = this[i].Normal.x * this[j].Normal.y - this[i].Normal.y * this[j].Normal.x,
+				d1 = v.x * this[j].Normal.y - v.y * this[j].Normal.x,
+				d2 = this[i].Normal.x * v.y - this[i].Normal.y * v.x;
 			a = d1 / d;
 			b = d2 / d;
 		}
@@ -462,7 +462,7 @@ namespace PolygonLibrary.Polygons
 		///</remarks>
 		protected static bool CheckTriple(GammaPair pm, GammaPair pc, GammaPair pp)
 		{
-			if (Tools.EQ(pm.Normal.X, -pp.Normal.X) && Tools.EQ(pm.Normal.Y, -pp.Normal.Y))
+			if (Tools.EQ(pm.Normal.x, -pp.Normal.x) && Tools.EQ(pm.Normal.y, -pp.Normal.y))
 				return Tools.GE(pm.Value, -pp.Value);
 
 			Point2D p = GammaPair.CrossPairs(pm, pc);
@@ -677,7 +677,7 @@ namespace PolygonLibrary.Polygons
 
 			Vector2D vp = p - Contour[0];
 
-			// If the point is outside the cone (v0,v1);(v0,vn), then it is outside the polygon
+			// If the point is outside the cone (v0,p1);(v0,vn), then it is outside the polygon
 			if (!vp.IsBetween(Contour[1] - Contour[0],
 												Contour[Contour.Count - 1] - Contour[0]))
 				return false;
@@ -685,7 +685,7 @@ namespace PolygonLibrary.Polygons
 			int ind = Contour.Vertices.BinarySearchByPredicate(
 				vert => Tools.GE(vp ^ (vert - Contour[0])), 1, Contour.Count - 1);
 
-			// The point is on the ray starting at v0 and passing through v1.
+			// The point is on the ray starting at v0 and passing through p1.
 			// Check distance
 			if (ind == 1)
 				return Tools.LE(vp.Length, (Contour[1] - Contour[0]).Length);

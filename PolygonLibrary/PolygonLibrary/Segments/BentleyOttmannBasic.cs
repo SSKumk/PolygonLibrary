@@ -43,7 +43,7 @@ namespace PolygonLibrary.Segments
     private EventQueue q = new EventQueue();
 
     /// <summary>
-    /// Y-ordered segments crossing the current sweeping line
+    /// y-ordered segments crossing the current sweeping line
     /// </summary>
     private YStructure yStruct = new YStructure();
 #endregion
@@ -79,11 +79,11 @@ namespace PolygonLibrary.Segments
 
       /*
        * The processing algorithm is as follows:
-       *  1) Add to the Y-structure all segments starting here.
+       *  1) Add to the y-structure all segments starting here.
        *  2) Take all groups passing through the current event point
        *     and send them to the result with the current event point
        *     as the crossing point.
-       *  3) Remove from Y-structure all segments ending here
+       *  3) Remove from y-structure all segments ending here
        *  4) Try to create a new event with the vertical group if it is non-empty:
        *     try to intersect the group of vertical segments with the group,
        *     which is greater than the greatest group passing through the current point
@@ -91,14 +91,14 @@ namespace PolygonLibrary.Segments
        *     have become empty, then search upper and lower groups and try to generate
        *     event on the basis of their intersection
        *  6) Otherwise, rearrange sloped groups passing through the current point by removing
-       *     them from the Y-structure and storing aside, then moving the sweeping point
-       *     to the current one, and finally inserting the groups back to the Y-structure;
+       *     them from the y-structure and storing aside, then moving the sweeping point
+       *     to the current one, and finally inserting the groups back to the y-structure;
        *     with that, check the minimal and minimal of those groups. The try to generate
        *     two events: by intersection of the maximal group and the upper one and
        *     by intersection of the minimal group and the lower one
        */
       
-      // The item 1) of the algorithm - adding to the Y-structure all segments starting here
+      // The item 1) of the algorithm - adding to the y-structure all segments starting here
       foreach (InnerSegment s in evInfo.L.GetSegments())
         yStruct.Add(s);
       
@@ -113,10 +113,10 @@ namespace PolygonLibrary.Segments
       List<InnerSegment> vertSegs = yStruct.GetVerticalSegments().ToList();
       if (vertSegs.Count > 0)
       {
-        SegmentGroup next = yStruct.UpperGroup(evPoint.Y);
+        SegmentGroup next = yStruct.UpperGroup(evPoint.y);
         if (next != null)
         {
-          double nextOrdinate = next.ComputeAtPoint(evPoint.X);
+          double nextOrdinate = next.ComputeAtPoint(evPoint.x);
           
         }
       }

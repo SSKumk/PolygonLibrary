@@ -8,7 +8,7 @@ namespace AVLUtils
   /// Basic class for all set classes of the library
   /// </summary>
   /// <typeparam name="TValue">Type of data to be stored in the container</typeparam>
-  /// <typeparam name="TTree">The tree type on which the containre is based</typeparam>
+  /// <typeparam name="TTree">The tree type on which the container is based</typeparam>
   public abstract class AVLBaseSet<TValue, TTree> : ISet<TValue>, IMultiEnumerable<TValue>
     where TValue : new ()
     where TTree : AVLTree<TValue>
@@ -21,99 +21,96 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor
     /// </summary>
-    protected AVLBaseSet()
-    {
-      _tree = null;
-    }
+    protected AVLBaseSet() => _tree = null;
 
     /// <summary>
     /// Indexer
     /// </summary>
     /// <param name="i">Index</param>
     /// <returns>The value with the index i</returns>
-    public TValue this[int i] { get { return _tree[i]; } }
+    public TValue this[int i] { get => _tree[i]; }
 
     /// <summary>
     /// Getting the set comparer
     /// </summary>
-    public IComparer<TValue> comparer { get { return _tree.comparer; } }
+    public IComparer<TValue> comparer { get => _tree.comparer; }
 
     #region IMultiEnumerable<TValue> and related methods
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<TValue> GetEnumerator () { return _tree.GetEnumerator (); }
+    public IEnumerator<TValue> GetEnumerator () => _tree.GetEnumerator ();
 
     /// <summary>
     /// Returns an untyped enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    IEnumerator IEnumerable.GetEnumerator () { return GetEnumerator (); }
+    IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetEnumerator (TValue v) { return _tree.GetEnumerator (v); }
+    public IEnumerator<TValue> GetEnumerator (TValue v) => _tree.GetEnumerator (v);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<TValue> GetReverseEnumerator () { return _tree.GetReverseEnumerator (); }
+    public IEnumerator<TValue> GetReverseEnumerator () => _tree.GetReverseEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection put at the given value or before it 
     /// (if there is no such a value in the collection)
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetReverseEnumerator (TValue v) { return _tree.GetReverseEnumerator (v); }
+    public IEnumerator<TValue> GetReverseEnumerator (TValue v) => _tree.GetReverseEnumerator (v);
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator () { return _tree.GetCyclicEnumerator(); }
+    public IEnumerator<TValue> GetCyclicEnumerator () => _tree.GetCyclicEnumerator();
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one;
-    /// initially the enumerator is put to the given value or (if it is absent) to minimal value cyclicly 
+    /// initially the enumerator is put to the given value or (if it is absent) to minimal value cyclically 
     /// greater than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) { return _tree.GetCyclicEnumerator(v); }
+    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) => _tree.GetCyclicEnumerator(v);
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that reversely iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator () { return _tree.GetCyclicReverseEnumerator (); }
+    public IEnumerator<TValue> GetCyclicReverseEnumerator () => _tree.GetCyclicReverseEnumerator ();
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one;
-    /// initially the enumerator is put to the given value or (if it is absent) to maximal value cyclicly 
+    /// initially the enumerator is put to the given value or (if it is absent) to maximal value cyclically 
     /// less than the given one
     /// </summary>
-    /// <param name="v">The value the enymerator to be put on</param>
+    /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that iterates reversely through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) { return _tree.GetCyclicReverseEnumerator (v); }    
+    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) => _tree.GetCyclicReverseEnumerator (v);
     #endregion
 
     #region ICollection<TValue> methods
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-    public bool IsReadOnly { get { return false; } }
+    public bool IsReadOnly { get => false; }
 
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count { get { return _tree.Count; } }
+    public int Count { get => _tree.Count; }
 
     /// <summary>
     /// Adds an item to the collection
@@ -137,7 +134,7 @@ namespace AVLUtils
     /// </summary>
     /// <param name="v">The object to locate in the collection</param>
     /// <returns>true if item is found in the collection; otherwise, false</returns>
-    public bool Contains (TValue v) { return _tree.Contains (v); }
+    public bool Contains (TValue v) => _tree.Contains (v);
 
     /// <summary>
     /// Copies the elements of the collection to an array, starting at a particular index
@@ -155,12 +152,12 @@ namespace AVLUtils
     /// <param name="v">The value to be removed form the collection</param>
     /// <returns>true if item was successfully removed from the collection; otherwise, false. 
     /// This method also returns false if item is not found in the collection</returns>
-    public bool Remove (TValue v) { return _tree.Remove (v); }
+    public bool Remove (TValue v) => _tree.Remove (v);
     #endregion
 
     #region ISet methods
     /// <summary>
-    /// Adds an element to the current set and returns a valu e to indicate if the element was successfully added.
+    /// Adds an element to the current set and returns a value to indicate if the element was successfully added.
     /// </summary>
     /// <param name="v">The element to add to the set.</param>
     /// <returns>true if the element is added to the set; false if the element is already in the set. </returns>
@@ -178,8 +175,9 @@ namespace AVLUtils
     /// <param name="other">The collection of items to remove from the set.</param>
     public void ExceptWith (IEnumerable<TValue> other)
     {
-      foreach (TValue v in other)
+      foreach (TValue v in other) {
         Remove (v);
+      }
     }
 
     /// <summary>
@@ -189,11 +187,13 @@ namespace AVLUtils
     public void IntersectWith (IEnumerable<TValue> other)
     {
       TValue v;
+      IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
       for (int i = Count - 1; i >= 0; i++)
       {
         v = _tree[i];
-        if (!other.Contains (v))
+        if (!enumerable.Contains (v)) {
           Remove (v);
+        }
       }
     }
 
@@ -212,15 +212,19 @@ namespace AVLUtils
       foreach (TValue v in other)
       {
         // Skip duplicates
-        if (processed.Contains (v))
+        if (processed.Contains (v)) {
           continue;
+        }
 
         if (Contains (v))
           // If there is an element that belongs to our collection, count it
+        {
           qntContained++;
-        else
+        } else
           // If there is an element that does not belong to our collection, remember this fact
+        {
           hasNewElems = true;
+        }
 
         // Remember the processed element for duplicate counting
         processed.Add (v);
@@ -245,12 +249,15 @@ namespace AVLUtils
       foreach (TValue v in other)
       {
         // Skip duplicates
-        if (processed.Contains (v))
+        if (processed.Contains (v)) {
           continue;
+        }
 
         if (Contains (v))
           // If there is an element that belongs to our collection, count it
+        {
           qntContained++;
+        }
 
         // Remember the processed element for duplicate counting
         processed.Add (v);
@@ -268,10 +275,11 @@ namespace AVLUtils
     /// <returns>true if the current set is a subset of other; otherwise, false. </returns>
     public bool IsSubsetOf (IEnumerable<TValue> other)
     {
-      for (int i = 0; i < Count; i++)
-      {
-        if (!other.Contains (_tree[i]))
+      IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
+      for (int i = 0; i < Count; i++) {
+        if (!enumerable.Contains (_tree[i])) {
           return false;
+        }
       }
       return true;
     }
@@ -285,8 +293,9 @@ namespace AVLUtils
     {
       foreach (TValue v in other)
       {
-        if (Contains (v))
+        if (Contains (v)) {
           return false;
+        }
       }
       return true;
     }
@@ -300,8 +309,9 @@ namespace AVLUtils
     {
       foreach (TValue v in other)
       {
-        if (Contains (v))
+        if (Contains (v)) {
           return true;
+        }
       }
       return false;
     }
@@ -320,18 +330,20 @@ namespace AVLUtils
       foreach (TValue v in other)
       {
         // Skip duplicates
-        if (processed.Contains (v))
+        if (processed.Contains (v)) {
           continue;
+        }
 
         // If there is an element that does not belong to our collection, there is no equivalence
-        if (!Contains (v))
+        if (!Contains (v)) {
           return false;
+        }
 
         // Remember the processed element for duplicate counting
         processed.Add (v);
       }
 
-      // The eqivalence is iff number of processed elemnts equals to the number of elements in our collection
+      // The equivalence is iff number of processed elements equals to the number of elements in our collection
       return processed.Count == Count;
     }
 
@@ -342,22 +354,25 @@ namespace AVLUtils
     /// <param name="other">The collection to compare to the current set.</param>
     public void SymmetricExceptWith (IEnumerable<TValue> other)
     {
-      // Temporary strage for suitable objects
+      // Temporary storage for suitable objects
       List<TValue> temp = new List<TValue> ();
+      IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
 
       // Search for the elements of our collection that are not in the other one
       for (int i = 0; i < Count; i++)
       {
         TValue v = _tree[i];
-        if (!other.Contains (v))
+        if (!enumerable.Contains (v)) {
           temp.Add (v);
+        }
       }
 
       // Search for the elements of the other collection that are not in our one
-      foreach (TValue v in other)
+      foreach (TValue v in enumerable)
       {
-        if (!Contains (v))
+        if (!Contains (v)) {
           temp.Add (v);
+        }
       }
 
       // Clearing our storage and fill it with the found elements
@@ -372,8 +387,9 @@ namespace AVLUtils
     /// <param name="other">The collection to compare to the current set.</param>
     public void UnionWith (IEnumerable<TValue> other)
     {
-      foreach (TValue v in other)
+      foreach (TValue v in other) {
         Add (v);
+      }
     }
     #endregion
 
@@ -381,38 +397,26 @@ namespace AVLUtils
     /// <summary>
     /// Take the minimal value in the tree
     /// </summary>
-    /// <returns>The minmal value</returns>
-    public TValue Min ()
-    {
-      return _tree.Min ();
-    }
+    /// <returns>The minimal value</returns>
+    public TValue Min () => _tree.Min ();
 
     /// <summary>
     /// Take the maximal value in the tree
     /// </summary>
     /// <returns>The maximal value</returns>
-    public TValue Max ()
-    {
-      return _tree.Max ();
-    }
+    public TValue Max () => _tree.Max ();
 
     /// <summary>
     /// Take the minimal value in the tree and remove it
     /// </summary>
     /// <returns>The value</returns>
-    public TValue Pop ()
-    {
-      return _tree.Pop ();
-    }
+    public TValue Pop () => _tree.Pop ();
 
     /// <summary>
     /// Take the maximal value in the tree and remove it
     /// </summary>
     /// <returns>The value</returns>
-    public TValue Pop_Back ()
-    {
-      return _tree.Pop_Back ();
-    }
+    public TValue Pop_Back () => _tree.Pop_Back ();
 
     /// <summary>
     /// Take the value following after the given one
@@ -421,10 +425,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TValue v, out TValue next)
-    {
-      return _tree.Next (v, out next);
-    }
+    public bool Next (TValue v, out TValue next) => _tree.Next (v, out next);
 
     /// <summary>
     /// Take the value following after the given one in the cyclic order
@@ -432,10 +433,7 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (TValue v, out TValue next)
-    {
-      return _tree.CyclicNext (v, out next);
-    }
+    public bool CyclicNext (TValue v, out TValue next) => _tree.CyclicNext (v, out next);
 
     /// <summary>
     /// Take the value previous to the given one
@@ -444,10 +442,7 @@ namespace AVLUtils
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TValue v, out TValue prev)
-    {
-      return _tree.Prev (v, out prev);
-    }
+    public bool Prev (TValue v, out TValue prev) => _tree.Prev (v, out prev);
 
     /// <summary>
     /// Take the value previous to the given one in the cyclic order
@@ -455,10 +450,7 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TValue v, out TValue prev)
-    {
-      return _tree.CyclicPrev (v, out prev);
-    }
+    public bool CyclicPrev (TValue v, out TValue prev) => _tree.CyclicPrev (v, out prev);
     #endregion
   }
 
@@ -472,18 +464,12 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor that involves the default order
     /// </summary>
-    public AVLSet()
-    {
-      _tree = new AVLTree<TValue> ();
-    }
+    public AVLSet() => _tree = new AVLTree<TValue> ();
 
     /// <summary>
     /// Constructor that involves the given order
     /// </summary>
-    public AVLSet (IComparer<TValue> newComp)
-    {
-      _tree = new AVLTree<TValue> (newComp);
-    }
+    public AVLSet (IComparer<TValue> newComp) => _tree = new AVLTree<TValue> (newComp);
   }
 
   /// <summary>
@@ -497,29 +483,20 @@ namespace AVLUtils
     /// <summary>
     /// Default constructor that involves the default order
     /// </summary>
-    public AVLSetUnsafe ()
-    {
-      _tree = new AVLTreeUnsafe<TValue> ();
-    }
+    public AVLSetUnsafe () => _tree = new AVLTreeUnsafe<TValue> ();
 
     /// <summary>
     /// Constructor that involves the given order
     /// </summary>
-    public AVLSetUnsafe (IComparer<TValue> newComp)
-    {
-      _tree = new AVLTreeUnsafe<TValue> (newComp);
-    }
+    public AVLSetUnsafe (IComparer<TValue> newComp) => _tree = new AVLTreeUnsafe<TValue> (newComp);
     #endregion
 
     #region Methods for working with comparer
     /// <summary>
-    /// Checks cosistency of the current structure of the tree
+    /// Checks consistency of the current structure of the tree
     /// </summary>
     /// <returns>true, if the order</returns>
-    public bool CheckConsistency ()
-    {
-      return _tree.CheckConsistency ();
-    }
+    public bool CheckConsistency () => _tree.CheckConsistency ();
 
     /// <summary>
     /// Rebuild the tree according to the current comparer

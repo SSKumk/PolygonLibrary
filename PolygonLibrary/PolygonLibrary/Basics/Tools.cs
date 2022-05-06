@@ -99,7 +99,7 @@ namespace PolygonLibrary.Basics
     /// Signum function based of approximate comparison of doubles
     /// </summary>
     /// <param name="x">The value which sign should be found</param>
-    /// <returns>The sign of X</returns>
+    /// <returns>The sign of x</returns>
     public static int Sign(double x)
     {
       if (Tools.EQ(x))

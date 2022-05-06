@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PolygonLibrary.Basics
-{
+namespace PolygonLibrary.Basics{
   /// <summary>
   /// Class of points (elements of affine space) in the plane. 
   /// It is connected ideologically to the class Vector2D of planar vectors
   /// </summary>
-  public class Point2D : IComparable<Point2D>
-  {
+  public class Point2D : IComparable<Point2D>{
     #region Comparing
     /// <summary>
     /// Point comparer realizing the lexicographic order
     /// </summary>
     /// <param name="v">The point to be compared with</param>
     /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-    public int CompareTo(Point2D v)
-    {
+    public int CompareTo(Point2D v) {
       int xRes = Tools.CMP(x, v.x);
       if (xRes != 0) {
         return xRes;
-      }
-      else {
+      } else {
         return Tools.CMP(y, v.y);
       }
     }
@@ -79,34 +75,32 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// The abscissa
     /// </summary>
-    public double x { get; protected set; }
+    public readonly double x;
 
     /// <summary>
     /// The ordinate
     /// </summary>
-    public double y { get; protected set; }
+    public readonly double y;
 
     /// <summary>
     /// Indexer access
     /// </summary>
     /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
     /// <returns>The value of the corresponding component</returns>
-    public double this[int i]
-    {
-      get
-      {
+    public double this[int i] {
+      get {
 #if DEBUG
-        if (i == 0)
-          return x;
-        else if (i == 1)
-          return y;
-        else
-          throw new IndexOutOfRangeException();
+        return i switch {
+          0 => x
+          , 1 => y
+          , _ => throw new IndexOutOfRangeException()
+        };
 #else
-          if (i == 0)
-            return X;
-          else 
-            return Y;
+        if (i == 0) {
+          return x;
+        } else { 
+          return y;
+        }
 #endif
       }
     }
@@ -116,12 +110,16 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Distance to the origin
     /// </summary>
-    public double Abs { get => Math.Sqrt(x * x + y * y); }
+    public double Abs {
+      get => Math.Sqrt(x * x + y * y);
+    }
 
     /// <summary>
     /// The polar angle of the point
     /// </summary>
-    public double PolarAngle { get => Math.Atan2(y, x); }
+    public double PolarAngle {
+      get => Math.Atan2(y, x);
+    }
 
     /// <summary>
     /// Compute the distance between two points
@@ -140,52 +138,51 @@ namespace PolygonLibrary.Basics
     public static double Dist2(Point2D p1, Point2D p2) => Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2);
     #endregion
 
-    #region Convertors 
+    #region Convertors
     /// <summary>
     /// Explicit convertor to a two-dimensional point from a two-dimensional vector
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The point, which is the endpoint of the given vector</returns>
-    public static explicit operator Point2D(Vector2D v) => new Point2D(v.X, v.Y);
+    public static explicit operator Point2D(Vector2D v) => new Point2D(v.x, v.y);
 
     /// <summary>
-    /// Explicit convertor to a two-dimensional point from a multidimensional point of gereral kind
+    /// Explicit convertor to a two-dimensional point from a multidimensional point of general kind
     /// </summary>
-    /// <param name="v">The point to be converted</param>
+    /// <param name="p">The point to be converted</param>
     /// <returns>The resultant point</returns>
-    public static explicit operator Point2D (Point p)
-    {
+    public static explicit operator Point2D(Point p) {
 #if DEBUG
-      if (p.Dim != 2)
+      if (p.Dim != 2) {
         throw new ArgumentException("A multidimensional point is tried to be converted to a two-dimensional point!");
+      }
 #endif
       return new Point2D(p[0], p[1]);
     }
 
     /// <summary>
-    /// Explicit convertor to a two-dimensional point from a multidimensional vector of gereral kind
+    /// Explicit convertor to a two-dimensional point from a multidimensional vector of general kind
     /// </summary>
     /// <param name="v">The point to be converted</param>
     /// <returns>The resultant point</returns>
-    public static explicit operator Point2D (Vector v)
-    {
+    public static explicit operator Point2D(Vector v) {
 #if DEBUG
-      if (v.Dim != 2)
+      if (v.Dim != 2) {
         throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional point!");
+      }
 #endif
       return new Point2D(v[0], v[1]);
     }
     #endregion
 
     #region Overrides
-    public override bool Equals(object obj)
-    {
+    public override bool Equals(object obj) {
 #if DEBUG
-      if (!(obj is Point2D))
+      if (!(obj is Point2D point2D)) {
         throw new ArgumentException();
+      }
 #endif
-      Point2D v = obj as Point2D;
-      return this.CompareTo(v) == 0;
+      return CompareTo(point2D) == 0;
     }
 
     public override string ToString() => "{" + x + ";" + y + "}";
@@ -197,8 +194,7 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// The default construct producing the origin point 
     /// </summary>
-    public Point2D()
-    {
+    public Point2D() {
       x = 0;
       y = 0;
     }
@@ -208,8 +204,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="nx">The new abscissa</param>
     /// <param name="ny">The new ordinate</param>
-    public Point2D(double nx, double ny)
-    {
+    public Point2D(double nx, double ny) {
       x = nx;
       y = ny;
     }
@@ -218,8 +213,7 @@ namespace PolygonLibrary.Basics
     /// Copying constructor from another point
     /// </summary>
     /// <param name="p">The point to be copied</param>
-    public Point2D(Point2D p)
-    {
+    public Point2D(Point2D p) {
       x = p.x;
       y = p.y;
     }
@@ -228,54 +222,56 @@ namespace PolygonLibrary.Basics
     /// Copying constructor from a vector
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Point2D(Vector2D v)
-    {
-      x = v.X;
-      y = v.Y;
+    public Point2D(Vector2D v) {
+      x = v.x;
+      y = v.y;
     }
-		#endregion
+    #endregion
 
-		#region Operators
-		/// <summary>
-		/// Linear combination of two points 
-		/// </summary>
-		/// <param name="p1">The first point</param>
-		/// <param name="w1">The weight of the first point</param>
-		/// <param name="p2">The second point</param>
-		/// <param name="w2">The weight of the second point</param>
-		/// <returns>The resultant point</returns>
-		public static Point2D LinearCombination(Point2D p1, double w1, Point2D p2, double w2) => new Point2D(w1 * p1.x + w2 * p2.x, w1 * p1.y + w2 * p2.y);
+    #region Operators
+    /// <summary>
+    /// Linear combination of two points 
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="w1">The weight of the first point</param>
+    /// <param name="p2">The second point</param>
+    /// <param name="w2">The weight of the second point</param>
+    /// <returns>The resultant point</returns>
+    public static Point2D LinearCombination(Point2D p1, double w1, Point2D p2, double w2) =>
+      new Point2D(w1 * p1.x + w2 * p2.x, w1 * p1.y + w2 * p2.y);
 
     /// <summary>
-		/// Linear combination of three points 
-		/// </summary>
-		/// <param name="p1">The first point</param>
-		/// <param name="w1">The weight of the first point</param>
-		/// <param name="p2">The second point</param>
-		/// <param name="w2">The weight of the second point</param>
-		/// <param name="p3">The third point</param>
-		/// <param name="w3">The weight of the third point</param>
-		/// <returns>The resultant point</returns>
-		public static Point2D LinearCombination(
-			Point2D p1, double w1, Point2D p2, double w2, Point2D p3, double w3) =>
+    /// Linear combination of three points 
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="w1">The weight of the first point</param>
+    /// <param name="p2">The second point</param>
+    /// <param name="w2">The weight of the second point</param>
+    /// <param name="p3">The third point</param>
+    /// <param name="w3">The weight of the third point</param>
+    /// <returns>The resultant point</returns>
+    public static Point2D LinearCombination(
+      Point2D p1, double w1, Point2D p2, double w2, Point2D p3, double w3) =>
       new Point2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 
     /// <summary>
-		/// Linear combination of a collection of points 
-		/// </summary>
-		/// <param name="ps">Collection of the points</param>
-		/// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
-		/// <returns>The resultant point</returns>
-		public static Point2D LinearCombination(IEnumerable<Point2D> ps, IEnumerable<double> ws)
-    {
+    /// Linear combination of a collection of points 
+    /// </summary>
+    /// <param name="ps">Collection of the points</param>
+    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
+    /// <returns>The resultant point</returns>
+    public static Point2D LinearCombination(IEnumerable<Point2D> ps, IEnumerable<double> ws) {
       IEnumerator<Point2D> enPoint = ps.GetEnumerator();
       IEnumerator<double> enWeight = ws.GetEnumerator();
       double x = 0, y = 0;
-      while (enPoint.MoveNext() && enWeight.MoveNext())
-      {
+      while (enPoint.MoveNext() && enWeight.MoveNext()) {
         x += enPoint.Current.x * enWeight.Current;
         y += enPoint.Current.y * enWeight.Current;
       }
+
+      enPoint.Dispose();
+      enWeight.Dispose();
+      
       return new Point2D(x, y);
     }
 
@@ -292,7 +288,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The first point summand</param>
     /// <param name="v">The second vector summand</param>
     /// <returns>The point, which is shift of the original point to the direction of the vector</returns>
-    public static Point2D operator +(Point2D p, Vector2D v) => new Point2D(p.x + v.X, p.y + v.Y);
+    public static Point2D operator +(Point2D p, Vector2D v) => new Point2D(p.x + v.x, p.y + v.y);
 
     /// <summary>
     /// Difference of a point and a vector
@@ -300,7 +296,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The point minuend</param>
     /// <param name="v">The vector subtrahend</param>
     /// <returns>The point, which is shift of the original point to the opposite direction of the vector</returns>
-    public static Point2D operator -(Point2D p, Vector2D v) => new Point2D(p.x - v.X, p.y - v.Y);
+    public static Point2D operator -(Point2D p, Vector2D v) => new Point2D(p.x - v.x, p.y - v.y);
 
     /// <summary>
     /// Difference of two points 
@@ -332,11 +328,11 @@ namespace PolygonLibrary.Basics
     /// <param name="p">The vector dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The quotient</returns>
-    public static Point2D operator /(Point2D p, double a)
-    {
+    public static Point2D operator /(Point2D p, double a) {
 #if DEBUG
-      if (Tools.EQ(a))
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
+      }
 #endif
       return new Point2D(p.x / a, p.y / a);
     }

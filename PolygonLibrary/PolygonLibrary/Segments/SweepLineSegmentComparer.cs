@@ -5,7 +5,7 @@ using PolygonLibrary.Basics;
 namespace PolygonLibrary.Segments
 {
   // Part of the SegmentCrosserBasic class containing the definition of a subsidiary
-  // class for comparing segment groups in the Y-structure according to the current
+  // class for comparing segment groups in the y-structure according to the current
   // position of the sweeping point
   public abstract partial class SegmentCrosserBasic
   {
@@ -32,17 +32,17 @@ namespace PolygonLibrary.Segments
         // to find the slope and vertical position of such a group.
         // If an empty group appears, then throw an exception
         if (g1.isEmpty || g2.isEmpty)
-          throw new ArgumentException("An empty group in segment groups comparer in Y-structure");
+          throw new ArgumentException("An empty group in segment groups comparer in y-structure");
 
         // Check whether one of the group is vertical.
         // If so, than throw an exception
         if (g1.isVertical || g2.isVertical)
-          throw new ArgumentException("A vertical group in segment groups comparer in Y-structure");
+          throw new ArgumentException("A vertical group in segment groups comparer in y-structure");
 #endif
 
         double
-          y1 = g1.ComputeAtPoint(p_sweep.X),
-          y2 = g2.ComputeAtPoint(p_sweep.X);
+          y1 = g1.ComputeAtPoint(p_sweep.x),
+          y2 = g2.ComputeAtPoint(p_sweep.x);
 
         if (Tools.NE(y1, y2))
         {
@@ -70,7 +70,7 @@ namespace PolygonLibrary.Segments
             res = +1;
 
           // If they are lower than the sweeping point, change the order
-          if (Tools.GT(y1, p_sweep.Y))
+          if (Tools.GT(y1, p_sweep.y))
             res = -res;
 
           return res;

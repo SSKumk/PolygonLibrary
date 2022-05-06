@@ -132,7 +132,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if v1 > v2; false, otherwise</returns>
+    /// <returns>true, if p1 > p2; false, otherwise</returns>
     public static bool operator >(Vector v1, Vector v2) => v1.CompareTo(v2) > 0;
 
     /// <summary>
@@ -140,7 +140,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if v1 >= v2; false, otherwise</returns>
+    /// <returns>true, if p1 >= p2; false, otherwise</returns>
     public static bool operator >=(Vector v1, Vector v2) => v1.CompareTo(v2) >= 0;
 
     /// <summary>
@@ -148,7 +148,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if v1 is less than v2; false, otherwise</returns>
+    /// <returns>true, if p1 is less than p2; false, otherwise</returns>
     public static bool operator <(Vector v1, Vector v2) => v1.CompareTo(v2) < 0;
 
     /// <summary>
@@ -156,7 +156,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if v1 is less than or equal to v2; false, otherwise</returns>
+    /// <returns>true, if p1 is less than or equal to p2; false, otherwise</returns>
     public static bool operator <=(Vector v1, Vector v2) => v1.CompareTo(v2) <= 0;
     #endregion
     

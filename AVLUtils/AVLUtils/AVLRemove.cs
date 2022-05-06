@@ -10,8 +10,9 @@ namespace AVLUtils
     /// <param name="collection">The collection to be removed</param>
     public void RemoveRange (IEnumerable<TValue> collection)
     {
-      foreach (TValue v in collection)
-        Remove (v);
+      foreach (TValue v in collection) {
+        Remove(v);
+      }
     }
 
     /// <summary>
@@ -52,20 +53,26 @@ namespace AVLUtils
           p = curNode.left;
           RemoveIter (ref p, remVal, out removed, ref hChanged);
           curNode.left = p;
-          if (removed)
+          if (removed) {
             curNode.subtreeQnt--;
-          if (hChanged)
+          }
+
+          if (hChanged) {
             balance1 (ref curNode, ref hChanged);
+          }
         }
         else if (res > 0)
         {
           p = curNode.right;
           RemoveIter (ref p, remVal, out removed, ref hChanged);
           curNode.right = p;
-          if (removed)
+          if (removed) {
             curNode.subtreeQnt--;
-          if (hChanged)
+          }
+
+          if (hChanged) {
             balance2 (ref curNode, ref hChanged);
+          }
         }
         else
         {
@@ -94,15 +101,16 @@ namespace AVLUtils
 
             curNode.SetQnt ();
 
-            if (hChanged)
+            if (hChanged) {
               balance1 (ref curNode, ref hChanged);
+            }
           }
         }
       }
     }
 
     /// <summary>
-    /// Auxiliary procedure for the case when we should remove a node with two chilrden.
+    /// Auxiliary procedure for the case when we should remove a node with two children.
     /// It seeks for the rightmost node in the given subtree (the left subtree if the node to be deleted),
     /// takes it off the tree, rebalances the rest if necessary and returns the _top of the new subtree
     /// and the detached node (to replace the removed node by it)
@@ -118,8 +126,9 @@ namespace AVLUtils
         del (ref r1, out q, ref hChanged);
         r.right = r1;
         r.SetQnt ();
-        if (hChanged)
+        if (hChanged) {
           balance2 (ref r, ref hChanged);
+        }
       }
       else
       {
@@ -182,14 +191,17 @@ namespace AVLUtils
             p2.right = p1;
             p.right = p2.left;
             p2.left = p;
-            if (b2 == +1)
+            if (b2 == +1) {
               p.balance = -1;
-            else
+            } else {
               p.balance = 0;
-            if (b2 == -1)
+            }
+
+            if (b2 == -1) {
               p1.balance = +1;
-            else
+            } else {
               p1.balance = 0;
+            }
 
             p.SetQnt ();
             p1.SetQnt ();
@@ -255,14 +267,17 @@ namespace AVLUtils
             p2.left = p1;
             p.left = p2.right;
             p2.right = p;
-            if (b2 == -1)
+            if (b2 == -1) {
               p.balance = +1;
-            else
+            } else {
               p.balance = 0;
-            if (b2 == +1)
+            }
+
+            if (b2 == +1) {
               p1.balance = -1;
-            else
+            } else {
               p1.balance = 0;
+            }
 
             p.SetQnt ();
             p1.SetQnt ();

@@ -11,8 +11,9 @@ namespace AVLUtils
     /// <param name="collection">The collection to be added</param>
     public void AddRange (IEnumerable<TValue> collection)
     {
-      foreach (TValue v in collection)
-        Add (v);
+      foreach (TValue v in collection) {
+        Add(v);
+      }
     }
 
     /// <summary>
@@ -63,8 +64,9 @@ namespace AVLUtils
         p1 = curNode.left;
         AddIter (ref p1, newVal, out added, ref hChanged);
         curNode.left = p1;
-        if (added)
+        if (added) {
           curNode.subtreeQnt++;
+        }
 
         // If the balance is changed, check and rebalance the tree if necessary
         if (hChanged)
@@ -99,14 +101,17 @@ namespace AVLUtils
                 p2.left = p1;
                 curNode.left = p2.right;
                 p2.right = curNode;
-                if (p2.balance == -1)
+                if (p2.balance == -1) {
                   curNode.balance = +1;
-                else
+                } else {
                   curNode.balance = 0;
-                if (p2.balance == +1)
+                }
+
+                if (p2.balance == +1) {
                   p1.balance = -1;
-                else
+                } else {
                   p1.balance = 0;
+                }
 
                 p1.SetQnt ();
                 curNode.SetQnt ();
@@ -125,8 +130,9 @@ namespace AVLUtils
         p1 = curNode.right;
         AddIter (ref p1, newVal, out added, ref hChanged);
         curNode.right = p1;
-        if (added)
+        if (added) {
           curNode.subtreeQnt++;
+        }
 
         if (hChanged)
         {
@@ -160,14 +166,17 @@ namespace AVLUtils
                 p2.right = p1;
                 curNode.right = p2.left;
                 p2.left = curNode;
-                if (p2.balance == +1)
+                if (p2.balance == +1) {
                   curNode.balance = -1;
-                else
+                } else {
                   curNode.balance = 0;
-                if (p2.balance == -1)
+                }
+
+                if (p2.balance == -1) {
                   p1.balance = +1;
-                else
+                } else {
                   p1.balance = 0;
+                }
 
                 p1.SetQnt ();
                 curNode.SetQnt ();
