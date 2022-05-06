@@ -26,8 +26,9 @@ namespace PolygonLibrary.Segments
       /// <returns>A collection of the verical segments</returns>
       public IEnumerable<InnerSegment> GetVerticalSegments()
       {
-        foreach (InnerSegment s in vertSegs)
+        foreach (InnerSegment s in vertSegs) {
           yield return s;
+        }
       }
 
       /// <summary>
@@ -37,8 +38,9 @@ namespace PolygonLibrary.Segments
       public IEnumerable<InnerSegment> GetSlopeSegments()
       {
         foreach (SegmentGroup g in this)
-          foreach (InnerSegment s in g)
+          foreach (InnerSegment s in g) {
             yield return s;
+          }
       }
 #endregion
 
@@ -58,10 +60,7 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Getting comparer as a SweepLineSegmentComparer object
       /// </summary>
-      public new SweepLineSegmentComparer comparer
-      {
-        get => (SweepLineSegmentComparer) base.comparer;
-      }
+      public new SweepLineSegmentComparer comparer => (SweepLineSegmentComparer) base.comparer;
 
       /// <summary>
       /// Work with the swep point
@@ -91,10 +90,11 @@ namespace PolygonLibrary.Segments
       {
         SegmentGroup g = new SegmentGroup(), resG;
         g.Add(s);
-        if (Find(g, out resG))
+        if (Find(g, out resG)) {
           return resG;
-        else
+        } else {
           return null;
+        }
       }
 
       /// <summary>
@@ -104,14 +104,14 @@ namespace PolygonLibrary.Segments
       /// <returns>true, if the segment has been added successfully; false, otherwise</returns>
       public bool Add(InnerSegment s)
       {
-        if (s.isVertical)
+        if (s.isVertical) {
           return vertSegs.Add(s);
-        else
+        } else
         {
           SegmentGroup resG = FindByAngle(s);
-          if (resG != null)
+          if (resG != null) {
             return resG.Add(s);
-          else
+          } else
           {
             resG = new SegmentGroup();
             resG.Add(s);
@@ -128,20 +128,24 @@ namespace PolygonLibrary.Segments
       /// <returns>true, if the segment has been removed successfully; false, otherwise</returns>
       public bool Remove(InnerSegment s)
       {
-        if (s.isVertical)
+        if (s.isVertical) {
           return vertSegs.Remove(s);
-        else
+        } else
         {
           SegmentGroup resG = FindByAngle(s);
           
           if (resG != null)
           {
             bool res = resG.Remove(s);
-            if (resG.isEmpty) Remove(resG);
+            if (resG.isEmpty) {
+              Remove(resG);
+            }
+
             return res;
           }
-          else
+          else {
             return false;
+          }
         }
       }
 
@@ -155,7 +159,9 @@ namespace PolygonLibrary.Segments
       public SegmentGroup LowerGroup(double ordinate)
       {
         // If no groups are in the structure, then no group can be found
-        if (IsEmpty) return null;
+        if (IsEmpty) {
+          return null;
+        }
 
         // The abscissa where to test
         double testX = SweepPoint.x;
@@ -163,12 +169,16 @@ namespace PolygonLibrary.Segments
         // If the lowest group in the structure is not lower than the given ordinate,
         // then no group can be found
         SegmentGroup minG = Min();
-        if (Tools.GE(minG.ComputeAtPoint(testX), ordinate)) return null;
+        if (Tools.GE(minG.ComputeAtPoint(testX), ordinate)) {
+          return null;
+        }
 
         // If the the most upper group in the structure is lower than the given ordinate,
         // then the result is just that group
         SegmentGroup maxG = Max();
-        if (Tools.LT(maxG.ComputeAtPoint(testX), ordinate)) return maxG;
+        if (Tools.LT(maxG.ComputeAtPoint(testX), ordinate)) {
+          return maxG;
+        }
 
         // Now we are sure that there are more low and more upper groups.
         // Let's start the binary search
@@ -176,10 +186,11 @@ namespace PolygonLibrary.Segments
         while (l + 1 < u)
         {
           m = (l + u) / 2;
-          if (Tools.LT(this[m].ComputeAtPoint(testX), ordinate))
+          if (Tools.LT(this[m].ComputeAtPoint(testX), ordinate)) {
             l = m;
-          else
+          } else {
             u = m;
+          }
         }
 
         return this[l];
@@ -195,7 +206,9 @@ namespace PolygonLibrary.Segments
       public SegmentGroup UpperGroup(double ordinate)
       {
         // If no groups are in the structure, then no group can be found
-        if (IsEmpty) return null;
+        if (IsEmpty) {
+          return null;
+        }
 
         // The abscissa where to test
         double testX = SweepPoint.x;
@@ -203,12 +216,16 @@ namespace PolygonLibrary.Segments
         // If the most upper group in the structure is not upper than the given ordinate,
         // then no group can be found
         SegmentGroup maxG = Max();
-        if (Tools.LE(maxG.ComputeAtPoint(testX), ordinate)) return null;
+        if (Tools.LE(maxG.ComputeAtPoint(testX), ordinate)) {
+          return null;
+        }
 
         // If the the lowest group in the structure is upper than the given ordinate,
         // then the result is just that group
         SegmentGroup minG = Min();
-        if (Tools.GT(minG.ComputeAtPoint(testX), ordinate)) return minG;
+        if (Tools.GT(minG.ComputeAtPoint(testX), ordinate)) {
+          return minG;
+        }
 
         // Now we are sure that there are more low and more upper groups.
         // Let's start the binary search
@@ -216,10 +233,11 @@ namespace PolygonLibrary.Segments
         while (l + 1 < u)
         {
           m = (l + u) / 2;
-          if (Tools.LE(this[m].ComputeAtPoint(testX), ordinate))
+          if (Tools.LE(this[m].ComputeAtPoint(testX), ordinate)) {
             l = m;
-          else
+          } else {
             u = m;
+          }
         }
 
         return this[u];

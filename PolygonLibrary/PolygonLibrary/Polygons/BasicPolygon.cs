@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
 using PolygonLibrary.Toolkit;
@@ -40,8 +37,10 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
-        if (_contours == null)
+        if (_contours == null) {
           ComputeContours();
+        }
+
         return _contours;
       }
       protected set => _contours = value;
@@ -55,8 +54,10 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
-        if (_vertices == null)
+        if (_vertices == null) {
           ComputeVertices();
+        }
+
         return _vertices;
       }
       protected set => _vertices = value;
@@ -70,8 +71,10 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
-        if (_edges == null)
+        if (_edges == null) {
           ComputeEdges();
+        }
+
         return _edges;
       }
       protected set => _edges = value;
@@ -122,12 +125,14 @@ namespace PolygonLibrary.Polygons
       if (_vertices == null)
       {
 #if DEBUG
-        if (_contours == null)
+        if (_contours == null) {
           throw new Exception("Cannot compute vertices - contours have not been initialized");
+        }
 #endif
         Vertices = new List<Point2D>();
-        foreach (Polyline p in _contours)
+        foreach (Polyline p in _contours) {
           Vertices.AddRange(p.Vertices);
+        }
 
         Vertices.Sort();
       }
@@ -142,12 +147,14 @@ namespace PolygonLibrary.Polygons
       if (_edges == null)
       {
 #if DEBUG
-        if (_contours == null)
+        if (_contours == null) {
           throw new Exception("Cannot compute edges - contours have not been initialized");
+        }
 #endif
         Edges = new List<Segment>();
-        foreach (Polyline p in _contours)
+        foreach (Polyline p in _contours) {
           Edges.AddRange(p.Edges);
+        }
 
         Edges.Sort();
       }
@@ -162,8 +169,9 @@ namespace PolygonLibrary.Polygons
       if (_contours == null)
       {
 #if DEBUG
-        if (_vertices == null)
+        if (_vertices == null) {
           throw new Exception("Cannot compute contour - vertices have not been initialized");
+        }
 #endif
         _contours = new List<Polyline>();
         _contours.Add(new Polyline(Convexification.ArcHull2D(_vertices),

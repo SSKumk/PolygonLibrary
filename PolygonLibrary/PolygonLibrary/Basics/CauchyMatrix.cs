@@ -32,17 +32,17 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// The instant, to which the initial value is connected
     /// </summary>
-    public double T { get; protected set; }
+    public readonly double T;
 
     /// <summary>
     /// The matrix, for which the Cauchy matrix is computed
     /// </summary>
-    public Matrix A { get; protected set; }
+    public readonly Matrix A;
 
     /// <summary>
     /// Maximal time step in the integration scheme
     /// </summary>
-    public double dt { get; protected set; }
+    public readonly double dt;
     #endregion
 
     #region Constructors
@@ -55,8 +55,9 @@ namespace PolygonLibrary.Basics
     public CauchyMatrix(Matrix nA, double nT, double ndt)
     {
 #if DEBUG
-      if (nA.Rows != nA.Cols)
+      if (nA.Rows != nA.Cols) {
         throw new ArgumentException("CauchyMatrix: The given matrix should be square!");
+      }
 #endif
       A = nA;
       T = nT;
@@ -73,10 +74,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="t">The time instant, at which it is necessary to get the Cauchy matrix</param>
     /// <returns>The Cauchy matrix at the given instant</returns>
-    public Matrix this[double t]
-    {
-      get => GetAt(t);
-    }
+    public Matrix this[double t] => GetAt(t);
 
     /// <summary>
     /// Function that gives the Cauchy matrix for given instant. 
@@ -86,8 +84,10 @@ namespace PolygonLibrary.Basics
     /// <returns>The Cauchy matrix at the given instant</returns>
     public Matrix GetAt(double t)
     {
-      if (!_ms.ContainsKey(t))
+      if (!_ms.ContainsKey(t)) {
         ComputeAt(t);
+      }
+
       return _ms[t];
     }
 
@@ -117,20 +117,17 @@ namespace PolygonLibrary.Basics
       bool forward;
 
       try { leftVal = _ms.GetReverseEnumerator(t).Current; leftExists = true; }
-      catch { }
+      catch {
+        // ignored
+      }
+
       try { rightVal = _ms.GetEnumerator(t).Current; rightExists = true; }
-      catch { }
+      catch {
+        // ignored
+      }
 
       // Setting the flag of integration direction
-      if (leftExists)
-      {
-        if (rightExists)
-          forward = Tools.LT(Math.Abs(leftVal.Key - t), Math.Abs(rightVal.Key - t));
-        else
-          forward = true;
-      }
-      else
-        forward = false;
+      forward = leftExists && (!rightExists || Tools.LT(Math.Abs(leftVal.Key - t), Math.Abs(rightVal.Key - t)));
 
       // Setting the initial values for the integration
       if (forward)
@@ -177,16 +174,16 @@ namespace PolygonLibrary.Basics
     /// Procedure computing result of one step of 4th order Runge-Kutta method
     /// </summary>
     /// <param name="cur">Current value of the matrix</param>
-    /// <param name="dt">Time step</param>
+    /// <param name="curTimeStep">Time step</param>
     /// <returns>The result of integration</returns>
-    private Matrix RungeKuttaStep(Matrix cur, double dt)
+    private Matrix RungeKuttaStep(Matrix cur, double curTimeStep)
     {
       Matrix
         K1 = A * cur,
-        K2 = A * (cur + (dt / 2) * K1),
-        K3 = A * (cur + (dt / 2) * K2),
-        K4 = A * (cur + dt * K3);
-      return cur + (dt / 6) * (K1 + 2 * K2 + 2 * K3 + K4);
+        K2 = A * (cur + (curTimeStep / 2) * K1),
+        K3 = A * (cur + (curTimeStep / 2) * K2),
+        K4 = A * (cur + curTimeStep * K3);
+      return cur + (curTimeStep / 6) * (K1 + 2 * K2 + 2 * K3 + K4);
     }
     #endregion
   }

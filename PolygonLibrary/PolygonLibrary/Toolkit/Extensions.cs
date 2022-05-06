@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PolygonLibrary.Toolkit
 {
@@ -28,7 +25,10 @@ namespace PolygonLibrary.Toolkit
 		/// </remarks>
 		public static int BinarySearchByPredicate<T>(this List<T> list, Predicate<T> pred)
 		{
-			if (list == null || list.Count == 0) return -1;
+			if (list == null || list.Count == 0) {
+				return -1;
+			}
+
 			return BinarySearchByPredicate(list, pred, 0, list.Count - 1);
 		}
 
@@ -56,19 +56,34 @@ namespace PolygonLibrary.Toolkit
 		public static int BinarySearchByPredicate<T>(
 			this List<T> list, Predicate<T> pred, int lower, int upper)
 		{
-			if (list == null) return -1;
-			if (lower < 0) lower = 0;
-			if (upper >= list.Count) upper = list.Count - 1;
-			if (upper < lower || !pred(list[upper])) return -1;
-			if (pred(list[lower])) return lower;
+			if (list == null) {
+				return -1;
+			}
+
+			if (lower < 0) {
+				lower = 0;
+			}
+
+			if (upper >= list.Count) {
+				upper = list.Count - 1;
+			}
+
+			if (upper < lower || !pred(list[upper])) {
+				return -1;
+			}
+
+			if (pred(list[lower])) {
+				return lower;
+			}
 
 			while (lower + 1 < upper)
 			{
 				int mid = (lower + upper) / 2;
-				if (pred(list[mid]))
+				if (pred(list[mid])) {
 					upper = mid;
-				else
+				} else {
 					lower = mid;
+				}
 			}
 			return upper;
 		}
@@ -79,14 +94,15 @@ namespace PolygonLibrary.Toolkit
 		/// </summary>
 		/// <typeparam name="T">Type of the elements of the list</typeparam>
 		/// <param name="list">The list object</param>
-		/// <param name="index">Unnormalized index - any integer</param>
+		/// <param name="index">Non-normalized index - any integer</param>
 		/// <returns>The normalized index from the range [0,size)</returns>
 		public static int NormalizeIndex<T>(this List<T> list, int index)
 		{
-			if (index < 0)
+			if (index < 0) {
 				return index % list.Count + list.Count;
-			else
+			} else {
 				return index % list.Count;
+			}
 		}
 
 		/// <summary>
@@ -106,30 +122,41 @@ namespace PolygonLibrary.Toolkit
 		/// do not obey the predicate and the complementary tail of the shown part of the list 
 		/// consists of elements that provide true to the predicate.
 		/// 
-		/// The indices <see cref="lower"/> and <see cref="upper"/> are treated cyclicly and,
+		/// The indices <see cref="lower"/> and <see cref="upper"/> are treated cyclically and,
 		/// therefore, can be less than 0 and greater or equal to the size of the list.
 		/// If <see cref="lower"/> is greater than <see cref="upper"/>, the method searches 
-		/// in the final part of the list, which starts from <see cref="upper"/>, and cyclicly 
+		/// in the final part of the list, which starts from <see cref="upper"/>, and cyclically 
 		/// passes to the initial part of the list, which finishes at <see cref="lower"/>.
 		/// </remarks>
 		public static int BinaryCyclicSearchByPredicate<T>(
 			this List<T> list, Predicate<T> pred, int lower, int upper)
 		{
-			if (list == null) return -1;
-			if (!pred(list.GetAtCyclic(upper))) return -1;
-			if (pred(list.GetAtCyclic(lower))) return lower;
+			if (list == null) {
+				return -1;
+			}
+
+			if (!pred(list.GetAtCyclic(upper))) {
+				return -1;
+			}
+
+			if (pred(list.GetAtCyclic(lower))) {
+				return lower;
+			}
 
 			lower = list.NormalizeIndex(lower);
 			upper = list.NormalizeIndex(upper);
-			if (upper < lower) upper += list.Count;
+			if (upper < lower) {
+				upper += list.Count;
+			}
 
 			while (lower + 1 < upper)
 			{
 				int mid = (lower + upper) / 2;
-				if (pred(list.GetAtCyclic(mid)))
+				if (pred(list.GetAtCyclic(mid))) {
 					upper = mid;
-				else
+				} else {
 					lower = mid;
+				}
 			}
 
 			return list.NormalizeIndex(upper);
@@ -142,13 +169,17 @@ namespace PolygonLibrary.Toolkit
 		/// <typeparam name="T">The type of elements in the list</typeparam>
 		/// <param name="list">The list object</param>
 		/// <param name="i">The index</param>
+		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The necessary element</returns>
 		public static T GetAtCyclic<T>(this List<T> list, int i)
 		{
-			if (list == null)
-				throw new ArgumentNullException("List.GetAtCyclic: null list");
-			if (list.Count == 0)
-				throw new ArgumentException("List.GetAtCyclic: empty list");
+			if (list == null) {
+				throw new ArgumentNullException("List.GetAtCyclic: a null list");
+			}
+
+			if (list.Count == 0) {
+				throw new ArgumentException("List.GetAtCyclic: an empty list");
+			}
 
 			return list[list.NormalizeIndex(i)];
 		}
@@ -177,7 +208,10 @@ namespace PolygonLibrary.Toolkit
 		/// </remarks>
 		public static int BinarySearchByPredicate<T>(this T[] array, Predicate<T> pred)
 		{
-			if (array == null || array.Rank > 1 || array.Length == 0) return -1;
+			if (array == null || array.Rank > 1 || array.Length == 0) {
+				return -1;
+			}
+
 			return BinarySearchByPredicate(array, pred, 0, array.Length - 1);
 		}
 
@@ -205,19 +239,34 @@ namespace PolygonLibrary.Toolkit
 		public static int BinarySearchByPredicate<T>(
 			this T[] array, Predicate<T> pred, int lower, int upper)
 		{
-			if (array == null || array.Rank > 1) return -1;
-			if (lower < 0) lower = 0;
-			if (upper >= array.Length) upper = array.Length - 1;
-			if (upper < lower || !pred(array[upper])) return -1;
-			if (pred(array[lower])) return lower;
+			if (array == null || array.Rank > 1) {
+				return -1;
+			}
+
+			if (lower < 0) {
+				lower = 0;
+			}
+
+			if (upper >= array.Length) {
+				upper = array.Length - 1;
+			}
+
+			if (upper < lower || !pred(array[upper])) {
+				return -1;
+			}
+
+			if (pred(array[lower])) {
+				return lower;
+			}
 
 			while (lower + 1 < upper)
 			{
 				int mid = (lower + upper) / 2;
-				if (pred(array[mid]))
+				if (pred(array[mid])) {
 					upper = mid;
-				else
+				} else {
 					lower = mid;
+				}
 			}
 			return upper;
 		}
@@ -227,15 +276,16 @@ namespace PolygonLibrary.Toolkit
 		/// by modulo size.
 		/// </summary>
 		/// <typeparam name="T">Type of the elements of the array</typeparam>
-		/// <param name="list">The array object</param>
-		/// <param name="index">Unnormalized index - any integer</param>
+		/// <param name="array">The array object</param>
+		/// <param name="index">Non-normalized index - any integer</param>
 		/// <returns>The normalized index from the range [0,size)</returns>
 		public static int NormalizeIndex<T>(this T[] array, int index)
 		{
-			if (index < 0)
+			if (index < 0) {
 				return index % array.Length + array.Length;
-			else
+			} else {
 				return index % array.Length;
+			}
 		}
 
 		/// <summary>
@@ -255,30 +305,41 @@ namespace PolygonLibrary.Toolkit
 		/// do not obey the predicate and the complementary tail of the shown part of the array 
 		/// consists of elements that provide true to the predicate.
 		/// 
-		/// The indices <see cref="lower"/> and <see cref="upper"/> are treated cyclicly and,
+		/// The indices <see cref="lower"/> and <see cref="upper"/> are treated cyclically and,
 		/// therefore, can be less than 0 and greater or equal to the size of the list.
 		/// If <see cref="lower"/> is greater than <see cref="upper"/>, the method searches 
-		/// in the final part of the array, which starts from <see cref="upper"/>, and cyclicly 
+		/// in the final part of the array, which starts from <see cref="upper"/>, and cyclically 
 		/// passes to the initial part of the array, which finishes at <see cref="lower"/>.
 		/// </remarks>
 		public static int BinaryCyclicSearchByPredicate<T>(
 			this T[] array, Predicate<T> pred, int lower, int upper)
 		{
-			if (array == null) return -1;
-			if (!pred(array.GetAtCyclic(upper))) return -1;
-			if (pred(array.GetAtCyclic(lower))) return lower;
+			if (array == null) {
+				return -1;
+			}
+
+			if (!pred(array.GetAtCyclic(upper))) {
+				return -1;
+			}
+
+			if (pred(array.GetAtCyclic(lower))) {
+				return lower;
+			}
 
 			lower = array.NormalizeIndex(lower);
 			upper = array.NormalizeIndex(upper);
-			if (upper < lower) upper += array.Length;
+			if (upper < lower) {
+				upper += array.Length;
+			}
 
 			while (lower + 1 < upper)
 			{
 				int mid = (lower + upper) / 2;
-				if (pred(array.GetAtCyclic(mid)))
+				if (pred(array.GetAtCyclic(mid))) {
 					upper = mid;
-				else
+				} else {
 					lower = mid;
+				}
 			}
 
 			return array.NormalizeIndex(upper);
@@ -289,15 +350,18 @@ namespace PolygonLibrary.Toolkit
 		/// reduced to the interval [0, size) by modulo size
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the array</typeparam>
-		/// <param name="list">The array object</param>
+		/// <param name="array">The array object</param>
 		/// <param name="i">The index</param>
 		/// <returns>The necessary element</returns>
 		public static T GetAtCyclic<T>(this T[] array, int i)
 		{
-			if (array == null)
+			if (array == null) {
 				throw new ArgumentNullException("Array.GetAtCyclic: null array");
-			if (array.Length == 0)
+			}
+
+			if (array.Length == 0) {
 				throw new ArgumentException("Array.GetAtCyclic: empty array");
+			}
 
 			return array[array.NormalizeIndex(i)];
 		}

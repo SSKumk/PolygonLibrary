@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-
-using PolygonLibrary;
+﻿using System;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons;
 using PolygonLibrary.Toolkit;
@@ -172,8 +169,9 @@ namespace ToolsTests
           }
 
         }
-        else
+        else {
           Assert.IsTrue(r.Contour.Count == 2, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
+        }
       }
     }
 
@@ -215,8 +213,9 @@ namespace ToolsTests
           }
 
         }
-        else
+        else {
           Assert.IsTrue(r.Contour.Count == 2, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
+        }
       }
     }
 
@@ -258,8 +257,9 @@ namespace ToolsTests
           }
 
         }
-        else
+        else {
           Assert.IsTrue(r.Contour.Count == 2, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
+        }
       }
     }
 
@@ -301,8 +301,9 @@ namespace ToolsTests
           }
 
         }
-        else
+        else {
           Assert.IsTrue(r.Contour.Count == 2, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
+        }
       }
     }
 

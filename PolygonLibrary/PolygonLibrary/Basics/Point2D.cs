@@ -110,16 +110,12 @@ namespace PolygonLibrary.Basics{
     /// <summary>
     /// Distance to the origin
     /// </summary>
-    public double Abs {
-      get => Math.Sqrt(x * x + y * y);
-    }
+    public double Abs => Math.Sqrt(x * x + y * y);
 
     /// <summary>
     /// The polar angle of the point
     /// </summary>
-    public double PolarAngle {
-      get => Math.Atan2(y, x);
-    }
+    public double PolarAngle => Math.Atan2(y, x);
 
     /// <summary>
     /// Compute the distance between two points

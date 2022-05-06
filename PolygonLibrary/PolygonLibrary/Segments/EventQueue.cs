@@ -20,12 +20,16 @@ namespace PolygonLibrary.Segments
       /// <param name="s">The segment, which ends should be added</param>
       public void AddEnds(InnerSegment s)
       {
-        if (!ContainsKey(s.p1))
+        if (!ContainsKey(s.p1)) {
           Add(s.p1, new Event());
+        }
+
         this[s.p1].L.Add(s);
 
-        if (!ContainsKey(s.p2))
+        if (!ContainsKey(s.p2)) {
           Add(s.p2, new Event());
+        }
+
         this[s.p2].R.Add(s);
       }
 
@@ -37,13 +41,18 @@ namespace PolygonLibrary.Segments
       /// <param name="s2">The second segment</param>
       public void AddCrossing(Vector2D p, InnerSegment s1, InnerSegment s2)
       {
-        if (!ContainsKey(p))
+        if (!ContainsKey(p)) {
           Add(p, new Event());
+        }
+
         Event e = this[p];
-        if (!e.I.Contains(s1) && !e.L.Contains(s1) && !e.R.Contains(s1))
+        if (!e.I.Contains(s1) && !e.L.Contains(s1) && !e.R.Contains(s1)) {
           e.I.Add(s1);
-        if (!e.I.Contains(s2) && !e.L.Contains(s2) && !e.R.Contains(s2))
+        }
+
+        if (!e.I.Contains(s2) && !e.L.Contains(s2) && !e.R.Contains(s2)) {
           e.I.Add(s2);
+        }
       }
 
       /// <summary>
@@ -54,8 +63,9 @@ namespace PolygonLibrary.Segments
       public void Pop(out Vector2D p, out Event e)
       {
 #if DEBUG
-        if (Count == 0)
+        if (Count == 0) {
           throw new ArgumentException("The queue is empty!");
+        }
 #endif
         KeyValuePair<Vector2D, Event> pair = this.First();
         p = pair.Key;

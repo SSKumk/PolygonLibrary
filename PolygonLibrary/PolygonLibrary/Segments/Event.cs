@@ -33,8 +33,10 @@ namespace PolygonLibrary.Segments
         /// <returns>true, if the segment has been added successfully; false, otherwise</returns>
         public bool Add(InnerSegment s)
         {
-          if (!ContainsKey(s.polarAngle))
+          if (!ContainsKey(s.polarAngle)) {
             this[s.polarAngle] = new SegmentGroup();
+          }
+
           return this[s.polarAngle].Add(s);
         }
 
@@ -51,11 +53,8 @@ namespace PolygonLibrary.Segments
         /// Getting all segments in the structure (despite their angle)
         /// </summary>
         /// <returns>A collection of all segments in the structure</returns>
-        public IEnumerable<InnerSegment> GetSegments()
-        {
-          return Keys.SelectMany(angle => this[angle]);
-        }
-#endregion        
+        public IEnumerable<InnerSegment> GetSegments() => Keys.SelectMany(angle => this[angle]);
+        #endregion        
       }
 
       /// <summary>
@@ -195,10 +194,7 @@ namespace PolygonLibrary.Segments
         /// <summary>
         /// Getting property showing whether the iterator has a valid value
         /// </summary>
-        public bool IsValid
-        {
-          get => state != State.Before && state != State.After;
-        }
+        public bool IsValid => state != State.Before && state != State.After;
 
         /// <summary>
         /// Getting property of the current value
@@ -208,8 +204,9 @@ namespace PolygonLibrary.Segments
           get
           {
 #if DEBUG            
-            if (!IsValid)
+            if (!IsValid) {
               throw new InvalidOperationException();
+            }
 #endif            
             return curSegEnumerator.Current;
           }
@@ -218,10 +215,7 @@ namespace PolygonLibrary.Segments
         /// <summary>
         /// Getting property of non-generic interface
         /// </summary>
-        object IEnumerator.Current
-        {
-          get => Current;
-        }
+        object IEnumerator.Current => Current;
 
         /// <summary>
         /// Dispose method (for the aim of compatability)
@@ -255,9 +249,10 @@ namespace PolygonLibrary.Segments
 
           if (state == State.InL)
           {
-            if (curSegEnumerator.MoveNext())
+            if (curSegEnumerator.MoveNext()) {
               return true;
-            
+            }
+
             curGroupEnumerator = myEvent.R.GetEnumerator();
             curSegEnumerator = curGroupEnumerator.Current.Value.GetEnumerator();
             state = State.InR;
@@ -265,9 +260,10 @@ namespace PolygonLibrary.Segments
           
           if (state == State.InR)
           {
-            if (curSegEnumerator.MoveNext())
+            if (curSegEnumerator.MoveNext()) {
               return true;
-            
+            }
+
             curGroupEnumerator = myEvent.I.GetEnumerator();
             curSegEnumerator = curGroupEnumerator.Current.Value.GetEnumerator();
             state = State.InR;
@@ -275,9 +271,10 @@ namespace PolygonLibrary.Segments
 
           if (state == State.InI)
           {
-            if (curSegEnumerator.MoveNext())
+            if (curSegEnumerator.MoveNext()) {
               return true;
-          
+            }
+
             state = State.After;
           }
 

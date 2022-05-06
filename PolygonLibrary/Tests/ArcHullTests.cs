@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using PolygonLibrary;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
@@ -37,9 +34,10 @@ namespace Tests
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
       Assert.AreEqual(hull.Count, expected.Count, "Wrong number of convex hull vertices");
-      for (int i = 0; i < expected.Count; i++)
+      for (int i = 0; i < expected.Count; i++) {
         Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " +
-          "It is expected " + expected[i] + ", but there is " + hull[i]);
+                                              "It is expected " + expected[i] + ", but there is " + hull[i]);
+      }
     }
 
     [TestMethod]
@@ -62,8 +60,9 @@ namespace Tests
       orig.AddRange (expected);
 
       // Some random internal points
-      for (int i = 0; i < 10; i++)
+      for (int i = 0; i < 10; i++) {
         orig.Add(new Point2D(r.NextDouble(), r.NextDouble()));
+      }
 
       // Some points in the initial cutting line
       orig.Add(new Point2D(0.3, 0.3));
@@ -89,9 +88,10 @@ namespace Tests
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
       Assert.AreEqual (hull.Count, expected.Count, "Wrong number of convex hull vertices");
-      for (int i = 0; i < expected.Count; i++)
+      for (int i = 0; i < expected.Count; i++) {
         Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " + 
-          "It is expected " + expected[i] + ", but there is " + hull[i]);
+                                              "It is expected " + expected[i] + ", but there is " + hull[i]);
+      }
     }
 
     [TestMethod]
@@ -156,9 +156,10 @@ namespace Tests
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
       Assert.AreEqual(hull.Count, expected.Count, "Wrong number of convex hull vertices");
-      for (int i = 0; i < expected.Count; i++)
+      for (int i = 0; i < expected.Count; i++) {
         Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " +
-          "It is expected " + expected[i] + ", but there is " + hull[i]);
+                                              "It is expected " + expected[i] + ", but there is " + hull[i]);
+      }
     }
 
   }

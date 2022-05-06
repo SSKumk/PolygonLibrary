@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using PolygonLibrary;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons;
-using PolygonLibrary.Toolkit;
 
 namespace Tests
 {

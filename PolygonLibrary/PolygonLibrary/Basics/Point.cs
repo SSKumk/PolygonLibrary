@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics
 {
@@ -18,12 +13,12 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// The internal storage of the point as a one-dimensional array
     /// </summary>
-    private double[] _p;
+    private readonly double[] _p;
 
     /// <summary>
     /// Dimension of the point
     /// </summary>
-    public int Dim { get => _p.Length; }
+    public int Dim => _p.Length;
 
     /// <summary>
     /// Indexer access
@@ -35,16 +30,18 @@ namespace PolygonLibrary.Basics
       get
       {
 #if DEBUG
-        if (i < 0 || i >= Dim)
+        if (i < 0 || i >= Dim) {
           throw new IndexOutOfRangeException();
+        }
 #endif
         return _p[i];
       }
       protected set
       {
 #if DEBUG
-        if (i < 0 || i >= Dim)
+        if (i < 0 || i >= Dim) {
           throw new IndexOutOfRangeException();
+        }
 #endif
         _p[i] = value;
       }
@@ -53,7 +50,7 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Convert a point to a one-dimensional array
     /// </summary>
-    /// <param name="p">The point to be converted</param>
+    /// <param name="v">The point to be converted</param>
     /// <returns>The resultant array</returns>
     public static implicit operator double[](Point v) => v._p;
 
@@ -82,14 +79,16 @@ namespace PolygonLibrary.Basics
     {
       int d = Dim, res;
 #if DEBUG
-      if (d != p.Dim)
+      if (d != p.Dim) {
         throw new ArgumentException("Cannot compare points of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(this._p[i], p._p[i]);
-        if (res != 0)
+        if (res != 0) {
           return res;
+        }
       }
       return 0;
     }
@@ -104,14 +103,16 @@ namespace PolygonLibrary.Basics
     {
       int d = p1.Dim, res;
 #if DEBUG
-      if (d != p2.Dim)
+      if (d != p2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(p1._p[i], p2._p[i]);
-        if (res != 0)
+        if (res != 0) {
           return false;
+        }
       }
       return true;
     }
@@ -126,14 +127,16 @@ namespace PolygonLibrary.Basics
     {
       int d = p1.Dim, res;
 #if DEBUG
-      if (d != p2.Dim)
+      if (d != p2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(p1._p[i], p2._p[i]);
-        if (res != 0)
+        if (res != 0) {
           return true;
+        }
       }
       return false;
     }
@@ -181,8 +184,10 @@ namespace PolygonLibrary.Basics
       {
         double res;
         int i, d = Dim;
-        for (i = 0, res = 0; i < Dim; i++)
+        for (i = 0, res = 0; i < d; i++) {
           res += _p[i] * _p[i];
+        }
+
         return Math.Sqrt(res);
       }
     }
@@ -199,9 +204,9 @@ namespace PolygonLibrary.Basics
 		}
 
 		/// <summary>
-		/// Storage of the flag showing wheter the point is zero
+		/// Storage of the flag showing whether the point is zero
 		/// </summary>
-		protected bool? _IsZero = null;
+		protected bool? _IsZero;
 
 		/// <summary>
 		/// Property showing whether the point iz zero;
@@ -214,8 +219,10 @@ namespace PolygonLibrary.Basics
 				if (!_IsZero.HasValue)
 				{
 					_IsZero = true;
-					for (int i = 0; i < Dim && _IsZero.Value; i++) _IsZero = Tools.EQ(this[i]);
-				}
+					for (int i = 0; i < Dim && _IsZero.Value; i++) {
+            _IsZero = Tools.EQ(this[i]);
+          }
+        }
 				return _IsZero.Value;
 			}
 		}
@@ -225,19 +232,21 @@ namespace PolygonLibrary.Basics
 		public override bool Equals(object obj)
     {
 #if DEBUG
-      if (!(obj is Point))
+      if (!(obj is Point point)) {
         throw new ArgumentException();
+      }
 #endif
-      Point v = obj as Point;
-      return this.CompareTo(v) == 0;
+      return this.CompareTo(point) == 0;
     }
 
     public override string ToString()
     {
       string res = "{" + _p[0];
       int d = Dim, i;
-      for (i = 1; i < d; i++)
+      for (i = 1; i < d; i++) {
         res += ";" + _p[i];
+      }
+
       res += "}";
       return res;
     }
@@ -245,8 +254,10 @@ namespace PolygonLibrary.Basics
     public override int GetHashCode()
     {
       int res = 0, d = Dim, i;
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         res += _p[i].GetHashCode();
+      }
+
       return res;
     }
     #endregion
@@ -259,8 +270,9 @@ namespace PolygonLibrary.Basics
     public Point(int n)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Dimension of a point cannot be non-positive");
+      }
 #endif
       _p = new double[n];
     }
@@ -272,10 +284,13 @@ namespace PolygonLibrary.Basics
     public Point(double[] np)
     {
 #if DEBUG
-      if (np.Length <= 0)
+      if (np.Length <= 0) {
         throw new ArgumentException("Dimension of a point cannot be non-positive");
-      if (np.Rank != 1)
-        throw new ArgumentException("Cannot initialize a point by a multidimaensional array");
+      }
+
+      if (np.Rank != 1) {
+        throw new ArgumentException("Cannot initialize a point by a multidimensional array");
+      }
 #endif
       _p = np;
     }
@@ -288,18 +303,16 @@ namespace PolygonLibrary.Basics
     {
       int d = p.Dim, i;
       _p = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         _p[i] = p._p[i];
+      }
     }
 
     /// <summary>
     /// Copying constructor from a two-dimensional point
     /// </summary>
     /// <param name="p">The point to be copied</param>
-    public Point(Point2D p)
-    {
-      _p = new double[2] {p.x, p.y};
-    }
+    public Point(Point2D p) => _p = new double[2] {p.x, p.y};
 
     /// <summary>
     /// Copying constructor from a vector
@@ -311,10 +324,7 @@ namespace PolygonLibrary.Basics
     /// Copying constructor from a two-dimensional vector
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Point(Vector2D v)
-    {
-      _p = new double[2] {v.x, v.y};
-    }
+    public Point(Vector2D v) => _p = new double[2] {v.x, v.y};
     #endregion
 
     #region Operators
@@ -329,12 +339,15 @@ namespace PolygonLibrary.Basics
     public static Point LinearCombination(Point p1, double w1, Point p2, double w2)
     {
 #if DEBUG
-      if (p1.Dim != p2.Dim)
+      if (p1.Dim != p2.Dim) {
         throw new ArgumentException("Cannot combine two point of different dimensions");
+      }
 #endif
       double[] coords = new double[p1.Dim];
-      for (int i = 0; i < p1.Dim; i++)
+      for (int i = 0; i < p1.Dim; i++) {
         coords[i] = w1*p1[i] + w2*p2[i];
+      }
+
       return new Point(coords);
     }
 
@@ -349,22 +362,32 @@ namespace PolygonLibrary.Basics
       IEnumerator<Point> enPoint = ps.GetEnumerator();
       IEnumerator<double> enWeight = ws.GetEnumerator();
 
-      if (!enPoint.MoveNext())
+      if (!enPoint.MoveNext()) {
         throw new ArgumentException("No points in the collection to combine");
-      if (!enWeight.MoveNext())
+      }
+
+      if (!enWeight.MoveNext()) {
         throw new ArgumentException("No weights in the collection to combine");
+      }
+
       int dim = enPoint.Current.Dim;
       double[] coords = new double[dim];
 
       do
       {
 #if DEBUG
-        if (enPoint.Current.Dim != dim)
+        if (enPoint.Current.Dim != dim) {
           throw new ArgumentException("Dimension of a point in the collection differs from the dimension of the point");
+        }
 #endif
-        for (int i = 0; i < dim; i++)
+        for (int i = 0; i < dim; i++) {
           coords[i] += enPoint.Current[i] * enWeight.Current;
+        }
       } while (enPoint.MoveNext() && enWeight.MoveNext());
+      
+      enPoint.Dispose();
+      enWeight.Dispose();
+      
       return new Point(coords);
     }
 
@@ -377,8 +400,10 @@ namespace PolygonLibrary.Basics
     {
       int d = p.Dim, i;
       double[] np = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         np[i] = -p._p[i];
+      }
+
       return new Point(np);
     }
 
@@ -392,12 +417,15 @@ namespace PolygonLibrary.Basics
     {
       int d = p.Dim, i;
 #if DEBUG
-      if (d != v.Dim)
+      if (d != v.Dim) {
         throw new ArgumentException("Cannot add a point and a vector of different dimensions");
+      }
 #endif
       double[] np = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         np[i] = p._p[i] + v[i];
+      }
+
       return new Point(np);
     }
 
@@ -411,12 +439,15 @@ namespace PolygonLibrary.Basics
     {
       int d = p.Dim, i;
 #if DEBUG
-      if (d != v.Dim)
+      if (d != v.Dim) {
         throw new ArgumentException("Cannot subtract a point and a vector of different dimensions");
+      }
 #endif
       double[] np = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         np[i] = p._p[i] - v[i];
+      }
+
       return new Point(np);
     }
 
@@ -430,12 +461,15 @@ namespace PolygonLibrary.Basics
     {
       int d = p1.Dim, i;
 #if DEBUG
-      if (d != p2.Dim)
+      if (d != p2.Dim) {
         throw new ArgumentException("Cannot subtract two points of different dimensions");
+      }
 #endif
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = p1._p[i] - p2._p[i];
+      }
+
       return new Vector(nv);
     }
 
@@ -449,8 +483,10 @@ namespace PolygonLibrary.Basics
     {
       int d = p.Dim, i;
       double[] np = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         np[i] = a * p._p[i];
+      }
+
       return new Point(np);
     }
 
@@ -471,13 +507,16 @@ namespace PolygonLibrary.Basics
     public static Point operator /(Point p, double a)
     {
 #if DEBUG
-      if (Tools.EQ(a))
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
+      }
 #endif
       int d = p.Dim, i;
       double[] np = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         np[i] = p._p[i] / a;
+      }
+
       return new Point(np);
     }
     #endregion

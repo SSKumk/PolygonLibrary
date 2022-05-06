@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
@@ -29,10 +26,13 @@ namespace PolygonLibrary.Polygons
 					l2 = other.Normal.Length;
 
 #if DEBUG
-				if (Tools.EQ(l1))
+				if (Tools.EQ(l1)) {
 					throw new ArgumentException("Equality of two gamma pairs: the first argument has zero normal");
-				if (Tools.EQ(l2))
+				}
+
+				if (Tools.EQ(l2)) {
 					throw new ArgumentException("Equality of two gamma pairs: the second argument has zero normal");
+				}
 #endif
 
 				res = Tools.EQ(this.Value / l1, other.Value / l2);
@@ -54,20 +54,26 @@ namespace PolygonLibrary.Polygons
 		public int CompareTo(GammaPair other)
 		{
 			int res = Tools.CMP(this.Normal.PolarAngle, other.Normal.PolarAngle);
-			if (res != 0) return res;
+			if (res != 0) {
+				return res;
+			}
 
-			if (Vector2D.AreCounterdirected(this.Normal, other.Normal))
+			if (Vector2D.AreCounterdirected(this.Normal, other.Normal)) {
 				return -1;
+			}
 
 			double
 				l1 = this.Normal.Length,
 				l2 = other.Normal.Length;
 
 #if DEBUG
-			if (Tools.EQ(l1))
+			if (Tools.EQ(l1)) {
 				throw new ArgumentException("Comparison of two gamma pairs: the first argument has zero normal");
-			if (Tools.EQ(l2))
+			}
+
+			if (Tools.EQ(l2)) {
 				throw new ArgumentException("Comparison of two gamma pairs: the second argument has zero normal");
+			}
 #endif
 
 			return Tools.CMP(this.Value / l1, other.Value / l2);
@@ -102,8 +108,9 @@ namespace PolygonLibrary.Polygons
 		{
 #if DEBUG
 			double ll = nv.Length;
-			if (Tools.EQ(ll))
+			if (Tools.EQ(ll)) {
 				throw new ArgumentException("Cannot construct a GammaPair with zero normal");
+			}
 #endif
 			if (ToNormalize)
 			{
@@ -144,8 +151,9 @@ namespace PolygonLibrary.Polygons
 		public static Point2D CrossPairs(GammaPair g1, GammaPair g2)
 		{
 #if DEBUG
-			if (Vector2D.AreParallel(g1.Normal, g2.Normal))
+			if (Vector2D.AreParallel(g1.Normal, g2.Normal)) {
 				throw new ArgumentException("Cannot cross lines defined by pairs with parallel normals");
+			}
 #endif
 			// g1.g = g1.v * r = g1.v.x * x + g1.v.y * y,  g2.g = g2.v * r = g2.v.x * x + g2.v.y * y
 			double
@@ -180,14 +188,19 @@ namespace PolygonLibrary.Polygons
 					gs1.Add(new GammaPair(pair.Normal / l, pair.Value / l));
 				}
 			}
-			if (gs1.Count == 0)
+			if (gs1.Count == 0) {
 				throw new ArgumentException("Only pairs with zero normals in initialization of a support function");
-			if (ToSort) gs1.Sort();
+			}
+
+			if (ToSort) {
+				gs1.Sort();
+			}
 
 			foreach (GammaPair pair in gs1)
 			{
-				if (this.Count == 0 || !this[this.Count - 1].Normal.Equals(pair.Normal))
+				if (this.Count == 0 || !this[this.Count - 1].Normal.Equals(pair.Normal)) {
 					this.Add(pair);
+				}
 			}
 		}
 
@@ -249,8 +262,9 @@ namespace PolygonLibrary.Polygons
 		public void FindCone(Vector2D v, out int i, out int j)
 		{
 #if DEBUG
-			if (this.Count < 2)
+			if (this.Count < 2) {
 				throw new Exception("The function is defined by too few directions");
+			}
 #endif
 
 			// If the vector coincides with the last vector in the collection,
@@ -289,12 +303,17 @@ namespace PolygonLibrary.Polygons
 		public void ConicCombination(Vector2D v, int i, int j, out double a, out double b)
 		{
 #if DEBUG
-			if (i < 0 || i >= Count)
+			if (i < 0 || i >= Count) {
 				throw new IndexOutOfRangeException("ConicCombination: bad index i");
-			if (j < 0 || j >= Count)
+			}
+
+			if (j < 0 || j >= Count) {
 				throw new IndexOutOfRangeException("ConicCombination: bad index j");
-			if (i == j)
+			}
+
+			if (i == j) {
 				throw new ArgumentException("ConicCombination: indices i and j coincide");
+			}
 #endif
 
 			// Computing coefficients of the conic combinations
@@ -321,13 +340,15 @@ namespace PolygonLibrary.Polygons
 		public double FuncVal(Vector2D v, int i = -1, int j = -1)
 		{
 #if DEBUG
-			if (this.Count <= 2)
+			if (this.Count <= 2) {
 				throw new Exception("The function is defined by too few directions");
+			}
 #endif
 
 			// Seeking the vector from the set, which is first equal or greater in the counterclockwise order
-			if (i == -1 || j == -1)
+			if (i == -1 || j == -1) {
 				FindCone(v, out i, out j);
+			}
 
 			// Computing coefficients of the conic combinations
 			double alpha, beta;
@@ -360,8 +381,13 @@ namespace PolygonLibrary.Polygons
 				anglea = fa[0].Normal.PolarAngle + turna * 2 * Math.PI,
 				angleb = fb[0].Normal.PolarAngle + turnb * 2 * Math.PI;
 
-			if (suspIndices != null) suspIndices.Clear();
-			if (suspVectors != null) suspVectors.Clear();
+			if (suspIndices != null) {
+				suspIndices.Clear();
+			}
+
+			if (suspVectors != null) {
+				suspVectors.Clear();
+			}
 
 			while (turna == 0 || turnb == 0)
 			{
@@ -376,8 +402,13 @@ namespace PolygonLibrary.Polygons
 				}
 				else if (Tools.GT(anglea, angleb))
 				{
-					if (suspIndices != null) suspIndices.Add(res.Count);
-					if (suspVectors != null) suspVectors.Add(fb[jb].Normal);
+					if (suspIndices != null) {
+						suspIndices.Add(res.Count);
+					}
+
+					if (suspVectors != null) {
+						suspVectors.Add(fb[jb].Normal);
+					}
 
 					res.Add(new GammaPair(fb[jb].Normal, ca * fa.FuncVal(fb[jb].Normal, ia, ja) + cb * fb[jb].Value));
 
@@ -388,8 +419,13 @@ namespace PolygonLibrary.Polygons
 				}
 				else
 				{
-					if (suspIndices != null) suspIndices.Add(res.Count);
-					if (suspVectors != null) suspVectors.Add(fb[jb].Normal);
+					if (suspIndices != null) {
+						suspIndices.Add(res.Count);
+					}
+
+					if (suspVectors != null) {
+						suspVectors.Add(fb[jb].Normal);
+					}
 
 					res.Add(new GammaPair(fa[ja].Normal, ca * fa[ja].Value + cb * fb[jb].Value));
 
@@ -462,8 +498,9 @@ namespace PolygonLibrary.Polygons
 		///</remarks>
 		protected static bool CheckTriple(GammaPair pm, GammaPair pc, GammaPair pp)
 		{
-			if (Tools.EQ(pm.Normal.x, -pp.Normal.x) && Tools.EQ(pm.Normal.y, -pp.Normal.y))
+			if (Tools.EQ(pm.Normal.x, -pp.Normal.x) && Tools.EQ(pm.Normal.y, -pp.Normal.y)) {
 				return Tools.GE(pm.Value, -pp.Value);
+			}
 
 			Point2D p = GammaPair.CrossPairs(pm, pc);
 			return Tools.LT(pp.Normal * (Vector2D)p, pp.Value);
@@ -481,8 +518,9 @@ namespace PolygonLibrary.Polygons
 		public SupportFunction ConvexifyFunctionWithInfo(List<int> suspIndices)
 		{
 			// If there is no suspicious elements, do nothing
-			if (suspIndices.Count == 0)
+			if (suspIndices.Count == 0) {
 				return this;
+			}
 
 			int i;
 
@@ -512,12 +550,15 @@ namespace PolygonLibrary.Polygons
 					list[list[i].prev].next = list[i].next;
 
 					// Check the angle between the new neighbors
-					if (Tools.LT(this[list[i].prev].Normal.PolarAngle, this[list[i].next].Normal.PolarAngle))
+					if (Tools.LT(this[list[i].prev].Normal.PolarAngle, this[list[i].next].Normal.PolarAngle)) {
 						da = this[list[i].next].Normal.PolarAngle - this[list[i].prev].Normal.PolarAngle;
-					else
+					} else {
 						da = 2 * Math.PI + this[list[i].next].Normal.PolarAngle - this[list[i].prev].Normal.PolarAngle;
-					if (Tools.GE(da, Math.PI))
+					}
+
+					if (Tools.GE(da, Math.PI)) {
 						return null;
+					}
 
 					// If the angle is OK, add the neighbors to the suspicious collection
 					susp.Push(list[i].prev);
@@ -529,8 +570,11 @@ namespace PolygonLibrary.Polygons
 			// The remained pairs are marked in the list
 			// Put them to the resultant function
 			List<GammaPair> res = new List<GammaPair>();
-			for (i = 0; i < Count; i++)
-				if (list[i].isValid) res.Add(this[i]);
+			for (i = 0; i < Count; i++) {
+				if (list[i].isValid) {
+					res.Add(this[i]);
+				}
+			}
 
 			return new SupportFunction(res, false);
 		}
@@ -554,8 +598,10 @@ namespace PolygonLibrary.Polygons
 		{
 			get
 			{
-				if (_sf == null)
+				if (_sf == null) {
 					ComputeSF();
+				}
+
 				return _sf;
 			}
 			protected set => _sf = value;
@@ -568,8 +614,10 @@ namespace PolygonLibrary.Polygons
 		{
 			get
 			{
-				if (_contours == null)
+				if (_contours == null) {
 					ComputeContours();
+				}
+
 				return _contours[0];
 			}
 		}
@@ -587,7 +635,10 @@ namespace PolygonLibrary.Polygons
 		{
 			get
 			{
-				if (!_square.HasValue) GenerateTriangleWeights();
+				if (!_square.HasValue) {
+					GenerateTriangleWeights();
+				}
+
 				return _square.Value;
 			}
 		}
@@ -628,15 +679,16 @@ namespace PolygonLibrary.Polygons
 		/// </summary>
 		private void ComputeSF()
 		{
-			if (_contours != null)
+			if (_contours != null) {
 				_sf = new SupportFunction(_contours[0].Vertices);
-			else if (_vertices != null)
+			} else if (_vertices != null)
 			{
 				ComputeContours();
 				_sf = new SupportFunction(_contours[0].Vertices, false);
 			}
-			else
+			else {
 				throw new Exception("Cannot construct dual description of a convex polygon: neither vertices, nor contours are initialized");
+			}
 		}
 
 		/// <summary>
@@ -648,18 +700,21 @@ namespace PolygonLibrary.Polygons
 			{
 				int i, j;
 				List<Point2D> ps = new List<Point2D>();
-				for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count)
+				for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count) {
 					ps.Add(GammaPair.CrossPairs(_sf[i], _sf[j]));
+				}
 
 				List<Point2D> ps1 = Convexification.ArcHull2D(ps);
 
 				_contours = new List<Polyline>();
 				_contours.Add(new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false));
-				if (ps1.Count != ps.Count)
+				if (ps1.Count != ps.Count) {
 					ComputeSF();
+				}
 			}
-			else if (_vertices != null)
+			else if (_vertices != null) {
 				base.ComputeContours();
+			}
 		}
 		#endregion
 
@@ -672,23 +727,26 @@ namespace PolygonLibrary.Polygons
 		public override bool Contains(Point2D p)
 		{
 			// Special case: the point coinsides with the initial vertex of the polygon
-			if (p.Equals(Contour[0]))
+			if (p.Equals(Contour[0])) {
 				return true;
+			}
 
 			Vector2D vp = p - Contour[0];
 
 			// If the point is outside the cone (v0,p1);(v0,vn), then it is outside the polygon
 			if (!vp.IsBetween(Contour[1] - Contour[0],
-												Contour[Contour.Count - 1] - Contour[0]))
+												Contour[Contour.Count - 1] - Contour[0])) {
 				return false;
+			}
 
 			int ind = Contour.Vertices.BinarySearchByPredicate(
 				vert => Tools.GE(vp ^ (vert - Contour[0])), 1, Contour.Count - 1);
 
 			// The point is on the ray starting at v0 and passing through p1.
 			// Check distance
-			if (ind == 1)
+			if (ind == 1) {
 				return Tools.LE(vp.Length, (Contour[1] - Contour[0]).Length);
+			}
 
 			// The point is somewhere inside the polygon cone.
 			// The final decision is made on the basis of support function calculation
@@ -715,11 +773,13 @@ namespace PolygonLibrary.Polygons
 
 			p1 = GammaPair.CrossPairs(SF[i], SF[j]);
 			// A vector co-directed with the given one is found
-			if (Tools.EQ(direction.PolarAngle, SF[j].Normal.PolarAngle))
+			if (Tools.EQ(direction.PolarAngle, SF[j].Normal.PolarAngle)) {
 				p2 = GammaPair.CrossPairs(SF[j], SF.GetAtCyclic(j + 1));
+			}
 			// The given vector is inside some cone
-			else
+			else {
 				p2 = null;
+			}
 		}
 
 		/// <summary>
@@ -730,7 +790,9 @@ namespace PolygonLibrary.Polygons
 		{
 			int i;
 			triangleWeights = new List<double>(Contour.Count - 1);
-			for (i = Contour.Count - 1; i > 0; i--) triangleWeights.Add(0);
+			for (i = Contour.Count - 1; i > 0; i--) {
+				triangleWeights.Add(0);
+			}
 
 			for (i = 1; i < Contour.Count - 1; i++)
 			{
@@ -757,13 +819,19 @@ namespace PolygonLibrary.Polygons
 			out int trInd, out double a, out double b, out double c, Random rnd = null)
 		{
 			// Generate the list triangle weights, if necessary
-			if (triangleWeights == null)
+			if (triangleWeights == null) {
 				GenerateTriangleWeights();
+			}
 
-			if (rnd == null) rnd = MyRnd;
+			if (rnd == null) {
+				rnd = MyRnd;
+			}
+
 			double s = rnd.NextDouble() * _square.Value;
 			trInd = triangleWeights.BinarySearch(s, new Tools.DoubleComparer(Tools.Eps));
-			if (trInd < 0) trInd = ~trInd;
+			if (trInd < 0) {
+				trInd = ~trInd;
+			}
 
 			double r1 = Math.Sqrt(rnd.NextDouble()), r2 = rnd.NextDouble();
 			a = 1 - r1;
@@ -790,7 +858,10 @@ namespace PolygonLibrary.Polygons
 		{
 			get
 			{
-				if (_myRnd == null) _myRnd = new Random();
+				if (_myRnd == null) {
+					_myRnd = new Random();
+				}
+
 				return _myRnd;
 			}
 		}
@@ -864,10 +935,11 @@ namespace PolygonLibrary.Polygons
 			SupportFunction sf =
 				SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspInds)
 					.ConvexifyFunctionWithInfo(suspInds);
-			if (sf == null)
+			if (sf == null) {
 				return null;
-			else
+			} else {
 				return new ConvexPolygon(sf);
+			}
 		}
 		#endregion
 	}

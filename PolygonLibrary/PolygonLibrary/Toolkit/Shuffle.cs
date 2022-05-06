@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PolygonLibrary.Toolkit
 {
@@ -22,13 +20,11 @@ namespace PolygonLibrary.Toolkit
     public static void Shuffle<T>(List<T> array, Random ownRnd = null)
     {
       int n = array.Count;
-      Random rnd = ownRnd == null ? _random : ownRnd;
+      Random rnd = ownRnd ?? _random;
       for (int i = 0; i < n; i++)
       {
         int r = i + (int)(rnd.NextDouble() * (n - i));
-        T t = array[r];
-        array[r] = array[i];
-        array[i] = t;
+        (array[r], array[i]) = (array[i], array[r]);
       }
     }
   }

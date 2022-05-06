@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using PolygonLibrary;
+﻿using System.Collections.Generic;
 using PolygonLibrary.Toolkit;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Segments;
 
 namespace Tests
 {
@@ -28,34 +21,44 @@ namespace Tests
 
       coll = new CollectionOfEnumerables<int> (ar1, ar2);
       en = coll.GetEnumerator ();
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         res.Add (en.Current);
+      }
+
       Assert.AreEqual (res.Count, 11);
 
       res.Clear ();
       en = coll.GetEnumerator (100);
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         res.Add (en.Current);
+      }
+
       Assert.AreEqual (res.Count, 11);
 
       res.Clear ();
       en = coll.GetEnumerator (20);
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         res.Add (en.Current);
+      }
+
       Assert.AreEqual (res.Count, 4);
 
       res.Clear ();
       coll.Add (ar3);
       en = coll.GetEnumerator ();
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         res.Add (en.Current);
+      }
+
       Assert.AreEqual (res.Count, 21);
 
       res.Clear ();
       coll.Add (ar1);
       en = coll.GetEnumerator ();
-      while (en.MoveNext ())
+      while (en.MoveNext ()) {
         res.Add (en.Current);
+      }
+
       Assert.AreEqual (res.Count, 26);
     }
   }

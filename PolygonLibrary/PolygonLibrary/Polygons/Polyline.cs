@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
 using PolygonLibrary.Toolkit;
@@ -45,12 +41,12 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Number of vertices
     /// </summary>
-    public int Count { get => _vertices.Count; }
+    public int Count => _vertices.Count;
 
     /// <summary>
     /// List of vertices
     /// </summary>
-    public List<Point2D> Vertices { get => _vertices; }
+    public List<Point2D> Vertices => _vertices;
 
     /// <summary>
     /// List of edges. Is computed on demand
@@ -64,8 +60,10 @@ namespace PolygonLibrary.Polygons
           _edges = new List<Segment>();
           if (_vertices.Count > 1)
           {
-            for (int i = 0; i < _vertices.Count - 1; i++)
+            for (int i = 0; i < _vertices.Count - 1; i++) {
               _edges.Add(new Segment(_vertices[i], _vertices[i + 1]));
+            }
+
             _edges.Add(new Segment(_vertices[_vertices.Count - 1], _vertices[0]));
           }
         }
@@ -105,8 +103,10 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
-        if (!_square.HasValue)
+        if (!_square.HasValue) {
           _square = ComputeSquare();
+        }
+
         return _square.Value;
       }
     }
@@ -167,7 +167,7 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Check whether the line is actually empty, that is, it does not contain any vertex
     /// </summary>
-    public bool IsEmpty { get => Count == 0; }
+    public bool IsEmpty => Count == 0;
 
     /// <summary>
     /// Compute square of the current polyline
@@ -176,8 +176,10 @@ namespace PolygonLibrary.Polygons
     private double ComputeSquare()
     {
       double res = 0;
-      for (int i = 0; i < Count; i++)
+      for (int i = 0; i < Count; i++) {
         res += this[i].x * this[i + 1].y - this[i].y * this[i + 1].x;
+      }
+
       return 0.5 * res;
     }
 
@@ -211,8 +213,9 @@ namespace PolygonLibrary.Polygons
         vim1 = vi;
         vi = this[i] - p;
         double psp = vim1 ^ vi;
-        if (Tools.NE(psp))
+        if (Tools.NE(psp)) {
           res += Math.Atan2(psp, vim1 * vi);
+        }
       }
       return res;
     }

@@ -7,12 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/PolygonLibrary.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/PolygonLibrary.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/Tests/Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/Tests/Tests.csproj" afterDir="false" />
-    </list>
+    <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,7 +75,7 @@
       <workItem from="1651827557972" duration="1482000" />
       <workItem from="1651830665105" duration="603000" />
       <workItem from="1651831329250" duration="174000" />
-      <workItem from="1651831765218" duration="377000" />
+      <workItem from="1651831765218" duration="598000" />
     </task>
     <servers />
   </component>

@@ -16,10 +16,7 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Dimension of the vector
     /// </summary>
-    public int Dim
-    {
-      get => _v.Length;
-    }
+    public int Dim => _v.Length;
 
     /// <summary>
     /// Indexer access
@@ -31,8 +28,9 @@ namespace PolygonLibrary.Basics
       get
       {
 #if DEBUG
-        if (i < 0 || i >= Dim)
+        if (i < 0 || i >= Dim) {
           throw new IndexOutOfRangeException();
+        }
 #endif
         return _v[i];
       }
@@ -68,14 +66,16 @@ namespace PolygonLibrary.Basics
     {
       int d = Dim, res;
 #if DEBUG
-      if (d != v.Dim)
+      if (d != v.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(this[i], v[i]);
-        if (res != 0)
+        if (res != 0) {
           return res;
+        }
       }
 
       return 0;
@@ -91,14 +91,16 @@ namespace PolygonLibrary.Basics
     {
       int d = v1.Dim, res;
 #if DEBUG
-      if (d != v2.Dim)
+      if (d != v2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(v1[i], v2[i]);
-        if (res != 0)
+        if (res != 0) {
           return false;
+        }
       }
 
       return true;
@@ -114,14 +116,16 @@ namespace PolygonLibrary.Basics
     {
       int d = v1.Dim, res;
 #if DEBUG
-      if (d != v2.Dim)
+      if (d != v2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
+      }
 #endif
       for (int i = 0; i < d; i++)
       {
         res = Tools.CMP(v1[i], v2[i]);
-        if (res != 0)
+        if (res != 0) {
           return true;
+        }
       }
 
       return false;
@@ -167,12 +171,15 @@ namespace PolygonLibrary.Basics
     public Vector Normalize()
     {
 #if DEBUG
-      if (Tools.EQ(Length))
+      if (Tools.EQ(Length)) {
         throw new DivideByZeroException();
+      }
 #endif
       Vector res = new Vector(Dim);
-      for (int i = 0; i < Dim; i++)
+      for (int i = 0; i < Dim; i++) {
         res._v[i] = _v[i] / Length;
+      }
+
       res.Length = 1;
       return res;
     }
@@ -186,10 +193,11 @@ namespace PolygonLibrary.Basics
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
     public static double Angle(Vector v1, Vector v2)
     {
-      if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length))
+      if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
         return 0;
-      else
+      } else {
         return Math.Acos((v1 * v2) / v1.Length / v2.Length);
+      }
     }
 #endregion
     
@@ -197,8 +205,9 @@ namespace PolygonLibrary.Basics
     public override bool Equals(object obj)
     {
 #if DEBUG
-      if (!(obj is Vector))
+      if (!(obj is Vector)) {
         throw new ArgumentException();
+      }
 #endif
       Vector v = (Vector)obj;
       return this.CompareTo(v) == 0;
@@ -208,8 +217,10 @@ namespace PolygonLibrary.Basics
     {
       string res = "(" + _v[0];
       int d = Dim, i;
-      for (i = 1; i < d; i++)
+      for (i = 1; i < d; i++) {
         res += ";" + _v[i];
+      }
+
       res += ")";
       return res;
     }
@@ -217,8 +228,10 @@ namespace PolygonLibrary.Basics
     public override int GetHashCode()
     {
       int res = 0, d = Dim, i;
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         res += _v[i].GetHashCode();
+      }
+
       return res;
     }
 #endregion
@@ -231,8 +244,9 @@ namespace PolygonLibrary.Basics
     public Vector(int n)
     {
 #if DEBUG
-      if (n <= 0)
+      if (n <= 0) {
         throw new ArgumentException("Dimension of a vector cannot be non-positive");
+      }
 #endif
       _v = new double[n];
 
@@ -246,13 +260,18 @@ namespace PolygonLibrary.Basics
     public Vector(double[] nv)
     {
 #if DEBUG
-      if (nv.Length <= 0)
+      if (nv.Length <= 0) {
         throw new ArgumentException("Dimension of a vector cannot be non-positive");
-      if (nv.Rank != 1)
+      }
+
+      if (nv.Rank != 1) {
         throw new ArgumentException("Cannot initialize a vector by a multidimensional array");
+      }
 #endif
       _v = new double[nv.Length];
-      for (int i = 0; i < nv.Length; i++) _v[i] = nv[i];
+      for (int i = 0; i < nv.Length; i++) {
+        _v[i] = nv[i];
+      }
 
       ComputeParameters();
     }
@@ -265,8 +284,9 @@ namespace PolygonLibrary.Basics
     {
       int d = v.Dim, i;
       _v = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         _v[i] = v._v[i];
+      }
 
       ComputeParameters();
     }
@@ -274,8 +294,10 @@ namespace PolygonLibrary.Basics
     private void ComputeParameters()
     {
       double res = 0;
-      for (int i = 0; i < Dim; i++)
+      for (int i = 0; i < Dim; i++) {
         res += _v[i] * _v[i];
+      }
+
       Length = Math.Sqrt(res);
     }
 #endregion
@@ -290,8 +312,10 @@ namespace PolygonLibrary.Basics
     {
       int d = v.Dim, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = -v._v[i];
+      }
+
       return new Vector(nv);
     }
 
@@ -305,12 +329,15 @@ namespace PolygonLibrary.Basics
     {
       int d = v1.Dim, i;
 #if DEBUG
-      if (d != v2.Dim)
+      if (d != v2.Dim) {
         throw new ArgumentException("Cannot add two vectors of different dimensions");
+      }
 #endif
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = v1._v[i] + v2._v[i];
+      }
+
       return new Vector(nv);
     }
 
@@ -324,12 +351,15 @@ namespace PolygonLibrary.Basics
     {
       int d = v1.Dim, i;
 #if DEBUG
-      if (d != v2.Dim)
+      if (d != v2.Dim) {
         throw new ArgumentException("Cannot subtract two vectors of different dimensions");
+      }
 #endif
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = v1._v[i] - v2._v[i];
+      }
+
       return new Vector(nv);
     }
 
@@ -343,8 +373,10 @@ namespace PolygonLibrary.Basics
     {
       int d = v.Dim, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = a * v._v[i];
+      }
+
       return new Vector(nv);
     }
 
@@ -365,13 +397,16 @@ namespace PolygonLibrary.Basics
     public static Vector operator /(Vector v, double a)
     {
 #if DEBUG
-      if (Tools.EQ(a))
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
+      }
 #endif
       int d = v.Dim, i;
       double[] nv = new double[d];
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         nv[i] = v._v[i] / a;
+      }
+
       return new Vector(nv);
     }
 
@@ -385,12 +420,15 @@ namespace PolygonLibrary.Basics
     {
       int d = v1.Dim, i;
 #if DEBUG
-      if (d != v2.Dim)
+      if (d != v2.Dim) {
         throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
+      }
 #endif
       double res = 0;
-      for (i = 0; i < d; i++)
+      for (i = 0; i < d; i++) {
         res += v1._v[i] * v2._v[i];
+      }
+
       return res;
     }
 

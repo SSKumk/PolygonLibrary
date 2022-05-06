@@ -31,13 +31,15 @@ namespace PolygonLibrary.Segments
         // Empty groups cannot appear in the comparer because it is impossible
         // to find the slope and vertical position of such a group.
         // If an empty group appears, then throw an exception
-        if (g1.isEmpty || g2.isEmpty)
+        if (g1.isEmpty || g2.isEmpty) {
           throw new ArgumentException("An empty group in segment groups comparer in y-structure");
+        }
 
         // Check whether one of the group is vertical.
         // If so, than throw an exception
-        if (g1.isVertical || g2.isVertical)
+        if (g1.isVertical || g2.isVertical) {
           throw new ArgumentException("A vertical group in segment groups comparer in y-structure");
+        }
 #endif
 
         double
@@ -46,32 +48,36 @@ namespace PolygonLibrary.Segments
 
         if (Tools.NE(y1, y2))
         {
-          if (Tools.GT(y1, y2))
+          if (Tools.GT(y1, y2)) {
             return +1;
-          else
+          } else {
             return -1;
+          }
         }
 
         // They have equal ordinates. Check their slopes
         double sl1 = g1.polarAngle, sl2 = g2.polarAngle;
         if (Tools.EQ(sl1, sl2))
           // They have equal slopes - that is, the groups are equal
+        {
           return 0;
-        else
+        } else
         {
           // They have diferent slopes. Compare them taking into account their position 
           // with respect to the sweeping point
 
           // At first, compare them by the right slopes
           int res;
-          if (Tools.LT(sl1, sl2))
+          if (Tools.LT(sl1, sl2)) {
             res = -1;
-          else
+          } else {
             res = +1;
+          }
 
           // If they are lower than the sweeping point, change the order
-          if (Tools.GT(y1, p_sweep.y))
+          if (Tools.GT(y1, p_sweep.y)) {
             res = -res;
+          }
 
           return res;
         }

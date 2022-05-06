@@ -26,11 +26,8 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Reading property for the ID
       /// </summary>
-      public int ID
-      {
-        get => myID;
-      }
-#endregion
+      public int ID => myID;
+      #endregion
 
 #region Additional data
       /// <summary>
@@ -147,10 +144,11 @@ namespace PolygonLibrary.Segments
       public int CompareTo(InnerSegment other)
       {
         int res = base.CompareTo(other);
-        if (res != 0)
+        if (res != 0) {
           return res;
-        else
+        } else {
           return myID.CompareTo(other.myID);
+        }
       }
 #endregion
     }

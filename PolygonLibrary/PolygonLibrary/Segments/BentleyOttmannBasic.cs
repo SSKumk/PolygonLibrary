@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using AVLUtils;
 using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Segments
@@ -99,15 +96,17 @@ namespace PolygonLibrary.Segments
        */
       
       // The item 1) of the algorithm - adding to the y-structure all segments starting here
-      foreach (InnerSegment s in evInfo.L.GetSegments())
+      foreach (InnerSegment s in evInfo.L.GetSegments()) {
         yStruct.Add(s);
-      
+      }
+
       // The item 2) of the algorithm - putting to the result all segments passing through the point
       AddToResult(evPoint, evInfo);
       
       // The item 3) of the algorithm - removing all segments ending here
-      foreach (InnerSegment s in evInfo.R.GetSegments())
+      foreach (InnerSegment s in evInfo.R.GetSegments()) {
         yStruct.Remove(s);
+      }
 
       // The item 4) of the algorithm - try to produce an event by the vertical group
       List<InnerSegment> vertSegs = yStruct.GetVerticalSegments().ToList();
@@ -133,10 +132,11 @@ namespace PolygonLibrary.Segments
     /// <returns>The information </returns>
     private CrossInfo FindIntersection(InnerSegment s1, InnerSegment s2)
     {
-      if (AreIncident(s1, s2))
+      if (AreIncident(s1, s2)) {
         return new CrossInfo(CrossType.NoCross, null, null, null, null);
-      else
+      } else {
         return Segment.Intersect(s1, s2);
+      }
     }
 
     /// <summary>
@@ -158,12 +158,14 @@ namespace PolygonLibrary.Segments
       }
 
       // Initializing the event queue
-      foreach (InnerSegment s in innerSegs)
+      foreach (InnerSegment s in innerSegs) {
         q.AddEnds(s);
+      }
 
       // Starting the main loop
-      while (q.Count > 0)
+      while (q.Count > 0) {
         ProcessNextEvent();
+      }
     }
 #endregion
     

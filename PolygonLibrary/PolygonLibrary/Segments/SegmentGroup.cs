@@ -45,10 +45,11 @@ namespace PolygonLibrary.Segments
         public int Compare(InnerSegment s1, InnerSegment s2)
         {
           int res = -s2.p2.CompareTo(s1.p2);
-          if (res != 0)
+          if (res != 0) {
             return res;
-          else
+          } else {
             return -s2.p1.CompareTo(s1.p1);
+          }
         }
       }
 #endregion
@@ -68,18 +69,12 @@ namespace PolygonLibrary.Segments
       /// <summary>
       /// Number of segments in the group
       /// </summary>
-      public int count
-      {
-        get => accOrdered.Count;
-      }
+      public int count => accOrdered.Count;
 
       /// <summary>
       /// Check whether the group is empty
       /// </summary>
-      public bool isEmpty
-      {
-        get => accOrdered.Count == 0;
-      }
+      public bool isEmpty => accOrdered.Count == 0;
 
       /// <summary>
       /// Check whether the group consists of vertical segments 
@@ -90,8 +85,9 @@ namespace PolygonLibrary.Segments
         get
         {
 #if DEBUG
-          if (isEmpty)
+          if (isEmpty) {
             throw new InvalidOperationException("Getting slope of an empty group!");
+          }
 #endif
           return accOrdered.Min().isVertical;
         }
@@ -106,8 +102,9 @@ namespace PolygonLibrary.Segments
         get
         {
 #if DEBUG
-          if (isEmpty)
+          if (isEmpty) {
             throw new InvalidOperationException("Getting slope of an empty group!");
+          }
 #endif
           return accOrdered.Min().polarAngle;
         }
@@ -135,8 +132,9 @@ namespace PolygonLibrary.Segments
           decOrdered.Add(s);
           return true;
         }
-        else
+        else {
           return false;
+        }
       }
 
       /// <summary>
@@ -148,8 +146,9 @@ namespace PolygonLibrary.Segments
       public bool Add(SegmentGroup g)
       {
         bool res = true;
-        foreach (InnerSegment s in g)
+        foreach (InnerSegment s in g) {
           res = res && Add(s);
+        }
 
         return res;
       }
@@ -166,8 +165,9 @@ namespace PolygonLibrary.Segments
           decOrdered.Remove(s);
           return true;
         }
-        else
+        else {
           return false;
+        }
       }
 
       /// <summary>
@@ -274,13 +274,15 @@ namespace PolygonLibrary.Segments
       public double ComputeAtPoint(double x)
       {
 #if DEBUG
-        if (isEmpty)
+        if (isEmpty) {
           throw new InvalidOperationException("Cannot compute ordinate for an empty group!");
+        }
 #endif
         InnerSegment s = Min();
 #if DEBUG
-        if (s.isVertical)
+        if (s.isVertical) {
           throw new InvalidOperationException("Cannot compute ordinate for a group of vertical segments!");
+        }
 #endif
 
         return s.ComputeAtPoint(x);

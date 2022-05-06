@@ -22,8 +22,9 @@ namespace PolygonLibrary.Basics
       set
       {
 #if DEBUG
-        if (value <= 0)
+        if (value <= 0) {
           throw new ArgumentOutOfRangeException();
+        }
 #endif
         _eps = value;
       }
@@ -37,12 +38,13 @@ namespace PolygonLibrary.Basics
     /// <returns>+1, if a &gt; b; -1, if a &lt; b; 0, otherwise</returns>
     public static int CMP(double a, double b = 0)
     {
-      if (Tools.EQ(a, b))
+      if (Tools.EQ(a, b)) {
         return 0;
-      else if (a > b)
+      } else if (a > b) {
         return +1;
-      else
+      } else {
         return -1;
+      }
     }
 
     /// <summary>
@@ -102,12 +104,13 @@ namespace PolygonLibrary.Basics
     /// <returns>The sign of x</returns>
     public static int Sign(double x)
     {
-      if (Tools.EQ(x))
+      if (Tools.EQ(x)) {
         return 0;
-      else if (x > 0)
+      } else if (x > 0) {
         return +1;
-      else
+      } else {
         return -1;
+      }
     }
 
     /// <summary>

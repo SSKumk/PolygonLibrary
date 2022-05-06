@@ -1,9 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using AVLUtils;
-using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Segments
 {
@@ -50,10 +45,11 @@ namespace PolygonLibrary.Segments
     public int CompareTo(SegmentPair other)
     {
       int res = s1.CompareTo(other.s1);
-      if (res != 0)
+      if (res != 0) {
         return res;
-      else
+      } else {
         return s2.CompareTo(other.s2);
+      }
     }
   }
 }

@@ -37,10 +37,13 @@ namespace PolygonLibrary.Segments
     /// <param name="segs">The enumerable structure containing all segment</param>
     protected override void AddToResult(Vector2D p, IEnumerable<InnerSegment> segs)
     {
-      if (!crossPoints.ContainsKey(p))
+      if (!crossPoints.ContainsKey(p)) {
         crossPoints[p] = new SortedSet<int>();
-      foreach (InnerSegment s in segs)
+      }
+
+      foreach (InnerSegment s in segs) {
         crossPoints[p].Add(s.ID);
+      }
     }
 #endregion
     
@@ -131,12 +134,14 @@ namespace PolygonLibrary.Segments
       {
         int res;
         res = s1.CompareTo(other.s1);
-        if (res != 0)
+        if (res != 0) {
           return res;
+        }
 
         res = Tools.Sign(Part - other.Part);
-        if (res != 0)
+        if (res != 0) {
           return res;
+        }
 
         return s2.CompareTo(other.s2);
       }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Toolkit
 {
   /// <summary>
-  /// A class that contains static methods of different convexifixaction procedures
+  /// A class that contains static methods of different convexification procedures
   /// </summary>
   public class Convexification
   {
@@ -27,8 +23,10 @@ namespace PolygonLibrary.Toolkit
       if (swarm.Count <= 1)
       {
         res = new List<Point2D>();
-        if (swarm.Count == 1)
+        if (swarm.Count == 1) {
           res.Add(swarm[0]);
+        }
+
         return res;
       }
 
@@ -53,8 +51,8 @@ namespace PolygonLibrary.Toolkit
 
       // Taking envelops of the obtained subsets
       List<Point2D>
-        upEnv = Convexification.QuickHullIter(negative, line, minPoint, maxPoint),
-        lowEnv = Convexification.QuickHullIter(positive, line.Reorient(), maxPoint, minPoint);
+        upEnv = QuickHullIter(negative, line, minPoint, maxPoint),
+        lowEnv = QuickHullIter(positive, line.Reorient(), maxPoint, minPoint);
 
       // Constructing the answer: upEnv, minPoint, lowEnv, maxPoint
       res = upEnv;
@@ -76,18 +74,20 @@ namespace PolygonLibrary.Toolkit
     private static List<Point2D> QuickHullIter(List<Point2D> ps, Line2D line, Point2D pMin, Point2D pMax)
     {
       // If the list is empty, return empty list
-      if (ps.Count == 0)
+      if (ps.Count == 0) {
         return new List<Point2D>();
+      }
 
-      // Find the point farest from the given line and when, the distances are equal, from the point pMin
+      // Find the point farthest from the given line and when, the distances are equal, from the point pMin
       Point2D pBase = ps.Aggregate((acc, p) =>
         {
           double accD = line[acc], pD = line[p];
           if (Tools.LT(accD, pD) || (Tools.EQ(accD, pD) &&
-              Tools.GT(Point2D.Dist2(acc, pMin), Point2D.Dist2(p, pMin))))
+              Tools.GT(Point2D.Dist2(acc, pMin), Point2D.Dist2(p, pMin)))) {
             return acc;
-          else
+          } else {
             return p;
+          }
         });
 
       // Construct new cutting lines taking into account that the positive halfplane
@@ -99,10 +99,8 @@ namespace PolygonLibrary.Toolkit
       // Filtering points located in _negative_ halfplanes of the lines
       // and taking their envelops
       List<Point2D>
-        arc1 = Convexification.QuickHullIter(ps.Where(p => Tools.LT(line1[p])).ToList(),
-          line1, pBase, pMax),
-        arc2 = Convexification.QuickHullIter(ps.Where(p => Tools.LT(line2[p])).ToList(),
-          line2, pMin, pBase);
+        arc1 = QuickHullIter(ps.Where(p => Tools.LT(line1[p])).ToList(), line1, pBase, pMax),
+        arc2 = QuickHullIter(ps.Where(p => Tools.LT(line2[p])).ToList(), line2, pMin, pBase);
 
       // Preparing the result: arc1, then the point pBase, then arc2
       List<Point2D> res = arc1;
@@ -128,8 +126,10 @@ namespace PolygonLibrary.Toolkit
       if (swarmOrig.Count <= 1)
       {
         List<Point2D> res = new List<Point2D>();
-        if (swarmOrig.Count == 1)
+        if (swarmOrig.Count == 1) {
           res.Add(swarmOrig[0]);
+        }
+
         return res;
       }
 
@@ -145,13 +145,15 @@ namespace PolygonLibrary.Toolkit
       // Remove the duplicates
       foreach (Point2D p in swarmSort)
       {
-        if (swarm.Count == 0 || !swarm[swarm.Count - 1].Equals(p))
+        if (swarm.Count == 0 || !swarm[^1].Equals(p)) {
           swarm.Add(p);
+        }
       }
 
       // Degenerated situation of many equal points
-      if (swarm.Count == 1)
+      if (swarm.Count == 1) {
         return swarm;
+      }
 
       // Start the arc algorithm
       lower.Add(swarm[0]);
@@ -175,8 +177,9 @@ namespace PolygonLibrary.Toolkit
           eNew = swarm[i] - lower[j_1];
 
           lastBad = Tools.GE(eNew ^ eLast / eNew.Length / eLast.Length);
-          if (lastBad)
+          if (lastBad) {
             lower.RemoveRange(j_1, 1);
+          }
         } while (lastBad && lower.Count > 1);
         lower.Add(swarm[i]);
 
@@ -191,8 +194,9 @@ namespace PolygonLibrary.Toolkit
           eNew = swarm[i] - upper[j_1];
 
           lastBad = Tools.LE(eNew ^ eLast / eNew.Length / eLast.Length);
-          if (lastBad)
+          if (lastBad) {
             upper.RemoveRange(j_1, 1);
+          }
         } while (lastBad && upper.Count > 1);
         upper.Add(swarm[i]);
       }

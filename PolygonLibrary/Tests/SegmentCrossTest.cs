@@ -72,8 +72,9 @@ namespace Tests
       };
 
       List<Vector2D> p = new List<Vector2D> ();
-      for (int i = 0; i < x.Length/2; i++)
+      for (int i = 0; i < x.Length/2; i++) {
         p.Add (new Vector2D (x[i, 0], x[i, 1]));
+      }
 
       int[,] ind = new int[,]
       {
@@ -124,8 +125,10 @@ namespace Tests
       };
 
       // Direct, direct
-      for (int i = 0; i < ind.Length / 2; i++)
+      for (int i = 0; i < ind.Length / 2; i++) {
         segs.Add (new Segment (p[ind[i, 0]], p[ind[i, 1]]));
+      }
+
       for (int i = 1; i < res.Length; i++)
       {
         CrossInfo info = Segment.Intersect (segs[0], segs[i]);
@@ -155,10 +158,11 @@ namespace Tests
       segs.Clear ();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add (new Segment (p[ind[i, 0]], p[ind[i, 1]]));
-        else
+        } else {
           segs.Add (new Segment (p[ind[i, 1]], p[ind[i, 0]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {
@@ -189,10 +193,11 @@ namespace Tests
       segs.Clear ();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add (new Segment (p[ind[i, 1]], p[ind[i, 0]]));
-        else
+        } else {
           segs.Add (new Segment (p[ind[i, 0]], p[ind[i, 1]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {
@@ -223,10 +228,11 @@ namespace Tests
       segs.Clear ();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add (new Segment (p[ind[i, 1]], p[ind[i, 0]]));
-        else
+        } else {
           segs.Add (new Segment (p[ind[i, 1]], p[ind[i, 0]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {

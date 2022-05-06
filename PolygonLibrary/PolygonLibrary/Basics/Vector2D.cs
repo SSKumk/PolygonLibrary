@@ -85,14 +85,12 @@ namespace PolygonLibrary.Basics{
     /// </summary>
     /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
     /// <returns>The value of the corresponding component</returns>
-    public double this[int i] {
-      get =>
-        i switch {
-          0 => x
-          , 1 => y
-          , _ => throw new IndexOutOfRangeException()
-        };
-    }
+    public double this[int i] =>
+      i switch {
+        0 => x
+        , 1 => y
+        , _ => throw new IndexOutOfRangeException()
+      };
 
     /// <summary>
     /// length of the vector

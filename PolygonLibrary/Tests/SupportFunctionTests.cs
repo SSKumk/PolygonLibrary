@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using static System.Math;
-
-using PolygonLibrary;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 using PolygonLibrary.Polygons;
@@ -59,8 +55,9 @@ namespace Tests
 
 			Assert.AreEqual(sf.Count, 4, "Wrong number of resultant vectors");
 
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 4; i++) {
 				Assert.IsTrue(sf[i].Equals(gps1_true[i]), "i = " + i);
+			}
 		}
 
 		[TestCategory("SuppFuncTests"), TestMethod()]
@@ -70,8 +67,9 @@ namespace Tests
 
 			Assert.AreEqual(sf.Count, 4, "Wrong number of resultant vectors");
 
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 4; i++) {
 				Assert.IsTrue(sf[i].Equals(gps2_true[i]), "i = " + i);
+			}
 		}
 
 		[TestCategory("SuppFuncTests"), TestMethod()]
@@ -92,8 +90,9 @@ namespace Tests
 			};
 			double[] gs = new double[] { 1, 1, v, 1, 1, v, 1, 1 };
 
-			for (int i = 0; i < vs.Length; i++)
+			for (int i = 0; i < vs.Length; i++) {
 				Assert.IsTrue(Tools.EQ(sf.FuncVal(vs[i]), gs[i]), "i = " + i);
+			}
 		}
 
 		[TestCategory("SuppFuncTests"), TestMethod()]

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using PolygonLibrary;
+﻿using System.Collections.Generic;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
 
@@ -76,8 +70,9 @@ namespace ToolsTests
       };
 
       List<Point2D> p = new List<Point2D>();
-      for (int i = 0; i < x.Length / 2; i++)
+      for (int i = 0; i < x.Length / 2; i++) {
         p.Add(new Point2D(x[i, 0], x[i, 1]));
+      }
 
       int[,] ind = new int[,]
       {
@@ -128,8 +123,10 @@ namespace ToolsTests
       };
 
       // Direct, direct
-      for (int i = 0; i < ind.Length / 2; i++)
+      for (int i = 0; i < ind.Length / 2; i++) {
         segs.Add(new Segment(p[ind[i, 0]], p[ind[i, 1]]));
+      }
+
       for (int i = 1; i < res.Length; i++)
       {
         CrossInfo info = Segment.Intersect(segs[0], segs[i]);
@@ -159,10 +156,11 @@ namespace ToolsTests
       segs.Clear();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add(new Segment(p[ind[i, 0]], p[ind[i, 1]]));
-        else
+        } else {
           segs.Add(new Segment(p[ind[i, 1]], p[ind[i, 0]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {
@@ -193,10 +191,11 @@ namespace ToolsTests
       segs.Clear();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add(new Segment(p[ind[i, 1]], p[ind[i, 0]]));
-        else
+        } else {
           segs.Add(new Segment(p[ind[i, 0]], p[ind[i, 1]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {
@@ -227,10 +226,11 @@ namespace ToolsTests
       segs.Clear();
       for (int i = 0; i < ind.Length / 2; i++)
       {
-        if (i == 0)
+        if (i == 0) {
           segs.Add(new Segment(p[ind[i, 1]], p[ind[i, 0]]));
-        else
+        } else {
           segs.Add(new Segment(p[ind[i, 1]], p[ind[i, 0]]));
+        }
       }
       for (int i = 1; i < res.Length; i++)
       {

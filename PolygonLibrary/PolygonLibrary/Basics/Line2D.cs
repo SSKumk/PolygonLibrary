@@ -55,10 +55,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="p1">The first point that lies in the line</param>
     /// <param name="p2">The second point that lies in the line</param>
-    public Line2D(Point2D p1, Point2D p2)
-    {
-      PointAndDirect(p1, p2 - p1);
-    }
+    public Line2D(Point2D p1, Point2D p2) => PointAndDirect(p1, p2 - p1);
 
     /// <summary>
     /// Constructing a line passing through two points <paramref name="p1"/> and <paramref name="p2"/>.
@@ -67,10 +64,7 @@ namespace PolygonLibrary.Basics
     /// <param name="p1">The first point that lies in the line</param>
     /// <param name="p2">The second point that lies in the line</param>
     /// <param name="p3">A point that does not belong to the line and defines the positive halfplane</param>
-    public Line2D(Point2D p1, Point2D p2, Point2D p3)
-    {
-      PointAndDirect(p1, p2 - p1, p3);
-    }
+    public Line2D(Point2D p1, Point2D p2, Point2D p3) => PointAndDirect(p1, p2 - p1, p3);
 
     /// <summary>
     /// Factory that produces a line on the basis of a point that belongs to the line
@@ -195,10 +189,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="p">The point where to compute the function value</param>
     /// <returns>The computed value</returns>
-    public double this[Point2D p]
-    {
-      get => A * p.x + B * p.y + C;
-    }
+    public double this[Point2D p] => A * p.x + B * p.y + C;
 
     /// <summary>
     /// Checks whether the line passes through the given point

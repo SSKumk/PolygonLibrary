@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>11</LangVersion>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="AVLUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\netcoreapp3.0\AVLUtils.dll</HintPath>
+      <Reference Include="AVLUtils">
+        <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net6.0\AVLUtils.dll</HintPath>
       </Reference>
     </ItemGroup>
 

@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PolygonLibrary.Toolkit
 {
@@ -11,7 +9,7 @@ namespace PolygonLibrary.Toolkit
   /// A class that can logically concatenate a number of enumerables with the same type of elements 
   /// (in the order given by user) and traverse them in sequence. The resultant collection contains
   /// references to the original enumerables, therefore, if any changes are made with them,
-  /// all enumerators over the entire collection should be concidered as invalid
+  /// all enumerators over the entire collection should be considered as invalid
   /// </summary>
   /// <typeparam name="T">The type of the elements</typeparam>
   public class CollectionOfEnumerables<T> : IEnumerable<T>
@@ -29,19 +27,15 @@ namespace PolygonLibrary.Toolkit
     /// Constructor with variable number of enumerables to be added
     /// </summary>
     /// <param name="ens">The set of enumerables to be joined into collection</param>
-    public CollectionOfEnumerables (params IEnumerable<T>[] ens)
-    {
+    public CollectionOfEnumerables (params IEnumerable<T>[] ens) => 
       _coll = new List<IEnumerable<T>> (ens.Where(en => en != null && en.Count() != 0));
-    }
 
     /// <summary>
     /// Constructor that takes a sequence of enumerables to be added
     /// </summary>
     /// <param name="ens">The set of enumerables to be joined into collection</param>
-    public CollectionOfEnumerables (IEnumerable<IEnumerable<T>> ens)
-    {
+    public CollectionOfEnumerables (IEnumerable<IEnumerable<T>> ens) => 
       _coll = new List<IEnumerable<T>>(ens.Where(en => en != null && en.Count() != 0));
-    }
     #endregion
 
     #region The class for an enumerator over a collection of enumerables
@@ -82,7 +76,7 @@ namespace PolygonLibrary.Toolkit
       /// then the enumerator is set to the beginning of the collection
       /// </summary>
       /// <param name="parent">The collection of enumerables to which the enumerator to be connected</param>
-      /// <param name="s">The value to which the enumerator should be set</param>
+      /// <param name="val">The value to which the enumerator should be set</param>
       public EnumeratorOverCollection (CollectionOfEnumerables<T> parent, T val)
       {
         this.parent = parent;
@@ -102,8 +96,9 @@ namespace PolygonLibrary.Toolkit
           while (curPosition.MoveNext ())
           {
             // If the desired value is found, stop the main loop and exit from the constructor
-            if (curPosition.Current.Equals (val))
+            if (curPosition.Current.Equals (val)) {
               return;
+            }
           }
           curEnumerable++;
         }
@@ -117,10 +112,7 @@ namespace PolygonLibrary.Toolkit
       /// <summary>
       /// Getting property showing whether the iterator has a valid value
       /// </summary>
-      public bool IsValid
-      {
-        get => curEnumerable != -1 && curEnumerable < parent._coll.Count;
-      }
+      public bool IsValid => curEnumerable != -1 && curEnumerable < parent._coll.Count;
 
       /// <summary>
       /// Getting property of the current value
@@ -129,20 +121,21 @@ namespace PolygonLibrary.Toolkit
       {
         get
         {
-          if (!IsValid)
+          if (!IsValid) {
             throw new InvalidOperationException ();
-          else
+          } else {
             return curPosition.Current;
+          }
         }
       }
 
       /// <summary>
       /// Getting property of non-generic interface
       /// </summary>
-      object IEnumerator.Current { get => Current; }
+      object IEnumerator.Current => Current;
 
       /// <summary>
-      /// Dispose method (for the aim of compatability)
+      /// Dispose method (for the aim of compatibility)
       /// </summary>
       public void Dispose () { }
 
@@ -165,8 +158,9 @@ namespace PolygonLibrary.Toolkit
         if (curEnumerable == -1)
         {
           // If there is no enumerables in the collection, the MoveNext is impossible
-          if (parent._coll.Count == 0)
+          if (parent._coll.Count == 0) {
             return false;
+          }
 
           // Otherwise, put the enumerator before beginning of the first enumerable
           curEnumerable++;
@@ -176,11 +170,14 @@ namespace PolygonLibrary.Toolkit
         // Main loop over enumerables in the collection
         while (curEnumerable < parent._coll.Count)
         {
-          if (curPosition.MoveNext())
+          if (curPosition.MoveNext()) {
             return true;
+          }
+
           curEnumerable++;
-          if (curEnumerable < parent._coll.Count)
+          if (curEnumerable < parent._coll.Count) {
             curPosition = parent._coll[curEnumerable].GetEnumerator();
+          }
         }
         return false;
       }
@@ -211,14 +208,11 @@ namespace PolygonLibrary.Toolkit
 
     #region Methods
     /// <summary>
-    /// Adding an enumerable to the end of the current colelction
+    /// Adding an enumerable to the end of the current collection
     /// All enumerators over the collection should be regarded as invalid
     /// </summary>
     /// <param name="en">The enumerable that should be added</param>
-    public void Add (IEnumerable<T> en)
-    {
-      _coll.Add (en);
-    }
+    public void Add (IEnumerable<T> en) => _coll.Add (en);
 
     /// <summary>
     /// Converting the collection to a continuous list
@@ -228,8 +222,10 @@ namespace PolygonLibrary.Toolkit
     {
       List<T> res = new List<T>();
       EnumeratorOverCollection it = new EnumeratorOverCollection(this);
-      while (it.MoveNext())
+      while (it.MoveNext()) {
         res.Add(it.Current);
+      }
+
       return res;
     }
 

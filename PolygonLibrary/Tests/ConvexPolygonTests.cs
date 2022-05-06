@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using PolygonLibrary;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
 using PolygonLibrary.Toolkit;
@@ -45,23 +42,29 @@ namespace Tests
 			Debug.IndentSize = 2;
 
 			Debug.WriteLine("Number of contours: " + cp.Contours.Count + ", Contour vertices: ");
-			foreach (Point2D p in cp.Contour.Vertices)
+			foreach (Point2D p in cp.Contour.Vertices) {
 				Debug.WriteLine("  (" + p.x + ";" + p.y + ")");
+			}
 
 			Debug.WriteLine("Vertices: ");
-			foreach (Point2D p in cp.Vertices)
+			foreach (Point2D p in cp.Vertices) {
 				Debug.WriteLine("  (" + p.x + ";" + p.y + ")");
+			}
 
 			Debug.WriteLine("Edges: ");
 			Debug.Indent();
-			foreach (Segment e in cp.Edges)
+			foreach (Segment e in cp.Edges) {
 				Debug.WriteLine(e);
+			}
+
 			Debug.Unindent();
 
 			Debug.WriteLine("Support function: ");
 			Debug.Indent();
-			foreach (GammaPair gp in cp.SF)
+			foreach (GammaPair gp in cp.SF) {
 				Debug.WriteLine(gp);
+			}
+
 			Debug.Unindent();
 		}
 
@@ -196,9 +199,10 @@ namespace Tests
 				true, true, false
 			};
 
-			for (int i = 0; i < testPoints.Count; i++)
+			for (int i = 0; i < testPoints.Count; i++) {
 				Assert.AreEqual(cp.Contains(testPoints[i]), res[i],
 					"ContainsTest2, test #" + i + " failed, point = " + testPoints[i]);
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -221,8 +225,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Sum 1: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 1: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -240,8 +245,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Sum 2: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 2: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -261,8 +267,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 1: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 1: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -289,8 +296,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 2: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 2: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -308,8 +316,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 3: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 3: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -326,8 +335,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 4: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 4: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -344,8 +354,9 @@ namespace Tests
 			};
 
 			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 5: wrong number of vertices");
-			foreach (Point2D p in res)
+			foreach (Point2D p in res) {
 				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 5: vertex " + p + " is not in the resultant polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -427,11 +438,13 @@ namespace Tests
 			ConvexPolygon cp = new ConvexPolygon(ps1, true);
 			int N = 10, i;
 			Point2D[] rndPoints = new Point2D[N];
-			for (i = 0; i < N; i++)
+			for (i = 0; i < N; i++) {
 				rndPoints[i] = cp.GenerateRandomPoint();
+			}
 
-			for (i = 0; i < N; i++)
+			for (i = 0; i < N; i++) {
 				Assert.IsTrue(cp.Contains(rndPoints[i]), "RandomPoint1: a point is obtained that is outside the polygon");
+			}
 		}
 
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
@@ -451,8 +464,9 @@ namespace Tests
 				}, true);
 			int N = 100000, i;
 			Point2D[] rndPoints = new Point2D[N];
-			for (i = 0; i < N; i++)
+			for (i = 0; i < N; i++) {
 				rndPoints[i] = cp.GenerateRandomPoint();
+			}
 
 			Point2D[]
 				cornerPoints = Array.FindAll(rndPoints, p => Math.Abs(p.x) > 1 && Math.Abs(p.y) > 1),
@@ -460,8 +474,9 @@ namespace Tests
 
 			double cornPointsFreq = cornerPoints.Length * 7, _01PointsFreq = _01Points.Length * 14;
 
-			for (i = 0; i < N; i++)
+			for (i = 0; i < N; i++) {
 				Assert.IsTrue(cp.Contains(rndPoints[i]), "RandomPoint2: a point is obtained that is outside the polygon");
+			}
 		}
 	}
 }

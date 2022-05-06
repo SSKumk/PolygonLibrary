@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polygons
 {
@@ -28,18 +23,12 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Getting number of contours in this polygon
     /// </summary>
-    public int Count
-    {
-      get => _ls.Count;
-    }
+    public int Count => _ls.Count;
 
     /// <summary>
     /// Getting the outer contour of the polygon
     /// </summary>
-    public Polyline OuterContour
-    {
-      get => _ls[0];
-    }
+    public Polyline OuterContour => _ls[0];
 
     /// <summary>
     /// Indexer for accessing contours of the polygon
@@ -52,8 +41,9 @@ namespace PolygonLibrary.Polygons
       get
       {
 #if DEBUG
-        if (i >= _ls.Count)
+        if (i >= _ls.Count) {
           throw new IndexOutOfRangeException();
+        }
 #endif
         return _ls[i];
       }
@@ -99,9 +89,16 @@ namespace PolygonLibrary.Polygons
     /// <returns>true, of the point is inside the polygon; false, otherwise</returns>
     public bool ContainsPoint (Point2D p)
     {
-      if (!this[0].ContainsPoint(p)) return false;
-      for (int i = 1; i < Count; i++)
-        if (this[i].ContainsPointInside(p)) return false;
+      if (!this[0].ContainsPoint(p)) {
+        return false;
+      }
+
+      for (int i = 1; i < Count; i++) {
+        if (this[i].ContainsPointInside(p)) {
+          return false;
+        }
+      }
+
       return true;
     }
     #endregion

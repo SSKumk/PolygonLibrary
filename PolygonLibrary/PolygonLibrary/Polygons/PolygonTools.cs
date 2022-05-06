@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polygons
@@ -47,8 +42,9 @@ namespace PolygonLibrary.Polygons
       {
         // The case of a segment or a point
         vs.Add(new Point2D(x1o, y1o));
-        if (Tools.NE(x1, x2) || Tools.NE(y1, y2))
+        if (Tools.NE(x1, x2) || Tools.NE(y1, y2)) {
           vs.Add(new Point2D(x2o, y2o));
+        }
       }
       else
       {
@@ -91,8 +87,9 @@ namespace PolygonLibrary.Polygons
     public static ConvexPolygon RectangleTurned(double x1o, double y1o, double x2o, double y2o, double alpha)
     {
       // If the points coincide, return a single-pointed polygon
-      if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o))
+      if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o)) {
         return new ConvexPolygon(new Point2D[] { new Point2D(x1o, y1o) }, false);
+      }
 
       double
         dvx = x2o - x1o,
@@ -151,13 +148,16 @@ namespace PolygonLibrary.Polygons
     /// <returns>The appropriate polygon</returns>
     public static ConvexPolygon Circle(double x, double y, double R, int n, double a0 = 0)
     {
-      if (Tools.EQ(R))
+      if (Tools.EQ(R)) {
         return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
+      }
 
       List<Point2D> res = new List<Point2D>();
       double da = 2 * Math.PI / n;
-      for (int i = 0; i < n; i++)
+      for (int i = 0; i < n; i++) {
         res.Add(new Point2D(x + R * Math.Cos(i * da + a0), y + R * Math.Sin(i * da + a0)));
+      }
+
       return new ConvexPolygon(res, false);
     }
 
@@ -179,21 +179,23 @@ namespace PolygonLibrary.Polygons
     {
       if (Tools.EQ(a))
       {
-        if (Tools.EQ(b))
+        if (Tools.EQ(b)) {
           return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
-        else
+        } else {
           return new ConvexPolygon(new Point2D[] 
-            { 
-              new Point2D(x + a*Math.Cos(phi), y + a*Math.Sin(phi)), 
-              new Point2D(x - a*Math.Cos(phi), y - a*Math.Sin(phi)) 
-            }, false);
+          { 
+            new Point2D(x + a*Math.Cos(phi), y + a*Math.Sin(phi)), 
+            new Point2D(x - a*Math.Cos(phi), y - a*Math.Sin(phi)) 
+          }, false);
+        }
       }
-      else if (Tools.EQ(b))
+      else if (Tools.EQ(b)) {
         return new ConvexPolygon(new Point2D[] 
-            { 
-              new Point2D(x + b*Math.Sin(phi), y + b*Math.Cos(phi)), 
-              new Point2D(x - b*Math.Sin(phi), y - b*Math.Cos(phi)) 
-            }, false);
+        { 
+          new Point2D(x + b*Math.Sin(phi), y + b*Math.Cos(phi)), 
+          new Point2D(x - b*Math.Sin(phi), y - b*Math.Cos(phi)) 
+        }, false);
+      }
 
       List<Point2D> res = new List<Point2D>();
       double da = 2 * Math.PI / n;
