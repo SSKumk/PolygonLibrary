@@ -8,123 +8,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/bin/Debug/net6.0/AVLUtils.deps.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/bin/Debug/net6.0/AVLUtils.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/bin/Debug/net6.0/AVLUtils.pdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.AssemblyInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.AssemblyInfoInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.assets.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.csproj.AssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/AVLUtils.pdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/ref/AVLUtils.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/net6.0/refint/AVLUtils.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/.NETCoreApp,Version=v3.0.AssemblyAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csproj.AssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/project.nuget.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AVLUtils/obj/rider.project.restore.info" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/AVLUtils.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/AVLUtils.pdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/TreeTest" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/TreeTest.deps.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/TreeTest.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/TreeTest.pdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/net6.0/TreeTest.runtimeconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.AssemblyInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.AssemblyInfoInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.assets.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.csproj.AssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.csproj.CopyComplete" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.genruntimeconfig.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/TreeTest.pdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/apphost" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/ref/TreeTest.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/net6.0/refint/TreeTest.dll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/.NETCoreApp,Version=v3.0.AssemblyAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.AssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.genruntimeconfig.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/apphost" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.dgspec.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/project.nuget.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TreeTest/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLAdd.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLAdd.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLAux.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLAux.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLDictionaries.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLDictionaries.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLEnumerators.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLEnumerators.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLInterfaces.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLRemove.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLRemove.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLSets.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLSets.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLTree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLTree.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLTreeUnsafe.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLTreeUnsafe.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/Properties/AssemblyInfo.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/bin/Debug/netcoreapp3.0/AVLUtils.dll" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/bin/Debug/netcoreapp3.0/AVLUtils.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/bin/Debug/netcoreapp3.0/AVLUtils.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/bin/Debug/netcoreapp3.0/AVLUtils.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.g.props" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.g.targets" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.csprojAssemblyReference.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.dll" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/Debug/netcoreapp3.0/AVLUtils.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.nuget.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/Properties/AssemblyInfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AVLUtils/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/rider.project.restore.info" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TreeTest/TreeTest.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/TreeTest.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/AVLUtils.dll" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/AVLUtils.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/AVLUtils.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/AVLUtils.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.dll" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.runtimeconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/bin/Debug/netcoreapp3.0/TreeTest.runtimeconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.csprojAssemblyReference.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.dll" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/Debug/netcoreapp3.0/TreeTest.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.g.props" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/TreeTest.csproj.nuget.dgspec.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.nuget.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TreeTest/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/CachyMatrix.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/CauchyMatrix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/CauchyMatrix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Line2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Line2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Matrices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Matrices.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Point.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Point.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Point2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Point2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Tools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Tools.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Vector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Vector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Basics/Vector2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Polygons/ConvexPolygon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Polygons/ConvexPolygon.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/BentleyOttmannBasic.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/BentleyOttmannBasic.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/InnerSegment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/InnerSegment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/Segment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/Segment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/SweepLineSegmentComparer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/SweepLineSegmentComparer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/YStructure.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Segments/YStructure.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Toolkit/Tools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/Toolkit/Tools.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../PolygonLibrary/PolygonLibrary/obj/Debug/netcoreapp3.0/PolygonLibrary.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TreeTest/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/TreeTest/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,8 +33,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/TreeTest/Program.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="28maJGkeuD8XMnGwnSRQny5oEey" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -185,6 +90,7 @@
       <updated>1651824140929</updated>
       <workItem from="1651824151460" duration="3077000" />
       <workItem from="1651827557972" duration="1482000" />
+      <workItem from="1651830665105" duration="420000" />
     </task>
     <servers />
   </component>
