@@ -1,7 +1,0 @@
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/x86/Debug/.NETFramework,Version=v4.0,Profile=Client.AssemblyAttribute.cs
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/bin/Debug/TreeTest.exe.mdb
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/bin/Debug/TreeTest.exe
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/x86/Debug/TreeTest.exe
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/obj/x86/Debug/TreeTest.exe.mdb
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/bin/Debug/AVLUtils.dll
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/TreeTest/bin/Debug/AVLUtils.dll.mdb

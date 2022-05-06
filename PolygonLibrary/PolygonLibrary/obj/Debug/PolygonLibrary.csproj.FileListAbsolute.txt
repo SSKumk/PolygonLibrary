@@ -1,8 +1,0 @@
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Debug\PolygonLibrary.dll
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Debug\PolygonLibrary.pdb
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Debug\AVLUtils.dll
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Debug\AVLUtils.pdb
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\bin\Debug\AVLUtils.xml
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Debug\PolygonLibrary.csprojResolveAssemblyReference.cache
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Debug\PolygonLibrary.dll
-C:\MyData\MyProjects\NewPak\PolygonLibrary\PolygonLibrary\PolygonLibrary\obj\Debug\PolygonLibrary.pdb
