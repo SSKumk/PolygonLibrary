@@ -81,11 +81,7 @@ namespace AVLUtils
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
-<<<<<<< HEAD
-    public bool IsReadOnly { get => false; }
-=======
     public bool IsReadOnly => false;
->>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Number of elements in the tree
@@ -147,11 +143,7 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
-<<<<<<< HEAD
-    public bool IsEmpty { get => Count == 0; }
-=======
     public bool IsEmpty => Count == 0;
->>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Default constructor. Sets default comparer
@@ -185,11 +177,7 @@ namespace AVLUtils
       int
       l1 = (l + node.left?.subtreeQnt ?? l) - 1,
       r1 = (r - node.right?.subtreeQnt ?? r) + 1;
-<<<<<<< HEAD
       if (i <= l1) {
-=======
-      if (i <= l1)
->>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
         return GetByIndexIter (node.left, i, l, l1);
       } else if (i >= r1) {
         return GetByIndexIter (node.right, i, r1, r);
@@ -208,14 +196,9 @@ namespace AVLUtils
       get
       {
         int l = 0, r = Count - 1;
-<<<<<<< HEAD
         if (i < l || i > r) {
           throw new IndexOutOfRangeException ("Erroneous index in AVLBaseTree");
         }
-=======
-        if (i < l || i > r)
-          throw new IndexOutOfRangeException ("Erroneous index in AVLBaseTree");
->>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
         return GetByIndexIter (_top, i, l, r);
       }
