@@ -28,12 +28,20 @@ namespace AVLUtils
     /// </summary>
     /// <param name="i">Index</param>
     /// <returns>The value with the index i</returns>
+<<<<<<< HEAD
     public TValue this[int i] { get => _tree[i]; }
+=======
+    public TValue this[int i] => _tree[i];
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Getting the set comparer
     /// </summary>
+<<<<<<< HEAD
     public IComparer<TValue> comparer { get => _tree.comparer; }
+=======
+    public IComparer<TValue> comparer => _tree.comparer;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     #region IMultiEnumerable<TValue> and related methods
     /// <summary>
@@ -105,12 +113,20 @@ namespace AVLUtils
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
+<<<<<<< HEAD
     public bool IsReadOnly { get => false; }
+=======
+    public bool IsReadOnly => false;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
+<<<<<<< HEAD
     public int Count { get => _tree.Count; }
+=======
+    public int Count => _tree.Count;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Adds an item to the collection

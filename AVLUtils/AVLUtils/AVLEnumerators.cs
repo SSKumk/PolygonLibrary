@@ -42,9 +42,13 @@ namespace AVLUtils{
       /// <summary>
       /// Getting property showing whether the iterator has a valid value
       /// </summary>
+<<<<<<< HEAD
       public bool IsValid {
         get => state == IteratorState.Inside;
       }
+=======
+      public bool IsValid => state == IteratorState.Inside;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// Reference to the connected collection
@@ -87,9 +91,13 @@ namespace AVLUtils{
       /// <summary>
       /// Getting property of non-generic interface
       /// </summary>
+<<<<<<< HEAD
       object IEnumerator.Current {
         get => Current;
       }
+=======
+      object IEnumerator.Current => Current;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// Dispose method (for the aim of compatibility)

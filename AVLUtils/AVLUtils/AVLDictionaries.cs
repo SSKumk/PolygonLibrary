@@ -37,7 +37,11 @@ namespace AVLUtils
     /// <summary>
     /// Getting the key comparer
     /// </summary>
+<<<<<<< HEAD
     public IComparer<TKey> comparer { get => (_tree.comparer as MyComparer).keyComp; }
+=======
+    public IComparer<TKey> comparer => (_tree.comparer as MyComparer).keyComp;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Comparer for pairs that compares keys only
@@ -279,12 +283,20 @@ namespace AVLUtils
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
+<<<<<<< HEAD
     public int Count { get => _tree.Count; }
+=======
+    public int Count => _tree.Count;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Read-only property (permanently false)
     /// </summary>
+<<<<<<< HEAD
     public bool IsReadOnly { get => false; }
+=======
+    public bool IsReadOnly => false;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Adds a pair key-value to the dictionary. If there is an element with the given key, nothing changes
@@ -379,7 +391,11 @@ namespace AVLUtils
     /// Gets a value indicating whether this tree is empty.
     /// </summary>
     /// <value><c>true</c> if empty; otherwise, <c>false</c>.</value>
+<<<<<<< HEAD
     public bool IsEmpty { get => Count == 0; }
+=======
+    public bool IsEmpty => Count == 0;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Take the minimal pair key-value in the dictionary
@@ -527,13 +543,22 @@ namespace AVLUtils
     /// Gets an ICollection object containing the keys of the dictionary.
     /// The order of keys is the same as in the dictionary
     /// </summary>
+<<<<<<< HEAD
     public ICollection<TKey> Keys { get => new KeyCollection (this); }
+=======
+    public ICollection<TKey> Keys => new KeyCollection (this);
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
     /// <summary>
     /// Gets an ICollection object containing the values of the dictionary.
     /// The order of values is the same as in the dictionary
     /// </summary>
+<<<<<<< HEAD
     public ICollection<TValue> Values { get => new ValueCollection (this); }
+=======
+    public ICollection<TValue> Values => new ValueCollection (this);
+
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
     #endregion
 
     #region Auxiliary enumerator class for the keys and values collection classes
@@ -573,7 +598,11 @@ namespace AVLUtils
       /// <summary>
       /// Getting the current key
       /// </summary>
+<<<<<<< HEAD
       object IEnumerator.Current { get => Current; }
+=======
+      object IEnumerator.Current => Current;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// Resetting the enumerator
@@ -602,7 +631,11 @@ namespace AVLUtils
         /// <summary>
         /// Getting key of the current pair in the dictionary
         /// </summary>
+<<<<<<< HEAD
         public override TKey Current { get => _dictEnum.Current.Key; }
+=======
+        override public TKey Current => _dictEnum.Current.Key;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
       }
 
       /// <summary>
@@ -715,12 +748,20 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of keys in the collection
       /// </summary>
+<<<<<<< HEAD
       public int Count { get => _dict.Count; }
+=======
+      public int Count => _dict.Count;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
+<<<<<<< HEAD
       bool ICollection<TKey>.IsReadOnly { get => true; }
+=======
+      bool ICollection<TKey>.IsReadOnly => true;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// A stub for Add method
@@ -770,7 +811,11 @@ namespace AVLUtils
         /// <summary>
         /// Getting value of the current pair in the dictionary
         /// </summary>
+<<<<<<< HEAD
         public override TValue Current { get => _dictEnum.Current.Value; }
+=======
+        override public TValue Current => _dictEnum.Current.Value;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
       }
 
       /// <summary>
@@ -888,12 +933,20 @@ namespace AVLUtils
       /// <summary>
       /// Getting number of values in the collection
       /// </summary>
+<<<<<<< HEAD
       public int Count { get => _dict.Count; }
+=======
+      public int Count => _dict.Count;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// Getting read-only flag (constantly true)
       /// </summary>
+<<<<<<< HEAD
       bool ICollection<TValue>.IsReadOnly { get => true; }
+=======
+      bool ICollection<TValue>.IsReadOnly => true;
+>>>>>>> a74c97c4b594f3670a9588842c11f3a5f0b951e0
 
       /// <summary>
       /// A stub for Add method
