@@ -8,10 +8,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLDictionaries.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLDictionaries.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLEnumerators.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLEnumerators.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLSets.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLSets.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AVLUtils/AVLTree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLTree.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/AVLUtils.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/AVLUtils.csproj.nuget.dgspec.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/AVLUtils/obj/project.assets.json" afterDir="false" />
@@ -90,7 +86,7 @@
       <updated>1651824140929</updated>
       <workItem from="1651824151460" duration="3077000" />
       <workItem from="1651827557972" duration="1482000" />
-      <workItem from="1651830665105" duration="420000" />
+      <workItem from="1651830665105" duration="603000" />
     </task>
     <servers />
   </component>
