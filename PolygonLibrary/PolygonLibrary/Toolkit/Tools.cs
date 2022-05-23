@@ -104,7 +104,7 @@ public partial class Tools
   /// </summary>
   public class DoubleComparer : IComparer<double>
   {
-    private double _epsLocal;
+    private readonly double _epsLocal;
 
     public DoubleComparer(double eps) => _epsLocal = eps;
 

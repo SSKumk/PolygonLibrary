@@ -27,7 +27,7 @@ namespace PolygonLibrary.Basics
     /// The main storage: Cauchy matrix values (the value in the dictionary) 
     /// for distinct instants (the keys in the dictionary)
     /// </summary>
-    private AVLDictionary<double, Matrix> _ms;
+    private readonly AVLDictionary<double, Matrix> _ms;
 
     /// <summary>
     /// The instant, to which the initial value is connected
@@ -114,7 +114,6 @@ namespace PolygonLibrary.Basics
       Matrix mCur;
 
       // The flag set if we apply forward integration and cleared if we apply backward integration
-      bool forward;
 
       try { leftVal = _ms.GetReverseEnumerator(t).Current; leftExists = true; }
       catch {
@@ -127,7 +126,7 @@ namespace PolygonLibrary.Basics
       }
 
       // Setting the flag of integration direction
-      forward = leftExists && (!rightExists || Tools.LT(Math.Abs(leftVal.Key - t), Math.Abs(rightVal.Key - t)));
+      bool forward = leftExists && (!rightExists || Tools.LT(Math.Abs(leftVal.Key - t), Math.Abs(rightVal.Key - t)));
 
       // Setting the initial values for the integration
       if (forward)

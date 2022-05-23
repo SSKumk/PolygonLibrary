@@ -7,7 +7,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="" />
+    <list default="true" id="5872261b-bc67-4041-966b-316065a8a460" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AVLUtils/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,7 +42,12 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils.sln",
-    "settings.editor.selected.configurable": "preferences.sourceCode.C#"
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager">
@@ -76,8 +83,12 @@
       <workItem from="1651830665105" duration="603000" />
       <workItem from="1651831329250" duration="174000" />
       <workItem from="1651831765218" duration="598000" />
+      <workItem from="1653306281220" duration="411000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
