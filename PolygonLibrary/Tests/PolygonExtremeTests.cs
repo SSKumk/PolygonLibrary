@@ -11,7 +11,7 @@ namespace Tests
     public void PolygonExtremeTest1()
     {
       // Polygon has no normal codirected with E1
-      ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10, 0);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10, 0);
       double[] testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342 };
       Vector2D[] testDirs = new Vector2D[testAnglesDeg.Length];
       Point2D[,] res = new Point2D[testAnglesDeg.Length, 2];
@@ -35,7 +35,7 @@ namespace Tests
     public void PolygonExtremeTest2()
     {
       // Polygon has a normal codirected with E1
-      ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10, Math.PI/10);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10, Math.PI/10);
       double[] testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342 };
       Vector2D[] testDirs = new Vector2D[testAnglesDeg.Length];
       Point2D[,] res = new Point2D[testAnglesDeg.Length, 2];

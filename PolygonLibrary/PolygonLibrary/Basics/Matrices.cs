@@ -1,5 +1,7 @@
 ﻿using System;
 
+using PolygonLibrary.Toolkit;
+
 namespace PolygonLibrary.Basics;
 
 /// <summary>
@@ -336,7 +338,7 @@ public class Matrix : IEquatable<Matrix>
 
   /// <summary>
   /// Multiplication of a matrix by a vector at right. The vector factor and the result
-  /// are considered as column vectors
+  /// are considered as a column vectors
   /// </summary>
   /// <param name="m">The matrix (first) factor</param>
   /// <param name="v">The vector (second) factor</param>
@@ -386,6 +388,32 @@ public class Matrix : IEquatable<Matrix>
     return new Vector(res);
   }
 
+  /// <summary>
+  /// Multiplication of a matrix by a point at right. The point factor is considered
+  /// as a column vector. The result is considered as a point
+  /// </summary>
+  /// <param name="m">The matrix (first) factor</param>
+  /// <param name="p">The point (second) factor</param>
+  /// <returns>The resultant vector</returns>
+  public static Point operator *(Matrix m, Point p)
+  {
+#if DEBUG
+    if (m.Cols != p.Dim) {
+      throw new ArgumentException("Cannot multiply a matrix and a point of improper dimensions");
+    }
+#endif
+    double[] res = new double[m.Rows];
+    int r = m.Rows, c = m.Cols, i, j, k = 0;
+    for (i = 0; i < r; i++)
+    {
+      for (j = 0; j < c; j++, k++) {
+        res[i] += m._m[k] * p[j];
+      }
+    }
+
+    return new Point(res);
+  }  
+  
   /// <summary>
   /// Multiplication of two matrices
   /// </summary>

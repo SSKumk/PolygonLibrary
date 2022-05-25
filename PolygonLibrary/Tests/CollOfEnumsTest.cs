@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Xunit;
+
+using System.Collections.Generic;
 using PolygonLibrary.Toolkit;
 
 namespace Tests

@@ -8,8 +8,7 @@ namespace PolygonLibrary.Toolkit;
 /// <summary>
 /// Class with general purpose procedures
 /// </summary>
-public partial class Tools
-{
+public partial class Tools {
   #region Double comparison
   /// <summary>
   /// Absolute accuracy for comparison
@@ -20,11 +19,9 @@ public partial class Tools
   /// Property to deal with the accuracy
   /// </summary>
   /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
-  public static double Eps
-  {
+  public static double Eps {
     get { return _eps; }
-    set
-    {
+    set {
 #if DEBUG
       if (value <= 0) {
         throw new ArgumentOutOfRangeException("Non-positive precision parameter");
@@ -40,8 +37,7 @@ public partial class Tools
   /// <param name="a">The first number</param>
   /// <param name="b">The second number</param>
   /// <returns>+1, if a &gt; b; -1, if a &lt; b; 0, otherwise</returns>
-  public static int CMP(double a, double b = 0)
-  {
+  public static int CMP(double a, double b = 0) {
     if (Tools.EQ(a, b)) {
       return 0;
     } else if (a > b) {
@@ -102,8 +98,7 @@ public partial class Tools
   /// <summary>
   /// Type of a comparer of doubles with the respect to given precision
   /// </summary>
-  public class DoubleComparer : IComparer<double>
-  {
+  public class DoubleComparer : IComparer<double> {
     private readonly double _epsLocal;
 
     public DoubleComparer(double eps) => _epsLocal = eps;
@@ -115,6 +110,7 @@ public partial class Tools
       Tools.Eps = oldEPS;
       return res;
     }
+  }
   #endregion
 
   #region Common procedures
@@ -123,8 +119,7 @@ public partial class Tools
   /// </summary>
   /// <param name="x">The value which sign should be found</param>
   /// <returns>The sign of x</returns>
-  public static int Sign(double x)
-  {
+  public static int Sign(double x) {
     if (Tools.EQ(x)) {
       return 0;
     } else if (Tools.GT(x)) {
@@ -140,36 +135,32 @@ public partial class Tools
   /// <typeparam name="T">The type of the objects to be swapped</typeparam>
   /// <param name="a">The first object</param>
   /// <param name="b">The second object</param>
-  public static void Swap<T>(ref T a, ref T b)
-  {
-    (a, b) = (b, a);
-  }
+  public static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
   /// <summary>
   /// Projecting a set of n-dimensional points to the plane by means of a matrix 2 x n
   /// </summary>
   /// <param name="m">The projection matrix</param>
   /// <param name="ps">The set of multidimensional points</param>
-  /// <returns></returns>
-  public static List<Point2D> Project2D(Matrix m, List<Point> ps)
-  {
+  /// <returns>List of two-dimensional projections</returns>
+  public static List<Point2D> Project2D(Matrix m, List<Point> ps) {
 #if DEBUG
     if (m.Rows != 2) {
       throw new ArgumentException("For a projection to the plane a matrix is given with " +
                                   m.Rows + " rows!");
     }
 #endif
-    List<Point2D> res = ps.Select(p =>
-    {
+    List<Point2D> res = ps.Select(p => {
 #if DEBUG
       if (p.Dim != m.Cols) {
         throw new ArgumentException("During projection to the plane a point with wrong dimension has been found!");
       }
 #endif
-      return (Point2D)(m * (Vector)p);
+      return (Point2D)(m * p);
     }).ToList();
 
     return res;
   }
   #endregion
 }
+

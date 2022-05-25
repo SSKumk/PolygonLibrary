@@ -17,7 +17,7 @@ namespace PolygonLibrary.Polygons
     Counterclockwise,
 
     /// <summary>
-    /// Negative rclockwise orientation
+    /// Negative clockwise orientation
     /// </summary>
     Clockwise
   }
@@ -31,12 +31,12 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// The list of vertices of the polygon enlisted counterclockwise
     /// </summary>
-    protected List<Point2D> _vertices;
+    protected readonly List<Point2D> _vertices;
 
     /// <summary>
-    /// The list of edges enlisted passagewise
+    /// The list of edges enlisted passage-wise
     /// </summary>
-    protected List<Segment> _edges = null;
+    protected List<Segment> _edges;
 
     /// <summary>
     /// Number of vertices
@@ -64,7 +64,7 @@ namespace PolygonLibrary.Polygons
               _edges.Add(new Segment(_vertices[i], _vertices[i + 1]));
             }
 
-            _edges.Add(new Segment(_vertices[_vertices.Count - 1], _vertices[0]));
+            _edges.Add(new Segment(_vertices[^1], _vertices[0]));
           }
         }
         return _edges;
@@ -72,10 +72,10 @@ namespace PolygonLibrary.Polygons
     }
 
     /// <summary>
-    /// Getting a vertex by index. The index is counted cyclicly!
+    /// Getting a vertex by index. The index is counted cyclically!
     /// </summary>
-    /// <param name="i">The index of the vertex. The index is counted cyclicly!</param>
-    /// <returns>The poiint of the vertex</returns>
+    /// <param name="i">The index of the vertex. The index is counted cyclically!</param>
+    /// <returns>The point of the vertex</returns>
     public Point2D this[int i]
     {
       get
@@ -101,12 +101,8 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     public double Square
     {
-      get
-      {
-        if (!_square.HasValue) {
-          _square = ComputeSquare();
-        }
-
+      get {
+        _square ??= ComputeSquare();
         return _square.Value;
       }
     }
@@ -140,7 +136,7 @@ namespace PolygonLibrary.Polygons
     public Polyline(List<Point2D> ps, PolylineOrientation orient,
       bool checkSimplicity = true, bool checkOrientation = true)
     {
-      // ToDo:  Write checks !!!
+      // TODO:  Write checks !!!
       _vertices = ps;
       Orientation = orient;
     }
@@ -199,7 +195,7 @@ namespace PolygonLibrary.Polygons
     public bool ContainsPointInside(Point2D p) => Tools.EQ(Math.Abs(ComputeAngleVariation(p)), 2 * Math.PI);
 
     /// <summary>
-    /// A suplementary method for the ones that check whether the polygon contains a point.
+    /// A supplementary method for the ones that check whether the polygon contains a point.
     /// Computes variation of angle along the contour with respect to the point
     /// </summary>
     /// <param name="p">The base point</param>

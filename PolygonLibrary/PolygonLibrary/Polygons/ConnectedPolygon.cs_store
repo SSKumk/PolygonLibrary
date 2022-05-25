@@ -15,7 +15,7 @@ namespace PolygonLibrary.Polygons
   {
     #region Storages and accesors
     /// <summary>
-    /// Stirage of polygon's contours. It is assumed that the contour with index 0
+    /// Storage of polygon's contours. It is assumed that the contour with index 0
     /// is the outer one and the ones with greater indices are the holes
     /// </summary>
     private List<Polyline> _ls;
@@ -52,7 +52,7 @@ namespace PolygonLibrary.Polygons
 
     #region Constructors and factories
     /// <summary>
-    /// The default constuctor. Produces a dot polygon at the origin
+    /// The default constructor. Produces a dot polygon at the origin
     /// </summary>
     public ConnectedPolygon()
     {

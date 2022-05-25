@@ -16,7 +16,7 @@ namespace ToolsTests
     public void RectParallelTest1()
     {
       Point2D p = new Point2D(1, 2);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p, p);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p, p);
       Assert.IsTrue(r.Contours.Count == 1, "Point rectangle: too many contours");
       Assert.IsTrue(r.Contour.Count == 1, "Point rectangle: too many points in the contour");
       Assert.IsTrue(r.Contour[0].Equals(p), "Point rectangle: wrong point in the contour");
@@ -28,7 +28,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(1, 3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
       Assert.IsTrue(r.Contours.Count == 1, "Vertical segment rectangle 1: too many contours");
       Assert.IsTrue(r.Contour.Count == 2, "Vertical segment rectangle 1: wrong number points in the contour");
     }
@@ -40,7 +40,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(1, 3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
       Assert.IsTrue(r.Contours.Count == 1, "Vertical segment rectangle 2: too many contours");
       Assert.IsTrue(r.Contour.Count == 2, "Vertical segment rectangle 2: wrong number points in the contour");
     }
@@ -51,7 +51,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, 2);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
       Assert.IsTrue(r.Contours.Count == 1, "Horizontal segment rectangle 1: too many contours");
       Assert.IsTrue(r.Contour.Count == 2, "Horizontal segment rectangle 1: wrong number points in the contour");
     }
@@ -62,7 +62,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, 2);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
       Assert.IsTrue(r.Contours.Count == 1, "Horizontal segment rectangle 2: too many contours");
       Assert.IsTrue(r.Contour.Count == 2, "Horizontal segment rectangle 2: wrong number points in the contour");
     }
@@ -73,7 +73,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, 3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
       Assert.IsTrue(r.Contours.Count == 1, "LL-RU rectangle 1: too many contours");
       Assert.IsTrue(r.Contour.Count == 4, "LL-RU rectangle 1: wrong number points in the contour");
     }
@@ -84,7 +84,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, 3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
       Assert.IsTrue(r.Contours.Count == 1, "LL-RU rectangle 2: too many contours");
       Assert.IsTrue(r.Contour.Count == 4, "LL-RU rectangle 2: wrong number points in the contour");
     }
@@ -95,7 +95,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, -3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
       Assert.IsTrue(r.Contours.Count == 1, "LU-RL rectangle 1: too many contours");
       Assert.IsTrue(r.Contour.Count == 4, "LU-RL rectangle 1: wrong number points in the contour");
     }
@@ -106,7 +106,7 @@ namespace ToolsTests
       Point2D
         p1 = new Point2D(1, 2),
         p2 = new Point2D(5, -3);
-      ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+      PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
       Assert.IsTrue(r.Contours.Count == 1, "LU-RL rectangle 2: too many contours");
       Assert.IsTrue(r.Contour.Count == 4, "LU-RL rectangle 2: wrong number points in the contour");
     }
@@ -124,7 +124,7 @@ namespace ToolsTests
       for (int i = 0; i <= 6; i++)
       {
         double a = i * Math.PI / 6;
-        ConvexPolygon r = PolygonTools.RectangleTurned(p, p, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p, p, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many contours");
         Assert.IsTrue(r.Contour.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
         Assert.IsTrue(r.Contour[0].Equals(p), "Turned rectangle, alpha = " + a + ", i = " + i + ": wrong point in the contour");
@@ -143,7 +143,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
         if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI))
         {
@@ -187,7 +187,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
         if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI))
         {
@@ -231,7 +231,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
         if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI))
         {
@@ -275,7 +275,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
         if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI))
         {
@@ -319,7 +319,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
 
         Assert.IsTrue(r.Contour.Count == 4, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
@@ -357,7 +357,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
 
         Assert.IsTrue(r.Contour.Count == 4, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
@@ -395,7 +395,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
 
         Assert.IsTrue(r.Contour.Count == 4, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
@@ -433,7 +433,7 @@ namespace ToolsTests
       for (int i = 0; i <= N; i++)
       {
         double a = i * a0, cos = Math.Abs(Math.Cos(a));
-        ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+        PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
         Assert.IsTrue(r.Contours.Count == 1, "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
 
         Assert.IsTrue(r.Contour.Count == 4, "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");

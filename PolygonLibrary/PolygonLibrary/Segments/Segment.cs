@@ -1,5 +1,6 @@
 ﻿using System;
 using PolygonLibrary.Basics;
+using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Segments
 {

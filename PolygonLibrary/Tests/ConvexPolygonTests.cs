@@ -12,12 +12,12 @@ namespace Tests
 	public class ConvexPolygonTests
 	{
 		#region Data
-		GammaPair[] gps = new GammaPair[]
+		PolygonLibrary.Polygons.ConvexPolygons.GammaPair[] gps = new PolygonLibrary.Polygons.ConvexPolygons.GammaPair[]
 		{
-			new GammaPair (new Vector2D(1,0), 1),
-			new GammaPair (new Vector2D(0,1), 1),
-			new GammaPair (new Vector2D(-1,0), 1),
-			new GammaPair (new Vector2D(0,-1), 1)
+			new PolygonLibrary.Polygons.ConvexPolygons.GammaPair (new Vector2D(1,0), 1),
+			new PolygonLibrary.Polygons.ConvexPolygons.GammaPair (new Vector2D(0,1), 1),
+			new PolygonLibrary.Polygons.ConvexPolygons.GammaPair (new Vector2D(-1,0), 1),
+			new PolygonLibrary.Polygons.ConvexPolygons.GammaPair (new Vector2D(0,-1), 1)
 		};
 
 		Point2D[] ps1 = new Point2D[]
@@ -37,7 +37,7 @@ namespace Tests
 		};
 		#endregion
 
-		private void PrintCP(ConvexPolygon cp)
+		private void PrintCP(PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp)
 		{
 			Debug.IndentSize = 2;
 
@@ -61,7 +61,7 @@ namespace Tests
 
 			Debug.WriteLine("Support function: ");
 			Debug.Indent();
-			foreach (GammaPair gp in cp.SF) {
+			foreach (PolygonLibrary.Polygons.ConvexPolygons.GammaPair gp in cp.SF) {
 				Debug.WriteLine(gp);
 			}
 
@@ -71,7 +71,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void CreateCPOfPointsTest1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(ps1);
 			PrintCP(cp);
 			Assert.IsTrue(true);
 		}
@@ -79,7 +79,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void CreateCPOfPointsTest2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps2, true);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(ps2, true);
 			PrintCP(cp);
 			Assert.IsTrue(true);
 		}
@@ -87,8 +87,8 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void CreateCPOfCFTest1()
 		{
-			SupportFunction sf = new SupportFunction(gps);
-			ConvexPolygon cp = new ConvexPolygon(sf);
+			PolygonLibrary.Polygons.ConvexPolygons.SupportFunction sf = new PolygonLibrary.Polygons.ConvexPolygons.SupportFunction(gps);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(sf);
 			PrintCP(cp);
 			Assert.IsTrue(true);
 		}
@@ -96,7 +96,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void ContainsTest1()
 		{
-			ConvexPolygon cp = PolygonTools.Circle(10, 10, 2, 100);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = PolygonTools.Circle(10, 10, 2, 100);
 			Point2D
 				inside1 = new Point2D(11.5, 10.1),
 				inside2 = new Point2D(10, 10),
@@ -151,7 +151,7 @@ namespace Tests
 				new Point2D (-1,  2),
 				new Point2D (-2,  1)
 			};
-			ConvexPolygon cp = new ConvexPolygon(vs);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(vs);
 			List<Point2D> testPoints = new List<Point2D>()
 			{
 				new Point2D(-2, -1),  // 0th vertex
@@ -208,7 +208,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void SumTest1()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(0, -1, 0, 1, Math.PI / 4),
 				cp2 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp3 = cp1 + cp2;
@@ -233,7 +233,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void SumTest2()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp3 = cp + cp;
 			Point2D[] res = new Point2D[]
@@ -253,7 +253,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest1()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
 				cp2 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp3 = cp1 - cp2;
@@ -282,9 +282,9 @@ namespace Tests
 				new Point2D(0, -1)
 			};
 
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
-				cp2 = new ConvexPolygon(vs2),
+				cp2 = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(vs2),
 				cp3 = cp1 - cp2;
 
 			Point2D[] res = new Point2D[]
@@ -304,7 +304,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest3()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp2 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp3 = cp1 - cp2;
@@ -324,7 +324,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest4()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(-3, 4, -1, 4),
 				cp3 = cp1 - cp2;
@@ -343,7 +343,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest5()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(-1, 0, 1, 0, Math.PI / 4),
 				cp2 = PolygonTools.RectangleTurned(-3, 4, -1, 4, Math.PI / 4),
 				cp3 = cp1 - cp2;
@@ -362,7 +362,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest6()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(-1, 0, 1, 0, Math.PI / 4),
 				cp2 = PolygonTools.RectangleTurned(-3.01, 4, -1, 4, Math.PI / 4),
 				cp3 = cp1 - cp2;
@@ -373,7 +373,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest7()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(-3.01, 4, -1, 4),
 				cp3 = cp1 - cp2;
@@ -384,7 +384,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest8()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(0, -1, 0, 1),
 				cp3 = cp1 - cp2;
@@ -395,7 +395,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void DiffTest9()
 		{
-			ConvexPolygon
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon
 				cp1 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp2 = PolygonTools.Circle(0, 0, 1.01, 100),
 				cp3 = cp1 - cp2;
@@ -406,7 +406,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void WeightTest1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1, true);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(ps1, true);
 			double s = cp.Square;
 
 			Assert.IsTrue(Tools.EQ(s, 4), "WeightTest1: wrong square");
@@ -415,7 +415,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void WeightTest2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(
 				new Point2D[]
 				{
 					new Point2D(-2, -1),
@@ -435,7 +435,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void RandomPoint1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1, true);
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(ps1, true);
 			int N = 10, i;
 			Point2D[] rndPoints = new Point2D[N];
 			for (i = 0; i < N; i++) {
@@ -450,7 +450,7 @@ namespace Tests
 		[TestCategory("ConvexPolygonTests"), TestMethod()]
 		public void RandomPoint2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(
+			PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = new PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon(
 				new Point2D[]
 				{
 					new Point2D(-2, -1),

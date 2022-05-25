@@ -16,17 +16,17 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// The storage for the contours of the polygon
     /// </summary>
-    protected List<Polyline> _contours = null;
+    protected List<Polyline> _contours;
 
     /// <summary>
     /// The storage for the polygon vertices
     /// </summary>
-    protected List<Point2D> _vertices = null;
+    protected List<Point2D> _vertices;
 
     /// <summary>
     /// The storage for the polygon edges
     /// </summary>
-    protected List<Segment> _edges = null;
+    protected List<Segment> _edges;
     #endregion
 
     #region Access properties
@@ -43,7 +43,7 @@ namespace PolygonLibrary.Polygons
 
         return _contours;
       }
-      protected set => _contours = value;
+      protected init => _contours = value;
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="vs">List of vertices in the contour</param>
     /// <param name="checkOrient">Flag showing whether the counterclockwise orientation should be checked</param>
-    /// <param name="checkCross">Flag showing whether the selfcrossing of the contour should be checked</param>
+    /// <param name="checkCross">Flag showing whether the self-crossing of the contour should be checked</param>
     public BasicPolygon(List<Point2D> vs, bool checkOrient = true, bool checkCross = true)
     {
       // The only contour is initialized just here, because now we have information about it - 
@@ -110,7 +110,7 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="vs">Array of vertices in the contour</param>
     /// <param name="checkOrient">Flag showing whether the counterclockwise orientation should be checked</param>
-    /// <param name="checkCross">Flag showing whether the selfcrossing of the contour should be checked</param>
+    /// <param name="checkCross">Flag showing whether the self-crossing of the contour should be checked</param>
     public BasicPolygon(Point2D[] vs, bool checkOrient = true, bool checkCross = true)
       : this(vs.ToList(), checkOrient, checkCross) { }
     #endregion
@@ -118,7 +118,7 @@ namespace PolygonLibrary.Polygons
     #region Internal methods
     /// <summary>
     /// On demand computation of sorted list of vertices on the basis of the array of contours.
-    /// If the array of contours is not initializaed, an exception is thrown
+    /// If the array of contours is not initialized, an exception is thrown
     /// </summary>
     protected virtual void ComputeVertices()
     {
@@ -140,7 +140,7 @@ namespace PolygonLibrary.Polygons
 
     /// <summary>
     /// On demand computation of sorted list of edges on the basis of the array of contours.
-    /// If the array of contours is not initializaed, an exception is thrown
+    /// If the array of contours is not initialized, an exception is thrown
     /// </summary>
     protected virtual void ComputeEdges()
     {
@@ -162,7 +162,7 @@ namespace PolygonLibrary.Polygons
 
     /// <summary>
     /// On demand computation of a single contoured convex polygon on the basis of the array 
-    /// of vertices. If the array of vertices is not initializaed, an exception is thrown
+    /// of vertices. If the array of vertices is not initialized, an exception is thrown
     /// </summary>
     protected virtual void ComputeContours()
     {
