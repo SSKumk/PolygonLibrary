@@ -1,8 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolygonLibrary", "PolygonLibrary\PolygonLibrary.csproj", "{48C800CB-56B5-4206-89AD-9231E1A5DF23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{32003C40-7957-4F51-9FC1-2BD37E363341}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{1B47E72D-234B-4283-989D-BD1221FE452E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +15,9 @@ Global
 		{48C800CB-56B5-4206-89AD-9231E1A5DF23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C800CB-56B5-4206-89AD-9231E1A5DF23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48C800CB-56B5-4206-89AD-9231E1A5DF23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32003C40-7957-4F51-9FC1-2BD37E363341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32003C40-7957-4F51-9FC1-2BD37E363341}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32003C40-7957-4F51-9FC1-2BD37E363341}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32003C40-7957-4F51-9FC1-2BD37E363341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B47E72D-234B-4283-989D-BD1221FE452E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B47E72D-234B-4283-989D-BD1221FE452E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B47E72D-234B-4283-989D-BD1221FE452E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B47E72D-234B-4283-989D-BD1221FE452E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

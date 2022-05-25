@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
 
-using PolygonLibrary.Basics;
+using PolygonLibrary.Toolkit;
 
 namespace Tests
 {

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NUnit.Framework;
+
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
 namespace Tests
 {
-  [TestClass]
+  [TestFixtureAttribute]
   public class ArcHullTests
   {
-    [TestMethod]
+    [Test]
     public void SimpleArcCHTest()
     {
       Random r = new Random(10);
@@ -28,19 +28,21 @@ namespace Tests
       orig.AddRange(expected);
       orig.Add(new Point2D(0.5, 0.5));
 
-      // Перемешиваем точки
+      // Shuffle the points
       Tools.Shuffle(orig, r);
 
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
-      Assert.AreEqual(hull.Count, expected.Count, "Wrong number of convex hull vertices");
-      for (int i = 0; i < expected.Count; i++) {
-        Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " +
-                                              "It is expected " + expected[i] + ", but there is " + hull[i]);
-      }
+      Assert.Multiple(() => {
+        Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
+        for (int i = 0; i < expected.Count; i++) {
+          Assert.That(hull[i], Is.EqualTo(expected[i]), "Wrong " + i + "th vertex of the convex hull vertices. " +
+                                                        "It is expected " + expected[i] + ", but there is " + hull[i]);
+        }
+      });
     }
 
-    [TestMethod]
+    [Test]
     public void SquareArcCHTest()
     {
       Random r = new Random(10);
@@ -81,20 +83,19 @@ namespace Tests
       orig.Add(new Point2D(1, 0));
       orig.Add(new Point2D(1, 0));
 
-
-      // Перемешиваем точки
+      // Shuffle the points
       Tools.Shuffle (orig, r);
 
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
-      Assert.AreEqual (hull.Count, expected.Count, "Wrong number of convex hull vertices");
+      Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
       for (int i = 0; i < expected.Count; i++) {
-        Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " + 
+        Assert.That(hull[i], Is.EqualTo(expected[i]), "Wrong " + i + "th vertex of the convex hull vertices. " + 
                                               "It is expected " + expected[i] + ", but there is " + hull[i]);
       }
     }
 
-    [TestMethod]
+    [Test]
     public void HexagonArcCHTest()
     {
       Random r = new Random(10);
@@ -150,16 +151,18 @@ namespace Tests
       orig.Add(new Point2D(2, 2));
       orig.Add(new Point2D(1, 2));
 
-      // Перемешиваем точки
+      // Shuffle the points
       Tools.Shuffle(orig, r);
 
       List<Point2D> hull = Convexification.ArcHull2D(orig);
 
-      Assert.AreEqual(hull.Count, expected.Count, "Wrong number of convex hull vertices");
-      for (int i = 0; i < expected.Count; i++) {
-        Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " +
-                                              "It is expected " + expected[i] + ", but there is " + hull[i]);
-      }
+      Assert.Multiple(() => {
+        Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
+        for (int i = 0; i < expected.Count; i++) {
+          Assert.That(hull[i], Is.EqualTo(expected[i]), "Wrong " + i + "th vertex of the convex hull vertices. " +
+                                                "It is expected " + expected[i] + ", but there is " + hull[i]);
+        }
+      });
     }
 
   }
