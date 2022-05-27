@@ -73,26 +73,16 @@ namespace Tests
     };
     private string[] names = new string[] { "EQ", "NE", "GT", "GE", "LT", "LE" };
 
-    private bool CallComp (double v1, double v2, int func)
-    {
-      switch (func)
-      {
-        case 0:
-          return Tools.EQ (v1, v2);
-        case 1:
-          return Tools.NE (v1, v2);
-        case 2:
-          return Tools.GT (v1, v2);
-        case 3:
-          return Tools.GE (v1, v2);
-        case 4:
-          return Tools.LT (v1, v2);
-        case 5:
-          return Tools.LE (v1, v2);
-        default:
-          throw new ArgumentException ();
-      }
-    }
+    private bool CallComp (double v1, double v2, int func) =>
+      func switch {
+        0 => Tools.EQ(v1, v2)
+        , 1 => Tools.NE(v1, v2)
+        , 2 => Tools.GT(v1, v2)
+        , 3 => Tools.GE(v1, v2)
+        , 4 => Tools.LT(v1, v2)
+        , 5 => Tools.LE(v1, v2)
+        , _ => throw new ArgumentException()
+      };
 
     /// <summary>
     /// Test for comparison
@@ -108,7 +98,7 @@ namespace Tests
         for (i = 0; i < 13; i++)
         {
           actual = CallComp (a[i, 0], a[i, 1], ind);
-          Assert.AreEqual (res[i, ind], actual, "Test #" + i + " isn't passed for " + names[ind]);
+          Assert.That(actual, Is.EqualTo(res[i, ind]), "Test #" + i + " isn't passed for " + names[ind]);
         }
       }
     } 
@@ -121,7 +111,7 @@ namespace Tests
     {
       double e = 1e-7;
       Tools.Eps = e;
-      Assert.AreEqual (e, Tools.Eps, "Cannot set comparison precision");
+      Assert.That(Tools.Eps, Is.EqualTo(e), "Cannot set comparison precision");
     }
   }
 }

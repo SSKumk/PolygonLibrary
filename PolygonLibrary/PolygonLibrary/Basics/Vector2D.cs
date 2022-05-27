@@ -101,7 +101,7 @@ public class Vector2D : IComparable<Vector2D>{
   public double Length { get; private set; }
 
   /// <summary>
-  /// The polar angle of the vector
+  /// The polar angle of the vector in the range (-pi;pi]
   /// </summary>
   public double PolarAngle { get; private set; }
   #endregion
@@ -142,23 +142,14 @@ public class Vector2D : IComparable<Vector2D>{
   }
 
   /// <summary>
-  /// Checks if the current vector is between the two given, that is,
-  /// the angles counted in the shortest way from the first vector to the current one
-  /// and from the current one to the second vector are positive.
-  /// It is assumed that the angle counted counterclockwise
-  /// from the first vector to the second one vectors is less than pi
+  /// Checks if the current vector is strictly between the two given, that is,
+  /// the angles counted counterclockwise from the first vector to the current one
+  /// and from the current one to the second vector are strictly positive.
   /// </summary>
   /// <param name="a1">The first vector, the clockwise boundary of the cone</param>
   /// <param name="a2">The second vector, the counterclockwise boundary of the cone</param>
   /// <returns>Flag showing whether the vector belongs to the given cone</returns>
-  public bool IsBetween(Vector2D a1, Vector2D a2) {
-    double angle1 = Vector2D.Angle(a1, this);
-    if (Tools.LE(angle1)) {
-      return false;
-    }
-    double angle2 = Vector2D.Angle(this, a2);
-    return Tools.LT(angle2);
-  }
+  public bool IsBetween(Vector2D a1, Vector2D a2) => Tools.GT(Vector2D.Angle2PI(a1, this)) && Tools.GT(Vector2D.Angle2PI(this, a2));
 
   /// <summary>
   /// Angle from the one vector to another from the interval (-pi, pi] 
@@ -244,7 +235,7 @@ public class Vector2D : IComparable<Vector2D>{
   public override int GetHashCode() => x.GetHashCode() + y.GetHashCode();
   #endregion
 
-  #region Constructors
+  #region Constructors and factories
   /// <summary>
   /// The default construct producing the zero vector
   /// </summary>
@@ -277,6 +268,15 @@ public class Vector2D : IComparable<Vector2D>{
 
     ComputeParameters();
   }
+
+  /// <summary>
+  /// Factory producing a two-dimensional vector by its polar coordinates
+  /// </summary>
+  /// <param name="angle">The polar angle (in radians!)</param>
+  /// <param name="radius">The radius (can be negative!)</param>
+  /// <returns>The resultant vector</returns>
+  public static Vector2D FromPolar(double angle, double radius) =>
+    new Vector2D(radius * Math.Cos(angle), radius * Math.Sin(angle));
 
   /// <summary>
   /// Computing parameters of the vector for future usage
