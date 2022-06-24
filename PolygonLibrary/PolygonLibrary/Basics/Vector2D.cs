@@ -1,13 +1,12 @@
 ﻿using System;
-
 using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Basics; 
+namespace PolygonLibrary.Basics;
 
 /// <summary>
 /// Class of vectors in the plane
 /// </summary>
-public class Vector2D : IComparable<Vector2D>{
+public class Vector2D : IComparable<Vector2D> {
   #region Comparing
   /// <summary>
   /// Vector comparer realizing the lexicographic order
@@ -138,7 +137,7 @@ public class Vector2D : IComparable<Vector2D>{
   /// <returns>The turned vector</returns>
   public Vector2D Turn(double angle) {
     double cs = Math.Cos(angle), sn = Math.Sin(angle);
-    return new Vector2D(cs*x - sn*y, sn*x + cs*y);
+    return new Vector2D(cs * x - sn * y, sn * x + cs * y);
   }
 
   /// <summary>
@@ -146,10 +145,13 @@ public class Vector2D : IComparable<Vector2D>{
   /// the angles counted counterclockwise from the first vector to the current one
   /// and from the current one to the second vector are strictly positive.
   /// </summary>
-  /// <param name="a1">The first vector, the clockwise boundary of the cone</param>
-  /// <param name="a2">The second vector, the counterclockwise boundary of the cone</param>
+  /// <param name="v1">The first vector, the clockwise boundary of the cone</param>
+  /// <param name="v2">The second vector, the counterclockwise boundary of the cone</param>
   /// <returns>Flag showing whether the vector belongs to the given cone</returns>
-  public bool IsBetween(Vector2D a1, Vector2D a2) => Tools.GT(Vector2D.Angle2PI(a1, this)) && Tools.GT(Vector2D.Angle2PI(this, a2));
+  public bool IsBetween(Vector2D v1, Vector2D v2) {
+    double a1 = Vector2D.Angle(this, v1), a2 = Vector2D.Angle(this, v2);
+    return (Tools.EQ(a1, Math.PI)  ||  Tools.LT(a1))  &&   Tools.GT(a2);
+  }
 
   /// <summary>
   /// Angle from the one vector to another from the interval (-pi, pi] 
@@ -219,7 +221,7 @@ public class Vector2D : IComparable<Vector2D>{
     return new Vector2D(p[0], p[1]);
   }
   #endregion
-    
+
   #region Overrides
   public override bool Equals(object obj) {
 #if DEBUG

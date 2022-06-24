@@ -55,44 +55,42 @@ public class VectorsTests {
     Assert.Multiple(() => {
       //===========================================================
       // TRUE tests
-      // Small cone, the first vector has the polar angle pi, the second has the polar angle less than 0  
-      Assert.That(v1.IsBetween(v0, v2));
-      Assert.That(v1.IsBetween(v0, v3));
-      Assert.That(v1.IsBetween(v0, v2));
-      Assert.That(v3.IsBetween(v0, v4));
+      // Group 1: Small cone, the first vector has the polar angle pi, the second has the polar angle less than 0  
+      Assert.That(v1.IsBetween(v0, v2), "Group 1: Test #1");
+      Assert.That(v1.IsBetween(v0, v3), "Group 1: Test #2");
+      Assert.That(v1.IsBetween(v0, v4), "Group 1: Test #3");
+      Assert.That(v3.IsBetween(v0, v4), "Group 1: Test #4");
 
-      // Small cone, both vectors have the polar angle less than 0  
-      Assert.That(v2.IsBetween(v1, v3));
-      Assert.That(v2.IsBetween(v1, v4));
-      Assert.That(v2.IsBetween(v1, v5));
+      // Group 2: Small cone, both vectors have the polar angle less than 0  
+      Assert.That(v2.IsBetween(v1, v3), "Group 2: Test #1");
+      Assert.That(v2.IsBetween(v1, v4), "Group 2: Test #2");
+      Assert.That(v2.IsBetween(v1, v5), "Group 2: Test #3");
 
-      // Small cone, the first vector has a negative polar angle, the second has a positive polar angle  
-      Assert.That(v4.IsBetween(v3, v6));
-      Assert.That(v5.IsBetween(v3, v6));
+      // Group 3: Small cone, the first vector has a negative polar angle, the second has a positive polar angle  
+      Assert.That(v4.IsBetween(v3, v6), "Group 3: Test #1");
+      Assert.That(v5.IsBetween(v3, v6), "Group 3: Test #2");
 
-      // Small cone, the first vector has the polar angle 0, the second has a positive polar angle  
-      Assert.That(v6.IsBetween(v5, v7));
-      Assert.That(v6.IsBetween(v5, v8));
-      Assert.That(v7.IsBetween(v5, v8));
-      Assert.That(v6.IsBetween(v5, v9));
-      Assert.That(v7.IsBetween(v5, v9));
-      Assert.That(v8.IsBetween(v5, v9));
+      // Group 4: Small cone, the first vector has the polar angle 0, the second has a positive polar angle  
+      Assert.That(v6.IsBetween(v5, v7), "Group 4: Test #1");
+      Assert.That(v6.IsBetween(v5, v8), "Group 4: Test #2");
+      Assert.That(v7.IsBetween(v5, v8), "Group 4: Test #3");
+      Assert.That(v6.IsBetween(v5, v9), "Group 4: Test #4");
+      Assert.That(v7.IsBetween(v5, v9), "Group 4: Test #5");
+      Assert.That(v8.IsBetween(v5, v9), "Group 4: Test #6");
 
-      // Small cone, both vectors have a positive polar angle   
-      Assert.That(v7.IsBetween(v6, v8));
-      Assert.That(v7.IsBetween(v6, v9));
-      Assert.That(v7.IsBetween(v6, v0));
-      Assert.That(v8.IsBetween(v7, v8));
-      Assert.That(v8.IsBetween(v7, v9));
-      Assert.That(v8.IsBetween(v7, v0));
+      // Group 5: Small cone, both vectors have a positive polar angle   
+      Assert.That(v7.IsBetween(v6, v8), "Group 5: Test #1");
+      Assert.That(v7.IsBetween(v6, v0), "Group 5: Test #2");
+      Assert.That(v8.IsBetween(v7, v9), "Group 5: Test #3");
+      Assert.That(v8.IsBetween(v7, v0), "Group 5: Test #4");
 
-      // Small cone, the first vector has a positive polar angle, the second has a negative polar angle  
-      Assert.That(v9.IsBetween(v7, v2));
-      Assert.That(v0.IsBetween(v7, v2));
-      Assert.That(v1.IsBetween(v7, v2));
-      Assert.That(v9.IsBetween(v8, v3));
-      Assert.That(v0.IsBetween(v8, v3));
-      Assert.That(v1.IsBetween(v8, v3));
+      // Group 6: Small cone, the first vector has a positive polar angle, the second has a negative polar angle  
+      Assert.That(v9.IsBetween(v7, v2), "Group 6: Test #1");
+      Assert.That(v0.IsBetween(v7, v2), "Group 6: Test #2");
+      Assert.That(v1.IsBetween(v7, v2), "Group 6: Test #3");
+      Assert.That(v9.IsBetween(v8, v3), "Group 6: Test #4");
+      Assert.That(v0.IsBetween(v8, v3), "Group 6: Test #5");
+      Assert.That(v1.IsBetween(v8, v3), "Group 6: Test #6");
       
       // Flat cone ...
       

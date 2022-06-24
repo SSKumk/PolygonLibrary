@@ -195,7 +195,7 @@ public class ConvexPolygon : BasicPolygon
 
 		p1 = GammaPair.CrossPairs(SF[i], SF[j]);
 		// A vector co-directed with the given one is found
-		p2 = Tools.EQ(direction.PolarAngle, SF[j].Normal.PolarAngle) ? GammaPair.CrossPairs(SF[j], SF.GetAtCyclic(j + 1)) : null;
+		p2 = Tools.EQ(direction.PolarAngle, SF[i].Normal.PolarAngle) ? GammaPair.CrossPairs(SF[i], SF.GetAtCyclic(j + 1)) : null;
 	}
 
 	/// <summary>
