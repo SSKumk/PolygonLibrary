@@ -149,8 +149,8 @@ public class Vector2D : IComparable<Vector2D> {
   /// <param name="v2">The second vector, the counterclockwise boundary of the cone</param>
   /// <returns>Flag showing whether the vector belongs to the given cone</returns>
   public bool IsBetween(Vector2D v1, Vector2D v2) {
-    double a1 = Vector2D.Angle(this, v1), a2 = Vector2D.Angle(this, v2);
-    return (Tools.EQ(a1, Math.PI)  ||  Tools.LT(a1))  &&   Tools.GT(a2);
+    double a1 = Vector2D.Angle2PI(v1, this), a2 = Vector2D.Angle2PI(v1, v2);
+    return Tools.GT(a1)  &&  Tools.LT(a1, a2);
   }
 
   /// <summary>

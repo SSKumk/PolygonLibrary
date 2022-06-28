@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NUnit.Framework;
+
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
 namespace Tests
 {
-  [TestClass]
+  [TestFixture]
   public class QuickHullTests
   {
-    [TestMethod]
+    [Test]
     public void SquareCHTest()
     {
       Random r = new Random(10);
@@ -50,19 +50,19 @@ namespace Tests
       orig.Add(new Point2D(1, 0));
 
 
-      // Перемешиваем точки
+      // Shuffle the points
       Tools.Shuffle (orig, r);
 
       List<Point2D> hull = Convexification.QuickHull2D(orig);
 
-      Assert.AreEqual (hull.Count, expected.Count, "Wrong number of convex hull vertices");
+      Assert.That(expected.Count, Is.EqualTo(hull.Count), "Wrong number of convex hull vertices");
       for (int i = 0; i < expected.Count; i++) {
-        Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " + 
+        Assert.That(expected[i], Is.EqualTo(hull[i]), "Wrong " + i + "th vertex of the convex hull vertices. " + 
                                               "It is expected " + expected[i] + ", but there is " + hull[i]);
       }
     }
 
-    [TestMethod]
+    [Test]
     public void HexagonCHTest()
     {
       Random r = new Random(10);
@@ -118,14 +118,14 @@ namespace Tests
       orig.Add(new Point2D(2, 2));
       orig.Add(new Point2D(1, 2));
 
-      // Перемешиваем точки
+      // Shuffle the points
       Tools.Shuffle(orig, r);
 
       List<Point2D> hull = Convexification.QuickHull2D(orig);
 
-      Assert.AreEqual(hull.Count, expected.Count, "Wrong number of convex hull vertices");
+      Assert.That(expected.Count, Is.EqualTo(hull.Count), "Wrong number of convex hull vertices");
       for (int i = 0; i < expected.Count; i++) {
-        Assert.AreEqual(hull[i], expected[i], "Wrong " + i + "th vertex of the convex hull vertices. " +
+        Assert.That(expected[i], Is.EqualTo(hull[i]), "Wrong " + i + "th vertex of the convex hull vertices. " +
                                               "It is expected " + expected[i] + ", but there is " + hull[i]);
       }
     }
