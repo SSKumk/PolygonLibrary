@@ -1,7 +1,9 @@
 ﻿using System;
 
 using PolygonLibrary.Toolkit;
-using PolygonLibrary.Segments;
+
+// TODO: Uncomment when segments are ready
+// using PolygonLibrary.Segments;
 
 
 namespace PolygonLibrary.Basics; 
@@ -177,12 +179,15 @@ public class Line2D
     Normal = l.Normal;
   }
 
+  // TODO: Uncomment when segments are ready
+  /*
   /// <summary>
   /// Constructing a line passing through the given segment; 
   /// the positive halfplane os to the left of directional vector of the segment
   /// </summary>
   /// <param name="s">The given segment</param>
   public Line2D (Segment s) : this (s.p1, s.p2) { }
+  */
   #endregion
 
   #region Supplementary functions

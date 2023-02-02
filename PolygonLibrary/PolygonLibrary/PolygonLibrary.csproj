@@ -9,14 +9,20 @@
     <ItemGroup>
       <Compile Remove="Class1.cs" />
       <Compile Remove="_\**" />
+      <Compile Remove="Polygons\Something\**" />
+      <Compile Remove="Segments\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="_\**" />
+      <EmbeddedResource Remove="Polygons\Something\**" />
+      <EmbeddedResource Remove="Segments\**" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="_\**" />
+      <None Remove="Polygons\Something\**" />
+      <None Remove="Segments\**" />
     </ItemGroup>
 
     <ItemGroup>
