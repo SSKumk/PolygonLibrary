@@ -72,7 +72,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void CreateCPOfPointsTest1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1);
+			ConvexPolygon cp = new ConvexPolygon(ps1, false);
 			PrintCP(cp);
 			Assert.That(true);
 		}
@@ -152,7 +152,7 @@ namespace Tests
 				new Point2D (-1,  2),
 				new Point2D (-2,  1)
 			};
-			ConvexPolygon cp = new ConvexPolygon(vs);
+			ConvexPolygon cp = new ConvexPolygon(vs, false);
 			List<Point2D> testPoints = new List<Point2D>()
 			{
 				new Point2D(-2, -1),  // 0th vertex
@@ -201,7 +201,7 @@ namespace Tests
 			};
 
 			for (int i = 0; i < testPoints.Count; i++) {
-				Assert.AreEqual(cp.Contains(testPoints[i]), res[i],
+				Assert.That(res[i], Is.EqualTo(cp.Contains(testPoints[i])),
 					"ContainsTest2, test #" + i + " failed, point = " + testPoints[i]);
 			}
 		}
@@ -285,7 +285,7 @@ namespace Tests
 
 			ConvexPolygon
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
-				cp2 = new ConvexPolygon(vs2),
+				cp2 = new ConvexPolygon(vs2, false),
 				cp3 = cp1 - cp2;
 
 			Point2D[] res = new Point2D[]

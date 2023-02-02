@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10</LangVersion>
+        <TargetFramework>net7.0</TargetFramework>
+        <LangVersion>11</LangVersion>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,7 +21,7 @@
 
     <ItemGroup>
       <Reference Include="AVLUtils">
-        <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net6.0\AVLUtils.dll</HintPath>
+        <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net7.0\AVLUtils.dll</HintPath>
       </Reference>
     </ItemGroup>
 
