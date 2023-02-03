@@ -105,16 +105,16 @@ namespace Tests
 
 				boundary1 = new Point2D(cp.Contour[0]),
 				boundary2 = new Point2D(cp.Contour[1]),
-				boundary3 = new Point2D(cp.Contour[cp.Contour.Count - 1]),
+				boundary3 = new Point2D(cp.Contour[^1]),
 				boundary4 = new Point2D(10, 8),
 				boundary5 = new Point2D(8, 10),
 				boundary6 = (Point2D)((Vector2D)cp.Contour[0] + (Vector2D)cp.Contour[1]) / 2,
-				boundary7 = (Point2D)((Vector2D)cp.Contour[0] + (Vector2D)cp.Contour[cp.Contour.Count - 1]) / 2,
+				boundary7 = (Point2D)((Vector2D)cp.Contour[0] + (Vector2D)cp.Contour[^1]) / 2,
 				boundary8 = (Point2D)((Vector2D)cp.Contour[55] + (Vector2D)cp.Contour[56]) / 2,
 
 				outside1 = new Point2D(12.1, 10),
 				outside2 = cp.Contour[0] + 1.1 * (cp.Contour[1] - cp.Contour[0]),
-				outside3 = cp.Contour[0] + 1.1 * (cp.Contour[cp.Contour.Count - 1] - cp.Contour[0]),
+				outside3 = cp.Contour[0] + 1.1 * (cp.Contour[^1] - cp.Contour[0]),
 				outside4 = new Point2D(7.9, 10),
 				outside5 = new Point2D(6, 11);
 

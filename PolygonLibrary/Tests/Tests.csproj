@@ -20,4 +20,17 @@
     <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="_Store\**" />
+    <Compile Remove="BentlyOttmannTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="_Store\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="_Store\**" />
+  </ItemGroup>
+
 </Project>
