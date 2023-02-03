@@ -158,7 +158,7 @@ public class ConvexPolygon : BasicPolygon
 		Vector2D vp = p - Contour[0];
 
 		// If the point is outside the cone (v0,p1);(v0,vn), then it is outside the polygon
-		if (!vp.IsBetween(Contour[1] - Contour[0], Contour[^1] - Contour[0])) {
+		if (vp.IsBetween(Contour[^1] - Contour[0], Contour[1] - Contour[0])) {
 			return false;
 		}
 

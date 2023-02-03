@@ -2,63 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="30f8a049-6ed4-40f8-9c36-3321051161f0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/BasicPolygon.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/Polyline.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.idea.PolygonLibrary.dir/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.idea.PolygonLibrary.dir/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.idea.PolygonLibrary.dir/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.idea.PolygonLibrary.dir/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.idea.PolygonLibrary.dir/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AVLUtils - 2016-05-03.7z" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AVLUtils/.idea/.idea.AVLUtils/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AVLUtils/.idea/.idea.AVLUtils/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AVLUtils/.idea/.idea.AVLUtils/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../AVLUtils/.idea/.idea.AVLUtils/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AVLUtils/global.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../PolygonLibrary - 2016-08-26.7z" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/dictionaries/serge.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Matrices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Matrices.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Point.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Point.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Point2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Point2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Tools.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/PolygonLibrary.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/PolygonLibrary.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/GammaPair.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/GammaPair.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/PolygonTools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/PolygonTools.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/Something/BasicPolygon.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/Something/ConnectedPolygon.cs_store" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/Something/Polyline-1.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannBasic.cs_old" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannBasic.cs_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannBasic.cs_store" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannBasic.cs_store" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannRealizations.cs_store" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Segments/Bentley-Ottmann/BentleyOttmannRealizations.cs_store" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/BentleyOttmann.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/BentleyOttmannBasic.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/BentleyOttmannBasic.cs_" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/BentleyOttmannRealizations.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/Event.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/EventQueue.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/InnerSegment.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/Segment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Segments/Segment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/SegmentGroup.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/SweepLineSegmentComparer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Segments/YStructure.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Toolkit/CollectionOfEnumerables.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Toolkit/CollectionOfEnumerables.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Convexification.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Convexification.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Extensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Shuffle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Shuffle.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/BentlyOttmannTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/BentlyOttmannTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/BentlyOttmannTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/CollOfEnumsTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/QuickHullTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/SegmentCrossTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Tests.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/ToolsTests.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +13,9 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Tests/BentlyOttmannTests.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="Toolset" />
@@ -87,8 +36,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
+    "XThreadsFramesViewSplitterKey": "0.029748283",
     "last_opened_file_path": "/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/Toolkit",
-    "settings.editor.selected.configurable": "SolutionBuilderGeneralOptionsPage",
+    "settings.editor.selected.configurable": "project.propDebugger",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -107,7 +57,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1675411962758</updated>
-      <workItem from="1675411963910" duration="2155000" />
+      <workItem from="1675411963910" duration="4843000" />
     </task>
     <servers />
   </component>
@@ -118,5 +68,50 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Tests/ConvexPolygonTests.cs</url>
+          <line>125</line>
+          <properties documentPath="$PROJECT_DIR$/Tests/ConvexPolygonTests.cs" initialLine="125" containingFunctionPresentation="method 'ContainsTest1'">
+            <startOffsets>
+              <option value="3225" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3276" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Tests/ConvexPolygonTests.cs</url>
+          <line>387</line>
+          <properties documentPath="$PROJECT_DIR$/Tests/ConvexPolygonTests.cs" initialLine="387" containingFunctionPresentation="method 'DiffTest8'">
+            <startOffsets>
+              <option value="11360" />
+            </startOffsets>
+            <endOffsets>
+              <option value="11504" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs</url>
+          <line>205</line>
+          <properties documentPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" initialLine="205" containingFunctionPresentation="method 'CombineFunctions'">
+            <startOffsets>
+              <option value="8409" />
+            </startOffsets>
+            <endOffsets>
+              <option value="8453" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -142,15 +142,17 @@ public class Vector2D : IComparable<Vector2D> {
 
   /// <summary>
   /// Checks if the current vector is strictly between the two given, that is,
-  /// the angles counted counterclockwise from the first vector to the current one
-  /// and from the current one to the second vector are strictly positive.
+  /// the angle counted counterclockwise from the first vector to the current one
+  /// is less than the angle counted counterclockwise from the first vector to the second one.
+  /// With that, the angle angle counted counterclockwise from the first vector to the current one
+  /// should be greater than zero.
   /// </summary>
   /// <param name="v1">The first vector, the clockwise boundary of the cone</param>
   /// <param name="v2">The second vector, the counterclockwise boundary of the cone</param>
   /// <returns>Flag showing whether the vector belongs to the given cone</returns>
   public bool IsBetween(Vector2D v1, Vector2D v2) {
     double a1 = Vector2D.Angle2PI(v1, this), a2 = Vector2D.Angle2PI(v1, v2);
-    return Tools.GT(a1)  &&  Tools.LT(a1, a2);
+    return Tools.GT(a1) && Tools.LT(a1, a2);
   }
 
   /// <summary>
@@ -177,11 +179,7 @@ public class Vector2D : IComparable<Vector2D> {
   /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
   public static double Angle2PI(Vector2D v1, Vector2D v2) {
     double a = Angle(v1, v2);
-    if (a < 0) {
-      return a + 2 * Math.PI;
-    } else {
-      return a;
-    }
+    return a < 0 ? a + 2 * Math.PI : a;
   }
   #endregion
 
