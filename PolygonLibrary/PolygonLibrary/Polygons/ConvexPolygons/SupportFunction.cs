@@ -19,7 +19,7 @@ public class SupportFunction : List<GammaPair> {
   /// </summary>
   /// <param name="gs">The list of pairs</param>
   /// <param name="ToSort">Flag showing whether the list should be sorted according the vector polar angle</param>
-  public SupportFunction(IEnumerable<GammaPair> gs) {
+  public SupportFunction(IEnumerable<GammaPair> gs, bool ToSort = true) {
     List<GammaPair> gs1 = new List<GammaPair>();
     foreach (GammaPair pair in gs) {
       if (pair.Normal != Vector2D.Zero) {
@@ -32,11 +32,11 @@ public class SupportFunction : List<GammaPair> {
       throw new ArgumentException("Only pairs with zero normals in initialization of a support function");
     }
 
-    gs1.Sort();
+    if (ToSort) gs1.Sort();
 
     foreach (GammaPair pair in gs1) {
-      if (this.Count == 0 || !this[this.Count - 1].Normal.Equals(pair.Normal)) {
-        this.Add(pair);
+      if (Count == 0 || !this[^1].Normal.Equals(pair.Normal)) {
+        Add(pair);
       }
     }
   }
@@ -204,52 +204,56 @@ public class SupportFunction : List<GammaPair> {
   public static SupportFunction CombineFunctions(SupportFunction fa, SupportFunction fb,
     double ca, double cb, List<int> suspiciousIndices = null, List<Vector2D> suspiciousVectors = null) {
     List<GammaPair> res = new List<GammaPair>();
-
+    
     int
-      ia = fa.Count - 1, ja = 0, turnA = 0, ib = fb.Count - 1, jb = 0, turnB = 0;
+      ia = fa.Count - 1, ja = 0, ib = fb.Count - 1, jb = 0;
     double
-      angleA = fa[0].Normal.PolarAngle, angleB = fb[0].Normal.PolarAngle;
+      angleA = fa[0].Normal.PolarAngle, angleB = fb[0].Normal.PolarAngle, oldAngle;
 
     suspiciousIndices?.Clear();
     suspiciousVectors?.Clear();
 
-    while (turnA == 0 || turnB == 0) {
+    while (Tools.LE(angleA, Math.PI) || Tools.LE(angleB, Math.PI)) {
       if (Tools.LT(angleA, angleB)) {
         res.Add(new GammaPair(fa[ja].Normal, ca * fa[ja].Value + cb * fb.FuncVal(fa[ja].Normal, ib, jb)));
 
-        turnA += (ja + 1) / fa.Count;
         ia = ja;
         ja = (ja + 1) % fa.Count;
-        angleA = fa[ja].Normal.PolarAngle + turnA * 2 * Math.PI;
+        oldAngle = angleA;
+        angleA = fa[ja].Normal.PolarAngle;
+        if (Tools.LT(angleA, oldAngle)) angleA += Tools.PI2;
       } else if (Tools.GT(angleA, angleB)) {
         suspiciousIndices?.Add(res.Count);
         suspiciousVectors?.Add(fb[jb].Normal);
 
         res.Add(new GammaPair(fb[jb].Normal, ca * fa.FuncVal(fb[jb].Normal, ia, ja) + cb * fb[jb].Value));
 
-        turnB += (jb + 1) / fb.Count;
         ib = jb;
         jb = (jb + 1) % fb.Count;
-        angleB = fb[jb].Normal.PolarAngle + turnB * 2 * Math.PI;
+        oldAngle = angleB;
+        angleB = fb[jb].Normal.PolarAngle;
+        if (Tools.LT(angleB, oldAngle)) angleB += Tools.PI2;
       } else {
         suspiciousIndices?.Add(res.Count);
         suspiciousVectors?.Add(fb[jb].Normal);
 
         res.Add(new GammaPair(fa[ja].Normal, ca * fa[ja].Value + cb * fb[jb].Value));
 
-        turnA += (ja + 1) / fa.Count;
+        oldAngle = angleA;
+        
         ia = ja;
         ja = (ja + 1) % fa.Count;
-        angleA = fa[ja].Normal.PolarAngle + turnA * 2 * Math.PI;
+        angleA = fa[ja].Normal.PolarAngle;
+        if (Tools.LT(angleA, oldAngle)) angleA += Tools.PI2;
 
-        turnB += (jb + 1) / fb.Count;
         ib = jb;
         jb = (jb + 1) % fb.Count;
-        angleB = fb[jb].Normal.PolarAngle + turnB * 2 * Math.PI;
+        angleB = fb[jb].Normal.PolarAngle;
+        if (Tools.LT(angleB, oldAngle)) angleB += Tools.PI2;
       }
     }
 
-    return new SupportFunction(res);
+    return new SupportFunction(res);    
   }
 
   /// <summary>

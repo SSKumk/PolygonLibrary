@@ -56,7 +56,7 @@ public sealed class PolygonTools
       vs.Add(new Point2D(x1, y2));
     }
 
-    return new ConvexPolygon(vs, true);
+    return new ConvexPolygon(vs, false);
   }
 
   /// <summary>

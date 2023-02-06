@@ -284,6 +284,8 @@ public class Vector2D : IComparable<Vector2D> {
   private void ComputeParameters() {
     Length = Math.Sqrt(x * x + y * y);
     PolarAngle = Math.Atan2(y, x);
+    // КОСТЫЛИЩЕ - DUCT TAPE
+    if (Tools.EQ(PolarAngle, -Math.PI)) PolarAngle = Math.PI;
   }
   #endregion
 

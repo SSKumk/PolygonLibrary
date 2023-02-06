@@ -9,6 +9,14 @@ namespace PolygonLibrary.Toolkit;
 /// Class with general purpose procedures
 /// </summary>
 public partial class Tools {
+#region Constants
+
+  /// <summary>
+  /// The constant 2*PI
+  /// </summary>
+  public /* static */ const double PI2 = 2 * Math.PI; 
+#endregion
+  
   #region Double comparison
   /// <summary>
   /// Absolute accuracy for comparison

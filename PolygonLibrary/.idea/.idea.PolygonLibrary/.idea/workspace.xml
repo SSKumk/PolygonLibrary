@@ -4,7 +4,9 @@
     <list default="true" id="30f8a049-6ed4-40f8-9c36-3321051161f0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PolygonLibrary/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Basics/Vector2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Polygons/PolygonTools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Polygons/PolygonTools.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Tools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PolygonLibrary/Toolkit/Tools.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,6 +14,25 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1e1e36fd267d2d7775ef52dfcfd93fed1156eda5158f5e9c58bb4d72716d9/EqualityComparer.CoreCLR.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/66fb396b9859c8734ef8e8dd529955858164ba8a4e32d9085dd3099d5c9127b/List.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/82c9bb5e221a173c1fdea3a72e50e7c731b51a6a7d3bc7e38ab8f5fb42194b7/Array.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Tests/BentlyOttmannTests.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -36,7 +57,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "XThreadsFramesViewSplitterKey": "0.029748283",
+    "XThreadsFramesViewSplitterKey": "0.082539685",
     "last_opened_file_path": "/home/serge/MyProjects/NewPak/PolygonLibrary/PolygonLibrary/PolygonLibrary/Toolkit",
     "settings.editor.selected.configurable": "project.propDebugger",
     "vue.rearranger.settings.migration": "true"
@@ -58,6 +79,7 @@
       <option name="presentableId" value="Default" />
       <updated>1675411962758</updated>
       <workItem from="1675411963910" duration="4843000" />
+      <workItem from="1675663052819" duration="5604000" />
     </task>
     <servers />
   </component>
@@ -99,17 +121,43 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs</url>
-          <line>205</line>
-          <properties documentPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/SupportFunction.cs" initialLine="205" containingFunctionPresentation="method 'CombineFunctions'">
+          <url>file://$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs</url>
+          <line>339</line>
+          <properties documentPath="$PROJECT_DIR$/PolygonLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs" initialLine="339" containingFunctionPresentation="">
             <startOffsets>
-              <option value="8409" />
+              <option value="11121" />
             </startOffsets>
             <endOffsets>
-              <option value="8453" />
+              <option value="11270" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="3" />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Tests/ConvexPolygonTests.cs</url>
+          <line>256</line>
+          <properties documentPath="$PROJECT_DIR$/Tests/ConvexPolygonTests.cs" initialLine="256" containingFunctionPresentation="method 'DiffTest1'">
+            <startOffsets>
+              <option value="7782" />
+            </startOffsets>
+            <endOffsets>
+              <option value="7938" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Tests/ConvexPolygonTests.cs</url>
+          <line>285</line>
+          <properties documentPath="$PROJECT_DIR$/Tests/ConvexPolygonTests.cs" initialLine="285" containingFunctionPresentation="method 'DiffTest2'">
+            <startOffsets>
+              <option value="8505" />
+            </startOffsets>
+            <endOffsets>
+              <option value="8646" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
