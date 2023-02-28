@@ -29,7 +29,7 @@ public partial class Tools {
   /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
   public static double Eps {
     get { return _eps; }
-    set {
+    private set {
 #if DEBUG
       if (value <= 0) {
         throw new ArgumentOutOfRangeException("Non-positive precision parameter");

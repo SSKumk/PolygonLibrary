@@ -173,9 +173,7 @@ namespace PolygonLibrary.Toolkit
 		/// <returns>The necessary element</returns>
 		public static T GetAtCyclic<T>(this List<T> list, int i)
 		{
-			if (list == null) {
-				throw new ArgumentNullException("List.GetAtCyclic: a null list");
-			}
+			ArgumentNullException.ThrowIfNull(list,"List.GetAtCyclic: a null list");
 
 			if (list.Count == 0) {
 				throw new ArgumentException("List.GetAtCyclic: an empty list");
@@ -236,7 +234,7 @@ namespace PolygonLibrary.Toolkit
 		/// If <see cref="upper"/> is greater or equal to the size of the array, it is set to size - 1.
 		/// If <see cref="lower"/> is greater than <see cref="upper"/>, the method returns -1.
 		/// </remarks>
-		public static int BinarySearchByPredicate<T>(
+		private static int BinarySearchByPredicate<T>(
 			this T[] array, Predicate<T> pred, int lower, int upper)
 		{
 			if (array == null || array.Rank > 1) {
@@ -279,12 +277,12 @@ namespace PolygonLibrary.Toolkit
 		/// <param name="array">The array object</param>
 		/// <param name="index">Non-normalized index - any integer</param>
 		/// <returns>The normalized index from the range [0,size)</returns>
-		public static int NormalizeIndex<T>(this T[] array, int index)
+		private static int NormalizeIndex<T>(this IReadOnlyCollection<T> array, int index)
 		{
 			if (index < 0) {
-				return index % array.Length + array.Length;
+				return index % array.Count + array.Count;
 			} else {
-				return index % array.Length;
+				return index % array.Count;
 			}
 		}
 
@@ -353,13 +351,11 @@ namespace PolygonLibrary.Toolkit
 		/// <param name="array">The array object</param>
 		/// <param name="i">The index</param>
 		/// <returns>The necessary element</returns>
-		public static T GetAtCyclic<T>(this T[] array, int i)
+		private static T GetAtCyclic<T>(this IReadOnlyList<T> array, int i)
 		{
-			if (array == null) {
-				throw new ArgumentNullException("Array.GetAtCyclic: null array");
-			}
+			ArgumentNullException.ThrowIfNull(array,"Array.GetAtCyclic: null array");
 
-			if (array.Length == 0) {
+			if (array.Count == 0) {
 				throw new ArgumentException("Array.GetAtCyclic: empty array");
 			}
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics; 
@@ -98,13 +97,8 @@ public class Point2D : IComparable<Point2D>{
         , 1 => y
         , _ => throw new IndexOutOfRangeException()
       };
-#else
-        if (i == 0) {
-          return x;
-        } else { 
-          return y;
-        }
 #endif
+      return i == 0 ? x : y;
     }
   }
   #endregion
@@ -175,10 +169,11 @@ public class Point2D : IComparable<Point2D>{
   #endregion
 
   #region Overrides
-  public override bool Equals(object obj) {
+  public override bool Equals( object obj)
+  {
 #if DEBUG
-    if (!(obj is Point2D point2D)) {
-      throw new ArgumentException();
+    if (obj is not Point2D point2D) {
+      throw new ArgumentException($"{obj} is not a Point2D!");
     }
 #endif
     return CompareTo(point2D) == 0;

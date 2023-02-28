@@ -19,7 +19,7 @@ namespace PolygonLibrary.Toolkit
     /// <summary>
     /// The collection of enumerables to be concatenated
     /// </summary>
-    List<IEnumerable<T>> _coll;
+    readonly List<IEnumerable<T>> _coll;
     #endregion
 
     #region Constructors
@@ -44,7 +44,7 @@ namespace PolygonLibrary.Toolkit
       /// <summary>
       /// The collection to which the enumerator is connected
       /// </summary>
-      private CollectionOfEnumerables<T> parent;
+      private readonly CollectionOfEnumerables<T> parent;
 
       /// <summary>
       /// Number of the enumerable in the collection that is currently traversed:
@@ -112,7 +112,7 @@ namespace PolygonLibrary.Toolkit
       /// <summary>
       /// Getting property showing whether the iterator has a valid value
       /// </summary>
-      public bool IsValid => curEnumerable != -1 && curEnumerable < parent._coll.Count;
+      private bool IsValid => curEnumerable != -1 && curEnumerable < parent._coll.Count;
 
       /// <summary>
       /// Getting property of the current value
@@ -218,7 +218,7 @@ namespace PolygonLibrary.Toolkit
     /// Converting the collection to a continuous list
     /// </summary>
     /// <returns>The list of all elements in the collection</returns>
-    public List<T> ToList()
+    private List<T> ToList()
     {
       List<T> res = new List<T>();
       EnumeratorOverCollection it = new EnumeratorOverCollection(this);

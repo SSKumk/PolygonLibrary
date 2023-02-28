@@ -208,7 +208,7 @@ public class Point : IComparable<Point>
   /// <summary>
   /// Storage of the flag showing whether the point is zero
   /// </summary>
-  protected bool? _IsZero;
+  private bool? isZero;
 
   /// <summary>
   /// Property showing whether the point iz zero;
@@ -218,14 +218,14 @@ public class Point : IComparable<Point>
   {
     get
     {
-      if (!_IsZero.HasValue)
+      if (!isZero.HasValue)
       {
-        _IsZero = true;
-        for (int i = 0; i < Dim && _IsZero.Value; i++) {
-          _IsZero = Tools.EQ(this[i]);
+        isZero = true;
+        for (int i = 0; i < Dim && isZero.Value; i++) {
+          isZero = Tools.EQ(this[i]);
         }
       }
-      return _IsZero.Value;
+      return isZero.Value;
     }
   }
   #endregion
@@ -234,11 +234,11 @@ public class Point : IComparable<Point>
   public override bool Equals(object obj)
   {
 #if DEBUG
-    if (!(obj is Point point)) {
-      throw new ArgumentException();
+    if (obj is not Point point) {
+      throw new ArgumentException($"{obj} is not a Point.");
     }
 #endif
-    return this.CompareTo(point) == 0;
+    return CompareTo(point) == 0;
   }
 
   public override string ToString()

@@ -9,7 +9,7 @@ public abstract partial class Tools
   /// <summary>
   /// Used in Shuffle(T).
   /// </summary>
-  static Random _random = new Random();
+  private static readonly Random _random = new Random();
 
   /// <summary>
   /// Shuffle the array using the Durstenfeld's algorithm

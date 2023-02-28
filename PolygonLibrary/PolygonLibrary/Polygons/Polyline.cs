@@ -114,10 +114,9 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     public Polyline()
     {
-      _vertices = new List<Point2D>();
-      _vertices.Add(Point2D.Origin);
+      _vertices   = new List<Point2D> { Point2D.Origin };
       Orientation = PolylineOrientation.Counterclockwise;
-      _square = null;
+      _square     = null;
     }
 
     /// <summary>

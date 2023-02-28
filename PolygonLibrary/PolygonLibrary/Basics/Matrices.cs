@@ -177,7 +177,17 @@ public class Matrix : IEquatable<Matrix>
   #endregion
     
   #region Overrides
-  public override bool Equals(object obj) => Equals(obj as Matrix);
+
+  public override bool Equals(object obj)
+  {
+#if DEBUG
+      if (obj is not Matrix matrix)
+      {
+        throw new ArgumentException($"{obj} is not a Matrix.");
+      }
+#endif
+    return Equals(matrix);
+  }
 
   public bool Equals(Matrix m)
   {

@@ -33,17 +33,17 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// The instant, to which the initial value is connected
     /// </summary>
-    public readonly double T;
+    private readonly double T;
 
     /// <summary>
     /// The matrix, for which the Cauchy matrix is computed
     /// </summary>
-    public readonly Matrix A;
+    private readonly Matrix A;
 
     /// <summary>
     /// Maximal time step in the integration scheme
     /// </summary>
-    public readonly double dt;
+    private readonly double dt;
     #endregion
 
     #region Constructors
@@ -83,7 +83,7 @@ namespace PolygonLibrary.Basics
     /// </summary>
     /// <param name="t">The time instant, at which it is necessary to get the Cauchy matrix</param>
     /// <returns>The Cauchy matrix at the given instant</returns>
-    public Matrix GetAt(double t)
+    private Matrix GetAt(double t)
     {
       if (!_ms.ContainsKey(t)) {
         ComputeAt(t);
@@ -100,7 +100,7 @@ namespace PolygonLibrary.Basics
     /// <param name="t">The instant, at which the Cauchy matrix should be computed</param>
     private void ComputeAt(double t)
     {
-      // Find the instants neighbouring to t (if they are in the storage
+      // Find the instants neighbouring to t (if they are in the storage)
       KeyValuePair<double, Matrix>
         leftVal = new KeyValuePair<double, Matrix>(),
         rightVal = new KeyValuePair<double, Matrix>();
@@ -141,7 +141,7 @@ namespace PolygonLibrary.Basics
         mCur = rightVal.Value;
       }
 
-      // Flag defining the integration loop repetitionЖ
+      // Flag defining the integration loop repetition;
       // do the integration if the period is not less than the time step
       bool flag = Tools.GE(Math.Abs(t - tCur), dt);
 

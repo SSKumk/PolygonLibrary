@@ -22,6 +22,7 @@
       <Compile Include="Polygons\BasicPolygon.cs" />
       <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />
       <Compile Include="Polygons\ConvexPolygons\GammaPair.cs" />
+      <Compile Include="Polygons\ConvexPolygons\Intersection.cs" />
       <Compile Include="Polygons\ConvexPolygons\SupportFunction.cs" />
       <Compile Include="Polygons\PolygonTools.cs" />
       <Compile Include="Polygons\Polyline.cs" />

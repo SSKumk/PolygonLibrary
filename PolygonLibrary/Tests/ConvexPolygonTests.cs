@@ -38,6 +38,15 @@ namespace Tests
 		};
 		#endregion
 
+		private void CyclicListComparison(List<Point2D> l1, List<Point2D> l2, string mes) {
+			Assert.IsTrue(l1.Count == l2.Count, mes + ": lengths of the lists are different");
+			int i2 = l2.IndexOf(l1[0]);
+			Assert.GreaterOrEqual(i2, 0, mes + ": the second list does not contain the point " + l1[0]);
+			for (int i1 = 0; i1 < l1.Count; i1++, i2 = (i2 + 1) % l2.Count) {
+				Assert.IsTrue(l1[i1].CompareTo(l2[i2]) == 0, mes + ": point #" + i1 + " " + l1[i1]
+				                                             + " is not equal to point #" + i2 + " " + l2[i2] );
+			}
+		}
 		private void PrintCP(ConvexPolygon cp)
 		{
 			Debug.IndentSize = 2;

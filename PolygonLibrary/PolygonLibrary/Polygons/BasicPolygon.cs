@@ -117,7 +117,7 @@ namespace PolygonLibrary.Polygons
 
     #region Internal methods
     /// <summary>
-    /// On demand computation of sorted list of vertices on the basis of the array of contours.
+    /// On demand computation of lexicographically sorted list of vertices on the basis of the array of contours.
     /// If the array of contours is not initialized, an exception is thrown
     /// </summary>
     protected virtual void ComputeVertices()
