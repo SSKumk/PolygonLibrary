@@ -12,7 +12,6 @@ namespace PolygonLibrary.Polygons.ConvexPolygons;
 /// Class of a convex polygon
 /// </summary>
 public partial class ConvexPolygon : BasicPolygon {
-
   #region Additional data structures and properties
 
   /// <summary>
@@ -82,8 +81,8 @@ public partial class ConvexPolygon : BasicPolygon {
   /// </summary>
   public ConvexPolygon(IEnumerable<Point> vs, bool ToConvexify = false)
     : base(ToConvexify
-             ? Convexification.ArcHull2D(vs.Select(p => (Point2D)p).ToList())
-             : vs.Select(p => (Point2D)p).ToList()) =>
+      ? Convexification.ArcHull2D(vs.Select(p => (Point2D)p).ToList())
+      : vs.Select(p => (Point2D)p).ToList()) =>
     _sf = null;
 
   /// <summary>
@@ -124,19 +123,18 @@ public partial class ConvexPolygon : BasicPolygon {
       base.ComputeContours();
     }
     else if (_sf != null) {
-      int           i, j;
+      int i, j;
       List<Point2D> ps = new List<Point2D>();
       for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count) {
-        ps.Add(GammaPair.CrossPairs(_sf[i], _sf[j]));
+        AddPoint(ps, GammaPair.CrossPairs(_sf[i], _sf[j]));
       }
 
-      // List<Point2D> ps1 = Convexification.ArcHull2D(ps); todo Зачем оно тут??? Если объект опорной функции _sf правильный, то никакая обработка ps не требуется
+      if (ps.Count > 1 && ps.First().CompareTo(ps.Last()) == 0) {
+        ps.RemoveAt(ps.Count - 1);
+      }
 
       _contours = new List<Polyline>();
       _contours.Add(new Polyline(ps, PolylineOrientation.Counterclockwise, false, false));
-      // if (ps1.Count != ps.Count) { todo Если ps1 действительно не нужно, то это нужно убрать
-      //   ComputeSF();
-      // }
     }
   }
 
@@ -167,7 +165,7 @@ public partial class ConvexPolygon : BasicPolygon {
     }
 
     int ind = Contour.Vertices.BinarySearchByPredicate(vert => Tools.GE(vp ^ (vert - Contour[0])), 1
-                                                     , Contour.Count - 1);
+      , Contour.Count - 1);
 
     // The point is on the ray starting at v0 and passing through p1.
     // Check distance
@@ -200,8 +198,8 @@ public partial class ConvexPolygon : BasicPolygon {
     p1 = GammaPair.CrossPairs(SF[i], SF[j]);
     // A vector co-directed with the given one is found
     p2 = Tools.EQ(direction.PolarAngle, SF[i].Normal.PolarAngle)
-           ? GammaPair.CrossPairs(SF[i], SF.GetAtCyclic(j + 1))
-           : null;
+      ? GammaPair.CrossPairs(SF[i], SF.GetAtCyclic(j + 1))
+      : null;
   }
 
   /// <summary>
@@ -236,7 +234,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="c">The weight of the vertex v_{i+1}</param>
   /// <param name="rnd">Random generator to be used; if null, the internal generator of the polygon is used</param>
   public void GenerateDataForRandomPoint(
-  out int trInd, out double a, out double b, out double c, Random rnd = null) {
+    out int trInd, out double a, out double b, out double c, Random rnd = null) {
     // Generate the list triangle weights, if necessary
     if (triangleWeights == null) {
       GenerateTriangleWeights();
@@ -281,7 +279,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="rnd">The random generator to be used; if null, the internal generator of the polygon is used</param>
   /// <returns>The generated point</returns>
   public Point2D GenerateRandomPoint(Random rnd = null) {
-    int    i;
+    int i;
     double a, b, c;
     GenerateDataForRandomPoint(out i, out a, out b, out c, rnd);
 
@@ -299,9 +297,9 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <returns>true, if the point is the nearest, that is, if both <see cref="sl"/> and <see cref="sr"/> are non-positive</returns>
   protected bool ComputePointSigns(Point2D x, int curPointInd, out int sl, out int sr) {
     Point2D
-      prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1)
-    , curVert  = Contour.Vertices.GetAtCyclic(curPointInd)
-    , nextVert = Contour.Vertices.GetAtCyclic(curPointInd + 1);
+      prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1),
+      curVert = Contour.Vertices.GetAtCyclic(curPointInd),
+      nextVert = Contour.Vertices.GetAtCyclic(curPointInd + 1);
     Vector2D toPoint = x - curVert;
     sl = Tools.CMP((prevVert - curVert) * toPoint);
     sr = Tools.CMP((nextVert - curVert) * toPoint);
@@ -347,7 +345,7 @@ public partial class ConvexPolygon : BasicPolygon {
     List<int> suspiciousIndices = new List<int>();
     SupportFunction sf =
       SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspiciousIndices)
-                     .ConvexifyFunctionWithInfo(suspiciousIndices);
+        .ConvexifyFunctionWithInfo(suspiciousIndices);
     if (sf == null) {
       return null;
     }
@@ -357,5 +355,4 @@ public partial class ConvexPolygon : BasicPolygon {
   }
 
   #endregion
-
 }

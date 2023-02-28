@@ -44,7 +44,7 @@ namespace Tests
 			Assert.GreaterOrEqual(i2, 0, mes + ": the second list does not contain the point " + l1[0]);
 			for (int i1 = 0; i1 < l1.Count; i1++, i2 = (i2 + 1) % l2.Count) {
 				Assert.IsTrue(l1[i1].CompareTo(l2[i2]) == 0, mes + ": point #" + i1 + " " + l1[i1]
-				                                             + " is not equal to point #" + i2 + " " + l2[i2] );
+				                                             + " of the 1st list is not equal to point #" + i2 + " " + l2[i2] + " of the 2nd list");
 			}
 		}
 		private void PrintCP(ConvexPolygon cp)
@@ -268,18 +268,14 @@ namespace Tests
 				cp2 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp3 = cp1 - cp2;
 
-			Point2D[] res = new Point2D[]
-			{
+			List<Point2D> res = new List<Point2D> {
 				new Point2D(1,0),
 				new Point2D(0,1),
 				new Point2D(-1,0),
 				new Point2D(0,-1)
 			};
 
-			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 1: wrong number of vertices");
-			foreach (Point2D p in res) {
-				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 1: vertex " + p + " is not in the resultant polygon");
-			}
+			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 1");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
@@ -297,18 +293,14 @@ namespace Tests
 				cp2 = new ConvexPolygon(vs2, false),
 				cp3 = cp1 - cp2;
 
-			Point2D[] res = new Point2D[]
-			{
+			List<Point2D> res = new List<Point2D> {
 				new Point2D(-2,0),
 				new Point2D(0,-2),
 				new Point2D(2.5,0.5),
 				new Point2D(0.5,2.5)
 			};
 
-			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 2: wrong number of vertices");
-			foreach (Point2D p in res) {
-				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 2: vertex " + p + " is not in the resultant polygon");
-			}
+			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 2");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
@@ -319,16 +311,12 @@ namespace Tests
 				cp2 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp3 = cp1 - cp2;
 
-			Point2D[] res = new Point2D[]
-			{
+			List<Point2D> res = new List<Point2D> {
 				new Point2D(0,1),
-				new Point2D(0,-1)
+				new Point2D(0,-1),
 			};
 
-			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 3: wrong number of vertices");
-			foreach (Point2D p in res) {
-				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 3: vertex " + p + " is not in the resultant polygon");
-			}
+			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 3");			
 		}
 
 		[Category("ConvexPolygonTests"), Test]
@@ -339,15 +327,11 @@ namespace Tests
 				cp2 = PolygonTools.RectangleParallel(-3, 4, -1, 4),
 				cp3 = cp1 - cp2;
 
-			Point2D[] res = new Point2D[]
-			{
+			List<Point2D> res = new List<Point2D> {
 				new Point2D(2,-4)
 			};
 
-			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 4: wrong number of vertices");
-			foreach (Point2D p in res) {
-				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 4: vertex " + p + " is not in the resultant polygon");
-			}
+			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 4");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
@@ -358,15 +342,11 @@ namespace Tests
 				cp2 = PolygonTools.RectangleTurned(-3, 4, -1, 4, Math.PI / 4),
 				cp3 = cp1 - cp2;
 
-			Point2D[] res = new Point2D[]
-			{
+			List<Point2D> res = new List<Point2D> {
 				new Point2D(2,-4)
 			};
 
-			Assert.IsTrue(cp3.Contour.Count == res.Length, "Diff 5: wrong number of vertices");
-			foreach (Point2D p in res) {
-				Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Diff 5: vertex " + p + " is not in the resultant polygon");
-			}
+			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 5");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
