@@ -102,7 +102,7 @@ namespace PolygonLibrary.Polygons
 
       // Copying the list of vertices
       Vertices = new List<Point2D>(vs);
-      Vertices.Sort();
+      // Vertices.Sort(); todo ???
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ namespace PolygonLibrary.Polygons
           Vertices.AddRange(p.Vertices);
         }
 
-        Vertices.Sort();
+        // Vertices.Sort(); todo ???
       }
     }
 
