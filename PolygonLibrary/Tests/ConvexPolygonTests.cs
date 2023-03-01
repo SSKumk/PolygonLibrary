@@ -10,7 +10,7 @@ using PolygonLibrary.Polygons.ConvexPolygons;
 namespace Tests
 {
 	[TestFixture]
-	public class ConvexPolygonTests
+	public partial class ConvexPolygonTests
 	{
 		#region Data
 		GammaPair[] gps = new GammaPair[]
@@ -468,5 +468,6 @@ namespace Tests
 				Assert.IsTrue(cp.Contains(rndPoints[i]), "RandomPoint2: a point is obtained that is outside the polygon");
 			}
 		}
+
 	}
 }
