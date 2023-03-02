@@ -188,7 +188,15 @@ namespace PolygonLibrary.Polygons
     /// <returns>true, if the point is inside the polygon; false, otherwise</returns>
     public abstract bool Contains(Point2D p);
 
+    /// <summary>
+    /// Method checking whether this polygon contains a given point in the interior of the polygon
+    /// </summary>
+    /// <param name="p">The point to be checked</param>
+    /// <returns>true, if the point is strictly inside the polygon; false, otherwise</returns>
+    public abstract bool ContainsInside(Point2D p);
+
     //public static P Rearrange<P> (P orig, SegmentCrosser2 crosses)
-    #endregion
+#endregion
+
   }
 }

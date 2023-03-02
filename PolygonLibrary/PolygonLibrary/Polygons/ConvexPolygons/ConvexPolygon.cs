@@ -12,8 +12,8 @@ namespace PolygonLibrary.Polygons.ConvexPolygons;
 /// Class of a convex polygon
 /// </summary>
 public partial class ConvexPolygon : BasicPolygon {
-  #region Additional data structures and properties
 
+#region Additional data structures and properties
   /// <summary>
   /// The storage for the dual description of the polygon
   /// </summary>
@@ -23,13 +23,14 @@ public partial class ConvexPolygon : BasicPolygon {
   /// Property for getting the dual description of the polygon
   /// </summary>
   public SupportFunction SF {
-    get {
-      if (_sf == null) {
-        ComputeSF();
-      }
+    get
+      {
+        if (_sf == null) {
+          ComputeSF();
+        }
 
-      return _sf;
-    }
+        return _sf;
+      }
     protected set => _sf = value;
   }
 
@@ -37,13 +38,14 @@ public partial class ConvexPolygon : BasicPolygon {
   /// Property to get the only contour of the convex polygon
   /// </summary>
   public Polyline Contour {
-    get {
-      if (_contours == null) {
-        ComputeContours();
-      }
+    get
+      {
+        if (_contours == null) {
+          ComputeContours();
+        }
 
-      return _contours[0];
-    }
+        return _contours[0];
+      }
   }
 
   /// <summary>
@@ -56,34 +58,34 @@ public partial class ConvexPolygon : BasicPolygon {
   /// Computes the square if necessary
   /// </summary>
   public double Square {
-    get {
-      if (!_square.HasValue) {
-        GenerateTriangleWeights();
+    get
+      {
+        if (!_square.HasValue) {
+          GenerateTriangleWeights();
+        }
+
+        return _square.Value;
       }
-
-      return _square.Value;
-    }
   }
+#endregion
 
-  #endregion
-
-  #region Constructors
-
+#region Constructors
   /// <summary>
   /// Constructor on the basis of list of vertices represented as two-dimensional points
   /// </summary>
-  public ConvexPolygon(IEnumerable<Point2D> vs, bool ToConvexify = false)
-    : base(ToConvexify ? Convexification.ArcHull2D(vs.ToList()) : vs.ToList()) =>
-    _sf = null;
+  public ConvexPolygon(IEnumerable<Point2D> vs, bool ToConvexify = false) : base(ToConvexify
+    ? Convexification.ArcHull2D(vs.ToList())
+    : vs.ToList()) => _sf = null;
 
   /// <summary>
   /// Constructor on the basis of list of vertices represented as multidimensional points
   /// </summary>
-  public ConvexPolygon(IEnumerable<Point> vs, bool ToConvexify = false)
-    : base(ToConvexify
-      ? Convexification.ArcHull2D(vs.Select(p => (Point2D)p).ToList())
-      : vs.Select(p => (Point2D)p).ToList()) =>
-    _sf = null;
+  public ConvexPolygon(IEnumerable<Point> vs, bool ToConvexify = false) : base(ToConvexify
+                                                                                 ? Convexification
+                                                                                  .ArcHull2D(vs.Select(p => (Point2D)p)
+                                                                                    .ToList())
+                                                                                 : vs.Select(p => (Point2D)p)
+                                                                                  .ToList()) => _sf = null;
 
   /// <summary>
   /// Constructor on the basis of the support function. 
@@ -91,11 +93,9 @@ public partial class ConvexPolygon : BasicPolygon {
   /// </summary>
   /// <param name="sf">The support function</param>
   public ConvexPolygon(SupportFunction sf) => _sf = sf;
+#endregion
 
-  #endregion
-
-  #region Internal methods
-
+#region Internal methods
   /// <summary>
   /// On demand computation of the dual description of the polygon on the basis
   /// of the array of vertices (which, in its turn, can be computed on the basis 
@@ -104,14 +104,12 @@ public partial class ConvexPolygon : BasicPolygon {
   private void ComputeSF() {
     if (_contours != null) {
       _sf = new SupportFunction(_contours[0].Vertices, false);
-    }
-    else if (_vertices != null) {
+    } else if (_vertices != null) {
       ComputeContours();
       _sf = new SupportFunction(_contours[0].Vertices, false);
-    }
-    else {
-      throw new Exception(
-        "Cannot construct dual description of a convex polygon: neither vertices, nor contours are initialized");
+    } else {
+      throw new
+        Exception("Cannot construct dual description of a convex polygon: neither vertices, nor contours are initialized");
     }
   }
 
@@ -121,9 +119,8 @@ public partial class ConvexPolygon : BasicPolygon {
   protected override void ComputeContours() {
     if (_vertices != null) {
       base.ComputeContours();
-    }
-    else if (_sf != null) {
-      int i, j;
+    } else if (_sf != null) {
+      int           i, j;
       List<Point2D> ps = new List<Point2D>();
       for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count) {
         AddPoint(ps, GammaPair.CrossPairs(_sf[i], _sf[j]));
@@ -138,14 +135,10 @@ public partial class ConvexPolygon : BasicPolygon {
     }
   }
 
-  protected override void ComputeVertices() {
-    Vertices = Contour.Vertices;
-  }
+  protected override void ComputeVertices() { Vertices = Contour.Vertices; }
+#endregion
 
-  #endregion
-
-  #region Convex polygon utilities
-
+#region Convex polygon utilities
   /// <summary>
   /// Method checking whether this polygon contains a given point
   /// </summary>
@@ -165,7 +158,7 @@ public partial class ConvexPolygon : BasicPolygon {
     }
 
     int ind = Contour.Vertices.BinarySearchByPredicate(vert => Tools.GE(vp ^ (vert - Contour[0])), 1
-      , Contour.Count - 1);
+                                                     , Contour.Count - 1);
 
     // The point is on the ray starting at v0 and passing through p1.
     // Check distance
@@ -180,6 +173,39 @@ public partial class ConvexPolygon : BasicPolygon {
 
       return Tools.LE(norm * (Vector2D)p, norm * (Vector2D)Contour[ind - 1]);
     }
+  }
+
+  /// <summary>
+  /// Method checking whether this polygon contains a given point in the interior of the polygon
+  /// </summary>
+  /// <param name="p">The point to be checked</param>
+  /// <returns>true, if the point is strictly inside the polygon; false, otherwise</returns>
+  public override bool ContainsInside(Point2D p) {
+    // Special case: the point coincides with the initial vertex of the polygon
+    if (p.Equals(Contour[0])) {
+      return false;
+    }
+
+    Vector2D vp = p - Contour[0];
+
+    // If the point is outside the cone (v0,p1);(v0,vn), then it is outside the polygon
+    if (!vp.IsBetween(Contour[1] - Contour[0], Contour[^1] - Contour[0])) {
+      return false;
+    }
+
+    int ind = Contour.Vertices.BinarySearchByPredicate(vert => Tools.GE(vp ^ (vert - Contour[0])), 1
+                                                     , Contour.Count - 1);
+
+    // The point is on the ray starting at v0 and passing through p1.
+    // Check distance
+    if (ind == 1) {
+      return false;
+    }
+
+    // The point is somewhere inside the polygon cone.
+    // The final decision is made on the basis of support function calculation
+      Vector2D norm = (Contour[ind] - Contour[ind - 1]).TurnCW();
+      return Tools.LT(norm * (Vector2D)p, norm * (Vector2D)Contour[ind - 1]);
   }
 
   /// <summary>
@@ -198,8 +224,8 @@ public partial class ConvexPolygon : BasicPolygon {
     p1 = GammaPair.CrossPairs(SF[i], SF[j]);
     // A vector co-directed with the given one is found
     p2 = Tools.EQ(direction.PolarAngle, SF[i].Normal.PolarAngle)
-      ? GammaPair.CrossPairs(SF[i], SF.GetAtCyclic(j + 1))
-      : null;
+           ? GammaPair.CrossPairs(SF[i], SF.GetAtCyclic(j + 1))
+           : null;
   }
 
   /// <summary>
@@ -214,8 +240,7 @@ public partial class ConvexPolygon : BasicPolygon {
     }
 
     for (i = 1; i < Contour.Count - 1; i++) {
-      triangleWeights[i] = triangleWeights[i - 1] +
-                           (0.5 * (Contour[i] - Contour[0]) ^ (Contour[i + 1] - Contour[0]));
+      triangleWeights[i] = triangleWeights[i - 1] + (0.5 * (Contour[i] - Contour[0]) ^ (Contour[i + 1] - Contour[0]));
     }
 
     _square = triangleWeights[^1];
@@ -233,8 +258,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="b">The weight of the vertex v_i</param>
   /// <param name="c">The weight of the vertex v_{i+1}</param>
   /// <param name="rnd">Random generator to be used; if null, the internal generator of the polygon is used</param>
-  public void GenerateDataForRandomPoint(
-    out int trInd, out double a, out double b, out double c, Random rnd = null) {
+  public void GenerateDataForRandomPoint(out int trInd, out double a, out double b, out double c, Random rnd = null) {
     // Generate the list triangle weights, if necessary
     if (triangleWeights == null) {
       GenerateTriangleWeights();
@@ -279,7 +303,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="rnd">The random generator to be used; if null, the internal generator of the polygon is used</param>
   /// <returns>The generated point</returns>
   public Point2D GenerateRandomPoint(Random rnd = null) {
-    int i;
+    int    i;
     double a, b, c;
     GenerateDataForRandomPoint(out i, out a, out b, out c, rnd);
 
@@ -296,10 +320,9 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="sr">Sign of the dot product of vectors from the vertex to the next vertex and to the given point</param>
   /// <returns>true, if the point is the nearest, that is, if both <see cref="sl"/> and <see cref="sr"/> are non-positive</returns>
   protected bool ComputePointSigns(Point2D x, int curPointInd, out int sl, out int sr) {
-    Point2D
-      prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1),
-      curVert = Contour.Vertices.GetAtCyclic(curPointInd),
-      nextVert = Contour.Vertices.GetAtCyclic(curPointInd + 1);
+    Point2D prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1)
+          , curVert  = Contour.Vertices.GetAtCyclic(curPointInd)
+          , nextVert = Contour.Vertices.GetAtCyclic(curPointInd + 1);
     Vector2D toPoint = x - curVert;
     sl = Tools.CMP((prevVert - curVert) * toPoint);
     sr = Tools.CMP((nextVert - curVert) * toPoint);
@@ -315,14 +338,10 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <returns>The nearest point of the polygon</returns>
   public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
 
-  private bool IsPointContainsInHalfPlane(Segment s) {
-    throw new NotImplementedException();
-  }
+  private bool IsPointContainsInHalfPlane(Segment s) { throw new NotImplementedException(); }
+#endregion
 
-  #endregion
-
-  #region Operators
-
+#region Operators
   /// <summary>
   /// Operator of algebraic (Minkowski) sum of two convex polygons
   /// </summary>
@@ -343,16 +362,14 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <returns>The polygon difference; if the difference is empty, null is returned</returns>
   public static ConvexPolygon operator -(ConvexPolygon cp1, ConvexPolygon cp2) {
     List<int> suspiciousIndices = new List<int>();
-    SupportFunction sf =
-      SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspiciousIndices)
-        .ConvexifyFunctionWithInfo(suspiciousIndices);
+    SupportFunction sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspiciousIndices)
+                                        .ConvexifyFunctionWithInfo(suspiciousIndices);
     if (sf == null) {
       return null;
-    }
-    else {
+    } else {
       return new ConvexPolygon(sf);
     }
   }
+#endregion
 
-  #endregion
 }
