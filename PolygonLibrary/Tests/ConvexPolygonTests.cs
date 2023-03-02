@@ -216,6 +216,120 @@ namespace Tests
 		}
 
 		[Category("ConvexPolygonTests"), Test]
+		public void ContainsInsideTest1()
+		{
+			ConvexPolygon cp = PolygonTools.Circle(10, 10, 2, 100);
+			Point2D
+				inside1 = new Point2D(11.5, 10.1),
+				inside2 = new Point2D(10, 10),
+				inside3 = new Point2D(8.9, 10),
+
+				boundary1 = new Point2D(cp.Contour[0]),
+				boundary2 = new Point2D(cp.Contour[1]),
+				boundary3 = new Point2D(cp.Contour[^1]),
+				boundary4 = new Point2D(10, 8),
+				boundary5 = new Point2D(8, 10),
+				boundary6 = (Point2D)((Vector2D)cp.Contour[0] + (Vector2D)cp.Contour[1]) / 2,
+				boundary7 = (Point2D)((Vector2D)cp.Contour[0] + (Vector2D)cp.Contour[^1]) / 2,
+				boundary8 = (Point2D)((Vector2D)cp.Contour[55] + (Vector2D)cp.Contour[56]) / 2,
+
+				outside1 = new Point2D(12.1, 10),
+				outside2 = cp.Contour[0] + 1.1 * (cp.Contour[1] - cp.Contour[0]),
+				outside3 = cp.Contour[0] + 1.1 * (cp.Contour[^1] - cp.Contour[0]),
+				outside4 = new Point2D(7.9, 10),
+				outside5 = new Point2D(6, 11);
+
+			Assert.IsTrue(cp.ContainsInside(inside1), "inside1");
+			Assert.IsTrue(cp.ContainsInside(inside2), "inside2");
+			Assert.IsTrue(cp.ContainsInside(inside3), "inside3");
+
+			Assert.IsFalse(cp.ContainsInside(boundary1), "boundary1");
+			Assert.IsFalse(cp.ContainsInside(boundary2), "boundary2");
+			Assert.IsFalse(cp.ContainsInside(boundary3), "boundary3");
+			Assert.IsFalse(cp.ContainsInside(boundary4), "boundary4");
+			Assert.IsFalse(cp.ContainsInside(boundary5), "boundary5");
+			Assert.IsFalse(cp.ContainsInside(boundary6), "boundary6");
+			Assert.IsFalse(cp.ContainsInside(boundary7), "boundary7");
+			Assert.IsFalse(cp.ContainsInside(boundary8), "boundary8");
+
+			Assert.IsFalse(cp.ContainsInside(outside1), "outside1");
+			Assert.IsFalse(cp.ContainsInside(outside2), "outside2");
+			Assert.IsFalse(cp.ContainsInside(outside3), "outside3");
+			Assert.IsFalse(cp.ContainsInside(outside4), "outside4");
+			Assert.IsFalse(cp.ContainsInside(outside5), "outside5");
+		}
+
+		[Category("ConvexPolygonTests"), Test]
+		public void ContainsInsideTest2()
+		{
+			List<Point2D> vs = new List<Point2D>()
+			{
+				new Point2D (-2, -1),
+				new Point2D (-1, -2),
+				new Point2D ( 1, -2),
+				new Point2D ( 2, -1),
+				new Point2D ( 2,  1),
+				new Point2D ( 1,  2),
+				new Point2D (-1,  2),
+				new Point2D (-2,  1)
+			};
+			ConvexPolygon cp = new ConvexPolygon(vs);
+			List<Point2D> testPoints = new List<Point2D>()
+			{
+				new Point2D(-2, -1),  // 0th vertex
+
+				new Point2D(-1, -3),  // outside the polygon cone
+				new Point2D(-2, -3),  // outside the polygon cone
+				new Point2D(-3, -3),  // outside the polygon cone
+				new Point2D(-3,  0),  // outside the polygon cone
+				new Point2D(-3,  1),  // outside the polygon cone
+
+				new Point2D(-1.5, -1.5),  // right boundary of the polygon cone, boundary of thr polygon
+				new Point2D(-1, -2),      // right boundary of the polygon cone, vertex
+				new Point2D(0,  -3),      // right boundary of the polygon cone, outside
+
+				new Point2D(-2,  0),  // left boundary of the polygon cone, boundary of thr polygon
+				new Point2D(-2,  1),  // left boundary of the polygon cone, vertex
+				new Point2D(-2,  3),  // left boundary of the polygon cone, outside
+
+				new Point2D(-1, -1.5),  // ray passing through 2nd edge, inside
+				new Point2D( 0, -2),    // ray passing through 2nd edge, boundary
+				new Point2D( 2, -3),    // ray passing through 2nd edge, outside
+
+				new Point2D( 0, -0.5),  // ray passing through some middle edge, inside
+				new Point2D( 2,  0),    // ray passing through some middle edge, boundary
+				new Point2D( 6,  1),    // ray passing through some middle edge, inside
+
+				new Point2D( 0,  1),  // ray passing through some vertex, inside
+				new Point2D( 1,  2),  // ray passing through some vertex, boundary - vertex
+				new Point2D( 3,  4),  // ray passing through some vertex, outside
+
+				new Point2D(-11.0/6, 0),  // ray passing through the edge before penultimate, inside
+				new Point2D(-1.5, -1.5),  // ray passing through the edge before penultimate, vertex
+				new Point2D(-1, 4)        // ray passing through the edge before penultimate, outside
+			};
+
+			bool[] res = new bool[]
+			{
+				false,
+				false, false, false, false, false,
+				false, false, false,
+				false, false, false,
+				true, false, false,
+				true, false, false,
+				true, false, false,
+				true, false, false
+			};
+
+			for (int i = 0; i < testPoints.Count; i++) {
+				Assert.That(res[i], Is.EqualTo(cp.ContainsInside(testPoints[i])),
+					"ContainsTest2, test #" + i + " failed, point = " + testPoints[i]);
+			}
+		}
+
+		
+		
+		[Category("ConvexPolygonTests"), Test]
 		public void SumTest1()
 		{
 			ConvexPolygon
