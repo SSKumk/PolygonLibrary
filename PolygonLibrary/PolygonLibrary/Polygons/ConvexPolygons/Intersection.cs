@@ -55,8 +55,6 @@ public partial class ConvexPolygon {
     int lenQ   = Q.Vertices.Count;
     int countP = 1;
     int countQ = 1;
-    // int advP   = 0; //Will increase only after first intersection
-    // int advQ   = 0;
     do {
       Point2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
       Point2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
@@ -69,12 +67,8 @@ public partial class ConvexPolygon {
       Vector2D  hat_p0    = hat_p.directional.Normalize();
       Vector2D  hat_q0    = hat_q.directional.Normalize();
 
-      Vector2D aux_q = q - pred_p;
-      Vector2D aux_p = p - pred_q;
-      aux_q = aux_q.CompareTo(new Vector2D(0, 0)) == 0 ? aux_q : aux_q.Normalize();
-      aux_p = aux_p.CompareTo(new Vector2D(0, 0)) == 0 ? aux_p : aux_p.Normalize();
-      int qInHp = Tools.CMP(hat_p0 ^ aux_q);
-      int pInHq = Tools.CMP(hat_q0 ^ aux_p);
+      int qInHp = Tools.CMP(hat_p0 ^ (q - pred_p).NormalizeZero());
+      int pInHq = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
       if (crossInfo.crossType == CrossType.SinglePoint) {
         if (R.Count > 2) {
           if (crossInfo.p.Equals(R.First())) {
@@ -117,17 +111,22 @@ public partial class ConvexPolygon {
         }
       }
     } while (countP + countQ < 2 * (lenP + lenQ));
-    // } while ((countP < lenP || countQ < lenQ) && countP < 2 * lenP && countQ < 2 * lenQ); todo Потенциально можно быстрее 
+    // } while ((countP < lenP || countQ < lenQ) && countP < 2 * lenP && countQ < 2 * lenQ); todo Потенциально можно быстрее ?
 
+    //If the intersection is a point or a segment, then we assume that the intersection is empty  
+    if (R.Count == 1 || R.Count == 2) {
+      return null;
+    }
+    
     if (R.Count > 2) {
       return new ConvexPolygon(R);
     }
 
-    if (Q.Contains(P.Vertices.First())) {
+    if (Q.ContainsInside(P.Vertices.First())) {
       return P;
     }
 
-    if (P.Contains(Q.Vertices.First())) {
+    if (P.ContainsInside(Q.Vertices.First())) {
       return Q;
     }
 
