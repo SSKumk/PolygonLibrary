@@ -103,8 +103,8 @@ public partial class ConvexPolygonTests {
       };
     List<Point2D> triangleList = new List<Point2D>()
       {
-        new Point2D(-0.5, -2)
-      , new Point2D(-1.5, 1)
+        new Point2D(-1.5, 1)
+      , new Point2D(-0.5, -2)
       , new Point2D(0, 0)
       };
 
@@ -114,8 +114,9 @@ public partial class ConvexPolygonTests {
     var res = ConvexPolygon.IntersectionPolygon(square, triangle);
     Assert.Null(res, "Intersection4");
   }
-    //todo 1) Поправить Contains на случай только внутренности
-    //todo 2) Понять, что делать с (0,0) вектором
+
+  //todo 1) Поправить Contains на случай только внутренности
+  //todo 2) Понять, что делать с (0,0) вектором
   [Category("ConvexPolygonTests"), Test]
   public void Intersection5() {
     List<Point2D> squareList = new List<Point2D>()
@@ -173,7 +174,7 @@ public partial class ConvexPolygonTests {
       };
     List<Point2D> triangleList = new List<Point2D>()
       {
-        new Point2D(-1, 1.5) 
+        new Point2D(-1, 1.5)
       , new Point2D(-0.5, 1)
       , new Point2D(0, 2)
       };
@@ -196,7 +197,7 @@ public partial class ConvexPolygonTests {
       };
     List<Point2D> triangleList = new List<Point2D>()
       {
-        new Point2D(3.5, 1) 
+        new Point2D(3.5, 1)
       , new Point2D(2.5, 2)
       , new Point2D(2.5, 0)
       };
@@ -219,9 +220,9 @@ public partial class ConvexPolygonTests {
       };
     List<Point2D> triangleList = new List<Point2D>()
       {
-        new Point2D(-1.5, 2.5) 
+        new Point2D(-1.5, 2.5)
       , new Point2D(1, -2)
-      , new Point2D(3.5,2.5)
+      , new Point2D(3.5, 2.5)
       };
 
     ConvexPolygon square   = new ConvexPolygon(squareList);
@@ -242,9 +243,9 @@ public partial class ConvexPolygonTests {
       };
     List<Point2D> triangleList = new List<Point2D>()
       {
-        new Point2D(2, 2) 
+        new Point2D(2, 2)
       , new Point2D(-0.5, 2)
-      , new Point2D(2,-0.5)
+      , new Point2D(2, -0.5)
       };
     List<Point2D> answerList = new List<Point2D>()
       {
@@ -311,7 +312,6 @@ public partial class ConvexPolygonTests {
     var res = ConvexPolygon.IntersectionPolygon(triangle1, triangle2);
     CyclicListComparison(res.Vertices, answerList, "Intersection12");
   }
-  
-  
-  
+
+
 }
