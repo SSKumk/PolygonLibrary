@@ -170,6 +170,12 @@ public class Vector : IComparable<Vector>
   /// <summary>
   /// Normalization of the vector
   /// </summary>
+  /// <returns>
+  /// The normalized vector.
+  /// </returns>
+  /// <exception cref="DivideByZeroException">
+  /// Is thrown if the vector is zero 
+  /// </exception>
   public Vector Normalize()
   {
 #if DEBUG
@@ -177,6 +183,26 @@ public class Vector : IComparable<Vector>
       throw new DivideByZeroException();
     }
 #endif
+    Vector res = new Vector(Dim);
+    for (int i = 0; i < Dim; i++) {
+      res._v[i] = _v[i] / Length;
+    }
+
+    res.Length = 1;
+    return res;
+  }
+  
+  /// <summary>
+  /// Normalization of the vector with the zero vector check
+  /// </summary>
+  /// <returns>
+  /// The normalized vector. If the vector is zero, then zero is returned
+  /// </returns>
+  public Vector NormalizeZero()
+  {
+    if (Tools.EQ(Length)) {
+      return this;
+    }
     Vector res = new Vector(Dim);
     for (int i = 0; i < Dim; i++) {
       res._v[i] = _v[i] / Length;

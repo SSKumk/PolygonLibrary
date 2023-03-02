@@ -109,6 +109,12 @@ public class Vector2D : IComparable<Vector2D> {
   /// <summary>
   /// Normalization of the vector
   /// </summary>
+  /// <returns>
+  /// The normalized vector.
+  /// </returns>
+  /// <exception cref="DivideByZeroException">
+  /// Is thrown if the vector is zero 
+  /// </exception>
   public Vector2D Normalize() {
 #if DEBUG
     if (Tools.EQ(Length)) {
@@ -117,6 +123,21 @@ public class Vector2D : IComparable<Vector2D> {
 #endif
     return new Vector2D(x / Length, y / Length);
   }
+  
+  /// <summary>
+  /// Normalization of the vector with the zero vector check
+  /// </summary>
+  /// <returns>
+  /// The normalized vector. If the vector is zero, then zero is returned
+  /// </returns>
+  public Vector2D NormalizeZero() {
+    if (Tools.EQ(Length)) {
+      return this;
+    }
+    return new Vector2D(x / Length, y / Length);
+  }
+  
+  
 
   /// <summary>
   /// Construct a vector obtained from the current one by a clockwise 90-degree turn
