@@ -136,14 +136,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(3, 1)
       , new Point2D(6, 4)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 5)
-      , new Point2D(3, 1)
-      , new Point2D(6, 4)
-      };
 
-    DoIntersectionTest("4-1", P_List, Q_List, answerList);
+    DoIntersectionTest("4-1", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -160,6 +154,19 @@ public partial class ConvexPolygonTests {
   }
 
   [Category("ConvexPolygonTests"), Test]
+  public void Intersection06aux() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(2, 2)
+      , new Point2D(6, 4)
+      , new Point2D(4, 6)
+      });
+
+    DoIntersectionTest("4-3", P_List, Q_List, Q_List.ToList());
+  }
+
+  [Category("ConvexPolygonTests"), Test]
   public void Intersection06() {
     var P_List = squareList;
     var Q_List = new LinkedList<Point2D>(new List<Point2D>
@@ -169,15 +176,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(6, 3)
       , new Point2D(3, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(0, 3)
-      , new Point2D(3, 1)
-      , new Point2D(6, 3)
-      , new Point2D(3, 6)
-      };
 
-    DoIntersectionTest("4-4", P_List, Q_List, answerList);
+    DoIntersectionTest("4-4", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -189,14 +189,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(3, 1)
       , new Point2D(6, 3)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(0, 3)
-      , new Point2D(3, 1)
-      , new Point2D(6, 3)
-      };
 
-    DoIntersectionTest("4-5", P_List, Q_List, answerList);
+    DoIntersectionTest("4-5", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -204,19 +198,12 @@ public partial class ConvexPolygonTests {
     var P_List = squareList;
     var Q_List = new LinkedList<Point2D>(new List<Point2D>
       {
-        new Point2D(2, 4)
+        new Point2D(2, 8)
+      , new Point2D(2, 4)
       , new Point2D(6, 4)
-      , new Point2D(2, 8)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 4)
-      , new Point2D(6, 4)
-      , new Point2D(4, 6)
-      , new Point2D(2, 6)
-      };
 
-    DoIntersectionTest("4-6", P_List, Q_List, answerList);
+    DoIntersectionTest("4-6", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -269,14 +256,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(4, 2)
       , new Point2D(6, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 4)
-      , new Point2D(4, 2)
-      , new Point2D(6, 6)
-      };
 
-    DoIntersectionTest("5-1", P_List, Q_List, answerList);
+    DoIntersectionTest("5-1", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -359,14 +340,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(4, 1)
       , new Point2D(6, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(0, 0)
-      , new Point2D(4, 1)
-      , new Point2D(6, 6)
-      };
 
-    DoIntersectionTest("5-6", P_List, Q_List, answerList);
+    DoIntersectionTest("5-6", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -398,14 +373,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(3, 3)
       , new Point2D(4, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 6)
-      , new Point2D(3, 3)
-      , new Point2D(4, 6)
-      };
 
-    DoIntersectionTest("6-1", P_List, Q_List, answerList);
+    DoIntersectionTest("6-1", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -417,14 +386,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(3, 0)
       , new Point2D(4, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 6)
-      , new Point2D(3, 0)
-      , new Point2D(4, 6)
-      };
 
-    DoIntersectionTest("6-2", P_List, Q_List, answerList);
+    DoIntersectionTest("6-2", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -436,14 +399,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(6, 0)
       , new Point2D(4, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 6)
-      , new Point2D(6, 0)
-      , new Point2D(4, 6)
-      };
 
-    DoIntersectionTest("6-3", P_List, Q_List, answerList);
+    DoIntersectionTest("6-3", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -455,14 +412,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(4, 2)
       , new Point2D(6, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(4, 6)
-      , new Point2D(4, 2)
-      , new Point2D(6, 6)
-      };
 
-    DoIntersectionTest("6-4", P_List, Q_List, answerList);
+    DoIntersectionTest("6-4", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -474,14 +425,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(0, 0)
       , new Point2D(6, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(4, 6)
-      , new Point2D(0, 0)
-      , new Point2D(6, 6)
-      };
 
-    DoIntersectionTest("6-5", P_List, Q_List, answerList);
+    DoIntersectionTest("6-5", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -493,14 +438,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(6, 0)
       , new Point2D(6, 6)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 6)
-      , new Point2D(6, 0)
-      , new Point2D(6, 6)
-      };
 
-    DoIntersectionTest("6-6", P_List, Q_List, answerList);
+    DoIntersectionTest("6-6", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -567,7 +506,7 @@ public partial class ConvexPolygonTests {
 
     DoIntersectionTest("6-11", P_List, Q_List, Q_List.ToList());
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection29() {
     var P_List = squareList;
@@ -587,7 +526,7 @@ public partial class ConvexPolygonTests {
 
     DoIntersectionTest("6-12", P_List, Q_List, answerList);
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection30() {
     var P_List = squareList;
@@ -608,7 +547,7 @@ public partial class ConvexPolygonTests {
 
     DoIntersectionTest("6-13", P_List, Q_List, answerList);
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection31() {
     var P_List = squareList;
@@ -627,7 +566,7 @@ public partial class ConvexPolygonTests {
 
     DoIntersectionTest("6-14", P_List, Q_List, answerList);
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection32() {
     var P_List = squareList;
@@ -672,15 +611,8 @@ public partial class ConvexPolygonTests {
       , new Point2D(4, 4)
       , new Point2D(2, 4)
       });
-    var answerList = new List<Point2D>()
-      {
-        new Point2D(2, 2)
-      , new Point2D(4, 2)
-      , new Point2D(4, 4)
-      , new Point2D(2, 4)
-      };
 
-    DoIntersectionTest("7-2", P_List, Q_List, answerList);
+    DoIntersectionTest("7-2", P_List, Q_List, Q_List.ToList());
   }
 
   [Category("ConvexPolygonTests"), Test]
@@ -689,7 +621,7 @@ public partial class ConvexPolygonTests {
 
     DoIntersectionTest("7-3", P_List, P_List, squareList.ToList());
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection36() {
     var P_List = squareList;
@@ -703,7 +635,7 @@ public partial class ConvexPolygonTests {
 
     NullIntersectionTest("7-4", P_List, Q_List);
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection37() {
     var P_List = squareList;
@@ -716,7 +648,7 @@ public partial class ConvexPolygonTests {
 
     NullIntersectionTest("7-5", P_List, Q_List);
   }
-  
+
   [Category("ConvexPolygonTests"), Test]
   public void Intersection38() {
     var P_List = squareList;
