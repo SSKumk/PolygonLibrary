@@ -86,12 +86,21 @@ public partial class ConvexPolygon {
         AddPoint(R, crossInfo.p);
       }
 
-      int cross = Tools.CMP(hat_p.directional ^ hat_q.directional);
+      int cross = Tools.CMP(hat_p.directional.Normalize() ^ hat_q.directional.Normalize());
       switch (crossInfo.crossType) {
         case CrossType.Overlap when hat_p.directional * hat_q.directional < 0:
           return null; //todo И страдать правильным образом
         case CrossType.Overlap:
+          // if (R.FindAll(point => point.Equals(crossInfo.p)).Any() ) {
+          //   
+          // }
+          // if (inside == InsideType.InP) {
+          //   Move(R, crossInfo.p, ref countQ, false);
+          // } else {
+          //   Move(R, crossInfo.p, ref countP, false);
+          // }
           Move(R, crossInfo.p, ref countP, false);
+
           break;
         default: {
           if (Tools.GE(cross, 0)) {
@@ -117,7 +126,7 @@ public partial class ConvexPolygon {
     if (R.Count == 1 || R.Count == 2) {
       return null;
     }
-    
+
     if (R.Count > 2) {
       return new ConvexPolygon(R);
     }

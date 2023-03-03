@@ -16,6 +16,17 @@ public partial class ConvexPolygonTests {
     , new Point2D(0, 6)
     });
 
+  private void CyclicListComparison(List<Point2D> l1, List<Point2D> l2, string mes) {
+    Assert.IsTrue(l1.Count == l2.Count, mes + ": lengths of the lists are different");
+    int i2 = l2.IndexOf(l1[0]);
+    Assert.GreaterOrEqual(i2, 0, mes + ": the second list does not contain the point " + l1[0]);
+    for (int i1 = 0; i1 < l1.Count; i1++, i2 = (i2 + 1) % l2.Count) {
+      Assert.IsTrue(l1[i1].CompareTo(l2[i2]) == 0
+                  , mes + ": point #" + i1 + " " + l1[i1] + " of the 1st list is not equal to point #" + i2 + " " +
+                    l2[i2] + " of the 2nd list");
+    }
+  }
+
   private void DoIntersectionTest(string              mes
                                 , LinkedList<Point2D> P_List
                                 , LinkedList<Point2D> Q_List
@@ -36,9 +47,7 @@ public partial class ConvexPolygonTests {
     }
   }
 
-  private void NullIntersectionTest(string              mes
-                                    , LinkedList<Point2D> P_List
-                                    , LinkedList<Point2D> Q_List) {
+  private void NullIntersectionTest(string mes, LinkedList<Point2D> P_List, LinkedList<Point2D> Q_List) {
     for (int p = 0; p < P_List.Count; p++) {
       var P = new ConvexPolygon(P_List);
       for (int q = 0; q < Q_List.Count; q++) {
@@ -378,5 +387,108 @@ public partial class ConvexPolygonTests {
       };
 
     DoIntersectionTest("5-7", P_List, Q_List, answerList);
+  }
+
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection18() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(2, 6)
+      , new Point2D(3, 3)
+      , new Point2D(4, 6)
+      });
+    var answerList = new List<Point2D>()
+      {
+        new Point2D(2, 6)
+      , new Point2D(3, 3)
+      , new Point2D(4, 6)
+      };
+
+    DoIntersectionTest("6-1", P_List, Q_List, answerList);
+  }
+  
+  
+
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection33() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(8, 3)
+      , new Point2D(10, 0)
+      , new Point2D(12, 3)
+      , new Point2D(10, 6)
+      });
+
+    NullIntersectionTest("7-1", P_List, Q_List);
+  }
+
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection34() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(2, 2)
+      , new Point2D(4, 2)
+      , new Point2D(4, 4)
+      , new Point2D(2, 4)
+      });
+    var answerList = new List<Point2D>()
+      {
+        new Point2D(2, 2)
+      , new Point2D(4, 2)
+      , new Point2D(4, 4)
+      , new Point2D(2, 4)
+      };
+
+    DoIntersectionTest("7-2", P_List, Q_List, answerList);
+  }
+
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection35() {
+    var P_List = squareList;
+
+    DoIntersectionTest("7-3", P_List, P_List, squareList.ToList());
+  }
+  
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection36() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(2, 6)
+      , new Point2D(4, 6)
+      , new Point2D(4, 8)
+      , new Point2D(2, 8)
+      });
+
+    NullIntersectionTest("7-4", P_List, Q_List);
+  }
+  
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection37() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(0, 6)
+      , new Point2D(4, 6)
+      , new Point2D(2, 8)
+      });
+
+    NullIntersectionTest("7-5", P_List, Q_List);
+  }
+  
+  [Category("ConvexPolygonTests"), Test]
+  public void Intersection38() {
+    var P_List = squareList;
+    var Q_List = new LinkedList<Point2D>(new List<Point2D>
+      {
+        new Point2D(0, 6)
+      , new Point2D(6, 6)
+      , new Point2D(4, 8)
+      });
+
+    NullIntersectionTest("7-6", P_List, Q_List);
   }
 }
