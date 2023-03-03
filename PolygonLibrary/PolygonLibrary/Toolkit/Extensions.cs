@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PolygonLibrary.Toolkit
 {
 	/// <summary>
-	/// Extensions to standard ListOfT container"/>
+	/// Extensions to standard ListOfT container
 	/// </summary>
 	public static class ListExtensions
 	{
@@ -185,7 +186,7 @@ namespace PolygonLibrary.Toolkit
 	}
 
 	/// <summary>
-	/// Extensions to standard array"/>
+	/// Extensions to standard array
 	/// </summary>
 	public static class ArrayExtensions
 	{
@@ -362,4 +363,23 @@ namespace PolygonLibrary.Toolkit
 			return array[array.NormalizeIndex(i)];
 		}
 	}
+
+/// <summary>
+/// Extensions to standard LinkedList container
+/// </summary>
+public static class LinkedListExtensions {
+	/// <summary>
+	/// Cyclic shift to left by one position
+	/// </summary>
+	/// <example>2 4 1 5 --> 4 1 5 2</example>
+	/// <param name="lst">The linked list to be cycled</param>
+	/// <typeparam name="T">The type of elements in the linked list</typeparam>
+	public static void CyclicShift<T>(this LinkedList<T> lst) {
+		ArgumentNullException.ThrowIfNull(lst,$"{lst} is null");
+		
+		T temp = lst.First();
+		lst.RemoveFirst();
+		lst.AddLast(temp);
+	}
+}
 }
