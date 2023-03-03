@@ -1,6 +1,6 @@
-obj
-bin
+obj/**
+bin/**
 
-.idea/**
+**/.idea/**
 *.DotSettings
 *.user
