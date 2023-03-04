@@ -37,10 +37,12 @@ public partial class ConvexPolygonTests {
         var Q     = new ConvexPolygon(Q_List);
         var resPQ = ConvexPolygon.IntersectionPolygon(P, Q);
         var resQP = ConvexPolygon.IntersectionPolygon(Q, P);
-        CyclicListComparison(answer, resPQ.Vertices
-                           , $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
-        CyclicListComparison(answer, resQP.Vertices
-                           , $"Intersection{mes}: Q-P : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
+
+        Assert.IsNotNull(resPQ, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
+        Assert.IsNotNull(resQP, $"Intersection{mes}: Q-P : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
+
+        CyclicListComparison(answer, resPQ.Vertices, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
+        CyclicListComparison(answer, resQP.Vertices, $"Intersection{mes}: Q-P : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
         Q_List.CyclicShift();
       }
       P_List.CyclicShift();
@@ -202,8 +204,15 @@ public partial class ConvexPolygonTests {
       , new Point2D(2, 4)
       , new Point2D(6, 4)
       });
+    var answerList = new List<Point2D>()
+      {
+        new Point2D(2, 6)
+      , new Point2D(2, 4)
+      , new Point2D(6, 4)
+      , new Point2D(4, 6)
+      };
 
-    DoIntersectionTest("4-6", P_List, Q_List, Q_List.ToList());
+    DoIntersectionTest("4-6", P_List, Q_List, answerList);
   }
 
   [Category("ConvexPolygonTests"), Test]

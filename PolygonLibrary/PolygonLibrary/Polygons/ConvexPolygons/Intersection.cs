@@ -53,22 +53,25 @@ public partial class ConvexPolygon {
 
     int lenP   = P.Vertices.Count;
     int lenQ   = Q.Vertices.Count;
-    int countP = 1;
-    int countQ = 1;
+    int countP = 0;
+    int countQ = 0;
     do {
       Point2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
       Point2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
       Point2D p      = P.Vertices.GetAtCyclic(countP);
       Point2D q      = Q.Vertices.GetAtCyclic(countQ);
 
-      Segment   hat_p     = P.Contour.Edges.GetAtCyclic(countP - 1);
-      Segment   hat_q     = Q.Contour.Edges.GetAtCyclic(countQ - 1);
-      CrossInfo crossInfo = Segment.Intersect(hat_p, hat_q);
-      Vector2D  hat_p0    = hat_p.directional.Normalize();
-      Vector2D  hat_q0    = hat_q.directional.Normalize();
+      Segment  hat_p  = P.Contour.Edges.GetAtCyclic(countP - 1);
+      Segment  hat_q  = Q.Contour.Edges.GetAtCyclic(countQ - 1);
+      Vector2D hat_p0 = hat_p.directional.Normalize();
+      Vector2D hat_q0 = hat_q.directional.Normalize();
 
-      int qInHp = Tools.CMP(hat_p0 ^ (q - pred_p).NormalizeZero());
-      int pInHq = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
+      int cross    = Tools.CMP(hat_p0 ^ hat_q0);
+      int pHhat_q0 = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
+      int qHhat_p0 = Tools.CMP(hat_p0 ^ (q - pred_p).NormalizeZero());
+
+      CrossInfo crossInfo = Segment.Intersect(hat_p, hat_q);
+
       if (crossInfo.crossType == CrossType.SinglePoint) {
         if (R.Count > 2) {
           if (crossInfo.p.Equals(R.First())) {
@@ -76,52 +79,49 @@ public partial class ConvexPolygon {
           }
         }
 
-        if (pInHq > 0) {
+        if (pHhat_q0 > 0) {
           inside = InsideType.InP;
-        } else if (qInHp > 0) {
+        } else if (qHhat_p0 > 0) {
           inside = InsideType.InQ;
-        }
+        } //Else keep 'inside'
 
-        //Else keep 'inside'
         AddPoint(R, crossInfo.p);
       }
 
-      int cross = Tools.CMP(hat_p.directional.Normalize() ^ hat_q.directional.Normalize());
       switch (crossInfo.crossType) {
-        case CrossType.Overlap when hat_p.directional * hat_q.directional < 0:
-          return null; //todo И страдать правильным образом
+        case CrossType.Overlap when hat_p0 * hat_q0 < 0: return null; //todo И страдать правильным образом
         case CrossType.Overlap:
-          // if (R.FindAll(point => point.Equals(crossInfo.p)).Any() ) {
-          //   
-          // }
-          // if (inside == InsideType.InP) {
-          //   Move(R, crossInfo.p, ref countQ, false);
-          // } else {
-          //   Move(R, crossInfo.p, ref countP, false);
-          // }
-          Move(R, crossInfo.p, ref countP, false);
-
+          if (inside == InsideType.InP) {
+            Move(R, crossInfo.p, ref countQ, false);
+          } else {
+            Move(R, crossInfo.p, ref countP, false);
+          }
           break;
-        default: {
+        case CrossType.NoCross:
+        case CrossType.SinglePoint: {
           if (Tools.GE(cross, 0)) {
-            if (qInHp > 0) {
+            if (qHhat_p0 > 0) {
               Move(R, p, ref countP, inside == InsideType.InP);
             } else {
               Move(R, q, ref countQ, inside == InsideType.InQ);
             }
           } else {
-            if (pInHq > 0) {
+            if (pHhat_q0 > 0) {
               Move(R, q, ref countQ, inside == InsideType.InQ);
             } else {
               Move(R, p, ref countP, inside == InsideType.InP);
             }
           }
+          if (R.Count > 2 && R.Last().Equals(R.First())) {
+            R.RemoveAt(R.Count - 1);
+            return new ConvexPolygon(R);
+          }
           break;
         }
       }
     } while (countP + countQ < 2 * (lenP + lenQ));
-    // } while ((countP < lenP || countQ < lenQ) && countP < 2 * lenP && countQ < 2 * lenQ); todo Потенциально можно быстрее ?
 
+    
     //If the intersection is a point or a segment, then we assume that the intersection is empty  
     if (R.Count == 1 || R.Count == 2) {
       return null;
