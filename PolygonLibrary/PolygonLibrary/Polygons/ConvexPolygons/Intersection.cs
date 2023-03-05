@@ -53,8 +53,10 @@ public partial class ConvexPolygon {
 
     int lenP   = P.Vertices.Count;
     int lenQ   = Q.Vertices.Count;
-    int countP = 0;
-    int countQ = 0;
+    int countP = 1;
+    int countQ = 1;
+
+    int repeatCount = 0;
     do {
       Point2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
       Point2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
@@ -112,6 +114,7 @@ public partial class ConvexPolygon {
               Move(R, p, ref countP, inside == InsideType.InP);
             }
           }
+          //todo Костыль!
           if (R.Count > 2 && R.Last().Equals(R.First())) {
             R.RemoveAt(R.Count - 1);
             return new ConvexPolygon(R);
@@ -119,7 +122,8 @@ public partial class ConvexPolygon {
           break;
         }
       }
-    } while (countP + countQ < 2 * (lenP + lenQ));
+      repeatCount++;
+    } while (repeatCount < 2 * (lenP + lenQ));
 
     
     //If the intersection is a point or a segment, then we assume that the intersection is empty  
