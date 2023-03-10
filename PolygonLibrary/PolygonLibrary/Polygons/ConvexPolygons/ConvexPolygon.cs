@@ -123,7 +123,8 @@ public partial class ConvexPolygon : BasicPolygon {
       int           i, j;
       List<Point2D> ps = new List<Point2D>();
       for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count) {
-        AddPoint(ps, GammaPair.CrossPairs(_sf[i], _sf[j]));
+        Point2D temp = GammaPair.CrossPairs(_sf[i], _sf[j]);
+        if (ps.Count == 0 || temp != ps[^1]) { ps.Add(temp); }
       }
 
       if (ps.Count > 1 && ps.First().CompareTo(ps.Last()) == 0) {
@@ -204,8 +205,8 @@ public partial class ConvexPolygon : BasicPolygon {
 
     // The point is somewhere inside the polygon cone.
     // The final decision is made on the basis of support function calculation
-      Vector2D norm = (Contour[ind] - Contour[ind - 1]).TurnCW();
-      return Tools.LT(norm * (Vector2D)p, norm * (Vector2D)Contour[ind - 1]);
+    Vector2D norm = (Contour[ind] - Contour[ind - 1]).TurnCW();
+    return Tools.LT(norm * (Vector2D)p, norm * (Vector2D)Contour[ind - 1]);
   }
 
   /// <summary>

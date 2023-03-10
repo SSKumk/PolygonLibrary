@@ -15,30 +15,51 @@ public partial class ConvexPolygon {
   /// </summary>
   private enum InsideType { Unknown, InP, InQ }
 
+
   /// <summary>
-  /// Smart adding a point to a list
+  /// Move to the next point in list
   /// </summary>
-  /// <param name="P">The list whereto the point should be added</param>
-  /// <param name="k">The point to be added</param>
-  private static void AddPoint(List<Point2D> P, Point2D k) {
-    if (P.Count == 0 || k != P.Last()) {
-      P.Add(k);
+  /// <param name="counter">Current counter</param>
+  private static void Move(ref int counter) { counter++; }
+
+  /// <summary>
+  /// Add the point to the list
+  /// </summary>
+  /// <param name="list">The list of vertices of polygon to be build</param>
+  /// <param name="point">The vertex to be added</param>
+  /// <returns>
+  /// True if polygon is built already and stop is needed
+  /// False otherwise
+  /// </returns>
+  private static bool AddPoint(List<Point2D> list, Point2D point) {
+    if (list.Count != 0 && point.Equals(list[0])) {
+      return true;
     }
+    list.Add(point);
+    return false;
   }
 
-  /// <summary>
-  /// Moves to next vertex and if needed current vertex added to list 
-  /// </summary>
-  /// <param name="R">The list of vertices of polygon to be build</param>
-  /// <param name="vertex">The vertex to be added</param>
-  /// <param name="countVertex">Current counter</param>
-  /// <param name="needAdd">The flag determines will vertex be added or not</param>
-  private static void Move(List<Point2D> R, Point2D vertex, ref int countVertex, bool needAdd) {
-    if (needAdd) {
-      AddPoint(R, vertex);
+  private static bool MoveGeneric(List<Point2D> list
+                                , Point2D       p
+                                , Point2D       q
+                                , ref int       countP
+                                , ref int       countQ
+                                , int           skewPSign
+                                , int           pHhat_q0
+                                , int           qHhat_p0
+                                , InsideType    inside) {
+    if ((skewPSign >= 0 && qHhat_p0 > 0) || (skewPSign < 0 && pHhat_q0 <= 0)) {
+      if (inside == InsideType.InP) {
+        if (AddPoint(list, p)) { return true; }
+      }
+      Move(ref countP);
+    } else {
+      if (inside == InsideType.InQ) {
+        if (AddPoint(list, q)) { return true; }
+      }
+      Move(ref countQ);
     }
-
-    countVertex++;
+    return false;
   }
 
   /// <summary>
@@ -46,17 +67,17 @@ public partial class ConvexPolygon {
   /// </summary>
   /// <param name="P">The first convex polygon</param>
   /// <param name="Q">The second convex polygon</param>
-  /// <returns>The resultant convex polgon</returns>
+  /// <returns>The resultant convex polygon</returns>
   public static ConvexPolygon IntersectionPolygon(ConvexPolygon P, ConvexPolygon Q) {
     List<Point2D> R      = new List<Point2D>();
     InsideType    inside = InsideType.Unknown;
+    int           lenP   = P.Vertices.Count;
+    int           lenQ   = Q.Vertices.Count;
+    int           countP = 1;
+    int           countQ = 1;
 
-    int lenP   = P.Vertices.Count;
-    int lenQ   = Q.Vertices.Count;
-    int countP = 1;
-    int countQ = 1;
-
-    int repeatCount = 0;
+    int  repeatCount = 0;
+    bool noReturnYet = true;
     do {
       Point2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
       Point2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
@@ -68,83 +89,109 @@ public partial class ConvexPolygon {
       Vector2D hat_p0 = hat_p.directional.Normalize();
       Vector2D hat_q0 = hat_q.directional.Normalize();
 
-      int cross    = Tools.CMP(hat_p0 ^ hat_q0);
-      int pHhat_q0 = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
-      int qHhat_p0 = Tools.CMP(hat_p0 ^ (q - pred_p).NormalizeZero());
+      int skewPSign = Tools.CMP(hat_p0 ^ hat_q0);
+      int pHhat_q0  = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
+      int qHhat_p0  = Tools.CMP(hat_p0 ^ (q - pred_p).NormalizeZero());
 
       CrossInfo crossInfo = Segment.Intersect(hat_p, hat_q);
 
       if (crossInfo.crossType == CrossType.SinglePoint) {
-        if (R.Count > 2) {
-          if (crossInfo.p.Equals(R.First())) {
-            return new ConvexPolygon(R);
-          }
-        }
-
-        if (pHhat_q0 > 0) {
-          inside = InsideType.InP;
-        } else if (qHhat_p0 > 0) {
+        if (Tools.GT(pHhat_q0)) { inside = InsideType.InP; } else if (Tools.GT(qHhat_p0)) {
           inside = InsideType.InQ;
         } //Else keep 'inside'
-
-        AddPoint(R, crossInfo.p);
-      }
-
-      switch (crossInfo.crossType) {
-        case CrossType.Overlap when hat_p0 * hat_q0 < 0: return null; //todo И страдать правильным образом
-        case CrossType.Overlap:
-          if (inside == InsideType.InP) {
-            Move(R, crossInfo.p, ref countQ, false);
-          } else {
-            Move(R, crossInfo.p, ref countP, false);
+        if (crossInfo.fTypeS1 == IntersectPointPos.Inner && crossInfo.fTypeS2 == IntersectPointPos.Inner) {
+          if (AddPoint(R, crossInfo.fp)) {
+            noReturnYet = false;
+            continue;
           }
-          break;
-        case CrossType.NoCross:
-        case CrossType.SinglePoint: {
-          if (Tools.GE(cross, 0)) {
-            if (qHhat_p0 > 0) {
-              Move(R, p, ref countP, inside == InsideType.InP);
-            } else {
-              Move(R, q, ref countQ, inside == InsideType.InQ);
-            }
-          } else {
-            if (pHhat_q0 > 0) {
-              Move(R, q, ref countQ, inside == InsideType.InQ);
-            } else {
-              Move(R, p, ref countP, inside == InsideType.InP);
-            }
-          }
-          //todo Костыль!
-          if (R.Count > 2 && R.Last().Equals(R.First())) {
-            R.RemoveAt(R.Count - 1);
-            return new ConvexPolygon(R);
-          }
-          break;
         }
       }
-      repeatCount++;
-    } while (repeatCount < 2 * (lenP + lenQ));
 
-    
-    //If the intersection is a point or a segment, then we assume that the intersection is empty  
+      //No 'meaty' intersection
+      if (Tools.EQ(skewPSign) && Tools.LE(hat_p0 * hat_q0) && Tools.LE(pHhat_q0) && Tools.LE(qHhat_p0)) { return null; }
+
+      switch (crossInfo.crossType) {
+        case CrossType.NoCross:
+          if (MoveGeneric(R, p, q, ref countP, ref countQ, skewPSign, pHhat_q0, qHhat_p0, inside)) {
+            noReturnYet = false;
+            continue;
+          }
+          break;
+        case CrossType.SinglePoint:
+          if (crossInfo.fTypeS1 != IntersectPointPos.End && crossInfo.fTypeS2 == IntersectPointPos.End) {
+            if (AddPoint(R, crossInfo.fp)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countQ);
+            inside = InsideType.Unknown;
+          } else if (crossInfo.fTypeS1 == IntersectPointPos.End && crossInfo.fTypeS2 != IntersectPointPos.End) {
+            if (AddPoint(R, crossInfo.fp)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countP);
+            inside = InsideType.Unknown;
+          } else if (crossInfo.fTypeS1 == IntersectPointPos.End && crossInfo.fTypeS2 == IntersectPointPos.End) {
+            if (AddPoint(R, crossInfo.fp)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countP);
+            Move(ref countQ);
+            inside = InsideType.Unknown;
+          } else {
+            if (MoveGeneric(R, p, q, ref countP, ref countQ, skewPSign, pHhat_q0, qHhat_p0, inside)) {
+              noReturnYet = false;
+              continue;
+            }
+          }
+          break;
+        case CrossType.Overlap:
+          if (crossInfo.sTypeS1 == IntersectPointPos.End && crossInfo.sTypeS2 == IntersectPointPos.Inner) {
+            if (AddPoint(R, p)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countP);
+            inside = InsideType.InP;
+          } else if (crossInfo.sTypeS1 == IntersectPointPos.Inner && crossInfo.sTypeS2 == IntersectPointPos.End) {
+            if (AddPoint(R, q)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countQ);
+            inside = InsideType.InQ;
+          } else { // sTypeSP == E && sTypeSQ == E 
+            if (AddPoint(R, crossInfo.sp)) {
+              noReturnYet = false;
+              continue;
+            }
+            Move(ref countP);
+            Move(ref countQ);
+            inside = InsideType.Unknown;
+          }
+          break;
+      }
+      repeatCount++;
+    } while (noReturnYet && repeatCount < 2 * (lenP + lenQ));
+
+    //If the intersection is a point or a segment, then we assume that the intersection is empty
     if (R.Count == 1 || R.Count == 2) {
       return null;
     }
-
     if (R.Count > 2) {
       return new ConvexPolygon(R);
     }
-
     if (Q.ContainsInside(P.Vertices.First())) {
       return P;
     }
-
     if (P.ContainsInside(Q.Vertices.First())) {
       return Q;
     }
-
     return null;
   }
+
 #endregion
 
 }
