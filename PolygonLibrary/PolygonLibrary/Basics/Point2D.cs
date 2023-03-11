@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Basics; 
+namespace PolygonLibrary.Basics;
 
 /// <summary>
 /// Class of points (elements of affine space) in the plane. 
 /// It is connected ideologically to the class Vector2D of planar vectors
 /// </summary>
-public class Point2D : IComparable<Point2D>{
+public class Point2D : IComparable<Point2D> {
   #region Comparing
+
   /// <summary>
   /// Point comparer realizing the lexicographic order
   /// </summary>
@@ -71,9 +72,11 @@ public class Point2D : IComparable<Point2D>{
   /// <param name="p2">The second point</param>
   /// <returns>true, if p1 &lt;= p2; false, otherwise</returns>
   public static bool operator <=(Point2D p1, Point2D p2) => p1.CompareTo(p2) <= 0;
+
   #endregion
 
   #region Access properties
+
   /// <summary>
   /// The abscissa
   /// </summary>
@@ -92,18 +95,22 @@ public class Point2D : IComparable<Point2D>{
   public double this[int i] {
     get {
 #if DEBUG
-      return i switch {
-        0 => x
+      return i switch
+        {
+          0 => x
         , 1 => y
         , _ => throw new IndexOutOfRangeException()
-      };
-#endif
+        };
+#else
       return i == 0 ? x : y;
+#endif
     }
   }
+
   #endregion
 
   #region Miscellaneous procedures
+
   /// <summary>
   /// Distance to the origin
   /// </summary>
@@ -129,9 +136,11 @@ public class Point2D : IComparable<Point2D>{
   /// <param name="p2">The second point</param>
   /// <returns>The square of the distance between the given points</returns>
   public static double Dist2(Point2D p1, Point2D p2) => Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2);
+
   #endregion
 
   #region Convertors
+
   /// <summary>
   /// Explicit convertor to a two-dimensional point from a two-dimensional vector
   /// </summary>
@@ -166,11 +175,12 @@ public class Point2D : IComparable<Point2D>{
 #endif
     return new Point2D(v[0], v[1]);
   }
+
   #endregion
 
   #region Overrides
-  public override bool Equals( object obj)
-  {
+
+  public override bool Equals(object obj) {
 #if DEBUG
     if (obj is not Point2D point2D) {
       throw new ArgumentException($"{obj} is not a Point2D!");
@@ -182,9 +192,11 @@ public class Point2D : IComparable<Point2D>{
   public override string ToString() => "{" + x + ";" + y + "}";
 
   public override int GetHashCode() => x.GetHashCode() + y.GetHashCode();
+
   #endregion
 
   #region Constructors
+
   /// <summary>
   /// The default construct producing the origin point 
   /// </summary>
@@ -220,9 +232,11 @@ public class Point2D : IComparable<Point2D>{
     x = v.x;
     y = v.y;
   }
+
   #endregion
 
   #region Operators
+
   /// <summary>
   /// Linear combination of two points 
   /// </summary>
@@ -244,8 +258,7 @@ public class Point2D : IComparable<Point2D>{
   /// <param name="p3">The third point</param>
   /// <param name="w3">The weight of the third point</param>
   /// <returns>The resultant point</returns>
-  public static Point2D LinearCombination(
-    Point2D p1, double w1, Point2D p2, double w2, Point2D p3, double w3) =>
+  public static Point2D LinearCombination(Point2D p1, double w1, Point2D p2, double w2, Point2D p3, double w3) =>
     new Point2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 
   /// <summary>
@@ -265,7 +278,7 @@ public class Point2D : IComparable<Point2D>{
 
     enPoint.Dispose();
     enWeight.Dispose();
-      
+
     return new Point2D(x, y);
   }
 
@@ -330,12 +343,15 @@ public class Point2D : IComparable<Point2D>{
 #endif
     return new Point2D(p.x / a, p.y / a);
   }
+
   #endregion
 
   #region Point constants
+
   /// <summary>
   /// The zero vector
   /// </summary>
   public static readonly Point2D Origin = new Point2D(0, 0);
+
   #endregion
 }

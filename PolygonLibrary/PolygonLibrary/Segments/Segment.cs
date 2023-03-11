@@ -13,14 +13,14 @@ public enum CrossType {
   /// </summary>
   NoCross
 
- ,
+  ,
 
   /// <summary>
   /// Intersection at one point
   /// </summary>
   SinglePoint
 
- ,
+  ,
 
   /// <summary>
   /// The segments are parallel and overlap
@@ -33,28 +33,26 @@ public enum CrossType {
 /// Which type is the point of intersection regarding to the segment 
 /// </summary>
 public enum IntersectPointPos {
-
-
   /// <summary>
   /// There is no intersection
   /// </summary>
   Empty
 
- ,
+  ,
 
   /// <summary>
   /// The intersection point is a start point of a segment
   /// </summary>
   Begin
 
- ,
+  ,
 
   /// <summary>
   /// The intersection point is an inner point of a segment
   /// </summary>
   Inner
 
- ,
+  ,
 
   /// <summary>
   /// The intersection point is an end point of a segment
@@ -116,32 +114,32 @@ public class CrossInfo {
   /// Full constructor
   /// </summary>
   /// <param name="type">The type of the crossing</param>
-  /// <param name="np">The main point of the crossing</param>
-  /// <param name="np1">The additional point of the crossing</param>
+  /// <param name="nfp">The main point of the crossing</param>
+  /// <param name="nsp">The additional point of the crossing</param>
   /// <param name="ns1">The first segment reference</param>
   /// <param name="ns2">The second segment reference</param>
-  /// <param name="nfTypeS1">Location-type of the first point of the crossing relative to first segment</param>
-  /// <param name="nsTypeS1">Location-type of the second point of the crossing relative to first segment</param>
-  /// <param name="nfTypeS2">Location-type of the first point of the crossing relative to second segment</param>
-  /// <param name="nsTypeS2">Location-type of the second point of the crossing relative to second segment</param>
-  public CrossInfo(CrossType         type
-                 , Point2D           np
-                 , Point2D           np1
-                 , Segment           ns1
-                 , Segment           ns2
-                 , IntersectPointPos nfTypeS1
-                 , IntersectPointPos nsTypeS1
-                 , IntersectPointPos nfTypeS2
-                 , IntersectPointPos nsTypeS2) {
+  /// <param name="nfTypeS1">Location-type of the first point of the crossing relative to the first segment</param>
+  /// <param name="nfTypeS2">Location-type of the first point of the crossing relative to the second segment</param>
+  /// <param name="nsTypeS1">Location-type of the second point of the crossing relative to the first segment</param>
+  /// <param name="nsTypeS2">Location-type of the second point of the crossing relative to the second segment</param>
+  public CrossInfo(CrossType type
+                   , Point2D nfp
+                   , Point2D nsp
+                   , Segment ns1
+                   , Segment ns2
+                   , IntersectPointPos nfTypeS1
+                   , IntersectPointPos nfTypeS2
+                   , IntersectPointPos nsTypeS1
+                   , IntersectPointPos nsTypeS2) {
     crossType = type;
-    fp        = np;
-    sp        = np1;
-    s1        = ns1;
-    s2        = ns2;
-    fTypeS1   = nfTypeS1;
-    sTypeS1   = nsTypeS1;
-    fTypeS2   = nfTypeS2;
-    sTypeS2   = nsTypeS2;
+    fp = nfp;
+    sp = nsp;
+    s1 = ns1;
+    s2 = ns2;
+    fTypeS1 = nfTypeS1;
+    sTypeS1 = nsTypeS1;
+    fTypeS2 = nfTypeS2;
+    sTypeS2 = nsTypeS2;
   }
 }
 
@@ -149,8 +147,8 @@ public class CrossInfo {
 /// Class of a non-degenerated segment
 /// </summary>
 public class Segment : IComparable<Segment> {
+  #region Access properties
 
-#region Access properties
   /// <summary>
   /// The first end of the segment
   /// </summary>
@@ -167,15 +165,11 @@ public class Segment : IComparable<Segment> {
   /// <param name="i">The index: 0 - the first end, 1 - the second end</param>
   /// <returns>The point of the corresponding end</returns>
   public Point2D this[int i] {
-    get
-      {
+    get {
 #if DEBUG
-        return i switch
-                 {
-                   0 => p1
-                 , 1 => p2
-                 , _ => throw new IndexOutOfRangeException()
-                 };
+      return i switch {
+        0 => p1, 1 => p2, _ => throw new IndexOutOfRangeException()
+      };
 #else
         if (i == 0) {
           return p1;
@@ -183,7 +177,7 @@ public class Segment : IComparable<Segment> {
           return p2;
         }
 #endif
-      }
+    }
   }
 
   /// <summary>
@@ -211,13 +205,15 @@ public class Segment : IComparable<Segment> {
   /// Check whether the segment is vertical
   /// </summary>
   public bool isVertical { get; private set; }
-#endregion
 
-#region Comparing
+  #endregion
+
+  #region Comparing
+
   /// <summary>
   /// Full comparer:
   ///   - lexicographic order of the first ends
-  ///   - lexicographic orders of the second ends
+  ///   - lexicographic order of the second ends
   /// </summary>
   /// <param name="s">The segment, which to be compared with</param>
   /// <returns>+1, if this segment is greater; 0, if these segments are equal; -1, otherwise</returns>
@@ -229,9 +225,11 @@ public class Segment : IComparable<Segment> {
       return p2.CompareTo(s.p2);
     }
   }
-#endregion
 
-#region Overrides
+  #endregion
+
+  #region Overrides
+
   public override string ToString() => "[" + p1 + ";" + p2 + "]";
 
   public override bool Equals(object obj) {
@@ -244,9 +242,11 @@ public class Segment : IComparable<Segment> {
   }
 
   public override int GetHashCode() => p1.GetHashCode() + p2.GetHashCode();
-#endregion
 
-#region Constructors
+  #endregion
+
+  #region Constructors
+
   /// <summary>
   /// Auxiliary internal default constructor
   /// </summary>
@@ -308,18 +308,20 @@ public class Segment : IComparable<Segment> {
 
     ComputeParameters();
   }
-#endregion
 
-#region Common procedures
+  #endregion
+
+  #region Common procedures
+
   /// <summary>
   /// Computing parameters of the vector after changing a coordinate
   /// </summary>
   protected void ComputeParameters() {
-    normal      = new Vector2D(p2.y - p1.y, p1.x - p2.x);
+    normal = new Vector2D(p2.y - p1.y, p1.x - p2.x);
     directional = p2 - p1;
-    length      = directional.Length;
-    polarAngle  = directional.PolarAngle;
-    isVertical  = Tools.EQ(p1.x, p2.x);
+    length = directional.Length;
+    polarAngle = directional.PolarAngle;
+    isVertical = Tools.EQ(p1.x, p2.x);
   }
 
   /// <summary>
@@ -366,12 +368,12 @@ public class Segment : IComparable<Segment> {
   /// <param name="s2">The second segment</param>
   /// <returns>The information about the intersection</returns>
   public static CrossInfo Intersect(Segment s1, Segment s2) {
-    Vector2D d1       = s1.directional, d2        = s2.directional;
-    Point2D  resPoint = null,           resPoint1 = null;
+    Vector2D d1 = s1.directional, d2 = s2.directional;
+    Point2D resPoint = null, resPoint1 = null;
     IntersectPointPos fS1 = IntersectPointPos.Empty
-                    , fS2 = IntersectPointPos.Empty
-                    , sS1 = IntersectPointPos.Empty
-                    , sS2 = IntersectPointPos.Empty;
+      , fS2 = IntersectPointPos.Empty
+      , sS1 = IntersectPointPos.Empty
+      , sS2 = IntersectPointPos.Empty;
     CrossType crossType;
 
     /*
@@ -385,8 +387,8 @@ public class Segment : IComparable<Segment> {
           a1* = Delta1 / Delta = (ds ^ d2) / (d1 ^ d2),
           a2* = -Delta2 / Delta = -(d1 ^ ds) / (d1 ^ d2)
     */
-    double   Delta = d1 ^ d2;
-    Vector2D ds    = s2.p1 - s1.p1;
+    double Delta = d1 ^ d2;
+    Vector2D ds = s2.p1 - s1.p1;
     if (Tools.NE(Delta)) {
       // The lines containing the segments are not parallel;
       // then find the intersection point of the lines and 
@@ -396,7 +398,7 @@ public class Segment : IComparable<Segment> {
         crossType = CrossType.NoCross;
       } else {
         crossType = CrossType.SinglePoint;
-        resPoint  = s1.p1 + a1 * d1;
+        resPoint = s1.p1 + a1 * d1;
 
         fS1 = CheckPointType(a1, 0, 1);
         fS2 = CheckPointType(a2, 0, 1);
@@ -412,20 +414,20 @@ public class Segment : IComparable<Segment> {
       //      if the latter is not less then the first
       //   4) if the segments intersect, compute the endpoints of the intersection segment
       Vector2D unitVec = s1.p2 - s1.p1;
-      double l     = unitVec.Length
-           , l2    = l * l
-           , c_    = (s2.p1 - s1.p1) * unitVec / l2
-           , d_    = (s2.p2 - s1.p1) * unitVec / l2
-           , c     = Math.Min(c_, d_)
-           , d     = Math.Max(c_, d_)
-           , alpha = Math.Max(0 /* = a */, c)
-           , beta  = Math.Min(1 /* = b */, d);
+      double l = unitVec.Length
+        , l2 = l * l
+        , c_ = (s2.p1 - s1.p1) * unitVec / l2
+        , d_ = (s2.p2 - s1.p1) * unitVec / l2
+        , c = Math.Min(c_, d_)
+        , d = Math.Max(c_, d_)
+        , alpha = Math.Max(0 /* = a */, c)
+        , beta = Math.Min(1 /* = b */, d);
       if (Tools.LT(alpha, beta)) {
         // The segments overlap
         crossType = CrossType.Overlap;
-        resPoint  = s1.p1 + alpha * unitVec;
+        resPoint = s1.p1 + alpha * unitVec;
         resPoint1 = s1.p1 + beta * unitVec;
-        
+
         fS1 = CheckPointType(alpha, 0, 1);
         sS1 = CheckPointType(beta, 0, 1);
         fS2 = CheckPointType(alpha, c_, d_);
@@ -433,19 +435,18 @@ public class Segment : IComparable<Segment> {
       } else if (Tools.EQ(alpha, beta)) {
         // The segments intersect by an endpoint
         crossType = CrossType.SinglePoint;
-        resPoint  = s1.p1 + alpha * unitVec;
-        fS1       = CheckPointType(alpha, 0, 1);
-        fS2       = CheckPointType(alpha, c_, d_);
+        resPoint = s1.p1 + alpha * unitVec;
+        fS1 = CheckPointType(alpha, 0, 1);
+        fS2 = CheckPointType(alpha, c_, d_);
       } else {
         // The segments do not intersect
         crossType = CrossType.NoCross;
       }
-
     } else {
       crossType = CrossType.NoCross;
     }
 
-    return new CrossInfo(crossType, resPoint, resPoint1, s1, s2, fS1, sS1, fS2, sS2);
+    return new CrossInfo(crossType, resPoint, resPoint1, s1, s2, fS1, fS2, sS1, sS2);
   }
 
   /// <summary>
@@ -466,11 +467,13 @@ public class Segment : IComparable<Segment> {
     if (Tools.EQ(a, fst)) {
       return IntersectPointPos.Begin;
     }
+
     if (Tools.EQ(a, snd)) {
       return IntersectPointPos.End;
     }
+
     return IntersectPointPos.Inner;
   }
-#endregion
 
+  #endregion
 }
