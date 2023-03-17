@@ -10,7 +10,6 @@ namespace AVLUtils
   /// </summary>
   /// <typeparam name="TValue">The type of the elements of the tree</typeparam>
   public class AVLTreeUnsafe<TValue> : AVLTree<TValue>, IUnsafeContainer<TValue>
-    where TValue : new ()
   {
     #region Unsafe trees methods
     /// <summary>

@@ -10,7 +10,6 @@ namespace AVLUtils
   /// <typeparam name="TValue">Type of data to be stored in the container</typeparam>
   /// <typeparam name="TTree">The tree type on which the container is based</typeparam>
   public abstract class AVLBaseSet<TValue, TTree> : ISet<TValue>, IMultiEnumerable<TValue>
-    where TValue : new ()
     where TTree : AVLTree<TValue>
   {
     /// <summary>
@@ -456,7 +455,6 @@ namespace AVLUtils
   /// </summary>
   /// <typeparam name="TValue"></typeparam>
   public class AVLSet<TValue> : AVLBaseSet<TValue, AVLTree<TValue>>
-    where TValue : new()
   {
     /// <summary>
     /// Default constructor that involves the default order

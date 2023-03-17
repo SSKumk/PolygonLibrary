@@ -13,7 +13,6 @@ namespace AVLUtils
   /// <typeparam name="TTree">The tree type on which the container is based</typeparam>
   public class AVLBaseDictionary<TKey, TValue, TTree> :
     IDictionary<TKey, TValue>, IMultiEnumerable<KeyValuePair<TKey, TValue>>
-    where TValue : new ()
     where TTree : AVLTree<KeyValuePair<TKey, TValue>>
   {
     /// <summary>

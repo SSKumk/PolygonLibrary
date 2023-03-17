@@ -235,7 +235,7 @@ namespace PolygonLibrary.Toolkit
 		/// If <see cref="upper"/> is greater or equal to the size of the array, it is set to size - 1.
 		/// If <see cref="lower"/> is greater than <see cref="upper"/>, the method returns -1.
 		/// </remarks>
-		private static int BinarySearchByPredicate<T>(
+		public static int BinarySearchByPredicate<T>(
 			this T[] array, Predicate<T> pred, int lower, int upper)
 		{
 			if (array == null || array.Rank > 1) {

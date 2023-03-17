@@ -9,7 +9,6 @@ namespace AVLUtils
   /// </summary>
   /// <typeparam name="TValue">Type of the value to be stored in the tree</typeparam>
   public partial class AVLTree<TValue> : IAVLTree<TValue>
-    where TValue : new ()
   {
     #region IMultiEnumerable<T> methods (methids of IEnumerable<T> and related)
     /// <summary>
