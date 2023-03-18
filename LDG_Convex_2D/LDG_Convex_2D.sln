@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LDGObjects", "LDGObjects\LD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayoffGenerationTest", "TestProjects\PayoffGenerationTest\PayoffGenerationTest.csproj", "{63B9A091-28CD-40EF-9FA6-F377D0805587}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bridges", "Bridges\Bridges.csproj", "{80AFC65C-BD9E-4C91-9411-4F0B7C5C6770}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{63B9A091-28CD-40EF-9FA6-F377D0805587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63B9A091-28CD-40EF-9FA6-F377D0805587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63B9A091-28CD-40EF-9FA6-F377D0805587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80AFC65C-BD9E-4C91-9411-4F0B7C5C6770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80AFC65C-BD9E-4C91-9411-4F0B7C5C6770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80AFC65C-BD9E-4C91-9411-4F0B7C5C6770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80AFC65C-BD9E-4C91-9411-4F0B7C5C6770}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

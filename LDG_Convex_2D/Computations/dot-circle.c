@@ -5,7 +5,7 @@ ProblemName = "Inertial point; circle target set";
 ShortProblemName = "Dot-circle";
 
 // Path to the folder whereto the result should be written
-path = ".\\Dot-circle";
+path = "./Dot-circle";
 
 
 /* =================================================================================

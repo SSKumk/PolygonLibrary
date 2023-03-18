@@ -1,42 +1,48 @@
-﻿using PolygonLibrary.Basics;
+﻿using System.Text;
+using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Toolkit;
-
 using ParamReaderLibrary;
 
-namespace LDGObjects
-{
+namespace LDGObjects {
   /// <summary>
   /// Enumeration of the computation type.
   /// In particular, such an information is necessary for correct deleting 
   /// results of previous computations in the problem folder
   /// </summary>
-  public enum ComputationType
-  {
+  public enum ComputationType {
     /// <summary>
     /// This exemplar of GameData is initialized for computation of stable bridges.
     /// All files of results should be deleted
     /// </summary>
-    StableBridge,
+    StableBridge
+
+   ,
 
     /// <summary>
     /// This exemplar of GameData is initialized for computation of switching surfaces.
     /// All files of switching surfaces and motions should be deleted 
     /// </summary>
-    SwitchingSurfaces,
+    SwitchingSurfaces
+
+   ,
 
     /// <summary>
     /// This exemplar of GameData is initialized for computation of singular surfaces.
     /// All files of singular surfaces and motions should be deleted 
     /// </summary>
-    SingularSurfaces,
+    SingularSurfaces
+
+   ,
 
     /// <summary>
     /// This exemplar of GameData is initialized for computation of switching surfaces.
     /// All files of motions should be deleted 
     /// </summary>
-    Motions,
+    Motions
+
+   ,
 
     /// <summary>
     /// This exemplar of GameData is initialized for some other computation 
@@ -48,70 +54,72 @@ namespace LDGObjects
   /// <summary>
   /// Class for keeping game parameter data
   /// </summary>
-  public class GameData
-  {
+  public class GameData {
     #region Information about the initial clearance of the problem folder
+
     /// <summary>
     /// Extensions of files with certain objects (correspond to the ComputationType enumeration)
     /// </summary>
-    static public SortedDictionary<ComputationType,string> Extensions = 
-      new SortedDictionary<ComputationType,string>()
-      { 
-        { ComputationType.StableBridge, "bridge"}, 
-        { ComputationType.SwitchingSurfaces, "swsurf"}, 
-        { ComputationType.SingularSurfaces, "singsurf"}, 
-        { ComputationType.Motions, "motion" }
+    static public SortedDictionary<ComputationType, string> Extensions = new SortedDictionary<ComputationType, string>()
+      {
+        { ComputationType.StableBridge, "bridge" }
+      , { ComputationType.SwitchingSurfaces, "swsurf" }
+      , { ComputationType.SingularSurfaces, "singsurf" }
+      , { ComputationType.Motions, "motion" }
       };
 
     /// <summary>
     /// Information what types of files to delete during some certain computation
     /// </summary>
-    static protected SortedDictionary<ComputationType,List<ComputationType>> toDelete 
-      = new SortedDictionary<ComputationType,List<ComputationType>>()
-      {
-        // what to delete when stable bridges are copmuted
-        { 
-          ComputationType.StableBridge,
-          new List<ComputationType>() 
+    static protected SortedDictionary<ComputationType, List<ComputationType>> toDelete =
+      new SortedDictionary<ComputationType, List<ComputationType>>()
+        {
+          // what to delete when stable bridges are copmuted
           {
-            ComputationType.StableBridge,
-            ComputationType.SwitchingSurfaces,
-            ComputationType.SingularSurfaces,
-            ComputationType.Motions
+            ComputationType.StableBridge, new List<ComputationType>()
+              {
+                ComputationType.StableBridge
+              , ComputationType.SwitchingSurfaces
+              , ComputationType.SingularSurfaces
+              , ComputationType.Motions
+              }
           }
-        },
-        // what to delete when switching surfaces are computed
-        {
-          ComputationType.SwitchingSurfaces,
-          new List<ComputationType>() 
-          { 
-            ComputationType.SwitchingSurfaces,
-            ComputationType.Motions
+         ,
+          // what to delete when switching surfaces are computed
+          {
+            ComputationType.SwitchingSurfaces, new List<ComputationType>()
+              {
+                ComputationType.SwitchingSurfaces
+              , ComputationType.Motions
+              }
           }
-        },        
-        // what to delete when singular surfaces are computed 
-        {
-          ComputationType.SingularSurfaces,
-          new List<ComputationType>() 
-          { 
-            ComputationType.SingularSurfaces,
-            ComputationType.Motions
+         ,
+          // what to delete when singular surfaces are computed 
+          {
+            ComputationType.SingularSurfaces, new List<ComputationType>()
+              {
+                ComputationType.SingularSurfaces
+              , ComputationType.Motions
+              }
           }
-        },        
-        // what to delete when motions are computed
-        {
-          ComputationType.Motions,
-          new List<ComputationType>() { }
-        },
-        // what to delete when other computations are performed
-        {
-          ComputationType.Other,
-          new List<ComputationType>() { }           
-        }
-      };
+         ,
+          // what to delete when motions are computed
+          {
+            ComputationType.Motions, new List<ComputationType>()
+                { }
+          }
+         ,
+          // what to delete when other computations are performed
+          {
+            ComputationType.Other, new List<ComputationType>()
+                { }
+          }
+        };
+
     #endregion
 
     #region Input data
+
     /// <summary>
     /// Name of the problem; to be written in all resultant files for checking their consistency
     /// </summary> 
@@ -128,6 +136,7 @@ namespace LDGObjects
     public string path;
 
     #region Data defining the dynamics of the game
+
     /// <summary>
     /// Dimension of the phase vector
     /// </summary>
@@ -172,9 +181,11 @@ namespace LDGObjects
     /// The time step
     /// </summary>
     public double dt;
+
     #endregion
 
     #region Control constraints
+
     /// <summary>
     /// Type of the first player control constraint:
     ///   0 - a convex hull of a collection of points (now only for the case p = 2)
@@ -220,9 +231,11 @@ namespace LDGObjects
     /// Precomputed vectograms of the first player
     /// </summary>
     public SortedDictionary<double, ConvexPolygon> Qs;
+
     #endregion
 
     #region Data defining the payoff function
+
     /// <summary>
     /// Type of the payoff:
     ///   0 - distance to a given point in some given subspace;  
@@ -279,12 +292,9 @@ namespace LDGObjects
     /// Lazy property for the pPolygon of the set for the case of the payoff 
     /// taken as the distance to a set
     /// </summary>
-    private ConvexPolygon basic
-    {
-      get
-      {
-        if (_basic == null)
-          _basic = new ConvexPolygon(payVertices);
+    private ConvexPolygon basic {
+      get {
+        if (_basic == null) _basic = new ConvexPolygon(payVertices);
         return _basic;
       }
     }
@@ -295,11 +305,9 @@ namespace LDGObjects
     /// <param name="c">The value of the payoff</param>
     /// <param name="gridNum">In the case of distance to a set, number of vertices in approximations of arcs</param>
     /// <returns>The corresponding convex polygon</returns>
-    public ConvexPolygon PayoffLevelSet(double cOrig, int gridNum = 20)
-    {
+    public ConvexPolygon PayoffLevelSet(double cOrig, int gridNum = 20) {
       double c = cOrig >= 0 ? cOrig : 0;
-      switch (payoffType)
-      {
+      switch (payoffType) {
         case 0:
           return PolygonTools.Circle(payX, payY, c, payVqnt);
 
@@ -308,24 +316,24 @@ namespace LDGObjects
 
         case 2:
           if (gridNum < 1)
-            throw new Exception("Internal: generating level set of the payoff as a distance to a set - gridNum less than 1");
+            throw new Exception(
+              "Internal: generating level set of the payoff as a distance to a set - gridNum less than 1");
 
-          if (Tools.EQ(c))
-            return basic;
+          if (Tools.EQ(c)) return basic;
 
           List<GammaPair> gps = new List<GammaPair>();
-          int i, j, k;
+          int i
+          , j
+          , k;
           double da;
-          for (i = 0, j = 1; i < basic.Contour.Count; i++, j = (j + 1) % basic.Contour.Count)
-          {
+          for (i = 0, j = 1; i < basic.Contour.Count; i++, j = (j + 1) % basic.Contour.Count) {
             da = basic.SF[j].Normal.PolarAngle - basic.SF[i].Normal.PolarAngle;
             if (Tools.LT(da)) da += 2 * Math.PI;
             da /= gridNum;
 
             Vector2D vert = (Vector2D)GammaPair.CrossPairs(basic.SF[i], basic.SF[j]);
 
-            for (k = 0; k < gridNum; k++)
-            {
+            for (k = 0; k < gridNum; k++) {
               Vector2D norm = basic.SF[i].Normal.Turn(k * da);
               double val = norm * vert + c;
               gps.Add(new GammaPair(norm, val));
@@ -341,6 +349,7 @@ namespace LDGObjects
 
     // The array of values of the payoff to compute bridges
     public List<double> cValues;
+
     #endregion
 
     /// <summary>
@@ -362,16 +371,17 @@ namespace LDGObjects
     /// Collection of matrices E for the instants from the time grid
     /// </summary>
     public SortedDictionary<double, Matrix> E;
+
     #endregion
 
     #region Constructor
+
     /// <summary>
     /// Reading and initializtion of problem data
     /// </summary>
     /// <param name="inFName">File with the data</param>
     /// <param name="compObj">Computation type (to delete correctly files of previous computations)</param>
-    public GameData(string inFName, ComputationType compObj)
-    {
+    public GameData(string inFName, ComputationType compObj) {
       ParamReader pr = new ParamReader(inFName);
 
       ProblemName = pr.ReadString("ProblemName");
@@ -381,18 +391,21 @@ namespace LDGObjects
       // Creation or clearing the problem folder
       if (!Directory.Exists(path))
         Directory.CreateDirectory(path);
-      else
-      {
+      else {
         // Clearing old files
-        foreach (ComputationType delObj in toDelete[compObj])
-        {
+        foreach (ComputationType delObj in toDelete[compObj]) {
           string[] files = Directory.GetFiles(path, "*" + Extensions[delObj]);
-          foreach (string file in files)
-            File.Delete(file);
+          foreach (string file in files) File.Delete(file);
         }
       }
-      if (path[path.Length - 1] != '\\' && path[path.Length - 1] != '/')
-        path += '\\';
+
+      if (path[^1] == '\\') {
+        StringBuilder sb = new StringBuilder(path);
+        sb[^1] = '/';
+        path = sb.ToString();
+      } else if (path[^1] != '/') {
+        path += '/';
+      }
 
       // Dynamics
       n = pr.ReadInt("n");
@@ -420,8 +433,7 @@ namespace LDGObjects
       payI = pr.ReadInt("payI");
       payJ = pr.ReadInt("payJ");
 
-      switch (payoffType)
-      {
+      switch (payoffType) {
         case 0: // Distance to a point
           payX = pr.ReadDouble("payX");
           payY = pr.ReadDouble("payY");
@@ -433,32 +445,26 @@ namespace LDGObjects
           payVqnt = pr.ReadInt("payVqnt");
           double[,] rawCoord = pr.Read2DArray<double>("payVertices", payVqnt, 2);
           List<Point2D> psOrig = new List<Point2D>(payVqnt);
-          for (int i = 0; i < payVqnt; i++)
-            psOrig.Add(new Point2D(rawCoord[i, 0], rawCoord[i, 1]));
+          for (int i = 0; i < payVqnt; i++) psOrig.Add(new Point2D(rawCoord[i, 0], rawCoord[i, 1]));
           payVertices = Convexification.ArcHull2D(psOrig);
           break;
       }
 
       // C grid
-      int
-        cGridType = pr.ReadInt("cGridType"),
-        cQnt = pr.ReadInt("cQnt");
-      if (cGridType == 0)
-      {
+      int cGridType = pr.ReadInt("cGridType")
+      , cQnt = pr.ReadInt("cQnt");
+      if (cGridType == 0) {
         if (cQnt == 1)
           throw new Exception("Reading game data: in the case of uniform grid there cannot be one point only");
 
-        double
-          cMin = pr.ReadDouble("cMin"),
-          cMax = pr.ReadDouble("cMax"),
-          dc = (cMax - cMin) / (cQnt - 1);
+        double cMin = pr.ReadDouble("cMin")
+        , cMax = pr.ReadDouble("cMax")
+        , dc = (cMax - cMin) / (cQnt - 1);
 
         cValues = new List<double>(cQnt);
 
-        for (int i = 0; i < cQnt; i++)
-          cValues.Add(cMin + i * dc);
-      }
-      else
+        for (int i = 0; i < cQnt; i++) cValues.Add(cMin + i * dc);
+      } else
         cValues = new List<double>(pr.Read1DArray<double>("cValues", cQnt));
 
       // The projection matrix
@@ -471,8 +477,7 @@ namespace LDGObjects
       D = new SortedDictionary<double, Matrix>(new Tools.DoubleComparer(Tools.Eps));
       E = new SortedDictionary<double, Matrix>(new Tools.DoubleComparer(Tools.Eps));
       double t = T;
-      while (Tools.GE(t, t0))
-      {
+      while (Tools.GE(t, t0)) {
         Matrix Xstar = ProjMatr * cauchyMatrix[t];
         D[t] = Xstar * B;
         E[t] = Xstar * C;
@@ -480,28 +485,25 @@ namespace LDGObjects
         t -= dt;
       }
 
-      StableBridge2D
-        PTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram1st),
-        QTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
+      StableBridge2D PTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram1st)
+      , QTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
 
       // Precomputing the players' vectorgrams 
-      for (t = T; Tools.GE(t, t0); t -= dt)
-      {
-        PTube.Add(new TimeSection2D(t,
-          new ConvexPolygon(pVertices.Select(pPoint => (Point2D)((-1.0) * D[t] * pPoint)).ToList(), true)));
-        QTube.Add(new TimeSection2D(t,
-          new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      for (t = T; Tools.GE(t, t0); t -= dt) {
+        PTube.Add(new TimeSection2D(t
+        , new ConvexPolygon(pVertices.Select(pPoint => (Point2D)((-1.0) * D[t] * pPoint)).ToList(), true)));
+        QTube.Add(new TimeSection2D(t
+        , new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
       }
 
       // Writing the players' vectorgram if necessary
-      if (pWrite)
-      {
+      if (pWrite) {
         StreamWriter sw = new StreamWriter(path + "pVectograms.bridge");
         PTube.WriteToFile(sw);
         sw.Close();
       }
-      if (qWrite)
-      {
+
+      if (qWrite) {
         StreamWriter sw = new StreamWriter(path + "qVectograms.bridge");
         QTube.WriteToFile(sw);
         sw.Close();
@@ -522,12 +524,11 @@ namespace LDGObjects
     /// <param name="pr">The parameter reader objects</param>
     /// <param name="plNum">Number of the player</param>
     /// <param name="dim">Dimension of the player's control</param>
-    private void ReadConstraint(ParamReader pr, int plNum, int dim)
-    {
-      string
-        pref = plNum == 1 ? "p" : "q",
-        number = plNum == 1 ? "first" : "second";
-      int ConstrType = pr.ReadInt(pref + "ConstrType"), Vqnt;
+    private void ReadConstraint(ParamReader pr, int plNum, int dim) {
+      string pref = plNum == 1 ? "p" : "q"
+      , number = plNum == 1 ? "first" : "second";
+      int ConstrType = pr.ReadInt(pref + "ConstrType")
+      , Vqnt;
       List<Point> res = null;
 
       // Data for circle and elliptic constraint: coordinates of the center
@@ -551,11 +552,11 @@ namespace LDGObjects
       // Array for coordinates of the next point
       double[] pCoord;
 
-      switch (ConstrType)
-      {
+      switch (ConstrType) {
         case 0: // Just a convex hull of points in the plane
           if (dim != 2)
-            throw new Exception("Reading game data: the " + number + " player's constraint is a convex hull of a collection of points, but the dimension of the control is greater than 2!");
+            throw new Exception("Reading game data: the " + number +
+                                " player's constraint is a convex hull of a collection of points, but the dimension of the control is greater than 2!");
           Vqnt = pr.ReadInt(pref + "Vqnt");
           double[,] coords = pr.Read2DArray<double>(pref + "Vertices", Vqnt, 2);
           List<Point2D> psOrig = new List<Point2D>(Vqnt);
@@ -567,24 +568,26 @@ namespace LDGObjects
 
         case 1: // Box constraint
           double[,] lims = pr.Read2DArray<double>(pref + "Box", dim, 2);
-          int pNum = (int)Math.Pow(2, dim), temp;
+          int pNum = (int)Math.Pow(2, dim)
+          , temp;
           res = new List<Point>(pNum);
-          for (int k = 0; k < pNum; k++)
-          {
+          for (int k = 0; k < pNum; k++) {
             pCoord = new double[dim];
             temp = k;
-            for (int i = 0; i < dim; i++)
-            {
+            for (int i = 0; i < dim; i++) {
               pCoord[i] = lims[i, (int)(temp % 2)];
               temp /= 2;
             }
+
             res.Add(new Point(pCoord));
           }
+
           break;
 
         case 2: // Circle
           if (dim != 2)
-            throw new Exception("Reading game data: the " + number + " player's constraint is a circle, but the dimension of the control is greater than 2!");
+            throw new Exception("Reading game data: the " + number +
+                                " player's constraint is a circle, but the dimension of the control is greater than 2!");
           Vqnt = pr.ReadInt(pref + "Vqnt");
           x0 = pr.ReadDouble(pref + "x0");
           y0 = pr.ReadDouble(pref + "y0");
@@ -594,16 +597,21 @@ namespace LDGObjects
           res = new List<Point>(Vqnt);
 
           da = 2 * Math.PI / Vqnt;
-          for (int i = 0; i < Vqnt; i++)
-          {
-            pCoord = new double[2] { x0 + R * Math.Cos(Alpha0 + i * da), y0 + R * Math.Sin(Alpha0 + i * da) };
+          for (int i = 0; i < Vqnt; i++) {
+            pCoord = new double[2]
+              {
+                x0 + R * Math.Cos(Alpha0 + i * da)
+              , y0 + R * Math.Sin(Alpha0 + i * da)
+              };
             res.Add(new Point(pCoord));
           }
+
           break;
 
         case 3: // Ellipse
           if (dim != 2)
-            throw new Exception("Reading game data: the " + number + " player's constraint is an ellipse, but the dimension of the control is greater than 2!");
+            throw new Exception("Reading game data: the " + number +
+                                " player's constraint is an ellipse, but the dimension of the control is greater than 2!");
           Vqnt = pr.ReadInt(pref + "Vqnt");
           x0 = pr.ReadDouble(pref + "x0");
           y0 = pr.ReadDouble(pref + "y0");
@@ -614,37 +622,39 @@ namespace LDGObjects
 
           res = new List<Point>(Vqnt);
 
-          double cPhi = Math.Cos(Phi), sPhi = Math.Sin(Phi);
+          double cPhi = Math.Cos(Phi)
+          , sPhi = Math.Sin(Phi);
 
           da = 2 * Math.PI / Vqnt;
-          for (int i = 0; i < Vqnt; i++)
-          {
-            double
-              x = a * Math.Cos(Alpha0 + i * da),
-              y = b * Math.Sin(Alpha0 + i * da),
-              x1 = x * cPhi - y * sPhi,
-              y1 = x * sPhi + y * cPhi;
-            pCoord = new double[2] { x1, y1 };
+          for (int i = 0; i < Vqnt; i++) {
+            double x = a * Math.Cos(Alpha0 + i * da)
+            , y = b * Math.Sin(Alpha0 + i * da)
+            , x1 = x * cPhi - y * sPhi
+            , y1 = x * sPhi + y * cPhi;
+            pCoord = new double[2]
+              {
+                x1
+              , y1
+              };
             res.Add(new Point(pCoord));
           }
+
           break;
       }
 
       bool Write = pr.ReadBoolean(pref + "Write");
 
-      if (plNum == 1)
-      {
+      if (plNum == 1) {
         pConstrType = ConstrType;
         pVertices = res;
         pWrite = Write;
-      }
-      else
-      {
+      } else {
         qConstrType = ConstrType;
         qVertices = res;
         qWrite = Write;
       }
     }
-		#endregion
-	}
+
+    #endregion
+  }
 }
