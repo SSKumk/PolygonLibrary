@@ -1,3 +1,9 @@
+// Long problem name
+ProblemName = "Payoff Generation - Test 1";
+
+// Short problem name
+ShortProblemName = "Payoff Generation - Test 1";
+
 // Path to the folder whereto the result should be written
 path = ".";
 
@@ -65,6 +71,9 @@ pR = 1.0;
 // Data for circle and elliptic constraints: angle of turn of the initial vertex
 pAlpha0 = 0.0;
 
+// Flag showing whether to write vectograms of the first player;
+// The output file name is standard "pVectograms.bridge" with ContentType = "First player's vectorgram"
+pWrite = false;
 
 /* =================================================================================
   Block of data defining the constraint for the second player's control
@@ -98,6 +107,9 @@ qR = 0.9;
 // Data for circle and elliptic constraints: angle of turn of the initial vertex
 qAlpha0 = 0.0;
 
+// Flag showing whether to write vectograms of the second player;
+// The output file name is standard "pVectograms.bridge" with ContentType = "Second player's vectorgram"
+qWrite = false;
 
 /* =================================================================================
   Block of data defining the payoff function
