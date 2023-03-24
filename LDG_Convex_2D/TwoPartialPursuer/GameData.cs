@@ -175,9 +175,19 @@ public class GameData {
   public bool qWrite;
 
   /// <summary>
-  /// Precomputed vectograms of the first player
+  /// Precomputed vectograms of the second player
   /// </summary>
   public SortedDictionary<double, ConvexPolygon> Qs;
+
+  /// <summary>
+  /// Precomputed vectograms of the second player
+  /// </summary>
+  public SortedDictionary<double, ConvexPolygon> Qs1;
+
+  /// <summary>
+  /// Precomputed vectograms of the second player
+  /// </summary>
+  public SortedDictionary<double, ConvexPolygon> Qs2;
 #endregion
 
 #region Data defining the payoff function
@@ -411,29 +421,35 @@ public class GameData {
       t -= dt;
     }
 
-    StableBridge2D PTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram1st)
-                 , QTube = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
+    StableBridge2D PTube  = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram1st)
+                 , QTube  = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd)
+                 , QTube1 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd)
+                 , QTube2 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
 
     // Precomputing the players' vectorgrams 
     for (t = T; Tools.GE(t, t0); t -= dt) {
       PTube.Add(new
-                  TimeSection2D(t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)((-1.0) * D[t] * pPoint)).ToList(), true)));
+                  TimeSection2D(t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true)));
       QTube.Add(new
                   TimeSection2D(t, new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      QTube1.Add(new
+                   TimeSection2D(t, new ConvexPolygon(qVertices1.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      QTube2.Add(new
+                   TimeSection2D(t, new ConvexPolygon(qVertices2.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
     }
 
     // Writing the players' vectorgram if necessary
-    if (pWrite) {
-      StreamWriter sw = new StreamWriter(path + "pVectograms.bridge");
-      PTube.WriteToFile(sw);
-      sw.Close();
-    }
-
-    if (qWrite) {
-      StreamWriter sw = new StreamWriter(path + "qVectograms.bridge");
-      QTube.WriteToFile(sw);
-      sw.Close();
-    }
+    // if (pWrite) {
+    //   StreamWriter sw = new StreamWriter(path + "pVectograms.bridge");
+    //   PTube.WriteToFile(sw);
+    //   sw.Close();
+    // }
+    //
+    // if (qWrite) {
+    //   StreamWriter sw = new StreamWriter(path + "qVectograms.bridge");
+    //   QTube.WriteToFile(sw);
+    //   sw.Close();
+    // }
 
     // Multiplication of the vectogram tubes by time step
     Ps = new SortedDictionary<double, ConvexPolygon>();
@@ -442,6 +458,12 @@ public class GameData {
     Qs = new SortedDictionary<double, ConvexPolygon>();
     foreach (TimeSection2D ts in QTube)
       Qs[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
+    Qs1 = new SortedDictionary<double, ConvexPolygon>();
+    foreach (TimeSection2D ts in QTube1)
+      Qs1[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
+    Qs2 = new SortedDictionary<double, ConvexPolygon>();
+    foreach (TimeSection2D ts in QTube2)
+      Qs2[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
   }
 
   /// <summary>
