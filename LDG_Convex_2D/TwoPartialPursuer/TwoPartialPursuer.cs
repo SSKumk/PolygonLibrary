@@ -1,4 +1,5 @@
-﻿using LDGObjects;
+﻿using System.Globalization;
+using LDGObjects;
 using PolygonLibrary;
 using ParamReaderLibrary;
 using PolygonLibrary.Polygons.ConvexPolygons;
@@ -20,6 +21,11 @@ class TwoPartialPursuer {
   /// The directory where source file and result folder are placed
   /// </summary>
   private string workDir;
+
+  /// <summary>
+  /// The directory where .dat files will be saved
+  /// </summary>
+  private string gnuplotDat;
 
   /// <summary>
   /// The name of source file
@@ -63,9 +69,10 @@ class TwoPartialPursuer {
     this.workDir  = Directory.GetCurrentDirectory();
     this.fileName = fileName;
     gd            = new GameData(this.workDir + "/" + fileName, ComputationType.StableBridge);
-    br            = new StableBridge2D(gd.ProblemName, gd.ShortProblemName, gd.cValues[0], TubeType.Bridge);
-    W1            = new StableBridge2D(gd.ProblemName, gd.ShortProblemName, gd.cValues[0], TubeType.Bridge);
-    W2            = new StableBridge2D(gd.ProblemName, gd.ShortProblemName, gd.cValues[0], TubeType.Bridge);
+    br            = new StableBridge2D(gd.ProblemName, "Br", gd.cValues[0], TubeType.Bridge);
+    W1            = new StableBridge2D(gd.ProblemName, "W1", gd.cValues[0], TubeType.Bridge);
+    W2            = new StableBridge2D(gd.ProblemName, "W2", gd.cValues[0], TubeType.Bridge);
+    gnuplotDat    = gd.path + "gnuplot-dat/";
   }
 
   /// <summary>
@@ -112,6 +119,57 @@ class TwoPartialPursuer {
         Console.WriteLine("    empty interior of the section at t = " + t.ToString("#0.0000"));
       } else
         br.Add(new TimeSection2D(t, R));
+    }
+  }
+
+  /// <summary>
+  /// Writes the bridge to a file lying on the path: WorkDir/Problem-name
+  /// </summary>
+  /// <param name="bridge">Bridge to be written</param>
+  private void WriteBrByName(StableBridge2D bridge) {
+    StreamWriter sr =
+      new StreamWriter(gd.path + bridge.ShortProblemName + "_" + StableBridge2D.GenerateFileName(gd.cValues[0]));
+    bridge.WriteToFile(sr);
+    sr.Close();
+  }
+
+  /// <summary>
+  /// Writes br, Q1 and Q2 into files according to the format.
+  /// </summary>
+  public void WriteBridges() {
+    WriteBrByName(br);
+    WriteBrByName(W1);
+    WriteBrByName(W2);
+  }
+
+  /// <summary>
+  /// Clears GNU-plot directory and writes data into .dat files
+  /// </summary>
+  public void WriteDat() {
+    Directory.CreateDirectory(gnuplotDat);
+    Directory.Delete(gnuplotDat, true);
+    Directory.CreateDirectory(gnuplotDat);
+
+    WriteGnuplotDat(br);
+    WriteGnuplotDat(W1);
+    WriteGnuplotDat(W2);
+  }
+
+  /// <summary>
+  /// Writes bridge into .dat file. Format x-column _space_ y-column
+  /// </summary>
+  /// <param name="bridge">The bridge to be written</param>
+  private void WriteGnuplotDat(StableBridge2D bridge) {
+    int i = 1;
+    foreach (TimeSection2D ts in bridge) {
+      // using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{ts.t:F2}.dat")) {
+      using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{i}.dat")) {
+        foreach (var p in ts.section.Vertices) {
+          sw.WriteLine($"{p.x:G3} {p.y:G3}");
+        }
+        sw.WriteLine($"{ts.section.Vertices[0].x:G3} {ts.section.Vertices[0].y:G3}");
+        i++;
+      }
     }
   }
 }

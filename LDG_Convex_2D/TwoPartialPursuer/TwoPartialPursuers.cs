@@ -1,4 +1,6 @@
-﻿namespace TwoPartialPursuer; 
+﻿using System.Globalization;
+
+namespace TwoPartialPursuer; 
 
 public static class TwoPartialPursuers {
   public static void Main(string[] args) {
@@ -9,8 +11,11 @@ public static class TwoPartialPursuers {
       return;
     }
 
+    CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
     TwoPartialPursuer twoPartialPursuer = new TwoPartialPursuer(args[0], args[1]);
     twoPartialPursuer.Compute();
+    twoPartialPursuer.WriteBridges();
+    twoPartialPursuer.WriteDat();
     Console.WriteLine("The END!");
   }
 }
