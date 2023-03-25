@@ -2,6 +2,7 @@
 using LDGObjects;
 using PolygonLibrary;
 using ParamReaderLibrary;
+using PolygonLibrary.Polygons;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Toolkit;
 
@@ -82,43 +83,52 @@ class TwoPartialPursuer {
     //"../../../Computations/SourceData/ex00-VerySimple.c"
 
     double t = gd.T;
-    br.Add(new TimeSection2D(t, new ConvexPolygon(gd.payVertices))); //
-    W1.Add(new TimeSection2D(t, new ConvexPolygon(gd.payVertices))); // W1 = W2 = M at time = T
-    W2.Add(new TimeSection2D(t, new ConvexPolygon(gd.payVertices))); // W1 = W2 = M at time = T
-
+    {
+      // var M = new ConvexPolygon(gd.payVertices);
+      var M = PolygonTools.Circle(0,0,1,50);
+      br.Add(new TimeSection2D(t, M)); //
+      W1.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
+      W2.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
+    }
     double tPred = gd.T;
     t -= gd.dt;                                                                     // next step
-    br.Add(new TimeSection2D(t, br.Last().section + gd.Ps[tPred] - gd.Qs[tPred]));  //br.Last().section == M
-    W1.Add(new TimeSection2D(t, W1.Last().section + gd.Ps[tPred] - gd.Qs1[tPred])); //W1.Last().section == M
-    W2.Add(new TimeSection2D(t, W2.Last().section + gd.Ps[tPred] - gd.Qs2[tPred])); //W2.Last().section == M
+    br.Add(new TimeSection2D(t, br[^1].section + gd.Ps[tPred] - gd.Qs[tPred]));  //br.Last().section == M
+    W1.Add(new TimeSection2D(t, W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred])); //W1.Last().section == M
+    W2.Add(new TimeSection2D(t, W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred])); //W2.Last().section == M
 
     // Main computational loop
-    bool flag = true;
+    bool flag            = true;
+    bool brNotDegenerate = true;
     while (flag && Tools.GT(t, gd.t0)) {
       tPred =  t;
       t     -= gd.dt;
-      ConvexPolygon? S1 = W1.Last().section + gd.Ps[tPred] - gd.Qs1[tPred];
-      ConvexPolygon? S2 = W1.Last().section + gd.Ps[tPred] - gd.Qs2[tPred];
-      ConvexPolygon? T1 = W2.Last().section + gd.Ps[tPred] - gd.Qs1[tPred];
-      ConvexPolygon? T2 = W2.Last().section + gd.Ps[tPred] - gd.Qs2[tPred];
+      ConvexPolygon? S1 = W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
+      ConvexPolygon? S2 = W1[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
+      ConvexPolygon? T1 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
+      ConvexPolygon? T2 = W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
 
       ConvexPolygon? I1 = ConvexPolygon.IntersectionPolygon(S1, T2);
       ConvexPolygon? I2 = ConvexPolygon.IntersectionPolygon(S2, T1);
 
       if (I1 == null || I2 == null) {
         flag = false;
-        Console.WriteLine("    empty interior of the intersection at t = " + t.ToString("#0.0000"));
+        if (I1 == null) {
+          Console.WriteLine("    empty interior of the I1 interior at t = " + t.ToString("#0.0000"));
+        }
+        if (I2 == null) {
+          Console.WriteLine("    empty interior of the I2 interior at t = " + t.ToString("#0.0000"));
+        }
       } else {
         W1.Add(new TimeSection2D(t, I1));
         W2.Add(new TimeSection2D(t, I2));
       }
 
-      ConvexPolygon? R = br.Last().section + gd.Ps[tPred] - gd.Qs[tPred];
-      if (R == null || R.Contour.Count < 3) {
-        flag = false;
-        Console.WriteLine("    empty interior of the section at t = " + t.ToString("#0.0000"));
-      } else
-        br.Add(new TimeSection2D(t, R));
+      if (brNotDegenerate) {
+        ConvexPolygon? R = br[^1].section + gd.Ps[tPred] - gd.Qs[tPred];
+        if (R == null || R.Contour.Count < 3) {
+          brNotDegenerate = false;
+        } else { br.Add(new TimeSection2D(t, R)); }
+      }
     }
   }
 
@@ -160,10 +170,10 @@ class TwoPartialPursuer {
   /// </summary>
   /// <param name="bridge">The bridge to be written</param>
   private void WriteGnuplotDat(StableBridge2D bridge) {
-    int i = 1;
+    int i = 0;
     foreach (TimeSection2D ts in bridge) {
       // using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{ts.t:F2}.dat")) {
-      using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{i}.dat")) {
+      using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{i:000}.dat")) {
         foreach (var p in ts.section.Vertices) {
           sw.WriteLine($"{p.x:G3} {p.y:G3}");
         }

@@ -210,15 +210,15 @@ public class GameData {
   /// </summary>
   public int payJ;
 
-  // /// <summary>
-  // /// Data for the case of distance to a point - the first coordinate of the point
-  // /// </summary>
-  // public double payX;
-  //
-  // /// <summary>
-  // /// Data for the case of distance to a point - the second coordinate of the point
-  // /// </summary>
-  // public double payY;
+  /// <summary>
+  /// Data for the case of distance to a point - the first coordinate of the point
+  /// </summary>
+  public double payX;
+
+  /// <summary>
+  /// Data for the case of distance to a point - the second coordinate of the point
+  /// </summary>
+  public double payY;
 
   /// <summary>
   /// Number of vertices in the approximation of circles in the case of distance to a point payoff
@@ -230,68 +230,68 @@ public class GameData {
   /// </summary>
   public List<Point2D> payVertices;
 
-  // /// <summary>
-  // /// Polygon of the set for the case of the payoff taken as the distance to a set
-  // /// </summary>
-  // private ConvexPolygon _basic = null;
+  /// <summary>
+  /// Polygon of the set for the case of the payoff taken as the distance to a set
+  /// </summary>
+  private ConvexPolygon _basic = null;
 
-  // /// <summary>
-  // /// Lazy property for the pPolygon of the set for the case of the payoff 
-  // /// taken as the distance to a set
-  // /// </summary>
-  // private ConvexPolygon basic {
-  //   get
-  //     {
-  //       if (_basic == null)
-  //         _basic = new ConvexPolygon(payVertices);
-  //       return _basic;
-  //     }
-  // }
+  /// <summary>
+  /// Lazy property for the pPolygon of the set for the case of the payoff 
+  /// taken as the distance to a set
+  /// </summary>
+  private ConvexPolygon basic {
+    get
+      {
+        if (_basic == null)
+          _basic = new ConvexPolygon(payVertices);
+        return _basic;
+      }
+  }
 
-  // /// <summary>
-  // /// Method for generating a level set of the payoff corresponding to the given value
-  // /// </summary>
-  // /// <param name="c">The value of the payoff</param>
-  // /// <param name="gridNum">In the case of distance to a set, number of vertices in approximations of arcs</param>
-  // /// <returns>The corresponding convex polygon</returns>
-  // public ConvexPolygon PayoffLevelSet(double cOrig, int gridNum = 20) {
-  //   double c = cOrig >= 0 ? cOrig : 0;
-  //   switch (payoffType) {
-  //     case 0: return PolygonTools.Circle(payX, payY, c, payVqnt);
-  //
-  //     case 1: return new ConvexPolygon(payVertices.Select(p => c * p), true);
-  //
-  //     case 2:
-  //       if (gridNum < 1)
-  //         throw new
-  //           Exception("Internal: generating level set of the payoff as a distance to a set - gridNum less than 1");
-  //
-  //       if (Tools.EQ(c))
-  //         return basic;
-  //
-  //       List<GammaPair> gps = new List<GammaPair>();
-  //       int             i, j, k;
-  //       double          da;
-  //       for (i = 0, j = 1; i < basic.Contour.Count; i++, j = (j + 1) % basic.Contour.Count) {
-  //         da = basic.SF[j].Normal.PolarAngle - basic.SF[i].Normal.PolarAngle;
-  //         if (Tools.LT(da))
-  //           da += 2 * Math.PI;
-  //         da /= gridNum;
-  //
-  //         Vector2D vert = (Vector2D)GammaPair.CrossPairs(basic.SF[i], basic.SF[j]);
-  //
-  //         for (k = 0; k < gridNum; k++) {
-  //           Vector2D norm = basic.SF[i].Normal.Turn(k * da);
-  //           double   val  = norm * vert + c;
-  //           gps.Add(new GammaPair(norm, val));
-  //         }
-  //       }
-  //
-  //       return new ConvexPolygon(new SupportFunction(gps));
-  //
-  //     default: throw new Exception("Internal: generating level set of the payoff for unknown type of the payoff");
-  //   }
-  // }
+  /// <summary>
+  /// Method for generating a level set of the payoff corresponding to the given value
+  /// </summary>
+  /// <param name="cOrig">The value of the payoff</param>
+  /// <param name="gridNum">In the case of distance to a set, number of vertices in approximations of arcs</param>
+  /// <returns>The corresponding convex polygon</returns>
+  public ConvexPolygon PayoffLevelSet(double cOrig, int gridNum = 20) {
+    double c = cOrig >= 0 ? cOrig : 0;
+    switch (payoffType) {
+      case 0: return PolygonTools.Circle(payX, payY, c, payVqnt);
+
+      case 1: return new ConvexPolygon(payVertices.Select(p => c * p), true);
+
+      case 2:
+        if (gridNum < 1)
+          throw new
+            Exception("Internal: generating level set of the payoff as a distance to a set - gridNum less than 1");
+
+        if (Tools.EQ(c))
+          return basic;
+
+        List<GammaPair> gps = new List<GammaPair>();
+        int             i, j, k;
+        double          da;
+        for (i = 0, j = 1; i < basic.Contour.Count; i++, j = (j + 1) % basic.Contour.Count) {
+          da = basic.SF[j].Normal.PolarAngle - basic.SF[i].Normal.PolarAngle;
+          if (Tools.LT(da))
+            da += 2 * Math.PI;
+          da /= gridNum;
+
+          Vector2D vert = (Vector2D)GammaPair.CrossPairs(basic.SF[i], basic.SF[j]);
+
+          for (k = 0; k < gridNum; k++) {
+            Vector2D norm = basic.SF[i].Normal.Turn(k * da);
+            double   val  = norm * vert + c;
+            gps.Add(new GammaPair(norm, val));
+          }
+        }
+
+        return new ConvexPolygon(new SupportFunction(gps));
+
+      default: throw new Exception("Internal: generating level set of the payoff for unknown type of the payoff");
+    }
+  }
 
   // The array of values of the payoff to compute bridges
   public List<double> cValues;
@@ -332,18 +332,18 @@ public class GameData {
     path             = pr.ReadString("path");
 
     // Creation or clearing the problem folder
-    if (!Directory.Exists(path))
-      Directory.CreateDirectory(path);
-    else {
-      // Clearing old files
-      foreach (ComputationType delObj in toDelete[compObj]) {
-        string[] files = Directory.GetFiles(path, "*" + Extensions[delObj]);
-        foreach (string file in files)
-          File.Delete(file);
-      }
-    }
+    // if (!Directory.Exists(path))
+    //   Directory.CreateDirectory(path);
+    // else {
+    //   // Clearing old files
+    //   foreach (ComputationType delObj in toDelete[compObj]) {
+    //     string[] files = Directory.GetFiles(path, "*" + Extensions[delObj]);
+    //     foreach (string file in files)
+    //       File.Delete(file);
+    //   }
+    // }
 
-    if (path[^1] == '\\') {
+    if (path[^1] == '/') {
       StringBuilder sb = new StringBuilder(path);
       sb[^1] = '/';
       path   = sb.ToString();
@@ -378,6 +378,11 @@ public class GameData {
     payJ       = pr.ReadInt("payJ");
 
     switch (payoffType) {
+      case 0: // Distance to a point
+        payX    = pr.ReadDouble("payX");
+        payY    = pr.ReadDouble("payY");
+        payVqnt = pr.ReadInt("payVqnt");
+        break;
       case 1:
         payVqnt = pr.ReadInt("payVqnt");
         double[,]     rawCoord = pr.Read2DArray<double>("payVertices", payVqnt, 2);

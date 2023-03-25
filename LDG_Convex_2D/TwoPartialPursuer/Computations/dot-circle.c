@@ -1,11 +1,11 @@
 // Name of the problem
-ProblemName = "Simple problem";
+ProblemName = "Inertial point; circle target set";
 
 // Short name of the problem; to be used in SharpEye
-ShortProblemName = "First test";
+ShortProblemName = "Dot-circle";
 
 // Path to the folder whereto the result should be written
-path = "./Ex00";
+path = "./Dot-circle";
 
 
 /* =================================================================================
@@ -16,7 +16,7 @@ path = "./Ex00";
 n = 2;
 
 // The main matrix
-A = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+A = { { 0.0, 1.0 }, { 0.0, 0.0 } };
 
 // Dimension of the useful control
 p = 1;
@@ -34,7 +34,7 @@ C = { { 1.0 }, { 0.0 } };
 t0 = 0.0;
 
 // The final instant
-T = 2.0;
+T = 7.0;
 
 // The time step
 dt = 0.05;
@@ -57,7 +57,8 @@ dt = 0.05;
 */  
 pConstrType = 1;
 
-pBox = { { -1.0, 1.0 } };
+// Array of per coordinate boundaries for the case of a box constraint for the first player's control
+pBox = { { -1.0, +1.0 } };
 
 // Flag showing whether to write vectograms of the first player
 pWrite = false;
@@ -73,16 +74,18 @@ pWrite = false;
         is defined by an integer variable qVqnt
         and a qVqnt x 2 double array qVertices
     1 - box constraint; is defined by q x 2 array qBox
-
-
-    Need Q, Q1, Q2
-        where Q = Q1 \cup Q2 AND intQ1 \cap intQ2 = \empty
+    2 - circle; only for q = 2; 
+        defined by double variables qx0, qy0, qR, qVqnt, qAlpha0
+    3 - ellipse; only for q = 2
+        defined by double variables qx0, qy0, qa, qb, qPhi, qVqnt, qAlpha0
+    
 */  
 qConstrType = 1;
 
-qBox = { { -1.0, 1.0 } }; 
-qBox1 = { { -1.0, 0.0 } };
-qBox2 = { { 0.0, 1.0 } };
+// Array of per coordinate boundaries for the case of a box constraint for the second player's control
+qBox = { { -0.9, +0.9 } };
+qBox1 = { { -0.9, 0 } };
+qBox2 = { { 0, +0.9 } };
 
 // Flag showing whether to write vectograms of the second player
 qWrite = false;
@@ -92,20 +95,31 @@ qWrite = false;
   Block of data defining the payoff function
   
   Type of the payoff:
+    0 - distance to a given point in some given subspace;  
+        this payoff is described by integer variables payI, payJ defining the indices 
+        of the subspace coordinates and double variables payX, payY defining the coordinates
+        of the ponit
     1 - Minkowski functional of a convex set in some given subspace         
         this payoff is described by integer variables payI, payJ defining the indices 
         of the subspace coordinates, an integer variable payVqnt - number of points, which convex hull 
         defines the set, and payVqnt x 2 double array payVertices - these points
+    2 - distance to a convex set in some given subspace         
+        this payoff is described by integer variables payI, payJ defining the indices 
+        of the subspace coordinates, an integer variable payVqnt - number of points, which convex hull 
+        defines the set, and payVqnt x 2 double array payVertices - these points
 */
-payoffType = 1;
+payoffType = 0;
 
 // Indices of the two coordinates defining the payoff function (counted from zero)
 payI = 0;
 payJ = 1;
 
-// Data for the case of Minkowski functional or distance to a set: number of points and their coordinates
-payVqnt = 4;
-payVertices = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+// Data for the case of distance to a point - coordinates of the point
+payX = 0.0;
+payY = 0.0;
+
+// Number of the vertices in the approximation of the circles
+payVqnt = 100;
 
 
 
@@ -118,13 +132,15 @@ payVertices = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
     1 - some given grid of values defined by an integer variable cQnt - number of points in the grid -
         and one-dimensipnal array cValues, which contains the desired values
 */
-cGridType = 1;
+cGridType = 0;
 
 // Number of points in the grid
-cQnt = 1;
+cQnt = 21;
 
-// The array of values for an arbitrary grid
-cValues = { 1.0 };
+// The interval of values for the uniform grid
+cMin = 0.0;
+cMax = 2.0;
+
 
 
 
