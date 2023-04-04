@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AVLUtils
@@ -15,7 +16,7 @@ namespace AVLUtils
     /// <summary>
     /// The internal container
     /// </summary>
-    protected TTree _tree;
+    protected TTree? _tree;
 
     /// <summary>
     /// Default constructor
@@ -27,19 +28,35 @@ namespace AVLUtils
     /// </summary>
     /// <param name="i">Index</param>
     /// <returns>The value with the index i</returns>
-    public TValue this[int i] => _tree[i];
+    public TValue this[int i] {
+      get
+        {
+          Debug.Assert(_tree != null, nameof(_tree) + " != null");
+          return _tree[i];
+        }
+    }
 
     /// <summary>
     /// Getting the set comparer
     /// </summary>
-    public IComparer<TValue> comparer => _tree.comparer;
+    public IComparer<TValue> comparer {
+      get
+        {
+          Debug.Assert(_tree != null, nameof(_tree) + " != null");
+          Debug.Assert(_tree.comparer != null, "_tree.comparer != null");
+          return _tree.comparer;
+        }
+    }
 
-    #region IMultiEnumerable<TValue> and related methods
+#region IMultiEnumerable<TValue> and related methods
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<TValue> GetEnumerator () => _tree.GetEnumerator ();
+    public IEnumerator<TValue> GetEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator();
+    }
 
     /// <summary>
     /// Returns an untyped enumerator that directly iterates through the collection.
@@ -53,13 +70,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetEnumerator (TValue v) => _tree.GetEnumerator (v);
+    public IEnumerator<TValue> GetEnumerator (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator(v);
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<TValue> GetReverseEnumerator () => _tree.GetReverseEnumerator ();
+    public IEnumerator<TValue> GetReverseEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetReverseEnumerator();
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection put at the given value or before it 
@@ -67,13 +90,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<TValue> GetReverseEnumerator (TValue v) => _tree.GetReverseEnumerator (v);
+    public IEnumerator<TValue> GetReverseEnumerator (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetReverseEnumerator(v);
+    }
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator () => _tree.GetCyclicEnumerator();
+    public IEnumerator<TValue> GetCyclicEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicEnumerator();
+    }
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection regarding it as a cycled one;
@@ -82,13 +111,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that directly iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) => _tree.GetCyclicEnumerator(v);
+    public IEnumerator<TValue> GetCyclicEnumerator (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicEnumerator(v);
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one
     /// </summary>
     /// <returns>An enumerator that reversely iterates through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator () => _tree.GetCyclicReverseEnumerator ();
+    public IEnumerator<TValue> GetCyclicReverseEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicReverseEnumerator();
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection regarding it as a cycled one;
@@ -97,8 +132,11 @@ namespace AVLUtils
     /// </summary>
     /// <param name="v">The value the enumerator to be put on</param>
     /// <returns>An enumerator that iterates reversely through the collection regarding it as a cycled one</returns>
-    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) => _tree.GetCyclicReverseEnumerator (v);
-    #endregion
+    public IEnumerator<TValue> GetCyclicReverseEnumerator (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicReverseEnumerator(v);
+    }
+#endregion
 
     #region ICollection<TValue> methods
     /// <summary>
@@ -109,38 +147,59 @@ namespace AVLUtils
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count => _tree.Count;
+    public int Count {
+      get
+        {
+          Debug.Assert(_tree != null, nameof(_tree) + " != null");
+          return _tree.Count;
+        }
+    }
 
     /// <summary>
     /// Adds an item to the collection
     /// </summary>
     /// <param name="v">The value to be added</param>
-    void ICollection<TValue>.Add (TValue v) => _tree.Add (v);
+    void ICollection<TValue>.Add (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Add(v);
+    }
 
     /// <summary>
     /// Adding a collection to the tree
     /// </summary>
     /// <param name="other">The collection to be added</param>
-    public void AddRange (IEnumerable<TValue> other) => _tree.AddRange (other);
+    public void AddRange (IEnumerable<TValue> other) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.AddRange(other);
+    }
 
     /// <summary>
     /// Removes all items from the collection
     /// </summary>
-    public void Clear () => _tree.Clear ();
+    public void Clear () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Clear();
+    }
 
     /// <summary>
     /// Determines whether the collection contains a specific value
     /// </summary>
     /// <param name="v">The object to locate in the collection</param>
     /// <returns>true if item is found in the collection; otherwise, false</returns>
-    public bool Contains (TValue v) => _tree.Contains (v);
+    public bool Contains (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Contains(v);
+    }
 
     /// <summary>
     /// Copies the elements of the collection to an array, starting at a particular index
     /// </summary>
     /// <param name="array">The one-dimensional array that is the destination of the elements copied from collection. The array must have zero-based indexing</param>
     /// <param name="arrayIndex">The zero-based index in array at which copying begins</param>
-    public void CopyTo (TValue[] array, int arrayIndex) => _tree.CopyTo (array, arrayIndex);
+    public void CopyTo (TValue[] array, int arrayIndex) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.CopyTo(array, arrayIndex);
+    }
 
     /// <summary>
     /// Removes the first occurrence of a specific object from the collection
@@ -148,8 +207,11 @@ namespace AVLUtils
     /// <param name="v">The value to be removed form the collection</param>
     /// <returns>true if item was successfully removed from the collection; otherwise, false. 
     /// This method also returns false if item is not found in the collection</returns>
-    public bool Remove (TValue v) => _tree.Remove (v);
-    #endregion
+    public bool Remove (TValue v) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Remove(v);
+    }
+#endregion
 
     #region ISet methods
     /// <summary>
@@ -161,6 +223,7 @@ namespace AVLUtils
     public bool Add (TValue v)
     {
       int oldQnt = Count;
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       _tree.Add (v);
       return oldQnt != Count;
     }
@@ -186,6 +249,7 @@ namespace AVLUtils
       IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
       for (int i = Count - 1; i >= 0; i++)
       {
+        Debug.Assert(_tree != null, nameof(_tree) + " != null");
         v = _tree[i];
         if (!enumerable.Contains (v)) {
           Remove (v);
@@ -272,6 +336,7 @@ namespace AVLUtils
     public bool IsSubsetOf (IEnumerable<TValue> other)
     {
       IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       for (int i = 0; i < Count; i++) {
         if (!enumerable.Contains (_tree[i])) {
           return false;
@@ -355,6 +420,7 @@ namespace AVLUtils
       IEnumerable<TValue> enumerable = other as TValue[] ?? other.ToArray();
 
       // Search for the elements of our collection that are not in the other one
+        Debug.Assert(_tree != null, nameof(_tree) + " != null");
       for (int i = 0; i < Count; i++)
       {
         TValue v = _tree[i];
@@ -394,25 +460,37 @@ namespace AVLUtils
     /// Take the minimal value in the tree
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TValue Min () => _tree.Min ();
+    public TValue Min () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Min();
+    }
 
     /// <summary>
     /// Take the maximal value in the tree
     /// </summary>
     /// <returns>The maximal value</returns>
-    public TValue Max () => _tree.Max ();
+    public TValue Max () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Max();
+    }
 
     /// <summary>
     /// Take the minimal value in the tree and remove it
     /// </summary>
     /// <returns>The value</returns>
-    public TValue Pop () => _tree.Pop ();
+    public TValue Pop () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop();
+    }
 
     /// <summary>
     /// Take the maximal value in the tree and remove it
     /// </summary>
     /// <returns>The value</returns>
-    public TValue Pop_Back () => _tree.Pop_Back ();
+    public TValue Pop_Back () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop_Back();
+    }
 
     /// <summary>
     /// Take the value following after the given one
@@ -421,7 +499,10 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TValue v, out TValue next) => _tree.Next (v, out next);
+    public bool Next (TValue v, out TValue? next) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Next(v, out next);
+    }
 
     /// <summary>
     /// Take the value following after the given one in the cyclic order
@@ -429,7 +510,10 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (TValue v, out TValue next) => _tree.CyclicNext (v, out next);
+    public bool CyclicNext (TValue v, out TValue? next) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CyclicNext(v, out next);
+    }
 
     /// <summary>
     /// Take the value previous to the given one
@@ -438,7 +522,10 @@ namespace AVLUtils
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TValue v, out TValue prev) => _tree.Prev (v, out prev);
+    public bool Prev (TValue v, out TValue? prev) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Prev(v, out prev);
+    }
 
     /// <summary>
     /// Take the value previous to the given one in the cyclic order
@@ -446,8 +533,11 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TValue v, out TValue prev) => _tree.CyclicPrev (v, out prev);
-    #endregion
+    public bool CyclicPrev (TValue v, out TValue? prev) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CyclicPrev(v, out prev);
+    }
+#endregion
   }
 
   /// <summary>
@@ -491,12 +581,18 @@ namespace AVLUtils
     /// Checks consistency of the current structure of the tree
     /// </summary>
     /// <returns>true, if the order</returns>
-    public bool CheckConsistency () => _tree.CheckConsistency ();
+    public bool CheckConsistency () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CheckConsistency();
+    }
 
     /// <summary>
     /// Rebuild the tree according to the current comparer
     /// </summary>
-    public void Rebuild () => _tree.Rebuild ();
+    public void Rebuild () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Rebuild();
+    }
 
     /// <summary>
     /// Set a new comparer for the tree. It can be unsafe. 
@@ -508,7 +604,10 @@ namespace AVLUtils
     /// <param name="newComp">The new comparer to be set</param>
     /// <param name="checkAfter">Flag showing whether to check the consistency of the tree
     /// with the new comparer (in release mode only!)</param>
-    public void SetComparer (IComparer<TValue> newComp, bool checkAfter = false) => _tree.SetComparer (newComp, checkAfter);
-    #endregion
+    public void SetComparer (IComparer<TValue> newComp, bool checkAfter = false) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.SetComparer(newComp, checkAfter);
+    }
+#endregion
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AVLUtils{
   public partial class AVLTree<TValue>{
@@ -52,7 +53,7 @@ namespace AVLUtils{
       /// <summary>
       /// The current node of the iterator
       /// </summary>
-      internal AVLNode curNode;
+      internal AVLNode? curNode;
 
       /// <summary>
       /// Path to the current node (keeping all nodes where we turned left, that is, nodes where to we can return)
@@ -77,6 +78,7 @@ namespace AVLUtils{
           if (state != IteratorState.Inside) {
             throw new InvalidOperationException();
           } else {
+            Debug.Assert(curNode != null, nameof(curNode) + " != null");
             return curNode.val;
           }
         }
@@ -85,7 +87,13 @@ namespace AVLUtils{
       /// <summary>
       /// Getting property of non-generic interface
       /// </summary>
-      object IEnumerator.Current => Current;
+      object IEnumerator.Current {
+        get
+          {
+            Debug.Assert(Current != null, nameof(Current) + " != null");
+            return Current;
+          }
+      }
 
       /// <summary>
       /// Dispose method (for the aim of compatibility)
@@ -150,6 +158,7 @@ namespace AVLUtils{
       /// <param name="v">The value to be set to</param>
       public AVLEnumerator(AVLTree<TValue> newTree, TValue v)
         : base(newTree) {
+        Debug.Assert(tree._top != null, "tree._top != null");
         curNode = tree._top;
         if (curNode == null) {
           state = IteratorState.After;
@@ -186,6 +195,7 @@ namespace AVLUtils{
       /// (keeping the track in the stack)
       /// </summary>
       private void GoFarLeft() {
+        Debug.Assert(curNode != null, nameof(curNode) + " != null");
         while (curNode.left != null) {
           st.Push(curNode);
           curNode = curNode.left;
@@ -213,6 +223,7 @@ namespace AVLUtils{
             return true;
 
           default: {
+            Debug.Assert(curNode != null, nameof(curNode) + " != null");
             if (curNode.right != null) {
               curNode = curNode.right;
               GoFarLeft();
@@ -283,6 +294,7 @@ namespace AVLUtils{
       /// (keeping the track in the stack)
       /// </summary>
       private void GoFarRight() {
+        Debug.Assert(curNode != null, nameof(curNode) + " != null");
         while (curNode.right != null) {
           st.Push(curNode);
           curNode = curNode.right;
@@ -310,6 +322,7 @@ namespace AVLUtils{
             return true;
 
           default: {
+            Debug.Assert(curNode != null, nameof(curNode) + " != null");
             if (curNode.left != null) {
               curNode = curNode.left;
               GoFarRight();

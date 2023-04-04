@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AVLUtils{
   public partial class AVLTree<TValue>{
@@ -16,12 +17,12 @@ namespace AVLUtils{
       /// <summary>
       /// The property for the left child
       /// </summary>
-      public AVLNode left { get; set; }
+      public AVLNode? left { get; set; }
 
       /// <summary>
       /// The property for the right child
       /// </summary>
-      public AVLNode right { get; set; }
+      public AVLNode? right { get; set; }
 
       /// <summary>
       /// The property for the balance
@@ -68,7 +69,7 @@ namespace AVLUtils{
     /// <param name="res">The string accumulated up to the current instant</param>
     /// <param name="prefix">The prefix of the string</param>
     /// <param name="addPrefix">The additional prefix of the string</param>
-    private void ToStringIter(AVLNode curNode, ref string res, string prefix, string addPrefix) {
+    private void ToStringIter(AVLNode? curNode, ref string res, string prefix, string addPrefix) {
       if (curNode == null) {
         res += prefix + "+--X\n";
       } else {
@@ -85,6 +86,7 @@ namespace AVLUtils{
     /// </summary>
     /// <returns>The resulting string</returns>
     public override string ToString() {
+      
       string res = "{";
       bool first = true;
       foreach (TValue val in this) {
@@ -94,6 +96,7 @@ namespace AVLUtils{
           res += ",\n ";
         }
 
+        Debug.Assert(val != null, nameof(val) + " != null");
         res += val.ToString();
       }
 
@@ -131,13 +134,12 @@ namespace AVLUtils{
     /// </summary>
     /// <param name="v">The value to be found</param>
     /// <returns>The node where the value is located, or null if there is no such a value in the tree</returns>
-    private AVLNode GetNode(TValue v) {
-      AVLNode curNode = _top;
+    private AVLNode? GetNode(TValue v) {
+      AVLNode? curNode = _top;
       bool notFound = true;
-      int res;
 
       while (curNode != null && notFound) {
-        res = comparer.Compare(v, curNode.val);
+        int res = comparer.Compare(v, curNode.val);
         if (res < 0) {
           curNode = curNode.left;
         } else if (res > 0) {
@@ -155,13 +157,13 @@ namespace AVLUtils{
     /// </summary>
     /// <param name="n">The given node</param>
     /// <returns>The parent node</returns>
-    private AVLNode GetParentNode(AVLNode n) {
+    private AVLNode? GetParentNode(AVLNode? n) {
       if (n == null) {
         return null;
       }
 
-      AVLNode parent = null, cur = _top;
-      int res = comparer.Compare(n.val, cur.val);
+      AVLNode? parent = null, cur = _top;
+      int res = comparer.Compare(n.val, cur!.val);
       while (cur != null && res != 0) {
         parent = cur;
         cur = res < 0 ? cur.left : cur.right;
@@ -183,13 +185,13 @@ namespace AVLUtils{
     /// </summary>
     /// <param name="v">The given value</param>
     /// <returns>A stack containing the path, or null</returns>
-    private Stack<AVLNode> GetPath(TValue v) {
+    private Stack<AVLNode>? GetPath(TValue? v) {
       if (_top == null) {
         return null;
       }
 
       Stack<AVLNode> st = new Stack<AVLNode>();
-      AVLNode cur = _top;
+      AVLNode? cur = _top;
       int res = comparer.Compare(v, cur.val);
       while (cur != null && res != 0) {
         st.Push(cur);

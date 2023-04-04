@@ -93,7 +93,7 @@ namespace AVLUtils
     /// <param name="v">The value to be found</param>
     /// <param name="res">Reference to the found object: the object itself if found, default value otherwise</param>
     /// <returns>true if the object has been found, false otherwise</returns>
-    bool Find (T v, out T res);
+    bool Find (T v, out T? res);
 
     /// <summary>
     /// Take the minimal value in the tree
@@ -126,7 +126,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    bool Next (T v, out T next);
+    bool Next (T v, out T? next);
 
     /// <summary>
     /// Take the value cyclically following after the given one
@@ -135,7 +135,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    bool CyclicNext (T v, out T next);
+    bool CyclicNext (T v, out T? next);
 
     /// <summary>
     /// Take the value previous to the given one
@@ -143,7 +143,7 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    bool Prev (T v, out T prev);
+    bool Prev (T v, out T? prev);
 
     /// <summary>
     /// Take the value cyclically previous to the given one
@@ -151,7 +151,7 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    bool CyclicPrev (T v, out T prev);
+    bool CyclicPrev (T v, out T? prev);
   }
 
   /// <summary>

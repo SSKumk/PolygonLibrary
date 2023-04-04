@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AVLUtils
 {
@@ -131,7 +132,7 @@ namespace AVLUtils
     /// <summary>
     /// The _top of the tree
     /// </summary>
-    internal AVLNode _top;
+    internal AVLNode? _top;
 
     /// <summary>
     /// Comparer defining the order in the tree
@@ -177,8 +178,10 @@ namespace AVLUtils
       l1 = (l + node.left?.subtreeQnt ?? l) - 1,
       r1 = (r - node.right?.subtreeQnt ?? r) + 1;
       if (i <= l1) {
+        Debug.Assert(node.left != null, "node.left != null");
         return GetByIndexIter (node.left, i, l, l1);
       } else if (i >= r1) {
+        Debug.Assert(node.right != null, "node.right != null");
         return GetByIndexIter (node.right, i, r1, r);
       } else {
         return node.val;
@@ -199,6 +202,7 @@ namespace AVLUtils
           throw new IndexOutOfRangeException ("Erroneous index in AVLBaseTree");
         }
 
+        Debug.Assert(_top != null, nameof(_top) + " != null");
         return GetByIndexIter (_top, i, l, r);
       }
     }
@@ -210,7 +214,7 @@ namespace AVLUtils
     /// <returns>true, if the value is in the tree; false, otherwise</returns>
     public bool Contains (TValue v)
     {
-      AVLNode target = GetNode (v);
+      AVLNode? target = GetNode (v);
       return target != null;
     }
 
@@ -220,9 +224,9 @@ namespace AVLUtils
     /// <param name="v">The value to be found</param>
     /// <param name="res">Reference to the found object: the object itself if found, default value otherwise</param>
     /// <returns>true if the object has been found, false otherwise</returns>
-    public bool Find (TValue v, out TValue res)
+    public bool Find (TValue v, out TValue? res)
     {
-      AVLNode node = GetNode (v);
+      AVLNode? node = GetNode (v);
       if (node == null)
       {
         res = default;
@@ -309,7 +313,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <param name="en">Enumerator that defines direction of the collection and its type</param>
     /// <returns></returns>
-    private bool NextInternal (TValue v, out TValue next, AVLBaseEnumerator en)
+    private bool NextInternal (TValue v, out TValue? next, AVLBaseEnumerator en)
     {
       if (en.IsValid)
       {
@@ -338,7 +342,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TValue v, out TValue next) => NextInternal (v, out next, GetEnumerator (v) as AVLBaseEnumerator);
+    public bool Next (TValue v, out TValue? next) => NextInternal (v, out next, (GetEnumerator (v) as AVLBaseEnumerator)!);
 
     /// <summary>
     /// Take the value cyclically following after the given one
@@ -347,7 +351,7 @@ namespace AVLUtils
     /// <param name="next">The next value</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool CyclicNext (TValue v, out TValue next) => NextInternal (v, out next, GetCyclicEnumerator (v) as AVLBaseEnumerator);
+    public bool CyclicNext (TValue v, out TValue? next) => NextInternal (v, out next, (GetCyclicEnumerator (v) as AVLBaseEnumerator)!);
 
     /// <summary>
     /// Take the value previous to the given one
@@ -356,7 +360,7 @@ namespace AVLUtils
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TValue v, out TValue prev) => NextInternal (v, out prev, GetReverseEnumerator (v) as AVLBaseEnumerator);
+    public bool Prev (TValue v, out TValue? prev) => NextInternal (v, out prev, (GetReverseEnumerator (v) as AVLBaseEnumerator)!);
 
     /// <summary>
     /// Take the value cyclically previous to the given one
@@ -364,7 +368,7 @@ namespace AVLUtils
     /// <param name="v">The given value</param>
     /// <param name="prev">The previous value</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TValue v, out TValue prev) => NextInternal (v, out prev, GetCyclicReverseEnumerator (v) as AVLBaseEnumerator);
+    public bool CyclicPrev (TValue v, out TValue? prev) => NextInternal (v, out prev, (GetCyclicReverseEnumerator (v) as AVLBaseEnumerator)!);
     #endregion
 
     #region Convertors

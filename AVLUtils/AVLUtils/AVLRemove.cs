@@ -36,7 +36,7 @@ namespace AVLUtils
     /// <param name="removed">flag showing whether the value has been removed</param>
     /// <param name="hChanged">true, if the height of the subtree grows; false, otherwise</param>
     /// <returns>change of the height of the subtree</returns>
-    private void RemoveIter (ref AVLNode curNode, TValue remVal, out bool removed, ref bool hChanged)
+    private void RemoveIter (ref AVLNode? curNode, TValue remVal, out bool removed, ref bool hChanged)
     {
       if (curNode == null)
       {
@@ -46,7 +46,7 @@ namespace AVLUtils
       else
       {
         int res = comparer.Compare (remVal, curNode.val);
-        AVLNode p;
+        AVLNode? p;
 
         if (res < 0)
         {
@@ -132,8 +132,8 @@ namespace AVLUtils
       }
       else
       {
-        q = r;
-        r = r.left;
+        q        = r;
+        r        = r.left!;
         hChanged = true;
       }
     }
@@ -160,7 +160,7 @@ namespace AVLUtils
           break;
 
         case +1:
-          p1 = p.right;
+          p1 = p.right!;
           b1 = p1.balance;
           if (b1 >= 0)
           {
@@ -185,12 +185,12 @@ namespace AVLUtils
           }
           else
           {
-            p2 = p1.left;
-            b2 = p2.balance;
-            p1.left = p2.right;
+            p2       = p1.left!;
+            b2       = p2.balance;
+            p1.left  = p2.right;
             p2.right = p1;
-            p.right = p2.left;
-            p2.left = p;
+            p.right  = p2.left;
+            p2.left  = p;
             if (b2 == +1) {
               p.balance = -1;
             } else {
@@ -236,7 +236,7 @@ namespace AVLUtils
           break;
 
         case -1:
-          p1 = p.left;
+          p1 = p.left!;
           b1 = p1.balance;
           if (b1 <= 0)
           {
@@ -261,11 +261,11 @@ namespace AVLUtils
           }
           else
           {
-            p2 = p1.right;
-            b2 = p2.balance;
+            p2       = p1.right!;
+            b2       = p2.balance;
             p1.right = p2.left;
-            p2.left = p1;
-            p.left = p2.right;
+            p2.left  = p1;
+            p.left   = p2.right;
             p2.right = p;
             if (b2 == -1) {
               p.balance = +1;

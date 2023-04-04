@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace AVLUtils
@@ -40,7 +41,7 @@ namespace AVLUtils
     /// <param name="newVal">The value to be added</param>
     /// <param name="added">Flag showing whether the element has been added</param>
     /// <param name="hChanged">true, if the height of the subtree grows; false, otherwise</param>
-    private void AddIter (ref AVLNode curNode, TValue newVal, out bool added, ref bool hChanged)
+    private void AddIter (ref AVLNode? curNode, TValue newVal, out bool added, ref bool hChanged)
     {
       // If we left the existing tree, just create a new node and return it as the _top of the new subtree.
       // Thus, the element has been added. And height of corresponding subtree is increased
@@ -55,7 +56,7 @@ namespace AVLUtils
       // Otherwise check in what subtree the new element should be placed
       int res = comparer.Compare (newVal, curNode.val);
 
-      AVLNode p1, p2;
+      AVLNode? p1, p2;
 
       // In the left one
       if (res < 0)
@@ -84,7 +85,7 @@ namespace AVLUtils
 
             case -1:
               p1 = curNode.left;
-              if (p1.balance == -1)
+              if (p1!.balance == -1)
               {
                 curNode.left = p1.right;
                 p1.right = curNode;
@@ -96,11 +97,11 @@ namespace AVLUtils
               }
               else
               {
-                p2 = p1.right;
-                p1.right = p2.left;
-                p2.left = p1;
+                p2           = p1.right;
+                p1.right     = p2!.left;
+                p2.left      = p1;
                 curNode.left = p2.right;
-                p2.right = curNode;
+                p2.right     = curNode;
                 if (p2.balance == -1) {
                   curNode.balance = +1;
                 } else {
@@ -149,7 +150,7 @@ namespace AVLUtils
 
             case +1:
               p1 = curNode.right;
-              if (p1.balance == +1)
+              if (p1!.balance == +1)
               {
                 curNode.right = p1.left;
                 p1.left = curNode;
@@ -161,11 +162,11 @@ namespace AVLUtils
               }
               else
               {
-                p2 = p1.left;
-                p1.left = p2.right;
-                p2.right = p1;
+                p2            = p1.left;
+                p1.left       = p2!.right;
+                p2.right      = p1;
                 curNode.right = p2.left;
-                p2.left = curNode;
+                p2.left       = curNode;
                 if (p2.balance == +1) {
                   curNode.balance = -1;
                 } else {

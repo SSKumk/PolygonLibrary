@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AVLUtils
@@ -18,7 +19,7 @@ namespace AVLUtils
     /// <summary>
     /// The internal container
     /// </summary>
-    protected TTree _tree;
+    protected TTree? _tree;
 
     /// <summary>
     /// Default constructor
@@ -30,13 +31,24 @@ namespace AVLUtils
     /// </summary>
     /// <param name="i">The index</param>
     /// <returns>The key-value pair at the given index</returns>
-    public KeyValuePair<TKey, TValue> GetAt (int i) => _tree[i];
+    public KeyValuePair<TKey, TValue> GetAt (int i) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree[i];
+    }
 
-    #region Comparer for the tree that takes into account keys only
+#region Comparer for the tree that takes into account keys only
     /// <summary>
     /// Getting the key comparer
     /// </summary>
-    public IComparer<TKey> comparer => (_tree.comparer as MyComparer).keyComp;
+    public IComparer<TKey> comparer {
+      get
+        {
+          Debug.Assert(_tree != null, nameof(_tree) + " != null");
+          Debug.Assert(_tree.comparer != null, nameof(_tree.comparer) + " != null");
+          Debug.Assert(_tree.comparer is MyComparer, nameof(_tree.comparer) + " != null");
+          return (_tree.comparer as MyComparer)?.keyComp!;
+        }
+    }
 
     /// <summary>
     /// Comparer for pairs that compares keys only
@@ -74,7 +86,10 @@ namespace AVLUtils
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator () => _tree.GetEnumerator ();
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator();
+    }
 
     /// <summary>
     /// Returns an untyped enumerator that directly iterates through the collection.
@@ -88,7 +103,10 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (TKey key) => _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default));
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (TKey key) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator(new KeyValuePair<TKey, TValue>(key, default!));
+    }
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection put at the given value or after it 
@@ -96,13 +114,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetEnumerator (pair);
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator (KeyValuePair<TKey, TValue> pair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator(pair);
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator () => _tree.GetReverseEnumerator ();
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetReverseEnumerator();
+    }
 
     /// <summary>
     /// Returns an enumerator that reversely iterates through the collection put at the given value or before it 
@@ -110,7 +134,10 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (TKey key) => _tree.GetEnumerator (new KeyValuePair<TKey, TValue> (key, default));
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (TKey key) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetEnumerator(new KeyValuePair<TKey, TValue>(key, default!));
+    }
 
     /// <summary>
     /// Returns an enumerator that iterates reversely through the collection put at the given value or before it 
@@ -118,13 +145,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetReverseEnumerator (pair);
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetReverseEnumerator (KeyValuePair<TKey, TValue> pair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetReverseEnumerator(pair);
+    }
 
     /// <summary>
     /// Returns an enumerator that directly iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator () => _tree.GetCyclicEnumerator ();
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicEnumerator();
+    }
 
     /// <summary>
     /// Returns a cyclic enumerator that iterates through the collection put at the given value or after it 
@@ -132,7 +165,10 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (TKey key) => _tree.GetCyclicEnumerator (new KeyValuePair<TKey, TValue> (key, default));
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (TKey key) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicEnumerator(new KeyValuePair<TKey, TValue>(key, default!));
+    }
 
     /// <summary>
     /// Returns a cyclic enumerator that iterates through the collection put at the given value or after it 
@@ -140,13 +176,19 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetCyclicEnumerator (pair);
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicEnumerator (KeyValuePair<TKey, TValue> pair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicEnumerator(pair);
+    }
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator () => _tree.GetCyclicReverseEnumerator ();
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicReverseEnumerator();
+    }
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection put at the given value or before it 
@@ -154,7 +196,10 @@ namespace AVLUtils
     /// </summary>
     /// <param name="key">The key the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (TKey key) => _tree.GetCyclicReverseEnumerator (new KeyValuePair<TKey, TValue> (key, default));
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (TKey key) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicReverseEnumerator(new KeyValuePair<TKey, TValue>(key, default!));
+    }
 
     /// <summary>
     /// Returns a cyclic enumerator that reversely iterates through the collection put at the given value or before it 
@@ -162,8 +207,11 @@ namespace AVLUtils
     /// </summary>
     /// <param name="pair">The pair the enumerator to be put on</param>
     /// <returns>An enumerator that can be used to iterate through the collection</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (KeyValuePair<TKey, TValue> pair) => _tree.GetCyclicReverseEnumerator (pair);
-    #endregion
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetCyclicReverseEnumerator (KeyValuePair<TKey, TValue> pair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.GetCyclicReverseEnumerator(pair);
+    }
+#endregion
 
     #region IDictionary<T> methods
     /// <summary>
@@ -179,8 +227,8 @@ namespace AVLUtils
           throw new ArgumentNullException(nameof(key));
         }
 
-        KeyValuePair<TKey, TValue> res;
-        if (!_tree.Find(new KeyValuePair<TKey, TValue>(key, default), out res)) {
+        Debug.Assert(_tree != null, nameof(_tree) + " != null");
+        if (!_tree.Find(new KeyValuePair<TKey, TValue>(key, default!), out var res)) {
           throw new KeyNotFoundException();
         }
 
@@ -193,6 +241,7 @@ namespace AVLUtils
         }
 
         KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, value);
+        Debug.Assert(_tree != null, nameof(_tree) + " != null");
         if (_tree.Contains(temp)) {
           _tree.Remove(temp);
         }
@@ -214,6 +263,7 @@ namespace AVLUtils
       }
 
       KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, value);
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       if (_tree.Contains(temp)) {
         return;
       }
@@ -232,7 +282,8 @@ namespace AVLUtils
         throw new ArgumentNullException(nameof(key));
       }
 
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default);
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default!);
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       return _tree.Contains (temp);
     }
 
@@ -243,7 +294,8 @@ namespace AVLUtils
     /// <returns>true, if there was such an element and it has been removed successfully; false, otherwise</returns>
     public bool Remove (TKey key)
     {
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default);
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default!);
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       return _tree.Remove (temp);
     }
 
@@ -255,10 +307,11 @@ namespace AVLUtils
     /// <returns>true if the dictionary contains an element with the specified key; false, otherwise</returns>
     public bool TryGetValue (TKey key, out TValue value)
     {
-      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default), res;
+      KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue> (key, default!);
 
       // Check whether there is an element in the dictionary with the given key
-      if (_tree.Find (temp, out res))
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      if (_tree.Find (temp, out var res))
       {
         // If yes, then return true and the obtained value
         value = res.Value;
@@ -267,7 +320,7 @@ namespace AVLUtils
       else
       {
         // If no, return false and the default value
-        value = default;
+        value = default!;
         return false;
       }
     }
@@ -278,7 +331,13 @@ namespace AVLUtils
     /// <summary>
     /// Number of elements in the tree
     /// </summary>
-    public int Count => _tree.Count;
+    public int Count {
+      get
+        {
+          Debug.Assert(_tree != null, nameof(_tree) + " != null");
+          return _tree.Count;
+        }
+    }
 
     /// <summary>
     /// Read-only property (permanently false)
@@ -289,12 +348,18 @@ namespace AVLUtils
     /// Adds a pair key-value to the dictionary. If there is an element with the given key, nothing changes
     /// </summary>
     /// <param name="pair">The pair to be added</param>
-    public void Add (KeyValuePair<TKey, TValue> pair) => _tree.Add (pair);
+    public void Add (KeyValuePair<TKey, TValue> pair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Add(pair);
+    }
 
     /// <summary>
     /// Removes all items from the dictionary
     /// </summary>
-    public void Clear () => _tree.Clear ();
+    public void Clear () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Clear();
+    }
 
     /// <summary>
     /// Determines whether the dictionary contains a specific pair key-value
@@ -303,10 +368,9 @@ namespace AVLUtils
     /// <returns>true if there is such a pair, false otherwise</returns>
     public bool Contains (KeyValuePair<TKey, TValue> pair)
     {
-      KeyValuePair<TKey, TValue> temp;
-
       // Check whether there is an element in the dictionary with the given key
-      if (!_tree.Find(pair, out temp)) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      if (!_tree.Find(pair, out var temp)) {
         // If no, do nothing
         return false;
       }
@@ -335,8 +399,9 @@ namespace AVLUtils
       if (array.Length - arrayIndex < Count) {
         throw new ArgumentException("array too small");
       }
-#endif      
+#endif
 
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
       IEnumerator<KeyValuePair<TKey, TValue>> en = _tree.GetEnumerator ();
       for (int i = 0; i < Count; i++)
       {
@@ -354,10 +419,9 @@ namespace AVLUtils
     /// <returns>true if the pair has been removed, false otherwise</returns>
     public bool Remove (KeyValuePair<TKey, TValue> pair)
     {
-      KeyValuePair<TKey, TValue> temp;
-
       // Check whether there is an element in the dictionary with the given key
-      if (!_tree.Find(pair, out temp)) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      if (!_tree.Find(pair, out var temp)) {
         // If no, do nothing
         return false;
       }
@@ -384,73 +448,109 @@ namespace AVLUtils
     /// Take the minimal pair key-value in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public KeyValuePair<TKey, TValue> Min () => _tree.Min ();
+    public KeyValuePair<TKey, TValue> Min () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Min();
+    }
 
     /// <summary>
     /// Take the minimal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TKey MinKey () => _tree.Min ().Key;
+    public TKey MinKey () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Min().Key;
+    }
 
     /// <summary>
     /// Take the value with the minimal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TValue MinValue () => _tree.Min ().Value;
+    public TValue MinValue () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Min().Value;
+    }
 
     /// <summary>
     /// Take the maximal pair key-value in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public KeyValuePair<TKey, TValue> Max () => _tree.Max ();
+    public KeyValuePair<TKey, TValue> Max () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Max();
+    }
 
     /// <summary>
     /// Take the maximal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TKey MaxKey () => _tree.Max ().Key;
+    public TKey MaxKey () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Max().Key;
+    }
 
     /// <summary>
     /// Take the value with the maximal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TValue MaxValue () => _tree.Max ().Value;
+    public TValue MaxValue () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Max().Value;
+    }
 
     /// <summary>
     /// Remove and return the minimal pair key-value in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public KeyValuePair<TKey, TValue> Pop () => _tree.Pop ();
+    public KeyValuePair<TKey, TValue> Pop () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop();
+    }
 
     /// <summary>
     /// Remove and return the minimal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TKey PopKey () => _tree.Pop ().Key;
+    public TKey PopKey () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop().Key;
+    }
 
     /// <summary>
     /// Remove and return the value with the minimal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TValue PopValue () => _tree.Pop ().Value;
+    public TValue PopValue () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop().Value;
+    }
 
     /// <summary>
     /// Remove and return the maximal pair key-value in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public KeyValuePair<TKey, TValue> Pop_Back () => _tree.Pop_Back ();
+    public KeyValuePair<TKey, TValue> Pop_Back () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop_Back();
+    }
 
     /// <summary>
     /// Remove and return the maximal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TKey PopKey_Back () => _tree.Pop_Back ().Key;
+    public TKey PopKey_Back () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop_Back().Key;
+    }
 
     /// <summary>
     /// Remove and return the value with the maximal key in the dictionary
     /// </summary>
     /// <returns>The minimal value</returns>
-    public TValue PopValue_Back () => _tree.Pop_Back ().Value;
+    public TValue PopValue_Back () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Pop_Back().Value;
+    }
 
     /// <summary>
     /// Take the pair key-value following after the given pair (only the key is taken into account)
@@ -459,7 +559,10 @@ namespace AVLUtils
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.Next (pair, out nextPair);
+    public bool Next (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Next(pair, out nextPair);
+    }
 
     /// <summary>
     /// Take the pair key-value following after the given pair in cyclic order (only the key is taken into account)
@@ -467,7 +570,10 @@ namespace AVLUtils
     /// <param name="pair">The given pair</param>
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.CyclicNext (pair, out nextPair);
+    public bool CyclicNext (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CyclicNext(pair, out nextPair);
+    }
 
     /// <summary>
     /// Take the pair key-value following after the pair with given key 
@@ -476,7 +582,7 @@ namespace AVLUtils
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; 
     /// false, otherwise (the given value is maximal)</returns>
-    public bool Next (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Next (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
+    public bool Next (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Next (new KeyValuePair<TKey, TValue> (key, default!), out nextPair);
 
     /// <summary>
     /// Take the pair key-value following after the pair with given key in the cyclic order
@@ -484,7 +590,7 @@ namespace AVLUtils
     /// <param name="key">The given key</param>
     /// <param name="nextPair">The next pair</param>
     /// <returns>true, if the next value is taken successfully; false, otherwise</returns>
-    public bool CyclicNext (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicNext (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
+    public bool CyclicNext (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicNext (new KeyValuePair<TKey, TValue> (key, default!), out nextPair);
 
     /// <summary>
     /// Take the pair key-value preceding the given pair (only the key is taken into account)
@@ -493,7 +599,10 @@ namespace AVLUtils
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.Prev (pair, out nextPair);
+    public bool Prev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.Prev(pair, out nextPair);
+    }
 
     /// <summary>
     /// Take the pair key-value preceding the given pair in the cyclic order (only the key is taken into account)
@@ -501,7 +610,10 @@ namespace AVLUtils
     /// <param name="pair">The given pair</param>
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) => _tree.CyclicPrev (pair, out nextPair);
+    public bool CyclicPrev (KeyValuePair<TKey, TValue> pair, out KeyValuePair<TKey, TValue> nextPair) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CyclicPrev(pair, out nextPair);
+    }
 
     /// <summary>
     /// Take the pair key-value preceding the pair with given key 
@@ -510,7 +622,7 @@ namespace AVLUtils
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; 
     /// false, otherwise (the given value is minimal)</returns>
-    public bool Prev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Prev (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
+    public bool Prev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => Prev (new KeyValuePair<TKey, TValue> (key, default!), out nextPair);
 
     /// <summary>
     /// Take the pair key-value preceding the pair with given key in the cyclic order
@@ -518,7 +630,7 @@ namespace AVLUtils
     /// <param name="key">The given key</param>
     /// <param name="nextPair">The previous pair</param>
     /// <returns>true, if the previous value is taken successfully; false, otherwise</returns>
-    public bool CyclicPrev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicPrev (new KeyValuePair<TKey, TValue> (key, default), out nextPair);
+    public bool CyclicPrev (TKey key, out KeyValuePair<TKey, TValue> nextPair) => CyclicPrev (new KeyValuePair<TKey, TValue> (key, default!), out nextPair);
     #endregion
 
     #region Keys and Values properties
@@ -572,7 +684,13 @@ namespace AVLUtils
       /// <summary>
       /// Getting the current key
       /// </summary>
-      object IEnumerator.Current => Current;
+      object IEnumerator.Current {
+        get
+          {
+            Debug.Assert(Current != null, nameof(Current) + " != null");
+            return Current;
+          }
+      }
 
       /// <summary>
       /// Resetting the enumerator
@@ -966,12 +1084,18 @@ namespace AVLUtils
     /// Checks consistency of the current structure of the tree
     /// </summary>
     /// <returns>true, if the order</returns>
-    public bool CheckConsistency () => _tree.CheckConsistency ();
+    public bool CheckConsistency () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      return _tree.CheckConsistency();
+    }
 
     /// <summary>
     /// Rebuild the tree according to the current comparer
     /// </summary>
-    public void Rebuild () => _tree.Rebuild ();
+    public void Rebuild () {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.Rebuild();
+    }
 
     /// <summary>
     /// Set a new comparer for the tree. It can be unsafe. 
@@ -983,7 +1107,10 @@ namespace AVLUtils
     /// <param name="newComp">The new comparer to be set</param>
     /// <param name="checkAfter">Flag showing whether to check the consistency of the tree
     /// with the new comparer (in release mode only!)</param>
-    public void SetComparer (IComparer<TKey> newComp, bool checkAfter = false) => _tree.SetComparer (new MyComparer (newComp), checkAfter);
-    #endregion
+    public void SetComparer (IComparer<TKey> newComp, bool checkAfter = false) {
+      Debug.Assert(_tree != null, nameof(_tree) + " != null");
+      _tree.SetComparer(new MyComparer(newComp), checkAfter);
+    }
+#endregion
   }
 }
