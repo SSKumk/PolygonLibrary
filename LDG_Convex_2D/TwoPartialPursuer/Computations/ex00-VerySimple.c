@@ -34,7 +34,7 @@ C = { { 1.0 }, { 0.0 } };
 t0 = 0.0;
 
 // The final instant
-T = 2.0;
+T = 1.0;
 
 // The time step
 dt = 0.05;
@@ -81,8 +81,8 @@ pWrite = false;
 qConstrType = 1;
 
 qBox = { { -1.0, 1.0 } }; 
-qBox1 = { { -1.0, 0.0 } };
-qBox2 = { { 0.0, 1.0 } };
+qBox1 = { { -1.0, -0.5 } };
+qBox2 = { { -0.5, 1.0 } };
 
 // Flag showing whether to write vectograms of the second player
 qWrite = false;
