@@ -63,6 +63,7 @@ namespace Tests
 
 			Debug.WriteLine("Support function: ");
 			Debug.Indent();
+			Debug.Assert(cp.SF != null, "cp.SF != null");
 			foreach (GammaPair gp in cp.SF) {
 				Debug.WriteLine(gp);
 			}
@@ -369,7 +370,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest1()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
 				cp2 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp3 = cp1 - cp2;
@@ -381,6 +382,7 @@ namespace Tests
 				new Point2D(0,-1)
 			};
 
+			Debug.Assert(cp3 != null, nameof(cp3) + " != null");
 			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 1");
 		}
 
@@ -394,7 +396,7 @@ namespace Tests
 				new Point2D(0, -1)
 			};
 
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
 				cp2 = new ConvexPolygon(vs2, false),
 				cp3 = cp1 - cp2;
@@ -406,13 +408,14 @@ namespace Tests
 				new Point2D(0.5,2.5)
 			};
 
+			Debug.Assert(cp3 != null, nameof(cp3) + " != null");
 			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 2");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest3()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp2 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp3 = cp1 - cp2;
@@ -422,13 +425,14 @@ namespace Tests
 				new Point2D(0,-1),
 			};
 
+			Debug.Assert(cp3 != null, nameof(cp3) + " != null");
 			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 3");			
 		}
 
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest4()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(-3, 4, -1, 4),
 				cp3 = cp1 - cp2;
@@ -437,13 +441,14 @@ namespace Tests
 				new Point2D(2,-4)
 			};
 
+			Debug.Assert(cp3 != null, nameof(cp3) + " != null");
 			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 4");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest5()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleTurned(-1, 0, 1, 0, Math.PI / 4),
 				cp2 = PolygonTools.RectangleTurned(-3, 4, -1, 4, Math.PI / 4),
 				cp3 = cp1 - cp2;
@@ -452,13 +457,14 @@ namespace Tests
 				new Point2D(2,-4)
 			};
 
+			Debug.Assert(cp3 != null, nameof(cp3) + " != null");
 			CyclicListComparison(cp3.Contour.Vertices, res, "Diff 5");
 		}
 
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest6()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleTurned(-1, 0, 1, 0, Math.PI / 4),
 				cp2 = PolygonTools.RectangleTurned(-3.01, 4, -1, 4, Math.PI / 4),
 				cp3 = cp1 - cp2;
@@ -469,7 +475,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest7()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(-3.01, 4, -1, 4),
 				cp3 = cp1 - cp2;
@@ -480,7 +486,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest8()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleParallel(-1, 0, 1, 0),
 				cp2 = PolygonTools.RectangleParallel(0, -1, 0, 1),
 				cp3 = cp1 - cp2;
@@ -491,7 +497,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void DiffTest9()
 		{
-			ConvexPolygon
+			ConvexPolygon?
 				cp1 = PolygonTools.RectangleParallel(-1, -1, 1, 1),
 				cp2 = PolygonTools.Circle(0, 0, 1.01, 100),
 				cp3 = cp1 - cp2;

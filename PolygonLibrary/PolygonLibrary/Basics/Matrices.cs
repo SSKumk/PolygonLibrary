@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Diagnostics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -178,7 +178,7 @@ public class Matrix : IEquatable<Matrix>
     
   #region Overrides
 
-  public override bool Equals(object obj)
+  public override bool Equals(object? obj)
   {
 #if DEBUG
       if (obj is not Matrix matrix)
@@ -189,8 +189,9 @@ public class Matrix : IEquatable<Matrix>
     return Equals(matrix);
   }
 
-  public bool Equals(Matrix m)
+  public bool Equals(Matrix? m)
   {
+    Debug.Assert(m != null, nameof(m) + " != null");
     if (Rows != m.Rows || Cols != m.Cols) {
       return false;
     }

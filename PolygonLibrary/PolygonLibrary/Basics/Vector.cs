@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Diagnostics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics; 
@@ -64,10 +64,11 @@ public class Vector : IComparable<Vector>
   /// </summary>
   /// <param name="v">The vector to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public int CompareTo(Vector v)
+  public int CompareTo(Vector? v)
   {
     int d = Dim, res;
 #if DEBUG
+    Debug.Assert(v is not null, nameof(v) + " != null");
     if (d != v.Dim) {
       throw new ArgumentException("Cannot compare vectors of different dimensions");
     }
@@ -230,15 +231,14 @@ public class Vector : IComparable<Vector>
   #endregion
     
   #region Overrides
-  public override bool Equals(object obj)
+  public override bool Equals(object? obj)
   {
 #if DEBUG
-    if (!(obj is Vector)) {
-      throw new ArgumentException();
+    if (obj is not Vector vector) {
+      throw new ArgumentException($"{obj} is not a Vector!");
     }
 #endif
-    Vector v = (Vector)obj;
-    return this.CompareTo(v) == 0;
+    return CompareTo(vector) == 0;
   }
 
   public override string ToString()

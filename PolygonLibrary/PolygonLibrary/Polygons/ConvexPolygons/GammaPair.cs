@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Diagnostics;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
@@ -15,8 +15,9 @@ public class GammaPair : IEquatable<GammaPair>, IComparable<GammaPair>
 	/// </summary>
 	/// <param name="other">The pair to be compared with</param>
 	/// <returns>true, if equal; false, otherwise</returns>
-	public bool Equals(GammaPair other)
+	public bool Equals(GammaPair? other)
 	{
+		Debug.Assert(other != null, nameof(other) + " != null");
 		bool res = Tools.EQ(this.Normal.PolarAngle, other.Normal.PolarAngle);
 		if (res)
 		{
@@ -50,8 +51,9 @@ public class GammaPair : IEquatable<GammaPair>, IComparable<GammaPair>
 	/// </summary>
 	/// <param name="other">The pair to be compared with</param>
 	/// <returns>-1, this pair is less; +1, this pair is greater; 0, the pairs are equal</returns>
-	public int CompareTo(GammaPair other)
+	public int CompareTo(GammaPair? other)
 	{
+		Debug.Assert(other != null, nameof(other) + " != null");
 		int res = Tools.CMP(this.Normal.PolarAngle, other.Normal.PolarAngle);
 		if (res != 0) {
 			return res;

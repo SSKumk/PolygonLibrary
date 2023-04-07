@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics; 
@@ -77,17 +77,18 @@ public class Point : IComparable<Point>
   /// </summary>
   /// <param name="p">The point to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public int CompareTo(Point p)
+  public int CompareTo(Point? p)
   {
     int d = Dim, res;
 #if DEBUG
+    Debug.Assert(p is not null, nameof(p) + " != null");
     if (d != p.Dim) {
       throw new ArgumentException("Cannot compare points of different dimensions");
     }
 #endif
     for (int i = 0; i < d; i++)
     {
-      res = Tools.CMP(this._p[i], p._p[i]);
+      res = Tools.CMP(_p[i], p._p[i]);
       if (res != 0) {
         return res;
       }
@@ -231,7 +232,7 @@ public class Point : IComparable<Point>
   #endregion
 
   #region Overrides
-  public override bool Equals(object obj)
+  public override bool Equals(object? obj)
   {
 #if DEBUG
     if (obj is not Point point) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -7,13 +8,15 @@ namespace PolygonLibrary.Basics;
 /// Class of vectors in the plane
 /// </summary>
 public class Vector2D : IComparable<Vector2D> {
-  #region Comparing
+
+#region Comparing
   /// <summary>
   /// Vector comparer realizing the lexicographic order
   /// </summary>
   /// <param name="v">The vector to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public int CompareTo(Vector2D v) {
+  public int CompareTo(Vector2D? v) {
+    Debug.Assert(v is not null, nameof(v) + " != null");
     int xRes = Tools.CMP(x, v.x);
     if (xRes != 0) {
       return xRes;
@@ -69,9 +72,9 @@ public class Vector2D : IComparable<Vector2D> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if p1 is less than or equal to p2; false, otherwise</returns>
   public static bool operator <=(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) <= 0;
-  #endregion
+#endregion
 
-  #region Access properties
+#region Access properties
   /// <summary>
   /// The abscissa
   /// </summary>
@@ -87,12 +90,12 @@ public class Vector2D : IComparable<Vector2D> {
   /// </summary>
   /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
   /// <returns>The value of the corresponding component</returns>
-  public double this[int i] =>
-    i switch {
-      0 => x
-      , 1 => y
-      , _ => throw new IndexOutOfRangeException()
-    };
+  public double this[int i] => i switch
+                                 {
+                                   0 => x
+                                 , 1 => y
+                                 , _ => throw new IndexOutOfRangeException()
+                                 };
 
   /// <summary>
   /// length of the vector
@@ -103,9 +106,9 @@ public class Vector2D : IComparable<Vector2D> {
   /// The polar angle of the vector in the range (-pi;pi]
   /// </summary>
   public double PolarAngle { get; private set; }
-  #endregion
+#endregion
 
-  #region Miscellaneous procedures
+#region Miscellaneous procedures
   /// <summary>
   /// Normalization of the vector
   /// </summary>
@@ -123,7 +126,7 @@ public class Vector2D : IComparable<Vector2D> {
 #endif
     return new Vector2D(x / Length, y / Length);
   }
-  
+
   /// <summary>
   /// Normalization of the vector with the zero vector check
   /// </summary>
@@ -136,8 +139,7 @@ public class Vector2D : IComparable<Vector2D> {
     }
     return new Vector2D(x / Length, y / Length);
   }
-  
-  
+
 
   /// <summary>
   /// Construct a vector obtained from the current one by a clockwise 90-degree turn
@@ -202,9 +204,9 @@ public class Vector2D : IComparable<Vector2D> {
     double a = Angle(v1, v2);
     return a < 0 ? a + 2 * Math.PI : a;
   }
-  #endregion
+#endregion
 
-  #region Convertors
+#region Convertors
   /// <summary>
   /// Explicit convertor to a two-dimensional vector from a two-dimensional point
   /// </summary>
@@ -239,13 +241,13 @@ public class Vector2D : IComparable<Vector2D> {
 #endif
     return new Vector2D(p[0], p[1]);
   }
-  #endregion
+#endregion
 
-  #region Overrides
-  public override bool Equals(object obj) {
+#region Overrides
+  public override bool Equals(object? obj) {
 #if DEBUG
-    if (!(obj is Vector2D v)) {
-      throw new ArgumentException();
+    if (obj is not Vector2D v) {
+      throw new ArgumentException($"{obj} is not a Vector2D!");
     }
 #endif
     return CompareTo(v) == 0;
@@ -254,9 +256,9 @@ public class Vector2D : IComparable<Vector2D> {
   public override string ToString() => "(" + x + ";" + y + ")";
 
   public override int GetHashCode() => x.GetHashCode() + y.GetHashCode();
-  #endregion
+#endregion
 
-  #region Constructors and factories
+#region Constructors and factories
   /// <summary>
   /// The default construct producing the zero vector
   /// </summary>
@@ -303,14 +305,15 @@ public class Vector2D : IComparable<Vector2D> {
   /// Computing parameters of the vector for future usage
   /// </summary>
   private void ComputeParameters() {
-    Length = Math.Sqrt(x * x + y * y);
+    Length     = Math.Sqrt(x * x + y * y);
     PolarAngle = Math.Atan2(y, x);
     // КОСТЫЛИЩЕ - DUCT TAPE
-    if (Tools.EQ(PolarAngle, -Math.PI)) PolarAngle = Math.PI;
+    if (Tools.EQ(PolarAngle, -Math.PI))
+      PolarAngle = Math.PI;
   }
-  #endregion
+#endregion
 
-  #region Operators
+#region Operators
   /// <summary>
   /// Unary minus - the opposite vector
   /// </summary>
@@ -340,7 +343,7 @@ public class Vector2D : IComparable<Vector2D> {
   /// <param name="a">The numeric factor</param>
   /// <param name="v">The vector factor</param>
   /// <returns>The product</returns>
-  public static Vector2D operator *(double a, Vector2D v) => new Vector2D(a * v.x, a * v.y);
+  public static Vector2D operator *(double a, Vector2D v) { return new Vector2D(a * v.x, a * v.y); }
 
   /// <summary>
   /// Right multiplication of a vector by a number
@@ -348,7 +351,7 @@ public class Vector2D : IComparable<Vector2D> {
   /// <param name="v">The vector factor</param>
   /// <param name="a">The numeric factor</param>
   /// <returns>The product</returns>
-  public static Vector2D operator *(Vector2D v, double a) => new Vector2D(a * v.x, a * v.y);
+  public static Vector2D operator *(Vector2D v, double a) { return new Vector2D(a * v.x, a * v.y); }
 
   /// <summary>
   /// Division of a vector by a number
@@ -412,11 +415,10 @@ public class Vector2D : IComparable<Vector2D> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are orthogonal; false, otherwise</returns>
   public static bool AreOrthogonal(Vector2D v1, Vector2D v2) =>
-    Tools.EQ(v1.Length) || Tools.EQ(v2.Length) ||
-    Tools.EQ(Math.Abs(v1 * v2 / v1.Length / v1.Length));
-  #endregion
+    Tools.EQ(v1.Length) || Tools.EQ(v2.Length) || Tools.EQ(Math.Abs(v1 * v2 / v1.Length / v1.Length));
+#endregion
 
-  #region Vector constants
+#region Vector constants
   /// <summary>
   /// The zero vector
   /// </summary>
@@ -431,5 +433,6 @@ public class Vector2D : IComparable<Vector2D> {
   /// The second unit vector
   /// </summary>
   public static readonly Vector2D E2 = new Vector2D(0, 1);
-  #endregion
+#endregion
+
 }

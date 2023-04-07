@@ -11,7 +11,7 @@ namespace Tests
     [Test]
     public void SquareCHTest()
     {
-      Random r = new Random(10);
+      Random? r = new Random(10);
 
       List<Point2D> 
         expected = new List<Point2D>(), 
@@ -65,7 +65,7 @@ namespace Tests
     [Test]
     public void HexagonCHTest()
     {
-      Random r = new Random(10);
+      Random? r = new Random(10);
 
       List<Point2D>
         expected = new List<Point2D>(),

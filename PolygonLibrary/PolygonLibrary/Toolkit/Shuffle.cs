@@ -17,7 +17,7 @@ public abstract partial class Tools
   /// <typeparam name="T">Array element type</typeparam>
   /// <param name="array">Array to shuffle</param>
   /// <param name="ownRnd">A random generator. If is not passed, some internal generator will be used</param>
-  public static void Shuffle<T>(List<T> array, Random ownRnd = null)
+  public static void Shuffle<T>(List<T> array, Random? ownRnd = null)
   {
     int n = array.Count;
     Random rnd = ownRnd ?? _random;

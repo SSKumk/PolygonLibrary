@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <LangVersion>11</LangVersion>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     </PropertyGroup>

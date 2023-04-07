@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using PolygonLibrary.Basics;
@@ -17,12 +18,12 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <summary>
   /// The storage for the dual description of the polygon
   /// </summary>
-  private SupportFunction _sf;
+  private SupportFunction? _sf;
 
   /// <summary>
   /// Property for getting the dual description of the polygon
   /// </summary>
-  public SupportFunction SF {
+  public SupportFunction? SF {
     get
       {
         if (_sf == null) {
@@ -44,6 +45,7 @@ public partial class ConvexPolygon : BasicPolygon {
           ComputeContours();
         }
 
+        Debug.Assert(_contours != null, nameof(_contours) + " != null");
         return _contours[0];
       }
   }
@@ -64,6 +66,7 @@ public partial class ConvexPolygon : BasicPolygon {
           GenerateTriangleWeights();
         }
 
+        Debug.Assert(_square != null, nameof(_square) + " != null");
         return _square.Value;
       }
   }
@@ -106,6 +109,7 @@ public partial class ConvexPolygon : BasicPolygon {
       _sf = new SupportFunction(_contours[0].Vertices, false);
     } else if (_vertices != null) {
       ComputeContours();
+      Debug.Assert(_contours != null, nameof(_contours) + " != null");
       _sf = new SupportFunction(_contours[0].Vertices, false);
     } else {
       throw new
@@ -218,8 +222,9 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="direction">A vector defining the direction</param>
   /// <param name="p1">One extremal point</param>
   /// <param name="p2">Another extremal point</param>
-  public void GetExtremeElements(Vector2D direction, out Point2D p1, out Point2D p2) {
+  public void GetExtremeElements(Vector2D direction, out Point2D p1, out Point2D? p2) {
     int i, j;
+    Debug.Assert(SF != null, nameof(SF) + " != null");
     SF.FindCone(direction, out i, out j);
 
     p1 = GammaPair.CrossPairs(SF[i], SF[j]);
@@ -259,7 +264,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="b">The weight of the vertex v_i</param>
   /// <param name="c">The weight of the vertex v_{i+1}</param>
   /// <param name="rnd">Random generator to be used; if null, the internal generator of the polygon is used</param>
-  public void GenerateDataForRandomPoint(out int trInd, out double a, out double b, out double c, Random rnd = null) {
+  public void GenerateDataForRandomPoint(out int trInd, out double a, out double b, out double c, Random? rnd = null) {
     // Generate the list triangle weights, if necessary
     if (triangleWeights == null) {
       GenerateTriangleWeights();
@@ -267,6 +272,8 @@ public partial class ConvexPolygon : BasicPolygon {
 
     rnd ??= MyRnd;
 
+    Debug.Assert(_square != null, nameof(_square) + " != null");
+    Debug.Assert(triangleWeights != null, nameof(triangleWeights) + " != null");
     double s = rnd.NextDouble() * _square.Value;
     trInd = triangleWeights.BinarySearch(s, new Tools.DoubleComparer(Tools.Eps));
     if (trInd < 0) {
@@ -284,12 +291,12 @@ public partial class ConvexPolygon : BasicPolygon {
   /// it contains progressive sums of squares of triangle of type (v_0,v_i,v_{i+1}).
   /// It initializes at the first call to generation of a point and is used in further calls
   /// </summary>
-  protected List<double> triangleWeights;
+  protected List<double>? triangleWeights;
 
   /// <summary>
   /// Internal random generator
   /// </summary>
-  protected Random _myRnd;
+  protected Random? _myRnd;
 
   /// <summary>
   /// Internal property for taking the internal random generator initializing it if necessary
@@ -303,7 +310,7 @@ public partial class ConvexPolygon : BasicPolygon {
   /// </summary>
   /// <param name="rnd">The random generator to be used; if null, the internal generator of the polygon is used</param>
   /// <returns>The generated point</returns>
-  public Point2D GenerateRandomPoint(Random rnd = null) {
+  public Point2D GenerateRandomPoint(Random? rnd = null) {
     int    i;
     double a, b, c;
     GenerateDataForRandomPoint(out i, out a, out b, out c, rnd);
@@ -350,6 +357,8 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="cp2">The second polygon summand</param>
   /// <returns>The polygon sum</returns>
   public static ConvexPolygon operator +(ConvexPolygon cp1, ConvexPolygon cp2) {
+    Debug.Assert(cp1.SF != null, "cp1.SF != null");
+    Debug.Assert(cp2.SF != null, "cp2.SF != null");
     SupportFunction sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, 1);
 
     return new ConvexPolygon(sf);
@@ -361,10 +370,12 @@ public partial class ConvexPolygon : BasicPolygon {
   /// <param name="cp1">The polygon minuend</param>
   /// <param name="cp2">The polygon subtrahend</param>
   /// <returns>The polygon difference; if the difference is empty, null is returned</returns>
-  public static ConvexPolygon operator -(ConvexPolygon cp1, ConvexPolygon cp2) {
+  public static ConvexPolygon? operator -(ConvexPolygon cp1, ConvexPolygon cp2) {
     List<int> suspiciousIndices = new List<int>();
-    SupportFunction sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspiciousIndices)
-                                        .ConvexifyFunctionWithInfo(suspiciousIndices);
+    Debug.Assert(cp1.SF != null, "cp1.SF != null");
+    Debug.Assert(cp2.SF != null, "cp2.SF != null");
+    SupportFunction? sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, 1, -1, suspiciousIndices)
+                                         .ConvexifyFunctionWithInfo(suspiciousIndices);
     if (sf == null) {
       return null;
     } else {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
@@ -16,17 +17,17 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// The storage for the contours of the polygon
     /// </summary>
-    protected List<Polyline> _contours;
+    protected List<Polyline>? _contours;
 
     /// <summary>
     /// The storage for the polygon vertices
     /// </summary>
-    protected List<Point2D> _vertices;
+    protected List<Point2D>? _vertices;
 
     /// <summary>
     /// The storage for the polygon edges
     /// </summary>
-    protected List<Segment> _edges;
+    protected List<Segment>? _edges;
     #endregion
 
     #region Access properties
@@ -41,6 +42,7 @@ namespace PolygonLibrary.Polygons
           ComputeContours();
         }
 
+        Debug.Assert(_contours != null, nameof(_contours) + " != null");
         return _contours;
       }
       protected init => _contours = value;
@@ -58,6 +60,7 @@ namespace PolygonLibrary.Polygons
           ComputeVertices();
         }
 
+        Debug.Assert(_vertices != null, nameof(_vertices) + " != null");
         return _vertices;
       }
       protected set => _vertices = value;
@@ -75,6 +78,7 @@ namespace PolygonLibrary.Polygons
           ComputeEdges();
         }
 
+        Debug.Assert(_edges != null, nameof(_edges) + " != null");
         return _edges;
       }
       protected set => _edges = value;

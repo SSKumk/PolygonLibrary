@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
 
@@ -31,14 +32,18 @@ namespace PolygonLibrary.Toolkit
       }
 
       // Seek for minimal and maximal points of the swarm - they define the initial cut line
-      Point2D
+      Point2D?
         minPoint = swarm.Min(),
         maxPoint = swarm.Max();
 
+      Debug.Assert(minPoint is not null, nameof(minPoint) + " != null");
+      Debug.Assert(maxPoint is not null, nameof(maxPoint) + " != null");
       if (minPoint == maxPoint)
       {
-        res = new List<Point2D>();
-        res.Add(minPoint);
+        res = new List<Point2D>
+          {
+            minPoint
+          };
         return res;
       }
       Line2D line = new Line2D(maxPoint, minPoint);

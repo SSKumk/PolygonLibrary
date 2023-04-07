@@ -11,7 +11,7 @@ namespace Tests
     [Test]
     public void SimpleArcCHTest()
     {
-      Random r = new Random(10);
+      Random? r = new Random(10);
 
       List<Point2D>
         expected = new List<Point2D>(),
@@ -45,7 +45,7 @@ namespace Tests
     [Test]
     public void SquareArcCHTest()
     {
-      Random r = new Random(10);
+      Random? r = new Random(10);
 
       List<Point2D> 
         expected = new List<Point2D>(), 
@@ -98,7 +98,7 @@ namespace Tests
     [Test]
     public void HexagonArcCHTest()
     {
-      Random r = new Random(10);
+      Random? r = new Random(10);
 
       List<Point2D>
         expected = new List<Point2D>(),

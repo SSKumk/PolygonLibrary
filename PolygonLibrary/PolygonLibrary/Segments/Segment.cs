@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
@@ -72,12 +73,12 @@ public class CrossInfo {
   /// <summary>
   /// The first intersection point (if any)
   /// </summary>
-  public readonly Point2D fp;
+  public readonly Point2D? fp;
 
   /// <summary>
   /// The another (second) end of the overlapping part of the segments (if any)
   /// </summary>
-  public readonly Point2D sp;
+  public readonly Point2D? sp;
 
   /// <summary>
   /// Reference to the first segment
@@ -122,11 +123,11 @@ public class CrossInfo {
   /// <param name="nfTypeS2">Location-type of the first point of the crossing relative to the second segment</param>
   /// <param name="nsTypeS1">Location-type of the second point of the crossing relative to the first segment</param>
   /// <param name="nsTypeS2">Location-type of the second point of the crossing relative to the second segment</param>
-  public CrossInfo(CrossType type
-                   , Point2D nfp
-                   , Point2D nsp
-                   , Segment ns1
-                   , Segment ns2
+  public CrossInfo(CrossType           type
+                   , Point2D?          nfp
+                   , Point2D?          nsp
+                   , Segment           ns1
+                   , Segment           ns2
                    , IntersectPointPos nfTypeS1
                    , IntersectPointPos nfTypeS2
                    , IntersectPointPos nsTypeS1
@@ -217,7 +218,8 @@ public class Segment : IComparable<Segment> {
   /// </summary>
   /// <param name="s">The segment, which to be compared with</param>
   /// <returns>+1, if this segment is greater; 0, if these segments are equal; -1, otherwise</returns>
-  public int CompareTo(Segment s) {
+  public int CompareTo(Segment? s) {
+    Debug.Assert(s != null, nameof(s) + " != null");
     int res = p1.CompareTo(s.p1);
     if (res != 0) {
       return res;
@@ -232,10 +234,10 @@ public class Segment : IComparable<Segment> {
 
   public override string ToString() => "[" + p1 + ";" + p2 + "]";
 
-  public override bool Equals(object obj) {
+  public override bool Equals(object? obj) {
 #if DEBUG
-    if (!(obj is Segment segment)) {
-      throw new ArgumentException();
+    if (obj is not Segment segment) {
+      throw new ArgumentException($"{obj} is ot a Segment!");
     }
 #endif
     return p1 == segment.p1 && p2 == segment.p2;
@@ -368,8 +370,9 @@ public class Segment : IComparable<Segment> {
   /// <param name="s2">The second segment</param>
   /// <returns>The information about the intersection</returns>
   public static CrossInfo Intersect(Segment s1, Segment s2) {
-    Vector2D d1 = s1.directional, d2 = s2.directional;
-    Point2D resPoint = null, resPoint1 = null;
+    Vector2D d1       = s1.directional;
+    Vector2D d2       = s2.directional;
+    Point2D?   resPoint = null, resPoint1 = null;
     IntersectPointPos fS1 = IntersectPointPos.Empty
       , fS2 = IntersectPointPos.Empty
       , sS1 = IntersectPointPos.Empty
