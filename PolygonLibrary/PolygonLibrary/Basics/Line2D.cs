@@ -32,12 +32,12 @@ public class Line2D {
   /// <summary>
   /// The property of the directional vector of the line
   /// </summary>
-  public Vector2D Direct { get; protected set; }
+  public Vector2D Direct { get; protected set; } = Vector2D.Zero;
 
   /// <summary>
   /// The property of the normal vector of the line
   /// </summary>
-  public Vector2D Normal { get; protected set; }
+  public Vector2D Normal { get; protected set; } = Vector2D.Zero;
 #endregion
 
 #region Contructors, factories, and helping contruction functions
@@ -59,6 +59,7 @@ public class Line2D {
   /// <param name="p1">The first point that lies in the line</param>
   /// <param name="p2">The second point that lies in the line</param>
   public Line2D(Point2D p1, Point2D p2) => PointAndDirect(p1, p2 - p1);
+
 
   /// <summary>
   /// Constructing a line passing through two points <paramref name="p1"/> and <paramref name="p2"/>.

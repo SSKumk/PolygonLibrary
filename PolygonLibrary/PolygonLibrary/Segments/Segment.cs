@@ -184,12 +184,12 @@ public class Segment : IComparable<Segment> {
   /// <summary>
   /// The normal vector of the segment
   /// </summary>
-  public Vector2D normal { get; private set; }
+  public Vector2D normal { get; private set; } = Vector2D.Zero;
 
   /// <summary>
   /// The directional vector of the segment
   /// </summary>
-  public Vector2D directional { get; private set; }
+  public Vector2D directional { get; private set; } = Vector2D.Zero;
 
   /// <summary>
   /// length of the segment
