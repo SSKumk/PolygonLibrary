@@ -2,14 +2,14 @@
 using System.Diagnostics;
 using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Basics; 
+namespace PolygonLibrary.Basics;
 
 /// <summary>
 /// Class of multidimensional vector
 /// </summary>
-public class Vector : IComparable<Vector>
-{
-  #region Internal storage, access properties, and convertors
+public class Vector : IComparable<Vector> {
+
+#region Internal storage, access properties, and convertors
   /// <summary>
   /// The internal storage of the vector as a one-dimensional array
   /// </summary>
@@ -25,23 +25,24 @@ public class Vector : IComparable<Vector>
   /// </summary>
   /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
   /// <returns>The value of the corresponding component</returns>
-  public double this[int i]
-  {
+  public double this[int i] {
     get
-    {
+      {
 #if DEBUG
-      if (i < 0 || i >= Dim) {
-        throw new IndexOutOfRangeException();
-      }
+        if (i < 0 || i >= Dim) {
+          throw new IndexOutOfRangeException();
+        }
 #endif
-      return _v[i];
-    }
+        return _v[i];
+      }
   }
 
   /// <summary>
   /// length of the vector
   /// </summary>
-  public double Length { get; private set; }    
+  private Lazy<double> length { get; set; } = new();
+
+  public double Length() { return length.Value; }
 
   /// <summary>
   /// Convert a vector to a one-dimensional array
@@ -56,16 +57,15 @@ public class Vector : IComparable<Vector>
   /// <param name="v">Array to be converted</param>
   /// <returns>The resultant vector</returns>
   public static explicit operator Vector(double[] v) => new Vector(v);
-  #endregion
-    
-  #region Comparing
+#endregion
+
+#region Comparing
   /// <summary>
   /// Vector comparer realizing the lexicographic order
   /// </summary>
   /// <param name="v">The vector to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public int CompareTo(Vector? v)
-  {
+  public int CompareTo(Vector? v) {
     int d = Dim, res;
 #if DEBUG
     Debug.Assert(v is not null, nameof(v) + " != null");
@@ -73,8 +73,7 @@ public class Vector : IComparable<Vector>
       throw new ArgumentException("Cannot compare vectors of different dimensions");
     }
 #endif
-    for (int i = 0; i < d; i++)
-    {
+    for (int i = 0; i < d; i++) {
       res = Tools.CMP(this[i], v[i]);
       if (res != 0) {
         return res;
@@ -90,16 +89,14 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors coincide; false, otherwise</returns>
-  public static bool operator ==(Vector v1, Vector v2)
-  {
+  public static bool operator ==(Vector v1, Vector v2) {
     int d = v1.Dim, res;
 #if DEBUG
     if (d != v2.Dim) {
       throw new ArgumentException("Cannot compare vectors of different dimensions");
     }
 #endif
-    for (int i = 0; i < d; i++)
-    {
+    for (int i = 0; i < d; i++) {
       res = Tools.CMP(v1[i], v2[i]);
       if (res != 0) {
         return false;
@@ -115,16 +112,14 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors do not coincide; false, otherwise</returns>
-  public static bool operator !=(Vector v1, Vector v2)
-  {
+  public static bool operator !=(Vector v1, Vector v2) {
     int d = v1.Dim, res;
 #if DEBUG
     if (d != v2.Dim) {
       throw new ArgumentException("Cannot compare vectors of different dimensions");
     }
 #endif
-    for (int i = 0; i < d; i++)
-    {
+    for (int i = 0; i < d; i++) {
       res = Tools.CMP(v1[i], v2[i]);
       if (res != 0) {
         return true;
@@ -165,9 +160,9 @@ public class Vector : IComparable<Vector>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if p1 is less than or equal to p2; false, otherwise</returns>
   public static bool operator <=(Vector v1, Vector v2) => v1.CompareTo(v2) <= 0;
-  #endregion
-    
-  #region Miscellaneous procedures
+#endregion
+
+#region Miscellaneous procedures
   /// <summary>
   /// Normalization of the vector
   /// </summary>
@@ -177,39 +172,37 @@ public class Vector : IComparable<Vector>
   /// <exception cref="DivideByZeroException">
   /// Is thrown if the vector is zero 
   /// </exception>
-  public Vector Normalize()
-  {
+  public Vector Normalize() {
 #if DEBUG
-    if (Tools.EQ(Length)) {
+    if (Tools.EQ(Length())) {
       throw new DivideByZeroException();
     }
 #endif
     Vector res = new Vector(Dim);
     for (int i = 0; i < Dim; i++) {
-      res._v[i] = _v[i] / Length;
+      res._v[i] = _v[i] / Length();
     }
 
-    res.Length = 1;
+    res.length = new Lazy<double>(() => 1); //todo Не уверен!
     return res;
   }
-  
+
   /// <summary>
   /// Normalization of the vector with the zero vector check
   /// </summary>
   /// <returns>
   /// The normalized vector. If the vector is zero, then zero is returned
   /// </returns>
-  public Vector NormalizeZero()
-  {
-    if (Tools.EQ(Length)) {
+  public Vector NormalizeZero() {
+    if (Tools.EQ(Length())) {
       return this;
     }
     Vector res = new Vector(Dim);
     for (int i = 0; i < Dim; i++) {
-      res._v[i] = _v[i] / Length;
+      res._v[i] = _v[i] / Length();
     }
 
-    res.Length = 1;
+    res.length = new Lazy<double>(() => 1);
     return res;
   }
 
@@ -220,19 +213,17 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
-  public static double Angle(Vector v1, Vector v2)
-  {
-    if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
+  public static double Angle(Vector v1, Vector v2) {
+    if (Tools.EQ(v1.Length()) || Tools.EQ(v2.Length())) {
       return 0;
     } else {
-      return Math.Acos((v1 * v2) / v1.Length / v2.Length);
+      return Math.Acos((v1 * v2) / v1.Length() / v2.Length());
     }
   }
-  #endregion
-    
-  #region Overrides
-  public override bool Equals(object? obj)
-  {
+#endregion
+
+#region Overrides
+  public override bool Equals(object? obj) {
 #if DEBUG
     if (obj is not Vector vector) {
       throw new ArgumentException($"{obj} is not a Vector!");
@@ -241,10 +232,9 @@ public class Vector : IComparable<Vector>
     return CompareTo(vector) == 0;
   }
 
-  public override string ToString()
-  {
+  public override string ToString() {
     string res = "(" + _v[0];
-    int d = Dim, i;
+    int    d   = Dim, i;
     for (i = 1; i < d; i++) {
       res += ";" + _v[i];
     }
@@ -253,8 +243,7 @@ public class Vector : IComparable<Vector>
     return res;
   }
 
-  public override int GetHashCode()
-  {
+  public override int GetHashCode() {
     int res = 0, d = Dim, i;
     for (i = 0; i < d; i++) {
       res += _v[i].GetHashCode();
@@ -262,15 +251,14 @@ public class Vector : IComparable<Vector>
 
     return res;
   }
-  #endregion
-    
-  #region Constructors
+#endregion
+
+#region Constructors
   /// <summary>
   /// The default construct producing the zero vector
   /// </summary>
   /// <param name="n">The dimension of the vector</param>
-  public Vector(int n)
-  {
+  public Vector(int n) {
 #if DEBUG
     if (n <= 0) {
       throw new ArgumentException("Dimension of a vector cannot be non-positive");
@@ -285,8 +273,7 @@ public class Vector : IComparable<Vector>
   /// Constructor on the basis of a one-dimensional array
   /// </summary>
   /// <param name="nv">The array</param>
-  public Vector(double[] nv)
-  {
+  public Vector(double[] nv) {
 #if DEBUG
     if (nv.Length <= 0) {
       throw new ArgumentException("Dimension of a vector cannot be non-positive");
@@ -308,8 +295,7 @@ public class Vector : IComparable<Vector>
   /// Copying constructor
   /// </summary>
   /// <param name="v">The vector to be copied</param>
-  public Vector(Vector v)
-  {
+  public Vector(Vector v) {
     int d = v.Dim, i;
     _v = new double[d];
     for (i = 0; i < d; i++) {
@@ -319,26 +305,28 @@ public class Vector : IComparable<Vector>
     ComputeParameters();
   }
 
-  private void ComputeParameters()
-  {
-    double res = 0;
-    for (int i = 0; i < Dim; i++) {
-      res += _v[i] * _v[i];
-    }
-
-    Length = Math.Sqrt(res);
+  /// <summary>
+  /// Computing fields
+  /// </summary>
+  private void ComputeParameters() {
+    length = new Lazy<double>(() => {
+                                double res = 0;
+                                for (int i = 0; i < Dim; i++) {
+                                  res += _v[i] * _v[i];
+                                }
+                                return Math.Sqrt(res);
+                              });
   }
-  #endregion
-    
-  #region Operators
+#endregion
+
+#region Operators
   /// <summary>
   /// Unary minus - the opposite vector
   /// </summary>
   /// <param name="v">The vector to be reversed</param>
   /// <returns>The opposite vector</returns>
-  public static Vector operator -(Vector v)
-  {
-    int d = v.Dim, i;
+  public static Vector operator -(Vector v) {
+    int      d  = v.Dim, i;
     double[] nv = new double[d];
     for (i = 0; i < d; i++) {
       nv[i] = -v._v[i];
@@ -353,8 +341,7 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector summand</param>
   /// <param name="v2">The second vector summand</param>
   /// <returns>The sum</returns>
-  public static Vector operator +(Vector v1, Vector v2)
-  {
+  public static Vector operator +(Vector v1, Vector v2) {
     int d = v1.Dim, i;
 #if DEBUG
     if (d != v2.Dim) {
@@ -375,8 +362,7 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The vector minuend</param>
   /// <param name="v2">The vector subtrahend</param>
   /// <returns>The differece</returns>
-  public static Vector operator -(Vector v1, Vector v2)
-  {
+  public static Vector operator -(Vector v1, Vector v2) {
     int d = v1.Dim, i;
 #if DEBUG
     if (d != v2.Dim) {
@@ -397,9 +383,8 @@ public class Vector : IComparable<Vector>
   /// <param name="a">The numeric factor</param>
   /// <param name="v">The vector factor</param>
   /// <returns>The product</returns>
-  public static Vector operator *(double a, Vector v)
-  {
-    int d = v.Dim, i;
+  public static Vector operator *(double a, Vector v) {
+    int      d  = v.Dim, i;
     double[] nv = new double[d];
     for (i = 0; i < d; i++) {
       nv[i] = a * v._v[i];
@@ -422,14 +407,13 @@ public class Vector : IComparable<Vector>
   /// <param name="v">The vector dividend</param>
   /// <param name="a">The numeric divisor</param>
   /// <returns>The product</returns>
-  public static Vector operator /(Vector v, double a)
-  {
+  public static Vector operator /(Vector v, double a) {
 #if DEBUG
     if (Tools.EQ(a)) {
       throw new DivideByZeroException();
     }
 #endif
-    int d = v.Dim, i;
+    int      d  = v.Dim, i;
     double[] nv = new double[d];
     for (i = 0; i < d; i++) {
       nv[i] = v._v[i] / a;
@@ -444,8 +428,7 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector factor</param>
   /// <param name="v2">The first vector factor</param>
   /// <returns>The product</returns>
-  public static double operator *(Vector v1, Vector v2)
-  {
+  public static double operator *(Vector v1, Vector v2) {
     int d = v1.Dim, i;
 #if DEBUG
     if (d != v2.Dim) {
@@ -466,9 +449,8 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are parallel; false, otherwise</returns>
-  public static bool AreParallel(Vector v1, Vector v2)
-  {
-    double l1 = v1.Length, l2 = v2.Length;
+  public static bool AreParallel(Vector v1, Vector v2) {
+    double l1 = v1.Length(), l2 = v2.Length();
     return Tools.EQ(Math.Abs(v1 * v2), l1 * l2);
   }
 
@@ -478,9 +460,8 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are codirected; false, otherwise</returns>
-  public static bool AreCodirected(Vector v1, Vector v2)
-  {
-    double l1 = v1.Length, l2 = v2.Length;
+  public static bool AreCodirected(Vector v1, Vector v2) {
+    double l1 = v1.Length(), l2 = v2.Length();
     return Tools.EQ(v1 * v2, l1 * l2);
   }
 
@@ -490,9 +471,8 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
-  public static bool AreCounterdirected(Vector v1, Vector v2)
-  {
-    double l1 = v1.Length, l2 = v2.Length;
+  public static bool AreCounterdirected(Vector v1, Vector v2) {
+    double l1 = v1.Length(), l2 = v2.Length();
     return Tools.EQ(v1 * v2, -l1 * l2);
   }
 
@@ -502,10 +482,10 @@ public class Vector : IComparable<Vector>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
-  public static bool AreOrthogonal(Vector v1, Vector v2)
-  {
-    double l1 = v1.Length, l2 = v2.Length;
+  public static bool AreOrthogonal(Vector v1, Vector v2) {
+    double l1 = v1.Length(), l2 = v2.Length();
     return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(Math.Abs(v1 * v2 / (l1 * l2)));
   }
-  #endregion
+#endregion
+
 }
