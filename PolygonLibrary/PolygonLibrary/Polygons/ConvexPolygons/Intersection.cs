@@ -111,8 +111,8 @@ public partial class ConvexPolygon {
 
       Segment  hat_p  = P.Contour.Edges.GetAtCyclic(countP - 1);
       Segment  hat_q  = Q.Contour.Edges.GetAtCyclic(countQ - 1);
-      Vector2D hat_p0 = hat_p.directional.Normalize();
-      Vector2D hat_q0 = hat_q.directional.Normalize();
+      Vector2D hat_p0 = hat_p.DirectionalNormalized();
+      Vector2D hat_q0 = hat_q.DirectionalNormalized();
 
       int skewPSign = Tools.CMP(hat_p0 ^ hat_q0);
       int pHhat_q0  = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
