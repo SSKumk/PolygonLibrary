@@ -1,0 +1,8 @@
+4711.5МБ  .NET Host  5'000'000  Lazy
+1242.9МБ  .NET Host  5'000'000  Non Lazy
+2494.7МБ  .NET Host  10'000'000  Non Lazy
+
+3753.2МБ  .NET Host  5'000'000  OWN-Lazy
+3827.0МБ  .NET Host  5'000'000  OWN-Lazy with calls
+
+1099.6МБ  .NET Host  5'000'000  Explicitly written Lazy logic
