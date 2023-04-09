@@ -38,10 +38,28 @@ public class Vector : IComparable<Vector> {
   }
 
   /// <summary>
-  /// Get length field
+  /// The length field
+  /// </summary>
+  private double? length = null;
+
+  /// <summary>
+  /// Getter
   /// </summary>
   /// <returns>The length of the vector</returns>
-  public double Length { get; protected set; }
+  public double Length {
+    get
+      {
+        if (length is null) {
+          double res = 0;
+          for (int i = 0; i < Dim; i++) {
+            res += _v[i] * _v[i];
+          }
+          length = Math.Sqrt(res);
+        }
+          
+        return length.Value;
+      }
+  }
 
   /// <summary>
   /// Convert a vector to a one-dimensional array
@@ -182,7 +200,7 @@ public class Vector : IComparable<Vector> {
       res._v[i] = _v[i] / Length;
     }
 
-    res.Length = 1;
+    res.length = 1;
     return res;
   }
 
@@ -201,7 +219,7 @@ public class Vector : IComparable<Vector> {
       res._v[i] = _v[i] / Length;
     }
 
-    res.Length = 1;
+    res.length = 1;
     return res;
   }
 
@@ -308,11 +326,7 @@ public class Vector : IComparable<Vector> {
   /// Computing fields
   /// </summary>
   private void ComputeParameters() {
-    double res = 0;
-    for (int i = 0; i < Dim; i++) {
-      res += _v[i] * _v[i];
-    }
-    Length = Math.Sqrt(res);
+
   }
 #endregion
 
