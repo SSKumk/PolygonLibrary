@@ -1,10 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Segments;
+
+/// <summary>
+/// Own Lazy class
+/// </summary>
+/// <typeparam name="T">The type of the value to be hold</typeparam>
+public class Lazy<T> {
+  /// <summary>
+  /// Is Value to be created
+  /// </summary>
+  private bool toBeCreated = true;
+
+  private Func<T>? creator;
+
+  /// <summary>
+  /// The Value to be hold
+  /// </summary>
+  private T? value;
+
+  /// <summary>
+  /// Getter
+  /// </summary>
+  public T Value {
+    get
+      {
+        if (toBeCreated) {
+          value       = creator!();
+          creator     = null;
+          toBeCreated = false;
+        }
+        return value!;
+      }
+  }
+
+  /// <summary>
+  /// Constructor
+  /// </summary>
+  /// <param name="func">The function to create the Value</param>
+  public Lazy(Func<T> func) {
+    creator = func;
+  }
+}
 
 /// <summary>
 /// Enumeration for types of intersection of two segments
@@ -253,7 +295,7 @@ public class Segment : IComparable<Segment> {
   /// Auxiliary method for Lazy initialization of the length field 
   /// </summary>
   /// <returns>The length of the segment</returns>
-  private double ComputeLength() => Directional.Length();
+  private double ComputeLength() => Directional.Length;
 
   /// <summary>
   /// Getting polar angle of the segment in the range (-pi, pi]:
@@ -480,7 +522,7 @@ public class Segment : IComparable<Segment> {
       //      if the latter is not less then the first
       //   4) if the segments intersect, compute the endpoints of the intersection segment
       Vector2D unitVec = s1.p2 - s1.p1;
-      double l     = unitVec.Length()
+      double l     = unitVec.Length
            , l2    = l * l
            , c_    = (s2.p1 - s1.p1) * unitVec / l2
            , d_    = (s2.p2 - s1.p1) * unitVec / l2
@@ -542,4 +584,23 @@ public class Segment : IComparable<Segment> {
   }
 #endregion
 
+}
+
+
+					
+public class Program
+{
+  public static void Main()
+  {
+    Console.WriteLine("Hello World");
+    List<Segment> bigList = new List<Segment>();
+    double        dv      = 0;
+    for (int i = 0; i < 5000000; i++) {
+      bigList.Add(new Segment(new Point2D(1,1), new Point2D(2,2)));
+      dv += bigList[^1].Normal.Length;
+    }
+    Console.WriteLine(bigList[^1]);
+    Console.WriteLine(dv);
+    Console.ReadKey();
+  }
 }
