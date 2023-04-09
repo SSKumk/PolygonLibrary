@@ -189,70 +189,106 @@ public class Segment : IComparable<Segment> {
   /// <summary>
   /// The normal vector of the segment
   /// </summary>
-  private Lazy<Vector2D> normal { get; set; } = new();
-
-  /// <summary>
-  /// The directional vector of the segment
-  /// </summary>
-  private Lazy<Vector2D> directional { get; set; } = new();
-
-  /// <summary>
-  /// The normalized directional vector of the segment
-  /// </summary>
-  private Lazy<Vector2D> directional_normalized { get; set; } = new();
-
-  /// <summary>
-  /// The length of the segment
-  /// </summary>
-  private Lazy<double> length { get; set; } = new();
-
-  /// <summary>
-  /// Getting polar angle of the segment in the range (-pi, pi]:
-  /// the order of ends is significant
-  /// </summary>
-  private Lazy<double> polarAngle { get; set; } = new();
-
-  /// <summary>
-  /// Check whether the segment is vertical
-  /// </summary>
-  private Lazy<bool> isVertical { get; set; } = new();
-
+  private readonly Lazy<Vector2D> normal;
 
   /// <summary>
   /// Get the normal field
   /// </summary>
   /// <returns> The normal vector of the segment </returns>
-  public Vector2D Normal() { return normal.Value; }
+  public Vector2D Normal => normal.Value;
+
+  /// <summary>
+  /// Auxiliary method for Lazy initialization of the normal field 
+  /// </summary>
+  /// <returns>The normal vector of the segment</returns>
+  private Vector2D ComputeNormal() => new(p2.y - p1.y, p1.x - p2.x);
+
+
+  /// <summary>
+  /// The directional vector of the segment
+  /// </summary>
+  private readonly Lazy<Vector2D> directional;
 
   /// <summary>
   /// Get the directional field 
   /// </summary>
   /// <returns> The directional vector of the segment </returns>
-  public Vector2D Directional() { return directional.Value; }
+  public Vector2D Directional => directional.Value;
 
   /// <summary>
-  /// Get the directional field 
+  /// Auxiliary method for Lazy initialization of the directional field 
   /// </summary>
-  /// <returns> The directional vector of the segment </returns>
-  public Vector2D DirectionalNormalized() { return directional_normalized.Value; }
+  /// <returns>The directional vector of the segment</returns>
+  private Vector2D ComputeDirectional() => new(p2 - p1);
+
+  /// <summary>
+  /// The normalized directional vector of the segment
+  /// </summary>
+  private readonly Lazy<Vector2D> directional_normalized;
+
+  /// <summary>
+  /// Get the normalized directional field 
+  /// </summary>
+  /// <returns> The normalized directional vector of the segment </returns>
+  public Vector2D DirectionalNormalized => directional_normalized.Value;
+
+  /// <summary>
+  /// Auxiliary method for Lazy initialization of the normalized directional field 
+  /// </summary>
+  /// <returns>The normalized directional vector of the segment</returns>
+  private Vector2D ComputeDirectionalNormalized() => new(Directional.Normalize());
+
+  /// <summary>
+  /// The length of the segment
+  /// </summary>
+  private readonly Lazy<double> length;
 
   /// <summary>
   /// Get the length field 
   /// </summary>
   /// <returns> The length of the segment </returns>
-  public double Lenght() { return length.Value; }
+  public double Lenght => length.Value;
 
   /// <summary>
-  /// Get the polarAngle field 
+  /// Auxiliary method for Lazy initialization of the length field 
+  /// </summary>
+  /// <returns>The length of the segment</returns>
+  private double ComputeLength() => Directional.Length();
+
+  /// <summary>
+  /// Getting polar angle of the segment in the range (-pi, pi]:
+  /// the order of ends is significant
+  /// </summary>
+  private readonly Lazy<double> polarAngle;
+
+  /// <summary>
+  /// Get the polar angle field 
   /// </summary>
   /// <returns> The polar angle of the segment in the range (-pi, pi]: the order of ends is significant</returns>
-  public double PolAngle() { return polarAngle.Value; }
+  public double PolarAngle => polarAngle.Value;
+
+  /// <summary>
+  /// Auxiliary method for Lazy initialization of the polar angle field 
+  /// </summary>
+  /// <returns>The polar angle of the segment in the range (-pi, pi]: the order of ends is significant</returns>
+  private double ComputePolarAngle() => Directional.PolarAngle;
+
+  /// <summary>
+  /// Check whether the segment is vertical
+  /// </summary>
+  private readonly Lazy<bool> isVertical;
 
   /// <summary>
   /// Get the isVertical field 
   /// </summary>
   /// <returns>True if the segment is vertical, false otherwise </returns>
-  public bool IsVertical() { return isVertical.Value; }
+  public bool IsVertical => isVertical.Value;
+
+  /// <summary>
+  /// Auxiliary method for Lazy initialization of the length field 
+  /// </summary>
+  /// <returns>The length of the segment</returns>
+  private bool ComputeIsVertical() => Tools.EQ(p1.x, p2.x);
 #endregion
 
 #region Comparing
@@ -289,7 +325,7 @@ public class Segment : IComparable<Segment> {
   public override int GetHashCode() => p1.GetHashCode() + p2.GetHashCode();
 #endregion
 
-#region Constructors
+#region Constructors //todo 1)Протестировать использование памяти с Lazy объектами.    2)Переделать поля.
   /// <summary>
   /// Auxiliary internal default constructor
   /// </summary>
@@ -297,7 +333,12 @@ public class Segment : IComparable<Segment> {
     p1 = Point2D.Origin;
     p2 = Point2D.Origin;
 
-    ComputeParameters();
+    normal                 = new Lazy<Vector2D>(ComputeNormal);
+    directional            = new Lazy<Vector2D>(ComputeDirectional);
+    directional_normalized = new Lazy<Vector2D>(ComputeDirectionalNormalized);
+    length                 = new Lazy<double>(ComputeLength);
+    polarAngle             = new Lazy<double>(ComputePolarAngle);
+    isVertical             = new Lazy<bool>(ComputeIsVertical);
   }
 
   /// <summary>
@@ -307,7 +348,7 @@ public class Segment : IComparable<Segment> {
   /// <param name="y1">The ordinate of the first end</param>
   /// <param name="x2">The abscissa of the second end</param>
   /// <param name="y2">The ordinate of the second end</param>
-  public Segment(double x1, double y1, double x2, double y2) {
+  public Segment(double x1, double y1, double x2, double y2) : this() {
 #if DEBUG
     if (Tools.EQ(x1, x2) && Tools.EQ(y1, y2)) {
       throw new ArgumentException("The ends of a segment cannot coincide");
@@ -315,9 +356,6 @@ public class Segment : IComparable<Segment> {
 #endif
     p1 = new Point2D(x1, y1);
     p2 = new Point2D(x2, y2);
-
-
-    ComputeParameters();
   }
 
   /// <summary>
@@ -325,7 +363,7 @@ public class Segment : IComparable<Segment> {
   /// </summary>
   /// <param name="np1">The new first end</param>
   /// <param name="np2">The new second end</param>
-  public Segment(Point2D np1, Point2D np2) {
+  public Segment(Point2D np1, Point2D np2) : this() {
 #if DEBUG
     if (np1 == np2) {
       throw new ArgumentException("The ends of a segment cannot coincide");
@@ -333,15 +371,13 @@ public class Segment : IComparable<Segment> {
 #endif
     p1 = np1;
     p2 = np2;
-
-    ComputeParameters();
   }
 
   /// <summary>
   /// Copying constructor
   /// </summary>
   /// <param name="s">The segment to be copied</param>
-  public Segment(Segment s) {
+  public Segment(Segment s) : this() {
 #if DEBUG
     if (s.p1 == s.p2) {
       throw new ArgumentException("The ends of a segment cannot coincide");
@@ -349,24 +385,10 @@ public class Segment : IComparable<Segment> {
 #endif
     p1 = s.p1;
     p2 = s.p2;
-
-    ComputeParameters();
   }
 #endregion
 
 #region Common procedures
-  /// <summary>
-  /// Computing parameters of the vector after changing a coordinate
-  /// </summary>
-  protected void ComputeParameters() {
-    normal                 = new Lazy<Vector2D>(() => new Vector2D(p2.y - p1.y, p1.x - p2.x));
-    directional            = new Lazy<Vector2D>(() => p2 - p1);
-    directional_normalized = new Lazy<Vector2D>(() => Directional().Normalize());
-    length                 = new Lazy<double>(() => Directional().Length);
-    polarAngle             = new Lazy<double>(() => Directional().PolarAngle);
-    isVertical             = new Lazy<bool>(() => Tools.EQ(p1.x, p2.x));
-  }
-
   /// <summary>
   /// Checking that a point is an endpoint of this segment
   /// </summary>
@@ -396,7 +418,7 @@ public class Segment : IComparable<Segment> {
   /// <returns>The corresponding ordinate</returns>
   public double ComputeAtPoint(double x) {
 #if DEBUG
-    if (IsVertical()) {
+    if (IsVertical) {
       throw new InvalidOperationException("Cannot compute ordinate for a vertical segment!");
     }
 #endif
@@ -411,8 +433,8 @@ public class Segment : IComparable<Segment> {
   /// <param name="s2">The second segment</param>
   /// <returns>The information about the intersection</returns>
   public static CrossInfo Intersect(Segment s1, Segment s2) {
-    Vector2D d1       = s1.Directional();
-    Vector2D d2       = s2.Directional();
+    Vector2D d1       = s1.Directional;
+    Vector2D d2       = s2.Directional;
     Point2D? resPoint = null, resPoint1 = null;
     IntersectPointPos fS1 = IntersectPointPos.Empty
                     , fS2 = IntersectPointPos.Empty
@@ -458,7 +480,7 @@ public class Segment : IComparable<Segment> {
       //      if the latter is not less then the first
       //   4) if the segments intersect, compute the endpoints of the intersection segment
       Vector2D unitVec = s1.p2 - s1.p1;
-      double l     = unitVec.Length
+      double l     = unitVec.Length()
            , l2    = l * l
            , c_    = (s2.p1 - s1.p1) * unitVec / l2
            , d_    = (s2.p2 - s1.p1) * unitVec / l2
