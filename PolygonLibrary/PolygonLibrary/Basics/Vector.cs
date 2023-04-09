@@ -38,11 +38,10 @@ public class Vector : IComparable<Vector> {
   }
 
   /// <summary>
-  /// length of the vector
+  /// Get length field
   /// </summary>
-  private Lazy<double> length { get; set; } = new();
-
-  public double Length() { return length.Value; }
+  /// <returns>The length of the vector</returns>
+  public double Length { get; protected set; }
 
   /// <summary>
   /// Convert a vector to a one-dimensional array
@@ -174,16 +173,16 @@ public class Vector : IComparable<Vector> {
   /// </exception>
   public Vector Normalize() {
 #if DEBUG
-    if (Tools.EQ(Length())) {
+    if (Tools.EQ(Length)) {
       throw new DivideByZeroException();
     }
 #endif
     Vector res = new Vector(Dim);
     for (int i = 0; i < Dim; i++) {
-      res._v[i] = _v[i] / Length();
+      res._v[i] = _v[i] / Length;
     }
 
-    res.length = new Lazy<double>(() => 1); //todo Не уверен!
+    res.Length = 1;
     return res;
   }
 
@@ -194,15 +193,15 @@ public class Vector : IComparable<Vector> {
   /// The normalized vector. If the vector is zero, then zero is returned
   /// </returns>
   public Vector NormalizeZero() {
-    if (Tools.EQ(Length())) {
+    if (Tools.EQ(Length)) {
       return this;
     }
     Vector res = new Vector(Dim);
     for (int i = 0; i < Dim; i++) {
-      res._v[i] = _v[i] / Length();
+      res._v[i] = _v[i] / Length;
     }
 
-    res.length = new Lazy<double>(() => 1);
+    res.Length = 1;
     return res;
   }
 
@@ -214,10 +213,10 @@ public class Vector : IComparable<Vector> {
   /// <param name="v2">The second vector</param>
   /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
   public static double Angle(Vector v1, Vector v2) {
-    if (Tools.EQ(v1.Length()) || Tools.EQ(v2.Length())) {
+    if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
       return 0;
     } else {
-      return Math.Acos((v1 * v2) / v1.Length() / v2.Length());
+      return Math.Acos((v1 * v2) / v1.Length / v2.Length);
     }
   }
 #endregion
@@ -309,13 +308,11 @@ public class Vector : IComparable<Vector> {
   /// Computing fields
   /// </summary>
   private void ComputeParameters() {
-    length = new Lazy<double>(() => {
-                                double res = 0;
-                                for (int i = 0; i < Dim; i++) {
-                                  res += _v[i] * _v[i];
-                                }
-                                return Math.Sqrt(res);
-                              });
+    double res = 0;
+    for (int i = 0; i < Dim; i++) {
+      res += _v[i] * _v[i];
+    }
+    Length = Math.Sqrt(res);
   }
 #endregion
 
@@ -361,7 +358,7 @@ public class Vector : IComparable<Vector> {
   /// </summary>
   /// <param name="v1">The vector minuend</param>
   /// <param name="v2">The vector subtrahend</param>
-  /// <returns>The differece</returns>
+  /// <returns>The difference</returns>
   public static Vector operator -(Vector v1, Vector v2) {
     int d = v1.Dim, i;
 #if DEBUG
@@ -450,7 +447,7 @@ public class Vector : IComparable<Vector> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are parallel; false, otherwise</returns>
   public static bool AreParallel(Vector v1, Vector v2) {
-    double l1 = v1.Length(), l2 = v2.Length();
+    double l1 = v1.Length, l2 = v2.Length;
     return Tools.EQ(Math.Abs(v1 * v2), l1 * l2);
   }
 
@@ -461,7 +458,7 @@ public class Vector : IComparable<Vector> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are codirected; false, otherwise</returns>
   public static bool AreCodirected(Vector v1, Vector v2) {
-    double l1 = v1.Length(), l2 = v2.Length();
+    double l1 = v1.Length, l2 = v2.Length;
     return Tools.EQ(v1 * v2, l1 * l2);
   }
 
@@ -472,7 +469,7 @@ public class Vector : IComparable<Vector> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
   public static bool AreCounterdirected(Vector v1, Vector v2) {
-    double l1 = v1.Length(), l2 = v2.Length();
+    double l1 = v1.Length, l2 = v2.Length;
     return Tools.EQ(v1 * v2, -l1 * l2);
   }
 
@@ -483,7 +480,7 @@ public class Vector : IComparable<Vector> {
   /// <param name="v2">The second vector</param>
   /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
   public static bool AreOrthogonal(Vector v1, Vector v2) {
-    double l1 = v1.Length(), l2 = v2.Length();
+    double l1 = v1.Length, l2 = v2.Length;
     return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(Math.Abs(v1 * v2 / (l1 * l2)));
   }
 #endregion
