@@ -97,15 +97,44 @@ public class Vector2D : IComparable<Vector2D> {
                                  , _ => throw new IndexOutOfRangeException()
                                  };
 
+
+  /// <summary>
+  /// The length field
+  /// </summary>
+  private double? length = null;
+
   /// <summary>
   /// length of the vector
   /// </summary>
-  public double Length { get; private set; }
+  public double Length {
+    get
+      {
+        length ??= Math.Sqrt(x * x + y * y);
+        return length.Value;
+      }
+  }
+
+
+  /// <summary>
+  /// The polar angle field
+  /// </summary>
+  private double? polarAngle = null;
 
   /// <summary>
   /// The polar angle of the vector in the range (-pi;pi]
   /// </summary>
-  public double PolarAngle { get; private set; }
+  public double PolarAngle {
+    get
+      {
+        if (polarAngle is null) {
+          polarAngle = Math.Atan2(y, x);
+          // КОСТЫЛИЩЕ - DUCT TAPE
+          if (Tools.EQ(PolarAngle, -Math.PI))
+            polarAngle = Math.PI;
+        }
+        return polarAngle.Value;
+      }
+  }
 #endregion
 
 #region Miscellaneous procedures
@@ -265,8 +294,6 @@ public class Vector2D : IComparable<Vector2D> {
   public Vector2D() {
     x = 0;
     y = 0;
-
-    ComputeParameters();
   }
 
   /// <summary>
@@ -277,8 +304,6 @@ public class Vector2D : IComparable<Vector2D> {
   public Vector2D(double nx, double ny) {
     x = nx;
     y = ny;
-
-    ComputeParameters();
   }
 
   /// <summary>
@@ -288,8 +313,6 @@ public class Vector2D : IComparable<Vector2D> {
   public Vector2D(Vector2D v) {
     x = v.x;
     y = v.y;
-
-    ComputeParameters();
   }
 
   /// <summary>
@@ -300,17 +323,6 @@ public class Vector2D : IComparable<Vector2D> {
   /// <returns>The resultant vector</returns>
   public static Vector2D FromPolar(double angle, double radius) =>
     new Vector2D(radius * Math.Cos(angle), radius * Math.Sin(angle));
-
-  /// <summary>
-  /// Computing parameters of the vector for future usage
-  /// </summary>
-  private void ComputeParameters() {
-    Length     = Math.Sqrt(x * x + y * y);
-    PolarAngle = Math.Atan2(y, x);
-    // КОСТЫЛИЩЕ - DUCT TAPE
-    if (Tools.EQ(PolarAngle, -Math.PI))
-      PolarAngle = Math.PI;
-  }
 #endregion
 
 #region Operators
