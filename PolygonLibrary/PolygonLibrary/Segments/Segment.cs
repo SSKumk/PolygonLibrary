@@ -8,45 +8,6 @@ using PolygonLibrary.Toolkit;
 namespace PolygonLibrary.Segments;
 
 /// <summary>
-/// Own Lazy class
-/// </summary>
-/// <typeparam name="T">The type of the value to be hold</typeparam>
-public class Lazy<T> {
-  /// <summary>
-  /// Is Value to be created
-  /// </summary>
-  private bool toBeCreated = true;
-
-  private Func<T>? creator;
-
-  /// <summary>
-  /// The Value to be hold
-  /// </summary>
-  private T? value;
-
-  /// <summary>
-  /// Getter
-  /// </summary>
-  public T Value {
-    get
-      {
-        if (toBeCreated) {
-          value       = creator!();
-          creator     = null;
-          toBeCreated = false;
-        }
-        return value!;
-      }
-  }
-
-  /// <summary>
-  /// Constructor
-  /// </summary>
-  /// <param name="func">The function to create the Value</param>
-  public Lazy(Func<T> func) { creator = func; }
-}
-
-/// <summary>
 /// Enumeration for types of intersection of two segments
 /// </summary>
 public enum CrossType {
@@ -236,20 +197,8 @@ public class Segment : IComparable<Segment> {
   /// </summary>
   /// <returns> The normal vector of the segment </returns>
   public Vector2D Normal {
-    get
-      {
-        if (normal is null)
-          normal = ComputeNormal();
-        return normal;
-      }
+    get { return normal ??= new(p2.y - p1.y, p1.x - p2.x); }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the normal field 
-  /// </summary>
-  /// <returns>The normal vector of the segment</returns>
-  private Vector2D ComputeNormal() => new(p2.y - p1.y, p1.x - p2.x);
-
 
   /// <summary>
   /// The directional vector of the segment
@@ -261,19 +210,8 @@ public class Segment : IComparable<Segment> {
   /// </summary>
   /// <returns> The directional vector of the segment </returns>
   public Vector2D Directional {
-    get
-      {
-        if (directional is null)
-          directional = ComputeDirectional();
-        return directional;
-      }
+    get { return directional ??= new(p2 - p1); }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the directional field 
-  /// </summary>
-  /// <returns>The directional vector of the segment</returns>
-  private Vector2D ComputeDirectional() => new(p2 - p1);
 
   /// <summary>
   /// The normalized directional vector of the segment
@@ -285,19 +223,8 @@ public class Segment : IComparable<Segment> {
   /// </summary>
   /// <returns> The normalized directional vector of the segment </returns>
   public Vector2D DirectionalNormalized {
-    get
-      {
-        if (directional_normalized is null)
-          directional_normalized = ComputeDirectionalNormalized();
-        return directional_normalized;
-      }
+    get { return directional_normalized ??= new(Directional.Normalize()); }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the normalized directional field 
-  /// </summary>
-  /// <returns>The normalized directional vector of the segment</returns>
-  private Vector2D ComputeDirectionalNormalized() => new(Directional.Normalize());
 
   /// <summary>
   /// The length of the segment
@@ -312,16 +239,10 @@ public class Segment : IComparable<Segment> {
     get
       {
         if (length is null)
-          length = ComputeLength();
+          length = Directional.Length;
         return length.Value;
       }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the length field 
-  /// </summary>
-  /// <returns>The length of the segment</returns>
-  private double ComputeLength() => Directional.Length;
 
   /// <summary>
   /// Getting polar angle of the segment in the range (-pi, pi]:
@@ -336,17 +257,10 @@ public class Segment : IComparable<Segment> {
   public double PolarAngle {
     get
       {
-        if (polarAngle is null)
-          polarAngle = ComputePolarAngle();
+        polarAngle ??= Directional.PolarAngle;
         return polarAngle.Value;
       }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the polar angle field 
-  /// </summary>
-  /// <returns>The polar angle of the segment in the range (-pi, pi]: the order of ends is significant</returns>
-  private double ComputePolarAngle() => Directional.PolarAngle;
 
   /// <summary>
   /// Check whether the segment is vertical
@@ -360,19 +274,12 @@ public class Segment : IComparable<Segment> {
   public bool IsVertical {
     get
       {
-        if (isVertical is null)
-          isVertical = ComputeIsVertical();
+        isVertical ??= Tools.EQ(p1.x, p2.x);
         return isVertical.Value;
       }
   }
-
-  /// <summary>
-  /// Auxiliary method for Lazy initialization of the length field 
-  /// </summary>
-  /// <returns>The length of the segment</returns>
-  private bool ComputeIsVertical() => Tools.EQ(p1.x, p2.x);
 #endregion
-
+  
 #region Comparing
   /// <summary>
   /// Full comparer:
@@ -407,7 +314,7 @@ public class Segment : IComparable<Segment> {
   public override int GetHashCode() => p1.GetHashCode() + p2.GetHashCode();
 #endregion
 
-#region Constructors //todo 1)Протестировать использование памяти с Lazy объектами.    2)Переделать поля.
+#region Constructors
   /// <summary>
   /// Auxiliary internal default constructor
   /// </summary>
@@ -617,19 +524,4 @@ public class Segment : IComparable<Segment> {
   }
 #endregion
 
-}
-
-public class Program {
-  public static void Main() {
-    Console.WriteLine("Hello World");
-    List<Segment> bigList = new List<Segment>();
-    double        dv      = 0;
-    for (int i = 0; i < 5000000; i++) {
-      bigList.Add(new Segment(new Point2D(1, 1), new Point2D(2, 2)));
-      dv += bigList[^1].Normal.Length;
-    }
-    Console.WriteLine(bigList[^1]);
-    Console.WriteLine(dv);
-    Console.ReadKey();
-  }
 }
