@@ -7,5 +7,7 @@
 **/.idea/**
 
 *.dat
-*.png
 *.bridge
+
+**/gnuplot-dat/**
+**/PNGs/**
