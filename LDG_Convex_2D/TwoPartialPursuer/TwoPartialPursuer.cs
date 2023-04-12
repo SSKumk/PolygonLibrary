@@ -54,6 +54,26 @@ class TwoPartialPursuer {
   private StableBridge2D W2;
 
   /// <summary>
+  /// Aux W1Q1 bridge
+  /// </summary>
+  private StableBridge2D W1Q1;
+
+  /// <summary>
+  /// Aux W1Q2 bridge
+  /// </summary>
+  private StableBridge2D W1Q2;
+
+  /// <summary>
+  /// Aux W2Q1 bridge
+  /// </summary>
+  private StableBridge2D W2Q1;
+
+  /// <summary>
+  /// Aux W2Q2 bridge
+  /// </summary>
+  private StableBridge2D W2Q2;
+
+  /// <summary>
   /// Constructor which creates GameData and init three StableBridges
   /// </summary>
   /// <param name="workDir">The directory where source file and result folder are placed</param>
@@ -74,6 +94,11 @@ class TwoPartialPursuer {
     W1            = new StableBridge2D(gd.ProblemName, "W1", gd.cValues[0], TubeType.Bridge);
     W2            = new StableBridge2D(gd.ProblemName, "W2", gd.cValues[0], TubeType.Bridge);
     gnuplotDat    = gd.path + "gnuplot-dat/";
+
+    W1Q1 = new StableBridge2D(gd.ProblemName, "W1Q1",gd.cValues[0], TubeType.Bridge);
+    W1Q2 = new StableBridge2D(gd.ProblemName, "W1Q2",gd.cValues[0], TubeType.Bridge);
+    W2Q1 = new StableBridge2D(gd.ProblemName, "W2Q1",gd.cValues[0], TubeType.Bridge);
+    W2Q2 = new StableBridge2D(gd.ProblemName, "W2Q2",gd.cValues[0], TubeType.Bridge);
   }
 
   /// <summary>
@@ -103,13 +128,13 @@ class TwoPartialPursuer {
     while (flag && Tools.GT(t, gd.t0)) {
       tPred =  t;
       t     -= gd.dt;
-      ConvexPolygon? S1 = W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
-      ConvexPolygon? S2 = W1[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
-      ConvexPolygon? T1 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
-      ConvexPolygon? T2 = W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
+      ConvexPolygon? W11 = W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
+      ConvexPolygon? W12 = W1[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
+      ConvexPolygon? W21 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
+      ConvexPolygon? W22 = W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
 
-      ConvexPolygon? I1 = ConvexPolygon.IntersectionPolygon(S1, T2);
-      ConvexPolygon? I2 = ConvexPolygon.IntersectionPolygon(S2, T1);
+      ConvexPolygon? I1 = ConvexPolygon.IntersectionPolygon(W11, W22);
+      ConvexPolygon? I2 = ConvexPolygon.IntersectionPolygon(W12, W21);
 
       if (I1 == null || I2 == null) {
         flag = false;
@@ -122,6 +147,11 @@ class TwoPartialPursuer {
       } else {
         W1.Add(new TimeSection2D(t, I1));
         W2.Add(new TimeSection2D(t, I2));
+        
+        W1Q1.Add(new TimeSection2D(t, W11));
+        W1Q2.Add(new TimeSection2D(t, W12));
+        W2Q1.Add(new TimeSection2D(t, W21));
+        W2Q2.Add(new TimeSection2D(t, W22));
       }
 
       if (brNotDegenerate) {
@@ -164,6 +194,11 @@ class TwoPartialPursuer {
     WriteGnuplotDat(br);
     WriteGnuplotDat(W1);
     WriteGnuplotDat(W2);
+    
+    WriteGnuplotDat(W1Q1);
+    WriteGnuplotDat(W1Q2);
+    WriteGnuplotDat(W2Q1);
+    WriteGnuplotDat(W2Q2);
   }
 
   /// <summary>
@@ -174,14 +209,36 @@ class TwoPartialPursuer {
     int i = 0;
     foreach (TimeSection2D ts in bridge) {
       // using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{ts.t:F2}.dat")) {
-      using (var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{i:000}.dat")) {
-        foreach (var p in ts.section.Vertices) {
-          sw.WriteLine($"{p.x:G3} {p.y:G3}");
-        }
-        sw.WriteLine($"{ts.section.Vertices[0].x:G3} {ts.section.Vertices[0].y:G3}");
-        i++;
+      using var sw = new StreamWriter($"{gnuplotDat}{bridge.ShortProblemName}_{i:000}.dat");
+      foreach (var p in ts.section.Vertices) {
+        sw.WriteLine($"{p.x:G3} {p.y:G3}");
       }
+      sw.WriteLine($"{ts.section.Vertices[0].x:G3} {ts.section.Vertices[0].y:G3}");
+      i++;
     }
+  }
+
+  public void WritePlt() {
+    string pngs = $"{gd.path}/PNGs/";
+    Directory.CreateDirectory(pngs);
+    Directory.Delete(pngs,true);
+    Directory.CreateDirectory(pngs);
+    
+    using var sw = new StreamWriter($"{gnuplotDat}doPNGs.plt");
+    sw.Write($"reset\nset term pngcairo size 1600,1200\ndo for [i=0:{W1.Count - 1}] {{\n");
+    sw.Write("  set output sprintf(\"../PNGs/Br_%03d.png\", i)\n  plot \\\n");
+    sw.WriteLine("    sprintf(\"W1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 lc 'green' title 'W1', \\");
+    sw.WriteLine("    sprintf(\"W2_%03d.dat\", i) with filledcurves fc 'blue'  fs transparent solid 0.25 lc 'blue' title  'W2', \\");
+    sw.WriteLine("    sprintf(\"Br_%03d.dat\", i) with filledcurves fc 'red'   fs transparent solid 0.25 lc 'red' title   'Main'");
+    sw.Write("  unset output\n}");
+    
+    sw.Write($"\ndo for [i=0:{W1Q1.Count - 1}] {{\n");
+    sw.Write("  set output sprintf(\"../PNGs/WQs_%03d.png\", i)\n  plot \\\n");
+    sw.WriteLine("    sprintf(\"W1Q1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 lc 'green' title 'W1Q1', \\");
+    sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'aquamarine' fs transparent solid 0.25 lc 'green' title 'W1Q2', \\");
+    sw.WriteLine("    sprintf(\"W2Q1_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 lc 'green' title 'W2Q1', \\");
+    sw.WriteLine("    sprintf(\"W2Q2_%03d.dat\", i) with filledcurves fc 'gold' fs transparent solid 0.25 lc 'green' title 'W2Q2'");
+    sw.Write("  unset output\n}");
   }
 }
 
