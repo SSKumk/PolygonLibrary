@@ -34,7 +34,7 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Property giving a list of the polygon contours
     /// </summary>
-    public List<Polyline> Contours
+    public List<Polyline> Contours //todo Привести к единообразному виду как в Segment
     {
       get
       {

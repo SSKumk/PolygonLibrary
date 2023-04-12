@@ -151,7 +151,7 @@ public class CrossInfo {
 /// </summary>
 public class Segment : IComparable<Segment> {
 
-#region Access properties
+#region Data and Access properties
   /// <summary>
   /// The first end of the segment
   /// </summary>
