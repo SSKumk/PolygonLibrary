@@ -2,7 +2,7 @@
 
 namespace TwoPartialPursuer; 
 
-public static class TwoPartialPursuers {
+public static class Solve_TwoPartialPursuer {
   public static void Main(string[] args) {
     if (args.Length < 2) {
       Console.WriteLine("The program needs two command line arguments:");
@@ -16,6 +16,7 @@ public static class TwoPartialPursuers {
     twoPartialPursuer.Compute();
     twoPartialPursuer.WriteBridges();
     twoPartialPursuer.WriteDat();
+    twoPartialPursuer.WritePlt();
     Console.WriteLine("The END!");
   }
 }
