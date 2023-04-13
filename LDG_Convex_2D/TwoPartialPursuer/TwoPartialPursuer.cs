@@ -225,7 +225,9 @@ class TwoPartialPursuer {
     Directory.CreateDirectory(pngs);
     
     using var sw = new StreamWriter($"{gnuplotDat}doPNGs.plt");
-    sw.Write($"reset\nset term pngcairo size 1600,1200\ndo for [i=0:{W1.Count - 1}] {{\n");
+    sw.Write("reset\nset term pngcairo size 800,600");
+    
+    sw.Write($"\ndo for [i=0:{W1.Count - 1}] {{\n");
     sw.Write("  set output sprintf(\"../PNGs/Br_%03d.png\", i)\n  plot \\\n");
     sw.WriteLine("    sprintf(\"W1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 lc 'green' title 'W1', \\");
     sw.WriteLine("    sprintf(\"W2_%03d.dat\", i) with filledcurves fc 'blue'  fs transparent solid 0.25 lc 'blue' title  'W2', \\");
