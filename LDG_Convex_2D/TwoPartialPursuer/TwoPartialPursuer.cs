@@ -110,8 +110,8 @@ class TwoPartialPursuer {
     double t = gd.T;
     {
       // var M = new ConvexPolygon(gd.payVertices);
-//      var M = PolygonTools.Circle(0,0,1,50);
-      var M = PolygonTools.RectangleParallel(-1.0, -1.0, +1.0, +1.0);
+      var M = PolygonTools.Circle(0,0,1,50);
+      // var M = PolygonTools.RectangleParallel(-0.5, -0.5, +0.5, +0.5);
       br.Add(new TimeSection2D(t, M)); //
       W1.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
       W2.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
@@ -128,6 +128,7 @@ class TwoPartialPursuer {
     while (flag && Tools.GT(t, gd.t0)) {
       tPred =  t;
       t     -= gd.dt;
+      Console.WriteLine($"t = {t}");
       ConvexPolygon? W11 = W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
       ConvexPolygon? W12 = W1[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
       ConvexPolygon? W21 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
@@ -225,22 +226,53 @@ class TwoPartialPursuer {
     Directory.CreateDirectory(pngs);
     
     using var sw = new StreamWriter($"{gnuplotDat}doPNGs.plt");
-    sw.Write("reset\nset term pngcairo size 800,600");
+    sw.WriteLine("reset");
+    sw.WriteLine("set term pngcairo size 1600,1200");
+    sw.WriteLine("set size ratio 1");
+    sw.WriteLine("set xrange [-1.2:+1.2]");
+    sw.WriteLine("set yrange [-1.2:+1.2]");
     
-    sw.Write($"\ndo for [i=0:{W1.Count - 1}] {{\n");
-    sw.Write("  set output sprintf(\"../PNGs/Br_%03d.png\", i)\n  plot \\\n");
-    sw.WriteLine("    sprintf(\"W1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 lc 'green' title 'W1', \\");
+    sw.WriteLine($"do for [i=0:{W1.Count - 1}] {{");
+    sw.WriteLine("  set output sprintf(\"../PNGs/Br_%03d.png\", i)\n  plot \\");
+    sw.WriteLine("    sprintf(\"W1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1', \\");
     sw.WriteLine("    sprintf(\"W2_%03d.dat\", i) with filledcurves fc 'blue'  fs transparent solid 0.25 lc 'blue' title  'W2', \\");
     sw.WriteLine("    sprintf(\"Br_%03d.dat\", i) with filledcurves fc 'red'   fs transparent solid 0.25 lc 'red' title   'Main'");
-    sw.Write("  unset output\n}");
+    sw.WriteLine("  unset output");
+    sw.WriteLine("}");
+
+    sw.WriteLine("  set output sprintf(\"../PNGs/000.W1W2_000.png\")\n  plot \\");
+    sw.WriteLine("    sprintf(\"W1_000.dat\") with filledcurves fc 'green' fs transparent solid 0.25 title 'W1', \\");
+    sw.WriteLine("    sprintf(\"W2_000.dat\") with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2'");
+    sw.WriteLine("  unset output");
+    sw.WriteLine();
     
-    sw.Write($"\ndo for [i=0:{W1Q1.Count - 1}] {{\n");
-    sw.Write("  set output sprintf(\"../PNGs/WQs_%03d.png\", i)\n  plot \\\n");
-    sw.WriteLine("    sprintf(\"W1Q1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 lc 'green' title 'W1Q1', \\");
-    sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'aquamarine' fs transparent solid 0.25 lc 'green' title 'W1Q2', \\");
-    sw.WriteLine("    sprintf(\"W2Q1_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 lc 'green' title 'W2Q1', \\");
-    sw.WriteLine("    sprintf(\"W2Q2_%03d.dat\", i) with filledcurves fc 'gold' fs transparent solid 0.25 lc 'green' title 'W2Q2'");
-    sw.Write("  unset output\n}");
+    sw.WriteLine();
+    sw.WriteLine($"do for [i=0:{W1Q1.Count - 1}] {{");
+
+    sw.WriteLine("  set output sprintf(\"../PNGs/%03d.W1W2_%03d.png\", 3*i+1, i+1)\n  plot \\");
+    sw.WriteLine("    sprintf(\"W1_%03d.dat\", i+1) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1', \\");
+    sw.WriteLine("    sprintf(\"W2_%03d.dat\", i+1) with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2'");
+    sw.WriteLine("  unset output");
+    sw.WriteLine();
+
+    sw.WriteLine("  set output sprintf(\"../PNGs/%03d.toW1_%03d.png\", 3*i+2, i+1)\n  plot \\");
+    sw.WriteLine("    sprintf(\"W1Q1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1Q1', \\");
+    sw.WriteLine("    sprintf(\"W2Q2_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2Q2'");
+    sw.WriteLine("  unset output");
+
+    sw.WriteLine("  set output sprintf(\"../PNGs/%03d.toW2_%03d.png\", 3*i+3, i+1)\n  plot \\");
+    sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1Q2', \\");
+    sw.WriteLine("    sprintf(\"W2Q1_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2Q1'");
+    sw.WriteLine("  unset output");
+    
+    // sw.WriteLine("  set output sprintf(\"../PNGs/%03d.WQs_%03d.png\", 4*i+4, i+1)\n  plot \\");
+    // sw.WriteLine("    sprintf(\"W1Q1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1Q1', \\");
+    // sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'black' fs transparent solid 0.25 title 'W1Q2', \\");
+    // sw.WriteLine("    sprintf(\"W2Q1_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2Q1', \\");
+    // sw.WriteLine("    sprintf(\"W2Q2_%03d.dat\", i) with filledcurves fc 'gold' fs transparent solid 0.25 title 'W2Q2'");
+    // sw.WriteLine("  unset output");
+
+    sw.WriteLine("}");
   }
 }
 
