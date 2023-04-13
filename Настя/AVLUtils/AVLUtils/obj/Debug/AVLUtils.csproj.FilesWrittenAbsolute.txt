@@ -1,5 +1,0 @@
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils/bin/Debug/AVLUtils.dll.mdb
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils/bin/Debug/AVLUtils.dll
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils/obj/Debug/AVLUtils.dll
-/home/serge/MyProjects/NewPak/PolygonLibrary/AVLUtils/AVLUtils/obj/Debug/AVLUtils.dll.mdb
