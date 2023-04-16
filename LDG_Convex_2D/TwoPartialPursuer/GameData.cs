@@ -263,6 +263,10 @@ public class GameData {
       path += '/';
     }
 
+    if (!Directory.Exists(path)) { //Cur dir must be in work directory
+      Directory.CreateDirectory(path);
+    }
+
     // Dynamics
     n = pr.ReadInt("n");
     A = new Matrix(pr.Read2DArray<double>("A", n, n));

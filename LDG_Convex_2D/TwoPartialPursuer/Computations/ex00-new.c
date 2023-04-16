@@ -5,7 +5,7 @@ ProblemName = "Simple problem";
 ShortProblemName = "First test";
 
 // Path to the folder whereto the result should be written
-path = "./Ex00";
+path = "./Ex00-new";
 
 
 /* =================================================================================
@@ -106,56 +106,31 @@ projJ = 1;
 //Type of the set
 typeSet = 4;
 
-/*
+
 // 0 - case example
-MQnt = 4;
-MVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
-*/
+// MQnt = 4;
+// MVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 
-/*
 // 1 - case example
-MRectParallel = {0.0, 0.0, 1.0, 1.0};
-*/
+// MRectParallel = {0.0, 0.0, 1.0, 1.0};
 
-/*
 // 2 - case example
-MRect = {0.0, 0.0, 1.0, 1.0};
-MAngle = 3.0;
-*/
+// MRect = {0.0, 0.0, 1.0, 1.0};
+// MAngle = 3.0;
 
-/*
 // 3 - case example
-MCenter = {0.0, 0.0};
-MRadius = 1.0;
-MQntVert = 50;
-MAngle = 1.0;
-*/
+// MCenter = {0.0, 0.0};
+// MRadius = 1.0;
+// MQntVert = 50;
+// MAngle = 1.0;
 
-/*
 // 4 - case example   x y a b n phi a0
 MCenter = {0.0, 0.0};
 MSemiaxes = {1.0, 0.5};
 MQntVert = 50;
 MAngle = 1.0;
 MAngleAux = 2.0; 
-*/
 
-/* =================================================================================
-  Block of data defining the grid of payoff values, for which the bridges are constructed
-  
-  Type of the grid:
-    0 - uniform grid; defined by double variables cMin, cMax and an integer variable cQnt - 
-        total number of points in the grid
-    1 - some given grid of values defined by an integer variable cQnt - number of points in the grid -
-        and one-dimensipnal array cValues, which contains the desired values
-*/
-cGridType = 1;
-
-// Number of points in the grid
-cQnt = 1;
-
-// The array of values for an arbitrary grid
-cValues = { 1.0 };
 
 
 
