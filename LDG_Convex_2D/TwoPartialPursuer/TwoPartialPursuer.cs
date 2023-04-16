@@ -90,15 +90,15 @@ class TwoPartialPursuer {
     this.workDir  = Directory.GetCurrentDirectory();
     this.fileName = fileName;
     gd            = new GameData(this.workDir + "/" + fileName, ComputationType.StableBridge);
-    br            = new StableBridge2D(gd.ProblemName, "Br", gd.cValues[0], TubeType.Bridge);
-    W1            = new StableBridge2D(gd.ProblemName, "W1", gd.cValues[0], TubeType.Bridge);
-    W2            = new StableBridge2D(gd.ProblemName, "W2", gd.cValues[0], TubeType.Bridge);
+    br            = new StableBridge2D(gd.ProblemName, "Br", 0, TubeType.Bridge);
+    W1            = new StableBridge2D(gd.ProblemName, "W1", 0, TubeType.Bridge);
+    W2            = new StableBridge2D(gd.ProblemName, "W2", 0, TubeType.Bridge);
     gnuplotDat    = gd.path + "gnuplot-dat/";
 
-    W1Q1 = new StableBridge2D(gd.ProblemName, "W1Q1",gd.cValues[0], TubeType.Bridge);
-    W1Q2 = new StableBridge2D(gd.ProblemName, "W1Q2",gd.cValues[0], TubeType.Bridge);
-    W2Q1 = new StableBridge2D(gd.ProblemName, "W2Q1",gd.cValues[0], TubeType.Bridge);
-    W2Q2 = new StableBridge2D(gd.ProblemName, "W2Q2",gd.cValues[0], TubeType.Bridge);
+    W1Q1 = new StableBridge2D(gd.ProblemName, "W1Q1", 0, TubeType.Bridge);
+    W1Q2 = new StableBridge2D(gd.ProblemName, "W1Q2", 0, TubeType.Bridge);
+    W2Q1 = new StableBridge2D(gd.ProblemName, "W2Q1", 0, TubeType.Bridge);
+    W2Q2 = new StableBridge2D(gd.ProblemName, "W2Q2", 0, TubeType.Bridge);
   }
 
   /// <summary>
@@ -110,17 +110,20 @@ class TwoPartialPursuer {
     double t = gd.T;
     {
       // var M = new ConvexPolygon(gd.payVertices);
-      var M = PolygonTools.Circle(0,0,1,50);
+      // var M = PolygonTools.Circle(0, 0, 1, 50);
       // var M = PolygonTools.RectangleParallel(-0.5, -0.5, +0.5, +0.5);
-      br.Add(new TimeSection2D(t, M)); //
-      W1.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
-      W2.Add(new TimeSection2D(t, M)); // W1 = W2 = M at time = T
+      br.Add(new TimeSection2D(t, gd.M)); //
+      W1.Add(new TimeSection2D(t, gd.M)); // W1 = W2 = M at time = T
+      W2.Add(new TimeSection2D(t, gd.M)); // W1 = W2 = M at time = T
     }
     double tPred = gd.T;
-    t -= gd.dt;                                                                     // next step
-    br.Add(new TimeSection2D(t, br[^1].section + gd.Ps[tPred] - gd.Qs[tPred]));  //br.Last().section == M
-    W1.Add(new TimeSection2D(t, W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred])); //W1.Last().section == M
-    W2.Add(new TimeSection2D(t, W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred])); //W2.Last().section == M
+    t -= gd.dt; // next step
+    br.Add(new
+             TimeSection2D(t, br[^1].section + gd.Ps[tPred] - gd.Qs[tPred] ?? throw new InvalidOperationException("Br_{N-1} is empty!"))); //br.Last().section == M
+    W1.Add(new
+             TimeSection2D(t, W1[^1].section + gd.Ps[tPred] - gd.Qs1[tPred] ?? throw new InvalidOperationException("W1_{N-1} is empty!"))); //W1.Last().section == M
+    W2.Add(new
+             TimeSection2D(t, W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred] ?? throw new InvalidOperationException("W2_{N-1} is empty!"))); //W2.Last().section == M
 
     // Main computational loop
     bool flag            = true;
@@ -134,6 +137,8 @@ class TwoPartialPursuer {
       ConvexPolygon? W21 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
       ConvexPolygon? W22 = W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
 
+
+      //todo Может определить пересечение с пустым множеством - пустым?
       ConvexPolygon? I1 = ConvexPolygon.IntersectionPolygon(W11, W22);
       ConvexPolygon? I2 = ConvexPolygon.IntersectionPolygon(W12, W21);
 
@@ -148,7 +153,7 @@ class TwoPartialPursuer {
       } else {
         W1.Add(new TimeSection2D(t, I1));
         W2.Add(new TimeSection2D(t, I2));
-        
+
         W1Q1.Add(new TimeSection2D(t, W11));
         W1Q2.Add(new TimeSection2D(t, W12));
         W2Q1.Add(new TimeSection2D(t, W21));
@@ -169,8 +174,7 @@ class TwoPartialPursuer {
   /// </summary>
   /// <param name="bridge">Bridge to be written</param>
   private void WriteBrByName(StableBridge2D bridge) {
-    StreamWriter sr =
-      new StreamWriter(gd.path + bridge.ShortProblemName + "_" + StableBridge2D.GenerateFileName(gd.cValues[0]));
+    var sr = new StreamWriter(gd.path + bridge.ShortProblemName + "_" + StableBridge2D.GenerateFileName(0));
     bridge.WriteToFile(sr);
     sr.Close();
   }
@@ -195,7 +199,7 @@ class TwoPartialPursuer {
     WriteGnuplotDat(br);
     WriteGnuplotDat(W1);
     WriteGnuplotDat(W2);
-    
+
     WriteGnuplotDat(W1Q1);
     WriteGnuplotDat(W1Q2);
     WriteGnuplotDat(W2Q1);
@@ -222,16 +226,16 @@ class TwoPartialPursuer {
   public void WritePlt() {
     string pngs = $"{gd.path}/PNGs/";
     Directory.CreateDirectory(pngs);
-    Directory.Delete(pngs,true);
+    Directory.Delete(pngs, true);
     Directory.CreateDirectory(pngs);
-    
+
     using var sw = new StreamWriter($"{gnuplotDat}doPNGs.plt");
     sw.WriteLine("reset");
     sw.WriteLine("set term pngcairo size 1600,1200");
     sw.WriteLine("set size ratio 1");
     sw.WriteLine("set xrange [-1.2:+1.2]");
     sw.WriteLine("set yrange [-1.2:+1.2]");
-    
+
     sw.WriteLine($"do for [i=0:{W1.Count - 1}] {{");
     sw.WriteLine("  set output sprintf(\"../PNGs/Br_%03d.png\", i)\n  plot \\");
     sw.WriteLine("    sprintf(\"W1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1', \\");
@@ -245,7 +249,7 @@ class TwoPartialPursuer {
     sw.WriteLine("    sprintf(\"W2_000.dat\") with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2'");
     sw.WriteLine("  unset output");
     sw.WriteLine();
-    
+
     sw.WriteLine();
     sw.WriteLine($"do for [i=0:{W1Q1.Count - 1}] {{");
 
@@ -264,7 +268,7 @@ class TwoPartialPursuer {
     sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1Q2', \\");
     sw.WriteLine("    sprintf(\"W2Q1_%03d.dat\", i) with filledcurves fc 'coral' fs transparent solid 0.25 title 'W2Q1'");
     sw.WriteLine("  unset output");
-    
+
     // sw.WriteLine("  set output sprintf(\"../PNGs/%03d.WQs_%03d.png\", 4*i+4, i+1)\n  plot \\");
     // sw.WriteLine("    sprintf(\"W1Q1_%03d.dat\", i) with filledcurves fc 'green' fs transparent solid 0.25 title 'W1Q1', \\");
     // sw.WriteLine("    sprintf(\"W1Q2_%03d.dat\", i) with filledcurves fc 'black' fs transparent solid 0.25 title 'W1Q2', \\");

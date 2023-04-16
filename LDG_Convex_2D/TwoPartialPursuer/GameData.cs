@@ -1,11 +1,14 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
+using LDGObjects;
+using ParamReaderLibrary;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Toolkit;
-using ParamReaderLibrary;
 
-namespace LDGObjects {
+namespace TwoPartialPursuer;
+
 /// <summary>
 /// Enumeration of the computation type.
 /// In particular, such an information is necessary for correct deleting 
@@ -40,10 +43,11 @@ public class GameData {
   /// <summary>
   /// Extensions of files with certain objects (correspond to the ComputationType enumeration)
   /// </summary>
-  static public SortedDictionary<ComputationType, string> Extensions = new SortedDictionary<ComputationType, string>()
-    {
-      { ComputationType.StableBridge, "bridge" }
-    };
+  static public readonly SortedDictionary<ComputationType, string> Extensions =
+    new SortedDictionary<ComputationType, string>()
+      {
+        { ComputationType.StableBridge, "bridge" }
+      };
 
   /// <summary>
   /// Information what types of files to delete during some certain computation
@@ -65,63 +69,63 @@ public class GameData {
   /// <summary>
   /// Name of the problem; to be written in all resultant files for checking their consistency
   /// </summary> 
-  public string ProblemName;
+  public readonly string ProblemName;
 
   /// <summary>
   /// Short name of the problem; to be used in SharpEye
   /// </summary>
-  public string ShortProblemName;
+  public readonly string ShortProblemName;
 
   /// <summary>
   /// Path to the folder whereto the result should be written
   /// </summary> 
-  public string path;
+  public readonly string path;
 
 #region Data defining the dynamics of the game
   /// <summary>
   /// Dimension of the phase vector
   /// </summary>
-  public int n;
+  public readonly int n;
 
   /// <summary>
   /// The main matrix
   /// </summary>
-  public Matrix A;
+  public readonly Matrix A;
 
   /// <summary>
   /// Dimension of the useful control
   /// </summary>
-  public int p;
+  public readonly int p;
 
   /// <summary>
   /// The useful control matrix
   /// </summary>
-  public Matrix B;
+  public readonly Matrix B;
 
   /// <summary>
   /// Dimension of the disturbance
   /// </summary>
-  public int q;
+  public readonly int q;
 
   /// <summary>
   /// The disturbance matrix
   /// </summary>
-  public Matrix C;
+  public readonly Matrix C;
 
   /// <summary>
   /// The initial instant
   /// </summary>
-  public double t0;
+  public readonly double t0;
 
   /// <summary>
   /// The final instant
   /// </summary>
-  public double T;
+  public readonly double T;
 
   /// <summary>
   /// The time step
   /// </summary>
-  public double dt;
+  public readonly double dt;
 #endregion
 
 #region Control constraints
@@ -137,7 +141,7 @@ public class GameData {
   /// <summary>
   /// Collection of points, which convex hull defines the constraint for the control of the first player
   /// </summary>
-  public List<Point> pVertices;
+  public List<Point> pVertices = null!;
 
   // Flag showing whether to write vectograms of the first player;
   // The output file name is standard "pVectograms.bridge" with ContentType = "First player's vectorgram"
@@ -146,7 +150,7 @@ public class GameData {
   /// <summary>
   /// Precomputed vectograms of the first player
   /// </summary>
-  public SortedDictionary<double, ConvexPolygon> Ps;
+  public readonly SortedDictionary<double, ConvexPolygon> Ps;
 
   /// <summary>
   /// Type of the second player control constraint:
@@ -158,17 +162,17 @@ public class GameData {
   /// <summary>
   /// Collection of points, which convex hull defines the constraint for the control of the second player
   /// </summary>
-  public List<Point> qVertices;
+  public List<Point> qVertices = null!;
 
   /// <summary>
   /// Collection of points, which convex hull defines the first part of constraint for the control of the second player
   /// </summary>
-  public List<Point> qVertices1;
+  public List<Point> qVertices1 = null!;
 
   /// <summary>
   /// Collection of points, which convex hull defines the second part of the constraint for the control of the second player
   /// </summary>
-  public List<Point> qVertices2;
+  public List<Point> qVertices2 = null!;
 
   // Flag showing whether to write vectograms of the second player;
   // The output file name is standard "pVectograms.bridge" with ContentType = "Second player's vectorgram"
@@ -177,145 +181,65 @@ public class GameData {
   /// <summary>
   /// Precomputed vectograms of the second player
   /// </summary>
-  public SortedDictionary<double, ConvexPolygon> Qs;
+  public readonly SortedDictionary<double, ConvexPolygon> Qs;
 
   /// <summary>
   /// Precomputed vectograms of the second player
   /// </summary>
-  public SortedDictionary<double, ConvexPolygon> Qs1;
+  public readonly SortedDictionary<double, ConvexPolygon> Qs1;
 
   /// <summary>
   /// Precomputed vectograms of the second player
   /// </summary>
-  public SortedDictionary<double, ConvexPolygon> Qs2;
+  public readonly SortedDictionary<double, ConvexPolygon> Qs2;
 #endregion
 
-#region Data defining the payoff function
+#region Data defining terminal set
   /// <summary>
-  /// Type of the payoff:
-  ///   1 - Minkowski functional of a convex set in some given subspace         
-  ///       this payoff is described by integer variables payI, payJ defining the indices 
-  ///       of the subspace coordinates, an integer variable payVqnt - number of points, which convex hull 
-  ///       defines the set, and payVqnt x 2 double array payVertices - these points
+  /// The index of the first of two coordinates
   /// </summary>
-  public int payoffType;
+  public int projI;
 
   /// <summary>
-  /// The index of the first of two coordinates defining the payoff function (counted from zero)
+  /// The index of the second of two coordinates
   /// </summary>
-  public int payI;
+  public int projJ;
 
   /// <summary>
-  /// The index of the second of two coordinates defining the payoff function (counted from zero)
+  /// The type of the terminal set
+  /// 0 - List of the vertices: number of points and their coordinates
+  /// 1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+  /// 2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
+  /// 3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
+  /// 4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
   /// </summary>
-  public int payJ;
+  public readonly int typeSet;
 
   /// <summary>
-  /// Data for the case of distance to a point - the first coordinate of the point
+  /// The terminal set
   /// </summary>
-  public double payX;
-
-  /// <summary>
-  /// Data for the case of distance to a point - the second coordinate of the point
-  /// </summary>
-  public double payY;
-
-  /// <summary>
-  /// Number of vertices in the approximation of circles in the case of distance to a point payoff
-  /// </summary>
-  public int payVqnt;
-
-  /// <summary>
-  /// Data for the case of Minkowski functional or distance to a set: coordinates of vertices sof the target set
-  /// </summary>
-  public List<Point2D> payVertices;
-
-  /// <summary>
-  /// Polygon of the set for the case of the payoff taken as the distance to a set
-  /// </summary>
-  private ConvexPolygon _basic = null;
-
-  /// <summary>
-  /// Lazy property for the pPolygon of the set for the case of the payoff 
-  /// taken as the distance to a set
-  /// </summary>
-  private ConvexPolygon basic {
-    get
-      {
-        if (_basic == null)
-          _basic = new ConvexPolygon(payVertices);
-        return _basic;
-      }
-  }
-
-  /// <summary>
-  /// Method for generating a level set of the payoff corresponding to the given value
-  /// </summary>
-  /// <param name="cOrig">The value of the payoff</param>
-  /// <param name="gridNum">In the case of distance to a set, number of vertices in approximations of arcs</param>
-  /// <returns>The corresponding convex polygon</returns>
-  public ConvexPolygon PayoffLevelSet(double cOrig, int gridNum = 20) {
-    double c = cOrig >= 0 ? cOrig : 0;
-    switch (payoffType) {
-      case 0: return PolygonTools.Circle(payX, payY, c, payVqnt);
-
-      case 1: return new ConvexPolygon(payVertices.Select(p => c * p), true);
-
-      case 2:
-        if (gridNum < 1)
-          throw new
-            Exception("Internal: generating level set of the payoff as a distance to a set - gridNum less than 1");
-
-        if (Tools.EQ(c))
-          return basic;
-
-        List<GammaPair> gps = new List<GammaPair>();
-        int             i, j, k;
-        double          da;
-        for (i = 0, j = 1; i < basic.Contour.Count; i++, j = (j + 1) % basic.Contour.Count) {
-          da = basic.SF[j].Normal.PolarAngle - basic.SF[i].Normal.PolarAngle;
-          if (Tools.LT(da))
-            da += 2 * Math.PI;
-          da /= gridNum;
-
-          Vector2D vert = (Vector2D)GammaPair.CrossPairs(basic.SF[i], basic.SF[j]);
-
-          for (k = 0; k < gridNum; k++) {
-            Vector2D norm = basic.SF[i].Normal.Turn(k * da);
-            double   val  = norm * vert + c;
-            gps.Add(new GammaPair(norm, val));
-          }
-        }
-
-        return new ConvexPolygon(new SupportFunction(gps));
-
-      default: throw new Exception("Internal: generating level set of the payoff for unknown type of the payoff");
-    }
-  }
-
-  // The array of values of the payoff to compute bridges
-  public List<double> cValues;
+  public readonly ConvexPolygon M = null!;
 #endregion
 
   /// <summary>
   /// The fundamental Cauchy matrix of the corresponding system
   /// </summary>
-  public CauchyMatrix cauchyMatrix;
+  public readonly CauchyMatrix cauchyMatrix;
 
   /// <summary>
   /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
   /// </summary>
-  public Matrix ProjMatr;
+  public readonly Matrix ProjMatr;
 
   /// <summary>
   /// Collection of matrices D for the instants from the time grid
   /// </summary>
-  public SortedDictionary<double, Matrix> D;
+  public readonly SortedDictionary<double, Matrix> D;
 
   /// <summary>
   /// Collection of matrices E for the instants from the time grid
   /// </summary>
-  public SortedDictionary<double, Matrix> E;
+  public readonly SortedDictionary<double, Matrix> E;
 #endregion
 
 #region Constructor
@@ -330,18 +254,6 @@ public class GameData {
     ProblemName      = pr.ReadString("ProblemName");
     ShortProblemName = pr.ReadString("ShortProblemName");
     path             = pr.ReadString("path");
-
-    // Creation or clearing the problem folder
-    // if (!Directory.Exists(path))
-    //   Directory.CreateDirectory(path);
-    // else {
-    //   // Clearing old files
-    //   foreach (ComputationType delObj in toDelete[compObj]) {
-    //     string[] files = Directory.GetFiles(path, "*" + Extensions[delObj]);
-    //     foreach (string file in files)
-    //       File.Delete(file);
-    //   }
-    // }
 
     if (path[^1] == '/') {
       StringBuilder sb = new StringBuilder(path);
@@ -370,49 +282,60 @@ public class GameData {
     ReadConstraint(pr, 1, p);
 
     // Reading data on the second player's control and generating the constraint if necessary
-    ReadConstraint(pr, 2, q);
+    ReadConstraint(pr, 2, q); //todo Динамические разбиения Q 
 
-    // Payoff
-    payoffType = pr.ReadInt("payoffType");
-    payI       = pr.ReadInt("payI");
-    payJ       = pr.ReadInt("payJ");
+    //Reading data of terminal set type
+    projI = pr.ReadInt("projI");
+    projJ = pr.ReadInt("projJ");
 
-    switch (payoffType) {
-      case 0: // Distance to a point
-        payX    = pr.ReadDouble("payX");
-        payY    = pr.ReadDouble("payY");
-        payVqnt = pr.ReadInt("payVqnt");
+    typeSet = pr.ReadInt("typeSet");
+    switch (typeSet) {
+      case 0: {
+        int       MQnt  = pr.ReadInt("MQnt");
+        double[,] MVert = pr.Read2DArray<double>("MVert", MQnt, 2);
+
+        List<Point2D> orig = new List<Point2D>(MQnt);
+        for (int i = 0; i < MQnt; i++) {
+          orig.Add(new Point2D(MVert[i, 0], MVert[i, 1]));
+        }
+        M = new ConvexPolygon(Convexification.ArcHull2D(orig));
         break;
-      case 1:
-        payVqnt = pr.ReadInt("payVqnt");
-        double[,]     rawCoord = pr.Read2DArray<double>("payVertices", payVqnt, 2);
-        List<Point2D> psOrig   = new List<Point2D>(payVqnt);
-        for (int i = 0; i < payVqnt; i++)
-          psOrig.Add(new Point2D(rawCoord[i, 0], rawCoord[i, 1]));
-        payVertices = Convexification.ArcHull2D(psOrig);
+      }
+      case 1: {
+        double[] rect = pr.Read1DArray<double>("MRectParallel", 4);
+        M = PolygonTools.RectangleParallel(rect[0], rect[1], rect[2], rect[3]);
         break;
+      }
+      case 2: {
+        double[] rect = pr.Read1DArray<double>("MRect", 4);
+        M = PolygonTools.RectangleTurned(rect[0], rect[1], rect[2], rect[3], pr.ReadDouble("MAngle"));
+        break;
+      }
+      case 3: {
+        double[] center = pr.Read1DArray<double>("MCenter", 2);
+        M = PolygonTools.Circle(center[0], center[1], pr.ReadDouble("MRadius"), pr.ReadInt("MQntVert")
+                              , pr.ReadDouble("MAngle"));
+        break;
+      }
+      case 4: {
+        double[] center = pr.Read1DArray<double>("MCenter", 2);
+        double[] semi   = pr.Read1DArray<double>("MSemiaxes", 2);
+        M = PolygonTools.Ellipse(center[0], center[1], semi[0], semi[1], pr.ReadInt("MQntVert"), pr.ReadDouble("MAngle")
+                               , pr.ReadDouble("MAngleAux"));
+
+        break;
+      }
     }
 
-    // C grid
-    int cGridType = pr.ReadInt("cGridType"), cQnt = pr.ReadInt("cQnt");
-    if (cGridType == 0) {
-      if (cQnt == 1)
-        throw new Exception("Reading game data: in the case of uniform grid there cannot be one point only");
 
-      double cMin = pr.ReadDouble("cMin"), cMax = pr.ReadDouble("cMax"), dc = (cMax - cMin) / (cQnt - 1);
+    if (M is null) { throw new NullReferenceException("The terminal set is empty!"); }
 
-      cValues = new List<double>(cQnt);
-
-      for (int i = 0; i < cQnt; i++)
-        cValues.Add(cMin + i * dc);
-    } else
-      cValues = new List<double>(pr.Read1DArray<double>("cValues", cQnt));
 
     // The projection matrix
     double[,] ProjMatrArr = new double[2, n];
-    ProjMatrArr[0, payI] = 1.0;
-    ProjMatrArr[1, payJ] = 1.0;
-    ProjMatr             = new Matrix(ProjMatrArr);
+    ProjMatrArr[0, projI] = 1.0;
+    ProjMatrArr[1, projJ] = 1.0;
+    ProjMatr              = new Matrix(ProjMatrArr);
 
     // The matrices D and E
     D = new SortedDictionary<double, Matrix>(new Tools.DoubleComparer(Tools.Eps));
@@ -431,8 +354,12 @@ public class GameData {
                  , QTube1 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd)
                  , QTube2 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
 
-    // Precomputing the players' vectorgrams 
     for (t = T; Tools.GE(t, t0); t -= dt) {
+      Debug.Assert(pVertices != null, nameof(pVertices) + " != null");
+      Debug.Assert(qVertices != null, nameof(qVertices) + " != null");
+      Debug.Assert(qVertices1 != null, nameof(qVertices1) + " != null");
+      Debug.Assert(qVertices2 != null, nameof(qVertices2) + " != null");
+
       PTube.Add(new
                   TimeSection2D(t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true)));
       QTube.Add(new
@@ -442,19 +369,7 @@ public class GameData {
       QTube2.Add(new
                    TimeSection2D(t, new ConvexPolygon(qVertices2.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
     }
-
-    // Writing the players' vectorgram if necessary
-    // if (pWrite) {
-    //   StreamWriter sw = new StreamWriter(path + "pVectograms.bridge");
-    //   PTube.WriteToFile(sw);
-    //   sw.Close();
-    // }
-    //
-    // if (qWrite) {
-    //   StreamWriter sw = new StreamWriter(path + "qVectograms.bridge");
-    //   QTube.WriteToFile(sw);
-    //   sw.Close();
-    // }
+    // Precomputing the players' vectorgrams 
 
     // Multiplication of the vectogram tubes by time step
     Ps = new SortedDictionary<double, ConvexPolygon>();
@@ -488,7 +403,7 @@ public class GameData {
     List<Point> qres2 = new List<Point>
         { };
 
-    // Data for           circle and elliptic constrai     nt: coordinates of the center
+    // Data for circle and elliptic constraint: coordinates of the center
     double x0;
     double y0;
 
@@ -576,5 +491,4 @@ public class GameData {
   }
 #endregion
 
-}
 }

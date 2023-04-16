@@ -1,7 +1,9 @@
-﻿using PolygonLibrary.Basics;
+﻿using System.Diagnostics;
+using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Toolkit;
 using ParamReaderLibrary;
+using TwoPartialPursuer;
 
 namespace LDGObjects {
 /// <summary>
@@ -84,7 +86,10 @@ public class TimeSection2D : IComparable<TimeSection2D> {
   /// </summary>
   /// <param name="other">The time section to be compared with</param>
   /// <returns>Standard -1, 0, +1 comparison result</returns>
-  public int CompareTo(TimeSection2D other) { return Tools.CMP(this.t, other.t); }
+  public int CompareTo(TimeSection2D? other) {
+    Debug.Assert(other != null, nameof(other) + " != null");
+    return Tools.CMP(this.t, other.t);
+  }
 }
 
 /// <summary>
@@ -270,7 +275,10 @@ public class StableBridge2D : List<TimeSection2D>, IComparable<StableBridge2D> {
   /// </summary>
   /// <param name="other">The bridge to be compared with</param>
   /// <returns>Standard -1,0,+1 comparison result</returns>
-  public int CompareTo(StableBridge2D other) { return Tools.CMP(this.c, other.c); }
+  public int CompareTo(StableBridge2D? other) {
+    Debug.Assert(other != null, nameof(other) + " != null");
+    return Tools.CMP(this.c, other.c);
+  }
 
   /// <summary>
   /// Generating bridge file name on the basis of paramtere c value
