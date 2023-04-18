@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using LDGObjects;
 using ParamReaderLibrary;
@@ -130,22 +132,20 @@ public class GameData {
 
 #region Control constraints
   /// <summary>
-  /// Type of the first player control constraint:
-  ///   0 - a convex hull of a collection of points (now only for the case p = 2)
-  ///   1 - box constraint
-  ///   2 - circle; only for control dimension equal to 2; 
-  ///   3 - ellipse; only for control dimension equal to 2; 
+  /// The type of the first player set
+  /// 0 - List of the vertices: number of points and their coordinates
+  /// 1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+  /// 2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
+  /// 3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
+  /// 4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
   /// </summary>
-  public int pConstrType;
+  public int PTypeSet;
 
   /// <summary>
   /// Collection of points, which convex hull defines the constraint for the control of the first player
   /// </summary>
   public List<Point> pVertices = null!;
 
-  // Flag showing whether to write vectograms of the first player;
-  // The output file name is standard "pVectograms.bridge" with ContentType = "First player's vectorgram"
-  public bool pWrite;
 
   /// <summary>
   /// Precomputed vectograms of the first player
@@ -153,11 +153,28 @@ public class GameData {
   public readonly SortedDictionary<double, ConvexPolygon> Ps;
 
   /// <summary>
-  /// Type of the second player control constraint:
-  ///   0 - a convex hull of a collection of points (now only for the case p = 2)
-  ///   1 - box constraint
+  /// The type of the second player set
+  /// 0 - List of the vertices: number of points and their coordinates
+  /// 1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+  /// 2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
+  /// 3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
+  /// 4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
   /// </summary>
-  public int qConstrType;
+  public int QTypeSet;
+
+  /// <summary>
+  /// The type of the second player partitioning
+  /// 0 - List of the vertexes:  n array -> number_of_points and their coordinates: Q1 and Q2
+  /// 1 - Const breakdown: ind_1 ind_2 -> two non adjacent vertex indexes
+  /// 2 - k alternating partitioning: k array -> number_of_parts  [an array of vertex indices of size 2 x k]
+  /// 3 - rotating partitioning: ind step -> index_of_origin and step of rotating  
+  /// </summary>
+  public int QTypePart;
+
+  /// <summary>
+  /// Partition list by vertex indices
+  /// </summary>
+  public List<(int, int)> QPart;
 
   /// <summary>
   /// Collection of points, which convex hull defines the constraint for the control of the second player
@@ -167,16 +184,13 @@ public class GameData {
   /// <summary>
   /// Collection of points, which convex hull defines the first part of constraint for the control of the second player
   /// </summary>
-  public List<Point> qVertices1 = null!;
+  public List<Point> qVertices1;
 
   /// <summary>
   /// Collection of points, which convex hull defines the second part of the constraint for the control of the second player
   /// </summary>
-  public List<Point> qVertices2 = null!;
+  public List<Point> qVertices2;
 
-  // Flag showing whether to write vectograms of the second player;
-  // The output file name is standard "pVectograms.bridge" with ContentType = "Second player's vectorgram"
-  public bool qWrite;
 
   /// <summary>
   /// Precomputed vectograms of the second player
@@ -213,12 +227,12 @@ public class GameData {
   /// 3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
   /// 4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
   /// </summary>
-  public readonly int typeSet;
+  public int MTypeSet;
 
   /// <summary>
   /// The terminal set
   /// </summary>
-  public readonly ConvexPolygon M = null!;
+  public ConvexPolygon M = null!;
 #endregion
 
   /// <summary>
@@ -283,57 +297,15 @@ public class GameData {
     cauchyMatrix = new CauchyMatrix(A, T, dt);
 
     // Reading data on the first player's control and generating the constraint if necessary
-    ReadConstraint(pr, 1, p);
+    ReadSets(pr, 'p');
 
     // Reading data on the second player's control and generating the constraint if necessary
-    ReadConstraint(pr, 2, q); //todo Динамические разбиения Q 
+    ReadSets(pr, 'q'); //todo динамическое разбиение
+
+    ReadQPartioning(pr);
 
     //Reading data of terminal set type
-    projI = pr.ReadInt("projI");
-    projJ = pr.ReadInt("projJ");
-
-    typeSet = pr.ReadInt("typeSet");
-    switch (typeSet) {
-      case 0: {
-        int       MQnt  = pr.ReadInt("MQnt");
-        double[,] MVert = pr.Read2DArray<double>("MVert", MQnt, 2);
-
-        List<Point2D> orig = new List<Point2D>(MQnt);
-        for (int i = 0; i < MQnt; i++) {
-          orig.Add(new Point2D(MVert[i, 0], MVert[i, 1]));
-        }
-        M = new ConvexPolygon(Convexification.ArcHull2D(orig));
-        break;
-      }
-      case 1: {
-        double[] rect = pr.Read1DArray<double>("MRectParallel", 4);
-        M = PolygonTools.RectangleParallel(rect[0], rect[1], rect[2], rect[3]);
-        break;
-      }
-      case 2: {
-        double[] rect = pr.Read1DArray<double>("MRect", 4);
-        M = PolygonTools.RectangleTurned(rect[0], rect[1], rect[2], rect[3], pr.ReadDouble("MAngle"));
-        break;
-      }
-      case 3: {
-        double[] center = pr.Read1DArray<double>("MCenter", 2);
-        M = PolygonTools.Circle(center[0], center[1], pr.ReadDouble("MRadius"), pr.ReadInt("MQntVert")
-                              , pr.ReadDouble("MAngle"));
-        break;
-      }
-      case 4: {
-        double[] center = pr.Read1DArray<double>("MCenter", 2);
-        double[] semi   = pr.Read1DArray<double>("MSemiaxes", 2);
-        M = PolygonTools.Ellipse(center[0], center[1], semi[0], semi[1], pr.ReadInt("MQntVert"), pr.ReadDouble("MAngle")
-                               , pr.ReadDouble("MAngleAux"));
-
-        break;
-      }
-    }
-
-
-    if (M is null) { throw new NullReferenceException("The terminal set is empty!"); }
-
+    ReadSets(pr, 'M');
 
     // The projection matrix
     double[,] ProjMatrArr = new double[2, n];
@@ -353,10 +325,10 @@ public class GameData {
       t -= dt;
     }
 
-    StableBridge2D PTube  = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram1st)
-                 , QTube  = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd)
-                 , QTube1 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd)
-                 , QTube2 = new StableBridge2D(ProblemName, ShortProblemName, 0.0, TubeType.Vectogram2nd);
+    StableBridge2D PTube  = new StableBridge2D(ProblemName, "PTube", 0.0, TubeType.Vectogram1st)
+                 , QTube  = new StableBridge2D(ProblemName, "QTube", 0.0, TubeType.Vectogram2nd)
+                 , QTube1 = new StableBridge2D(ProblemName, "Q1Tube", 0.0, TubeType.Vectogram2nd)
+                 , QTube2 = new StableBridge2D(ProblemName, "Q2Tube", 0.0, TubeType.Vectogram2nd);
 
     for (t = T; Tools.GE(t, t0); t -= dt) {
       Debug.Assert(pVertices != null, nameof(pVertices) + " != null");
@@ -391,107 +363,179 @@ public class GameData {
   }
 
   /// <summary>
-  /// Method that read and generates 
+  /// The function fills in the fields of the original sets 
   /// </summary>
-  /// <param name="pr">The parameter reader objects</param>
-  /// <param name="plNum">Number of the player</param>
-  /// <param name="dim">Dimension of the player's control</param>
-  private void ReadConstraint(ParamReader pr, int plNum, int dim) {
-    string pref       = plNum == 1 ? "p" : "q";
-    string number     = plNum == 1 ? "first" : "second";
-    int    ConstrType = pr.ReadInt(pref + "ConstrType");
-    List<Point> res = new List<Point>
-        { };
-    List<Point> qres1 = new List<Point>
-        { };
-    List<Point> qres2 = new List<Point>
-        { };
-
-    // Data for circle and elliptic constraint: coordinates of the center
-    double x0;
-    double y0;
-
-    // Data for circle constraints: radius of the circle
-    double R;
-
-    // Data for circle and elliptic constraints: angle of turn of the initial vertex
-    double Alpha0;
-
-    // Data for elliptic constraints: semiaxes of the ellipse and angle of turn of the semiaxis a
-    double a;
-    double b;
-    double Phi;
-
-    // Angle step for circle and elliptic constraints
-    double da;
-
-    // Array for coordinates of the next point
-    switch (ConstrType) {
-      case 0: // Just a convex hull of points in the plane
-        if (dim != 2)
-          throw new Exception("Reading game data: the " + number +
-                              " player's constraint is a convex hull of a collection of points, but the dimension of the control is greater than 2!");
-        res = FillArrayCH(pr, pref);
-        if (pref == "q") {
-          qres1 = FillArrayCH(pr, "q", "1");
-          qres2 = FillArrayCH(pr, "q", "2");
-        }
-        break;
-
-      case 1: // Box constraint
-        res = FillArrayBox(pr, dim, pref);
-        if (pref == "q") {
-          qres1 = FillArrayBox(pr, dim, "q", "1");
-          qres2 = FillArrayBox(pr, dim, "q", "2");
-        }
-
-        break;
-    }
-
-    bool Write = pr.ReadBoolean(pref + "Write");
-
-    if (plNum == 1) {
-      pConstrType = ConstrType;
-      pVertices   = res;
-      pWrite      = Write;
-    } else {
-      qConstrType = ConstrType;
-      qVertices   = res;
-      qVertices1  = qres1;
-      qVertices2  = qres2;
-      qWrite      = Write;
-    }
-  }
-
-  private static List<Point> FillArrayCH(ParamReader pr, string pref, string indx = "") {
-    int       Vqnt   = pr.ReadInt(pref + "Vqnt" + indx);
-    double[,] coords = pr.Read2DArray<double>(pref + "Vertices" + indx, Vqnt, 2);
-    var       psOrig = new List<Point2D>(Vqnt);
-    for (int i = 0; i < Vqnt; i++)
-      psOrig.Add(new Point2D(coords[i, 0], coords[i, 1]));
-    List<Point2D> ps  = Convexification.ArcHull2D(psOrig);
-    List<Point>   res = new(ps.Count);
-    foreach (Point2D p in ps)
-      res.Add(new Point(p));
-    return res;
-  }
-
-  private static List<Point> FillArrayBox(ParamReader pr, int dim, string pref, string indx = "") {
-    // Array for coordinates of the next point
-    double[,]   lims = pr.Read2DArray<double>(pref + "Box" + indx, dim, 2);
-    int         pNum = (int)Math.Pow(2, dim);
-    List<Point> res  = new(pNum);
-    for (int k = 0; k < pNum; k++) {
-      var pCoord = new double[dim];
-      int temp   = k;
-      for (int i = 0; i < dim; i++) {
-        pCoord[i] =  lims[i, temp % 2];
-        temp      /= 2;
+  /// <param name="pr">ParamReader</param>
+  /// <param name="set">p - first player. q - second player. M - terminal set.</param>
+  /// <exception cref="ArgumentException">If 'set' != p,q,M </exception>
+  /// <exception cref="InvalidOperationException">If the read set is empty</exception>
+  private void ReadSets(ParamReader pr, char set) {
+    string pref;
+    int    typeSet;
+    switch (set) {
+      case 'p': {
+        pref     = "P";
+        PTypeSet = pr.ReadInt("PTypeSet");
+        typeSet  = PTypeSet;
       }
-
-      res.Add(new Point(pCoord));
+        break;
+      case 'q': {
+        pref     = "Q";
+        QTypeSet = pr.ReadInt("QTypeSet");
+        typeSet  = QTypeSet;
+      }
+        break;
+      case 'M': {
+        pref     = "M";
+        projI    = pr.ReadInt("projI");
+        projJ    = pr.ReadInt("projJ");
+        MTypeSet = pr.ReadInt("MTypeSet");
+        typeSet  = MTypeSet;
+      }
+        break;
+      default: throw new ArgumentException($"{set} must be 'p', 'q' or 'M'!");
     }
-    return res;
+    ConvexPolygon? res = null;
+    switch (typeSet) {
+      case 0: {
+        int       Qnt  = pr.ReadInt(pref + "Qnt");
+        double[,] Vert = pr.Read2DArray<double>(pref + "Vert", Qnt, 2);
+
+        var orig = ArrayToListPoint2D(Vert);
+        res = new ConvexPolygon(Convexification.ArcHull2D(orig));
+        break;
+      }
+      case 1: {
+        double[] rect = pr.Read1DArray<double>(pref + "RectParallel", 4);
+        res = PolygonTools.RectangleParallel(rect[0], rect[1], rect[2], rect[3]);
+        break;
+      }
+      case 2: {
+        double[] rect = pr.Read1DArray<double>(pref + "Rect", 4);
+        res = PolygonTools.RectangleTurned(rect[0], rect[1], rect[2], rect[3], pr.ReadDouble(pref + "Angle"));
+        break;
+      }
+      case 3: {
+        double[] center = pr.Read1DArray<double>(pref + "Center", 2);
+        res = PolygonTools.Circle(center[0], center[1], pr.ReadDouble(pref + "Radius"), pr.ReadInt(pref + "QntVert")
+                                , pr.ReadDouble(pref + "Angle"));
+        break;
+      }
+      case 4: {
+        double[] center = pr.Read1DArray<double>(pref + "Center", 2);
+        double[] semi   = pr.Read1DArray<double>(pref + "Semiaxes", 2);
+        res = PolygonTools.Ellipse(center[0], center[1], semi[0], semi[1], pr.ReadInt(pref + "QntVert")
+                                 , pr.ReadDouble(pref + "Angle"), pr.ReadDouble(pref + "AngleAux"));
+        break;
+      }
+    }
+
+    switch (set) {
+      case 'p':
+        pVertices = Point.List2DTohD(res?.Vertices ??
+                                     throw new InvalidOperationException("First player set is empty!"));
+        break;
+      case 'q':
+        qVertices = Point.List2DTohD(res?.Vertices ??
+                                     throw new InvalidOperationException("First player set is empty!"));
+        break;
+      case 'M':
+        M = res ?? throw new InvalidOperationException("Terminal set is Empty!");
+        break;
+    }
+  }
+
+  /// <summary>
+  /// Aux. Array --> List
+  /// </summary>
+  /// <param name="ar">Array</param>
+  /// <returns>List of point2D</returns>
+  private static List<Point2D> ArrayToListPoint2D(double[,] ar) {
+    int qnt  = ar.Length;
+    var orig = new List<Point2D>(qnt);
+    for (int i = 0; i < qnt; i++) {
+      orig.Add(new Point2D(ar[i, 0], ar[i, 1]));
+    }
+    return orig;
+  }
+
+  /// <summary>
+  /// Aux, Is two indices is adjacent in a list 
+  /// </summary>
+  /// <param name="list">List</param>
+  /// <param name="f">First index</param>
+  /// <param name="s">Second index</param>
+  /// <returns>True if adjacent. False otherwise</returns>
+  private bool IsAdjacent(ICollection list, int f, int s) {
+    if (Math.Abs(f - s) < 2)
+      return true;
+    return Math.Abs(f - s) == list.Count - 1;
+  }
+
+  private void ReadQPartioning(ParamReader pr) {
+    QTypePart = pr.ReadInt("QTypePart");
+    switch (QTypePart) {
+      case 0: {
+        double[,] ar1 = pr.Read2DArray<double>("Q1Vert", pr.ReadInt("Q1Qnt"), 2);
+        qVertices1 = Point.List2DTohD(ArrayToListPoint2D(ar1));
+        double[,] ar2 = pr.Read2DArray<double>("Q2Vert", pr.ReadInt("Q2Qnt"), 2);
+        qVertices2 = Point.List2DTohD(ArrayToListPoint2D(ar2));
+      }
+        break;
+      case 1: {
+        int    qnt = pr.ReadInt("QK");
+        int[,] ar  = pr.Read2DArray<int>("QPart", qnt, 2);
+        var    res = new List<(int, int)>();
+        for (int i = 0; i < qnt; i++) {
+          int f = ar[i, 0];
+          int s = ar[i, 1];
+          QIndexBorderCheck(f);
+          QIndexBorderCheck(s);
+          if (IsAdjacent(qVertices, f, s)) {
+            throw new ArgumentException($"The vertices in 'Q set partitioning' {f} and {s} are adjacent!");
+          }
+          res.Add(new(ar[i, 0], ar[i, 1]));
+        }
+        QPart = res;
+      }
+        break;
+      case 2: {
+        int origin = pr.ReadInt("QOrigin");
+        int step   = pr.ReadInt("QStep");
+        QIndexBorderCheck(origin, "Origin");
+        if (step < 1 || step > qVertices.Count - 2) {
+          throw new InvalidEnumArgumentException($"Step {step} must be from 1 to {qVertices.Count - 2}!");
+        }
+        var res      = new List<(int, int)>();
+        int id       = step;
+        int idCycled = step;
+        do {
+          if (!IsAdjacent(qVertices, origin, idCycled)) {
+            res.Add(new(origin, idCycled));
+          }
+          id       += step;
+          idCycled =  id % qVertices.Count;
+        } while (idCycled != step);
+
+        QPart = res;
+      }
+        break;
+      default: throw new InvalidDataException("The QTypePart must be from 0 to 2!");
+    }
+  }
+
+  /// <summary>
+  /// Aux.
+  /// </summary>
+  private void IndexCheck(int f, int s) {
+    QIndexBorderCheck(f);
+    QIndexBorderCheck(s);
+  }
+
+  private void QIndexBorderCheck(int id, string mes = "Index") {
+    if (id < 0 || id >= qVertices.Count) {
+      throw new InvalidEnumArgumentException($"{mes} {id} in 'Q set partitioning' must be from 0 to {qVertices.Count - 1}!");
+    }
   }
 #endregion
 

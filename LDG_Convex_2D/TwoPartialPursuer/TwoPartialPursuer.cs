@@ -105,13 +105,9 @@ class TwoPartialPursuer {
   /// Computes LDG TwoPartialPursuers
   /// </summary>
   public void Compute() {
-    //"../../../Computations/SourceData/ex00-VerySimple.c"
 
     double t = gd.T;
     {
-      // var M = new ConvexPolygon(gd.payVertices);
-      // var M = PolygonTools.Circle(0, 0, 1, 50);
-      // var M = PolygonTools.RectangleParallel(-0.5, -0.5, +0.5, +0.5);
       br.Add(new TimeSection2D(t, gd.M)); //
       W1.Add(new TimeSection2D(t, gd.M)); // W1 = W2 = M at time = T
       W2.Add(new TimeSection2D(t, gd.M)); // W1 = W2 = M at time = T

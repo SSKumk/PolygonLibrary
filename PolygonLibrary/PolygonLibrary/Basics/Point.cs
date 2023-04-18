@@ -229,6 +229,17 @@ public class Point : IComparable<Point>
       return isZero.Value;
     }
   }
+
+  /// <summary>
+  /// Convert List&lt;Point2D&gt; to List&lt;Point&gt;
+  /// </summary>
+  /// <param name="listPoint2D">List of two-dimensional points</param>
+  /// <returns>List of h-dimensional points</returns>
+  public static List<Point> List2DTohD(List<Point2D> listPoint2D) {
+    var res = new List<Point>(listPoint2D.Count);
+    foreach (Point2D p in listPoint2D) res.Add(new Point(p));
+    return res;
+  } 
   #endregion
 
   #region Overrides

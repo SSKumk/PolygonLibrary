@@ -93,7 +93,11 @@ public partial class ConvexPolygon {
   /// <param name="P">The first convex polygon</param>
   /// <param name="Q">The second convex polygon</param>
   /// <returns>The resultant convex polygon</returns>
-  public static ConvexPolygon? IntersectionPolygon(ConvexPolygon P, ConvexPolygon Q) {
+  public static ConvexPolygon? IntersectionPolygon(ConvexPolygon? P, ConvexPolygon? Q) {
+    if (P is null || Q is null) {
+      return null;
+    }
+    
     var R      = new List<Point2D>();
     var inside = InsideType.Unknown;
     int lenP   = P.Vertices.Count;
