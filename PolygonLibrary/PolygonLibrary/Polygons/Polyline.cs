@@ -36,7 +36,7 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// The list of edges enlisted passage-wise
     /// </summary>
-    protected List<Segment> _edges;
+    protected List<Segment>? _edges;
 
     /// <summary>
     /// Number of vertices

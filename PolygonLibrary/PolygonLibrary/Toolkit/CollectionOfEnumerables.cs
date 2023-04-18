@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PolygonLibrary.Toolkit
@@ -19,7 +20,7 @@ namespace PolygonLibrary.Toolkit
     /// <summary>
     /// The collection of enumerables to be concatenated
     /// </summary>
-    readonly List<IEnumerable<T>> _coll;
+    private readonly List<IEnumerable<T>> _coll;
     #endregion
 
     #region Constructors
@@ -28,14 +29,14 @@ namespace PolygonLibrary.Toolkit
     /// </summary>
     /// <param name="ens">The set of enumerables to be joined into collection</param>
     public CollectionOfEnumerables (params IEnumerable<T>[] ens) => 
-      _coll = new List<IEnumerable<T>> (ens.Where(en => en != null && en.Count() != 0));
+      _coll = new List<IEnumerable<T>> (ens.Where(en => en != null && en.Any()));
 
     /// <summary>
     /// Constructor that takes a sequence of enumerables to be added
     /// </summary>
     /// <param name="ens">The set of enumerables to be joined into collection</param>
     public CollectionOfEnumerables (IEnumerable<IEnumerable<T>> ens) => 
-      _coll = new List<IEnumerable<T>>(ens.Where(en => en != null && en.Count() != 0));
+      _coll = new List<IEnumerable<T>>(ens.Where(en => en != null && en.Any()));
     #endregion
 
     #region The class for an enumerator over a collection of enumerables
@@ -57,7 +58,7 @@ namespace PolygonLibrary.Toolkit
       /// <summary>
       /// The current position of the enumerator in some enumerable from the collection
       /// </summary>
-      private IEnumerator<T> curPosition;
+      private IEnumerator<T>? curPosition;
 
       /// <summary>
       /// Getting an enumerator set before beginning of the first enumerable in the collection
@@ -124,6 +125,7 @@ namespace PolygonLibrary.Toolkit
           if (!IsValid) {
             throw new InvalidOperationException ();
           } else {
+            Debug.Assert(curPosition != null, nameof(curPosition) + " != null");
             return curPosition.Current;
           }
         }
@@ -170,6 +172,7 @@ namespace PolygonLibrary.Toolkit
         // Main loop over enumerables in the collection
         while (curEnumerable < parent._coll.Count)
         {
+          Debug.Assert(curPosition != null, nameof(curPosition) + " != null");
           if (curPosition.MoveNext()) {
             return true;
           }

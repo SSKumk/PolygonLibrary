@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -16,7 +18,8 @@ public class Point2D : IComparable<Point2D> {
   /// </summary>
   /// <param name="v">The point to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public int CompareTo(Point2D v) {
+  public int CompareTo(Point2D? v) {
+    Debug.Assert(v is not null, nameof(v) + " != null");
     int xRes = Tools.CMP(x, v.x);
     if (xRes != 0) {
       return xRes;
@@ -180,7 +183,7 @@ public class Point2D : IComparable<Point2D> {
 
   #region Overrides
 
-  public override bool Equals(object obj) {
+  public override bool Equals(object? obj) {
 #if DEBUG
     if (obj is not Point2D point2D) {
       throw new ArgumentException($"{obj} is not a Point2D!");

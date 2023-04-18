@@ -3,6 +3,7 @@
 
 *.DotSettings
 *.user
+*.DotSettings.user
 
 **/.idea/**
 

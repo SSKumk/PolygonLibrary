@@ -39,6 +39,31 @@ public partial class ConvexPolygon {
     return false;
   }
 
+  /// <summary>
+  /// Add point if necessary and move to the next vertex by increasing corresponding counter 
+  /// </summary>
+  /// <param name="list">The list of vertices of polygon to be build</param>
+  /// <param name="p">The vertex from first polygon P</param>
+  /// <param name="q">The vertex from second polygon Q</param>
+  /// <param name="countP">The counter on P</param>
+  /// <param name="countQ">The counter on Q</param>
+  /// <param name="skewPSign">The signum of hat_p ^ hat_q</param>
+  /// <param name="pHhat_q0">
+  /// Relationship between the point p and the vector hat_q0:
+  /// = 1, if  p \in H(hat_q0)
+  /// = -1, if  p not \in H(hat_q0)
+  /// = 0 otherwise
+  /// </param>
+  /// <param name="qHhat_p0">
+  /// Relationship between the point q and the vector hat_p0:
+  /// = 1, if  q \in H(hat_p0)
+  /// = -1, if  q not \in H(hat_p0)
+  /// = 0 otherwise</param>
+  /// <param name="inside">In which polygon we are</param>
+  /// <returns>
+  /// True if polygon is built already and stop is needed
+  /// False otherwise
+  /// </returns>
   private static bool MoveGeneric(List<Point2D> list
                                 , Point2D       p
                                 , Point2D       q
@@ -68,13 +93,13 @@ public partial class ConvexPolygon {
   /// <param name="P">The first convex polygon</param>
   /// <param name="Q">The second convex polygon</param>
   /// <returns>The resultant convex polygon</returns>
-  public static ConvexPolygon IntersectionPolygon(ConvexPolygon P, ConvexPolygon Q) {
-    List<Point2D> R      = new List<Point2D>();
-    InsideType    inside = InsideType.Unknown;
-    int           lenP   = P.Vertices.Count;
-    int           lenQ   = Q.Vertices.Count;
-    int           countP = 1;
-    int           countQ = 1;
+  public static ConvexPolygon? IntersectionPolygon(ConvexPolygon P, ConvexPolygon Q) {
+    var R      = new List<Point2D>();
+    var inside = InsideType.Unknown;
+    int lenP   = P.Vertices.Count;
+    int lenQ   = Q.Vertices.Count;
+    int countP = 1;
+    int countQ = 1;
 
     int  repeatCount = 0;
     bool noReturnYet = true;
@@ -86,8 +111,8 @@ public partial class ConvexPolygon {
 
       Segment  hat_p  = P.Contour.Edges.GetAtCyclic(countP - 1);
       Segment  hat_q  = Q.Contour.Edges.GetAtCyclic(countQ - 1);
-      Vector2D hat_p0 = hat_p.directional.Normalize();
-      Vector2D hat_q0 = hat_q.directional.Normalize();
+      Vector2D hat_p0 = hat_p.DirectionalNormalized;
+      Vector2D hat_q0 = hat_q.DirectionalNormalized;
 
       int skewPSign = Tools.CMP(hat_p0 ^ hat_q0);
       int pHhat_q0  = Tools.CMP(hat_q0 ^ (p - pred_q).NormalizeZero());
@@ -100,7 +125,7 @@ public partial class ConvexPolygon {
           inside = InsideType.InQ;
         } //Else keep 'inside'
         if (crossInfo.fTypeS1 == IntersectPointPos.Inner && crossInfo.fTypeS2 == IntersectPointPos.Inner) {
-          if (AddPoint(R, crossInfo.fp)) {
+          if (AddPoint(R, crossInfo.fp!)) {
             noReturnYet = false;
             continue;
           }
@@ -119,21 +144,21 @@ public partial class ConvexPolygon {
           break;
         case CrossType.SinglePoint:
           if (crossInfo.fTypeS1 != IntersectPointPos.End && crossInfo.fTypeS2 == IntersectPointPos.End) {
-            if (AddPoint(R, crossInfo.fp)) {
+            if (AddPoint(R, crossInfo.fp!)) {
               noReturnYet = false;
               continue;
             }
             Move(ref countQ);
             inside = InsideType.Unknown;
           } else if (crossInfo.fTypeS1 == IntersectPointPos.End && crossInfo.fTypeS2 != IntersectPointPos.End) {
-            if (AddPoint(R, crossInfo.fp)) {
+            if (AddPoint(R, crossInfo.fp!)) {
               noReturnYet = false;
               continue;
             }
             Move(ref countP);
             inside = InsideType.Unknown;
           } else if (crossInfo.fTypeS1 == IntersectPointPos.End && crossInfo.fTypeS2 == IntersectPointPos.End) {
-            if (AddPoint(R, crossInfo.fp)) {
+            if (AddPoint(R, crossInfo.fp!)) {
               noReturnYet = false;
               continue;
             }
@@ -163,7 +188,7 @@ public partial class ConvexPolygon {
             Move(ref countQ);
             inside = InsideType.InQ;
           } else { // sTypeSP == E && sTypeSQ == E 
-            if (AddPoint(R, crossInfo.sp)) {
+            if (AddPoint(R, crossInfo.sp!)) {
               noReturnYet = false;
               continue;
             }
@@ -191,7 +216,6 @@ public partial class ConvexPolygon {
     }
     return null;
   }
-
 #endregion
 
 }

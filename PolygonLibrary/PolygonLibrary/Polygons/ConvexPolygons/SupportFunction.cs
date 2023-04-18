@@ -32,7 +32,8 @@ public class SupportFunction : List<GammaPair> {
       throw new ArgumentException("Only pairs with zero normals in initialization of a support function");
     }
 
-    if (ToSort) gs1.Sort();
+    if (ToSort)
+      gs1.Sort();
 
     foreach (GammaPair pair in gs1) {
       if (Count == 0 || !this[^1].Normal.Equals(pair.Normal)) {
@@ -58,7 +59,7 @@ public class SupportFunction : List<GammaPair> {
         int i, j;
         for (i = 0, j = 1; i < ps1.Count; i++, j = (j + 1) % ps1.Count) {
           Vector2D v = (ps1[j] - ps1[i]).TurnCW().Normalize();
-          this.Add(new GammaPair(v, v * (Vector2D)ps1[i]));
+          Add(new GammaPair(v, v * (Vector2D)ps1[i]));
         }
 
         break;
@@ -66,26 +67,26 @@ public class SupportFunction : List<GammaPair> {
 
       case 2: {
         // Special generation of the support function of a segment
-        Vector2D v = (ps1[1] - ps1[0]).Normalize();
+        Vector2D v  = (ps1[1] - ps1[0]).Normalize();
         Vector2D v1 = v.TurnCW();
-        this.Add(new GammaPair(v, v * (Vector2D)ps1[1]));
-        this.Add(new GammaPair(-v, -v * (Vector2D)ps1[0]));
-        this.Add(new GammaPair(v1, v1 * (Vector2D)ps1[0]));
-        this.Add(new GammaPair(-v1, -v1 * (Vector2D)ps1[0]));
+        Add(new GammaPair(v, v * (Vector2D)ps1[1]));
+        Add(new GammaPair(-v, -v * (Vector2D)ps1[0]));
+        Add(new GammaPair(v1, v1 * (Vector2D)ps1[0]));
+        Add(new GammaPair(-v1, -v1 * (Vector2D)ps1[0]));
         break;
       }
 
       default: {
         Vector2D p = (Vector2D)ps1[0];
-        this.Add(new GammaPair(Vector2D.E1, Vector2D.E1 * p));
-        this.Add(new GammaPair(Vector2D.E2, Vector2D.E2 * p));
-        this.Add(new GammaPair(-Vector2D.E1, -Vector2D.E1 * p));
-        this.Add(new GammaPair(-Vector2D.E2, -Vector2D.E2 * p));
+        Add(new GammaPair(Vector2D.E1, Vector2D.E1 * p));
+        Add(new GammaPair(Vector2D.E2, Vector2D.E2 * p));
+        Add(new GammaPair(-Vector2D.E1, -Vector2D.E1 * p));
+        Add(new GammaPair(-Vector2D.E2, -Vector2D.E2 * p));
         break;
       }
     }
 
-    this.Sort();
+    Sort();
   }
 
   /// <summary>
@@ -101,14 +102,14 @@ public class SupportFunction : List<GammaPair> {
   /// <param name="j">Index of the counterclockwise boundary of the cone</param>
   public void FindCone(Vector2D v, out int i, out int j) {
 #if DEBUG
-    if (this.Count < 2) {
+    if (Count < 2) {
       throw new Exception("The function is defined by too few directions");
     }
 #endif
 
     // If the vector belongs to the cone between the last and the first normals
     // or coincides with the last vector, then the cone is between the last and the first vectors
-    if (Vector2D.AreCodirected(v, this[Count-1].Normal) || v.IsBetween(this[Count - 1].Normal, this[0].Normal)) {
+    if (Vector2D.AreCodirected(v, this[Count - 1].Normal) || v.IsBetween(this[Count - 1].Normal, this[0].Normal)) {
       i = Count - 1;
       j = 0;
     }
@@ -154,9 +155,9 @@ public class SupportFunction : List<GammaPair> {
       // v = alpha * vi + beta * vj
       //  alpha * vi.x + beta * vj.x = v.x
       //  alpha * vi.y + beta * vj.y = v.y
-      d = this[i].Normal.x * this[j].Normal.y - this[i].Normal.y * this[j].Normal.x
-      , d1 = v.x * this[j].Normal.y - v.y * this[j].Normal.x
-      , d2 = this[i].Normal.x * v.y - this[i].Normal.y * v.x;
+      d  = this[i].Normal.x * this[j].Normal.y - this[i].Normal.y * this[j].Normal.x
+    , d1 = v.x * this[j].Normal.y - v.y * this[j].Normal.x
+    , d2 = this[i].Normal.x * v.y - this[i].Normal.y * v.x;
     a = d1 / d;
     b = d2 / d;
   }
@@ -172,7 +173,7 @@ public class SupportFunction : List<GammaPair> {
   /// <returns>The support function</returns>
   public double FuncVal(Vector2D v, int i = -1, int j = -1) {
 #if DEBUG
-    if (this.Count <= 2) {
+    if (Count <= 2) {
       throw new Exception("The function is defined by too few directions");
     }
 #endif
@@ -201,14 +202,17 @@ public class SupportFunction : List<GammaPair> {
   /// <param name="suspiciousVectors">Array of vectors of the second function; 
   /// if null, then this information does not accumulated</param>
   /// <returns>The desired linear combination of the original functions</returns>
-  public static SupportFunction CombineFunctions(SupportFunction fa, SupportFunction fb,
-    double ca, double cb, List<int> suspiciousIndices = null, List<Vector2D> suspiciousVectors = null) {
+  public static SupportFunction CombineFunctions(SupportFunction fa
+                                               , SupportFunction fb
+                                               , double          ca
+                                               , double          cb
+                                               , List<int>?      suspiciousIndices = null
+                                               , List<Vector2D>? suspiciousVectors = null) {
     List<GammaPair> res = new List<GammaPair>();
-    
-    int
-      ia = fa.Count - 1, ja = 0, ib = fb.Count - 1, jb = 0;
-    double
-      angleA = fa[0].Normal.PolarAngle, angleB = fb[0].Normal.PolarAngle, oldAngle;
+
+    int ia = fa.Count - 1, ja = 0, ib = fb.Count - 1, jb = 0;
+
+    double angleA = fa[0].Normal.PolarAngle, angleB = fb[0].Normal.PolarAngle, oldAngle;
 
     suspiciousIndices?.Clear();
     suspiciousVectors?.Clear();
@@ -217,22 +221,24 @@ public class SupportFunction : List<GammaPair> {
       if (Tools.LT(angleA, angleB)) {
         res.Add(new GammaPair(fa[ja].Normal, ca * fa[ja].Value + cb * fb.FuncVal(fa[ja].Normal, ib, jb)));
 
-        ia = ja;
-        ja = (ja + 1) % fa.Count;
+        ia       = ja;
+        ja       = (ja + 1) % fa.Count;
         oldAngle = angleA;
-        angleA = fa[ja].Normal.PolarAngle;
-        if (Tools.LT(angleA, oldAngle)) angleA += Tools.PI2;
+        angleA   = fa[ja].Normal.PolarAngle;
+        if (Tools.LT(angleA, oldAngle))
+          angleA += Tools.PI2;
       } else if (Tools.GT(angleA, angleB)) {
         suspiciousIndices?.Add(res.Count);
         suspiciousVectors?.Add(fb[jb].Normal);
 
         res.Add(new GammaPair(fb[jb].Normal, ca * fa.FuncVal(fb[jb].Normal, ia, ja) + cb * fb[jb].Value));
 
-        ib = jb;
-        jb = (jb + 1) % fb.Count;
+        ib       = jb;
+        jb       = (jb + 1) % fb.Count;
         oldAngle = angleB;
-        angleB = fb[jb].Normal.PolarAngle;
-        if (Tools.LT(angleB, oldAngle)) angleB += Tools.PI2;
+        angleB   = fb[jb].Normal.PolarAngle;
+        if (Tools.LT(angleB, oldAngle))
+          angleB += Tools.PI2;
       } else {
         suspiciousIndices?.Add(res.Count);
         suspiciousVectors?.Add(fb[jb].Normal);
@@ -240,20 +246,22 @@ public class SupportFunction : List<GammaPair> {
         res.Add(new GammaPair(fa[ja].Normal, ca * fa[ja].Value + cb * fb[jb].Value));
 
         oldAngle = angleA;
-        
-        ia = ja;
-        ja = (ja + 1) % fa.Count;
-        angleA = fa[ja].Normal.PolarAngle;
-        if (Tools.LT(angleA, oldAngle)) angleA += Tools.PI2;
 
-        ib = jb;
-        jb = (jb + 1) % fb.Count;
+        ia     = ja;
+        ja     = (ja + 1) % fa.Count;
+        angleA = fa[ja].Normal.PolarAngle;
+        if (Tools.LT(angleA, oldAngle))
+          angleA += Tools.PI2;
+
+        ib     = jb;
+        jb     = (jb + 1) % fb.Count;
         angleB = fb[jb].Normal.PolarAngle;
-        if (Tools.LT(angleB, oldAngle)) angleB += Tools.PI2;
+        if (Tools.LT(angleB, oldAngle))
+          angleB += Tools.PI2;
       }
     }
 
-    return new SupportFunction(res);    
+    return new SupportFunction(res);
   }
 
   /// <summary>
@@ -286,7 +294,7 @@ public class SupportFunction : List<GammaPair> {
   /// <param name="lc">Index of the pair to be checked</param>
   /// <param name="lp">Index of the counterclockwise neighbor</param>
   /// <returns>true, if the central pair is valid; false, otherwise</returns>
-  protected bool CheckTriple(int lm, int lc, int lp) => SupportFunction.CheckTriple(this[lm], this[lc], this[lp]);
+  protected bool CheckTriple(int lm, int lc, int lp) => CheckTriple(this[lm], this[lc], this[lp]);
 
   /// <summary>
   /// Method supplement for the convexification procedure, which checks a triple of pairs
@@ -324,7 +332,7 @@ public class SupportFunction : List<GammaPair> {
   /// <param name="suspiciousIndices">Indices of the pair, around which normals the convexity can be violated</param>
   /// <returns>The resultant convex function; if the convex hull is improper function,
   /// the result equals null</returns>
-  public SupportFunction ConvexifyFunctionWithInfo(List<int> suspiciousIndices) {
+  public SupportFunction? ConvexifyFunctionWithInfo(List<int> suspiciousIndices) {
     // If there is no suspicious elements, do nothing
     if (suspiciousIndices.Count == 0) {
       return this;
@@ -334,22 +342,22 @@ public class SupportFunction : List<GammaPair> {
 
     // Creating the double linked list
     PairInfo[] list = new PairInfo[Count];
-    list[0].next = 1;
-    list[0].prev = Count - 1;
+    list[0].next    = 1;
+    list[0].prev    = Count - 1;
     list[0].isValid = true;
     for (i = 1; i < Count - 1; i++) {
-      list[i].next = i + 1;
-      list[i].prev = i - 1;
+      list[i].next    = i + 1;
+      list[i].prev    = i - 1;
       list[i].isValid = true;
     }
 
-    list[Count - 1].next = 0;
-    list[Count - 1].prev = Count - 2;
+    list[Count - 1].next    = 0;
+    list[Count - 1].prev    = Count - 2;
     list[Count - 1].isValid = true;
 
     // Stack of suspicious indices
     Stack<int> suspicious = new Stack<int>(suspiciousIndices);
-    double da;
+    double     da;
 
     while (suspicious.Count > 0) {
       i = suspicious.Pop();
