@@ -347,6 +347,37 @@ public partial class ConvexPolygon : BasicPolygon {
   public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
 
   private bool IsPointContainsInHalfPlane(Segment s) { throw new NotImplementedException(); }
+  
+  
+
+  /// <summary>
+  /// The function cuts a given convex polygon along a line passing through the given two vertices
+  /// </summary>
+  /// <param name="cp">The given convex polygon</param>
+  /// <param name="k">First index of vertex</param>
+  /// <param name="s">Second index of vertex</param>
+  /// <returns>A tuple of two polygons</returns>
+  /// <remarks> k less than s </remarks>
+  public static (ConvexPolygon, ConvexPolygon) CutConvexPolygon(ConvexPolygon cp, int k, int s) {
+    if (k > s) {
+      throw new ArgumentException($"{k} > {s}!");
+    }
+    if (s - k < 2 || s - k == cp.Vertices.Count - 1) { //if k == s or k-s is a edge
+      throw new ArgumentException($"{k} and {s} is adjacent!");
+    }
+    var list1 = new List<Point2D>();
+    for (int i = k; i < s + 1; i++) {
+      list1.Add(cp.Vertices[i]);
+    }
+    var list2 = new List<Point2D>();
+    for (int i = s; i < cp.Vertices.Count + k + 1; i++) {
+      list2.Add(cp.Vertices.GetAtCyclic(i));
+    }
+    return (new ConvexPolygon(list1), new ConvexPolygon(list2));
+  }
+  
+  
+  // public ConvexPolygon CutConvexPolygon();
 #endregion
 
 #region Operators
