@@ -17,7 +17,7 @@ public partial class ConvexPolygonTests {
     for (int i = 0; i < circle.Vertices.Count; i++) {
       for (int j = 0; j < circle.Vertices.Count; j++) {
         try {
-          (ConvexPolygon cp1,ConvexPolygon cp2) = ConvexPolygon.CutConvexPolygon(circle, i ,j);
+          (ConvexPolygon cp1,ConvexPolygon cp2) = circle.CutConvexPolygon(i ,j);
         }
         catch (ArgumentException) {
         }
