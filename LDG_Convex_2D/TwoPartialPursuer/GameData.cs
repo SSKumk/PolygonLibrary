@@ -11,6 +11,13 @@ using PolygonLibrary.Toolkit;
 
 namespace TwoPartialPursuer;
 
+/*todo 1) Читаем P-параллелотоп  ?
+  todo 2) Чтение P,Q,M в виде списка вершин ? 
+  todo 3) Чтение разбиения в виде явного представления разбиения множеств Q1 Q2 (для dim > 0) ?
+  todo 4) Вращающиеся разбиение ?
+  todo 5) Комментарии подправить в файле данных ?
+ */
+
 /// <summary>
 /// Enumeration of the computation type.
 /// In particular, such an information is necessary for correct deleting 
@@ -174,7 +181,17 @@ public class GameData {
   /// <summary>
   /// Partition list by vertex indices
   /// </summary>
-  public List<(int, int)> QPart;
+  public List<(int, int)> QAltParttitiong;
+
+  //For rotating partitioning
+  /// <summary> First index </summary>
+  private int QInd1;
+
+  /// <summary> Second index </summary>
+  private int QInd2;
+
+  /// <summary> Step </summary>
+  private int QStep;
 
   /// <summary>
   /// Collection of points, which convex hull defines the constraint for the control of the second player
@@ -332,51 +349,60 @@ public class GameData {
 
     int           qPartIdx = 0;
     ConvexPolygon cpMain   = new ConvexPolygon(qVertices);
-    Debug.Assert(QPart != null, nameof(QPart) + " != null");
+    if (QTypePart == 1) { Debug.Assert(QAltParttitiong != null, nameof(QAltParttitiong) + " != null"); }
     for (t = T; Tools.GE(t, t0); t -= dt) {
       Debug.Assert(pVertices != null, nameof(pVertices) + " != null");
       Debug.Assert(qVertices != null, nameof(qVertices) + " != null");
-      PTube.Add(new
-                  TimeSection2D(t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true)));
-      QTube.Add(new
-                  TimeSection2D(t, new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      PTube.Add
+        (
+         new TimeSection2D
+           (t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true))
+        );
+      QTube.Add
+        (new TimeSection2D(t, new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
 
 
       switch (QTypePart) {
         case 0: { }
           break;
-        case 1:
-        case 2: {
-          var forCut = QPart.GetAtCyclic(qPartIdx);
-          (var cp1, var cp2) = cpMain.CutConvexPolygon(forCut.Item1, forCut.Item2);
+        case 1: {
+          (QInd1, QInd2)     = QAltParttitiong.GetAtCyclic(qPartIdx);
+          (var cp1, var cp2) = cpMain.CutConvexPolygon(QInd1, QInd2);
           qVertices1         = Point.List2DTohD(cp1.Vertices);
           qVertices2         = Point.List2DTohD(cp2.Vertices);
           qPartIdx++;
         }
           break;
+        case 2: {
+          (var cp1, var cp2) = cpMain.CutConvexPolygon(QInd1, QInd2);
+          qVertices1         = Point.List2DTohD(cp1.Vertices);
+          qVertices2         = Point.List2DTohD(cp2.Vertices);
+          QInd1              = (QInd1 + QStep) % qVertices.Count;
+          QInd2              = (QInd2 + QStep) % qVertices.Count;
+        }
+          break;
       }
       Debug.Assert(qVertices1 != null, nameof(qVertices1) + " != null");
       Debug.Assert(qVertices2 != null, nameof(qVertices2) + " != null");
-      QTube1.Add(new
-                   TimeSection2D(t, new ConvexPolygon(qVertices1.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
-      QTube2.Add(new
-                   TimeSection2D(t, new ConvexPolygon(qVertices2.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      QTube1.Add
+        (new TimeSection2D(t, new ConvexPolygon(qVertices1.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+      QTube2.Add
+        (new TimeSection2D(t, new ConvexPolygon(qVertices2.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
     }
-    // Precomputing the players' vectorgrams 
 
     // Multiplication of the vectogram tubes by time step
     Ps = new SortedDictionary<double, ConvexPolygon>();
     foreach (TimeSection2D ts in PTube)
-      Ps[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(pPoint => dt * pPoint));
+      Ps[ts.t] = new ConvexPolygon(ts.section.Vertices.Select(pPoint => dt * pPoint));
     Qs = new SortedDictionary<double, ConvexPolygon>();
     foreach (TimeSection2D ts in QTube)
-      Qs[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
+      Qs[ts.t] = new ConvexPolygon(ts.section.Vertices.Select(qPoint => dt * qPoint));
     Qs1 = new SortedDictionary<double, ConvexPolygon>();
     foreach (TimeSection2D ts in QTube1)
-      Qs1[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
+      Qs1[ts.t] = new ConvexPolygon(ts.section.Vertices.Select(qPoint => dt * qPoint));
     Qs2 = new SortedDictionary<double, ConvexPolygon>();
     foreach (TimeSection2D ts in QTube2)
-      Qs2[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
+      Qs2[ts.t] = new ConvexPolygon(ts.section.Vertices.Select(qPoint => dt * qPoint));
   }
 #endregion
 
@@ -390,18 +416,20 @@ public class GameData {
   /// <exception cref="InvalidOperationException">If the read set is empty</exception>
   private void ReadSets(ParamReader pr, char set) {
     string pref;
-    int    typeSet;
+    int    typeSet, dim;
     switch (set) {
       case 'p': {
         pref     = "P";
         PTypeSet = pr.ReadInt("PTypeSet");
         typeSet  = PTypeSet;
+        dim      = p;
       }
         break;
       case 'q': {
         pref     = "Q";
         QTypeSet = pr.ReadInt("QTypeSet");
         typeSet  = QTypeSet;
+        dim      = q;
       }
         break;
       case 'M': {
@@ -410,56 +438,100 @@ public class GameData {
         projJ    = pr.ReadInt("projJ");
         MTypeSet = pr.ReadInt("MTypeSet");
         typeSet  = MTypeSet;
+        dim      = 2;
       }
         break;
       default: throw new ArgumentException($"{set} must be 'p', 'q' or 'M'!");
     }
-    ConvexPolygon? res = null;
+    if (set != 'p' && typeSet == -1) {
+      throw new ArgumentException("TypeSet = -1 can be only in P-section!");
+    }
+
+
+    // Array for coordinates of the next point
+    List<Point>? res = null;
     switch (typeSet) {
+      //P-only
+      case -1: {
+        double[,] lims = pr.Read2DArray<double>("PBox", dim, 2);
+        int       pNum = (int)Math.Pow(2, dim);
+        res = new List<Point>(pNum);
+        for (int k = 0; k < pNum; k++) {
+          var pCoord = new double[dim];
+          int temp   = k;
+          for (int i = 0; i < dim; i++) {
+            pCoord[i] =  lims[i, temp % 2];
+            temp      /= 2;
+          }
+
+          res.Add(new Point(pCoord));
+        }
+      }
+        break;
       case 0: {
         int       Qnt  = pr.ReadInt(pref + "Qnt");
-        double[,] Vert = pr.Read2DArray<double>(pref + "Vert", Qnt, 2);
+        double[,] Vert = pr.Read2DArray<double>(pref + "Vert", Qnt, dim);
+        res = Array2DToList(Vert, Qnt, dim);
 
-        var orig = Array2DToListPoint2D(Vert, Qnt);
-        res = new ConvexPolygon(Convexification.ArcHull2D(orig));
         break;
       }
       case 1: {
         double[] rect = pr.Read1DArray<double>(pref + "RectParallel", 4);
-        res = PolygonTools.RectangleParallel(rect[0], rect[1], rect[2], rect[3]);
+        res = Point.List2DTohD(PolygonTools.RectangleParallel(rect[0], rect[1], rect[2], rect[3]).Vertices);
         break;
       }
       case 2: {
         double[] rect = pr.Read1DArray<double>(pref + "Rect", 4);
-        res = PolygonTools.RectangleTurned(rect[0], rect[1], rect[2], rect[3], pr.ReadDouble(pref + "Angle"));
+        res = Point.List2DTohD
+          (PolygonTools.RectangleTurned(rect[0], rect[1], rect[2], rect[3], pr.ReadDouble(pref + "Angle")).Vertices);
         break;
       }
       case 3: {
         double[] center = pr.Read1DArray<double>(pref + "Center", 2);
-        res = PolygonTools.Circle(center[0], center[1], pr.ReadDouble(pref + "Radius"), pr.ReadInt(pref + "QntVert")
-                                , pr.ReadDouble(pref + "Angle"));
+        res = Point.List2DTohD
+          (
+           PolygonTools.Circle
+                        (
+                         center[0]
+                       , center[1]
+                       , pr.ReadDouble(pref + "Radius")
+                       , pr.ReadInt(pref + "QntVert")
+                       , pr.ReadDouble(pref + "Angle")
+                        )
+                       .Vertices
+          );
         break;
       }
       case 4: {
         double[] center = pr.Read1DArray<double>(pref + "Center", 2);
         double[] semi   = pr.Read1DArray<double>(pref + "Semiaxes", 2);
-        res = PolygonTools.Ellipse(center[0], center[1], semi[0], semi[1], pr.ReadInt(pref + "QntVert")
-                                 , pr.ReadDouble(pref + "Angle"), pr.ReadDouble(pref + "AngleAux"));
+        res = Point.List2DTohD
+          (
+           PolygonTools.Ellipse
+                        (
+                         center[0]
+                       , center[1]
+                       , semi[0]
+                       , semi[1]
+                       , pr.ReadInt(pref + "QntVert")
+                       , pr.ReadDouble(pref + "Angle")
+                       , pr.ReadDouble(pref + "AngleAux")
+                        )
+                       .Vertices
+          );
         break;
       }
     }
 
     switch (set) {
       case 'p':
-        pVertices = Point.List2DTohD(res?.Vertices ??
-                                     throw new InvalidOperationException("First player set is empty!"));
+        pVertices = res ?? throw new InvalidOperationException("First players set is empty!");
         break;
       case 'q':
-        qVertices = Point.List2DTohD(res?.Vertices ??
-                                     throw new InvalidOperationException("First player set is empty!"));
+        qVertices = res ?? throw new InvalidOperationException("Second players set is empty!");
         break;
       case 'M':
-        M = res ?? throw new InvalidOperationException("Terminal set is Empty!");
+        M = new ConvexPolygon(res ?? throw new InvalidOperationException("Terminal set is empty!"));
         break;
     }
   }
@@ -476,15 +548,15 @@ public class GameData {
       case 0: {
         int       Q1Qnt = pr.ReadInt("Q1Qnt");
         int       Q2Qnt = pr.ReadInt("Q2Qnt");
-        double[,] ar1       = pr.Read2DArray<double>("Q1Vert", Q1Qnt, 2);
-        qVertices1 = Point.List2DTohD(Array2DToListPoint2D(ar1,Q1Qnt));
-        double[,] ar2 = pr.Read2DArray<double>("Q2Vert", Q2Qnt, 2);
-        qVertices2 = Point.List2DTohD(Array2DToListPoint2D(ar2,Q2Qnt));
+        double[,] ar1   = pr.Read2DArray<double>("Q1Vert", Q1Qnt, q);
+        qVertices1 = Array2DToList(ar1, Q1Qnt, q);
+        double[,] ar2 = pr.Read2DArray<double>("Q2Vert", Q2Qnt, q);
+        qVertices2 = Array2DToList(ar2, Q2Qnt, q);
       }
         break;
       case 1: {
         int    qnt = pr.ReadInt("QK");
-        int[,] ar  = pr.Read2DArray<int>("QPart", qnt, 2);
+        int[,] ar  = pr.Read2DArray<int>("QAltParttitiong", qnt, 2);
         var    res = new List<(int, int)>();
         for (int i = 0; i < qnt; i++) {
           int f = ar[i, 0];
@@ -496,33 +568,42 @@ public class GameData {
           }
           res.Add(new(ar[i, 0], ar[i, 1]));
         }
-        QPart = res;
+        QAltParttitiong = res;
       }
         break;
       case 2: {
-        int origin = pr.ReadInt("QOrigin");
-        int step   = pr.ReadInt("QStep");
-        QIndexBorderCheck(origin, "Origin");
-        if (step < 1 || step > qVertices.Count - 2) {
-          throw new ArgumentException($"Step {step} must be from 1 to {qVertices.Count - 2}!");
-        }
-        var res      = new List<(int, int)>();
-        int id       = step;
-        int idCycled = step;
-        do {
-          if (!IsAdjacent(qVertices, origin, idCycled)) {
-            res.Add(new(origin, idCycled));
-          }
-          id       += step;
-          idCycled =  id % qVertices.Count;
-        } while (idCycled != step);
-
-        QPart = res;
+        QInd1 = pr.ReadInt("QInd1");
+        QInd2 = pr.ReadInt("QInd2");
+        QStep = pr.ReadInt("QStep");
+        QIndexBorderCheck(QInd1, "Index1");
+        QIndexBorderCheck(QInd2, "Index2");
+        QIndexBorderCheck(QStep - 1, $"Step {QStep} must be from 1 to qVert.Count - 2 ... NOT READ NEXT ...");
       }
         break;
       default: throw new InvalidDataException("The QTypePart must be from 0 to 2!");
     }
   }
+
+
+  /// <summary>
+  /// Converts a two-dimensional array to a list of points.
+  /// </summary>
+  /// <param name="ar">The two-dimensional array to convert.</param>
+  /// <param name="row">The number of rows in the array.</param>
+  /// <param name="col">The number of columns in the array.</param>
+  /// <returns>A list of points obtained from the two-dimensional array.</returns>
+  private static List<Point> Array2DToList(double[,] ar, int row, int col) {
+    var list = new List<Point>();
+    for (int i = 0; i < row; i++) {
+      var point = new double[col];
+      for (int j = 0; j < col; j++) {
+        point[j] = ar[i, j];
+      }
+      list.Add(new Point(point));
+    }
+    return list;
+  }
+
 
   /// <summary>
   /// Aux. Array --> List
@@ -558,8 +639,8 @@ public class GameData {
   /// <exception cref="InvalidEnumArgumentException">Thrown if id not in [0, qVert.Count - 1]</exception>
   private void QIndexBorderCheck(int id, string mes = "Index") {
     if (id < 0 || id >= qVertices.Count) {
-      throw new
-        InvalidEnumArgumentException($"{mes} {id} in 'Q set partitioning' must be from 0 to {qVertices.Count - 1}!");
+      throw new InvalidEnumArgumentException
+        ($"{mes} {id} in 'Q set partitioning' must be from 0 to {qVertices.Count - 1}!");
     }
   }
 #endregion

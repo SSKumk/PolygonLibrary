@@ -16,19 +16,19 @@ path = "./Ex00-new";
 n = 2;
 
 // The main matrix
-A = { { 1.0, 0.0 }, { 0.0, 1.0 } };
+A = { { 0.0, 1.0 }, { 0.0, 0.0 } };
 
 // Dimension of the useful control
 p = 2;
 
 // The useful control matrix
-B = { { 0.0, 1.0 }, { 0.0, 0.0 } };
+B = { { 0.0, 0.0 }, { 0.0, 1.0 } };
 
 // Dimension of the disturbance
 q = 2;
 
 // The disturbance matrix
-C = { { 0.0, 1.0 }, { 1.0, 0.0 } };
+C = { { 1.0, 0.0 }, { 0.0, 0.0 } };
 
 // The initial instant
 t0 = 0.0;
@@ -43,18 +43,43 @@ dt = 0.05;
   Block of data defining the constraint for the first player's control
 
   All angles in radians
-  Type of the set: 
-    0 - List of the vertexes: number of points and their coordinates
+  Type of the set:
+   -1 - box constraint; is defined by p x 2 array pBox
+   
+    0 - List of the vertices: PQnt PVert --> number_of_points and their_coordinates
+          PQnt = 4;
+          PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+          
     1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+          PRectParallel = {x1, y1, x2, y2};
+          
     2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
-    3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
-    4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
+          PRect = {x1, y1, x2, y2};
+          PAngle = alpha;
+          
+    3 - Circle: x y R n angle -> abscissa ordinate radius number_of_vertices turn_angle
+          PCenter = {x, y};
+          PRadius = R;
+          PQntVert = n;
+          PAngle = alpha;
+
+    4 - Ellipse: x y a b n angle angle_aux -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle
+          PCenter = {x, y};
+          PSemiaxes = {a, b};
+          PQntVert = n;
+          PAngle = alpha; 
+          PAngleAux = beta; 
 */
 
+// -1 - case example
+PTypeSet = -1;
+PBox =  { { -1.0, +1.0 }, { -1.0, +1.0 } };
+
+
 // 0 - case example
-PTypeSet = 0;
-PQnt = 4;
-PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+// PTypeSet = 0;
+// PQnt = 4;
+// PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 
 // 1 - case example
 // PTypeSet = 1;
@@ -87,12 +112,29 @@ PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 
 All angles in radians
   Type of the set: 
-    0 - List of the vertexes: number of points and their coordinates
+0 - List of the vertices: PQnt PVert --> number_of_points and their_coordinates
+          QQnt = 4;
+          QVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+          
     1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+          QRectParallel = {x1, y1, x2, y2};
+          
     2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
-    3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
-    4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle
+          QRect = {x1, y1, x2, y2};
+          QAngle = alpha;
+          
+    3 - Circle: x y R n angle -> abscissa ordinate radius number_of_vertices turn_angle
+          QCenter = {x, y};
+          QRadius = R;
+          QQntVert = n;
+          QAngle = alpha;
 
+    4 - Ellipse: x y a b n angle angle_aux -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle
+          QCenter = {x, y};
+          QSemiaxes = {a, b};
+          QQntVert = n;
+          QAngle = alpha; 
+          QAngleAux = beta; 
 */  
 
 // 0 - case example
@@ -121,30 +163,40 @@ QVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 // QCenter = {0.0, 0.0};
 // QSemiaxes = {1.0, 0.5};
 // QQntVert = 50;
-// QAngle = 1.0;
-// QAngleAux = 2.0; 
+// QAngle = 0.0;
+// QAngleAux = 0.0; 
 
 
 /*
- * Q set partitioning
- *
- * 0 - List of the vertexes:  n array -> number_of_points and their coordinates: Q1 and Q2
- * 1 - k alternating partitioning: k array -> number_of_parts  [an array of vertex indices of size 2 x k]
- * 2 - rotating partitioning: ind step -> index_of_origin and step of rotating 
+    Q set partitioning
+   
+    0 - List of the vertices:  n array -> number_of_points and their coordinates: Q1 and Q2
+        Q1Qnt = n1;    
+        Q1Vert = {{qDim number}, ... n1-times};    
+        Q2Qnt = n2;
+        Q2Vert = {{qDim number}, ... n2-times};
+    1 - k alternating partitioning: k array -> number_of_parts  [an array of vertex indices of size k x 2]
+        QK = k;
+        QAltParttitiong = { {ind1, ind2}, ... k-times };
+    2 - rotating partitioning: ind1 ind2 step -> index_of_origin1 index_of_origin2 and step of rotating
+        QInd1 = ind1;
+        QInd2 = ind2;
+        QStep = step;
  */
 
 // QTypePart = 0;
 // Q1Qnt = 2;
-// Q1Vert = { {a, b} , {c, d} };
+// Q1Vert = { {-1} , {0} };
 // Q2Qnt = 2;
-// Q2Vert = { {a, b} , {c, d} };
+// Q2Vert = { {0} , {1} };
 
 // QTypePart = 1;
-// QK = 2;
-// QPart = { {0, 3}, {5, 6} };
+// QK = 1;
+// QAltParttitiong = { {0, 2} };
 
 QTypePart = 2;
-QOrigin = 0;
+QInd1 = 0;
+QInd2 = 2;
 QStep = 1;
 
 /* =================================================================================
@@ -152,11 +204,29 @@ QStep = 1;
 
   All angles in radians
   Type of the set:
-    0 - List of the vertexes: number of points and their coordinates
+    0 - List of the vertices: PQnt PVert --> number_of_points and their_coordinates
+          MQnt = 4;
+          MVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+          
     1 - Rectangle-parallel: x1 y1 x2 y2 -> opposite vertices
+          MRectParallel = {x1, y1, x2, y2};
+          
     2 - Rectangle-turned: x1 y1 x2 y2 angle -> opposite vertices and angle between Ox, Oy and sides of the rect.
-    3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
-    4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle  
+          MRect = {x1, y1, x2, y2};
+          MAngle = alpha;
+          
+    3 - Circle: x y R n angle -> abscissa ordinate radius number_of_vertices turn_angle
+          MCenter = {x, y};
+          MRadius = R;
+          MQntVert = n;
+          MAngle = alpha;
+
+    4 - Ellipse: x y a b n angle angle_aux -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle
+          MCenter = {x, y};
+          MSemiaxes = {a, b};
+          MQntVert = n;
+          MAngle = alpha; 
+          MAngleAux = beta;
 */
 //The projection coordinates
 projI = 0;
@@ -177,19 +247,19 @@ projJ = 1;
 // MAngle = 3.0;
 
 // 3 - case example
-// MTypeSet = 3;
-// MCenter = {0.0, 0.0};
-// MRadius = 1.0;
-// MQntVert = 50;
-// MAngle = 1.0;
+MTypeSet = 3;
+MCenter = {0.0, 0.0};
+MRadius = 1.0;
+MQntVert = 50;
+MAngle = 0.0;
 
 // 4 - case example   x y a b n phi a0
-MTypeSet = 4;
-MCenter = {0.0, 0.0};
-MSemiaxes = {1.0, 0.5};
-MQntVert = 50;
-MAngle = 1.0;
-MAngleAux = 2.0; 
+// MTypeSet = 4;
+// MCenter = {0.0, 0.0};
+// MSemiaxes = {1.0, 0.5};
+// MQntVert = 50;
+// MAngle = 1.0;
+// MAngleAux = 2.0; 
 
 
 
