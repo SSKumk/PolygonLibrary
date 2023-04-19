@@ -258,7 +258,7 @@ public class GameData {
 
 #region Constructor
   /// <summary>
-  /// Reading and initializtion of problem data
+  /// Reading and initializing data
   /// </summary>
   /// <param name="inFName">File with the data</param>
   /// <param name="compObj">Computation type (to delete correctly files of previous computations)</param>
@@ -300,7 +300,7 @@ public class GameData {
     ReadSets(pr, 'p');
 
     // Reading data on the second player's control and generating the constraint if necessary
-    ReadSets(pr, 'q'); //todo динамическое разбиение
+    ReadSets(pr, 'q');
 
     ReadQPartioning(pr);
 
@@ -330,16 +330,33 @@ public class GameData {
                  , QTube1 = new StableBridge2D(ProblemName, "Q1Tube", 0.0, TubeType.Vectogram2nd)
                  , QTube2 = new StableBridge2D(ProblemName, "Q2Tube", 0.0, TubeType.Vectogram2nd);
 
+    int           qPartIdx = 0;
+    ConvexPolygon cpMain   = new ConvexPolygon(qVertices);
+    Debug.Assert(QPart != null, nameof(QPart) + " != null");
     for (t = T; Tools.GE(t, t0); t -= dt) {
       Debug.Assert(pVertices != null, nameof(pVertices) + " != null");
       Debug.Assert(qVertices != null, nameof(qVertices) + " != null");
-      Debug.Assert(qVertices1 != null, nameof(qVertices1) + " != null");
-      Debug.Assert(qVertices2 != null, nameof(qVertices2) + " != null");
-
       PTube.Add(new
                   TimeSection2D(t, new ConvexPolygon(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true)));
       QTube.Add(new
                   TimeSection2D(t, new ConvexPolygon(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
+
+
+      switch (QTypePart) {
+        case 0: { }
+          break;
+        case 1:
+        case 2: {
+          var forCut = QPart.GetAtCyclic(qPartIdx);
+          (var cp1, var cp2) = cpMain.CutConvexPolygon(forCut.Item1, forCut.Item2);
+          qVertices1         = Point.List2DTohD(cp1.Vertices);
+          qVertices2         = Point.List2DTohD(cp2.Vertices);
+          qPartIdx++;
+        }
+          break;
+      }
+      Debug.Assert(qVertices1 != null, nameof(qVertices1) + " != null");
+      Debug.Assert(qVertices2 != null, nameof(qVertices2) + " != null");
       QTube1.Add(new
                    TimeSection2D(t, new ConvexPolygon(qVertices1.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
       QTube2.Add(new
@@ -361,7 +378,9 @@ public class GameData {
     foreach (TimeSection2D ts in QTube2)
       Qs2[ts.t] = new ConvexPolygon(ts.section.Contour.Vertices.Select(qPoint => dt * qPoint));
   }
+#endregion
 
+#region Aux procedures
   /// <summary>
   /// The function fills in the fields of the original sets 
   /// </summary>
@@ -401,7 +420,7 @@ public class GameData {
         int       Qnt  = pr.ReadInt(pref + "Qnt");
         double[,] Vert = pr.Read2DArray<double>(pref + "Vert", Qnt, 2);
 
-        var orig = ArrayToListPoint2D(Vert);
+        var orig = Array2DToListPoint2D(Vert, Qnt);
         res = new ConvexPolygon(Convexification.ArcHull2D(orig));
         break;
       }
@@ -446,40 +465,21 @@ public class GameData {
   }
 
   /// <summary>
-  /// Aux. Array --> List
+  /// Read necessary data to QPartitioning
   /// </summary>
-  /// <param name="ar">Array</param>
-  /// <returns>List of point2D</returns>
-  private static List<Point2D> ArrayToListPoint2D(double[,] ar) {
-    int qnt  = ar.Length;
-    var orig = new List<Point2D>(qnt);
-    for (int i = 0; i < qnt; i++) {
-      orig.Add(new Point2D(ar[i, 0], ar[i, 1]));
-    }
-    return orig;
-  }
-
-  /// <summary>
-  /// Aux, Is two indices is adjacent in a list 
-  /// </summary>
-  /// <param name="list">List</param>
-  /// <param name="f">First index</param>
-  /// <param name="s">Second index</param>
-  /// <returns>True if adjacent. False otherwise</returns>
-  private bool IsAdjacent(ICollection list, int f, int s) {
-    if (Math.Abs(f - s) < 2)
-      return true;
-    return Math.Abs(f - s) == list.Count - 1;
-  }
-
+  /// <param name="pr">ParamReader</param>
+  /// <exception cref="ArgumentException">Thrown if indices are adjacent</exception>
+  /// <exception cref="InvalidDataException">Thrown if QTypePart not in [0, 2]</exception>
   private void ReadQPartioning(ParamReader pr) {
     QTypePart = pr.ReadInt("QTypePart");
     switch (QTypePart) {
       case 0: {
-        double[,] ar1 = pr.Read2DArray<double>("Q1Vert", pr.ReadInt("Q1Qnt"), 2);
-        qVertices1 = Point.List2DTohD(ArrayToListPoint2D(ar1));
-        double[,] ar2 = pr.Read2DArray<double>("Q2Vert", pr.ReadInt("Q2Qnt"), 2);
-        qVertices2 = Point.List2DTohD(ArrayToListPoint2D(ar2));
+        int       Q1Qnt = pr.ReadInt("Q1Qnt");
+        int       Q2Qnt = pr.ReadInt("Q2Qnt");
+        double[,] ar1       = pr.Read2DArray<double>("Q1Vert", Q1Qnt, 2);
+        qVertices1 = Point.List2DTohD(Array2DToListPoint2D(ar1,Q1Qnt));
+        double[,] ar2 = pr.Read2DArray<double>("Q2Vert", Q2Qnt, 2);
+        qVertices2 = Point.List2DTohD(Array2DToListPoint2D(ar2,Q2Qnt));
       }
         break;
       case 1: {
@@ -504,7 +504,7 @@ public class GameData {
         int step   = pr.ReadInt("QStep");
         QIndexBorderCheck(origin, "Origin");
         if (step < 1 || step > qVertices.Count - 2) {
-          throw new InvalidEnumArgumentException($"Step {step} must be from 1 to {qVertices.Count - 2}!");
+          throw new ArgumentException($"Step {step} must be from 1 to {qVertices.Count - 2}!");
         }
         var res      = new List<(int, int)>();
         int id       = step;
@@ -525,16 +525,41 @@ public class GameData {
   }
 
   /// <summary>
-  /// Aux.
+  /// Aux. Array --> List
   /// </summary>
-  private void IndexCheck(int f, int s) {
-    QIndexBorderCheck(f);
-    QIndexBorderCheck(s);
+  /// <param name="ar">Array</param>
+  /// <returns>List of point2D</returns>
+  private static List<Point2D> Array2DToListPoint2D(double[,] ar, int qnt) {
+    var orig = new List<Point2D>(qnt);
+    for (int i = 0; i < qnt; i++) {
+      orig.Add(new Point2D(ar[i, 0], ar[i, 1]));
+    }
+    return orig;
   }
 
+  /// <summary>
+  /// Aux, Is two indices is adjacent in a list 
+  /// </summary>
+  /// <param name="list">List</param>
+  /// <param name="f">First index</param>
+  /// <param name="s">Second index</param>
+  /// <returns>True if adjacent. False otherwise</returns>
+  private static bool IsAdjacent(ICollection list, int f, int s) {
+    if (Math.Abs(f - s) < 2)
+      return true;
+    return Math.Abs(f - s) == list.Count - 1;
+  }
+
+  /// <summary>
+  /// Aux. Check if id in [0, qVert.Count - 1]
+  /// </summary>
+  /// <param name="id">Id to be checked</param>
+  /// <param name="mes">Name of id-field</param>
+  /// <exception cref="InvalidEnumArgumentException">Thrown if id not in [0, qVert.Count - 1]</exception>
   private void QIndexBorderCheck(int id, string mes = "Index") {
     if (id < 0 || id >= qVertices.Count) {
-      throw new InvalidEnumArgumentException($"{mes} {id} in 'Q set partitioning' must be from 0 to {qVertices.Count - 1}!");
+      throw new
+        InvalidEnumArgumentException($"{mes} {id} in 'Q set partitioning' must be from 0 to {qVertices.Count - 1}!");
     }
   }
 #endregion
