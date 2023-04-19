@@ -16,7 +16,7 @@ path = "./Ex00-new";
 n = 2;
 
 // The main matrix
-A = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+A = { { 1.0, 0.0 }, { 0.0, 1.0 } };
 
 // Dimension of the useful control
 p = 2;
@@ -52,9 +52,9 @@ dt = 0.05;
 */
 
 // 0 - case example
-// PTypeSet = 0;
-// PQnt = 4;
-// PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+PTypeSet = 0;
+PQnt = 4;
+PVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 
 // 1 - case example
 // PTypeSet = 1;
@@ -73,12 +73,12 @@ dt = 0.05;
 // PAngle = 1.0;
 
 // 4 - case example   x y a b n phi a0
-PTypeSet = 4;
-PCenter = {0.0, 0.0};
-PSemiaxes = {1.0, 1.5};
-PQntVert = 30;
-PAngle = 0.0;
-PAngleAux = 0.0; 
+// PTypeSet = 4;
+// PCenter = {0.0, 0.0};
+// PSemiaxes = {1.0, 1.5};
+// PQntVert = 30;
+// PAngle = 0.0;
+// PAngleAux = 0.0; 
 
 
 
@@ -93,13 +93,12 @@ All angles in radians
     3 - Circle: x y R n a0 -> abscissa ordinate radius number_of_vertices turn_angle
     4 - Ellipse: x y a b n phi a0 -> abscissa ordinate one_semiaxis another number_of_vertices turn_angle another_turn_angle
 
-    !TODO РАЗБИЕНИЕ!
 */  
 
 // 0 - case example
-// QTypeSet = 0;
-// QQnt = 4;
-// QVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
+QTypeSet = 0;
+QQnt = 4;
+QVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
 
 // 1 - case example
 // QTypeSet = 1;
@@ -111,11 +110,11 @@ All angles in radians
 // QAngle = 3.0;
 
 // 3 - case example
-QTypeSet = 3;
-QCenter = {0.0, 0.0};
-QRadius = 1.0;
-QQntVert = 10;
-QAngle = 0.0;
+// QTypeSet = 3;
+// QCenter = {0.0, 0.0};
+// QRadius = 1.0;
+// QQntVert = 10;
+// QAngle = 0.0;
 
 // 4 - case example   x y a b n phi a0
 // QTypeSet = 4;
@@ -145,8 +144,8 @@ QAngle = 0.0;
 // QPart = { {0, 3}, {5, 6} };
 
 QTypePart = 2;
-QOrigin = 6;
-QStep = 6;
+QOrigin = 0;
+QStep = 1;
 
 /* =================================================================================
   Block of data defining the Terminal set
