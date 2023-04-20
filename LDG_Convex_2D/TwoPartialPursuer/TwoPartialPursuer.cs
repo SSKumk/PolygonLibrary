@@ -89,7 +89,7 @@ class TwoPartialPursuer {
     }
     this.workDir  = Directory.GetCurrentDirectory();
     this.fileName = fileName;
-    gd            = new GameData(this.workDir + "/" + fileName, ComputationType.StableBridge);
+    gd            = new GameData(this.workDir + "/" + fileName);
     br            = new StableBridge2D(gd.ProblemName, "Br", 0, TubeType.Bridge);
     W1            = new StableBridge2D(gd.ProblemName, "W1", 0, TubeType.Bridge);
     W2            = new StableBridge2D(gd.ProblemName, "W2", 0, TubeType.Bridge);
@@ -133,8 +133,6 @@ class TwoPartialPursuer {
       ConvexPolygon? W21 = W2[^1].section + gd.Ps[tPred] - gd.Qs1[tPred];
       ConvexPolygon? W22 = W2[^1].section + gd.Ps[tPred] - gd.Qs2[tPred];
 
-
-      //todo Может определить пересечение с пустым множеством - пустым?
       ConvexPolygon? I1 = ConvexPolygon.IntersectionPolygon(W11, W22);
       ConvexPolygon? I2 = ConvexPolygon.IntersectionPolygon(W12, W21);
 
@@ -150,10 +148,10 @@ class TwoPartialPursuer {
         W1.Add(new TimeSection2D(t, I1));
         W2.Add(new TimeSection2D(t, I2));
 
-        W1Q1.Add(new TimeSection2D(t, W11));
-        W1Q2.Add(new TimeSection2D(t, W12));
-        W2Q1.Add(new TimeSection2D(t, W21));
-        W2Q2.Add(new TimeSection2D(t, W22));
+        W1Q1.Add(new TimeSection2D(t, W11!));
+        W1Q2.Add(new TimeSection2D(t, W12!));
+        W2Q1.Add(new TimeSection2D(t, W21!));
+        W2Q2.Add(new TimeSection2D(t, W22!));
       }
 
       if (brNotDegenerate) {

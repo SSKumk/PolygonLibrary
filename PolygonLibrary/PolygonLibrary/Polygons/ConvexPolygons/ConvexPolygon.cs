@@ -347,36 +347,31 @@ public partial class ConvexPolygon : BasicPolygon {
   public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
 
   private bool IsPointContainsInHalfPlane(Segment s) { throw new NotImplementedException(); }
-
-
+  
   /// <summary>
-  /// The function cuts a given convex polygon along a line passing through the given two vertices
+  /// The function cuts a convex polygon along a line passing through the given two vertices
   /// </summary>
-  /// <param name="cp">The given convex polygon</param>
   /// <param name="k">First index of vertex</param>
   /// <param name="s">Second index of vertex</param>
   /// <returns>A tuple of two polygons</returns>
   /// <exception cref="ArgumentException">Thrown if k and s is adjacent!</exception>
-  public static (ConvexPolygon, ConvexPolygon) CutConvexPolygon(ConvexPolygon cp, int k, int s) {
+  public (ConvexPolygon, ConvexPolygon) CutConvexPolygon(int k, int s) {
     if (k > s) {
       (k, s) = (s, k);
     }
-    if (s - k < 2 || s - k == cp.Vertices.Count - 1) { //if k == s or k-s is a edge
+    if (s - k < 2 || s - k == Vertices.Count - 1) { //if k == s or k-s is a edge
       throw new ArgumentException($"{k} and {s} is adjacent!");
     }
     var list1 = new List<Point2D>();
     for (int i = k; i < s + 1; i++) {
-      list1.Add(cp.Vertices[i]);
+      list1.Add(Vertices[i]);
     }
     var list2 = new List<Point2D>();
-    for (int i = s; i < cp.Vertices.Count + k + 1; i++) {
-      list2.Add(cp.Vertices.GetAtCyclic(i));
+    for (int i = s; i < Vertices.Count + k + 1; i++) {
+      list2.Add(Vertices.GetAtCyclic(i));
     }
     return (new ConvexPolygon(list1), new ConvexPolygon(list2));
   }
-
-
-  // public ConvexPolygon CutConvexPolygon();
 #endregion
 
 #region Operators
