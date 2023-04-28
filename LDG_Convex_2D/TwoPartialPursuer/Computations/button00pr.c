@@ -1,8 +1,8 @@
 // Name of the problem
-ProblemName = "Simple problem";
+ProblemName = "Button00; strange Q partition";
 
 // Path to the folder whereto the result should be written
-path = "./Ex00-new";
+path = "./Button00pr";
 
 
 /* =================================================================================
@@ -13,13 +13,13 @@ path = "./Ex00-new";
 n = 2;
 
 // The main matrix
-A = { { 0.0, 1.0 }, { 0.0, 0.0 } };
+A = { { 1.0, 2.0 }, { 0.0, 1.0 } };
 
 // Dimension of the useful control
-p = 2;
+p = 1;
 
 // The useful control matrix
-B = { { 0.0, 0.0 }, { 0.0, 1.0 } };
+B = { { 0.0 }, { 1.0 } };
 
 // Dimension of the disturbance
 q = 2;
@@ -31,7 +31,7 @@ C = { { 1.0, 0.0 }, { 0.0, 0.0 } };
 t0 = 0.0;
 
 // The final instant
-T = 1.0;
+T = 8.0;
 
 // The time step
 dt = 0.05;
@@ -68,33 +68,33 @@ dt = 0.05;
           PAngleAux = beta; 
 */
 
-// -1 - case example
-// PTypeSet = 0;
-// PBox =  { { -1.0, +1.0 }, { -1.0, +1.0 } };
-
-
 // 0 - case example
-PTypeSet = 1;
-PQnt = 4;
-PVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+PTypeSet = 0;
+PBox =  { { -1.0, +1.0 } };
+
 
 // 1 - case example
+// PTypeSet = 1;
+// PQnt = 4;
+// PVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+
+// 2 - case example
 // PTypeSet = 2;
 // PRectParallel = {0.0, 0.0, 1.0, 1.0};
 
-// 2 - case example
+// 3 - case example
 // PTypeSet = 3;
 // PRect = {0.0, 0.0, 1.0, 1.0};
 // PAngle = 3.0;
 
-// 3 - case example
+// 4 - case example
 // PTypeSet = 4;
 // PCenter = {0.0, 0.0};
 // PRadius = 1.0;
 // PQntVert = 50;
 // PAngle = 1.0;
 
-// 4 - case example   x y a b n phi a0
+// 5 - case example   x y a b n phi a0
 // PTypeSet = 5;
 // PCenter = {0.0, 0.0};
 // PSemiaxes = {1.0, 1.5};
@@ -134,28 +134,32 @@ All angles in radians
           PAngleAux = beta; 
 */  
 
-// 0 - case example
-// QTypeSet = 1;
-// QQnt = 4;
-// QVert = { { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } };
-
 // 1 - case example
+// QTypeSet = 1;
+// QQnt = 6;
+// QVert = { { -0.9, 0.0 }, { -0.8, 0.0 }, { 0.0, 0.0 }, { 0.9, 0.0 }, { 0.0, 0.0 }, { -0.8, 0.0 } };
+// QVert = { { 0.9, 0.0 }, { 0.8999, 0.0 }, { 0.0, 0.0 }, { -0.9, 0.0 }, { 0.0, 0.0 }, { 0.8999, 0.0 } };
+QTypeSet = 1;
+QQnt = 4;
+QVert = { { -0.9, 0.0 }, { 0.0, 0.0 }, { 0.9, 0.0 }, { 0.0, 0.0 } };
+
+// 2 - case example
 // QTypeSet = 2;
 // QRectParallel = {0.0, 0.0, 1.0, 1.0};
 
-// 2 - case example
+// 3 - case example
 // QTypeSet = 3;
 // QRect = {0.0, 0.0, 1.0, 1.0};
 // QAngle = 3.0;
 
-// 3 - case example
-QTypeSet = 4;
-QCenter = {0.0, 0.0};
-QRadius = 1.0;
-QQntVert = 50;
-QAngle = 0.0;
+// 4 - case example
+// QTypeSet = 4;
+// QCenter = {0.0, 0.0};
+// QRadius = 1.1;
+// QQntVert = 100;
+// QAngle = 0.0;
 
-// 4 - case example   x y a b n phi a0
+// 5 - case example   x y a b n phi a0
 // QTypeSet = 5;
 // QCenter = {0.0, 0.0};
 // QSemiaxes = {1.0, 0.5};
@@ -183,24 +187,73 @@ QAngle = 0.0;
 
 // QTypePart = 0;
 // Q1Qnt = 2;
-// Q1Vert = { {-1} , {0} };
+// Q1Vert = { { -0.9 } , { 0 } };
 // Q2Qnt = 2;
-// Q2Vert = { {0} , {1} };
+// Q2Vert = { { 0 } , { 0.9} };
 
-// QTypePart = 1;
-// QK = 1;
-// QAltParttitiong = { {0, 2} };
+QTypePart = 1;
+// QK = 45;
+// QAltParttitiong = { 
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {2, 4},
+//       {1, 5}      
+// };
 
-QTypePart = 2;
-QInd1 = 0;
-QInd2 = 20;
-QStep = 20;
+QK = 1;
+QAltParttitiong = { {1, 3} };
+
+// QTypePart = 2;
+// QInd1 = 0;
+// QInd2 = 50;
+// QStep = 1;
 
 /*
  * Flag to write the partial tubes data
  * WriteQTubes = false | true;
 */
-WriteQTubes = false;
+WriteQTubes = true;
 
 
 /* =================================================================================
@@ -237,9 +290,9 @@ projI = 0;
 projJ = 1;
 
 // 0 - case example
-MTypeSet = 1;
-MQnt = 4;
-MVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+// MTypeSet = 1;
+// MQnt = 4;
+// MVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
 
 // 1 - case example
 // MTypeSet = 2;
@@ -251,11 +304,11 @@ MVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
 // MAngle = 3.0;
 
 // 3 - case example
-// MTypeSet = 4;
-// MCenter = {0.0, 0.0};
-// MRadius = 1.0;
-// MQntVert = 50;
-// MAngle = 0.0;
+MTypeSet = 4;
+MCenter = {0.0, 0.0};
+MRadius = 1.0;
+MQntVert = 50;
+MAngle = 0.0;
 
 // 4 - case example   x y a b n phi a0
 // MTypeSet = 5;

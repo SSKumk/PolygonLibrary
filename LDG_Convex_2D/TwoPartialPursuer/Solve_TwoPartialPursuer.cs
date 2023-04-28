@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace TwoPartialPursuer; 
+namespace TwoPartialPursuer;
 
 public static class Solve_TwoPartialPursuer {
   public static void Main(string[] args) {

@@ -1,8 +1,8 @@
 // Name of the problem
-ProblemName = "Simple problem";
+ProblemName = "Oscillator; circular constraint for the 2nd player";
 
 // Path to the folder whereto the result should be written
-path = "./Ex00-new";
+path = "./Osc-circle-nonscalar";
 
 
 /* =================================================================================
@@ -13,25 +13,25 @@ path = "./Ex00-new";
 n = 2;
 
 // The main matrix
-A = { { 0.0, 1.0 }, { 0.0, 0.0 } };
+A = { { 0.0, 1.0 }, { -1.0, 0.0 } };
 
 // Dimension of the useful control
-p = 2;
+p = 1;
 
 // The useful control matrix
-B = { { 0.0, 0.0 }, { 0.0, 1.0 } };
+B = { { 0.0 }, { 1.0 } };
 
 // Dimension of the disturbance
 q = 2;
 
 // The disturbance matrix
-C = { { 1.0, 0.0 }, { 0.0, 0.0 } };
+C = { { 1.0, 0.0 }, { 0.0, 1.0 } };
 
 // The initial instant
 t0 = 0.0;
 
 // The final instant
-T = 1.0;
+T = 4.0;
 
 // The time step
 dt = 0.05;
@@ -68,33 +68,33 @@ dt = 0.05;
           PAngleAux = beta; 
 */
 
-// -1 - case example
-// PTypeSet = 0;
-// PBox =  { { -1.0, +1.0 }, { -1.0, +1.0 } };
-
-
 // 0 - case example
-PTypeSet = 1;
-PQnt = 4;
-PVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+PTypeSet = 0;
+PBox =  { { -1.1, +1.1 } };
+
 
 // 1 - case example
+// PTypeSet = 1;
+// PQnt = 4;
+// PVert = { { 1.0, 1.0 }, { -1.0, 1.0 }, { -1.0, -1.0 }, { 1.0, -1.0 } };
+
+// 2 - case example
 // PTypeSet = 2;
 // PRectParallel = {0.0, 0.0, 1.0, 1.0};
 
-// 2 - case example
+// 3 - case example
 // PTypeSet = 3;
 // PRect = {0.0, 0.0, 1.0, 1.0};
 // PAngle = 3.0;
 
-// 3 - case example
+// 4 - case example
 // PTypeSet = 4;
 // PCenter = {0.0, 0.0};
 // PRadius = 1.0;
 // PQntVert = 50;
 // PAngle = 1.0;
 
-// 4 - case example   x y a b n phi a0
+// 5 - case example   x y a b n phi a0
 // PTypeSet = 5;
 // PCenter = {0.0, 0.0};
 // PSemiaxes = {1.0, 1.5};
@@ -151,8 +151,8 @@ All angles in radians
 // 3 - case example
 QTypeSet = 4;
 QCenter = {0.0, 0.0};
-QRadius = 1.0;
-QQntVert = 50;
+QRadius = 1.1;
+QQntVert = 100;
 QAngle = 0.0;
 
 // 4 - case example   x y a b n phi a0
@@ -188,19 +188,19 @@ QAngle = 0.0;
 // Q2Vert = { {0} , {1} };
 
 // QTypePart = 1;
-// QK = 1;
-// QAltParttitiong = { {0, 2} };
+// QK = 3;
+// QAltParttitiong = { {0, 60}, {0, 60}, {25, 85} };
 
 QTypePart = 2;
 QInd1 = 0;
-QInd2 = 20;
-QStep = 20;
+QInd2 = 50;
+QStep = 1;
 
 /*
  * Flag to write the partial tubes data
  * WriteQTubes = false | true;
 */
-WriteQTubes = false;
+WriteQTubes = true;
 
 
 /* =================================================================================
