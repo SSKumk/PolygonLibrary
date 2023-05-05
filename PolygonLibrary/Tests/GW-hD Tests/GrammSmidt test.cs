@@ -100,5 +100,41 @@ public class GrammShmidtTests {
       Assert.That(expected[i].CompareTo(output[i]) == 0, Is.True, $"Don't match: {expected[i]} and {output[i]}!");
     }
   }
+  
+  
+  /// <summary>
+  /// Simple test
+  /// </summary>
+  [Test]
+  public void TestBuildBasisOrtonormalSystem() {
+    Vector[] orthonormal =
+      {
+        new Vector(new double[] { 1, 0, 0, 0 })
+      , new Vector(new double[] { 0, 1, 0, 0 })
+      };
+
+    Vector[] Basis =
+      {
+        new Vector(new double[] { 1, 0, 0, 0 })
+      , new Vector(new double[] { 1, 1, 0, 0 })
+      , new Vector(new double[] { 1, 1, 1, 0 })
+      , new Vector(new double[] { 1, 1, 1, 1 })
+      };
+
+    Vector[] expected =
+      {
+        new Vector(new double[] { 1, 0, 0, 0 })
+      , new Vector(new double[] { 0, 1, 0, 0 })
+      , new Vector(new double[] { 0, 0, 1, 0 })
+      , new Vector(new double[] { 0, 0, 0, 1 })
+      };
+
+    var output = Vector.BuildBasisOnOrtonormalSystem(orthonormal, Basis);
+
+    Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
+    for (int i = 0; i < expected.Length; i++) {
+      Assert.That(expected[i].CompareTo(output[i]) == 0, Is.True, $"Don't match: {expected[i]} and {output[i]}!");
+    }
+  }
 
 }
