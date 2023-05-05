@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using PolygonLibrary.Toolkit;
 
@@ -249,28 +250,31 @@ public class Vector : IComparable<Vector> {
   /// <returns>An array of orthonormal basis vectors.</returns>
   /// <exception cref="ArgumentException">Thrown when the input array of vectors is empty.</exception>
   /// <remarks>The first vector can't be zero!</remarks>>
-  public static List<Vector> GramSchmidt(Vector[] V) {
-    if (V.Length == 0) {
+  public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
+    if (!V.Any()) {
       throw new ArgumentException($"Set of vectors {V} must have at least one element!");
     }
-    int dim = V[0].Dim;
-    if (V[0] == new Vector(dim)) {
+    int dim = V.First().Dim;
+    if (V.First() == new Vector(dim)) {
       throw new ArgumentException($"The first vector from {V} can't be Zero!");
     }
 
     var basis = new List<Vector>()
       {
-        V[0].Normalize()
+        V.First().Normalize()
       };
 
-    for (int k = 1; k < V.Length; k++) {
-      if (V[k].Dim != dim) {
-        throw new ArgumentException($"Vectors must have the same dimension. Found {V[k].Dim} and expected {dim}.");
+    foreach (Vector v in V) {
+      if (v == V.First()) {
+        continue;
       }
-      Vector v = V[k];
-      foreach (Vector bvec in basis) { v -= (bvec * V[k]) * bvec; }
-      if (v != new Vector(dim)) { // If the vector is Zero then scip it.
-        basis.Add(v.Normalize());
+      if (v.Dim != dim) {
+        throw new ArgumentException($"Vectors must have the same dimension. Found {v.Dim} and expected {dim}.");
+      }
+      Vector conceivable = v;
+      foreach (Vector bvec in basis) { conceivable -= (bvec * v) * bvec; }
+      if (conceivable != new Vector(dim)) { // If the vector is Zero then scip it.
+        basis.Add(conceivable.Normalize());
       }
     }
 
