@@ -54,9 +54,11 @@ public class Vector : IComparable<Vector> {
       {
         if (length is null) {
           double res = 0;
+
           for (int i = 0; i < Dim; i++) {
             res += _v[i] * _v[i];
           }
+
           length = Math.Sqrt(res);
         }
 
@@ -89,12 +91,14 @@ public class Vector : IComparable<Vector> {
     int d = Dim, res;
 #if DEBUG
     Debug.Assert(v is not null, nameof(v) + " != null");
+
     if (d != v.Dim) {
       throw new ArgumentException("Cannot compare vectors of different dimensions");
     }
 #endif
     for (int i = 0; i < d; i++) {
       res = Tools.CMP(this[i], v[i]);
+
       if (res != 0) {
         return res;
       }
@@ -118,6 +122,7 @@ public class Vector : IComparable<Vector> {
 #endif
     for (int i = 0; i < d; i++) {
       res = Tools.CMP(v1[i], v2[i]);
+
       if (res != 0) {
         return false;
       }
@@ -141,6 +146,7 @@ public class Vector : IComparable<Vector> {
 #endif
     for (int i = 0; i < d; i++) {
       res = Tools.CMP(v1[i], v2[i]);
+
       if (res != 0) {
         return true;
       }
@@ -199,11 +205,13 @@ public class Vector : IComparable<Vector> {
     }
 #endif
     Vector res = new Vector(Dim);
+
     for (int i = 0; i < Dim; i++) {
       res._v[i] = _v[i] / Length;
     }
 
     res.length = 1;
+
     return res;
   }
 
@@ -217,12 +225,15 @@ public class Vector : IComparable<Vector> {
     if (Tools.EQ(Length)) {
       return this;
     }
+
     Vector res = new Vector(Dim);
+
     for (int i = 0; i < Dim; i++) {
       res._v[i] = _v[i] / Length;
     }
 
     res.length = 1;
+
     return res;
   }
 
@@ -254,6 +265,7 @@ public class Vector : IComparable<Vector> {
     if (!Basis.Any()) {
       throw new ArgumentException("Basis must not be empty.");
     }
+
     if (v.Dim != Basis.First().Dim) {
       throw new ArgumentException("Vector and basis must have the same dimension.");
     }
@@ -265,57 +277,66 @@ public class Vector : IComparable<Vector> {
     return v.NormalizeZero();
   }
 
-
   /// <summary>
-  /// Computes the orthonormal basis of a set of input vectors using the Gramm-Schmidt algorithm.
+  /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
   /// </summary>
-  /// <param name="V">An array of input vectors to orthonormalize.</param>
-  /// <returns>An array of orthonormal basis vectors.</returns>
-  /// <exception cref="ArgumentException">Thrown when the input array of vectors is empty.</exception>
-  /// <remarks>The first vector can't be zero!</remarks>>
+  /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
+  /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
+  /// <exception cref="ArgumentException">Thrown when the input collection is empty or the first vector in the collection is the Zero vector.</exception>
   public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
-    //todo Стоит ли сделать Vector[], но в конце Basis.ToArray?
+#if DEBUG
     if (!V.Any()) {
       throw new ArgumentException($"Set of vectors {V} must have at least one element!");
     }
-    int dim = V.First().Dim;
-    if (V.First() == new Vector(dim)) {
+
+    if (V.First() == new Vector(V.First().Dim)) {
       throw new ArgumentException($"The first vector from {V} can't be Zero!");
     }
-
-    var Basis = new List<Vector>();
-
-    bool first = true;
-    foreach (Vector v in V) {
-      if (first) {
-        Basis.Add(V.First().Normalize());
-        first = false;
-        continue;
-      }
-      
-      Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
-      if (conceivable != new Vector(dim)) { // If the vector is Zero then scip it.
-        Basis.Add(conceivable.Normalize());
-      }
-    }
-
-    return Basis;
+#endif
+    return GramSchmidtMain(new[] { V.First().Normalize() }, V);
   }
+
   /// <summary>
   /// Builds a basis for an union of orthonormal system and set of vectors.
   /// </summary>
-  /// <param name="Ortonormal">The collection of orthonormal vectors.</param>
-  /// <param name="V">The collection of vectors.</param>
+  /// <param name="Orthonormal">The enumerable collection of orthonormal vectors.</param>
+  /// <param name="V">The enumerable collection of vectors.</param>
   /// <returns>A list of orthonormal vectors that form a basis for the given system and set of vectors.</returns>
   /// <exception cref="ArgumentException">Thrown if the resulting set has less than Dim(v \in V) dimension.</exception>
-  public static List<Vector> BuildBasisOnOrtonormalSystem(IEnumerable<Vector> Ortonormal, IEnumerable<Vector> V) {
-    var Basis = Ortonormal.Concat(V).ToList();
-    Basis = GramSchmidt(Basis);
+  public static List<Vector> BuildBasisOnOrtonormalSystem(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
+    var Basis = GramSchmidtMain(Orthonormal.ToList(), V);
 
+#if DEBUG
     if (Basis.Count < Basis.First().Dim) {
       throw new ArgumentException("The resulting basis does not have the correct dimension.");
     }
-    
+#endif
+
+    return Basis;
+  }
+
+  /// <summary>
+  /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
+  /// </summary>
+  /// <param name="BasisInit">A collection of vectors forming the initial basis.</param>
+  /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
+  /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
+  private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
+    int dim   = V.First().Dim;
+    var Basis = BasisInit.ToList();
+
+    foreach (Vector v in V) {
+      Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
+
+      if (conceivable != new Vector(dim)) { // If the vector is Zero then scip it.
+        Basis.Add(conceivable.Normalize());
+      }
+
+      if (Basis.Count == dim) { //We found Basis
+        break;
+      }
+    }
+
     return Basis;
   }
 #endregion
@@ -333,16 +354,19 @@ public class Vector : IComparable<Vector> {
   public override string ToString() {
     string res = "(" + _v[0];
     int    d   = Dim, i;
+
     for (i = 1; i < d; i++) {
       res += ";" + _v[i];
     }
 
     res += ")";
+
     return res;
   }
 
   public override int GetHashCode() {
     int res = 0, d = Dim, i;
+
     for (i = 0; i < d; i++) {
       res += _v[i].GetHashCode();
     }
@@ -382,6 +406,7 @@ public class Vector : IComparable<Vector> {
     }
 #endif
     _v = new double[nv.Length];
+
     for (int i = 0; i < nv.Length; i++) {
       _v[i] = nv[i];
     }
@@ -396,6 +421,7 @@ public class Vector : IComparable<Vector> {
   public Vector(Vector v) {
     int d = v.Dim, i;
     _v = new double[d];
+
     for (i = 0; i < d; i++) {
       _v[i] = v._v[i];
     }
@@ -418,6 +444,7 @@ public class Vector : IComparable<Vector> {
   public static Vector operator -(Vector v) {
     int      d  = v.Dim, i;
     double[] nv = new double[d];
+
     for (i = 0; i < d; i++) {
       nv[i] = -v._v[i];
     }
@@ -439,6 +466,7 @@ public class Vector : IComparable<Vector> {
     }
 #endif
     double[] nv = new double[d];
+
     for (i = 0; i < d; i++) {
       nv[i] = v1._v[i] + v2._v[i];
     }
@@ -460,6 +488,7 @@ public class Vector : IComparable<Vector> {
     }
 #endif
     double[] nv = new double[d];
+
     for (i = 0; i < d; i++) {
       nv[i] = v1._v[i] - v2._v[i];
     }
@@ -476,6 +505,7 @@ public class Vector : IComparable<Vector> {
   public static Vector operator *(double a, Vector v) {
     int      d  = v.Dim, i;
     double[] nv = new double[d];
+
     for (i = 0; i < d; i++) {
       nv[i] = a * v._v[i];
     }
@@ -505,6 +535,7 @@ public class Vector : IComparable<Vector> {
 #endif
     int      d  = v.Dim, i;
     double[] nv = new double[d];
+
     for (i = 0; i < d; i++) {
       nv[i] = v._v[i] / a;
     }
@@ -526,6 +557,7 @@ public class Vector : IComparable<Vector> {
     }
 #endif
     double res = 0;
+
     for (i = 0; i < d; i++) {
       res += v1._v[i] * v2._v[i];
     }
@@ -541,6 +573,7 @@ public class Vector : IComparable<Vector> {
   /// <returns>true, if the vectors are parallel; false, otherwise</returns>
   public static bool AreParallel(Vector v1, Vector v2) {
     double l1 = v1.Length, l2 = v2.Length;
+
     return Tools.EQ(Math.Abs(v1 * v2), l1 * l2);
   }
 
@@ -552,6 +585,7 @@ public class Vector : IComparable<Vector> {
   /// <returns>true, if the vectors are codirected; false, otherwise</returns>
   public static bool AreCodirected(Vector v1, Vector v2) {
     double l1 = v1.Length, l2 = v2.Length;
+
     return Tools.EQ(v1 * v2, l1 * l2);
   }
 
@@ -563,6 +597,7 @@ public class Vector : IComparable<Vector> {
   /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
   public static bool AreCounterdirected(Vector v1, Vector v2) {
     double l1 = v1.Length, l2 = v2.Length;
+
     return Tools.EQ(v1 * v2, -l1 * l2);
   }
 
@@ -574,6 +609,7 @@ public class Vector : IComparable<Vector> {
   /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
   public static bool AreOrthogonal(Vector v1, Vector v2) {
     double l1 = v1.Length, l2 = v2.Length;
+
     return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(Math.Abs(v1 * v2 / (l1 * l2)));
   }
 #endregion
