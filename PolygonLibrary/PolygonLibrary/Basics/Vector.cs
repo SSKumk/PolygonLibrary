@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -56,7 +58,7 @@ public class Vector : IComparable<Vector> {
           }
           length = Math.Sqrt(res);
         }
-          
+
         return length.Value;
       }
   }
@@ -239,6 +241,43 @@ public class Vector : IComparable<Vector> {
   }
 #endregion
 
+#region FunctionsRelatedWithVectors
+  /// <summary>
+  /// Computes the orthonormal basis of a set of input vectors using the Gramm-Schmidt algorithm.
+  /// </summary>
+  /// <param name="V">An array of input vectors to orthonormalize.</param>
+  /// <returns>An array of orthonormal basis vectors.</returns>
+  /// <exception cref="ArgumentException">Thrown when the input array of vectors is empty.</exception>
+  /// <remarks>The first vector can't be zero!</remarks>>
+  public static List<Vector> GramSchmidt(Vector[] V) {
+    if (V.Length == 0) {
+      throw new ArgumentException($"Set of vectors {V} must have at least one element!");
+    }
+    int dim = V[0].Dim;
+    if (V[0] == new Vector(dim)) {
+      throw new ArgumentException($"The first vector from {V} can't be Zero!");
+    }
+
+    var basis = new List<Vector>()
+      {
+        V[0].Normalize()
+      };
+
+    for (int k = 1; k < V.Length; k++) {
+      if (V[k].Dim != dim) {
+        throw new ArgumentException($"Vectors must have the same dimension. Found {V[k].Dim} and expected {dim}.");
+      }
+      Vector v = V[k];
+      foreach (Vector bvec in basis) { v -= (bvec * V[k]) * bvec; }
+      if (v != new Vector(dim)) { // If the vector is Zero then scip it.
+        basis.Add(v.Normalize());
+      }
+    }
+
+    return basis;
+  }
+#endregion
+
 #region Overrides
   public override bool Equals(object? obj) {
 #if DEBUG
@@ -325,9 +364,7 @@ public class Vector : IComparable<Vector> {
   /// <summary>
   /// Computing fields
   /// </summary>
-  private void ComputeParameters() {
-
-  }
+  private void ComputeParameters() { }
 #endregion
 
 #region Operators
