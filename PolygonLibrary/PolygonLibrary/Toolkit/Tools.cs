@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
+using Vector = System.Numerics.Vector;
 
 namespace PolygonLibrary.Toolkit;
 
@@ -179,10 +181,37 @@ public partial class Tools {
   }
 #endregion
 
+
+#region Gift Wrapping procedures
+  /// <summary>
+  /// Function project the Swarm of dD points into affine space with k-basis
+  /// </summary>
+  /// <param name="origin">The origin of k-Basis</param>
+  /// <param name="KBasis">The kD basis</param>
+  /// <param name="S">dD swarm of points</param>
+  /// <returns>kD swarm of points</returns>
+  public static IEnumerable<Point> ProjectToAffineSpace(Point origin, List<Basics.Vector> KBasis, IEnumerable<Point> S) {
+    int dim = KBasis[0].Dim;
+
+    foreach (Point p in S) {
+      Basics.Vector t  = p - origin;
+      var           nv = new double[dim];
+
+      foreach (Basics.Vector bvec in KBasis) {
+        for (int i = 0; i < dim; i++) {
+          Debug.Assert(bvec.Dim == dim, $"Dimensions don't match. Found {bvec.Dim} expected {dim}");
+          Debug.Assert(CMP(bvec.Length, 1) == 0, "Length must be 1 for vectors in KBasis!");
+
+          nv[i] += bvec[i] * t[i];
+        }
+      }
+
+      yield return new Point(nv);
+    }
+  }
+#endregion
+
 }
 
-
-//todo 1) ProjectToAffineSpace(ABasis, SetOfPoints) --> SetOfProjectedPoints
-// Вычитаем из точки начало координат и умножаем на Базисис
 //todo 2) BuildInitialPlane(Swarm) --> 
 //todo Наш рой S перегнать в "set" и удалять лишние вершины в процессе 

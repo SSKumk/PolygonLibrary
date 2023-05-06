@@ -84,6 +84,8 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">Array to be converted</param>
   /// <returns>The resultant vector</returns>
   public static explicit operator Vector(double[] v) => new Vector(v);
+  
+  public Point ToPoint() => new Point(_v);
 #endregion
 
 #region Comparing
