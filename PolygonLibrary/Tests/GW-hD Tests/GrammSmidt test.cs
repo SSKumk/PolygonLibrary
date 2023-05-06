@@ -5,13 +5,13 @@ using PolygonLibrary.Toolkit;
 namespace Tests.GW_hD_Tests;
 
 [TestFixture]
-public class GrammShmidtTests {
+public class GramSchmidtTests {
 
   /// <summary>
   /// Simplest test
   /// </summary>
   [Test]
-  public void TestGrammShmidt_1() {
+  public void TestGramSchmidt_1() {
     Vector[] input    = { new Vector(new double[] { 1, 0 }), new Vector(new double[] { 0, 1 }) };
     Vector[] expected = { new Vector(new double[] { 1, 0 }), new Vector(new double[] { 0, 1 }) };
 
@@ -28,7 +28,7 @@ public class GrammShmidtTests {
   /// 3D Int test
   /// </summary>
   [Test]
-  public void TestGrammShmidt_2() {
+  public void TestGramSchmidt_2() {
     Vector[] input =
       {
         new Vector(new double[] { 1, 0, 0 })
@@ -55,7 +55,7 @@ public class GrammShmidtTests {
   /// 3x2 Double test
   /// </summary>
   [Test]
-  public void TestGrammShmidt_3() {
+  public void TestGramSchmidt_3() {
     Vector[] input = { new Vector(new double[] { 1.5, -2.3, 0.7 }), new Vector(new double[] { 0.8, 1.2, -0.5 }) };
 
     Vector[] expected =
@@ -76,7 +76,7 @@ public class GrammShmidtTests {
   /// Linear dependent test
   /// </summary>
   [Test]
-  public void TestGrammShmidt_4() {
+  public void TestGramSchmidt_4() {
     Vector[] input =
       {
         new Vector(new double[] { 1, 0, 0 })
@@ -106,7 +106,7 @@ public class GrammShmidtTests {
   /// Simple test
   /// </summary>
   [Test]
-  public void TestBuildBasisOrtonormalSystem() {
+  public void TestGramSchmidt_TwoArg_1() {
     Vector[] orthonormal =
       {
         new Vector(new double[] { 1, 0, 0, 0 })
@@ -129,7 +129,7 @@ public class GrammShmidtTests {
       , new Vector(new double[] { 0, 0, 0, 1 })
       };
 
-    var output = Vector.BuildBasisOnOrtonormalSystem(orthonormal, Basis);
+    var output = Vector.GramSchmidt(orthonormal, Basis);
 
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
     for (int i = 0; i < expected.Length; i++) {
