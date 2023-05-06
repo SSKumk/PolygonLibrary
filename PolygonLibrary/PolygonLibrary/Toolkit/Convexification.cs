@@ -126,13 +126,14 @@ namespace PolygonLibrary.Toolkit
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
 		/// <remarks>It is guaranteed that the resultant list contains references
 		/// to some of the original objects; no new points are created during work of the method</remarks>
-    public static List<Point2D> ArcHull2D(List<Point2D> swarmOrig)
+		/// <remarks>The first point in the returned list is the point of the swarm minimal in lexicographic order</remarks>
+    public static IEnumerable<Point2D> ArcHull2D(IEnumerable<Point2D> swarmOrig)
     {
-      if (swarmOrig.Count <= 1)
+      if (swarmOrig.Count() <= 1)
       {
         List<Point2D> res = new List<Point2D>();
-        if (swarmOrig.Count == 1) {
-          res.Add(swarmOrig[0]);
+        if (swarmOrig.Count() == 1) {
+          res.Add(swarmOrig.First());
         }
 
         return res;

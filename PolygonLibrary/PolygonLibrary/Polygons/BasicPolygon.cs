@@ -34,15 +34,19 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Property giving a list of the polygon contours
     /// </summary>
-    public List<Polyline> Contours //todo Привести к единообразному виду как в Segment
+    public List<Polyline> Contours 
     {
       get
       {
+        Debug.Assert(!IsEmpty, "Try to get contours of an empty polygon!");
+
         if (_contours == null) {
           ComputeContours();
         }
-
-        Debug.Assert(_contours != null, nameof(_contours) + " != null");
+        
+        Debug.Assert(_contours != null, "List of contours of a polygon cannot be null");
+        Debug.Assert(_contours.Count != 0, "List of contours of a polygon cannot be empty");
+        
         return _contours;
       }
       protected init => _contours = value;
@@ -56,6 +60,8 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
+        Debug.Assert(!IsEmpty, "Try to get vertices of an empty polygon!");
+      
         if (_vertices == null) {
           ComputeVertices();
         }
@@ -74,6 +80,8 @@ namespace PolygonLibrary.Polygons
     {
       get
       {
+        Debug.Assert(!IsEmpty, "Try to get edges of an empty polygon!");
+
         if (_edges == null) {
           ComputeEdges();
         }
@@ -83,13 +91,21 @@ namespace PolygonLibrary.Polygons
       }
       protected set => _edges = value;
     }
+
+    /// <summary>
+    /// Property showing whether the polygon is empty
+    /// </summary>
+    public bool IsEmpty { get; protected init; }
     #endregion
 
-    #region Constructors
+    #region Constructors and factories
+
     /// <summary>
-    /// Default constructor doing nothing
+    /// Default constructor creates an empty polygon
     /// </summary>
-    public BasicPolygon() { }
+    public BasicPolygon() {
+      IsEmpty = true;
+    }
 
     /// <summary>
     /// Single contour polygon construction on the basis of list of its vertices
@@ -97,16 +113,17 @@ namespace PolygonLibrary.Polygons
     /// <param name="vs">List of vertices in the contour</param>
     /// <param name="checkOrient">Flag showing whether the counterclockwise orientation should be checked</param>
     /// <param name="checkCross">Flag showing whether the self-crossing of the contour should be checked</param>
-    public BasicPolygon(List<Point2D> vs, bool checkOrient = true, bool checkCross = true)
+    public BasicPolygon(IEnumerable<Point2D> vs, bool checkOrient = true, bool checkCross = true)
     {
       // The only contour is initialized just here, because now we have information about it - 
       // the order of points in the initial list
-      Contours = new List<Polyline>();
-      Contours.Add(new Polyline(vs, PolylineOrientation.Counterclockwise, checkCross, checkOrient));
+      _contours = new List<Polyline>();
+      _contours.Add(new Polyline(vs, PolylineOrientation.Counterclockwise, checkCross, checkOrient));
 
-      // Copying the list of vertices
-      Vertices = new List<Point2D>(vs);
-      // Vertices.Sort(); todo ???
+      _edges = null;
+      _vertices = null;
+      
+      IsEmpty = false;
     }
 
     /// <summary>
@@ -121,7 +138,7 @@ namespace PolygonLibrary.Polygons
 
     #region Internal methods
     /// <summary>
-    /// On demand computation of lexicographically sorted list of vertices on the basis of the array of contours.
+    /// On demand computation of a list of vertices (ordered in some way) on the basis of the array of contours.
     /// If the array of contours is not initialized, an exception is thrown
     /// </summary>
     protected virtual void ComputeVertices()
@@ -137,8 +154,6 @@ namespace PolygonLibrary.Polygons
         foreach (Polyline p in _contours) {
           Vertices.AddRange(p.Vertices);
         }
-
-        // Vertices.Sort(); todo ???
       }
     }
 
@@ -165,23 +180,11 @@ namespace PolygonLibrary.Polygons
     }
 
     /// <summary>
-    /// On demand computation of a single contoured convex polygon on the basis of the array 
-    /// of vertices. If the array of vertices is not initialized, an exception is thrown
+    /// A method for reconstructing contours if they are not defined when constructing the polygon
     /// </summary>
-    protected virtual void ComputeContours()
-    {
-      if (_contours == null)
-      {
-#if DEBUG
-        if (_vertices == null) {
-          throw new Exception("Cannot compute contour - vertices have not been initialized");
-        }
-#endif
-        _contours = new List<Polyline>();
-        _contours.Add(new Polyline(Convexification.ArcHull2D(_vertices),
-          PolylineOrientation.Counterclockwise, false, false));
-      }
-    }
+    protected abstract void ComputeContours();
+    
+
     #endregion
 
     #region Common polygon tools
@@ -198,9 +201,7 @@ namespace PolygonLibrary.Polygons
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is strictly inside the polygon; false, otherwise</returns>
     public abstract bool ContainsInside(Point2D p);
-
-    //public static P Rearrange<P> (P orig, SegmentCrosser2 crosses)
-#endregion
+    #endregion
 
   }
 }

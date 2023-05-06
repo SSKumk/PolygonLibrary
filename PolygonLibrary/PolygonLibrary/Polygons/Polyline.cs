@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Segments;
 using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Polygons
-{
+namespace PolygonLibrary.Polygons {
   /// <summary>
   /// Enumeration of a polyline
   /// </summary>
-  public enum PolylineOrientation
-  {
+  public enum PolylineOrientation {
     /// <summary>
     /// Positive counterclockwise orientation
     /// </summary>
-    Counterclockwise,
+    Counterclockwise
+
+   ,
 
     /// <summary>
     /// Negative clockwise orientation
@@ -25,9 +26,9 @@ namespace PolygonLibrary.Polygons
   /// <summary>
   /// Class of a closed polyline
   /// </summary>
-  public class Polyline
-  {
+  public class Polyline {
     #region Data storage and accessors
+
     /// <summary>
     /// The list of vertices of the polygon enlisted counterclockwise
     /// </summary>
@@ -51,15 +52,11 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// List of edges. Is computed on demand
     /// </summary>
-    public List<Segment> Edges
-    {
-      get
-      {
-        if (_edges == null)
-        {
+    public List<Segment> Edges {
+      get {
+        if (_edges == null) {
           _edges = new List<Segment>();
-          if (_vertices.Count > 1)
-          {
+          if (_vertices.Count > 1) {
             for (int i = 0; i < _vertices.Count - 1; i++) {
               _edges.Add(new Segment(_vertices[i], _vertices[i + 1]));
             }
@@ -67,6 +64,7 @@ namespace PolygonLibrary.Polygons
             _edges.Add(new Segment(_vertices[^1], _vertices[0]));
           }
         }
+
         return _edges;
       }
     }
@@ -76,10 +74,8 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="i">The index of the vertex. The index is counted cyclically!</param>
     /// <returns>The point of the vertex</returns>
-    public Point2D this[int i]
-    {
-      get
-      {
+    public Point2D this[int i] {
+      get {
         int ind = i % _vertices.Count;
         return _vertices[ind >= 0 ? ind : ind + _vertices.Count];
       }
@@ -99,24 +95,28 @@ namespace PolygonLibrary.Polygons
     /// <summary>
     /// Property that returns the square of the polygon
     /// </summary>
-    public double Square
-    {
+    public double Square {
       get {
         _square ??= ComputeSquare();
         return _square.Value;
       }
     }
+
     #endregion
 
     #region Constructors
+
     /// <summary>
     /// Default constructor. Produces a one-point polyline at the origin
     /// </summary>
-    public Polyline()
-    {
-      _vertices   = new List<Point2D> { Point2D.Origin };
+    public Polyline() {
+      _vertices = new List<Point2D>
+        {
+          Point2D.Origin
+        };
+      _edges = null;
       Orientation = PolylineOrientation.Counterclockwise;
-      _square     = null;
+      _square = null;
     }
 
     /// <summary>
@@ -131,12 +131,12 @@ namespace PolygonLibrary.Polygons
     /// <param name="orient">Declared orientation of the polyline</param>
     /// <param name="checkSimplicity">Flag showing whether the simplicity of the corresponding polygon 
     /// should be checked</param>
-    /// <param name="checkOrientation">Flag showing that the polyline orientation should be checked</param>
-    public Polyline(List<Point2D> ps, PolylineOrientation orient,
-      bool checkSimplicity = true, bool checkOrientation = true)
-    {
+    /// <param name="checkOrientation">Flag showing that the polyline orientation should be checked in the assumption of boundedness of the polygon</param>
+    public Polyline(IEnumerable<Point2D> ps, PolylineOrientation orient, bool checkSimplicity = true
+                  , bool checkOrientation = true) {
       // TODO:  Write checks !!!
-      _vertices = ps;
+      _vertices = ps.ToList();
+      _edges = null;
       Orientation = orient;
     }
 
@@ -153,12 +153,13 @@ namespace PolygonLibrary.Polygons
     /// <param name="checkSimplicity">Flag showing whether the simplicity of the corresponding polygon 
     /// should be checked</param>
     /// <param name="checkOrientation">Flag showing that the polyline orientation should be checked</param>
-    public Polyline(Point2D[] ps, PolylineOrientation orient,
-      bool checkSimplicity = true, bool checkOrientation = true) :
-      this(new List<Point2D>(ps), orient, checkSimplicity, checkOrientation) { }
+    public Polyline(Point2D[] ps, PolylineOrientation orient, bool checkSimplicity = true, bool checkOrientation = true)
+      : this(new List<Point2D>(ps), orient, checkSimplicity, checkOrientation) { }
+
     #endregion
 
     #region Miscelaneous methods
+
     /// <summary>
     /// Check whether the line is actually empty, that is, it does not contain any vertex
     /// </summary>
@@ -168,8 +169,7 @@ namespace PolygonLibrary.Polygons
     /// Compute square of the current polyline
     /// </summary>
     /// <returns>The square</returns>
-    private double ComputeSquare()
-    {
+    private double ComputeSquare() {
       double res = 0;
       for (int i = 0; i < Count; i++) {
         res += this[i].x * this[i + 1].y - this[i].y * this[i + 1].x;
@@ -199,12 +199,11 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="p">The base point</param>
     /// <returns>The variation of the angle</returns>
-    private double ComputeAngleVariation(Point2D p)
-    {
+    private double ComputeAngleVariation(Point2D p) {
       double res = 0;
-      Vector2D vi = this[0] - p, vim1;
-      for (int i = 1; i <= Count; i++)
-      {
+      Vector2D vi = this[0] - p
+      , vim1;
+      for (int i = 1; i <= Count; i++) {
         vim1 = vi;
         vi = this[i] - p;
         double psp = vim1 ^ vi;
@@ -212,6 +211,7 @@ namespace PolygonLibrary.Polygons
           res += Math.Atan2(psp, vim1 * vi);
         }
       }
+
       return res;
     }
 
@@ -220,11 +220,12 @@ namespace PolygonLibrary.Polygons
     /// </summary>
     /// <param name="i">Cyclic index of the edge</param>
     /// <returns>The angle</returns>
-    protected double EdgeAngle (int i)
-    {
-      Point2D a = this[i], b = this[i+1];
-      return Math.Atan2 (b.y - a.y, b.x - a.x);
+    protected double EdgeAngle(int i) {
+      Point2D a = this[i]
+      , b = this[i + 1];
+      return Math.Atan2(b.y - a.y, b.x - a.x);
     }
+
     #endregion
   }
 }

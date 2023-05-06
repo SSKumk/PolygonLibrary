@@ -74,7 +74,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void CreateCPOfPointsTest1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1, false);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(ps1);
 			PrintCP(cp);
 			Assert.That(true);
 		}
@@ -82,7 +82,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void CreateCPOfPointsTest2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps2, true);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(ps2);
 			PrintCP(cp);
 			Assert.That(true);
 		}
@@ -154,7 +154,7 @@ namespace Tests
 				new Point2D (-1,  2),
 				new Point2D (-2,  1)
 			};
-			ConvexPolygon cp = new ConvexPolygon(vs, false);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(vs);
 			List<Point2D> testPoints = new List<Point2D>()
 			{
 				new Point2D(-2, -1),  // 0th vertex
@@ -266,7 +266,7 @@ namespace Tests
 				new Point2D (-1,  2),
 				new Point2D (-2,  1)
 			};
-			ConvexPolygon cp = new ConvexPolygon(vs);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(vs);
 			List<Point2D> testPoints = new List<Point2D>()
 			{
 				new Point2D(-2, -1),  // 0th vertex
@@ -398,7 +398,7 @@ namespace Tests
 
 			ConvexPolygon?
 				cp1 = PolygonTools.RectangleTurned(0, -3, 0, 3, Math.PI / 4),
-				cp2 = new ConvexPolygon(vs2, false),
+				cp2 = ConvexPolygon.CreateConvexPolygonFromContour(vs2),
 				cp3 = cp1 - cp2;
 
 			List<Point2D> res = new List<Point2D> {
@@ -508,7 +508,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void WeightTest1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1, true);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(ps1);
 			double s = cp.Square;
 
 			Assert.IsTrue(Tools.EQ(s, 4), "WeightTest1: wrong square");
@@ -517,7 +517,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void WeightTest2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(
 				new Point2D[]
 				{
 					new Point2D(-2, -1),
@@ -528,7 +528,7 @@ namespace Tests
 					new Point2D( 1,  2),
 					new Point2D(-1,  2),
 					new Point2D(-2,  1)
-				}, true);
+				});
 			double s = cp.Square;
 
 			Assert.IsTrue(Tools.EQ(s, 14), "WeightTest1: wrong square");
@@ -537,7 +537,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void RandomPoint1()
 		{
-			ConvexPolygon cp = new ConvexPolygon(ps1, true);
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(ps1);
 			int N = 10, i;
 			Point2D[] rndPoints = new Point2D[N];
 			for (i = 0; i < N; i++) {
@@ -552,7 +552,7 @@ namespace Tests
 		[Category("ConvexPolygonTests"), Test]
 		public void RandomPoint2()
 		{
-			ConvexPolygon cp = new ConvexPolygon(
+			ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(
 				new Point2D[]
 				{
 					new Point2D(-2, -1),
@@ -563,7 +563,7 @@ namespace Tests
 					new Point2D( 1,  2),
 					new Point2D(-1,  2),
 					new Point2D(-2,  1)
-				}, true);
+				});
 			int N = 100000, i;
 			Point2D[] rndPoints = new Point2D[N];
 			for (i = 0; i < N; i++) {

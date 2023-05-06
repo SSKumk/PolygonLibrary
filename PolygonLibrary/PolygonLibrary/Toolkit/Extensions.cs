@@ -59,10 +59,6 @@ public static class ListExtensions
 	public static int BinarySearchByPredicate<T>(
 		this List<T> list, Predicate<T> pred, int lower, int upper)
 	{
-		if (list == null) {
-			return -1;
-		}
-
 		if (lower < 0) {
 			lower = 0;
 		}
@@ -134,10 +130,6 @@ public static class ListExtensions
 	public static int BinaryCyclicSearchByPredicate<T>(
 		this List<T> list, Predicate<T> pred, int lower, int upper)
 	{
-		if (list == null) {
-			return -1;
-		}
-
 		if (!pred(list.GetAtCyclic(upper))) {
 			return -1;
 		}

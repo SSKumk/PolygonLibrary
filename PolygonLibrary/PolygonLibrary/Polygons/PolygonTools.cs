@@ -56,7 +56,7 @@ public sealed class PolygonTools
       vs.Add(new Point2D(x1, y2));
     }
 
-    return new ConvexPolygon(vs, false);
+    return ConvexPolygon.CreateConvexPolygonFromContour(vs);
   }
 
   /// <summary>
@@ -89,7 +89,7 @@ public sealed class PolygonTools
   {
     // If the points coincide, return a single-pointed polygon
     if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o)) {
-      return new ConvexPolygon(new Point2D[] { new Point2D(x1o, y1o) }, false);
+      return ConvexPolygon.CreateConvexPolygonFromContour(new Point2D[] { new Point2D(x1o, y1o) });
     }
 
     double
@@ -121,7 +121,7 @@ public sealed class PolygonTools
     res.Add(new Point2D(v2[0], v2[1]));
     res.Add(new Point2D(v3[0], v3[1]));
 
-    return new ConvexPolygon(res, true);
+    return ConvexPolygon.CreateConvexPolygonFromSwarm(res);
   }
 
   /// <summary>
@@ -150,7 +150,7 @@ public sealed class PolygonTools
   public static ConvexPolygon Circle(double x, double y, double R, int n, double a0 = 0)
   {
     if (Tools.EQ(R)) {
-      return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
+      return ConvexPolygon.CreateConvexPolygonFromContour(new Point2D[] { new Point2D(x, y) });
     }
 
     List<Point2D> res = new List<Point2D>();
@@ -159,7 +159,7 @@ public sealed class PolygonTools
       res.Add(new Point2D(x + R * Math.Cos(i * da + a0), y + R * Math.Sin(i * da + a0)));
     }
 
-    return new ConvexPolygon(res, false);
+    return ConvexPolygon.CreateConvexPolygonFromSwarm(res);
   }
 
   /// <summary>
@@ -181,21 +181,20 @@ public sealed class PolygonTools
     if (Tools.EQ(a))
     {
       if (Tools.EQ(b)) {
-        return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
+        return ConvexPolygon.CreateConvexPolygonFromContour(new Point2D[] { new Point2D(x, y) });
       } else {
-        return new ConvexPolygon(new Point2D[] 
+        return ConvexPolygon.CreateConvexPolygonFromSwarm(new Point2D[] 
         { 
           new Point2D(x + a*Math.Cos(phi), y + a*Math.Sin(phi)), 
           new Point2D(x - a*Math.Cos(phi), y - a*Math.Sin(phi)) 
-        }, false);
+        });
       }
-    }
-    else if (Tools.EQ(b)) {
-      return new ConvexPolygon(new Point2D[] 
+    } else if (Tools.EQ(b)) {
+      return ConvexPolygon.CreateConvexPolygonFromSwarm(new Point2D[] 
       { 
         new Point2D(x + b*Math.Sin(phi), y + b*Math.Cos(phi)), 
         new Point2D(x - b*Math.Sin(phi), y - b*Math.Cos(phi)) 
-      }, false);
+      });
     }
 
     List<Point2D> res = new List<Point2D>();
@@ -208,6 +207,6 @@ public sealed class PolygonTools
         v1 = v.Turn(phi);
       res.Add(new Point2D(center + v1));
     }
-    return new ConvexPolygon(res, false);
+    return ConvexPolygon.CreateConvexPolygonFromSwarm(res);
   }
 }

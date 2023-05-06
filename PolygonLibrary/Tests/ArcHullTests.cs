@@ -31,7 +31,7 @@ namespace Tests
       // Shuffle the points
       Tools.Shuffle(orig, r);
 
-      List<Point2D> hull = Convexification.ArcHull2D(orig);
+      List<Point2D> hull = Convexification.ArcHull2D(orig).ToList();
 
       Assert.Multiple(() => {
         Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
@@ -86,7 +86,7 @@ namespace Tests
       // Shuffle the points
       Tools.Shuffle (orig, r);
 
-      List<Point2D> hull = Convexification.ArcHull2D(orig);
+      List<Point2D> hull = Convexification.ArcHull2D(orig).ToList();
 
       Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
       for (int i = 0; i < expected.Count; i++) {
@@ -154,7 +154,7 @@ namespace Tests
       // Shuffle the points
       Tools.Shuffle(orig, r);
 
-      List<Point2D> hull = Convexification.ArcHull2D(orig);
+      List<Point2D> hull = Convexification.ArcHull2D(orig).ToList();
 
       Assert.Multiple(() => {
         Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
@@ -50,9 +51,9 @@ public class SupportFunction : List<GammaPair> {
   /// then an exception is thrown
   /// </summary>
   /// <param name="ps">The collection of points</param>
-  /// <param name="ToConvexify">Flag showing whether the collection should be convexified in the beginning</param>
-  public SupportFunction(List<Point2D> ps, bool ToConvexify = true) {
-    List<Point2D> ps1 = ToConvexify ? Convexification.ArcHull2D(ps) : ps;
+  /// <param name="toConvexify">Flag showing whether the collection should be convexified in the beginning</param>
+  public SupportFunction(IEnumerable<Point2D> ps, bool toConvexify = true) {
+    List<Point2D> ps1 = (toConvexify ? Convexification.ArcHull2D(ps) : ps).ToList();
 
     switch (ps1.Count) {
       case > 2: {
@@ -92,7 +93,7 @@ public class SupportFunction : List<GammaPair> {
   /// <summary>
   /// Procedure for finding cone that contains the given vector.
   /// If the vector coincides with a normal from the collection, 
-  /// the cone will be returned, which has the vector as the counterclockwise boundary.
+  /// the cone will be returned, which has the vector as the clockwise boundary.
   /// The search is performed by dichotomy, therefore, it is of O(log n) complexity.
   /// If the collection is sub-definite (that is has one or zero pairs),
   /// an exception is thrown.
@@ -109,18 +110,18 @@ public class SupportFunction : List<GammaPair> {
 
     // If the vector belongs to the cone between the last and the first normals
     // or coincides with the last vector, then the cone is between the last and the first vectors
-    if (Vector2D.AreCodirected(v, this[Count - 1].Normal) || v.IsBetween(this[Count - 1].Normal, this[0].Normal)) {
+    if (Vector2D.AreCodirected(v, this[^1].Normal) || v.IsBetween(this[Count - 1].Normal, this[0].Normal)) {
       i = Count - 1;
       j = 0;
     }
-    // If the vector coincides with the first vector, then the cone is between the first and second vectors
-    else if (Vector2D.AreCodirected(v, this[0].Normal)) {
-      i = 0;
-      j = 1;
-    }
+    // // If the vector coincides with the first vector, then the cone is between the first and second vectors
+    // else if (Vector2D.AreCodirected(v, this[0].Normal)) {
+    //   i = 0;
+    //   j = 1;
+    // }
     // Otherwise the vector is somewhere strictly between the first and last vectors, do binary search
     else {
-      j = this.BinarySearchByPredicate(swElem => Tools.LT(v.PolarAngle, swElem.Normal.PolarAngle), 0, Count - 1);
+      j = this.BinarySearchByPredicate(swElem => Tools.GT(swElem.Normal.PolarAngle, v.PolarAngle), 0, Count - 1);
       i = this.NormalizeIndex(j - 1);
     }
   }

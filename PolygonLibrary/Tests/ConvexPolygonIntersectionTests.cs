@@ -32,9 +32,9 @@ public partial class ConvexPolygonTests {
                                 , LinkedList<Point2D> Q_List
                                 , List<Point2D>       answer) {
     for (int p = 0; p < P_List.Count; p++) {
-      var P = new ConvexPolygon(P_List);
+      var P = ConvexPolygon.CreateConvexPolygonFromSwarm(P_List);
       for (int q = 0; q < Q_List.Count; q++) {
-        var Q     = new ConvexPolygon(Q_List);
+        var Q     = ConvexPolygon.CreateConvexPolygonFromSwarm(Q_List);
         var resPQ = ConvexPolygon.IntersectionPolygon(P, Q);
         var resQP = ConvexPolygon.IntersectionPolygon(Q, P);
 
@@ -55,9 +55,9 @@ public partial class ConvexPolygonTests {
 
   private void NullIntersectionTest(string mes, LinkedList<Point2D> P_List, LinkedList<Point2D> Q_List) {
     for (int p = 0; p < P_List.Count; p++) {
-      var P = new ConvexPolygon(P_List);
+      var P = ConvexPolygon.CreateConvexPolygonFromSwarm(P_List);
       for (int q = 0; q < Q_List.Count; q++) {
-        var Q     = new ConvexPolygon(Q_List);
+        var Q     = ConvexPolygon.CreateConvexPolygonFromSwarm(Q_List);
         var resPQ = ConvexPolygon.IntersectionPolygon(P, Q);
         var resQP = ConvexPolygon.IntersectionPolygon(Q, P);
         Assert.IsNull(resPQ, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
