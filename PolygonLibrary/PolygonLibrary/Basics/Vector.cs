@@ -67,6 +67,11 @@ public class Vector : IComparable<Vector> {
   }
 
   /// <summary>
+  /// Property showing if the vector is zero vector
+  /// </summary>
+  public bool IsZero => Tools.EQ(Length);
+
+  /// <summary>
   /// Convert a vector to a one-dimensional array
   /// </summary>
   /// <param name="v">The vector to be converted</param>
@@ -239,7 +244,6 @@ public class Vector : IComparable<Vector> {
 
   /// <summary>
   /// Angle from the one vector to another from the interval [-pi, pi) 
-  /// (counted counterclock- or clockwise)
   /// </summary>
   /// <param name="v1">The first vector</param>
   /// <param name="v2">The second vector</param>
@@ -253,23 +257,14 @@ public class Vector : IComparable<Vector> {
   }
 #endregion
 
-#region FunctionsRelatedWithVectors
+#region Functions related to Vectors
   /// <summary>
   /// Orthonormalizes the given vector against the given basis and returns the result.
   /// </summary>
   /// <param name="v">The input vector to orthonormalize.</param>
   /// <param name="Basis">The basis to orthonormalize against.</param>
-  /// <returns>The resulting orthonormalized vector.</returns>
-  /// <exception cref="ArgumentException">Thrown when the input basis is empty or the input vector and basis have different dimensions.</exception>
+  /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector</returns>
   public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
-    if (!Basis.Any()) {
-      throw new ArgumentException("Basis must not be empty.");
-    }
-
-    if (v.Dim != Basis.First().Dim) {
-      throw new ArgumentException("Vector and basis must have the same dimension.");
-    }
-
     foreach (Vector bvec in Basis) {
       v -= (bvec * v) * bvec;
     }
@@ -278,18 +273,17 @@ public class Vector : IComparable<Vector> {
   }
 
   /// <summary>
-  /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
+  /// Computes an orthonormal system from a given set of vectors using the Gram-Schmidt algorithm.
   /// </summary>
-  /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
-  /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
-  /// <exception cref="ArgumentException">Thrown when the input collection is empty or the first vector in the collection is the Zero vector.</exception>
+  /// <param name="V">An collection of vectors to use in the orthonormalizing process.</param>
+  /// <returns>An orthonormal system of less or equal dimension than the input vectors.</returns>
   public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
 #if DEBUG
     if (!V.Any()) {
       throw new ArgumentException($"Set of vectors {V} must have at least one element!");
     }
 
-    if (V.First() == new Vector(V.First().Dim)) {
+    if (V.First().IsZero) {
       throw new ArgumentException($"The first vector from {V} can't be Zero!");
     }
 #endif
@@ -297,22 +291,13 @@ public class Vector : IComparable<Vector> {
   }
 
   /// <summary>
-  /// Builds a basis for an union of orthonormal system and set of vectors.
+  /// Computes an orthonormal system for an union of orthonormal system and set of vectors using the Gram-Schmidt algorithm.
   /// </summary>
-  /// <param name="Orthonormal">The enumerable collection of orthonormal vectors.</param>
-  /// <param name="V">The enumerable collection of vectors.</param>
-  /// <returns>A list of orthonormal vectors that form a basis for the given system and set of vectors.</returns>
-  /// <exception cref="ArgumentException">Thrown if the resulting set has less than Dim(v \in V) dimension.</exception>
-  public static List<Vector> BuildBasisOnOrtonormalSystem(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
-    var Basis = GramSchmidtMain(Orthonormal.ToList(), V);
-
-#if DEBUG
-    if (Basis.Count < Basis.First().Dim) {
-      throw new ArgumentException("The resulting basis does not have the correct dimension.");
-    }
-#endif
-
-    return Basis;
+  /// <param name="Orthonormal">The collection of orthonormal vectors.</param>
+  /// <param name="V">The collection of vectors.</param>
+  /// <returns>A list of orthonormal vectors.</returns>
+  public static List<Vector> GramSchmidt(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
+    return GramSchmidtMain(Orthonormal.ToList(), V);
   }
 
   /// <summary>
@@ -326,10 +311,12 @@ public class Vector : IComparable<Vector> {
     var Basis = BasisInit.ToList();
 
     foreach (Vector v in V) {
+      Debug.Assert(v.Dim == dim, $"Dimensions are different! Found {v.Dim} expected {dim}.");
+
       Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
 
-      if (conceivable != new Vector(dim)) { // If the vector is Zero then scip it.
-        Basis.Add(conceivable.Normalize());
+      if (!conceivable.IsZero) {
+        Basis.Add(conceivable);
       }
 
       if (Basis.Count == dim) { //We found Basis

@@ -9,15 +9,15 @@ namespace PolygonLibrary.Toolkit;
 /// Class with general purpose procedures
 /// </summary>
 public partial class Tools {
-#region Constants
 
+#region Constants
   /// <summary>
   /// The constant 2*PI
   /// </summary>
-  public /* static */ const double PI2 = 2 * Math.PI; 
+  public /* static */ const double PI2 = 2 * Math.PI;
 #endregion
-  
-  #region Double comparison
+
+#region Double comparison
   /// <summary>
   /// Absolute accuracy for comparison
   /// </summary>
@@ -29,14 +29,15 @@ public partial class Tools {
   /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
   public static double Eps {
     get { return _eps; }
-    set {
+    set
+      {
 #if DEBUG
-      if (value <= 0) {
-        throw new ArgumentOutOfRangeException("Non-positive precision parameter");
-      }
+        if (value <= 0) {
+          throw new ArgumentOutOfRangeException("Non-positive precision parameter");
+        }
 #endif
-      _eps = value;
-    }
+        _eps = value;
+      }
   }
 
   /// <summary>
@@ -107,6 +108,7 @@ public partial class Tools {
   /// Type of a comparer of doubles with the respect to given precision
   /// </summary>
   public class DoubleComparer : IComparer<double> {
+
     private readonly double _epsLocal;
 
     public DoubleComparer(double eps) => _epsLocal = eps;
@@ -116,12 +118,14 @@ public partial class Tools {
       Tools.Eps = _epsLocal;
       int res = Tools.CMP(a, b);
       Tools.Eps = oldEPS;
+
       return res;
     }
-  }
-  #endregion
 
-  #region Common procedures
+  }
+#endregion
+
+#region Common procedures
   /// <summary>
   /// Signum function based of approximate comparison of doubles
   /// </summary>
@@ -154,21 +158,31 @@ public partial class Tools {
   public static List<Point2D> Project2D(Matrix m, List<Point> ps) {
 #if DEBUG
     if (m.Rows != 2) {
-      throw new ArgumentException("For a projection to the plane a matrix is given with " +
-                                  m.Rows + " rows!");
+      throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
     }
 #endif
-    List<Point2D> res = ps.Select(p => {
+    List<Point2D> res = ps.Select
+                           (
+                            p => {
 #if DEBUG
-      if (p.Dim != m.Cols) {
-        throw new ArgumentException("During projection to the plane a point with wrong dimension has been found!");
-      }
+                              if (p.Dim != m.Cols) {
+                                throw new ArgumentException
+                                  ("During projection to the plane a point with wrong dimension has been found!");
+                              }
 #endif
-      return (Point2D)(m * p);
-    }).ToList();
+                              return (Point2D)(m * p);
+                            }
+                           )
+                          .ToList();
 
     return res;
   }
-  #endregion
+#endregion
+
 }
 
+
+//todo 1) ProjectToAffineSpace(ABasis, SetOfPoints) --> SetOfProjectedPoints
+// Вычитаем из точки начало координат и умножаем на Базисис
+//todo 2) BuildInitialPlane(Swarm) --> 
+//todo Наш рой S перегнать в "set" и удалять лишние вершины в процессе 
