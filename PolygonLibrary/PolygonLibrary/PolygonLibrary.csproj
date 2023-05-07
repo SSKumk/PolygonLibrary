@@ -12,8 +12,10 @@
       <Compile Remove="Class1.cs" />
       <Compile Remove="_\**" />
       <Compile Remove="Polygons\Something\**" />
+      <Compile Include="Basics\AffineBasis.cs" />
       <Compile Include="Basics\CauchyMatrix.cs" />
       <Compile Include="Basics\Line2D.cs" />
+      <Compile Include="Basics\LinearBasis.cs" />
       <Compile Include="Basics\Matrices.cs" />
       <Compile Include="Basics\Point.cs" />
       <Compile Include="Basics\Point2D.cs" />
@@ -27,6 +29,7 @@
       <Compile Include="Polygons\ConvexPolygons\SupportFunction.cs" />
       <Compile Include="Polygons\PolygonTools.cs" />
       <Compile Include="Polygons\Polyline.cs" />
+      <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" />
       <Compile Include="Segments\Segment.cs" />
       <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
       <Compile Include="Toolkit\Convexification.cs" />
