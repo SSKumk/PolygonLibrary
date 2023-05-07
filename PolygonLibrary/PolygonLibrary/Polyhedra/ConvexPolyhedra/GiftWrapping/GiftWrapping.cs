@@ -4,18 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polygons.ConvexPolygons.ConvexificationByGiftWrapping;
+namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 public class GiftWrapping {
 
-  public static (Point, List<Vector>) BuildInitialPlane(IEnumerable<Point> S) {
+  public static AffineBasis BuildInitialPlane(IEnumerable<Point> S) {
     Point origin = S.Min(p => p) ?? throw new InvalidOperationException("The swarm must has at least one point!");
     var   tempV  = new LinkedList<Vector>();
-    var   finalV = new List<Vector>();
+    var   Basis  = new AffineBasis(origin);
 
-    Debug.Assert(origin is not null, nameof(origin) + " != null");
-
-    int dim = origin.Dim;
+    int dim = Basis.Dim;
 
     for (int i = 1; i < dim; i++) {
       var e = new double[dim];
@@ -37,34 +35,30 @@ public class GiftWrapping {
           continue;
         }
 
-        Vector v = Vector.OrthonormalizeAgainstBasis(s - origin, finalV);
+        Vector v = Vector.OrthonormalizeAgainstBasis(s - origin, Basis.Basis);
 
-        if (v.IsZero) {
-          L.Add(v.ToPoint());
-        } else {
+        if (!v.IsZero) {
           double dot = v * tempV.First();
 
           if (dot < minDot) {
             minDot = dot;
             r      = v;
-            L.Add(s);
           }
         }
+
+        L.Add(s);
       }
 
-      if (!L.Any()) { //todo ????
-        throw new ArgumentException($"All points of the Swarm lies in dimension less tan d = {dim}.");
-      }
+      // if (L.Count == S.Count()) { //todo ????
+      //   throw new ArgumentException($"All points of the Swarm lies in dimension less tan d = {dim}."); //todo ????
+      // } //todo ????
 
       tempV.RemoveFirst();
-
-      if (!r.IsZero) {
-        finalV.Add(r);
-      }
+      Basis.AddVectorToBasis(r); //todo тут опять ортонормализуем, боремся как-то?
     }
 
 
-    return (origin, finalV);
+    return Basis;
   }
 
 }
