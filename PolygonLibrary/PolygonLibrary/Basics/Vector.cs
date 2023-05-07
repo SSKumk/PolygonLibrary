@@ -266,11 +266,11 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">The input vector to orthonormalize.</param>
   /// <param name="Basis">The basis to orthonormalize against.</param>
   /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector</returns>
-  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
-    int dim = Basis.First().Dim;
-    Debug.Assert(v.Dim == dim, $"Dimensions are different! Found {v.Dim} expected {dim}.");
-
+  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {//todo на LinearBasis заменить
     foreach (Vector bvec in Basis) {
+      Debug.Assert
+        (v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
+
       v -= (bvec * v) * bvec;
     }
 
