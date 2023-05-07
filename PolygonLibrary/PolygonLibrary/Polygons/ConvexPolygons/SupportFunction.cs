@@ -33,8 +33,9 @@ public class SupportFunction : List<GammaPair> {
       throw new ArgumentException("Only pairs with zero normals in initialization of a support function");
     }
 
-    if (ToSort)
+    if (ToSort) {
       gs1.Sort();
+    }
 
     foreach (GammaPair pair in gs1) {
       if (Count == 0 || !this[^1].Normal.Equals(pair.Normal)) {

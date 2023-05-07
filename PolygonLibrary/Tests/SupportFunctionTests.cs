@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Internal;
 using static System.Math;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
@@ -8,34 +9,40 @@ namespace Tests {
   [TestFixture]
   public class SupportFunctionTests {
     #region Data
-    private GammaPair[] gps1 = new GammaPair[] {
-      new GammaPair(new Vector2D(-1, 1), 1), new GammaPair(new Vector2D(1, -1), 1)
+
+    private GammaPair[] gps1 = new GammaPair[]
+      {
+        new GammaPair(new Vector2D(-1, 1), 1), new GammaPair(new Vector2D(1, -1), 1)
       , new GammaPair(new Vector2D(-1, 1), 2), new GammaPair(new Vector2D(-1, -1), 1)
       , new GammaPair(new Vector2D(1, 1), 1),
-    };
+      };
 
     private static double v = Math.Sqrt(2) / 2;
 
-    private GammaPair[] gps1_true = new GammaPair[] {
-      new GammaPair(new Vector2D(v, v), v), new GammaPair(new Vector2D(-v, v), v)
+    private GammaPair[] gps1_true = new GammaPair[]
+      {
+        new GammaPair(new Vector2D(v, v), v), new GammaPair(new Vector2D(-v, v), v)
       , new GammaPair(new Vector2D(-v, -v), v), new GammaPair(new Vector2D(v, -v), v)
-    };
+      };
 
-    private GammaPair[] gps2 = new GammaPair[] {
-      new GammaPair(new Vector2D(0, 1), 1), new GammaPair(new Vector2D(0, -1), 1), new GammaPair(new Vector2D(-1, 0), 1)
-      , new GammaPair(new Vector2D(1, 0), 1)
-    };
+    private GammaPair[] gps2 = new GammaPair[]
+      {
+        new GammaPair(new Vector2D(0, 1), 1), new GammaPair(new Vector2D(0, -1), 1)
+      , new GammaPair(new Vector2D(-1, 0), 1), new GammaPair(new Vector2D(1, 0), 1)
+      };
 
-    private GammaPair[] gps2_true = new GammaPair[] {
-      new GammaPair(new Vector2D(1, 0), 1), new GammaPair(new Vector2D(0, 1), 1), new GammaPair(new Vector2D(-1, 0), 1)
-      , new GammaPair(new Vector2D(0, -1), 1)
-    };
+    private GammaPair[] gps2_true = new GammaPair[]
+      {
+        new GammaPair(new Vector2D(1, 0), 1), new GammaPair(new Vector2D(0, 1), 1)
+      , new GammaPair(new Vector2D(-1, 0), 1), new GammaPair(new Vector2D(0, -1), 1)
+      };
+
     #endregion
 
     [Test]
     public void CreateSFTest1() {
       SupportFunction sf = new SupportFunction(gps1);
-      GammaPair[] ans = new GammaPair[gps1_true.Length]; 
+      GammaPair[] ans = new GammaPair[gps1_true.Length];
       gps1_true.CopyTo(ans, 0);
       Array.Sort(ans);
 
@@ -51,10 +58,10 @@ namespace Tests {
     [Test]
     public void CreateSFTest2() {
       SupportFunction sf = new SupportFunction(gps2);
-      GammaPair[] ans = new GammaPair[gps2_true.Length]; 
+      GammaPair[] ans = new GammaPair[gps2_true.Length];
       gps2_true.CopyTo(ans, 0);
       Array.Sort(ans);
-      
+
       Assert.Multiple(() => {
         Assert.That(sf, Has.Count.EqualTo(4), "Wrong number of resultant vectors");
 
@@ -68,11 +75,16 @@ namespace Tests {
     public void ComputeSFTest1() {
       SupportFunction sf = new SupportFunction(gps1);
 
-      Vector2D[] vs = new Vector2D[] {
-        new Vector2D(1, 0), new Vector2D(1, 0.5), new Vector2D(v, v), new Vector2D(1, 1), new Vector2D(0, 1)
+      Vector2D[] vs = new Vector2D[]
+        {
+          new Vector2D(1, 0), new Vector2D(1, 0.5), new Vector2D(v, v), new Vector2D(1, 1), new Vector2D(0, 1)
         , new Vector2D(v, -v), new Vector2D(-1, -1), new Vector2D(1, -0.5)
-      };
-      double[] gs = new double[] { 1, 1, v, 1, 1, v, 1, 1 };
+        };
+      double[] gs = new double[]
+        {
+          1, 1, v, 1, 1
+        , v, 1, 1
+        };
 
       Assert.Multiple(() => {
         for (int i = 0; i < vs.Length; i++) {
@@ -83,18 +95,16 @@ namespace Tests {
 
     [Test]
     public void CrossPairsTest() {
-      GammaPair
-        g1 = new GammaPair(new Vector2D(1, 0), 1)
-        , g2 = new GammaPair(new Vector2D(1, 0), 2)
-        , g3 = new GammaPair(new Vector2D(0, 1), 1)
-        , g4 = new GammaPair(new Vector2D(1, 1), 3);
-      Point2D
-        p13 = new Point2D(1, 1)
-        , p14 = new Point2D(1, 2)
-        , p23 = new Point2D(2, 1)
-        , p24 = new Point2D(2, 1)
-        , p34 = new Point2D(2, 1)
-        , p;
+      GammaPair g1 = new GammaPair(new Vector2D(1, 0), 1)
+      , g2 = new GammaPair(new Vector2D(1, 0), 2)
+      , g3 = new GammaPair(new Vector2D(0, 1), 1)
+      , g4 = new GammaPair(new Vector2D(1, 1), 3);
+      Point2D p13 = new Point2D(1, 1)
+      , p14 = new Point2D(1, 2)
+      , p23 = new Point2D(2, 1)
+      , p24 = new Point2D(2, 1)
+      , p34 = new Point2D(2, 1)
+      , p;
 
       bool hasException = false;
       try {
@@ -129,12 +139,11 @@ namespace Tests {
 
     [Test]
     public void CombineSFTest() {
-      SupportFunction
-        sf1 = new SupportFunction(gps1_true)
-        , sf2 = new SupportFunction(gps2_true)
-        , sf11 = SupportFunction.CombineFunctions(sf1, sf1, 1, 1)
-        , sf22 = SupportFunction.CombineFunctions(sf2, sf2, 1, 1)
-        , sf12 = SupportFunction.CombineFunctions(sf1, sf2, 1, 1);
+      SupportFunction sf1 = new SupportFunction(gps1_true)
+      , sf2 = new SupportFunction(gps2_true)
+      , sf11 = SupportFunction.CombineFunctions(sf1, sf1, 1, 1)
+      , sf22 = SupportFunction.CombineFunctions(sf2, sf2, 1, 1)
+      , sf12 = SupportFunction.CombineFunctions(sf1, sf2, 1, 1);
 
       int i;
 
@@ -163,68 +172,190 @@ namespace Tests {
 
     [Test]
     public void FindTest1() {
-      List<Point2D> ps = new List<Point2D>() {
-        new Point2D(-2, -1), new Point2D(-1, -2), new Point2D(1, -2), new Point2D(2, -1), new Point2D(2, 1)
+      List<Point2D> ps = new List<Point2D>()
+        {
+          new Point2D(-2, -1), new Point2D(-1, -2), new Point2D(1, -2), new Point2D(2, -1), new Point2D(2, 1)
         , new Point2D(1, 2), new Point2D(-1, 2), new Point2D(-2, 1)
-      };
+        };
       SupportFunction sf = new SupportFunction(ps);
       List<double> testAngles = new List<double>()
-        { 0.0, 30.0, 45.0, 60.0, 90.0, 120.0, 135.0, 150, 180, 210, 270.0, 300.0, 315.0, 330.0 };
-      int[,] res = new int[,] {
-        { 3, 4 }, { 3, 4 }, { 4, 5 }, { 4, 5 }, { 5, 6 }, { 5, 6 }, { 6, 7 }, { 6, 7 }, { 7, 0 }, { 7, 0 }, { 1, 2 }, { 1, 2 }, { 2, 3 }, { 2, 3 }
-      };
-      List<Vector2D> testVecs = testAngles.Select(
-        a => {
-          double a1 = a * PI / 180;
-          return new Vector2D(Cos(a1), Sin(a1));
-        }
-      ).ToList();
+        {
+          0.0, 30.0, 45.0, 60.0, 90.0, 120.0, 135.0, 150, 180, 210
+        , 270.0, 300.0, 315.0, 330.0
+        };
+      int[,] res = new int[,]
+        {
+          { 3, 4 }, { 3, 4 }, { 4, 5 }, { 4, 5 }, { 5, 6 }
+        , { 5, 6 }, { 6, 7 }, { 6, 7 }, { 7, 0 }, { 7, 0 }
+        , { 1, 2 }, { 1, 2 }, { 2, 3 }, { 2, 3 }
+        };
+      List<Vector2D> testVecs = testAngles.Select(a => {
+        double a1 = a * PI / 180;
+        return new Vector2D(Cos(a1), Sin(a1));
+      }).ToList();
 
-      int i, j, k;
+      int i
+      , j
+      , k;
 
       Assert.Multiple(() => {
         for (k = 0; k < testVecs.Count; k++) {
           sf.FindCone(testVecs[k], out i, out j);
-          Assert.That(i == res[k, 0] && j == res[k, 1],
-            "FindCone1: test #" + k + " failed, angle = " + testAngles[k]);
+          Assert.That(i == res[k, 0] && j == res[k, 1], "FindCone1: test #" + k + " failed, angle = " + testAngles[k]);
         }
       });
     }
 
     [Test]
     public void FindTest2() {
-      List<double> vertAngles = new List<double>()
-        { 0.0, 60.0, 120.0, 180.0, 240.0, 300.0 };
-      List<Point2D> ps = vertAngles.Select(
-        a => {
-          double a1 = a * PI / 180;
-          return new Point2D(Cos(a1), Sin(a1));
-        }
-      ).ToList();
+      List<double> vertAngles = new List<double>() { 0.0, 60.0, 120.0, 180.0, 240.0, 300.0 };
+      List<Point2D> ps = vertAngles.Select(a => {
+        double a1 = a * PI / 180;
+        return new Point2D(Cos(a1), Sin(a1));
+      }).ToList();
       SupportFunction sf = new SupportFunction(ps);
       List<double> testAngles = new List<double>
-        { -30.0, -15.0, 0.0, 15.0, 30.0, 60.0, 90.0, 150.0, 165.0, 180.0, 195.0, 210.0, 255.0, 270.0, 300.0 };
-      int[,] res = {
-        { 2, 3 }, { 2, 3 }, { 2, 3 }, { 2, 3 }, { 3, 4 }, { 3, 4 }, { 4, 5 },
-        { 5, 0 }, { 5, 0 }, { 5, 0 }, { 5, 0 }, { 0, 1 }, { 0, 1 }, { 1, 2 }, { 1, 2 }  
-      };
-      List<Vector2D> testVecs = testAngles.Select(
-        a => {
-          double a1 = a * PI / 180;
-          return new Vector2D(Cos(a1), Sin(a1));
-        }
-      ).ToList();
+        {
+          -30.0, -15.0, 0.0, 15.0, 30.0, 60.0, 90.0, 150.0, 165.0, 180.0
+        , 195.0, 210.0, 255.0, 270.0, 300.0
+        };
+      int[,] res =
+        {
+          { 2, 3 }, { 2, 3 }, { 2, 3 }, { 2, 3 }, { 3, 4 }
+        , { 3, 4 }, { 4, 5 }, { 5, 0 }, { 5, 0 }, { 5, 0 }
+        , { 5, 0 }, { 0, 1 }, { 0, 1 }, { 1, 2 }, { 1, 2 }
+        };
+      List<Vector2D> testVecs = testAngles.Select(a => {
+        double a1 = a * PI / 180;
+        return new Vector2D(Cos(a1), Sin(a1));
+      }).ToList();
 
-      int i, j, k;
+      int i
+      , j
+      , k;
       Assert.Multiple(() => {
         for (k = 0; k < testVecs.Count; k++) {
           sf.FindCone(testVecs[k], out i, out j);
-          Assert.That(i == res[k, 0] && j == res[k, 1],
-            "FindCone2: test #" + k + " failed, angle = " + testAngles[k]);
+          Assert.That(i == res[k, 0] && j == res[k, 1], "FindCone2: test #" + k + " failed, angle = " + testAngles[k]);
         }
       });
     }
+
+    // todo: написать проверку координрованного задания вершин и опорной функции
+
+    private readonly List<Point2D> _swarm1 = new List<Point2D>()
+      {
+        new Point2D(-5, -1), new Point2D(-3, -4), new Point2D(2, -3), new Point2D(1, 5), new Point2D(-1, 6)
+      , new Point2D(-4, 3)
+      };
+
+    private readonly List<Point2D> _swarm2 = new List<Point2D>()
+      {
+        new Point2D(1, 5), new Point2D(-4, 3), new Point2D(-3, -4), new Point2D(2, -3), new Point2D(-5, -1)
+      , new Point2D(-1, 6)
+      };
+
+    private readonly Point2D _addPoint = new Point2D(-5, 0);
+
+    [Test]
+    public void SFandVertices1() {
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(_swarm1);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices1, create the polygon from a contour, no vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices1_() {
+      List<Point2D> sw = new List<Point2D>(_swarm1);
+      sw.Add(_addPoint);
+
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromContour(sw);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices1_, create the polygon from a contour, some vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices2() {
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(_swarm1);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices2, create the polygon from a good swarm, no vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices2_() {
+      List<Point2D> sw = new List<Point2D>(_swarm1);
+      sw.Add(_addPoint);
+
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(sw);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices2_, create the polygon from a good swarm, some vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices3() {
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(_swarm2);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices3, create the polygon from a random swarm, no vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices3_() {
+      List<Point2D> sw = new List<Point2D>(_swarm2);
+      sw.Add(_addPoint);
+
+      ConvexPolygon cp = ConvexPolygon.CreateConvexPolygonFromSwarm(sw);
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices3_, create the polygon from a good swarm, some vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    private List<GammaPair> _gps1 = new List<GammaPair>()
+      {
+        new GammaPair(new Vector2D(-2, -1), 2), new GammaPair(new Vector2D(0, -1), 2)
+      , new GammaPair(new Vector2D(2, 0), 2), new GammaPair(new Vector2D(1, 1), 2)
+      , new GammaPair(new Vector2D(-2, 3), 2)
+      };
+
+    private readonly List<GammaPair> _gps2 = new List<GammaPair>()
+      {
+        new GammaPair(new Vector2D(-2, 3), 2), new GammaPair(new Vector2D(2, 0), 2)
+      , new GammaPair(new Vector2D(-2, -1), 2), new GammaPair(new Vector2D(1, 1), 2)
+      , new GammaPair(new Vector2D(0, -1), 2)
+      };
+
+    private readonly GammaPair _addPair = new GammaPair(new Vector2D(-3, 0), 2);
+    
+    [Test]
+    public void SFandVertices4() {
+      ConvexPolygon cp = new ConvexPolygon(new SupportFunction(_gps1));
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices4, create the polygon from a support function based on a sorted list of gamma pairs, no vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices4_() {
+      List<GammaPair> gps = new List<GammaPair>(_gps1);
+      gps.Add(_addPair);
+      ConvexPolygon cp = new ConvexPolygon(new SupportFunction(gps));
+      
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices4_, create the polygon from a support function based on a sorted list of gamma pairs, some vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+    
+    [Test]
+    public void SFandVertices5() {
+      ConvexPolygon cp = new ConvexPolygon(new SupportFunction(_gps2));
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices5, create the polygon from a support function based on an unsorted list of gamma pairs, no vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
+
+    [Test]
+    public void SFandVertices5_() {
+      List<GammaPair> gps = new List<GammaPair>(_gps2);
+      gps.Add(_addPair);
+      ConvexPolygon cp = new ConvexPolygon(new SupportFunction(gps));
+      
+      Assert.That(cp.Vertices[0] == GammaPair.CrossPairs(cp.SF[0], cp.SF[^1])
+      , "SFandVertices5_, create the polygon from a support function based on an unsorted list of gamma pairs, some vertical last edge: The 0th vertex is not intersection of the first and the las gamma pairs from the support function");
+    }
   }
-  
-  // todo: написать проверку координрованного задания вершин и опорной функции
 }
