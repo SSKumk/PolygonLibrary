@@ -84,7 +84,7 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">Array to be converted</param>
   /// <returns>The resultant vector</returns>
   public static explicit operator Vector(double[] v) => new Vector(v);
-  
+
   public Point ToPoint() => new Point(_v);
 #endregion
 
@@ -267,6 +267,9 @@ public class Vector : IComparable<Vector> {
   /// <param name="Basis">The basis to orthonormalize against.</param>
   /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector</returns>
   public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
+    int dim = Basis.First().Dim;
+    Debug.Assert(v.Dim == dim, $"Dimensions are different! Found {v.Dim} expected {dim}.");
+
     foreach (Vector bvec in Basis) {
       v -= (bvec * v) * bvec;
     }
@@ -313,8 +316,6 @@ public class Vector : IComparable<Vector> {
     var Basis = BasisInit.ToList();
 
     foreach (Vector v in V) {
-      Debug.Assert(v.Dim == dim, $"Dimensions are different! Found {v.Dim} expected {dim}.");
-
       Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
 
       if (!conceivable.IsZero) {
