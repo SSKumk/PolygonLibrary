@@ -55,6 +55,11 @@ public class LinearBasis {
   }
 
   /// <summary>
+  /// Gets the current basis of the linear space
+  /// </summary>
+  public List<Vector> Basis => _basis;
+
+  /// <summary>
   /// Add the given vector to the basis. If it is zero vector or linear dependent with the basis then it don't includes in.
   /// </summary>
   /// <param name="v">Vector to be added</param>

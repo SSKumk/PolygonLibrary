@@ -50,6 +50,11 @@ public class AffineBasis {
   public Vector this[int ind] => _basis[ind];
 
   /// <summary>
+  /// Gets the current basis of the affine space
+  /// </summary>
+  public List<Vector> Basis => _basis.Basis;
+
+  /// <summary>
   /// Adds the vector to the linear basis associated with the affine basis.
   /// </summary>
   /// <param name="v">The vector to add.</param>
