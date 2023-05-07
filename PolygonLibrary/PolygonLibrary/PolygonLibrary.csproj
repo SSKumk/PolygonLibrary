@@ -22,7 +22,6 @@
       <Compile Include="Basics\Vector.cs" />
       <Compile Include="Basics\Vector2D.cs" />
       <Compile Include="Polygons\BasicPolygon.cs" />
-      <Compile Include="Polygons\ConvexPolygons\ConvexificationByGiftWrapping\GiftWrapping.cs" />
       <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />
       <Compile Include="Polygons\ConvexPolygons\GammaPair.cs" />
       <Compile Include="Polygons\ConvexPolygons\Intersection.cs" />
