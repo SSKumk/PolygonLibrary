@@ -10,8 +10,8 @@ public class GiftWrapping {
 
   public static (Point, List<Vector>) BuildInitialPlane(IEnumerable<Point> S) {
     Point origin = S.Min(p => p) ?? throw new InvalidOperationException("The swarm must has at least one point!");
-    LinkedList<Vector> tempV = null!;
-    List<Vector> finalV = null!;
+    var   tempV  = new LinkedList<Vector>();
+    var   finalV = new List<Vector>();
 
     Debug.Assert(origin is not null, nameof(origin) + " != null");
 
@@ -28,9 +28,9 @@ public class GiftWrapping {
         origin
       };
 
-    while (!tempV.Any()) {
+    while (tempV.Any()) {
       var minDot = double.MaxValue;
-      var r    = new Vector(dim);
+      var r      = new Vector(dim);
 
       foreach (Point s in S) { //todo Может стоит удалять просмотренные точки из роя? 
         if (L.Contains(s)) {
@@ -46,7 +46,7 @@ public class GiftWrapping {
 
           if (dot < minDot) {
             minDot = dot;
-            r    = v;
+            r      = v;
             L.Add(s);
           }
         }
