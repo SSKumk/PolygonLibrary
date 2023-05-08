@@ -115,11 +115,6 @@ public class SupportFunction : List<GammaPair> {
       i = Count - 1;
       j = 0;
     }
-    // // If the vector coincides with the first vector, then the cone is between the first and second vectors
-    // else if (Vector2D.AreCodirected(v, this[0].Normal)) {
-    //   i = 0;
-    //   j = 1;
-    // }
     // Otherwise the vector is somewhere strictly between the first and last vectors, do binary search
     else {
       j = this.BinarySearchByPredicate(swElem => Tools.GT(swElem.Normal.PolarAngle, v.PolarAngle), 0, Count - 1);

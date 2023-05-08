@@ -7,7 +7,7 @@ using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polygons {
   /// <summary>
-  /// Enumeration of a polyline
+  /// Enumeration of a polyline. Enumeration of edges correlates with the enumeration of their starting vertices
   /// </summary>
   public enum PolylineOrientation {
     /// <summary>

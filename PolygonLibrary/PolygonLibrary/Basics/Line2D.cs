@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using PolygonLibrary.Segments;
 using PolygonLibrary.Toolkit;
-
-// TODO: Uncomment when segments are ready
-// using PolygonLibrary.Segments;
-
 
 namespace PolygonLibrary.Basics;
 
@@ -12,8 +8,8 @@ namespace PolygonLibrary.Basics;
 /// A call of a straight line in the plane
 /// </summary>
 public class Line2D {
+  #region Data and properties
 
-#region Data and properties
   /// <summary>
   /// The property of the coefficient A in the general equation of the line
   /// </summary>
@@ -38,16 +34,18 @@ public class Line2D {
   /// The property of the normal vector of the line
   /// </summary>
   public Vector2D Normal { get; protected set; } = Vector2D.Zero;
-#endregion
 
-#region Contructors, factories, and helping contruction functions
+  #endregion
+
+  #region Contructors, factories, and helping contruction functions
+
   /// <summary>
   /// Default constructor that produces the abscissa axis
   /// </summary>
   public Line2D() {
-    A      = 0;
-    B      = 1;
-    C      = 0;
+    A = 0;
+    B = 1;
+    C = 0;
     Direct = new Vector2D(1, 0);
     Normal = new Vector2D(0, 1);
   }
@@ -63,7 +61,7 @@ public class Line2D {
 
   /// <summary>
   /// Constructing a line passing through two points <paramref name="p1"/> and <paramref name="p2"/>.
-  /// The positive halfplane is laying to the left from the vector p1->p2.
+  /// The positive halfplane is defined by some third point (which should not belong to the line (p1 p2).
   /// </summary>
   /// <param name="p1">The first point that lies in the line</param>
   /// <param name="p2">The second point that lies in the line</param>
@@ -128,14 +126,16 @@ public class Line2D {
     PointAndDirect(p, v);
 
     double val = this[p1];
+#if DEBUG    
     if (Tools.EQ(val)) {
       throw new ArgumentException("The point that should define the positive halfplane belongs to the line");
     }
-
+#endif
+    
     if (Tools.LT(val)) {
-      A      = -A;
-      B      = -B;
-      C      = -C;
+      A = -A;
+      B = -B;
+      C = -C;
       Normal = -Normal;
       Direct = -Direct;
     }
@@ -150,12 +150,12 @@ public class Line2D {
   /// <returns>The resultant line</returns>
   public static Line2D Line2D_PointAndNormal(Point2D p, Vector2D v) {
     Line2D res = new Line2D();
-    res.Normal = new Vector2D(v).Normalize();
+    res.Normal = v.Normalize();
 
     res.Direct = new Vector2D(res.Normal.y, -res.Normal.x);
-    res.A      = res.Normal.x;
-    res.B      = res.Normal.y;
-    res.C      = -res.Normal * (Vector2D)p;
+    res.A = res.Normal.x;
+    res.B = res.Normal.y;
+    res.C = -res.Normal * (Vector2D)p;
 
     return res;
   }
@@ -165,25 +165,24 @@ public class Line2D {
   /// </summary>
   /// <param name="l">The line to be copied</param>
   public Line2D(Line2D l) {
-    A      = l.A;
-    B      = l.B;
-    C      = l.C;
+    A = l.A;
+    B = l.B;
+    C = l.C;
     Direct = l.Direct;
     Normal = l.Normal;
   }
 
-  // TODO: Uncomment when segments are ready
-  /*
   /// <summary>
   /// Constructing a line passing through the given segment; 
   /// the positive halfplane os to the left of directional vector of the segment
   /// </summary>
   /// <param name="s">The given segment</param>
-  public Line2D (Segment s) : this (s.p1, s.p2) { }
-  */
-#endregion
+  public Line2D (Segment s) : this (s.Start, s.End) { }
 
-#region Supplementary functions
+  #endregion
+
+  #region Supplementary functions
+
   /// <summary>
   /// Compute value of the corresponding linear function at the given point
   /// </summary>
@@ -205,9 +204,9 @@ public class Line2D {
   /// <returns></returns>
   public Line2D Reorient() {
     Line2D res = new Line2D();
-    res.A      = -A;
-    res.B      = -B;
-    res.C      = -C;
+    res.A = -A;
+    res.B = -B;
+    res.C = -C;
     res.Direct = -Direct;
     res.Normal = -Normal;
     return res;
@@ -220,22 +219,19 @@ public class Line2D {
     /// <summary>
     ///  Two lines are not parallel or overlapping
     /// </summary>
-    SinglePoint
-
-   ,
+    SinglePoint,
 
     /// <summary>
     /// Two lines are parallel
     /// </summary>
-    Parallel
-
-   ,
+    Parallel,
 
     /// <summary>
     /// Two lines are overlapping
     /// </summary>
     Overlap
   }
+
 
   /// <summary>
   /// Intersection of two lines.
@@ -247,19 +243,92 @@ public class Line2D {
   /// <param name="res">The intersection point (if exists and unique)</param>
   /// <returns>The type of imposition of the lines (crossing, parallel, overlapping) </returns>
   public static LineCrossType Intersect(Line2D l1, Line2D l2, out Point2D? res) {
-    double d = l1.A * l2.B - l1.B * l2.A, d1 = -(l1.C * l2.B - l2.C * l1.B), d2 = -(l1.A * l2.C - l1.C * l2.A);
+    double d = l1.A * l2.B - l1.B * l2.A
+    , d1 = -(l1.C * l2.B - l2.C * l1.B)
+    , d2 = -(l1.A * l2.C - l1.C * l2.A);
     if (Tools.NE(d)) {
       res = new Point2D(d1 / d, d2 / d);
       return LineCrossType.SinglePoint;
     } else {
       res = null;
-      if (Tools.EQ(d1)) {
+      if (Tools.EQ(d1) && Tools.EQ(d2)) {
         return LineCrossType.Overlap;
       } else {
         return LineCrossType.Parallel;
       }
     }
   }
-#endregion
 
+  /// <summary>
+  /// Type of crossing a line and a segment
+  /// </summary>
+  public enum LineAndSegmentCrossType {
+    /// <summary>
+    ///  There is one internal cross point
+    /// </summary>
+    InternalPoint,
+
+    /// <summary>
+    ///  There is one cross point, which is the start of the segment
+    /// </summary>
+    StartPoint,
+    
+    /// <summary>
+    ///  There is one cross point, which is the end of the segment
+    /// </summary>
+    EndPoint,
+    
+    /// <summary>
+    /// The line and the segment are parallel and the segment is not embedded to the line
+    /// </summary>
+    Parallel,
+
+    /// <summary>
+    /// The segment is embedded to the line
+    /// </summary>
+    Overlap,
+
+    /// <summary>
+    /// The segment and the line are not parallel, but they do not intersect
+    /// </summary>
+    NoCross
+  }
+
+  /// <summary>
+  /// Intersection of a line and a segment.
+  /// Returns the intersection type (single point, parallel, overlap, no cross) and
+  /// the intersection point (if it exists and is single) 
+  /// </summary>
+  /// <param name="l">The line</param>
+  /// <param name="s">The segment</param>
+  /// <param name="res">The intersection point (if exists and unique)</param>
+  /// <returns>The type of imposition of the objects (no cross, single crossing point, parallel, overlapping) </returns>
+  public static LineAndSegmentCrossType Intersect(Line2D l, Segment s, out Point2D? res) {
+    double A = l.Normal * s.Directional, B = l.C + l.Normal * (Vector2D)s.Start, alpha;
+
+    res = null;
+    if (Tools.NE(A)) {
+      alpha = -B / A;
+      if (Tools.EQ(alpha)) {
+        res = s.Start;
+        return LineAndSegmentCrossType.StartPoint;
+      } else if (Tools.EQ(alpha, 1)) {
+        res = s.End;
+        return LineAndSegmentCrossType.EndPoint;
+      } else if (Tools.GT(alpha) && Tools.LT(alpha, 1)) {
+        res = s.Start + alpha * s.Directional;
+        return LineAndSegmentCrossType.InternalPoint;
+      } else {
+        return LineAndSegmentCrossType.NoCross;
+      }
+    } else {
+      if (Tools.NE(B)) {
+        return LineAndSegmentCrossType.Parallel;
+      } else {
+        return LineAndSegmentCrossType.Overlap;
+      }
+    }
+  }
+
+  #endregion
 }

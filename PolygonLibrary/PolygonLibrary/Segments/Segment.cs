@@ -32,7 +32,7 @@ public enum CrossType {
 }
 
 /// <summary>
-/// Enumeration for the SinglePoint-type of intersection of two segments
+/// Enumeration for the InternalPoint-type of intersection of two segments
 /// Which type is the point of intersection regarding to the segment 
 /// </summary>
 public enum IntersectPointPos {
@@ -163,7 +163,17 @@ public class Segment : IComparable<Segment> {
   private readonly Point2D p2;
 
   /// <summary>
-  /// Indexer access
+  /// Direct access to the start point of the segment
+  /// </summary>
+  public Point2D Start => p1;
+  
+  /// <summary>
+  /// Direct access to the end point of the segment
+  /// </summary>
+  public Point2D End => p2;
+
+  /// <summary>
+  /// Indexer access to the endpoints 
   /// </summary>
   /// <param name="i">The index: 0 - the first end, 1 - the second end</param>
   /// <returns>The point of the corresponding end</returns>

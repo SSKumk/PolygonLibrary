@@ -107,17 +107,17 @@ public class SegmentCrossTests {
   //       , IntersectPointPos.Empty, IntersectPointPos.Empty, IntersectPointPos.Empty) // fake
   //     , /* s01 */ new CrossInfo(CrossType.NoCross, null, null, null, null, IntersectPointPos.Empty
   //       , IntersectPointPos.Empty, IntersectPointPos.Empty, IntersectPointPos.Empty)
-  //     , /* s02 */ new CrossInfo(CrossType.SinglePoint, p[4], null, null, null)
-  //     , /* s03 */ new CrossInfo(CrossType.SinglePoint, p[27], null, null, null)
-  //     , /* s04 */ new CrossInfo(CrossType.SinglePoint, p[27], null, null, null)
-  //     , /* s05 */ new CrossInfo(CrossType.SinglePoint, p[27], null, null, null)
-  //     , /* s06 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s07 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s08 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s09 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s10 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s11 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
-  //     , /* s12 */ new CrossInfo(CrossType.SinglePoint, p[16], null, null, null)
+  //     , /* s02 */ new CrossInfo(CrossType.InternalPoint, p[4], null, null, null)
+  //     , /* s03 */ new CrossInfo(CrossType.InternalPoint, p[27], null, null, null)
+  //     , /* s04 */ new CrossInfo(CrossType.InternalPoint, p[27], null, null, null)
+  //     , /* s05 */ new CrossInfo(CrossType.InternalPoint, p[27], null, null, null)
+  //     , /* s06 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s07 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s08 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s09 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s10 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s11 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
+  //     , /* s12 */ new CrossInfo(CrossType.InternalPoint, p[16], null, null, null)
   //     , /* s13 */ new CrossInfo(CrossType.NoCross, null, null, null, null)
   //     , /* s14 */ new CrossInfo(CrossType.Overlap, p[4], p[16], null, null)
   //     , /* s15 */ new CrossInfo(CrossType.Overlap, p[4], p[25], null, null)
@@ -138,7 +138,7 @@ public class SegmentCrossTests {
   //     if (info.crossType == CrossType.NoCross) {
   //       Assert.IsNull(info.fp, "(direct, direct), test #" + i + ": non-null result point");
   //       Assert.IsNull(info.sp, "(direct, direct), test #" + i + ": non-null additional point");
-  //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
+  //     } else if (info.crossType == CrossType.InternalPoint || info.crossType == CrossType.InternalPoint) {
   //       Assert.IsTrue(res[i].fp == info.fp, "(direct, direct), test #" + i + ": different result points");
   //       Assert.IsNull(info.sp, "(direct, direct), test #" + i + ": non-null additional point");
   //     } else {
@@ -164,7 +164,7 @@ public class SegmentCrossTests {
   //     if (info.crossType == CrossType.NoCross) {
   //       Assert.That(info.fp, Is.Null, "(direct, back), test #" + i + ": non-null result point");
   //       Assert.That(info.sp, Is.Null, "(direct, back), test #" + i + ": non-null additional point");
-  //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
+  //     } else if (info.crossType == CrossType.InternalPoint || info.crossType == CrossType.InternalPoint) {
   //       Assert.IsTrue(res[i].fp == info.fp, "(direct, back), test #" + i + ": different result points");
   //       Assert.IsNull(info.sp, "(direct, back), test #" + i + ": non-null additional point");
   //     } else {
@@ -190,7 +190,7 @@ public class SegmentCrossTests {
   //     if (info.crossType == CrossType.NoCross) {
   //       Assert.That(info.fp, Is.Null, "(back, direct), test #" + i + ": non-null result point");
   //       Assert.That(info.sp, Is.Null, "(back, direct), test #" + i + ": non-null additional point");
-  //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
+  //     } else if (info.crossType == CrossType.InternalPoint || info.crossType == CrossType.InternalPoint) {
   //       Assert.IsTrue(res[i].fp == info.fp, "(back, direct), test #" + i + ": different result points");
   //       Assert.IsNull(info.sp, "(back, direct), test #" + i + ": non-null additional point");
   //     } else {
@@ -215,7 +215,7 @@ public class SegmentCrossTests {
   //     if (info.crossType == CrossType.NoCross) {
   //       Assert.That(info.fp, Is.Null, "(back, back), test #" + i + ": non-null result point");
   //       Assert.That(info.sp, Is.Null, "(back, back), test #" + i + ": non-null additional point");
-  //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
+  //     } else if (info.crossType == CrossType.InternalPoint || info.crossType == CrossType.InternalPoint) {
   //       Assert.That(res[i].fp, Is.EqualTo(info.fp), "(back, back), test #" + i + ": different result points");
   //       Assert.That(info.sp, Is.Null, "(back, back), test #" + i + ": non-null additional point");
   //     } else {

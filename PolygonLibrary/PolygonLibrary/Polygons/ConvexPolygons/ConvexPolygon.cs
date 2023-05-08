@@ -11,7 +11,9 @@ namespace PolygonLibrary.Polygons.ConvexPolygons;
 /// Class of a convex polygon.
 /// It is guaranteed that the 0th vertex is the vertex minimal lexicographically.
 /// Also, is is guaranteed, that this vertex is obtained by the first and the last pairs
-/// in the support function collection
+/// in the support function collection.
+/// And also, it is guaranteed that enumeration of edges (obtainable through the Contour property)
+/// correlates with the enumeration of their starting vertices due to this property of the Polyline objects
 /// </summary>
 public partial class ConvexPolygon : BasicPolygon {
   #region Additional data structures and properties
@@ -461,7 +463,7 @@ public partial class ConvexPolygon : BasicPolygon {
   public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
 
   /// <summary>
-  /// The function cuts a convex polygon along a line passing through the given two vertices
+  /// The function cuts a convex polygon along a line passing through two given vertices
   /// </summary>
   /// <param name="k">First index of vertex</param>
   /// <param name="s">Second index of vertex</param>
@@ -501,22 +503,30 @@ public partial class ConvexPolygon : BasicPolygon {
   /// If the line does not cross the polygon, then the original polygon is returned in the appropriate element of the pair
   /// and an empty polygon will be the other element</returns>
   public (ConvexPolygon, ConvexPolygon) CutConvexPolygonByLine(Line2D l) {
-    Debug.Assert(!IsEmpty, "Cutting an empty polygon by a line");
+    if (IsEmpty) {
+      return (ConvexPolygon.EmptyPolygon, ConvexPolygon.EmptyPolygon);
+    }
 
-    Point2D p1p
-    , p1m;
-    Point2D? p2p
-    , p2m;
-    GetExtremeElements(l.Normal, out p1p, out p2p);
-    GetExtremeElements(-l.Normal, out p1m, out p2m);
+    int ind1Max, ind2Max, ind1Min, ind2Min;
+    GetExtremeVerticesIndices(l.Normal, out ind1Max, out ind2Max);
+    GetExtremeVerticesIndices(-l.Normal, out ind1Min, out ind2Min);
 
-    if (Tools.LE(l[p1p])) {
+    if (Tools.LE(l[Vertices[ind1Max]])) {
+      return (this, ConvexPolygon.EmptyPolygon);
+    }
+
+    if (Tools.GE(l[Vertices[ind1Min]])) {
       return (ConvexPolygon.EmptyPolygon, this);
     }
 
-    if (Tools.GE(l[p1m])) {
-      return (this, ConvexPolygon.EmptyPolygon);
-    }
+    if (ind2Max == -1) ind2Max = ind1Max;
+    if (ind2Min == -1) ind2Min = ind1Min;
+    
+    // Find the crossing at the arc min->max
+    int crossIndMinToMax = Vertices.BinaryCyclicSearchByPredicate(p => Tools.GE(l[p]), ind2Min, ind1Max);
+    
+
+    // Find the crossing at the arc max->min
 
     // TODO: realize this procedure
     return (ConvexPolygon.EmptyPolygon, ConvexPolygon.EmptyPolygon);

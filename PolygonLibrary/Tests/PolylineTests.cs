@@ -2,13 +2,12 @@
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons;
 
-namespace Tests; 
+namespace Tests;
 
 [TestFixture]
 public class PolylineTests {
-  private List<Point2D> ps1 = new List<Point2D>() {
-    new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1)
-  };
+  private List<Point2D> ps1 =
+    new List<Point2D>() { new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1) };
 
   [Test]
   public void PolylineContainsTest1a() {
@@ -19,9 +18,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside it, which should contain");
+        , "${i}th test: the polyline does not contain the point inside it, which should contain");
       });
     }
   }
@@ -35,9 +34,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside it, which should contain");
+        , "${i}th test: the polyline does not contain the point inside it, which should contain");
       });
     }
   }
@@ -51,9 +50,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside it, which should contain");
+        , "${i}th test: the polyline does not contain the point inside it, which should contain");
       });
     }
   }
@@ -67,9 +66,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p), Is.False
-          , "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside it, which should not contain");
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside it, which should not contain");
       });
     }
   }
@@ -82,10 +81,10 @@ public class PolylineTests {
       double x = 1 + 1 / Math.Pow(2, i);
       Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside it, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside it, which should not contain");
       });
     }
   }
@@ -98,10 +97,10 @@ public class PolylineTests {
       double x = -1 / Math.Pow(2, i);
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside it, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside it, which should not contain");
       });
     }
   }
@@ -113,9 +112,9 @@ public class PolylineTests {
     for (int i = 0; i < ps1.Count; i++) {
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(ps1[i])
-          , "${i}th test: the polyline does not contain the point, which should contain");
-        Assert.That(line.ContainsPointInside(ps1[i])
-          , Is.False, "${i}th test: the polyline does contain the point inside it, which should not contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
+        Assert.That(line.ContainsPointInside(ps1[i]), Is.False
+        , "${i}th test: the polyline does contain the point inside it, which should not contain");
       });
     }
   }
@@ -131,9 +130,10 @@ public class PolylineTests {
     });
   }
 
-  private List<Point2D> ps2 = new List<Point2D>() {
-    new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1), new Point2D(0.1, 0.5)
-  };
+  private List<Point2D> ps2 = new List<Point2D>()
+    {
+      new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1), new Point2D(0.1, 0.5)
+    };
 
   [Test]
   public void PolylineContainsTest2a() {
@@ -144,9 +144,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside, which should contain");
+        , "${i}th test: the polyline does not contain the point inside, which should contain");
       });
     }
   }
@@ -160,9 +160,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside, which should contain");
+        , "${i}th test: the polyline does not contain the point inside, which should contain");
       });
     }
   }
@@ -176,9 +176,9 @@ public class PolylineTests {
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside, which should contain");
+        , "${i}th test: the polyline does not contain the point inside, which should contain");
       });
     }
   }
@@ -192,9 +192,9 @@ public class PolylineTests {
       Point2D p = new Point2D(0.1 + x, 0.5);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
-          , "${i}th test: the polyline does not contain the point, which should contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
         Assert.That(line.ContainsPointInside(p)
-          , "${i}th test: the polyline does not contain the point inside, which should contain");
+        , "${i}th test: the polyline does not contain the point inside, which should contain");
       });
     }
   }
@@ -207,10 +207,10 @@ public class PolylineTests {
       double x = 1 + 1 / Math.Pow(2, i);
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside, which should not contain");
       });
     }
   }
@@ -223,10 +223,10 @@ public class PolylineTests {
       double x = 1 + 1 / Math.Pow(2, i);
       Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside, which should not contain");
       });
     }
   }
@@ -239,10 +239,10 @@ public class PolylineTests {
       double x = -1 / Math.Pow(2, i);
       Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
-        Assert.That(line.ContainsPointInside(p)
-          , Is.False, "${i}th test: the polyline does contain the point inside, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPointInside(p), Is.False
+        , "${i}th test: the polyline does contain the point inside, which should not contain");
       });
     }
   }
@@ -255,10 +255,10 @@ public class PolylineTests {
       double x = 1 / Math.Pow(2, i);
       Point2D p = new Point2D(0.1 - x, 0.5);
       Assert.Multiple(() => {
-        Assert.That(line.ContainsPoint(p)
-          , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
+        Assert.That(line.ContainsPoint(p), Is.False
+        , "${i}th test: the polyline does contain the point, which should not contain");
         Assert.That(line.ContainsPointInside(p), Is.False
-          , "${i}th test: the polyline does contain the point inside, which should not contain");
+        , "${i}th test: the polyline does contain the point inside, which should not contain");
       });
     }
   }
@@ -270,9 +270,9 @@ public class PolylineTests {
     for (int i = 0; i < ps2.Count; i++) {
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(ps2[i])
-          , "${i}th test: the polyline does not contain the point, which should contain");
-        Assert.That(line.ContainsPointInside(ps2[i])
-          , Is.False, "${i}th test: the polyline does contain the point inside, which should not contain");
+        , "${i}th test: the polyline does not contain the point, which should contain");
+        Assert.That(line.ContainsPointInside(ps2[i]), Is.False
+        , "${i}th test: the polyline does contain the point inside, which should not contain");
       });
     }
   }
@@ -289,5 +289,13 @@ public class PolylineTests {
       Assert.That(line.ContainsPoint(new Point2D(1.0000001, 0.5)), Is.False);
       Assert.That(line.ContainsPointInside(new Point2D(1.0000001, 0.5)), Is.False);
     });
+  }
+
+  [Test]
+  public void VerticesAndEdges() {
+    Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
+
+    Assert.That(line.Vertices[0] == line.Edges[0].Start
+    , "The initial point of the contour is not hte start point of the 0th edge");
   }
 }
