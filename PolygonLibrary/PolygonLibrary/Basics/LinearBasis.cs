@@ -29,7 +29,16 @@ public class LinearBasis {
   /// <summary>
   /// Property True if basis contain d-linear independent vectors in dD
   /// </summary>
-  public bool IsFullDim => Dim == _basis.Count;
+  public bool IsFullDim {
+    get
+      {
+        if (_basis.Any())
+          return Dim == _basis.Count;
+        else {
+          return false;
+        }
+      }
+  }
 
   /// <summary>
   /// Amount of vectors in the basis 
@@ -67,11 +76,7 @@ public class LinearBasis {
   public bool AddVector(Vector v) {
     Vector toAdd = v;
 
-    if (IsEmpty) {
-      toAdd.NormalizeZero();
-    } else {
-      toAdd = Vector.OrthonormalizeAgainstBasis(v, _basis);
-    }
+    toAdd = IsEmpty ? toAdd.NormalizeZero() : Vector.OrthonormalizeAgainstBasis(v, _basis);
 
     if (toAdd.IsZero) {
       return false;
