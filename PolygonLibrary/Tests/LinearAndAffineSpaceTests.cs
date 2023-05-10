@@ -21,10 +21,12 @@ public class LinearSpaceTests {
 
     var added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
     var added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
+    var added4 = basis.AddVector(new Vector(new double[] { 0, 0 }));
 
-    Assert.That(added1, Is.True, "The addition of the first vector should be successful.");
-    Assert.That(added2, Is.True, "The addition of the second vector should be successful.");
-    Assert.That(added3, Is.False, "The addition of the third vector should not be successful.");
+    Assert.That(added1, Is.True, "The addition of the linear independent vector should be successful.");
+    Assert.That(added2, Is.True, "The addition of the linear independent vector should be successful.");
+    Assert.That(added3, Is.False, "The addition of the linear dependent vector should not be successful.");
+    Assert.That(added4, Is.False, "The addition of the zero vector should not be successful.");
 
     Assert.That(basis.Count, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
     Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty after adding vectors.");
@@ -77,7 +79,7 @@ public class LinearSpaceTests {
       };
 
     var basis = new LinearBasis(vectors);
-    var v     = new Vector(new double[] { -2, 3, double.Pi*2 });
+    var v     = new Vector(new double[] { -2, 3, double.Pi * 2 });
 
     var expansion = basis.Expansion(v);
 
@@ -209,8 +211,12 @@ public class AffineSpaceTests {
     var result = basis.AddVectorToBasis(newVector);
     basis.AddVectorToBasis(newVector);
 
+    var newVector0 = new Vector(origin);
+    var result0    = basis.AddVectorToBasis(newVector0);
+
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
+    Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
     Assert.That(basis, Has.Count.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
@@ -237,9 +243,12 @@ public class AffineSpaceTests {
 
     var result = basis.AddPointToBasis(newPoint);
     basis.AddPointToBasis(newPoint);
+    
+    var result0    = basis.AddVectorToBasis(new Vector(origin));
 
 
     Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
+    Assert.That(result0, Is.False, "The zero point should not be added to the linear basis associated with the affine basis.");
     Assert.That(basis.Count, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
