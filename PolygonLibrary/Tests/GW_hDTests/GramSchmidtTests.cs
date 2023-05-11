@@ -2,7 +2,7 @@ using NUnit.Framework;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Toolkit;
 
-namespace Tests.GW_hD_Tests;
+namespace Tests.GW_hDTests;
 
 [TestFixture]
 public class GramSchmidtTests {
@@ -15,7 +15,7 @@ public class GramSchmidtTests {
     Vector[] input    = { new Vector(new double[] { 1, 0 }), new Vector(new double[] { 0, 1 }) };
     Vector[] expected = { new Vector(new double[] { 1, 0 }), new Vector(new double[] { 0, 1 }) };
 
-    var output = Vector.GramSchmidt(input);
+    List<Vector> output = Vector.GramSchmidt(input);
 
     // Assert
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
@@ -43,7 +43,7 @@ public class GramSchmidtTests {
       , new Vector(new double[] { 0, 0, 1 })
       };
 
-    var output = Vector.GramSchmidt(input);
+    List<Vector> output = Vector.GramSchmidt(input);
 
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
     for (int i = 0; i < expected.Length; i++) {
@@ -64,7 +64,7 @@ public class GramSchmidtTests {
       , new Vector(new double[] { 0.844642153633652, 0.476742255517412, -0.243508632514901 })
       };
 
-    var output = Vector.GramSchmidt(input);
+    List<Vector> output = Vector.GramSchmidt(input);
 
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
     for (int i = 0; i < expected.Length; i++) {
@@ -93,7 +93,7 @@ public class GramSchmidtTests {
       , new Vector(new double[] { 0, 0, 1 })
       };
 
-    var output = Vector.GramSchmidt(input);
+    List<Vector> output = Vector.GramSchmidt(input);
 
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
     for (int i = 0; i < expected.Length; i++) {
@@ -129,7 +129,7 @@ public class GramSchmidtTests {
       , new Vector(new double[] { 0, 0, 0, 1 })
       };
 
-    var output = Vector.GramSchmidt(orthonormal, Basis);
+    List<Vector> output = Vector.GramSchmidt(orthonormal, Basis);
 
     Assert.That(output.Count, Is.EqualTo(expected.Length), $"Lengths don't match {output.Count} and {expected.Length}");
     for (int i = 0; i < expected.Length; i++) {
