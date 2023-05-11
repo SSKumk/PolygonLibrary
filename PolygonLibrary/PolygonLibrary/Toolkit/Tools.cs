@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
-using Vector = System.Numerics.Vector;
 
 namespace PolygonLibrary.Toolkit;
 
@@ -168,8 +167,7 @@ public partial class Tools {
                             p => {
 #if DEBUG
                               if (p.Dim != m.Cols) {
-                                throw new ArgumentException
-                                  ("During projection to the plane a point with wrong dimension has been found!");
+                                throw new ArgumentException("During projection to the plane a point with wrong dimension has been found!");
                               }
 #endif
                               return (Point2D)(m * p);
@@ -181,6 +179,29 @@ public partial class Tools {
   }
 #endregion
 
+
+#region RotatePoints
+  public List<Point> RotateX(IEnumerable<Point> Swarm, double angle) {
+    double[,] rotX = { { 1.0, 0, 0 }, { 0, Math.Cos(angle), -Math.Sin(angle) }, { 0, Math.Sin(angle), Math.Cos(angle) } };
+
+    List<Point> res = new List<Point>();
+
+    foreach (Point point in Swarm) {
+      Vector   pv = new Vector(point);
+      double[] rv = new double[3];
+
+      for (int i = 0; i < 3; i++) {
+        for (int k = 0; k < 3; k++) {
+          rv[i] += rotX[i,k] * pv[k];
+        }
+      }
+
+      res.Add(new Point(rv));
+    }
+
+    return res;
+  }
+#endregion
 
 #region Gift Wrapping procedures
   /// <summary>
@@ -195,7 +216,7 @@ public partial class Tools {
 
     foreach (Point p in S) {
       Basics.Vector t  = p - origin;
-      var           nv = new double[dim];
+      double[]      nv = new double[dim];
 
       foreach (Basics.Vector bvec in KBasis) {
         for (int i = 0; i < dim; i++) {
@@ -212,6 +233,3 @@ public partial class Tools {
 #endregion
 
 }
-
-//todo 2) BuildInitialPlane(Swarm) --> 
-//todo Наш рой S перегнать в "set" и удалять лишние вершины в процессе 
