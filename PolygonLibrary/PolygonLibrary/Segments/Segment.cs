@@ -311,7 +311,12 @@ public class Segment : IComparable<Segment> {
     return p1 == segment.p1 && p2 == segment.p2;
   }
 
-  public override int GetHashCode() => p1.GetHashCode() + p2.GetHashCode();
+  public override int GetHashCode() {
+    int res = 0;
+    res = HashCode.Combine(res, p1.GetHashCode());
+    res = HashCode.Combine(res, p2.GetHashCode());
+    return res;
+  }
 #endregion
 
 #region Constructors
