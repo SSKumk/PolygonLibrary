@@ -284,7 +284,12 @@ public class Vector2D : IComparable<Vector2D> {
 
   public override string ToString() => "(" + x + ";" + y + ")";
 
-  public override int GetHashCode() => x.GetHashCode() + y.GetHashCode();
+  public override int GetHashCode() {
+    int res = 0;
+    res = HashCode.Combine(res, (int)(x / Tools.Eps));
+    res = HashCode.Combine(res, (int)(y / Tools.Eps));
+    return res;
+  }
 #endregion
 
 #region Constructors and factories

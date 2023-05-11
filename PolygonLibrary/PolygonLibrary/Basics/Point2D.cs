@@ -194,9 +194,13 @@ public class Point2D : IComparable<Point2D> {
 
   public override string ToString() => "{" + x + ";" + y + "}";
 
-  public override int GetHashCode() => x.GetHashCode() + y.GetHashCode();
-
-  #endregion
+  public override int GetHashCode() {
+    int res = 0;
+    res = HashCode.Combine(res, (int)(x / Tools.Eps));
+    res = HashCode.Combine(res, (int)(y / Tools.Eps));
+    return res;
+  }
+#endregion
 
   #region Constructors
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -312,8 +311,8 @@ public class Vector : IComparable<Vector> {
   /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
   /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
   private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
-    int dim   = V.First().Dim;
-    var Basis = BasisInit.ToList();
+    int          dim   = V.First().Dim;
+    List<Vector> Basis = BasisInit.ToList();
 
     foreach (Vector v in V) {
       Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
@@ -355,10 +354,10 @@ public class Vector : IComparable<Vector> {
   }
 
   public override int GetHashCode() {
-    int res = 0, d = Dim, i;
+    int res = 0, d = Dim;
 
-    for (i = 0; i < d; i++) {
-      res += _v[i].GetHashCode();
+    for (int i = 0; i < d; i++) {
+      res = HashCode.Combine(res, (int)(_v[i] / Tools.Eps));
     }
 
     return res;
@@ -425,6 +424,22 @@ public class Vector : IComparable<Vector> {
   private void ComputeParameters() { }
 #endregion
 
+#region Fabrics
+  /// <summary>
+  /// Creates the i-orth of given dimension
+  /// </summary>
+  /// <param name="dim">The dimension of the vector</param>
+  /// <param name="pos">The position of '1'</param>
+  /// <returns>The i-orth of given dimension</returns>
+  public static Vector CreateOrth(int dim, int pos) {
+    Debug.Assert(pos > 0, "Position should be greater than 0.");
+    double[] orth = new double[dim];
+    orth[pos-1] = 1;
+
+    return new Vector(orth);
+  }
+#endregion
+  
 #region Operators
   /// <summary>
   /// Unary minus - the opposite vector
