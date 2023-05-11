@@ -73,9 +73,17 @@ public class LinearBasis {
   /// Add the given vector to the basis. If it is zero vector or linear dependent with the basis then it don't includes in.
   /// </summary>
   /// <param name="v">Vector to be added</param>
+  /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
   /// <returns>True if vector added to the basis, false otherwise</returns>
-  public bool AddVector(Vector v) {
+  public bool AddVector(Vector v, bool orthogonalize = true) {
     Vector toAdd = v;
+
+    if (!orthogonalize) {
+      
+      _basis.Add(v);
+
+      return true;
+    }
 
     toAdd = IsEmpty ? toAdd.NormalizeZero() : Vector.OrthonormalizeAgainstBasis(v, _basis);
 

@@ -62,10 +62,9 @@ public class GiftWrapping {
 
       Viewed.Add(sMin);
       tempV.RemoveFirst();
-      Basis.AddVectorToBasis(r!); //todo добавить флаг orthonormalize = true
+      Basis.AddVectorToBasis(r!, false);
     }
-
-
+    
     return Basis;
   }
 

@@ -58,22 +58,24 @@ public class AffineBasis {
   /// Adds the vector to the linear basis associated with the affine basis.
   /// </summary>
   /// <param name="v">The vector to add.</param>
+  /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
   /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
-  public bool AddVectorToBasis(Vector v) {
+  public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
     Debug.Assert(_origin.Dim == v.Dim, "Adding a vector with a wrong dimension into an affine basis.");
 
-    return _basis.AddVector(v);
+    return _basis.AddVector(v, orthogonalize);
   }
 
   /// <summary>
   /// Adds the specified point to the linear basis associated with the affine basis.
   /// </summary>
   /// <param name="p">The point to add.</param>
+  /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
   /// <returns><c>true</c> if the point was added successfully; otherwise, <c>false</c>.</returns>
-  public bool AddPointToBasis(Point p) {
+  public bool AddPointToBasis(Point p, bool orthogonalize = true) {
     Debug.Assert(_origin.Dim == p.Dim, "Adding a point with a wrong dimension into an affine basis.");
 
-    return AddVectorToBasis(p - _origin);
+    return AddVectorToBasis(p - _origin, orthogonalize);
   }
 
   /// <summary>
@@ -135,8 +137,6 @@ public class AffineBasis {
   /// Aux method to check then the basis is correct
   /// </summary>
   /// <param name="affineBasis">Basis to be checked</param>
-  public static void CheckCorrectness(AffineBasis affineBasis) {
-    LinearBasis.CheckCorrectness(new LinearBasis(affineBasis.Basis));
-  }
+  public static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(new LinearBasis(affineBasis.Basis)); }
 
 }
