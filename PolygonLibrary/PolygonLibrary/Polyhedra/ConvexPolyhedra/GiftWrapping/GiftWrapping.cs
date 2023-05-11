@@ -2,36 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using AVLUtils;
 using PolygonLibrary.Basics;
+using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 public class GiftWrapping {
 
   public static AffineBasis BuildInitialPlane(IEnumerable<Point> S) {
-    Point origin = S.Min(p => p) ?? throw new InvalidOperationException("The swarm must has at least one point!");
-    var   tempV  = new LinkedList<Vector>();
-    var   Basis  = new AffineBasis(origin);
+    Debug.Assert(S.Any(), "The swarm must has at least one point!");
+
+    Point              origin = S.Min(p => p)!;
+    LinkedList<Vector> tempV  = new LinkedList<Vector>();
+    AffineBasis        Basis  = new AffineBasis(origin);
 
     int dim = Basis.Dim;
 
     for (int i = 1; i < dim; i++) {
-      var e = new double[dim];
-      e[i] = 1;
-      tempV.AddLast(new Vector(e));
+      tempV.AddLast(Vector.CreateOrth(dim, i + 1));
     }
 
-    var L = new HashSet<Point>()
+    HashSet<Point> Viewed = new HashSet<Point>()
       {
         origin
       };
 
-    while (tempV.Any()) {
-      var minDot = double.MaxValue;
-      var r      = new Vector(dim);
+    double  minDot;
+    Vector? r = null;
+    Point?  sMin;
 
-      foreach (Point s in S) { //todo Может стоит удалять просмотренные точки из роя? 
-        if (L.Contains(s)) {
+    while (tempV.Any()) {
+      minDot = double.MaxValue;
+      sMin   = null;
+
+      foreach (Point s in S) {
+        if (Viewed.Contains(s)) {
           continue;
         }
 
@@ -43,18 +49,20 @@ public class GiftWrapping {
           if (dot < minDot) {
             minDot = dot;
             r      = v;
+            sMin   = s;
           }
+        } else {
+          Viewed.Add(s);
         }
-
-        L.Add(s);
       }
 
-      // if (L.Count == S.Count()) { //todo ????
-      //   throw new ArgumentException($"All points of the Swarm lies in dimension less tan d = {dim}."); //todo ????
-      // } //todo ????
+      if (sMin is null) {
+        return Basis;
+      }
 
+      Viewed.Add(sMin);
       tempV.RemoveFirst();
-      Basis.AddVectorToBasis(r); //todo тут опять ортонормализуем, боремся как-то?
+      Basis.AddVectorToBasis(r!); //todo добавить флаг orthonormalize = true
     }
 
 

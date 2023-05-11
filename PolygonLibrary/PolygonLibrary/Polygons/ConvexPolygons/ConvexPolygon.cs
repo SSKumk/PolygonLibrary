@@ -362,11 +362,11 @@ public partial class ConvexPolygon : BasicPolygon {
     if (s - k < 2 || s - k == Vertices.Count - 1) { //if k == s or k-s is a edge
       throw new ArgumentException($"{k} and {s} is adjacent!");
     }
-    var list1 = new List<Point2D>();
+    List<Point2D>? list1 = new List<Point2D>();
     for (int i = k; i < s + 1; i++) {
       list1.Add(Vertices[i]);
     }
-    var list2 = new List<Point2D>();
+    List<Point2D>? list2 = new List<Point2D>();
     for (int i = s; i < Vertices.Count + k + 1; i++) {
       list2.Add(Vertices.GetAtCyclic(i));
     }

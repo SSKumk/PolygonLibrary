@@ -98,8 +98,8 @@ public partial class ConvexPolygon {
       return null;
     }
     
-    var R      = new List<Point2D>();
-    var inside = InsideType.Unknown;
+    List<Point2D>? R      = new List<Point2D>();
+    InsideType inside = InsideType.Unknown;
     int lenP   = P.Vertices.Count;
     int lenQ   = Q.Vertices.Count;
     int countP = 1;

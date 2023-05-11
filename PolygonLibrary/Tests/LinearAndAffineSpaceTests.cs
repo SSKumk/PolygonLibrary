@@ -12,16 +12,16 @@ public class LinearSpaceTests {
   /// </summary>
   [Test]
   public void AddVectorTest() {
-    var basis = new LinearBasis();
+    LinearBasis basis = new LinearBasis();
     Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
 
-    var added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
+    bool added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
 
-    Assert.That(basis.IsFullDim, Is.False, "The basis with a vector is not full dimensional, while the space is two dimensional.");
+    Assert.That(basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
 
-    var added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
-    var added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
-    var added4 = basis.AddVector(new Vector(new double[] { 0, 0 }));
+    bool added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
+    bool added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
+    bool added4 = basis.AddVector(new Vector(new double[] { 0, 0 }));
 
     Assert.That(added1, Is.True, "The addition of the linear independent vector should be successful.");
     Assert.That(added2, Is.True, "The addition of the linear independent vector should be successful.");
@@ -41,7 +41,7 @@ public class LinearSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithVectorsTest() {
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 2, 0, 0 })
       , new Vector(new double[] { 0, 3, 0 })
@@ -49,7 +49,7 @@ public class LinearSpaceTests {
       , new Vector(new double[] { -1, 1, 5.7412 })
       };
 
-    var basis = new LinearBasis(vectors);
+    LinearBasis basis = new LinearBasis(vectors);
 
     Assert.That
       (
@@ -71,17 +71,17 @@ public class LinearSpaceTests {
   /// </summary>
   [Test]
   public void ExpansionTest() {
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 1, 0, 0 })
       , new Vector(new double[] { 0, 1, 0 })
       , new Vector(new double[] { 0, 0, 1 })
       };
 
-    var basis = new LinearBasis(vectors);
-    var v     = new Vector(new double[] { -2, 3, double.Pi * 2 });
+    LinearBasis basis = new LinearBasis(vectors);
+    Vector      v     = new Vector(new double[] { -2, 3, double.Pi * 2 });
 
-    var expansion = basis.Expansion(v);
+    Vector expansion = basis.Expansion(v);
 
     Assert.That(v.CompareTo(expansion), Is.EqualTo(0), "Wrong expansion of a vector in the affine basis.");
   }
@@ -96,7 +96,7 @@ public class AffineSpaceTests {
   /// </summary>
   /// <param name="basis">Basis to be checked</param>
   private static void CheckVectorsLength(AffineBasis basis) {
-    foreach (var bvec in basis.Basis) {
+    foreach (Vector bvec in basis.Basis) {
       Assert.That(Tools.CMP(bvec.Length, 1), Is.EqualTo(0), "All vectors in the basis must have an unit length.");
     }
   }
@@ -106,16 +106,14 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithOriginTest() {
-    var origin = new Point(new double[] { 1, 2, 3 });
+    Point origin = new Point(new double[] { 1, 2, 3 });
 
-    var basis = new AffineBasis(origin);
+    AffineBasis basis = new AffineBasis(origin);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
     Assert.That(basis, Is.Empty, "The linear basis associated with the affine basis should be initially empty.");
     Assert.That(basis.FullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
     Assert.That(basis.IsEmpty, Is.True, "The affine basis should be empty if no vectors are added.");
-
-    CheckVectorsLength(basis);
   }
 
   /// <summary>
@@ -123,9 +121,9 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithOriginAndVectorsTest() {
-    var origin = new Point(new double[] { 1, 2, 3 });
+    Point origin = new Point(new double[] { 1, 2, 3 });
 
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 2, 0, 0 })
       , new Vector(new double[] { 0, 6, 0 })
@@ -134,7 +132,7 @@ public class AffineSpaceTests {
       };
 
 
-    var basis = new AffineBasis(origin, vectors);
+    AffineBasis basis = new AffineBasis(origin, vectors);
 
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
@@ -155,7 +153,7 @@ public class AffineSpaceTests {
 
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
-    CheckVectorsLength(basis);
+    AffineBasis.CheckCorrectness(basis);
   }
 
 
@@ -164,9 +162,9 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithOriginAndPointsTest() {
-    var origin = new Point(new double[] { -1, double.Pi, -3 });
+    Point origin = new Point(new double[] { -1, double.Pi, -3 });
 
-    var points = new List<Point>()
+    List<Point> points = new List<Point>()
       {
         new Point(new double[] { 2, 3, 4 })
       , new Point(new double[] { 3, 4, 5 })
@@ -175,7 +173,7 @@ public class AffineSpaceTests {
       , new Point(new double[] { double.Pi / 2, 5, 5 })
       };
 
-    var basis = new AffineBasis(origin, points);
+    AffineBasis basis = new AffineBasis(origin, points);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
@@ -189,7 +187,7 @@ public class AffineSpaceTests {
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the input points span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if non zero input points are provided.");
 
-    CheckVectorsLength(basis);
+    AffineBasis.CheckCorrectness(basis);
   }
 
   /// <summary>
@@ -197,22 +195,22 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void AddVectorToBasisTest() {
-    var origin = new Point(new double[] { 1, 2, 3 });
+    Point origin = new Point(new double[] { 1, 2, 3 });
 
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 1, 0, 0 })
       , new Vector(new double[] { 0, 1, 0 })
       };
 
-    var basis     = new AffineBasis(origin, vectors);
-    var newVector = new Vector(new double[] { 1, 1, 1 });
+    AffineBasis basis     = new AffineBasis(origin, vectors);
+    Vector      newVector = new Vector(new double[] { 1, 1, 1 });
 
-    var result = basis.AddVectorToBasis(newVector);
+    bool result = basis.AddVectorToBasis(newVector);
     basis.AddVectorToBasis(newVector);
 
-    var newVector0 = new Vector(origin);
-    var result0    = basis.AddVectorToBasis(newVector0);
+    Vector newVector0 = new Vector(origin);
+    bool   result0    = basis.AddVectorToBasis(newVector0);
 
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
@@ -221,7 +219,7 @@ public class AffineSpaceTests {
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
-    CheckVectorsLength(basis);
+    AffineBasis.CheckCorrectness(basis);
   }
 
   /// <summary>
@@ -229,22 +227,22 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void AddPointToBasisTest() {
-    var origin = new Point(new double[] { 1, 2, 3 });
+    Point origin = new Point(new double[] { 1, 2, 3 });
 
-    var points = new List<Point>()
+    List<Point> points = new List<Point>()
       {
         new Point(new double[] { 2, 3, 4 })
       , new Point(new double[] { 3, -4, 5 })
       };
 
-    var basis    = new AffineBasis(origin, points);
-    var newPoint = new Point(new double[] { 4, 5, -6 });
+    AffineBasis basis    = new AffineBasis(origin, points);
+    Point       newPoint = new Point(new double[] { 4, 5, -6 });
 
 
-    var result = basis.AddPointToBasis(newPoint);
+    bool result = basis.AddPointToBasis(newPoint);
     basis.AddPointToBasis(newPoint);
-    
-    var result0    = basis.AddVectorToBasis(new Vector(origin));
+
+    bool result0 = basis.AddVectorToBasis(new Vector(origin));
 
 
     Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
@@ -253,7 +251,7 @@ public class AffineSpaceTests {
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
 
-    CheckVectorsLength(basis);
+    AffineBasis.CheckCorrectness(basis);
   }
 
   /// <summary>
@@ -261,22 +259,22 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ExpansionWithVectorTest() {
-    var origin = new Point(new double[] { double.Pi, 1, 4 });
+    Point origin = new Point(new double[] { double.Pi, 1, 4 });
 
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 1, 0, 0 })
       , new Vector(new double[] { 0, 1, 0 })
       , new Vector(new double[] { 0, 0, 1 })
       };
 
-    var basis = new AffineBasis(origin, vectors);
-    var v     = new Vector(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
+    AffineBasis basis = new AffineBasis(origin, vectors);
+    Vector      v     = new Vector(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
 
-    var expansion = basis.Expansion(v);
+    Vector expansion = basis.Expansion(v);
 
     Assert.That(expansion.CompareTo(v), Is.EqualTo(0), "Wrong expansion of a vector in the affine basis.");
-    CheckVectorsLength(basis);
+    AffineBasis.CheckCorrectness(basis);
   }
 
   /// <summary>
@@ -284,19 +282,19 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ExpansionWithPointTest() {
-    var origin = new Point(new double[] { 1, 0, 0 });
+    Point origin = new Point(new double[] { 1, 0, 0 });
 
-    var vectors = new List<Vector>()
+    List<Vector> vectors = new List<Vector>()
       {
         new Vector(new double[] { 1, 0, 0 })
       , new Vector(new double[] { 0, 1, 0 })
       , new Vector(new double[] { 0, 0, 1 })
       };
 
-    var basis = new AffineBasis(origin, vectors);
-    var p     = new Point(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
+    AffineBasis basis = new AffineBasis(origin, vectors);
+    Point       p     = new Point(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
 
-    var expansion = basis.Expansion(p);
+    Vector expansion = basis.Expansion(p);
 
 
     Assert.That(expansion.CompareTo(p - origin), Is.EqualTo(0), "Wrong expansion of a point in the affine basis.");
@@ -307,24 +305,24 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_1() {
-    var origin = new Point(new double[] { 0, 0 });
+    Point origin = new Point(new double[] { 0, 0 });
 
-    var basis = new List<Vector>
+    List<Vector> basis = new List<Vector>
       {
         new Vector(new double[] { 1, 0 })
       , new Vector(new double[] { 0, 1 })
       };
 
-    var points = new HashSet<Point>
+    HashSet<Point> points = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 3 })
       , new Point(new double[] { -1, 4 })
       };
 
-    var expected = points;
+    HashSet<Point> expected = points;
 
-    var result = Tools.ProjectToAffineSpace(origin, basis, points);
+    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -336,29 +334,29 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_2() {
-    var origin = new Point(new double[] { 0, 0 });
+    Point origin = new Point(new double[] { 0, 0 });
 
-    var basis = new List<Vector>
+    List<Vector> basis = new List<Vector>
       {
         new Vector(new double[] { -1, 0 })
       , new Vector(new double[] { 0, -1 })
       };
 
-    var points = new HashSet<Point>
+    HashSet<Point> points = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 3 })
       , new Point(new double[] { -1, 4 })
       };
 
-    var expected = new HashSet<Point>
+    HashSet<Point> expected = new HashSet<Point>
       {
         new Point(new double[] { -1, -1 })
       , new Point(new double[] { -2, -3 })
       , new Point(new double[] { 1, -4 })
       };
 
-    var result = Tools.ProjectToAffineSpace(origin, basis, points);
+    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -370,29 +368,29 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_3() {
-    var origin = new Point(new double[] { 2, 2 });
+    Point origin = new Point(new double[] { 2, 2 });
 
-    var basis = new List<Vector>
+    List<Vector> basis = new List<Vector>
       {
         new Vector(new double[] { -1, 0 })
       , new Vector(new double[] { 0, -1 })
       };
 
-    var points = new HashSet<Point>
+    HashSet<Point> points = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 4 })
       , new Point(new double[] { -4, 4 })
       };
 
-    var expected = new HashSet<Point>
+    HashSet<Point> expected = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 0, -2 })
       , new Point(new double[] { 6, -2 })
       };
 
-    var result = Tools.ProjectToAffineSpace(origin, basis, points);
+    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -403,15 +401,15 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_4() {
-    var origin = new Point(new double[] { 0, 0, 0, 0 });
+    Point origin = new Point(new double[] { 0, 0, 0, 0 });
 
-    var basis = new List<Vector>
+    List<Vector> basis = new List<Vector>
       {
         new Vector(new double[] { 1, 0, 0, 0 })
       , new Vector(new double[] { 0, 1, 0, 0 })
       };
 
-    var points = new HashSet<Point>
+    HashSet<Point> points = new HashSet<Point>
       {
         new Point(new double[] { 0, 0, 0, 0 })
       , new Point(new double[] { 1, 0, 0, 0 })
@@ -419,7 +417,7 @@ public class AffineSpaceTests {
       , new Point(new double[] { 1, 1, 1, 1 })
       };
 
-    var expected = new HashSet<Point>
+    HashSet<Point> expected = new HashSet<Point>
       {
         new Point(new double[] { 0, 0, 0, 0 })
       , new Point(new double[] { 1, 0, 0, 0 })
@@ -427,7 +425,7 @@ public class AffineSpaceTests {
       , new Point(new double[] { 1, 1, 0, 0 })
       };
 
-    var result = Tools.ProjectToAffineSpace(origin, basis, points);
+    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
