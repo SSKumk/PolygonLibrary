@@ -11,12 +11,12 @@ public class AffineBasis {
   /// <summary>
   /// The linear basis associated with the affine basis.
   /// </summary>
-  private LinearBasis _basis;
+  private readonly LinearBasis _basis;
 
   /// <summary>
   /// The origin point of the affine basis.
   /// </summary>
-  private Point _origin;
+  private readonly Point _origin;
 
   /// <summary>
   /// Gets the origin point of the affine basis.
@@ -129,6 +129,14 @@ public class AffineBasis {
     foreach (Point p in Ps) {
       AddPointToBasis(p);
     }
+  }
+
+  /// <summary>
+  /// Aux method to check then the basis is correct
+  /// </summary>
+  /// <param name="affineBasis">Basis to be checked</param>
+  public static void CheckCorrectness(AffineBasis affineBasis) {
+    LinearBasis.CheckCorrectness(new LinearBasis(affineBasis.Basis));
   }
 
 }

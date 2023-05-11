@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
 
@@ -96,7 +97,7 @@ public class LinearBasis {
     Debug.Assert(v.Dim == Dim, "Vector dimension and basis dimensions don't match!");
     Debug.Assert(IsFullDim, "To expanse a vector the basis must be of full dimension!");
 
-    var expan = new double[Dim];
+    double[] expan = new double[Dim];
 
     for (int i = 0; i < Dim; i++) {
       expan[i] = v * _basis[i];
@@ -119,6 +120,27 @@ public class LinearBasis {
 
     foreach (Vector v in Vs) {
       AddVector(v);
+    }
+  }
+
+
+  /// <summary>
+  /// Aux method to check then the basis is correct
+  /// </summary>
+  /// <param name="linearBasis">Basis to be checked</param>
+  public static void CheckCorrectness(LinearBasis linearBasis) {
+    foreach (Vector bvec in linearBasis.Basis) {
+      Debug.Assert(Tools.CMP(bvec.Length, 1) == 0, "All vectors in the basis must have an unit length.");
+    }
+
+    for (int i = 0; i < linearBasis.Count; i++) {
+      for (int k = 0; k < linearBasis.Count; k++) {
+        if (i == k) {
+          continue;
+        }
+
+        Debug.Assert(Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k]), "All pairwise different vectors must be orthogonal.");
+      }
     }
   }
 
