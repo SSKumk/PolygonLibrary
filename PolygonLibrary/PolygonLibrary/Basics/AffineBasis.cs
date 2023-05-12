@@ -114,9 +114,10 @@ public class AffineBasis {
   /// </summary>
   /// <param name="o">The origin point of the affine basis.</param>
   /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
-  public AffineBasis(Point o, IEnumerable<Vector> Vs) {
+  /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
+  public AffineBasis(Point o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
     _origin = o;
-    _basis  = new LinearBasis(Vs);
+    _basis  = new LinearBasis(Vs, orthogonalize);
   }
 
   /// <summary>
@@ -134,9 +135,23 @@ public class AffineBasis {
   }
 
   /// <summary>
+  /// Initializes a new instance of the <see cref="AffineBasis"/> class with the specified origin point and linear basis.
+  /// </summary>
+  /// <param name="o">The origin point of the affine basis.</param>
+  /// <param name="lbasis">The linear basis associated with the affine basis.</param>
+  public AffineBasis(Point o, LinearBasis lbasis) {
+    _origin = o;
+    _basis  = lbasis;
+  }
+
+  /// <summary>
   /// Aux method to check then the basis is correct
   /// </summary>
   /// <param name="affineBasis">Basis to be checked</param>
-  public static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(new LinearBasis(affineBasis.Basis)); }
+  public static void CheckCorrectness(AffineBasis affineBasis) {
+#if DEBUG
+    LinearBasis.CheckCorrectness(affineBasis._basis);
+#endif
+  }
 
 }
