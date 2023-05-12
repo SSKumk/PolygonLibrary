@@ -1,10 +1,11 @@
+using System.Diagnostics;
 using NUnit.Framework;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
-using PolygonLibrary.Toolkit;
 
 
 namespace Tests.GW_hDTests;
+
 
 [TestFixture]
 public class InitialPlaneTests {
@@ -14,8 +15,11 @@ public class InitialPlaneTests {
   /// </summary>
   /// <param name="Swarm"></param>
   private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm) {
-    AffineBasis basis = GiftWrapping.BuildInitialPlane(Swarm);
-    AffineBasis.CheckCorrectness(basis);
+    AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm);
+    AffineBasis.CheckCorrectness(aBasis);
+    HyperPlane         hp         = new HyperPlane(aBasis);
+    IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm);
+    Assert.That(hp.AllAtOneSide(notInPlane).Item1, Is.True);
   }
 
   [Test]
@@ -40,7 +44,6 @@ public class InitialPlaneTests {
       , new Point(new double[] { 2, 4, 0 })
       , new Point(new double[] { -3, 1, 0 })
       , new Point(new double[] { -9, -2, 0 })
-      , new Point(new double[] { 0, 0, 0 })
       };
 
     AssertInitialPlaneBasis(Swarm);
