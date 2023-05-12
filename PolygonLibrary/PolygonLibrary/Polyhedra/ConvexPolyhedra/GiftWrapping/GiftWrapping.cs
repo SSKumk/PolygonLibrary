@@ -43,7 +43,9 @@ public class GiftWrapping {
 
         Vector v = Vector.OrthonormalizeAgainstBasis(s - origin, Basis.Basis);
 
-        if (!v.IsZero) {
+        if (v.IsZero) {
+          Viewed.Add(s);
+        } else {
           double dot = v * tempV.First();
 
           if (dot < minDot) {
@@ -51,8 +53,6 @@ public class GiftWrapping {
             r      = v;
             sMin   = s;
           }
-        } else {
-          Viewed.Add(s);
         }
       }
 
