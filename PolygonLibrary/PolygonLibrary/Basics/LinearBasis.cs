@@ -19,7 +19,7 @@ public class LinearBasis {
   /// <summary>
   /// The dimension of the basis vectors
   /// </summary>
-  public int Dim {
+  public int VecDim {
     get
       {
         Debug.Assert(_basis.Any(), "Basis must have at least one vector to determine it dimension");
@@ -35,7 +35,7 @@ public class LinearBasis {
     get
       {
         if (_basis.Any())
-          return Dim == _basis.Count;
+          return VecDim == _basis.Count;
         else {
           return false;
         }
@@ -45,12 +45,12 @@ public class LinearBasis {
   /// <summary>
   /// Amount of vectors in the basis 
   /// </summary>
-  public int Count => _basis.Count;
+  public int BasisDim => _basis.Count;
 
   /// <summary>
   /// True if there are no vectors in the basis
   /// </summary>
-  public bool IsEmpty => Count == 0;
+  public bool IsEmpty => BasisDim == 0;
 
   /// <summary>
   /// Index access
@@ -103,12 +103,12 @@ public class LinearBasis {
   /// <param name="v">The vector to expand.</param>
   /// <returns>The expanded vector.</returns>
   public Vector Expansion(Vector v) {
-    Debug.Assert(v.Dim == Dim, "Vector dimension and basis dimensions don't match!");
+    Debug.Assert(v.Dim == VecDim, "Vector dimension and basis dimensions don't match!");
     Debug.Assert(IsFullDim, "To expanse a vector the basis must be of full dimension!");
 
-    double[] expan = new double[Dim];
+    double[] expan = new double[VecDim];
 
-    for (int i = 0; i < Dim; i++) {
+    for (int i = 0; i < VecDim; i++) {
       expan[i] = v * _basis[i];
     }
 
@@ -144,8 +144,8 @@ public class LinearBasis {
       Debug.Assert(Tools.EQ(bvec.Length, 1), "All vectors in the basis must have a unit length.");
     }
 
-    for (int i = 0; i < linearBasis.Count - 1; i++) {
-      for (int k = i + 1; k < linearBasis.Count; k++) {
+    for (int i = 0; i < linearBasis.BasisDim - 1; i++) {
+      for (int k = i + 1; k < linearBasis.BasisDim; k++) {
         Debug.Assert(Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k]), "All pairwise different vectors must be orthogonal.");
       }
     }

@@ -26,7 +26,7 @@ public class AffineBasis {
   /// <summary>
   /// Gets the dimension of the affine basis.
   /// </summary>
-  public int Dim => _origin.Dim;
+  public int VecDim => _origin.Dim;
 
   /// <summary>
   /// <c>True</c> if this affine basis is full dimension.
@@ -36,12 +36,12 @@ public class AffineBasis {
   /// <summary>
   /// Gets the number of vectors in the linear basis associated with the affine basis.
   /// </summary>
-  public int Count => _basis.Count;
+  public int BasisDim => _basis.BasisDim;
 
   /// <summary>
   /// Gets a value indicating whether this affine basis is empty.
   /// </summary>
-  public bool IsEmpty => Count == 0;
+  public bool IsEmpty => BasisDim == 0;
 
   /// <summary>
   /// Gets the vector corresponding to the specified index in the linear basis associated with the affine basis.

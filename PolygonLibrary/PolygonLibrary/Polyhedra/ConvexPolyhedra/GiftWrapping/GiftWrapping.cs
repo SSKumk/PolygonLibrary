@@ -17,7 +17,7 @@ public class GiftWrapping {
     LinkedList<Vector> tempV  = new LinkedList<Vector>();
     AffineBasis        Basis  = new AffineBasis(origin);
 
-    int dim = Basis.Dim;
+    int dim = Basis.VecDim;
 
     for (int i = 1; i < dim; i++) {
       tempV.AddLast(Vector.CreateOrth(dim, i + 1));

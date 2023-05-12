@@ -28,12 +28,12 @@ public class LinearSpaceTests {
     Assert.That(added3, Is.False, "The addition of the linear dependent vector should not be successful.");
     Assert.That(added4, Is.False, "The addition of the zero vector should not be successful.");
 
-    Assert.That(basis.Count, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
+    Assert.That(basis.BasisDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
     Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty after adding vectors.");
 
     Assert.That(basis.IsFullDim, Is.True, "The basis should have full dimension after adding two linearly independent vectors.");
 
-    Assert.That(basis.Dim, Is.EqualTo(2), "The dimension of the basis should be equal to 2.");
+    Assert.That(basis.VecDim, Is.EqualTo(2), "The dimension of the basis should be equal to 2.");
   }
 
   /// <summary>
@@ -53,12 +53,12 @@ public class LinearSpaceTests {
 
     Assert.That
       (
-       basis.Count
+       basis.BasisDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
 
-    Assert.That(basis.Dim, Is.EqualTo(3), "The dimension of the basis should be equal to the first vector dimension.");
+    Assert.That(basis.VecDim, Is.EqualTo(3), "The dimension of the basis should be equal to the first vector dimension.");
 
     Assert.That
       (basis.IsFullDim, Is.True, "The basis should have full dimension if subset of the input vectors (d-dim) are forming d-basis.");
@@ -139,8 +139,8 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis
-     , Has.Count.EqualTo(3)
+       basis.BasisDim
+     , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
 
@@ -179,8 +179,8 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis
-     , Has.Count.EqualTo(3)
+       basis.BasisDim
+     , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
 
@@ -215,7 +215,7 @@ public class AffineSpaceTests {
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis, Has.Count.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
+    Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
@@ -247,7 +247,7 @@ public class AffineSpaceTests {
 
     Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero point should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis.Count, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
+    Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
 
