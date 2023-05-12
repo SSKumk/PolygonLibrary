@@ -18,7 +18,12 @@ public class HyperPlane {
   /// <summary>
   /// The dimension of the hyperplane.
   /// </summary>
-  public int Dim => Origin.Dim - 1;
+  private readonly int _dim;
+
+  /// <summary>
+  /// The dimension of the hyperplane.
+  /// </summary>
+  public int Dim => _dim;
 
   /// <summary>
   /// The affine basis associated with the hyperplane.
@@ -36,7 +41,7 @@ public class HyperPlane {
             lBasis.AddVector(orth);
           }
 
-          _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.Count - 1));
+          _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.BasisDim - 1));
         }
 
         return _affineBasis;
@@ -52,18 +57,18 @@ public class HyperPlane {
     get
       {
         if (_normal is null) {
+          Debug.Assert(_affineBasis != null, nameof(_affineBasis) + " != null");
           int spaceDim = Origin.Dim;
 
-          for (int i = 1; i <= spaceDim; i++) {
-            Debug.Assert(_affineBasis != null, nameof(_affineBasis) + " != null");
 
+          for (int i = 1; i <= spaceDim; i++) {
             Vector orth = Vector.CreateOrth(spaceDim, i);
             Vector n    = Vector.OrthonormalizeAgainstBasis(orth, _affineBasis.Basis);
 
             if (!n.IsZero) {
               _normal = n;
 
-              return _normal;
+              break;
             }
           }
         }
@@ -81,7 +86,7 @@ public class HyperPlane {
     get
       {
         if (_constantTerm is null) {
-          _constantTerm = -(Normal * new Vector(Origin));
+          _constantTerm = -(Normal * (Vector)Origin);
         }
 
         return _constantTerm.Value;
@@ -98,6 +103,7 @@ public class HyperPlane {
   public HyperPlane(Point origin, Vector normal) {
     Origin  = origin;
     _normal = normal;
+    _dim    = Origin.Dim - 1;
   }
 
   /// <summary>
@@ -107,6 +113,7 @@ public class HyperPlane {
   public HyperPlane(AffineBasis affineBasis) {
     Origin       = affineBasis.Origin;
     _affineBasis = affineBasis;
+    _dim         = Origin.Dim - 1;
   }
 
   /// <summary>
@@ -114,19 +121,11 @@ public class HyperPlane {
   /// </summary>
   /// <param name="hp">The hyperplane to be copied.</param>
   public HyperPlane(HyperPlane hp) {
-    Origin = hp.Origin;
-
-    if (hp._affineBasis is not null) {
-      _affineBasis = hp._affineBasis;
-    }
-
-    if (hp._normal is not null) {
-      _normal = hp._normal;
-    }
-
-    if (hp._constantTerm is not null) {
-      _constantTerm = hp._constantTerm;
-    }
+    Origin        = hp.Origin;
+    _dim          = Origin.Dim - 1;
+    _affineBasis  = hp._affineBasis;
+    _normal       = hp._normal;
+    _constantTerm = hp._constantTerm;
   }
 
   /// <summary>
@@ -134,7 +133,7 @@ public class HyperPlane {
   /// </summary>
   /// <param name="point">The point at which the equation is to be evaluated.</param>
   /// <returns>The value of the equation of the hyperplane at the given point.</returns>
-  public double Eval(Point point) { return Normal * new Vector(point) + ConstantTerm; }
+  public double Eval(Point point) { return Normal * (Vector)point + ConstantTerm; }
 
   /// <summary>
   /// Checks if the hyperplane contains a given point.
@@ -185,17 +184,14 @@ public class HyperPlane {
       return (true, int.MaxValue);
     }
 
-    bool isAtOneSide = true;
-    int  sign        = Tools.CMP(Eval(Swarm.First()));
+    IEnumerable<int> temp = Swarm.Select(p => Tools.CMP(Eval(p))).Where(k => k != 0);
 
-    foreach (Point p in Swarm) {
-      if (Tools.CMP(Eval(p)) != sign) {
-        isAtOneSide = false;
-        sign        = int.MaxValue;
-
-        break;
-      }
+    if (!temp.Any()) {
+      return (true, 0);
     }
+
+    int  sign        = temp.First();
+    bool isAtOneSide = temp.All(k => k == sign);
 
     return (isAtOneSide, sign);
   }
