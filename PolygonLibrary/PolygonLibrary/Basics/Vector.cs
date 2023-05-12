@@ -25,7 +25,7 @@ public class Vector : IComparable<Vector> {
   /// <summary>
   /// Indexer access
   /// </summary>
-  /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
+  /// <param name="i">The index of the coordinate</param>
   /// <returns>The value of the corresponding component</returns>
   public double this[int i] {
     get
@@ -265,10 +265,9 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">The input vector to orthonormalize.</param>
   /// <param name="Basis">The basis to orthonormalize against.</param>
   /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector</returns>
-  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {//todo на LinearBasis заменить
+  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) { //todo на LinearBasis заменить
     foreach (Vector bvec in Basis) {
-      Debug.Assert
-        (v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
+      Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
 
       v -= (bvec * v) * bvec;
     }
@@ -434,12 +433,12 @@ public class Vector : IComparable<Vector> {
   public static Vector CreateOrth(int dim, int pos) {
     Debug.Assert(pos > 0, "Position should be greater than 0.");
     double[] orth = new double[dim];
-    orth[pos-1] = 1;
+    orth[pos - 1] = 1;
 
     return new Vector(orth);
   }
 #endregion
-  
+
 #region Operators
   /// <summary>
   /// Unary minus - the opposite vector
