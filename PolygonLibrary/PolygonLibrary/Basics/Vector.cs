@@ -83,6 +83,20 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">Array to be converted</param>
   /// <returns>The resultant vector</returns>
   public static explicit operator Vector(double[] v) => new Vector(v);
+  
+  /// <summary>
+  /// Explicit convertor to a multidimensional vector from a two-dimensional vector
+  /// </summary>
+  /// <param name="v">The vector to be converted</param>
+  /// <returns>The resultant vector</returns>
+  public static explicit operator Vector(Vector2D v) => new(new double[]{v[0], v[1]});
+
+  /// <summary>
+  /// Explicit convertor to a multidimensional vector from a multidimensional point
+  /// </summary>
+  /// <param name="p">The point to be converted</param>
+  /// <returns>The resultant vector</returns>
+  public static explicit operator Vector(Point p) => new(p);
 
   public Point ToPoint() => new Point(_v);
 #endregion
