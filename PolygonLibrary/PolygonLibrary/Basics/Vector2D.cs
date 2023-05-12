@@ -251,21 +251,21 @@ public class Vector2D : IComparable<Vector2D> {
   public static explicit operator Vector2D(Vector v) {
 #if DEBUG
     if (v.Dim != 2) {
-      throw new ArgumentException("A multidimensional point is tried to be converted to a two-dimensional point!");
+      throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional vector!");
     }
 #endif
     return new Vector2D(v[0], v[1]);
   }
-
+  
   /// <summary>
-  /// Explicit convertor to a two-dimensional vector from a multidimensional point of general kind
+  /// Explicit convertor to a two-dimensional vector from a multidimensional point
   /// </summary>
   /// <param name="p">The point to be converted</param>
-  /// <returns>The resultant point</returns>
+  /// <returns>The resultant vector</returns>
   public static explicit operator Vector2D(Point p) {
 #if DEBUG
     if (p.Dim != 2) {
-      throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional point!");
+      throw new ArgumentException("A multidimensional point is tried to be converted to a two-dimensional vector!");
     }
 #endif
     return new Vector2D(p[0], p[1]);
