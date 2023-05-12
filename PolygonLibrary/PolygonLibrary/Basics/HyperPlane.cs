@@ -36,7 +36,7 @@ public class HyperPlane {
             lBasis.AddVector(orth);
           }
 
-          _affineBasis = new AffineBasis(Origin, lBasis[1..]);
+          _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.Count - 1));
         }
 
         return _affineBasis;
@@ -184,18 +184,19 @@ public class HyperPlane {
     if (!Swarm.Any()) {
       return (true, int.MaxValue);
     }
-    
-    bool isAtOneSide  = true;
-    int  sign = Tools.CMP(Eval(Swarm.First()));
-    
+
+    bool isAtOneSide = true;
+    int  sign        = Tools.CMP(Eval(Swarm.First()));
+
     foreach (Point p in Swarm) {
       if (Tools.CMP(Eval(p)) != sign) {
-        isAtOneSide  = false;
-        sign = int.MaxValue;
+        isAtOneSide = false;
+        sign        = int.MaxValue;
+
         break;
       }
     }
-    
+
     return (isAtOneSide, sign);
   }
 
