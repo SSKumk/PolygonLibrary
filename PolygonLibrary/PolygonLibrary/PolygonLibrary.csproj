@@ -14,6 +14,7 @@
       <Compile Remove="Polygons\Something\**" />
       <Compile Include="Basics\AffineBasis.cs" />
       <Compile Include="Basics\CauchyMatrix.cs" />
+      <Compile Include="Basics\HyperPlane.cs" />
       <Compile Include="Basics\Line2D.cs" />
       <Compile Include="Basics\LinearBasis.cs" />
       <Compile Include="Basics\Matrices.cs" />
