@@ -90,8 +90,8 @@ public class HyperPlaneTests {
 
     Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.False);
 
-    IEnumerable<Point> inPlane = hp.FilterIn(Swarm); //todo Может список возвращать?
-    IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm); //todo Может список возвращать?
+    IEnumerable<Point> inPlane = hp.FilterIn(Swarm); 
+    IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm);
 
     Assert.That(hp.AllAtOneSide(inPlane), Is.EqualTo((true,0)));
     Assert.That(inPlane.Count(), Is.EqualTo(4));
