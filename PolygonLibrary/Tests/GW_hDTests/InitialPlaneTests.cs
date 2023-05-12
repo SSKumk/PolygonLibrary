@@ -6,20 +6,56 @@ using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 namespace Tests.GW_hDTests;
 
-
 [TestFixture]
 public class InitialPlaneTests {
 
   /// <summary>
   /// Aux method to check basis of Initial Plane
   /// </summary>
-  /// <param name="Swarm"></param>
-  private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm) {
+  /// <param name="Swarm">The swarm for which the plane is constructed</param>
+  /// <param name="planeDim">The desired dimension of the plane</param>
+  private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm, int planeDim) {
     AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm);
     AffineBasis.CheckCorrectness(aBasis);
-    HyperPlane         hp         = new HyperPlane(aBasis);
-    IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm);
-    Assert.That(hp.AllAtOneSide(notInPlane).Item1, Is.True);
+    Assert.That(aBasis.BasisDim, Is.EqualTo(planeDim));
+    HyperPlane hp = new HyperPlane(aBasis);
+    Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True);
+    IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
+    Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim));
+  }
+
+  [Test]
+  public void LineInInitialPlaneTest() {
+    Point p0 = new Point(new double[] { 0, 0, 0 });
+    Point p1 = new Point(new double[] { 0, 1, 0 });
+
+    List<Point> Swarm = new List<Point>()
+      {
+        p0
+      , p1
+      , Point.LinearCombination(p0, 1, p1, 2)
+      , Point.LinearCombination(p0, 1, p1, 3)
+      , Point.LinearCombination(p0, 1, p1, 0.5)
+      };
+
+    AssertInitialPlaneBasis(Swarm, 1);
+  }
+
+  [Test]
+  public void LineNotInInitialPlaneTest() {
+    Point p0 = new Point(new double[] { 0, 0, 0 });
+    Point p1 = new Point(new double[] { 1, 1, 0 });
+
+    List<Point> Swarm = new List<Point>()
+      {
+        p0
+      , p1
+      , Point.LinearCombination(p0, 1, p1, 2)
+      , Point.LinearCombination(p0, 1, p1, 3)
+      , Point.LinearCombination(p0, 1, p1, 0.5)
+      };
+
+    AssertInitialPlaneBasis(Swarm, 1);
   }
 
   [Test]
@@ -31,7 +67,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -46,7 +82,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -9, -2, 0 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -59,7 +95,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 5, 5, 5 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -72,7 +108,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -1, -1, 5 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -85,7 +121,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, -5, 0 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -101,7 +137,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -1, 0, 0 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -119,7 +155,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, -5, 0 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -141,7 +177,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -0.6464806022, -0.6767596989, 2.0302790966 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
 
@@ -160,7 +196,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0.5, 6, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
 
@@ -178,7 +214,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -2, 2, 2.8284271247 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -195,7 +231,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 1, 1, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
 
@@ -215,7 +251,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { -2, 2, 2.8284271247 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
 
@@ -236,7 +272,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0.1, 0, 0.9 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -248,7 +284,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 1, 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -263,7 +299,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 4, 0, 0, 8 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 2);
   }
 
   [Test]
@@ -279,7 +315,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 77, 25, 1.454, 0 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
 
@@ -294,7 +330,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0.1, 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
@@ -308,7 +344,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
@@ -325,7 +361,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, 0, 0.8 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
 
@@ -340,7 +376,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
@@ -357,7 +393,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, -2, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
 
@@ -372,7 +408,7 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, 0, 0, 1 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
@@ -388,27 +424,34 @@ public class InitialPlaneTests {
       , new Point(new double[] { 0, -9, 4, 3 })
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
 
   [Test]
   public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
+    Point p0 = new Point(new double[] { 0, 0, 0, 0 });
     Point p1 = new Point(new double[] { 1, 0, 0, 0 });
     Point p2 = new Point(new double[] { 0, 1, 0, 0 });
+    Point p3 = new Point(new double[] { 0.1, 0, 1, 0 });
+    Point p4 = new Point(new double[] { 0.1, 0, 0, 1 });
 
     List<Point> Swarm = new List<Point>()
       {
-        new Point(new double[] { 0, 0, 0, 0 })
-      , new Point(new double[] { 1, 0, 0, 0 })
-      , new Point(new double[] { 0, 1, 0, 0 })
-      , new Point(new double[] { 0.1, 0, 1, 0 })
-      , new Point(new double[] { 0.1, 0, 0, 1 })
+        p0
+      , p1
+      , p2
+      , p3
+      , p4
       , Point.LinearCombination(p1, 0.3, p2, 0.2)
       , Point.LinearCombination(p1, 0.4, p2, 0.1)
+      , Point.LinearCombination(p1, 0.4, p3, 0.1)
+      , Point.LinearCombination(p1, 0.4, p3, 0.1)
+      , Point.LinearCombination(p1, 0.4, p4, 0.1)
+      , Point.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
@@ -441,7 +484,7 @@ public class InitialPlaneTests {
       , Point.LinearCombination(ps, ws)
       };
 
-    AssertInitialPlaneBasis(Swarm);
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
 }
