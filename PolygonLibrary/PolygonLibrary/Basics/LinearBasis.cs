@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -79,7 +80,6 @@ public class LinearBasis {
     Vector toAdd = v;
 
     if (!orthogonalize) {
-      
       _basis.Add(v);
 
       return true;
@@ -95,6 +95,7 @@ public class LinearBasis {
       return true;
     }
   }
+
 
   /// <summary>
   /// Expands a vector based on the basis of this linear space.
@@ -123,11 +124,12 @@ public class LinearBasis {
   /// Based on collection constructor 
   /// </summary>
   /// <param name="Vs">Vectors on which basis should be constructed</param>
-  public LinearBasis(IEnumerable<Vector> Vs) {
+  /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
+  public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
     _basis = new List<Vector>();
 
     foreach (Vector v in Vs) {
-      AddVector(v);
+      AddVector(v, orthogonalize);
     }
   }
 
@@ -137,19 +139,17 @@ public class LinearBasis {
   /// </summary>
   /// <param name="linearBasis">Basis to be checked</param>
   public static void CheckCorrectness(LinearBasis linearBasis) {
+#if DEBUG
     foreach (Vector bvec in linearBasis.Basis) {
-      Debug.Assert(Tools.CMP(bvec.Length, 1) == 0, "All vectors in the basis must have an unit length.");
+      Debug.Assert(Tools.EQ(bvec.Length, 1), "All vectors in the basis must have a unit length.");
     }
 
-    for (int i = 0; i < linearBasis.Count; i++) {
-      for (int k = 0; k < linearBasis.Count; k++) {
-        if (i == k) {
-          continue;
-        }
-
+    for (int i = 0; i < linearBasis.Count - 1; i++) {
+      for (int k = i + 1; k < linearBasis.Count; k++) {
         Debug.Assert(Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k]), "All pairwise different vectors must be orthogonal.");
       }
     }
+#endif
   }
 
 }
