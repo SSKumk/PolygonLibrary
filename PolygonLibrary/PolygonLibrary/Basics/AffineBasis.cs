@@ -101,6 +101,35 @@ public class AffineBasis {
   }
 
   /// <summary>
+  /// Projects a given point onto the affine basis.
+  /// </summary>
+  /// <param name="point">The point to project.</param>
+  /// <returns>The projected point.</returns>
+  public Point ProjectPoint(Point point) {
+    Debug.Assert(VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
+
+    Vector   t  = point - Origin;
+    double[] np = new double[BasisDim];
+
+    for (int i = 0; i < BasisDim; i++) {
+      np[i] = _basis[i] * t;
+    }
+
+    return new Point(np);
+  }
+
+  /// <summary>
+  /// Projects a given set of points onto the affine basis.
+  /// </summary>
+  /// <param name="Swarm">The set of points to project.</param>
+  /// <returns>The projected points.</returns>
+  public IEnumerable<Point> ProjectPoints(IEnumerable<Point> Swarm) {
+    foreach (Point point in Swarm) {
+      yield return ProjectPoint(point);
+    }
+  }
+
+  /// <summary>
   /// Construct the new affine basis with the specified origin point.
   /// </summary>
   /// <param name="o">The origin point of the affine basis.</param>
@@ -109,6 +138,35 @@ public class AffineBasis {
     _basis  = new LinearBasis();
   }
 
+  /// <summary>
+  /// Construct the new affine basis of full dim with d-dim zero origin and d-orth
+  /// </summary>
+  /// <param name="d">The dimension of the basis</param>
+  public AffineBasis(int d) {
+    _origin = new Point(d);
+    _basis  = new LinearBasis();
+
+    for (int i = 0; i < _origin.Dim; i++) {
+      _basis.AddVector(Vector.CreateOrth(_origin.Dim, i + 1), false);
+    }
+  }
+  
+  /// <summary>
+  /// Construct the new affine basis of given dimension with d-dim zero origin and d-orth
+  /// </summary>
+  public AffineBasis(int vecDim, int basisDim) {
+    Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
+    
+    _origin = new Point(vecDim);
+    _basis  = new LinearBasis();
+
+    for (int i = 0; i < basisDim; i++) {
+      _basis.AddVector(Vector.CreateOrth(_origin.Dim, i + 1), false);
+    }
+  }
+  
+  
+  
   /// <summary>
   ///Construct the new affine basis with the specified origin point and specified vectors.
   /// </summary>
