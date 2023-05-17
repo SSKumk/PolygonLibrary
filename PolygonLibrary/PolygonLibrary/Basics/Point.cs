@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -51,23 +52,9 @@ public class Point : IComparable<Point> {
   /// <summary>
   /// Convert a point to a one-dimensional array
   /// </summary>
-  /// <param name="v">The point to be converted</param>
+  /// <param name="p">The point to be converted</param>
   /// <returns>The resultant array</returns>
-  public static implicit operator double[](Point v) => v._p;
-
-  /// <summary>
-  /// Converting a one-dimensional array to a point
-  /// </summary>
-  /// <param name="p">Array to be converted</param>
-  /// <returns>The resultant point</returns>
-  public static explicit operator Point(double[] p) => new Point(p);
-
-  /// <summary>
-  /// Explicit convertor to the point from a vector
-  /// </summary>
-  /// <param name="v">The vector to be converted</param>
-  /// <returns>The point, which is the endpoint of the given vector</returns>
-  public static explicit operator Point(Vector v) => new Point((double[])v);
+  public static explicit operator double[](Point p) => p._p;
 #endregion
 
 
@@ -76,7 +63,7 @@ public class Point : IComparable<Point> {
   /// Point comparer realizing the lexicographic order
   /// </summary>
   /// <param name="p">The point to be compared with</param>
-  /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
+  /// <returns>+1, if this object greater than p; 0, if they are equal; -1, otherwise</returns>
   public int CompareTo(Point? p) {
     int d = Dim, res;
 #if DEBUG
@@ -257,11 +244,11 @@ public class Point : IComparable<Point> {
   }
 
   public override string ToString() {
-    string res = "{" + _p[0];
+    string res = "{" + _p[0].ToString(CultureInfo.InvariantCulture);
     int    d   = Dim, i;
 
     for (i = 1; i < d; i++) {
-      res += ";" + _p[i];
+      res += ";" + _p[i].ToString(CultureInfo.InvariantCulture);
     }
 
     res += "}";

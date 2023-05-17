@@ -75,30 +75,8 @@ public class Vector : IComparable<Vector> {
   /// </summary>
   /// <param name="v">The vector to be converted</param>
   /// <returns>The resultant array</returns>
-  public static implicit operator double[](Vector v) => v._v;
+  public static explicit operator double[](Vector v) => v._v;
 
-  /// <summary>
-  /// Converting a one-dimensional array to a vector
-  /// </summary>
-  /// <param name="v">Array to be converted</param>
-  /// <returns>The resultant vector</returns>
-  public static explicit operator Vector(double[] v) => new Vector(v);
-  
-  /// <summary>
-  /// Explicit convertor to a multidimensional vector from a two-dimensional vector
-  /// </summary>
-  /// <param name="v">The vector to be converted</param>
-  /// <returns>The resultant vector</returns>
-  public static explicit operator Vector(Vector2D v) => new(new double[]{v[0], v[1]});
-
-  /// <summary>
-  /// Explicit convertor to a multidimensional vector from a multidimensional point
-  /// </summary>
-  /// <param name="p">The point to be converted</param>
-  /// <returns>The resultant vector</returns>
-  public static explicit operator Vector(Point p) => new(p);
-
-  public Point ToPoint() => new Point(_v);
 #endregion
 
 #region Comparing
@@ -431,6 +409,26 @@ public class Vector : IComparable<Vector> {
     ComputeParameters();
   }
 
+  /// <summary>
+  /// Constructor based on point treated as radius-vector from 0.
+  /// </summary>
+  /// <param name="p">The point on which constructor construct the vector</param>
+  public Vector(Point p) : this((double[])p) { }
+  
+  /// <summary>
+  /// Constructor to a multidimensional vector from a two-dimensional vector
+  /// </summary>
+  /// <param name="v">The vector to be copied</param>
+  /// <returns>The resultant vector</returns>
+  public Vector(Vector2D v) : this(new double[] { v[0], v[1] }){}
+  
+  /// <summary>
+  /// Constructor to a multidimensional vector from a two-dimensional point
+  /// </summary>
+  /// <param name="p">The point to be copied</param>
+  /// <returns>The resultant vector</returns>
+  public Vector(Point2D p) : this(new double[] { p.x, p.y }){}
+  
   /// <summary>
   /// Computing fields
   /// </summary>
