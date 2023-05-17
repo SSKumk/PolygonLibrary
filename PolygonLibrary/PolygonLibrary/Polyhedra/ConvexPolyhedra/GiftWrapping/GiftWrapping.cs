@@ -68,4 +68,22 @@ public class GiftWrapping {
     return Basis;
   }
 
+  //todo
+  /*
+   * Взять
+   * Набор граней и информация о соседстве. Какие грани сходятся в каждой 0-мерной вершине + массив граней = Polyhedron
+   *
+   * Point, Point2D -- не трогаем
+   * 
+   * ) ISubspacePoint -- сюда добавляем всё что связывает точку 
+   * ) SubspacePoint : ISubspacePoint, Point умеет хранить о предыдущем предке и о самом первом
+   * ) SubspacePoint2D : ISubspacePoint, Point2D умеет хранить в 2D о предыдущем предке и о самом первом
+   *    - возможно сюда проектирование нужно принести
+   * 
+   * ) Polyhedron
+   *    Face : Polyhedron, IFace
+   *    Face2D : Polyhedron,IFace
+   *   - GetPoints в своём пространстве 
+   *   - GetPoints в заданном пространстве большей размерности 
+   */
 }
