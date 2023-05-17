@@ -313,16 +313,17 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 0, 1 })
       };
 
-    HashSet<Point> points = new HashSet<Point>
+    HashSet<Point> swarm = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 3 })
       , new Point(new double[] { -1, 4 })
       };
 
-    HashSet<Point> expected = points;
+    HashSet<Point> expected = swarm;
 
-    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
+    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -342,7 +343,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 0, -1 })
       };
 
-    HashSet<Point> points = new HashSet<Point>
+    HashSet<Point> swarm = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 3 })
@@ -356,7 +357,8 @@ public class AffineSpaceTests {
       , new Point(new double[] { 1, -4 })
       };
 
-    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
+    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -376,7 +378,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 0, -1 })
       };
 
-    HashSet<Point> points = new HashSet<Point>
+    HashSet<Point> swarm = new HashSet<Point>
       {
         new Point(new double[] { 1, 1 })
       , new Point(new double[] { 2, 4 })
@@ -390,7 +392,8 @@ public class AffineSpaceTests {
       , new Point(new double[] { 6, -2 })
       };
 
-    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
+    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -409,7 +412,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 0, 1, 0, 0 })
       };
 
-    HashSet<Point> points = new HashSet<Point>
+    HashSet<Point> swarm = new HashSet<Point>
       {
         new Point(new double[] { 0, 0, 0, 0 })
       , new Point(new double[] { 1, 0, 0, 0 })
@@ -425,7 +428,8 @@ public class AffineSpaceTests {
       , new Point(new double[] { 1, 1, 0, 0 })
       };
 
-    IEnumerable<Point> result = Tools.ProjectToAffineSpace(origin, basis, points);
+    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
