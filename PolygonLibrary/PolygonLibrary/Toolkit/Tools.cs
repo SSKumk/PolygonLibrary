@@ -156,7 +156,7 @@ public partial class Tools {
   /// <param name="m">The projection matrix</param>
   /// <param name="ps">The set of multidimensional points</param>
   /// <returns>List of two-dimensional projections</returns>
-  public static List<Point2D> Project2D(Matrix m, List<Point> ps) {
+  public static List<Point2D> Project2D(Matrix m, IEnumerable<Point> ps) {
 #if DEBUG
     if (m.Rows != 2) {
       throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
@@ -180,56 +180,28 @@ public partial class Tools {
 #endregion
 
 
-#region RotatePoints
-  public List<Point> RotateX(IEnumerable<Point> Swarm, double angle) {
-    double[,] rotX = { { 1.0, 0, 0 }, { 0, Math.Cos(angle), -Math.Sin(angle) }, { 0, Math.Sin(angle), Math.Cos(angle) } };
-
-    List<Point> res = new List<Point>();
-
-    foreach (Point point in Swarm) {
-      Vector   pv = new Vector(point);
-      double[] rv = new double[3];
-
-      for (int i = 0; i < 3; i++) {
-        for (int k = 0; k < 3; k++) {
-          rv[i] += rotX[i,k] * pv[k];
-        }
-      }
-
-      res.Add(new Point(rv));
-    }
-
-    return res;
-  }
-#endregion
-
-#region Gift Wrapping procedures
-  /// <summary>
-  /// Function project the Swarm of dD points into affine space with k-basis
-  /// </summary>
-  /// <param name="origin">The origin of k-Basis</param>
-  /// <param name="KBasis">The kD basis</param>
-  /// <param name="S">dD swarm of points</param>
-  /// <returns>kD swarm of points</returns>
-  public static IEnumerable<Point> ProjectToAffineSpace(Point origin, List<Basics.Vector> KBasis, IEnumerable<Point> S) {
-    int dim = KBasis[0].Dim;
-
-    foreach (Point p in S) {
-      Basics.Vector t  = p - origin;
-      double[]      nv = new double[dim];
-
-      foreach (Basics.Vector bvec in KBasis) {
-        for (int i = 0; i < dim; i++) {
-          Debug.Assert(bvec.Dim == dim, $"Dimensions don't match. Found {bvec.Dim} expected {dim}");
-          Debug.Assert(CMP(bvec.Length, 1) == 0, "Length must be 1 for vectors in KBasis!");
-
-          nv[i] += bvec[i] * t[i];
-        }
-      }
-
-      yield return new Point(nv);
-    }
-  }
-#endregion
+// #region RotatePoints
+//   public List<Point> RotateX(IEnumerable<Point> Swarm, double angle) {
+//     double[,] rotX = { { 1.0, 0, 0 }, { 0, Math.Cos(angle), -Math.Sin(angle) }, { 0, Math.Sin(angle), Math.Cos(angle) } };
+//
+//     List<Point> res = new List<Point>();
+//
+//     foreach (Point point in Swarm) {
+//       Vector   pv = new Vector(point);
+//       double[] rv = new double[3];
+//
+//       for (int i = 0; i < 3; i++) {
+//         for (int k = 0; k < 3; k++) {
+//           rv[i] += rotX[i, k] * pv[k];
+//         }
+//       }
+//
+//       res.Add(new Point(rv));
+//     }
+//
+//     return res;
+//   }
+// #endregion
+  
 
 }
