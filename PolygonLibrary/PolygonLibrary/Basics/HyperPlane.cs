@@ -50,6 +50,7 @@ public class HyperPlane {
 
   private AffineBasis? _affineBasis = null;
 
+  //todo Может стоит возвращаь HyperPlane?
   /// <summary>
   /// The normal vector to the hyperplane.
   /// </summary>
@@ -86,7 +87,7 @@ public class HyperPlane {
     get
       {
         if (_constantTerm is null) {
-          _constantTerm = -(Normal * (Vector)Origin);
+          _constantTerm = -(Normal * new Vector(Origin));
         }
 
         return _constantTerm.Value;
@@ -133,7 +134,7 @@ public class HyperPlane {
   /// </summary>
   /// <param name="point">The point at which the equation is to be evaluated.</param>
   /// <returns>The value of the equation of the hyperplane at the given point.</returns>
-  public double Eval(Point point) { return Normal * (Vector)point + ConstantTerm; }
+  public double Eval(Point point) { return Normal * new Vector(point) + ConstantTerm; }
 
   /// <summary>
   /// Checks if the hyperplane contains a given point.
