@@ -37,9 +37,9 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\Face2D.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\IFace.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\IConvexPolyhedron.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ISubspacePoint.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\Polyhedron.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\SimplexFace.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\Simplex.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\SubspacePoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\SubspacePoint2D.cs" />
         <Compile Include="Segments\Segment.cs" />
