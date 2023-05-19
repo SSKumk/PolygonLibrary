@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PolygonLibrary.Basics;
 
@@ -31,7 +32,7 @@ public class AffineBasis {
   /// <summary>
   /// <c>True</c> if this affine basis is full dimension.
   /// </summary>
-  public bool FullDim => _basis.IsFullDim;
+  public bool IsFullDim => _basis.IsFullDim;
 
   /// <summary>
   /// Gets the number of vectors in the linear basis associated with the affine basis.
@@ -185,6 +186,22 @@ public class AffineBasis {
   /// <param name="Ps">The points to use in the linear basis associated with the affine basis.</param>
   public AffineBasis(Point o, IEnumerable<Point> Ps) {
     _origin = o;
+    _basis  = new LinearBasis();
+
+    foreach (Point p in Ps) {
+      AddPointToBasis(p);
+    }
+  }
+  
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AffineBasis"/> class with the enumerable of points.
+  /// The first point is interpret as origin.
+  /// </summary>
+  /// <param name="Ps">The points to construct the affine basis.</param>
+  public AffineBasis(IEnumerable<Point> Ps) {
+    Debug.Assert(Ps.Any(), "At least one point should be in points");
+    
+    _origin = Ps.First();
     _basis  = new LinearBasis();
 
     foreach (Point p in Ps) {
