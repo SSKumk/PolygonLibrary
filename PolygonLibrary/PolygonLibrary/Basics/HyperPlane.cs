@@ -6,7 +6,7 @@ using PolygonLibrary.Toolkit;
 namespace PolygonLibrary.Basics;
 
 /// <summary>
-/// Represents a (d-1)-hyperplane in a d-euclidean space.
+/// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.
 /// </summary>
 public class HyperPlane {
 
@@ -50,7 +50,6 @@ public class HyperPlane {
 
   private AffineBasis? _affineBasis = null;
 
-  //todo Может стоит возвращаь HyperPlane?
   /// <summary>
   /// The normal vector to the hyperplane.
   /// </summary>
@@ -111,10 +110,24 @@ public class HyperPlane {
   /// Constructs a hyperplane from a given affine basis.
   /// </summary>
   /// <param name="affineBasis">The affine basis that defines the hyperplane.</param>
-  public HyperPlane(AffineBasis affineBasis) {
+  /// <param name="toOrient">A pair to orient the HyperPlane explicitly.
+  /// If null, no orientation is defined.
+  /// If not null, the point part of the pair should belong to the positive semi-space
+  /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
+  public HyperPlane(AffineBasis affineBasis, (Point, bool)? toOrient = null) {
     Origin       = affineBasis.Origin;
     _affineBasis = affineBasis;
     _dim         = Origin.Dim - 1;
+
+    if (toOrient is not null) {
+      double res = Eval(toOrient.Value.Item1);
+
+      Debug.Assert(Tools.NE(res), "For hyperplane orientation, a point is given, which belongs to the hyperplane");
+      if ((Tools.LT(res) && toOrient.Value.Item2) || (Tools.GT(res) && !toOrient.Value.Item2)) {
+        _normal       = -_normal!;
+        _constantTerm = -_constantTerm!;
+      }
+    }
   }
 
   /// <summary>
