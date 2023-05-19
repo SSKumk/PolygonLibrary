@@ -9,28 +9,28 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
-        <PackageReference Include="NUnit" Version="3.13.3"/>
-        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
-        <PackageReference Include="NUnit.Analyzers" Version="3.3.0"/>
-        <PackageReference Include="coverlet.collector" Version="3.1.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+        <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+        <PackageReference Include="coverlet.collector" Version="3.1.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj"/>
+        <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="_Store\**"/>
-        <Compile Remove="BentlyOttmannTests.cs"/>
+        <Compile Remove="_Store\**" />
+        <Compile Remove="BentlyOttmannTests.cs" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="_Store\**"/>
+        <EmbeddedResource Remove="_Store\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="_Store\**"/>
+        <None Remove="_Store\**" />
     </ItemGroup>
 
 </Project>
