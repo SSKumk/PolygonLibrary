@@ -3,7 +3,7 @@ using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra; 
 
-internal class SubspacePoint2D : Point2D, ISubspacePoint {
+public class SubspacePoint2D : Point2D, ISubspacePoint {
 
   public Point Original { get; }
 
