@@ -8,7 +8,7 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 /// <summary>
 /// Represents a point in a subspace greater than 2.
 /// </summary>
-internal class SubspacePoint : Point, ISubspacePoint {
+public class SubspacePoint : Point, ISubspacePoint {
 
   /// <summary>
   /// Gets the original point in the original coordinate system.
