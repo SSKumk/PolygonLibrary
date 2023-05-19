@@ -1,15 +1,21 @@
+using System;
 using System.Collections.Generic;
 using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra; 
 
-internal class Face : IFace {
+public class Face : IFace {
 
-  private HyperPlane _hyperPlane;
+  public IConvexPolyhedron Polyhedron => throw new System.NotImplementedException();
 
-  private Polyhedron _polyhedron;
-  
-  
+  public HyperPlane HyperPlane => throw new System.NotImplementedException();
+
+  public HashSet<IConvexPolyhedron> Edges => throw new System.NotImplementedException();
+
   public IEnumerable<ISubspacePoint> GetPoints() { throw new System.NotImplementedException(); }
+
+  public Face(IEnumerable<Point> Ps) {
+    throw new NotImplementedException();
+  }
 
 }

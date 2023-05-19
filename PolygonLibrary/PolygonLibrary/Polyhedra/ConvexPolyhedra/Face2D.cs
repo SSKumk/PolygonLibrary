@@ -1,18 +1,21 @@
+using System;
 using System.Collections.Generic;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons.ConvexPolygons;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra; 
+namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 
-internal class Face2D : IFace {
+public class Face2D : ConvexPolygon, IFace {
 
-  private ConvexPolygon _convexPolygon;
-  
-  
-  
-  //todo нужны ли нам точки в подпространстве с координатами локальными
-  
-  public IEnumerable<Point> GetPoints()        { throw new System.NotImplementedException(); }
-  public IEnumerable<Point> GetPoints(int dim) { throw new System.NotImplementedException(); }
+  public     IConvexPolyhedron           Polyhedron  => throw new NotImplementedException();
+  public     HyperPlane                  HyperPlane  { get; }
+  public new HashSet<IConvexPolyhedron>  Edges       => throw new NotImplementedException();
+  public     IEnumerable<ISubspacePoint> GetPoints() { throw new NotImplementedException(); }
+
+  public Face2D(IEnumerable<Point> Ps) : base(Ps) { //todo Наверное надо принимать ISubspacePoint, но как тогда конструировать base(Ps)???
+    AffineBasis faceABasis = new AffineBasis(Ps);
+    HyperPlane = new HyperPlane(faceABasis); //todo Как переориентировать нормаль если что???
+    // Polyhedron = new TwoDimensional();
+  }
 
 }
