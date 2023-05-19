@@ -112,7 +112,7 @@ public class AffineSpaceTests {
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
     Assert.That(basis, Is.Empty, "The linear basis associated with the affine basis should be initially empty.");
-    Assert.That(basis.FullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
+    Assert.That(basis.IsFullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
     Assert.That(basis.IsEmpty, Is.True, "The affine basis should be empty if no vectors are added.");
   }
 
@@ -146,7 +146,7 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis.FullDim
+       basis.IsFullDim
      , Is.True
      , "The affine basis should be full dimension if the input vectors (d-dim) are linearly independent and form the dD basis."
       );
@@ -184,7 +184,7 @@ public class AffineSpaceTests {
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
 
-    Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the input points span a linear space.");
+    Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the input points span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if non zero input points are provided.");
 
     AffineBasis.CheckCorrectness(basis);
@@ -216,7 +216,7 @@ public class AffineSpaceTests {
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
     Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
-    Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
+    Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
     AffineBasis.CheckCorrectness(basis);
@@ -248,7 +248,7 @@ public class AffineSpaceTests {
     Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero point should not be added to the linear basis associated with the affine basis.");
     Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
-    Assert.That(basis.FullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
+    Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
 
     AffineBasis.CheckCorrectness(basis);
