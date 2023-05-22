@@ -8,6 +8,51 @@ using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
+/*
+ * Входная информация:
+ * IEnumerable<Point> Swarm
+ * 
+ * Предлагаю в классе GW хранить:
+ * Swarm, возможно модифицируя его в процессе (но не понятно, насколько это оправдано)
+ * В конструкторе преобразовывать в ISubspacePoint
+ *
+ * ) AffineBasis надо ли делать ISP?
+ * ) HyperPlane надо ли делать ISP? Скорее всего нет, тогда и базис не нужно
+ *
+ * BuildInitialPlane --> private AffineBasis BuildInitialPlane(){ ... } Вроде не зависит от ISP
+ *
+ *  todo где гарантия того, что вектор, полученный при ортонормировании набора (Базис ребра + вектор грани будет направлен в сторону грани?)
+ *  Иначе, минимум скалярного произведения это -- наименьший угол.
+ * 
+ * В процессе работы алгоритма используются следующие классы:
+ * > ISubFace -- по-сути это грань
+ *   - int                  Dim 
+ *   - ConvexPolyhedronType Type (Тут нужен ещё одномерный. Как иначе перекатываться через ребро куба?)
+ *   - HashSet<ISubspacePoint> Vertices 
+ *   - AffineBasis? aBasis размерности Dim  (? базис живет на Point норм ли?)
+ *   - HashSet<ISubFace>? Edges   (null если Dim = 1) 
+ *   
+ *
+ *  Копится следующая информация
+ *   - Dictionary<ISubFace, (ISubFace, ISubFace)> FaceIncidence
+ *   - Dictionary<Point, HashSet<ISubFace>>       Fans  
+ *
+ * Получили множество граней, на их основе создали требуемый многогранник
+ *
+ *
+ * Выходная информация:
+ * Point.Dim = d
+ * IConvexPolyhedron
+ *  - int                  Dim
+ *  - ConvexPolyhedronType Type
+ *  - HashSet<Point>       Vertices
+ *  - HashSet<IConvexPolyhedron>  Faces   (не нужна доп. информация (HyperPlane))
+ *  - HashSet<IConvexPolyhedron>? Edges
+ *  - Dictionary<IConvexPolyhedron, (IConvexPolyhedron, IConvexPolyhedron)> FaceIncidence
+ *  - Dictionary<Point, HashSet<IConvexPolyhedron>> Fans 
+ */
+
+
 public class GiftWrapping {
 
   public static AffineBasis BuildInitialPlane(IEnumerable<Point> S) {
