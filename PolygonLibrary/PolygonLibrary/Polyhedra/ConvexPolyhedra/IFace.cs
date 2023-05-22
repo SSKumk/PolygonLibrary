@@ -33,10 +33,11 @@ public interface IFace {
   /// Gets the set of (d-2)-dimensional edges that belong to this face.
   /// </summary>
   HashSet<IConvexPolyhedron> Edges { get; }
-
-  /// <summary>
-  /// Gets an enumerable collection of subspace points that belong to this face.
-  /// </summary>
-  IEnumerable<ISubspacePoint> GetPoints();
+  
+  //
+  // /// <summary>
+  // /// Gets an enumerable collection of subspace points that belong to this face.
+  // /// </summary>
+  // IEnumerable<ISubspacePoint> GetPoints();
 
 }
