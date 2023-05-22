@@ -10,7 +10,6 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 /// </summary>
 public interface ISubspacePoint : IEquatable<ISubspacePoint> {
 
-  //todo Как получить точку в подпространстве размерности этого подпространства
   /// <summary>
   /// Gets the original point in the original coordinate system.
   /// Original point is the point before any projection to subspaces
