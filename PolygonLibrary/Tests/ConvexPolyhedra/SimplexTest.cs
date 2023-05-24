@@ -11,15 +11,21 @@ public class SimplexTest {
 
   [Test]
   public void ConstructSimplexTest_1() {
-    Point origin = new Point(new Vector(3));
-    Point e1     = new Point(Vector.CreateOrth(3, 1));
-    Point e2     = new Point(Vector.CreateOrth(3, 2));
-    Point e3     = new Point(Vector.CreateOrth(3, 3));
+    Point       origin = new Point(new Vector(5));
+    Point       e1     = new Point(Vector.CreateOrth(5, 1));
+    Point       e2     = new Point(Vector.CreateOrth(5, 2));
+    Point       e3     = new Point(Vector.CreateOrth(5, 3));
+    Point       e4     = new Point(Vector.CreateOrth(5, 4));
+    Point       e5     = new Point(Vector.CreateOrth(5, 5));
 
-    Point[] Ps = new Point[] { origin, e1, e2, e3 };
+    Point[] simplex5D = new Point[] { origin, e1, e2, e3, e4,e5 };
+    Point[] simplex4D = new Point[] { origin, e1, e2, e3, e4 };
+    Point[] simplex3D = new Point[] { origin, e1, e2, e3 };
 
-    Simplex tetrahedron = new Simplex(Ps);
-    Console.WriteLine(tetrahedron.Dim);
+    Simplex tetrahedron5D = new Simplex(simplex5D, 5);
+    Simplex tetrahedron4D  = new Simplex(simplex4D, 4);
+    Simplex tetrahedron3D  = new Simplex(simplex3D, 3);
+    Simplex tetrahedron3D_ = new Simplex(tetrahedron3D);
   }
 
 }
