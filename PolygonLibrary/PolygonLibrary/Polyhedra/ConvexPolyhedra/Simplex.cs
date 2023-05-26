@@ -69,20 +69,7 @@ public class Simplex : IConvexPolyhedron {
   /// <summary>
   /// Gets the set of (d-2)-dimensional edges of the simplex.
   /// </summary>
-  public HashSet<IConvexPolyhedron> Edges {
-    get
-      {
-        if (_edges is null) {
-          _edges = new HashSet<IConvexPolyhedron>();
-
-          foreach (IConvexPolyhedron face in Faces) {
-            _edges.UnionWith(face.Faces);
-          }
-        }
-
-        return _edges;
-      }
-  }
+  public HashSet<IConvexPolyhedron> Edges => _edges ??= IConvexPolyhedron.ConstructEdges(Faces);
 
 
   /// <summary>
@@ -93,25 +80,8 @@ public class Simplex : IConvexPolyhedron {
   /// <summary>
   /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
   /// </summary>
-  public Dictionary<IConvexPolyhedron, (IConvexPolyhedron F1, IConvexPolyhedron F2)> FaceIncidence {
-    get
-      {
-        if (_faceIncidence is null) {
-          Dictionary<IConvexPolyhedron, (IConvexPolyhedron, IConvexPolyhedron)> faceIncidence =
-            new Dictionary<IConvexPolyhedron, (IConvexPolyhedron, IConvexPolyhedron)>();
-
-          foreach (IConvexPolyhedron edge in Edges) {
-            IConvexPolyhedron[] x = Faces.Where(F => F.Faces.Contains(edge)).ToArray();
-
-            faceIncidence.Add(edge, (x[0], x[1]));
-          }
-
-          _faceIncidence = faceIncidence;
-        }
-
-        return _faceIncidence;
-      }
-  }
+  public Dictionary<IConvexPolyhedron, (IConvexPolyhedron F1, IConvexPolyhedron F2)> FaceIncidence =>
+    _faceIncidence ??= IConvexPolyhedron.ConstructFaceIncidence(Faces, Edges);
 
   /// <summary>
   /// The dictionary where the key is a d-dimensional point and the value is a set of faces that are incident to this point.
@@ -121,22 +91,7 @@ public class Simplex : IConvexPolyhedron {
   /// <summary>
   /// Gets the dictionary where the key is a d-dimensional point and the value is a set of faces that are incident to this point.
   /// </summary>
-  public Dictionary<Point, HashSet<IConvexPolyhedron>> Fans {
-    get
-      {
-        if (_fans is null) {
-          Dictionary<Point, HashSet<IConvexPolyhedron>> fans = new Dictionary<Point, HashSet<IConvexPolyhedron>>();
-
-          foreach (Point vertex in Vertices) {
-            fans.Add(vertex, new HashSet<IConvexPolyhedron>(Faces.Where(F => F.Vertices.Contains(vertex))));
-          }
-
-          _fans = fans;
-        }
-
-        return _fans;
-      }
-  }
+  public Dictionary<Point, HashSet<IConvexPolyhedron>> Fans => _fans ??= IConvexPolyhedron.ConstructFans(Vertices, Faces);
 
   /// <summary>
   /// Initializes a new instance of the <see cref="Simplex"/> class with the specified set of vertices and dimension.
@@ -164,22 +119,20 @@ public class Simplex : IConvexPolyhedron {
     _fans          = simplex._fans;
     _faceIncidence = simplex._faceIncidence;
   }
-  
+
   /// <summary>
   /// Determines whether the specified object is equal to simplex.
   /// </summary>
   /// <param name="obj">The object to compare with simplex.</param>
   /// <returns>True if the specified object is equal to convex polyhedron, False otherwise</returns>
-  public override bool Equals(object? obj)
-  {
-    if (obj == null || GetType() != obj.GetType())
-    {
+  public override bool Equals(object? obj) {
+    if (obj == null || GetType() != obj.GetType()) {
       return false;
     }
 
     Simplex other = (Simplex)obj;
-    if (Dim != other.Dim)
-    {
+
+    if (Dim != other.Dim) {
       return false;
     }
 

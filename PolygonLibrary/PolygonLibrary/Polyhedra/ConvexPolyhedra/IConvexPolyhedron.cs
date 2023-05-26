@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PolygonLibrary.Basics;
+using System.Linq;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 
@@ -59,11 +60,24 @@ public interface IConvexPolyhedron {
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.
   /// </summary>
+  /// <param name="polyhedron">The convex polyhedron to compare</param>
   /// <param name="obj">The object to compare with convex polyhedron.</param>
   /// <returns>True if the specified object is equal to convex polyhedron, False otherwise</returns>
-  public bool Equals(object? obj);
+  public static bool Equals(IConvexPolyhedron polyhedron, object? obj) {
+    if (obj == null || polyhedron.GetType() != obj.GetType()) {
+      return false;
+    }
 
-  /// <summary>
+    IConvexPolyhedron other = (IConvexPolyhedron)obj;
+
+    if (polyhedron.Dim != other.Dim) {
+      return false;
+    }
+
+    return polyhedron.Vertices.SetEquals(other.Vertices);
+  }
+
+  /// <summary> todo Может есть лучше ХЕШ???
   /// Returns a hash code for the convex polyhedron based on specified set of vertices and dimension.
   /// </summary>
   /// <param name="Vertices">The set of vertices to calculate a hash code for.</param>
@@ -71,12 +85,64 @@ public interface IConvexPolyhedron {
   /// <returns>A hash code for the specified set of vertices and dimension.</returns>
   public static int GetHashCode(HashSet<Point> Vertices, int Dim) {
     int hash = 0;
-  
+
     foreach (Point vertex in Vertices) {
       hash = HashCode.Combine(hash, vertex.GetHashCode());
     }
+
     return HashCode.Combine(hash, Dim);
   }
-  
+
+  /// <summary>
+  /// Aux procedure.
+  /// </summary>
+  /// <param name="Faces">Faces of the convex polyhedron to extract edges from.</param>
+  /// <returns>A set of edges of given faces.</returns>
+  protected static HashSet<IConvexPolyhedron> ConstructEdges(HashSet<IConvexPolyhedron> Faces) {
+    HashSet<IConvexPolyhedron> Edges = new HashSet<IConvexPolyhedron>();
+
+    foreach (IConvexPolyhedron face in Faces) {
+      Edges.UnionWith(face.Faces);
+    }
+
+    return Edges;
+  }
+
+  /// <summary>
+  /// Aux procedure.
+  /// </summary>
+  /// <param name="Faces">Faces of the convex polyhedron</param>
+  /// <param name="Edges">Edges of the convex polyhedron</param>
+  /// <returns>A dictionary which key is a edge, and a pair (F1, F2) two faces incidence to this key. </returns>
+  protected static Dictionary<IConvexPolyhedron, (IConvexPolyhedron F1, IConvexPolyhedron F2)> ConstructFaceIncidence(
+    HashSet<IConvexPolyhedron> Faces
+  , HashSet<IConvexPolyhedron> Edges) {
+    Dictionary<IConvexPolyhedron, (IConvexPolyhedron, IConvexPolyhedron)> faceIncidence =
+      new Dictionary<IConvexPolyhedron, (IConvexPolyhedron, IConvexPolyhedron)>();
+
+    foreach (IConvexPolyhedron edge in Edges) {
+      IConvexPolyhedron[] x = Faces.Where(F => F.Faces.Contains(edge)).ToArray();
+
+      faceIncidence.Add(edge, (x[0], x[1]));
+    }
+
+    return faceIncidence;
+  }
+
+  /// <summary>
+  /// Aux procedure.
+  /// </summary>
+  /// <param name="Vertices">Vertices of the convex polyhedron.</param>
+  /// <param name="Faces">Faces of the convex polyhedron.</param>
+  /// <returns>A dictionary which key is a vertex and a value is a set of faces that contains this key</returns>
+  protected static Dictionary<Point, HashSet<IConvexPolyhedron>> ConstructFans(HashSet<Point> Vertices, HashSet<IConvexPolyhedron> Faces) {
+    Dictionary<Point, HashSet<IConvexPolyhedron>> fans = new Dictionary<Point, HashSet<IConvexPolyhedron>>();
+
+    foreach (Point vertex in Vertices) {
+      fans.Add(vertex, new HashSet<IConvexPolyhedron>(Faces.Where(F => F.Vertices.Contains(vertex))));
+    }
+
+    return fans;
+  }
 
 }
