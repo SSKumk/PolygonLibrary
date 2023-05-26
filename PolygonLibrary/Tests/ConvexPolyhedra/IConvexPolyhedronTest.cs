@@ -7,7 +7,7 @@ using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 namespace Tests.ConvexPolyhedra;
 
 [TestFixture]
-public class SimplexTest {
+public class IConvexPolyhedronTest {
 
   [Test]
   public void ConstructSimplexTest_1() {
@@ -27,5 +27,16 @@ public class SimplexTest {
     Simplex tetrahedron3D  = new Simplex(simplex3D, 3);
     Simplex tetrahedron3D_ = new Simplex(tetrahedron3D);
   }
+  
 
+  [Test]
+  public void ConstructNonSimplexTest_1() {
+    Point origin = new Point(new Vector(5));
+    Point e1     = new Point(Vector.CreateOrth(5, 1));
+    Point e2     = new Point(Vector.CreateOrth(5, 2));
+    Point e3     = new Point(Vector.CreateOrth(5, 3));
+    Point e4     = new Point(Vector.CreateOrth(5, 4));
+    Point e5     = new Point(Vector.CreateOrth(5, 5));
+    
+  }
 }
