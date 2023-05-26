@@ -59,6 +59,7 @@ public interface IConvexPolyhedron {
 
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.
+  /// Two polyhedra are equal if they have the same dimensions and the sets of their vertices are equal. 
   /// </summary>
   /// <param name="polyhedron">The convex polyhedron to compare</param>
   /// <param name="obj">The object to compare with convex polyhedron.</param>
@@ -77,7 +78,7 @@ public interface IConvexPolyhedron {
     return polyhedron.Vertices.SetEquals(other.Vertices);
   }
 
-  /// <summary> todo Может есть лучше ХЕШ???
+  /// <summary> todo Надо его хранить!
   /// Returns a hash code for the convex polyhedron based on specified set of vertices and dimension.
   /// </summary>
   /// <param name="Vertices">The set of vertices to calculate a hash code for.</param>
@@ -86,7 +87,7 @@ public interface IConvexPolyhedron {
   public static int GetHashCode(HashSet<Point> Vertices, int Dim) {
     int hash = 0;
 
-    foreach (Point vertex in Vertices) {
+    foreach (Point vertex in Vertices.OrderBy(v => v)) {
       hash = HashCode.Combine(hash, vertex.GetHashCode());
     }
 

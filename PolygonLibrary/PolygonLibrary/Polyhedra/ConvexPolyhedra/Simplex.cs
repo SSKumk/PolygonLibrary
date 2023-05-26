@@ -126,17 +126,7 @@ public class Simplex : IConvexPolyhedron {
   /// <param name="obj">The object to compare with simplex.</param>
   /// <returns>True if the specified object is equal to convex polyhedron, False otherwise</returns>
   public override bool Equals(object? obj) {
-    if (obj == null || GetType() != obj.GetType()) {
-      return false;
-    }
-
-    Simplex other = (Simplex)obj;
-
-    if (Dim != other.Dim) {
-      return false;
-    }
-
-    return Vertices.SetEquals(other.Vertices);
+    return IConvexPolyhedron.Equals(this, obj);
   }
 
   /// <summary>
