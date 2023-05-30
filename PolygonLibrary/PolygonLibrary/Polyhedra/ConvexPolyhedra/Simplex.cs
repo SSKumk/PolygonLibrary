@@ -30,7 +30,7 @@ public class Simplex : BaseConvexPolyhedron {
   /// <summary>
   /// The set of (d-1)-dimensional faces of a simplex, which are in turn a Simplex.
   /// </summary>
-  private HashSet<BaseConvexPolyhedron>? _faces = null; //todo почему я сюда не могу написать Simplex. 
+  private HashSet<BaseConvexPolyhedron>? _faces = null; 
   // todo Simplex2D как с ним быть?
 
   /// <summary>
@@ -47,8 +47,7 @@ public class Simplex : BaseConvexPolyhedron {
             BaseConvexPolyhedron? simplex  = null;
 
             if (Dim == 3) { //Therefore Face.Dim == 2
-              // simplex = new TwoDimensional(faceVert);
-              throw new NotImplementedException();
+              simplex = new TwoDimensional(new HashSet<Point>(faceVert));
             } else {
               simplex = new Simplex(faceVert, Dim - 1);
             }

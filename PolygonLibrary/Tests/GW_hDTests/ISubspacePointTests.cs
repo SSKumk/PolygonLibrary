@@ -22,7 +22,7 @@ public class ISubspacePointTests {
     AffineBasis aBasis2 = new AffineBasis(3,2);
 
     Point          p6 = new Point(new double[] { 1, 2, 3, 4, 5, 6 });
-    ISubspacePoint p5 = SubspacePoint.ProjectTo(aBasis5, p6);
+    ISubspacePoint p5 = SubPoint.ProjectTo(aBasis5, p6);
     ISubspacePoint p4 = p5.ProjectTo(aBasis4);
     ISubspacePoint p3 = p4.ProjectTo(aBasis3);
     ISubspacePoint p2 = p3.ProjectTo(aBasis2);
@@ -33,7 +33,7 @@ public class ISubspacePointTests {
     Console.WriteLine($"{p2}. P = {p2.Parent}. O = {p2.Original}");
 
     Point p3c = new Point((Point)p3);
-    Debug.Assert((SubspacePoint)p2.Parent! == p3c);
+    Debug.Assert((SubPoint)p2.Parent! == p3c);
     Debug.Assert(p3.Parent!.Equals(p4));
     Debug.Assert(p4.Parent!.Equals(p5));
     Debug.Assert(p5.Parent!.Equals(p6));

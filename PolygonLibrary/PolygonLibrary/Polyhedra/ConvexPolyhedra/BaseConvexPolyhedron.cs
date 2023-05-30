@@ -154,9 +154,6 @@ public abstract class BaseConvexPolyhedron {
     return _hash.Value;
   }
 
-  //????????????????????????????????????????????????????????????????????????????????????????????
-  protected void AddIncidenceInfo(TempIncidenceInfo tempIncidence, BaseConvexPolyhedron face) { }
-
   /// <summary>
   /// Aux procedure for constructing edges. Also, if the faceIncidence do not establish yet, the procedure does it.
   /// </summary>
@@ -180,10 +177,12 @@ public abstract class BaseConvexPolyhedron {
       }
     }
 
-    if (_faceIncidence is not null) {
+    if (_faceIncidence is null) {
       Debug.Assert(tempIncidence != null, nameof(tempIncidence) + " != null");
 
-      foreach (KeyValuePair<BaseConvexPolyhedron,(BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> pair in tempIncidence) {
+      _faceIncidence = new IncidenceInfo();
+
+      foreach (KeyValuePair<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> pair in tempIncidence) {
         _faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
       }
     }
@@ -215,6 +214,10 @@ public abstract class BaseConvexPolyhedron {
           tempIncidence.Add(edge, (face, null));
         }
       }
+    }
+
+    foreach (KeyValuePair<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> pair in tempIncidence) {
+      _faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
   }
 

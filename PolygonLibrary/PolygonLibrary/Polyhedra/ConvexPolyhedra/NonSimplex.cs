@@ -15,7 +15,7 @@ public class NonSimplex : BaseConvexPolyhedron {
   /// <summary>
   /// Gets the type of the convex polyhedron.
   /// </summary>
-  public override  ConvexPolyhedronType Type { get; }
+  public override ConvexPolyhedronType Type { get; }
 
   /// <summary>
   /// Gets the set of vertices of the polyhedron.
@@ -36,11 +36,13 @@ public class NonSimplex : BaseConvexPolyhedron {
     Type  = ConvexPolyhedronType.NonSimplex;
     Faces = faces;
 
-    Vertices = new HashSet<Point>();
+    HashSet<Point> tempVertices = new HashSet<Point>();
 
-    foreach (BaseConvexPolyhedron face in Faces) {
-      Vertices.UnionWith(face.Vertices);
+    foreach (BaseConvexPolyhedron face in faces) {
+      tempVertices.UnionWith(face.Vertices);
     }
+
+    Vertices = tempVertices;
   }
 
 }

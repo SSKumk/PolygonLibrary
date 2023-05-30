@@ -114,16 +114,23 @@ public class HyperPlane {
   /// If null, no orientation is defined.
   /// If not null, the point part of the pair should belong to the positive semi-space
   /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
-  public HyperPlane(AffineBasis affineBasis, (Point, bool)? toOrient = null) {
+  public HyperPlane(AffineBasis affineBasis, (Point point, bool isPositive)? toOrient = null) {
+    Debug.Assert
+      (
+       affineBasis.BasisDim == affineBasis.Origin.Dim - 1
+     , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.BasisDim}"
+      );
+
     Origin       = affineBasis.Origin;
     _affineBasis = affineBasis;
     _dim         = Origin.Dim - 1;
 
     if (toOrient is not null) {
-      double res = Eval(toOrient.Value.Item1);
+      double res = Eval(toOrient.Value.point);
 
       Debug.Assert(Tools.NE(res), "For hyperplane orientation, a point is given, which belongs to the hyperplane");
-      if ((Tools.LT(res) && toOrient.Value.Item2) || (Tools.GT(res) && !toOrient.Value.Item2)) {
+
+      if ((Tools.LT(res) && toOrient.Value.isPositive) || (Tools.GT(res) && !toOrient.Value.isPositive)) {
         _normal       = -_normal!;
         _constantTerm = -_constantTerm!;
       }
