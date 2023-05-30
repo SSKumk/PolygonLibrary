@@ -7,9 +7,9 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 
 public class Face2D : ConvexPolygon, IFace {
 
-  public     IConvexPolyhedron           Polyhedron  => throw new NotImplementedException();
+  public     BaseConvexPolyhedron           Polyhedron  => throw new NotImplementedException();
   public     HyperPlane                  HyperPlane  { get; }
-  public new HashSet<IConvexPolyhedron>  Edges       => throw new NotImplementedException();
+  public new HashSet<BaseConvexPolyhedron>  Edges       => throw new NotImplementedException();
   public     IEnumerable<ISubspacePoint> GetPoints() { throw new NotImplementedException(); }
 
   public Face2D(IEnumerable<Point> Ps) : base(Ps) { //todo Наверное надо принимать ISubspacePoint, но как тогда конструировать base(Ps)???

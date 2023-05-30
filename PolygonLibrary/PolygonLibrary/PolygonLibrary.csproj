@@ -40,7 +40,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\ISubspacePoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubspacePoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubspacePoint2D.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\IConvexPolyhedron.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\BaseConvexPolyhedron.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\NonSimplex.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\Simplex.cs" />
         <Compile Include="Segments\Segment.cs" />

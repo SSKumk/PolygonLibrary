@@ -11,7 +11,7 @@ public interface IFace {
   /// <summary>
   /// Gets the convex polyhedron which forms this face.
   /// </summary>
-  IConvexPolyhedron Polyhedron { get; }
+  BaseConvexPolyhedron Polyhedron { get; }
 
   /// <summary>
   /// Gets the (d-1)-dimensional hyperplane that goes through this face.
@@ -32,7 +32,7 @@ public interface IFace {
   /// <summary>
   /// Gets the set of (d-2)-dimensional edges that belong to this face.
   /// </summary>
-  HashSet<IConvexPolyhedron> Edges { get; }
+  HashSet<BaseConvexPolyhedron> Edges { get; }
   
   //
   // /// <summary>
