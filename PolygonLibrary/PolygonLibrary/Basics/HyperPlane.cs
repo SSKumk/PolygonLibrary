@@ -126,14 +126,7 @@ public class HyperPlane {
     _dim         = Origin.Dim - 1;
 
     if (toOrient is not null) {
-      double res = Eval(toOrient.Value.point);
-
-      Debug.Assert(Tools.NE(res), "For hyperplane orientation, a point is given, which belongs to the hyperplane");
-
-      if ((Tools.LT(res) && toOrient.Value.isPositive) || (Tools.GT(res) && !toOrient.Value.isPositive)) {
-        _normal       = -_normal!;
-        _constantTerm = -_constantTerm!;
-      }
+      OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
     }
   }
 
@@ -147,6 +140,22 @@ public class HyperPlane {
     _affineBasis  = hp._affineBasis;
     _normal       = hp._normal;
     _constantTerm = hp._constantTerm;
+  }
+
+  /// <summary>
+  /// Method to orient normal of the plane.
+  /// </summary>
+  /// <param name="point">Point should belong to the semi-space.</param>
+  /// <param name="isPositive">If the bool is <c>true</c> than point is in positive semi-space, in the negative semi-space otherwise.</param>
+  public void OrientNormal(Point point, bool isPositive) {
+    double res = Eval(point);
+
+    Debug.Assert(Tools.NE(res), "For hyperplane orientation, a point is given, which belongs to the hyperplane");
+
+    if ((Tools.LT(res) && isPositive) || (Tools.GT(res) && !isPositive)) {
+      _normal       = -_normal!;
+      _constantTerm = -_constantTerm!;
+    }
   }
 
   /// <summary>
