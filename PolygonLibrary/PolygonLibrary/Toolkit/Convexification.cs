@@ -116,7 +116,7 @@ namespace PolygonLibrary.Toolkit
     }
     #endregion
 
-    #region Two-dimensional convexofocation by means of arc algorithm
+    #region Two-dimensional convexification by means of arc algorithm
     /// <summary>
     /// Construction of a convex hull of a two-dimensional swarm of points; 
     /// the swarm may contain pairs of coinciding points.
