@@ -15,7 +15,7 @@ internal class SubSimplex : BaseSubCP {
   /// <summary>
   /// Gets the dimension of the simplex.
   /// </summary>
-  public override int Dim { get; }
+  public override int PolyhedronDim { get; }
 
   /// <summary>
   /// Gets the type of the convex polyhedron.
@@ -64,18 +64,24 @@ internal class SubSimplex : BaseSubCP {
   public override AffineBasis? Basis { get; set; }
 
   /// <summary>
+  /// Lifts a simplex to the previous space.
+  /// </summary>
+  /// <returns>A simplex in (d+1)-space.</returns>
+  public override BaseSubCP ToPreviousSpace() {
+    return new SubSimplex(Vertices.Select(v => v.Parent)!);
+  }
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="SubSimplex"/> class with the specified set of vertices and dimension.
   /// </summary>
   /// <param name="simplex">The set of vertices of the simplex.</param>
-  // /// <param name="aBasis">The affine basis of this polyhedron</param>
   public SubSimplex(IEnumerable<SubPoint> simplex) {
     Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
 
-    Dim           = simplex.First().Dim - 1;
+    PolyhedronDim = simplex.Count() - 1;
     Type          = SubCPType.Simplex;
     Vertices      = new HashSet<SubPoint>(simplex);
     FaceIncidence = null;
-    // Basis         = aBasis;
   }
 
 }

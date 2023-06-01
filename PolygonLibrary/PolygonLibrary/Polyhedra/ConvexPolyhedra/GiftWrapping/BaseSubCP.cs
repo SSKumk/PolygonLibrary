@@ -22,7 +22,7 @@ public class IncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)>
 /// <b>NonSimplex</b> - the polyhedron is a complex structure
 /// <para><b>TwoDimensional</b> - the polyhedron is a 2D-plane polygon</para>
 /// </summary>
-public enum SubCPType { Simplex, NonSimplex, TwoDimensional }
+public enum SubCPType { Simplex, NonSimplex, TwoDimensional, OneDimensional }
 
 /// <summary>
 /// Represents the d-dimensional convex polyhedron
@@ -30,9 +30,14 @@ public enum SubCPType { Simplex, NonSimplex, TwoDimensional }
 public abstract class BaseSubCP {
 
   /// <summary>
+  /// Gets the dimension of the space in which the polyhedron is treated.
+  /// </summary>
+  public int SpaceDim => Vertices.First().Dim;
+  
+  /// <summary>
   /// Gets the dimension of the polyhedron.
   /// </summary>
-  public abstract int Dim { get; }
+  public abstract int PolyhedronDim { get; }
 
   /// <summary>
   /// Gets the type of the convex polyhedron.
@@ -50,7 +55,7 @@ public abstract class BaseSubCP {
   /// <summary>
   /// Gets the set of (d-1)-dimensional faces of the polyhedron.
   /// </summary>
-  public abstract HashSet<BaseSubCP> Faces { get; }
+  public abstract HashSet<BaseSubCP>? Faces { get; }
 
 
   /// <summary>
@@ -66,6 +71,14 @@ public abstract class BaseSubCP {
 
 
   /// <summary>
+  /// Converts current d-dimensional polyhedron in d-dimensional space to d-dimensional polyhedron in (d+1)-dimensional space.
+  /// Assumed that the corresponding parents of vertices are exist. 
+  /// </summary>
+  /// <returns>The d-dimensional polyhedron in (d+1)-dimensional space.</returns>
+  public abstract BaseSubCP ToPreviousSpace();
+
+
+  /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.
   /// Two polyhedra are equal if they have the same dimensions and the sets of their vertices are equal. 
   /// </summary>
@@ -78,7 +91,7 @@ public abstract class BaseSubCP {
 
     BaseSubCP other = (BaseSubCP)obj;
 
-    if (this.Dim != other.Dim) {
+    if (this.PolyhedronDim != other.PolyhedronDim) {
       return false;
     }
 
@@ -102,7 +115,7 @@ public abstract class BaseSubCP {
         hash = HashCode.Combine(hash, vertex.GetHashCode());
       }
 
-      _hash = HashCode.Combine(hash, Dim);
+      _hash = HashCode.Combine(hash, PolyhedronDim);
     }
 
     return _hash.Value;

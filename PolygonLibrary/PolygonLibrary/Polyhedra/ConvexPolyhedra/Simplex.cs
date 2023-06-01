@@ -46,7 +46,7 @@ public class Simplex : BaseConvexPolyhedron {
             IEnumerable<Point>    faceVert = Vertices.Where(v => !v.Equals(vertex));
             BaseConvexPolyhedron? simplex  = null;
 
-            if (Dim == 3) { //Therefore Face.Dim == 2
+            if (Dim == 3) { //Therefore Face.PolyhedronDim == 2
               simplex = new TwoDimensional(new HashSet<Point>(faceVert));
             } else {
               simplex = new Simplex(faceVert, Dim - 1);

@@ -122,17 +122,17 @@ namespace PolygonLibrary.Toolkit
     /// the swarm may contain pairs of coinciding points.
     /// The boundary is constructed by means of building lower and upper envelops
     /// </summary>
-    /// <param name="swarmOrig">List of the original swarm</param>
+    /// <param name="swarmOrig">Enumerable collection of the original swarm</param>
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
 		/// <remarks>It is guaranteed that the resultant list contains references
 		/// to some of the original objects; no new points are created during work of the method</remarks>
-    public static List<Point2D> ArcHull2D(List<Point2D> swarmOrig)
+    public static List<Point2D> ArcHull2D(IEnumerable<Point2D> swarmOrig)
     {
-      if (swarmOrig.Count <= 1)
+      if (swarmOrig.Count() <= 1)
       {
         List<Point2D> res = new List<Point2D>();
-        if (swarmOrig.Count == 1) {
-          res.Add(swarmOrig[0]);
+        if (swarmOrig.Count() == 1) {
+          res.Add(swarmOrig.First());
         }
 
         return res;

@@ -220,6 +220,15 @@ public class AffineBasis {
   }
 
   /// <summary>
+  /// Copy constructor.
+  /// </summary>
+  /// <param name="affineBasis">The affine basis to be copied.</param>
+  public AffineBasis(AffineBasis affineBasis) {
+    _origin = affineBasis._origin;
+    _basis  = affineBasis._basis;
+  }
+
+  /// <summary>
   /// Aux method to check then the basis is correct
   /// </summary>
   /// <param name="affineBasis">Basis to be checked</param>

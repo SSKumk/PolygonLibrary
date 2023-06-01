@@ -4,12 +4,15 @@ using PolygonLibrary.Basics;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
+/// <summary>
+/// Non simplex 3 and higher dimension
+/// </summary>
 public class SubNonSimplex : BaseSubCP {
 
   /// <summary>
   /// Gets the dimension of the polyhedron.
   /// </summary>
-  public override int Dim { get; }
+  public override int PolyhedronDim { get; }
 
 
   /// <summary>
@@ -42,29 +45,36 @@ public class SubNonSimplex : BaseSubCP {
   /// </summary>
   public override AffineBasis? Basis { get; set; }
 
+  public override BaseSubCP ToPreviousSpace() {
+    HashSet<BaseSubCP> faces = ;
+  }
+
   /// <summary>
   /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces. 
   /// </summary>
   /// <param name="faces">Faces to construct the convex polyhedron</param>
   /// <param name="tempIncidence">Information about a face incidence</param>
-  public SubNonSimplex(HashSet<BaseSubCP> faces, TempIncidenceInfo tempIncidence) {
-    Dim   = faces.First().Dim + 1;
+  /// <param name="Vs">Vertices of this convex polyhedron. If null then its construct base on faces.</param>
+  public SubNonSimplex(HashSet<BaseSubCP> faces, TempIncidenceInfo tempIncidence, HashSet<SubPoint>? Vs = null) {
+    PolyhedronDim   = faces.First().PolyhedronDim + 1;
     Type  = SubCPType.NonSimplex;
     Faces = faces;
 
-    IncidenceInfo?     faceIncidence = new IncidenceInfo();
-    HashSet<SubPoint> tempVertices  = new HashSet<SubPoint>();
-    
+    IncidenceInfo?    faceIncidence = new IncidenceInfo();
+
     foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in tempIncidence) {
       faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
 
-    foreach (BaseSubCP face in faces) {
-      tempVertices.UnionWith(face.Vertices);
+    if (Vs is null) {
+      Vs = new HashSet<SubPoint>();
+      foreach (BaseSubCP face in faces) {
+        Vs.UnionWith(face.Vertices);
+      }
     }
-    
+
     FaceIncidence = faceIncidence;
-    Vertices      = tempVertices;
+    Vertices      = Vs;
   }
 
 }
