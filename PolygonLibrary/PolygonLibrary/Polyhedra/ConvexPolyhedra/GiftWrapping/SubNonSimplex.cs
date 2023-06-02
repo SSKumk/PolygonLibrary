@@ -45,29 +45,42 @@ public class SubNonSimplex : BaseSubCP {
   /// </summary>
   public override AffineBasis? Basis { get; set; }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <returns></returns>
   public override BaseSubCP ToPreviousSpace() {
-    HashSet<BaseSubCP> faces = ;
+    //todo Поднимать не весь комплекс, а только d-1 и d-2
+    HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
+    // IncidenceInfo      info  = new IncidenceInfo();
+
+    // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in FaceIncidence!) {
+    //   info.Add(pair.Key.ToPreviousSpace(), (pair.Value.F1.ToPreviousSpace(), pair.Value.F2.ToPreviousSpace()));
+    // }
+
+    return new SubNonSimplex(faces, FaceIncidence!);
   }
 
   /// <summary>
   /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces. 
   /// </summary>
   /// <param name="faces">Faces to construct the convex polyhedron</param>
-  /// <param name="tempIncidence">Information about a face incidence</param>
+  /// <param name="incidence"></param>
   /// <param name="Vs">Vertices of this convex polyhedron. If null then its construct base on faces.</param>
-  public SubNonSimplex(HashSet<BaseSubCP> faces, TempIncidenceInfo tempIncidence, HashSet<SubPoint>? Vs = null) {
-    PolyhedronDim   = faces.First().PolyhedronDim + 1;
-    Type  = SubCPType.NonSimplex;
-    Faces = faces;
+  public SubNonSimplex(HashSet<BaseSubCP> faces, IncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
+    PolyhedronDim = faces.First().PolyhedronDim + 1;
+    Type          = SubCPType.NonSimplex;
+    Faces         = faces;
 
-    IncidenceInfo?    faceIncidence = new IncidenceInfo();
+    IncidenceInfo faceIncidence = new IncidenceInfo();
 
-    foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in tempIncidence) {
+    foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in incidence) {
       faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
 
     if (Vs is null) {
       Vs = new HashSet<SubPoint>();
+
       foreach (BaseSubCP face in faces) {
         Vs.UnionWith(face.Vertices);
       }

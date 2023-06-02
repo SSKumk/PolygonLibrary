@@ -52,25 +52,55 @@ public class GiftWrapping {
   //
   //   return P;
   // }
+  public static BaseSubCP ToConvex(IEnumerable<Point> Swarm) {
+    return GW(Swarm.Select(s => new SubPoint(s, null, s)));
+  }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="S">The swarm of d-dimensional points for some d.</param>
+  /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
+  /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space.</param>
+  /// <returns>
+  /// The (d-1)-dimensional face and its (d-2)-dimensional edges expressed in terms of d-dimensional points.
+  /// The faces of a lower dimension are not lifted up.
+  /// </returns>
+  public static BaseSubCP BuildFace(IEnumerable<SubPoint> S, AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
+    HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
+    List<SubPoint> inPlane    = new List<SubPoint>();      //todo заметим, хранение разумно только на самом верхнем уровне
+
+    foreach (SubPoint s in S) {
+      if (hyperPlane.Contains(s)) {
+        inPlane.Add(new SubPoint(s.ProjectTo(FaceBasis), s, s.Original));
+      }
+    }
+
+    if (inPlane.Count == FaceBasis.VecDim) {
+      return new SubSimplex(inPlane.Select(p => p.Parent!));
+    } else {
+      return GW(inPlane, initEdge).ToPreviousSpace();
+    }
+  }
+  // /// The face consists of d-dimensional sub-points and has its (d-1)-dimensional affine basis,
+  // /// which includes d-1 d-dimensional vectors of the original space.
   /// <summary>
   /// Procedure performing convexification of a swarm of d-dimensional points for some d.
   /// </summary>
-  /// <param name="S">The swarm to be convexified.</param>
+  /// <param name="S">The swarm of d-dimensional points to be convexified.</param>
   /// <param name="initFace">
-  /// If not null, then this is some (d-1)-dimensional face of the convex hull to be constructed.
-  /// The face consists of d-dimensional sub-points and has its (d-1)-dimensional affine basis,
-  /// which includes d-1 d-dimensional vectors of the original space.</param>
+  /// If not null, then this is some (d-1)-dimensional face in terms of d-dimensional space of the convex hull to be constructed.
+  /// All (d-2)-dimensional edges also expressed in terms of d-space
+  /// </param>
   /// <returns>d-dimensional convex sub polyhedron, which is the convex hull of the given swarm.</returns>
   /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
   public static BaseSubCP GW(IEnumerable<SubPoint> S, BaseSubCP? initFace = null) {
     if (S.First().Dim == 2) {
       List<Point2D> convexPolygon2D = Convexification.ArcHull2D(S.Select(s => new SubPoint2D(s)));
 
-      return new SubTwoDimensional(convexPolygon2D.Select(v => (SubPoint2D)v).ToList());
+      return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
     }
 
-    //todo Проблема: Базис ребра должен состоять d-2 штук в d-пространстве. Но сейчас он в (d-1)-пространстве.
     if (initFace is null) {
       AffineBasis initBasis = BuildInitialPlane(S);
 
@@ -84,56 +114,31 @@ public class GiftWrapping {
     //todo По-хорошему бы выкинуть из роя точки, лежащие в плоскости начальной грани, но не являющиеся её вершинами
     // IEnumerable<SubPoint> S1 = S.Where(s => ... ); 
 
+    
+    Debug.Assert(initFace.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
+    Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
+    Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
+    Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
+    
 
-    //todo FaceIncidence: ПРОБЛЕМА, если D = 3, то ребро размерности 1, а такое хранить мы не умеем!
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
     TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
 
     DFS_step(S, initFace, ref buildFaces, ref buildIncidence);
 
-    return new SubNonSimplex(buildFaces, buildIncidence);
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="S">The swarm of d-dimensional points for some d.</param>
-  /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
-  /// <returns>
-  /// The (d-1)-dimensional face and its (d-2)-dimensional edges expressed in terms of d-dimensional points.
-  /// The faces of a lower dimension are not lifted up.
-  /// </returns>
-  public static BaseSubCP BuildFace(IEnumerable<SubPoint> S, AffineBasis FaceBasis) {
-    HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
-    List<SubPoint> inPlane    = new List<SubPoint>();      //todo заметим, хранение разумно только на самом верхнем уровне
-
-    foreach (SubPoint s in S) {
-      if (hyperPlane.Contains(s)) {
-        inPlane.Add(new SubPoint(s.ProjectTo(FaceBasis), s, s.Original)); //
-      }
+    IncidenceInfo info = new IncidenceInfo();
+    foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
+      info.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
-
-    if (inPlane.Count == FaceBasis.VecDim) {
-      return new SubSimplex(inPlane.Select(p => p.Parent!));
-    } else {
-      BaseSubCP faceInLowerDim = GW(inPlane);
-
-      if (faceInLowerDim is SubTwoDimensional) {
-        return faceInLowerDim.ToPreviousSpace();
-      }
-
-      //todo 3D+ ??
-      return new SubSimplex(); //todo СФОРМИРОВАТЬ НОВЫЙ BaseSubCP в пространстве на 1 больше !!!
-    }
-
-    return inPlane.Count == FaceBasis.VecDim ? new SubSimplex(inPlane.Select(p => p.Parent!)) : GW(inPlane);
+    
+    return new SubNonSimplex(buildFaces, info);
   }
 
   public static void DFS_step(IEnumerable<SubPoint>  S
                             , BaseSubCP              face
                             , ref HashSet<BaseSubCP> buildFaces
                             , ref TempIncidenceInfo  buildIncidence) {
-    foreach (BaseSubCP edge in face.Faces) {
+    foreach (BaseSubCP edge in face.Faces!) {
       if (buildIncidence.ContainsKey(edge)) {
         if (buildIncidence[edge].F1.GetHashCode() <= face.GetHashCode()) {
           buildIncidence[edge] = (buildIncidence[edge].F1, face);
@@ -154,14 +159,26 @@ public class GiftWrapping {
     }
   }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="S">Swarm in d-dimensional space.</param>
+  /// <param name="face">(d-1)-dimensional face in d-dimensional space.</param>
+  /// <param name="edge">(d-2)-dimensional edge in d-dimensional space.</param>
+  /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
   public static BaseSubCP RollOverEdge(IEnumerable<SubPoint> S, BaseSubCP face, BaseSubCP edge) {
-    AffineBasis edgeBasis = BuildEdgeBasis(S, edge); //todo Где его взять?? (d-2)-штук d-мерных
+    Debug.Assert(face.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
+    Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
+    Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
+    Debug.Assert(face.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
 
-    AffineBasis basisF_ = new AffineBasis(edgeBasis);
-    basisF_.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
+    AffineBasis edgeBasis = new AffineBasis(edge.Vertices); //todo Где его взять?? (d-2)-штук d-мерных
+
+    AffineBasis basis_F = new AffineBasis(edgeBasis);
+    basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
 
 
-    Debug.Assert(basisF_.BasisDim == face.Basis.BasisDim, "The dimension of the new basis F' must equals to F dimension!");
+    Debug.Assert(basis_F.BasisDim == face.PolyhedronDim, "The dimension of the basis F expressed in terms of edge must equals to F dimension!");
 
     double  minDot;
     Vector? r = null;
@@ -172,7 +189,7 @@ public class GiftWrapping {
       Vector v = Vector.OrthonormalizeAgainstBasis(s - edgeBasis.Origin, edgeBasis.Basis);
 
       if (!v.IsZero) {
-        double dot = v * basisF_.Basis.Last(); //По идее это должен быть нужный нам вектор, перпенд. E и лежащий в F 
+        double dot = v * basis_F.Basis.Last(); //По идее это должен быть нужный нам вектор, перпенд. E и лежащий в F 
 
         if (dot < minDot) {
           minDot = dot;
@@ -184,7 +201,10 @@ public class GiftWrapping {
     AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
     newF_aBasis.AddVectorToBasis(r!, false);
 
-    return ?????;
+    Debug.Assert(newF_aBasis.BasisDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
+
+    
+    return BuildFace(S,basis_F); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
   }
 
   /// <summary>
