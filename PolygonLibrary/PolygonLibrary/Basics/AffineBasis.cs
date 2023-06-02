@@ -15,19 +15,14 @@ public class AffineBasis {
   private readonly LinearBasis _basis;
 
   /// <summary>
-  /// The origin point of the affine basis.
-  /// </summary>
-  private readonly Point _origin;
-
-  /// <summary>
   /// Gets the origin point of the affine basis.
   /// </summary>
-  public Point Origin => _origin;
+  public Point Origin { get; }
 
   /// <summary>
   /// Gets the dimension of the affine basis.
   /// </summary>
-  public int VecDim => _origin.Dim;
+  public int VecDim => Origin.Dim;
 
   /// <summary>
   /// <c>True</c> if this affine basis is full dimension.
@@ -62,7 +57,7 @@ public class AffineBasis {
   /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
   /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
   public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
-    Debug.Assert(_origin.Dim == v.Dim, "Adding a vector with a wrong dimension into an affine basis.");
+    Debug.Assert(Origin.Dim == v.Dim, "Adding a vector with a wrong dimension into an affine basis.");
 
     return _basis.AddVector(v, orthogonalize);
   }
@@ -74,9 +69,9 @@ public class AffineBasis {
   /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
   /// <returns><c>true</c> if the point was added successfully; otherwise, <c>false</c>.</returns>
   public bool AddPointToBasis(Point p, bool orthogonalize = true) {
-    Debug.Assert(_origin.Dim == p.Dim, "Adding a point with a wrong dimension into an affine basis.");
+    Debug.Assert(Origin.Dim == p.Dim, "Adding a point with a wrong dimension into an affine basis.");
 
-    return AddVectorToBasis(p - _origin, orthogonalize);
+    return AddVectorToBasis(p - Origin, orthogonalize);
   }
 
   /// <summary>
@@ -85,7 +80,7 @@ public class AffineBasis {
   /// <param name="v">The vector to expand.</param>
   /// <returns>The expansion of the vector in the affine basis.</returns>
   public Vector Expansion(Vector v) {
-    Debug.Assert(_origin.Dim == v.Dim, "Expansion a vector with a wrong dimension.");
+    Debug.Assert(Origin.Dim == v.Dim, "Expansion a vector with a wrong dimension.");
 
     return _basis.Expansion(v);
   }
@@ -96,9 +91,9 @@ public class AffineBasis {
   /// <param name="p">The point to expand.</param>
   /// <returns>The expansion of the point in the affine basis.</returns>
   public Vector Expansion(Point p) {
-    Debug.Assert(_origin.Dim == p.Dim, "Expansion a point with a wrong dimension.");
+    Debug.Assert(Origin.Dim == p.Dim, "Expansion a point with a wrong dimension.");
 
-    return _basis.Expansion(p - _origin);
+    return _basis.Expansion(p - Origin);
   }
 
   /// <summary>
@@ -135,8 +130,8 @@ public class AffineBasis {
   /// </summary>
   /// <param name="o">The origin point of the affine basis.</param>
   public AffineBasis(Point o) {
-    _origin = o;
-    _basis  = new LinearBasis();
+    Origin = o;
+    _basis = new LinearBasis();
   }
 
   /// <summary>
@@ -144,30 +139,29 @@ public class AffineBasis {
   /// </summary>
   /// <param name="d">The dimension of the basis</param>
   public AffineBasis(int d) {
-    _origin = new Point(d);
-    _basis  = new LinearBasis();
+    Origin = new Point(d);
+    _basis = new LinearBasis();
 
-    for (int i = 0; i < _origin.Dim; i++) {
-      _basis.AddVector(Vector.CreateOrth(_origin.Dim, i + 1), false);
+    for (int i = 0; i < Origin.Dim; i++) {
+      _basis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
     }
   }
-  
+
   /// <summary>
   /// Construct the new affine basis of given dimension with d-dim zero origin and d-orth
   /// </summary>
   public AffineBasis(int vecDim, int basisDim) {
     Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
-    
-    _origin = new Point(vecDim);
-    _basis  = new LinearBasis();
+
+    Origin = new Point(vecDim);
+    _basis = new LinearBasis();
 
     for (int i = 0; i < basisDim; i++) {
-      _basis.AddVector(Vector.CreateOrth(_origin.Dim, i + 1), false);
+      _basis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
     }
   }
-  
-  
-  
+
+
   /// <summary>
   ///Construct the new affine basis with the specified origin point and specified vectors.
   /// </summary>
@@ -175,8 +169,8 @@ public class AffineBasis {
   /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
   /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
   public AffineBasis(Point o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
-    _origin = o;
-    _basis  = new LinearBasis(Vs, orthogonalize);
+    Origin = o;
+    _basis = new LinearBasis(Vs, orthogonalize);
   }
 
   /// <summary>
@@ -185,14 +179,14 @@ public class AffineBasis {
   /// <param name="o">The origin point of the affine basis.</param>
   /// <param name="Ps">The points to use in the linear basis associated with the affine basis.</param>
   public AffineBasis(Point o, IEnumerable<Point> Ps) {
-    _origin = o;
-    _basis  = new LinearBasis();
+    Origin = o;
+    _basis = new LinearBasis();
 
     foreach (Point p in Ps) {
-      AddPointToBasis(p);
+      AddVectorToBasis(p - Origin);
     }
   }
-  
+
   /// <summary>
   /// Initializes a new instance of the <see cref="AffineBasis"/> class with the enumerable of points.
   /// The first point is interpret as origin.
@@ -200,12 +194,12 @@ public class AffineBasis {
   /// <param name="Ps">The points to construct the affine basis.</param>
   public AffineBasis(IEnumerable<Point> Ps) {
     Debug.Assert(Ps.Any(), "At least one point should be in points");
-    
-    _origin = Ps.First();
-    _basis  = new LinearBasis();
+
+    Origin = Ps.First();
+    _basis = new LinearBasis();
 
     foreach (Point p in Ps) {
-      AddPointToBasis(p);
+      AddVectorToBasis(p - Origin);
     }
   }
 
@@ -215,8 +209,8 @@ public class AffineBasis {
   /// <param name="o">The origin point of the affine basis.</param>
   /// <param name="lbasis">The linear basis associated with the affine basis.</param>
   public AffineBasis(Point o, LinearBasis lbasis) {
-    _origin = o;
-    _basis  = lbasis;
+    Origin = o;
+    _basis = lbasis;
   }
 
   /// <summary>
@@ -224,8 +218,12 @@ public class AffineBasis {
   /// </summary>
   /// <param name="affineBasis">The affine basis to be copied.</param>
   public AffineBasis(AffineBasis affineBasis) {
-    _origin = affineBasis._origin;
-    _basis  = affineBasis._basis;
+    Origin = new Point(affineBasis.Origin);
+    _basis = new LinearBasis();
+
+    foreach (Vector bvec in affineBasis.Basis) {
+      _basis.AddVector(bvec, false);
+    }
   }
 
   /// <summary>

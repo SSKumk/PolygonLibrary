@@ -73,9 +73,7 @@ public class LinearSpaceTests {
   public void ExpansionTest() {
     List<Vector> vectors = new List<Vector>()
       {
-        new Vector(new double[] { 1, 0, 0 })
-      , new Vector(new double[] { 0, 1, 0 })
-      , new Vector(new double[] { 0, 0, 1 })
+        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
       };
 
     LinearBasis basis = new LinearBasis(vectors);
@@ -197,11 +195,7 @@ public class AffineSpaceTests {
   public void AddVectorToBasisTest() {
     Point origin = new Point(new double[] { 1, 2, 3 });
 
-    List<Vector> vectors = new List<Vector>()
-      {
-        new Vector(new double[] { 1, 0, 0 })
-      , new Vector(new double[] { 0, 1, 0 })
-      };
+    List<Vector> vectors = new List<Vector>() { new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }) };
 
     AffineBasis basis     = new AffineBasis(origin, vectors);
     Vector      newVector = new Vector(new double[] { 1, 1, 1 });
@@ -229,11 +223,7 @@ public class AffineSpaceTests {
   public void AddPointToBasisTest() {
     Point origin = new Point(new double[] { 1, 2, 3 });
 
-    List<Point> points = new List<Point>()
-      {
-        new Point(new double[] { 2, 3, 4 })
-      , new Point(new double[] { 3, -4, 5 })
-      };
+    List<Point> points = new List<Point>() { new Point(new double[] { 2, 3, 4 }), new Point(new double[] { 3, -4, 5 }) };
 
     AffineBasis basis    = new AffineBasis(origin, points);
     Point       newPoint = new Point(new double[] { 4, 5, -6 });
@@ -263,9 +253,7 @@ public class AffineSpaceTests {
 
     List<Vector> vectors = new List<Vector>()
       {
-        new Vector(new double[] { 1, 0, 0 })
-      , new Vector(new double[] { 0, 1, 0 })
-      , new Vector(new double[] { 0, 0, 1 })
+        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
       };
 
     AffineBasis basis = new AffineBasis(origin, vectors);
@@ -286,9 +274,7 @@ public class AffineSpaceTests {
 
     List<Vector> vectors = new List<Vector>()
       {
-        new Vector(new double[] { 1, 0, 0 })
-      , new Vector(new double[] { 0, 1, 0 })
-      , new Vector(new double[] { 0, 0, 1 })
+        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
       };
 
     AffineBasis basis = new AffineBasis(origin, vectors);
@@ -307,17 +293,11 @@ public class AffineSpaceTests {
   public void ProjectToAffineSpace_1() {
     Point origin = new Point(new double[] { 0, 0 });
 
-    List<Vector> basis = new List<Vector>
-      {
-        new Vector(new double[] { 1, 0 })
-      , new Vector(new double[] { 0, 1 })
-      };
+    List<Vector> basis = new List<Vector> { new Vector(new double[] { 1, 0 }), new Vector(new double[] { 0, 1 }) };
 
     HashSet<Point> swarm = new HashSet<Point>
       {
-        new Point(new double[] { 1, 1 })
-      , new Point(new double[] { 2, 3 })
-      , new Point(new double[] { -1, 4 })
+        new Point(new double[] { 1, 1 }), new Point(new double[] { 2, 3 }), new Point(new double[] { -1, 4 })
       };
 
     HashSet<Point> expected = swarm;
@@ -337,24 +317,16 @@ public class AffineSpaceTests {
   public void ProjectToAffineSpace_2() {
     Point origin = new Point(new double[] { 0, 0 });
 
-    List<Vector> basis = new List<Vector>
-      {
-        new Vector(new double[] { -1, 0 })
-      , new Vector(new double[] { 0, -1 })
-      };
+    List<Vector> basis = new List<Vector> { new Vector(new double[] { -1, 0 }), new Vector(new double[] { 0, -1 }) };
 
     HashSet<Point> swarm = new HashSet<Point>
       {
-        new Point(new double[] { 1, 1 })
-      , new Point(new double[] { 2, 3 })
-      , new Point(new double[] { -1, 4 })
+        new Point(new double[] { 1, 1 }), new Point(new double[] { 2, 3 }), new Point(new double[] { -1, 4 })
       };
 
     HashSet<Point> expected = new HashSet<Point>
       {
-        new Point(new double[] { -1, -1 })
-      , new Point(new double[] { -2, -3 })
-      , new Point(new double[] { 1, -4 })
+        new Point(new double[] { -1, -1 }), new Point(new double[] { -2, -3 }), new Point(new double[] { 1, -4 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
@@ -372,24 +344,16 @@ public class AffineSpaceTests {
   public void ProjectToAffineSpace_3() {
     Point origin = new Point(new double[] { 2, 2 });
 
-    List<Vector> basis = new List<Vector>
-      {
-        new Vector(new double[] { -1, 0 })
-      , new Vector(new double[] { 0, -1 })
-      };
+    List<Vector> basis = new List<Vector> { new Vector(new double[] { -1, 0 }), new Vector(new double[] { 0, -1 }) };
 
     HashSet<Point> swarm = new HashSet<Point>
       {
-        new Point(new double[] { 1, 1 })
-      , new Point(new double[] { 2, 4 })
-      , new Point(new double[] { -4, 4 })
+        new Point(new double[] { 1, 1 }), new Point(new double[] { 2, 4 }), new Point(new double[] { -4, 4 })
       };
 
     HashSet<Point> expected = new HashSet<Point>
       {
-        new Point(new double[] { 1, 1 })
-      , new Point(new double[] { 0, -2 })
-      , new Point(new double[] { 6, -2 })
+        new Point(new double[] { 1, 1 }), new Point(new double[] { 0, -2 }), new Point(new double[] { 6, -2 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
@@ -406,11 +370,7 @@ public class AffineSpaceTests {
   public void ProjectToAffineSpace_4() {
     Point origin = new Point(new double[] { 0, 0, 0, 0 });
 
-    List<Vector> basis = new List<Vector>
-      {
-        new Vector(new double[] { 1, 0, 0, 0 })
-      , new Vector(new double[] { 0, 1, 0, 0 })
-      };
+    List<Vector> basis = new List<Vector> { new Vector(new double[] { 1, 0, 0, 0 }), new Vector(new double[] { 0, 1, 0, 0 }) };
 
     HashSet<Point> swarm = new HashSet<Point>
       {
