@@ -204,7 +204,7 @@ public class GiftWrapping {
     Debug.Assert(newF_aBasis.BasisDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
     
-    return BuildFace(S,basis_F); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
+    return BuildFace(S,newF_aBasis, face); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
   }
 
   /// <summary>
