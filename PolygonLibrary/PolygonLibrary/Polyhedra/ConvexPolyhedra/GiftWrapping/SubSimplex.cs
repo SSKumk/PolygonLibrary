@@ -43,9 +43,18 @@ internal class SubSimplex : BaseSubCP {
           _faces = new HashSet<BaseSubCP>();
 
           foreach (SubPoint vertex in Vertices) {
-            IEnumerable<SubPoint> faceVert = Vertices.Where(v => !v.Equals(vertex));
-            BaseSubCP             simplex  = new SubSimplex(faceVert);
+            SubPoint[] faceVert = Vertices.Where(v => !v.Equals(vertex)).ToArray();
+            if (PolyhedronDim == 2)
+            {
+              BaseSubCP edge = new SubTwoDimensionalEdge(faceVert[0], faceVert[1]);
+              _faces.Add(edge);
+            }
+            else
+            {
+             BaseSubCP simplex = new SubSimplex(faceVert);
             _faces.Add(simplex);
+              
+            }
           }
         }
 
