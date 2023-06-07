@@ -32,12 +32,12 @@ public class AffineBasis {
   /// <summary>
   /// Gets the number of vectors in the linear basis associated with the affine basis.
   /// </summary>
-  public int BasisDim => _basis.BasisDim;
+  public int SpaceDim => _basis.BasisDim;
 
   /// <summary>
   /// Gets a value indicating whether this affine basis is empty.
   /// </summary>
-  public bool IsEmpty => BasisDim == 0;
+  public bool IsEmpty => SpaceDim == 0;
 
   /// <summary>
   /// Gets the vector corresponding to the specified index in the linear basis associated with the affine basis.
@@ -105,9 +105,9 @@ public class AffineBasis {
     Debug.Assert(VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
 
     Vector   t  = point - Origin;
-    double[] np = new double[BasisDim];
+    double[] np = new double[SpaceDim];
 
-    for (int i = 0; i < BasisDim; i++) {
+    for (int i = 0; i < SpaceDim; i++) {
       np[i] = _basis[i] * t;
     }
 
