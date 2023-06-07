@@ -67,6 +67,14 @@ public class GiftWrapping {
   /// The faces of a lower dimension are not lifted up.
   /// </returns>
   public static BaseSubCP BuildFace(IEnumerable<SubPoint> S, AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
+    Debug.Assert(FaceBasis.SpaceDim == S.First().Dim - 1, "The basis must lie in (d-1)-dimensional space!");
+
+    if (initEdge is not null) {
+      Debug.Assert(initEdge.PolyhedronDim == S.First().Dim - 2, "The dimension of the initial edge must equal to (d-2)!");
+    }
+
+    
+    
     HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
     List<SubPoint> inPlane    = new List<SubPoint>();      //todo заметим, хранение разумно только на самом верхнем уровне
 
@@ -79,7 +87,7 @@ public class GiftWrapping {
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
-      return GW(inPlane, initEdge).ToPreviousSpace();
+      return GW(inPlane, initEdge).ToPreviousSpace(); //todo 
     }
   }
   // /// The face consists of d-dimensional sub-points and has its (d-1)-dimensional affine basis,
@@ -104,7 +112,7 @@ public class GiftWrapping {
     if (initFace is null) {
       AffineBasis initBasis = BuildInitialPlane(S);
 
-      if (initBasis.BasisDim < initBasis.VecDim - 1) {
+      if (initBasis.SpaceDim < initBasis.VecDim - 1) {
         throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
       }
 
@@ -178,7 +186,7 @@ public class GiftWrapping {
     basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
 
 
-    Debug.Assert(basis_F.BasisDim == face.PolyhedronDim, "The dimension of the basis F expressed in terms of edge must equals to F dimension!");
+    Debug.Assert(basis_F.SpaceDim == face.PolyhedronDim, "The dimension of the basis F expressed in terms of edge must equals to F dimension!");
 
     double  minDot;
     Vector? r = null;
@@ -201,10 +209,10 @@ public class GiftWrapping {
     AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
     newF_aBasis.AddVectorToBasis(r!, false);
 
-    Debug.Assert(newF_aBasis.BasisDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
+    Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
     
-    return BuildFace(S,newF_aBasis, face); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
+    return BuildFace(S,newF_aBasis); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
   }
 
   /// <summary>

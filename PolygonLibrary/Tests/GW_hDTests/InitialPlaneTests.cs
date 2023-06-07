@@ -17,7 +17,7 @@ public class InitialPlaneTests {
   private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm, int planeDim) {
     AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)));
     AffineBasis.CheckCorrectness(aBasis);
-    Assert.That(aBasis.BasisDim, Is.EqualTo(planeDim));
+    Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim));
     HyperPlane hp = new HyperPlane(aBasis);
     Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True);
     IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);

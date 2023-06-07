@@ -117,8 +117,8 @@ public class HyperPlane {
   public HyperPlane(AffineBasis affineBasis, (Point point, bool isPositive)? toOrient = null) {
     Debug.Assert
       (
-       affineBasis.BasisDim == affineBasis.Origin.Dim - 1
-     , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.BasisDim}"
+       affineBasis.SpaceDim == affineBasis.Origin.Dim - 1
+     , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SpaceDim}"
       );
 
     Origin       = affineBasis.Origin;

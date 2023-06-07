@@ -107,7 +107,7 @@ public class SubPoint : Point {
   /// <param name="aBasis">The affine basis of non greater dimension to project the point to.</param>
   /// <returns>The projected point.</returns>
   public SubPoint ProjectTo(AffineBasis aBasis) {
-    Debug.Assert(aBasis.BasisDim > 1, "Can not create one dimensional subspace point.");
+    Debug.Assert(aBasis.SpaceDim > 1, "Can not create one dimensional subspace point.");
 
     Point projectPoint = aBasis.ProjectPoint(this);
 

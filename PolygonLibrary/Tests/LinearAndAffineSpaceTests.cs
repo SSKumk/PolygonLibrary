@@ -137,7 +137,7 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis.BasisDim
+       basis.SpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
@@ -177,7 +177,7 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis.BasisDim
+       basis.SpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
@@ -209,7 +209,7 @@ public class AffineSpaceTests {
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
+    Assert.That(basis.SpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
@@ -237,7 +237,7 @@ public class AffineSpaceTests {
 
     Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero point should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis.BasisDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
+    Assert.That(basis.SpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
 
