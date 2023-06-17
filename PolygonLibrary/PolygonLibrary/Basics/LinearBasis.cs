@@ -133,6 +133,22 @@ public class LinearBasis {
     }
   }
 
+  /// <summary>
+  /// The matrix representation of the basis.
+  /// </summary>
+  /// <returns>Basis by column vectors.</returns>
+  public Matrix GetMatrix() {
+    double[,] m = new double[VecDim,BasisDim];
+
+    for (int i = 0; i < VecDim; i++) {
+      for (int j = 0; j < BasisDim; j++) {
+        m[i,j] = Basis[j][i];
+      }
+    }
+
+    return new Matrix(m);
+  }
+
 
   /// <summary>
   /// Aux method to check then the basis is correct
