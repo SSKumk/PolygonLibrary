@@ -15,7 +15,22 @@ public class TempIncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPol
 /// Type of permanent storage of face incidence information.
 /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
 /// </summary>
-public class IncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron F2)> { }
+public class IncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron F2)> {
+
+  public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
+  
+  /// <summary>
+  /// Base constructor
+  /// </summary>
+  public IncidenceInfo() { }
+
+}
+
+public class FansInfo : Dictionary<Point, HashSet<BaseConvexPolyhedron>> {
+
+  public FansInfo(FansInfo fansInfo) : base(fansInfo){}
+
+}
 
 /// <summary>
 /// <para><b>Simplex</b> - the polyhedron is a simplex</para>
@@ -233,14 +248,7 @@ public abstract class BaseConvexPolyhedron {
         if (_fans.ContainsKey(vertex)) {
           _fans[vertex].Add(face);
         } else {
-          _fans.Add
-            (
-             vertex
-           , new HashSet<BaseConvexPolyhedron>()
-               {
-                 face
-               }
-            );
+          _fans.Add(vertex, new HashSet<BaseConvexPolyhedron>() { face });
         }
       }
     }
