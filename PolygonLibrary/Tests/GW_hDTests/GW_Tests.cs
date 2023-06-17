@@ -32,11 +32,11 @@ namespace Tests.GW_hDTests;
 public class GW_Tests {
 
   /// <summary>
-  /// 
+  /// Generates a hypercube in the specified dimension.
   /// </summary>
-  /// <param name="cubeDim"></param>
-  /// <param name="facesDim"></param>
-  /// <returns></returns>
+  /// <param name="cubeDim">The dimension of the hypercube.</param>
+  /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
+  /// <returns>A list of points representing the hypercube.</returns>
   List<Point> CubeHD(int cubeDim, List<int>? facesDim = null) {
     List<List<double>> cube_prev = new List<List<double>>();
     List<List<double>> cube      = new List<List<double>>();
@@ -93,10 +93,10 @@ public class GW_Tests {
   }
 
   /// <summary>
-  /// 
+  /// Generates a non-zero random vector of the specified dimension.
   /// </summary>
-  /// <param name="dim"></param>
-  /// <returns></returns>
+  /// <param name="dim">The dimension of the vector.</param>
+  /// <returns>A random vector. Each coordinate: [-0.5, 0.5) \ {0}.</returns>
   Vector GenVector(int dim) {
     Random   random = new Random();
     double[] v      = new double[dim];
@@ -112,10 +112,10 @@ public class GW_Tests {
   }
 
   /// <summary>
-  /// 
+  /// Rotates the given swarm of points in the space.
   /// </summary>
-  /// <param name="Swarm"></param>
-  /// <returns></returns>
+  /// <param name="Swarm">The swarm of points to rotate.</param>
+  /// <returns>The rotated swarm of points.</returns>
   List<Point> Rotate(IEnumerable<Point> Swarm) {
     int         spaceDim = Swarm.First().Dim;
     LinearBasis basis    = new LinearBasis(new[] { GenVector(spaceDim) });
