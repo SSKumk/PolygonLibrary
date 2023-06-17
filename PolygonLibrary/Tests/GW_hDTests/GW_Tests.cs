@@ -2,58 +2,138 @@ using System.Diagnostics;
 using NUnit.Framework;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+using PolygonLibrary.Toolkit;
 
 
+namespace Tests.GW_hDTests;
 
-namespace Tests.GW_hDTests; 
+/* todo
+ * Куб_3D
+ * Куб_3D с точками внутри
+ * Куб_3D с точками внутри граней 
+ * Куб_3D с точками внутри ребёр
+ * Куб_3D с точками внутри и внутри граней
+ * Куб_3D с точками внутри, внутри граней и внутри ребёр
+ * 
+ * Куб_4D
+ * Куб_4D с точками внутри
+ * Куб_4D с точками внутри 3D-граней 
+ * Куб_4D с точками внутри 2D-граней 
+ * Куб_4D с точками внутри ребёр (1D-граней)
+ * Комбинации:
+ * ...
+ *
+ *
+ * Написать генератор, который получает размерность куба и список размерностей граней,
+ * внутри которых генерировать точки
+ */
 
 [TestFixture]
 public class GW_Tests {
 
-  [Test]
-  public void Cube3D() {
-      List<Point> Swarm = new List<Point>()
-        {
-          new Point(new double[] { 0, 0, 0 })
-        , new Point(new double[] { 1, 0, 0 })
-        , new Point(new double[] { 0, 1, 0 })
-        , new Point(new double[] { 0, 0, 1 })
-        , new Point(new double[] { 1, 1, 0 })
-        , new Point(new double[] { 0, 1, 1 })
-        , new Point(new double[] { 1, 0, 1 })
-        , new Point(new double[] { 1, 1, 1 })
-        };
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="cubeDim"></param>
+  /// <param name="facesDim"></param>
+  /// <returns></returns>
+  List<Point> CubeHD(int cubeDim, List<int>? facesDim = null) {
+    List<List<double>> cube_prev = new List<List<double>>();
+    List<List<double>> cube      = new List<List<double>>();
+    cube_prev.Add(new List<double>() { 0 });
+    cube_prev.Add(new List<double>() { 1 });
 
-      var x = GiftWrapping.ToConvex(Swarm);
-      foreach (Point point in x.Vertices)
-      {
-        Console.WriteLine(point);
+    for (int i = 1; i < cubeDim; i++) {
+      cube.Clear();
+
+      foreach (List<double> coords in cube_prev) {
+        cube.Add(new List<double>(coords) { 0 });
+        cube.Add(new List<double>(coords) { 1 });
       }
-  }
-  
-  [Test]
-  public void Simplex3D() {
-      List<Point> Swarm = new List<Point>()
-        {
-          new Point(new double[] { 0, 0, 0 })
-        , new Point(new double[] { 1, 0, 0 })
-        , new Point(new double[] { 0, 1, 0 })
-        , new Point(new double[] { 0, 0, 1 })
-        };
+      cube_prev = new List<List<double>>(cube);
+    }
 
-      var x = GiftWrapping.ToConvex(Swarm);
-      foreach (Point point in x.Vertices)
-      {
-        Console.WriteLine(point);
+    List<Point> Cube = new List<Point>();
+
+    foreach (List<double> v in cube) {
+      Cube.Add(new Point(v.ToArray()));
+    }
+
+    AffineBasis basis  = new AffineBasis(cubeDim);
+    List<Point> Es     = basis.Basis.Select(e => new Point(e)).ToList();
+    Random      random = new Random();
+
+    if (facesDim is not null) { // накидываем точки на грани нужных размерностей
+      foreach (int dim in facesDim) {
+        Debug.Assert(dim <= Cube.First().Dim); //Если равно, то внутрь самого куба
+
+        for (int i = 0; i <= Es.Count - dim; i++) {
+          List<Point> toGen = Es.GetRange(i, dim);
+
+
+          for (int k = 0; k < 10; k++) {
+            List<double> Ws = new List<double>(dim);
+
+            for (int j = 0; j < dim; j++) {
+              double w = 0;
+
+              while (Tools.EQ(w)) {
+                w = random.NextDouble();
+              }
+              Ws.Add(w);
+            }
+
+            Cube.Add(Point.LinearCombination(toGen, Ws));
+          }
+        }
       }
+    }
+
+    return Cube;
   }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="dim"></param>
+  /// <returns></returns>
+  Vector GenVector(int dim) {
+    Random   random = new Random();
+    double[] v      = new double[dim];
+
+    do {
+      for (int i = 0; i < dim; i++) {
+        v[i] = random.NextDouble() - 0.5;
+      }
+    } while (new Vector(v).IsZero);
+
+
+    return new Vector(v);
+  }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="Swarm"></param>
+  /// <returns></returns>
+  List<Point> Rotate(IEnumerable<Point> Swarm) {
+    int         spaceDim = Swarm.First().Dim;
+    LinearBasis basis    = new LinearBasis(new[] { GenVector(spaceDim) });
+
+    while (!basis.IsFullDim) {
+      basis.AddVector(GenVector(spaceDim));
+    }
+
+    IEnumerable<Vector> rotated = Swarm.Select(s => new Vector(s) * basis.GetMatrix());
+
+    return rotated.Select(v => new Point(v)).ToList();
+  }
 
   [Test]
-  public void Cube3D_withInnerPoints() {
-    List<Point> Swarm = new List<Point>()
-    {
-      new Point(new double[] { 0, 0, 0 })
+  public void CubeTest() {
+    HashSet<Point> Swarm = new HashSet<Point>()
+      {
+        new Point(new double[] { 0, 0, 0 })
       , new Point(new double[] { 1, 0, 0 })
       , new Point(new double[] { 0, 1, 0 })
       , new Point(new double[] { 0, 0, 1 })
@@ -61,18 +141,188 @@ public class GW_Tests {
       , new Point(new double[] { 0, 1, 1 })
       , new Point(new double[] { 1, 0, 1 })
       , new Point(new double[] { 1, 1, 1 })
-      , new Point(new double[] { 0.5, 0.6, 0.7 })
-      , new Point(new double[] { 0.5, 0.5, 0.7 })
-      , new Point(new double[] { 0.7, 0.6, 0.7 })
-    };
+      };
+
+    List<Point> S = CubeHD(3);
+
+    Debug.Assert(Swarm.SetEquals(new HashSet<Point>(S)), "Swarm is not equal to generated Cube");
+  }
+
+  [Test]
+  public void Cube3D() {
+    List<Point> Swarm = CubeHD(3);
 
     var x = GiftWrapping.ToConvex(Swarm);
-    foreach (Point point in x.Vertices)
-    {
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+  [Test]
+  public void Cube3D_Rotated() {
+    List<Point> Swarm   = CubeHD(3);
+    List<Point> Rotated = Rotate(Swarm);
+
+    var x = GiftWrapping.ToConvex(Rotated);
+
+    foreach (Point point in x.Vertices) {
       Console.WriteLine(point);
     }
   }
 
+  [Test]
+  public void Simplex3D() {
+    List<Point> Swarm = new List<Point>()
+      {
+        new Point(new double[] { 0, 0, 0 })
+      , new Point(new double[] { 1, 0, 0 })
+      , new Point(new double[] { 0, 1, 0 })
+      , new Point(new double[] { 0, 0, 1 })
+      };
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_1D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 1 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_2D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 2 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_3D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_1D_2D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 1, 2 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_2D_3D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 2, 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube3D_withInnerPoints_On_1D_2D_3D() {
+    List<Point> Swarm = CubeHD(3, new List<int>() { 1, 2, 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_1D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 1 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_2D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 2 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_3D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_1D_2D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_2D_3D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 2, 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_1D_2D_3D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2, 3 });
+
+    var x = GiftWrapping.ToConvex(Swarm);
+
+    foreach (Point point in x.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+
+  //todo и дальше в том же духе ...
 
   [Test]
   public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
@@ -98,10 +348,10 @@ public class GW_Tests {
       };
 
     var x = GiftWrapping.ToConvex(Swarm);
-    foreach (Point point in x.Vertices)
-    {
+
+    foreach (Point point in x.Vertices) {
       Console.WriteLine(point);
-    }    
+    }
   }
 
 }
