@@ -30,7 +30,7 @@ public class Simplex : BaseConvexPolyhedron {
   /// <summary>
   /// The set of (d-1)-dimensional faces of a simplex, which are in turn a Simplex.
   /// </summary>
-  private HashSet<BaseConvexPolyhedron>? _faces = null; 
+  private HashSet<BaseConvexPolyhedron>? _faces = null;
   // todo Simplex2D как с ним быть?
 
   /// <summary>
@@ -64,7 +64,7 @@ public class Simplex : BaseConvexPolyhedron {
   /// Initializes a new instance of the <see cref="Simplex"/> class with the specified set of vertices and dimension.
   /// </summary>
   /// <param name="simplex">The set of vertices of the simplex.</param>
-  /// <param name="simplexDim">The dimension of the simplex</param>
+  /// <param name="simplexDim">The dimension of the simplex.</param>
   public Simplex(IEnumerable<Point> simplex, int simplexDim) {
     Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
     Debug.Assert(simplex.Count() == simplexDim + 1, "The simplex must have amount points equal to simplexDim + 1");
@@ -72,19 +72,7 @@ public class Simplex : BaseConvexPolyhedron {
     Dim      = simplexDim;
     Type     = ConvexPolyhedronType.Simplex;
     Vertices = new HashSet<Point>(simplex);
-  }
 
-  /// <summary>
-  /// The copy constructor
-  /// </summary>
-  /// <param name="simplex">The copied simplex</param>
-  public Simplex(Simplex simplex) {
-    Dim            = simplex.Dim;
-    Type           = ConvexPolyhedronType.Simplex;
-    Vertices       = simplex.Vertices;
-    _faces         = simplex._faces;
-    _fans          = simplex._fans;
-    _faceIncidence = simplex._faceIncidence;
   }
 
 }
