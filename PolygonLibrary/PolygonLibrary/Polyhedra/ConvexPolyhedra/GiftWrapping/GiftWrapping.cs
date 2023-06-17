@@ -24,6 +24,30 @@ public enum ConvexificationResult { NotFullDimension, FullDimension }
 
 public class GiftWrapping {
 
+  // public static BaseConvexPolyhedron ConstructPolyhedron(IEnumerable<Point> Swarm) {
+    // BaseSubCP P = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+
+    // switch (P.Type) {
+    //   case SubCPType.Simplex:
+    //     return new Simplex(P.Vertices.Select(v => v.Original), P.PolyhedronDim); //todo Может и не нужен тут Select
+    //   case SubCPType.NonSimplex:
+    //     HashSet<Point>                Vs    = new HashSet<Point>(P.Vertices.Select(v => v.Original));
+    //     HashSet<BaseConvexPolyhedron> Faces = new HashSet<BaseConvexPolyhedron>();
+    //
+    //     Debug.Assert(P.Faces != null, "P.Faces != null");
+    //
+    //     foreach (BaseSubCP subF in P.Faces) {
+    //       
+    //     }
+    //
+    //     return new NonSimplex(Vs);
+    //   case SubCPType.TwoDimensional: break;
+    //   case SubCPType.OneDimensional: break;
+    //   default:                       throw new ArgumentOutOfRangeException();
+    // }
+    
+  // }
+  
   /*
    * Сделать типа фабрика
    *
@@ -52,9 +76,7 @@ public class GiftWrapping {
   //
   //   return P;
   // }
-  public static BaseSubCP ToConvex(IEnumerable<Point> Swarm) {
-    return GW(Swarm.Select(s => new SubPoint(s, null, s)));
-  }
+  public static BaseSubCP ToConvex(IEnumerable<Point> Swarm) { return GW(Swarm.Select(s => new SubPoint(s, null, s))); }
 
   /// <summary>
   /// 
@@ -73,8 +95,7 @@ public class GiftWrapping {
       Debug.Assert(initEdge.PolyhedronDim == S.First().Dim - 2, "The dimension of the initial edge must equal to (d-2)!");
     }
 
-    
-    
+
     HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
     List<SubPoint> inPlane    = new List<SubPoint>();      //todo заметим, хранение разумно только на самом верхнем уровне
 
@@ -90,8 +111,7 @@ public class GiftWrapping {
       return GW(inPlane, initEdge).ToPreviousSpace(); //todo 
     }
   }
-  // /// The face consists of d-dimensional sub-points and has its (d-1)-dimensional affine basis,
-  // /// which includes d-1 d-dimensional vectors of the original space.
+
   /// <summary>
   /// Procedure performing convexification of a swarm of d-dimensional points for some d.
   /// </summary>
@@ -122,12 +142,12 @@ public class GiftWrapping {
     //todo По-хорошему бы выкинуть из роя точки, лежащие в плоскости начальной грани, но не являющиеся её вершинами
     // IEnumerable<SubPoint> S1 = S.Where(s => ... ); 
 
-    
+
     Debug.Assert(initFace.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
     Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
     Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
-    
+
 
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
     TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
@@ -135,10 +155,11 @@ public class GiftWrapping {
     DFS_step(S, initFace, ref buildFaces, ref buildIncidence);
 
     IncidenceInfo info = new IncidenceInfo();
+
     foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
       info.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
-    
+
     return new SubNonSimplex(buildFaces, info);
   }
 
@@ -186,7 +207,8 @@ public class GiftWrapping {
     basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
 
 
-    Debug.Assert(basis_F.SpaceDim == face.PolyhedronDim, "The dimension of the basis F expressed in terms of edge must equals to F dimension!");
+    Debug.Assert
+      (basis_F.SpaceDim == face.PolyhedronDim, "The dimension of the basis F expressed in terms of edge must equals to F dimension!");
 
     double  minDot;
     Vector? r = null;
@@ -211,8 +233,8 @@ public class GiftWrapping {
 
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
-    
-    return BuildFace(S,newF_aBasis); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
+
+    return BuildFace(S, newF_aBasis); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
   }
 
   /// <summary>
