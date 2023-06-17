@@ -25,7 +25,6 @@ public class IConvexPolyhedronTest {
     Simplex tetrahedron5D = new Simplex(simplex5D, 5);
     Simplex tetrahedron4D  = new Simplex(simplex4D, 4);
     Simplex tetrahedron3D  = new Simplex(simplex3D, 3);
-    Simplex tetrahedron3D_ = new Simplex(tetrahedron3D);
     
   }
   
