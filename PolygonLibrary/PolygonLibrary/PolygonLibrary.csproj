@@ -33,6 +33,7 @@
         <Compile Include="Polygons\ConvexPolygons\SupportFunction.cs" />
         <Compile Include="Polygons\PolygonTools.cs" />
         <Compile Include="Polygons\Polyline.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\BaseConvexPolyhedron.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubNonSimplex.cs" />
@@ -40,11 +41,12 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint2D.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubSimplex.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\BaseConvexPolyhedron.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\NonSimplex.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\Simplex.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\TwoDimensional.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\BaseConvexPolyhedron.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\NonSimplex.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\Simplex.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\TwoDimensional.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\Polyhedron.cs" />
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
         <Compile Include="Toolkit\Convexification.cs" />
