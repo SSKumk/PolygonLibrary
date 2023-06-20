@@ -11,7 +11,7 @@ public class SubTwoDimensionalEdge : BaseSubCP {
   private         SubPoint            first         { get; }
   private         SubPoint            second         { get; }
   public override HashSet<BaseSubCP>? Faces         => null;
-  public override IncidenceInfo?      FaceIncidence => null;
+  public override SubIncidenceInfo?      FaceIncidence => null;
   public override AffineBasis?        Basis         { get; set; }
 
   public override BaseSubCP ToPreviousSpace() {

@@ -12,7 +12,7 @@ public class SubTwoDimensional : BaseSubCP {
   public override HashSet<SubPoint>   Vertices      { get; }
   public          List<SubPoint>      VerticesList  { get; }
   public override HashSet<BaseSubCP>? Faces         { get; }
-  public override IncidenceInfo?      FaceIncidence => null;
+  public override SubIncidenceInfo?      FaceIncidence => null;
 
   public override AffineBasis? Basis { get; set; }
 

@@ -65,7 +65,7 @@ internal class SubSimplex : BaseSubCP {
   /// <summary>
   /// Null for a Simplex.
   /// </summary>
-  public override IncidenceInfo? FaceIncidence { get; }
+  public override SubIncidenceInfo? FaceIncidence { get; }
 
   /// <summary>
   /// todo ???????????????????
