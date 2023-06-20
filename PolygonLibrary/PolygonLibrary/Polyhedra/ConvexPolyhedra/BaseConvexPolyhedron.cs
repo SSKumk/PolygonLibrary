@@ -11,26 +11,9 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 /// </summary>
 public class TempIncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> { }
 
-/// <summary>
-/// Type of permanent storage of face incidence information.
-/// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
-/// </summary>
-public class IncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron F2)> {
 
-  public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
-  
-  /// <summary>
-  /// Base constructor
-  /// </summary>
-  public IncidenceInfo() { }
 
-}
 
-public class FansInfo : Dictionary<Point, HashSet<BaseConvexPolyhedron>> {
-
-  public FansInfo(FansInfo fansInfo) : base(fansInfo){}
-
-}
 
 /// <summary>
 /// <para><b>Simplex</b> - the polyhedron is a simplex</para>
@@ -43,11 +26,15 @@ public enum ConvexPolyhedronType { Simplex, NonSimplex, TwoDimensional }
 /// Represents the d-dimensional convex polyhedron
 /// </summary>
 public abstract class BaseConvexPolyhedron {
-
+  /// <summary>
+  /// Gets the dimension of the space in which the polyhedron is treated.
+  /// </summary>
+  public int SpaceDim => Vertices.First().Dim;
+  
   /// <summary>
   /// Gets the dimension of the polyhedron.
   /// </summary>
-  public abstract int Dim { get; }
+  public abstract int PolyhedronDim { get; }
 
   /// <summary>
   /// Gets the type of the convex polyhedron.
@@ -61,71 +48,12 @@ public abstract class BaseConvexPolyhedron {
   /// Gets the set of vertices of the polyhedron.
   /// </summary>
   public abstract HashSet<Point> Vertices { get; }
-
+  
   /// <summary>
-  /// Gets the set of (d-1)-dimensional faces of the polyhedron.
+  /// The affine basis of the polyhedron
   /// </summary>
-  public abstract HashSet<BaseConvexPolyhedron> Faces { get; }
-
-  /// <summary>
-  /// The set of (d-2)-dimensional edges of the polyhedron.
-  /// </summary>
-  protected HashSet<BaseConvexPolyhedron>? _edges = null;
-
-  /// <summary>
-  /// Gets the set of (d-2)-dimensional edges of the polyhedron.
-  /// </summary>
-  public HashSet<BaseConvexPolyhedron> Edges {
-    get
-      {
-        if (_edges is null) {
-          ConstructEdges();
-        }
-
-        return _edges!;
-      }
-  }
-
-  /// <summary>
-  /// The dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
-  /// </summary>
-  protected IncidenceInfo? _faceIncidence = null;
-
-  /// <summary>
-  /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
-  /// The second face can be equal to null if it is not constructed yet. 
-  /// </summary>
-  public IncidenceInfo FaceIncidence {
-    get
-      {
-        if (_faceIncidence is null) {
-          ConstructFaceIncidence();
-        }
-
-        return _faceIncidence!;
-      }
-  }
-
-
-  /// <summary>
-  /// The dictionary where the key is a d-dimensional point and the value is a set of faces that are incident to this point.
-  /// </summary>
-  protected Dictionary<Point, HashSet<BaseConvexPolyhedron>>? _fans = null;
-
-  /// <summary>
-  /// Gets a dictionary where the key is a d-dimensional point and the value is a set of faces that are incident to this point.
-  /// </summary>
-  public Dictionary<Point, HashSet<BaseConvexPolyhedron>> Fans {
-    get
-      {
-        if (_fans is null) {
-          ConstructFans();
-        }
-
-        return _fans!;
-      }
-  }
-
+  public abstract AffineBasis Basis { get; }
+  
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.
   /// Two polyhedra are equal if they have the same dimensions and the sets of their vertices are equal. 
@@ -139,7 +67,7 @@ public abstract class BaseConvexPolyhedron {
 
     BaseConvexPolyhedron other = (BaseConvexPolyhedron)obj;
 
-    if (this.Dim != other.Dim) {
+    if (this.PolyhedronDim != other.PolyhedronDim) {
       return false;
     }
 
@@ -163,95 +91,10 @@ public abstract class BaseConvexPolyhedron {
         hash = HashCode.Combine(hash, vertex.GetHashCode());
       }
 
-      _hash = HashCode.Combine(hash, Dim);
+      _hash = HashCode.Combine(hash, PolyhedronDim);
     }
 
     return _hash.Value;
   }
-
-  /// <summary>
-  /// Aux procedure for constructing edges. Also, if the faceIncidence do not establish yet, the procedure does it.
-  /// </summary>
-  /// <returns>A set of edges of given faces.</returns>
-  protected void ConstructEdges() {
-    _edges = new HashSet<BaseConvexPolyhedron>();
-
-    TempIncidenceInfo? tempIncidence = _faceIncidence is null ? new TempIncidenceInfo() : null;
-
-    foreach (BaseConvexPolyhedron face in Faces) {
-      _edges.UnionWith(face.Faces);
-
-      if (tempIncidence is not null) {
-        foreach (BaseConvexPolyhedron edge in face.Faces) {
-          if (tempIncidence.ContainsKey(edge)) {
-            tempIncidence[edge] = (tempIncidence[edge].F1, face);
-          } else {
-            tempIncidence.Add(edge, (face, null));
-          }
-        }
-      }
-    }
-
-    if (_faceIncidence is null) {
-      Debug.Assert(tempIncidence != null, nameof(tempIncidence) + " != null");
-
-      _faceIncidence = new IncidenceInfo();
-
-      foreach (KeyValuePair<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> pair in tempIncidence) {
-        _faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-      }
-    }
-  }
-
-  /// <summary>
-  /// Aux procedure for constructing of information about face incidence. If the edges do not establish yet, the procedure construct its.
-  /// </summary>
-  /// <returns>A dictionary which key is a edge, and a pair (F1, F2) two faces incidence to this key. </returns>
-  protected void ConstructFaceIncidence() {
-    _faceIncidence = new IncidenceInfo();
-    TempIncidenceInfo tempIncidence = new TempIncidenceInfo();
-
-    bool isEdgesWasNull = _edges is null;
-
-    if (isEdgesWasNull) {
-      _edges = new HashSet<BaseConvexPolyhedron>();
-    }
-
-    foreach (BaseConvexPolyhedron face in Faces) {
-      if (isEdgesWasNull) {
-        _edges!.UnionWith(face.Faces);
-      }
-
-      foreach (BaseConvexPolyhedron edge in face.Faces) {
-        if (tempIncidence.ContainsKey(edge)) {
-          tempIncidence[edge] = (tempIncidence[edge].F1, face);
-        } else {
-          tempIncidence.Add(edge, (face, null));
-        }
-      }
-    }
-
-    foreach (KeyValuePair<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> pair in tempIncidence) {
-      _faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-    }
-  }
-
-  /// <summary>
-  /// Aux procedure for constructing fans of the polyhedra.
-  /// </summary>
-  /// <returns>A dictionary which key is a vertex and a value is a set of faces that contains this key</returns>
-  protected void ConstructFans() {
-    _fans = new Dictionary<Point, HashSet<BaseConvexPolyhedron>>();
-
-    foreach (BaseConvexPolyhedron face in Faces) {
-      foreach (Point vertex in face.Vertices) {
-        if (_fans.ContainsKey(vertex)) {
-          _fans[vertex].Add(face);
-        } else {
-          _fans.Add(vertex, new HashSet<BaseConvexPolyhedron>() { face });
-        }
-      }
-    }
-  }
-
+  
 }

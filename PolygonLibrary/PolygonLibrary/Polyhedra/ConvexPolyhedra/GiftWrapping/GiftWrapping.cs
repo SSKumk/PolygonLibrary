@@ -24,30 +24,32 @@ public enum ConvexificationResult { NotFullDimension, FullDimension }
 
 public class GiftWrapping {
 
-  // public static BaseConvexPolyhedron ConstructPolyhedron(IEnumerable<Point> Swarm) {
-    // BaseSubCP P = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+  public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
+    BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
-    // switch (P.Type) {
-    //   case SubCPType.Simplex:
-    //     return new Simplex(P.Vertices.Select(v => v.Original), P.PolyhedronDim); //todo Может и не нужен тут Select
-    //   case SubCPType.NonSimplex:
-    //     HashSet<Point>                Vs    = new HashSet<Point>(P.Vertices.Select(v => v.Original));
-    //     HashSet<BaseConvexPolyhedron> Faces = new HashSet<BaseConvexPolyhedron>();
-    //
-    //     Debug.Assert(P.Faces != null, "P.Faces != null");
-    //
-    //     foreach (BaseSubCP subF in P.Faces) {
-    //       
-    //     }
-    //
-    //     return new NonSimplex(Vs);
-    //   case SubCPType.TwoDimensional: break;
-    //   case SubCPType.OneDimensional: break;
-    //   default:                       throw new ArgumentOutOfRangeException();
-    // }
-    
-  // }
-  
+    HashSet<Face>        Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, p.Basis)));
+    ConvexPolyhedronType type;
+
+    switch (p.Type) {
+      case SubCPType.Simplex:
+        type = ConvexPolyhedronType.Simplex;
+
+        break;
+      case SubCPType.NonSimplex:
+        type = ConvexPolyhedronType.NonSimplex;
+
+        break;
+      case SubCPType.TwoDimensional:
+        type = ConvexPolyhedronType.TwoDimensional;
+
+        break;
+      default: throw new NotImplementedException();
+    }
+
+    return new Polyhedron
+      (p.OriginalVertices, p.PolyhedronDim, Fs, type, p.Basis, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
+  }
+
   /*
    * Сделать типа фабрика
    *
@@ -154,7 +156,7 @@ public class GiftWrapping {
 
     DFS_step(S, initFace, ref buildFaces, ref buildIncidence);
 
-    IncidenceInfo info = new IncidenceInfo();
+    SubIncidenceInfo info = new SubIncidenceInfo();
 
     foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
       info.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);

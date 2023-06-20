@@ -15,7 +15,7 @@ public class TempIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP?
 /// Type of permanent storage of face incidence information.
 /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
 /// </summary>
-public class IncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
+public class SubIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
 /// <summary>
 /// <para><b>Simplex</b> - the polyhedron is a simplex</para>
@@ -53,6 +53,11 @@ public abstract class BaseSubCP {
   public abstract HashSet<SubPoint> Vertices { get; }
 
   /// <summary>
+  /// Returns set of original points.
+  /// </summary>
+  public HashSet<Point> OriginalVertices => new HashSet<Point>(Vertices.Select(v => v.Original));
+
+  /// <summary>
   /// Gets the set of (d-1)-dimensional faces of the polyhedron.
   /// </summary>
   public abstract HashSet<BaseSubCP>? Faces { get; }
@@ -62,12 +67,12 @@ public abstract class BaseSubCP {
   /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
   /// The second face can be equal to null if it is not constructed yet. 
   /// </summary>
-  public abstract IncidenceInfo? FaceIncidence { get; }
+  public abstract SubIncidenceInfo? FaceIncidence { get; }
   
   /// <summary>
   /// todo БАЗИС ???? ГРАНИ ????
   /// </summary>
-  public abstract AffineBasis? Basis { get; set; }
+  public abstract AffineBasis Basis { get; set; }
 
 
   /// <summary>
