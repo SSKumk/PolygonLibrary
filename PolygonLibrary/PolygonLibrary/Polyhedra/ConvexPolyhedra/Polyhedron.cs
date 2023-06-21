@@ -65,7 +65,46 @@ public class Face {
 
   public Face(IEnumerable<Point> Vs, AffineBasis affineBasis) {
     Vertices = new HashSet<Point>(Vs);
-    Basis    = new AffineBasis(affineBasis);
+    // Basis    = new AffineBasis(affineBasis);
+    Basis = affineBasis;
+  }
+
+  /// <summary>
+  /// Determines whether the specified object is equal to face.
+  /// Two faces are equal if they have same sets of their vertices. 
+  /// </summary>
+  /// <param name="obj">The object to compare with face.</param>
+  /// <returns>True if the specified object is equal to face, False otherwise</returns>
+  public override bool Equals(object? obj) {
+    if (obj == null || this.GetType() != obj.GetType()) {
+      return false;
+    }
+
+    Face other = (Face)obj;
+
+    return this.Vertices.SetEquals(other.Vertices);
+  }
+
+  /// <summary>
+  /// Internal field for the hash of the face
+  /// </summary>
+  private int? _hash = null;
+
+  /// <summary>
+  /// Returns a hash code for the face based on specified set of vertices.
+  /// </summary>
+  /// <returns>A hash code for the specified set of vertices.</returns>
+  public override int GetHashCode() {
+    if (_hash is null) {
+      int hash = 0;
+
+      foreach (Point vertex in Vertices.OrderBy(v => v)) {
+        hash = HashCode.Combine(hash, vertex.GetHashCode());
+      }
+      _hash = hash;
+    }
+
+    return _hash.Value;
   }
 
 }
@@ -75,6 +114,44 @@ public class Edge {
   public HashSet<Point> Vertices { get; }
 
   public Edge(IEnumerable<Point> Vs) { Vertices = new HashSet<Point>(Vs); }
+
+  /// <summary>
+  /// Determines whether the specified object is equal to edge.
+  /// Two edges are equal if they have same sets of their vertices. 
+  /// </summary>
+  /// <param name="obj">The object to compare with edge.</param>
+  /// <returns>True if the specified object is equal to edge, False otherwise</returns>
+  public override bool Equals(object? obj) {
+    if (obj == null || this.GetType() != obj.GetType()) {
+      return false;
+    }
+
+    Edge other = (Edge)obj;
+
+    return this.Vertices.SetEquals(other.Vertices);
+  }
+
+  /// <summary>
+  /// Internal field for the hash of the edge
+  /// </summary>
+  private int? _hash = null;
+
+  /// <summary>
+  /// Returns a hash code for the edge based on specified set of vertices.
+  /// </summary>
+  /// <returns>A hash code for the specified set of vertices.</returns>
+  public override int GetHashCode() {
+    if (_hash is null) {
+      int hash = 0;
+
+      foreach (Point vertex in Vertices.OrderBy(v => v)) {
+        hash = HashCode.Combine(hash, vertex.GetHashCode());
+      }
+      _hash = hash;
+    }
+
+    return _hash.Value;
+  }
 
 }
 
@@ -115,10 +192,10 @@ public class Polyhedron : BaseConvexPolyhedron {
   public FansInfo Fans { get; }
 
 
-  public Polyhedron(IEnumerable<Point> Vs
-                  , int                polyhedronDim
-                  , IEnumerable<Face>  faces
-                    , IEnumerable<Edge>    edges
+  public Polyhedron(IEnumerable<Point>   Vs
+                  , int                  polyhedronDim
+                  , IEnumerable<Face>    faces
+                  , IEnumerable<Edge>    edges
                   , ConvexPolyhedronType type
                   , AffineBasis          basis
                   , IncidenceInfo        faceIncidence
@@ -128,7 +205,8 @@ public class Polyhedron : BaseConvexPolyhedron {
     Faces         = new HashSet<Face>(faces);
     Edges         = new HashSet<Edge>(edges);
     Type          = type;
-    Basis         = new AffineBasis(basis);
+    // Basis         = new AffineBasis(basis);
+    Basis         = basis;
     FaceIncidence = new IncidenceInfo(faceIncidence);
     Fans          = new FansInfo(fans);
   }
