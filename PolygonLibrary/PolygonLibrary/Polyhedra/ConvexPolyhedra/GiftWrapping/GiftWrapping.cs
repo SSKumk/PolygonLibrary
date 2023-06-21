@@ -133,7 +133,7 @@ public class GiftWrapping {
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
     Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
 
-
+    //todo Вписать Базис обычный. Подумать над SubBasis (скорее всего никуда не деться от него ...)
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
     TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
 
@@ -184,11 +184,10 @@ public class GiftWrapping {
     Debug.Assert(face.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
     Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
     Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
-    Debug.Assert(face.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
-
-    AffineBasis edgeBasis = new AffineBasis(edge.Vertices); //todo Где его взять?? (d-2)-штук d-мерных
-
-    AffineBasis basis_F = new AffineBasis(edgeBasis);
+    Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "The dimension of the edge must equals to d-2!");
+    
+    AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
+    AffineBasis basis_F   = new AffineBasis(edgeBasis);
     basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
 
 

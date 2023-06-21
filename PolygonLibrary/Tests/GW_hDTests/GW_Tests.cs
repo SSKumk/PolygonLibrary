@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using PolygonLibrary.Basics;
+using PolygonLibrary.Polyhedra.ConvexPolyhedra;
 using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 using PolygonLibrary.Toolkit;
 
@@ -31,8 +32,15 @@ namespace Tests.GW_hDTests;
 [TestFixture]
 public class GW_Tests {
 
+  /// <summary>
+  /// The random engine.
+  /// </summary>
   private static readonly Random _random = new Random();
 
+  /// <summary>
+  /// Generates a random double value between 0 and 1, excluding the values 0 and 1.
+  /// </summary>
+  /// <returns>The generated random double value.</returns>
   double GenIn() {
     double w = _random.NextDouble();
 
@@ -106,7 +114,7 @@ public class GW_Tests {
               point[j] = GenIn();
             }
           }
-          // Console.WriteLine(new Point(point));
+          Console.WriteLine(new Point(point));
           Cube.Add(new Point(point));
         }
       }
@@ -151,8 +159,12 @@ public class GW_Tests {
     return rotated.Select(v => new Point(v)).ToList();
   }
 
+  // HashSet<Face> CubeFaceHD(int cubeDim, int faceDim) {
+  //   
+  // }
+
   [Test]
-  public void CubeTest() {
+  public void GenCubeHDTest() {
     HashSet<Point> Swarm = new HashSet<Point>()
       {
         new Point(new double[] { 0, 0, 0 })
@@ -174,9 +186,11 @@ public class GW_Tests {
   public void Cube3D() {
     List<Point> Swarm = CubeHD(3);
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -186,9 +200,9 @@ public class GW_Tests {
     List<Point> Swarm   = CubeHD(3);
     List<Point> Rotated = Rotate(Swarm);
 
-    var x = GiftWrapping.ToConvex(Rotated);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Rotated);
 
-    foreach (Point point in x.Vertices) {
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -203,9 +217,11 @@ public class GW_Tests {
       , new Point(new double[] { 0, 0, 1 })
       };
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -214,9 +230,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 1 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -225,9 +243,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_2D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 2 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -236,9 +256,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_3D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -247,9 +269,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D_2D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 1, 2 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -258,9 +282,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_2D_3D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 2, 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -269,9 +295,11 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D_2D_3D() {
     List<Point> Swarm = CubeHD(3, new List<int>() { 1, 2, 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(3)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -281,9 +309,11 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 1 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -293,9 +323,11 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 2 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -304,9 +336,11 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_3D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -315,9 +349,11 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -326,9 +362,11 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D_3D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 2, 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -337,9 +375,38 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D_3D() {
     List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2, 3 });
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
+    List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2, 3, 4 });
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube_7D() { //todo Понять, почему неверно заворачивает.
+    const int   cubeDim = 7;
+    List<Point> Swarm   = CubeHD(cubeDim);
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(cubeDim)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
@@ -370,9 +437,9 @@ public class GW_Tests {
       , Point.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
-    var x = GiftWrapping.ToConvex(Swarm);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    foreach (Point point in x.Vertices) {
+    foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
   }
