@@ -15,7 +15,7 @@ public class IncidenceInfo : Dictionary<Edge, (Face F1, Face F2)> {
 
   public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
 
-  public IncidenceInfo(GiftWrapping.SubIncidenceInfo info) : base
+  public IncidenceInfo(SubIncidenceInfo info) : base
     (
      new Dictionary<Edge, (Face F1, Face F2)>
        (
@@ -105,10 +105,10 @@ public class Polyhedron : BaseConvexPolyhedron {
   /// </summary>
   public HashSet<Face> Faces { get; }
 
-  // /// <summary>
-  // /// Gets the set of the edges of polyhedron.
-  // /// </summary>
-  // public HashSet<Edge> Edges { get; }
+  /// <summary>
+  /// Gets the set of the edges of polyhedron.
+  /// </summary>
+  public HashSet<Edge> Edges { get; }
 
   public IncidenceInfo FaceIncidence { get; }
 
@@ -118,7 +118,7 @@ public class Polyhedron : BaseConvexPolyhedron {
   public Polyhedron(IEnumerable<Point> Vs
                   , int                polyhedronDim
                   , IEnumerable<Face>  faces
-                    // , IEnumerable<Edge>    edges
+                    , IEnumerable<Edge>    edges
                   , ConvexPolyhedronType type
                   , AffineBasis          basis
                   , IncidenceInfo        faceIncidence
@@ -126,7 +126,7 @@ public class Polyhedron : BaseConvexPolyhedron {
     Vertices      = new HashSet<Point>(Vs);
     PolyhedronDim = polyhedronDim;
     Faces         = new HashSet<Face>(faces);
-    // Edges         = new HashSet<Edge>(edges);
+    Edges         = new HashSet<Edge>(edges);
     Type          = type;
     Basis         = new AffineBasis(basis);
     FaceIncidence = new IncidenceInfo(faceIncidence);
@@ -139,7 +139,6 @@ public class Polyhedron : BaseConvexPolyhedron {
       throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolyhedronDim}.");
     }
 #endif
-    AffineBasis toProj = Basis;
 
     if (basis is null) {
       return new ConvexPolygon(Basis.ProjectPoints(Vertices));

@@ -8,26 +8,17 @@ using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
-public enum PolyhedronType {
-
-  Face
-, // точки и базис гипер-плоскости (?нормаль)
-  Polyhedron
-, // Vertices, Faces, FaceIncidence (Face --> Set<Face>), Fans (Point --> Set(Face))
-
-  PolyhedralComplex // Всё тут есть
-  //BaseConvexP содержит флаг, какой он. И ненужные поля тогда null.
-
-}
-
-public enum ConvexificationResult { NotFullDimension, FullDimension }
-
 public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
     BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
-    HashSet<Face>        Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, p.Basis)));
+    HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, p.Basis)));
+    HashSet<Edge> Es = new HashSet<Edge>();
+    foreach (BaseSubCP face in p.Faces!) {
+      Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
+    }
+
     ConvexPolyhedronType type;
 
     switch (p.Type) {
@@ -47,7 +38,7 @@ public class GiftWrapping {
     }
 
     return new Polyhedron
-      (p.OriginalVertices, p.PolyhedronDim, Fs, type, p.Basis, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
+      (p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, p.Basis, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
   }
 
   /*
@@ -70,14 +61,6 @@ public class GiftWrapping {
    *  - базис? = null
    */
 
-  // public static BaseConvexPolyhedron ToConvex(IEnumerable<Point> Swarm) {
-  //   BaseSubCP x = GW(Swarm.Select(s => new SubPoint(s, null, s)));
-  //
-  //   //todo translate x --> BCP;
-  //   BaseConvexPolyhedron P;
-  //
-  //   return P;
-  // }
   public static BaseSubCP ToConvex(IEnumerable<Point> Swarm) { return GW(Swarm.Select(s => new SubPoint(s, null, s))); }
 
   /// <summary>
