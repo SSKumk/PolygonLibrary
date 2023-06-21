@@ -7,15 +7,6 @@ using System.Linq;
 namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
 
 /// <summary>
-/// Type of temporary storage of face incidence information
-/// </summary>
-public class TempIncidenceInfo : Dictionary<BaseConvexPolyhedron, (BaseConvexPolyhedron F1, BaseConvexPolyhedron? F2)> { }
-
-
-
-
-
-/// <summary>
 /// <para><b>Simplex</b> - the polyhedron is a simplex</para>
 /// <b>NonSimplex</b> - the polyhedron is a complex structure
 /// <para><b>TwoDimensional</b> - the polyhedron is a 2D-plane polygon</para>
@@ -56,7 +47,7 @@ public abstract class BaseConvexPolyhedron {
   
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.
-  /// Two polyhedra are equal if they have the same dimensions and the sets of their vertices are equal. 
+  /// Two polyhedra are equal if they have same dimensions and sets of their vertices are equal. 
   /// </summary>
   /// <param name="obj">The object to compare with convex polyhedron.</param>
   /// <returns>True if the specified object is equal to convex polyhedron, False otherwise</returns>
