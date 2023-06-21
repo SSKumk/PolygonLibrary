@@ -31,8 +31,20 @@ namespace Tests.GW_hDTests;
 [TestFixture]
 public class GW_Tests {
 
+  private static readonly Random _random = new Random();
+
+  double GenIn() {
+    double w = _random.NextDouble();
+
+    while (Tools.EQ(w) || Tools.EQ(w, 1)) {
+      w = _random.NextDouble();
+    }
+
+    return w;
+  }
+
   /// <summary>
-  /// Generates a hypercube in the specified dimension.
+  /// Generates a full-dimension hypercube in the specified dimension.
   /// </summary>
   /// <param name="cubeDim">The dimension of the hypercube.</param>
   /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
@@ -59,32 +71,43 @@ public class GW_Tests {
       Cube.Add(new Point(v.ToArray()));
     }
 
-    AffineBasis basis  = new AffineBasis(cubeDim);
-    List<Point> Es     = basis.Basis.Select(e => new Point(e)).ToList();
-    Random      random = new Random();
 
     if (facesDim is not null) { // накидываем точки на грани нужных размерностей
       foreach (int dim in facesDim) {
         Debug.Assert(dim <= Cube.First().Dim); //Если равно, то внутрь самого куба
 
-        for (int i = 0; i <= Es.Count - dim; i++) {
-          List<Point> toGen = Es.GetRange(i, dim);
+        int ammount = 50;
 
+        for (int i = 0; i < ammount; i++) {
+          double[] point = new double[cubeDim];
 
-          for (int k = 0; k < 10; k++) {
-            List<double> Ws = new List<double>(dim);
-
-            for (int j = 0; j < dim; j++) {
-              double w = 0;
-
-              while (Tools.EQ(w)) {
-                w = random.NextDouble();
-              }
-              Ws.Add(w);
-            }
-
-            Cube.Add(Point.LinearCombination(toGen, Ws));
+          for (int j = 0; j < cubeDim; j++) {
+            point[j] = -1;
           }
+
+          HashSet<int> constInd = new HashSet<int>();
+
+          for (int j = 0; j < cubeDim - dim; j++) {
+            int ind;
+
+            do {
+              ind = _random.Next(0, cubeDim);
+            } while (!constInd.Add(ind));
+          }
+
+          int zeroOrOne = _random.Next(0, 2);
+
+          foreach (int ind in constInd) {
+            point[ind] = zeroOrOne;
+          }
+
+          for (int j = 0; j < cubeDim; j++) {
+            if (Tools.EQ(point[j], -1)) {
+              point[j] = GenIn();
+            }
+          }
+          // Console.WriteLine(new Point(point));
+          Cube.Add(new Point(point));
         }
       }
     }
@@ -98,12 +121,11 @@ public class GW_Tests {
   /// <param name="dim">The dimension of the vector.</param>
   /// <returns>A random vector. Each coordinate: [-0.5, 0.5) \ {0}.</returns>
   Vector GenVector(int dim) {
-    Random   random = new Random();
-    double[] v      = new double[dim];
+    double[] v = new double[dim];
 
     do {
       for (int i = 0; i < dim; i++) {
-        v[i] = random.NextDouble() - 0.5;
+        v[i] = _random.NextDouble() - 0.5;
       }
     } while (new Vector(v).IsZero);
 
@@ -158,6 +180,7 @@ public class GW_Tests {
       Console.WriteLine(point);
     }
   }
+
   [Test]
   public void Cube3D_Rotated() {
     List<Point> Swarm   = CubeHD(3);
