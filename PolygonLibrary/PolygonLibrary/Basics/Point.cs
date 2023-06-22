@@ -19,9 +19,15 @@ public class Point : IComparable<Point> {
   private readonly double[] _p;
 
   /// <summary>
+  /// Internal field for the hash of the point
+  /// </summary>
+  private int? _hash = null;
+
+  /// <summary>
   /// Dimension of the point
   /// </summary>
   public int Dim => _p.Length;
+
 
   /// <summary>
   /// Indexer access
@@ -257,15 +263,18 @@ public class Point : IComparable<Point> {
   }
 
   public override int GetHashCode() {
-    int res = 0, d = Dim;
+    if (_hash is null) {
+      int res = 0, d = Dim;
 
-    for (int i = 0; i < d; i++) {
-      // res = HashCode.Combine(res, (int)(_p[i] * 1e8));
-      //todo Сравнение по точности и генерация Хешей используют фактически разное количество знаков
-      res = HashCode.Combine(res, (int)(_p[i] / Tools.Eps));
+      for (int i = 0; i < d; i++) {
+        // res = HashCode.Combine(res, (int)(_p[i] * 1e8));
+        //todo Сравнение по точности и генерация Хешей используют фактически разное количество знаков
+        res = HashCode.Combine(res, (int)(_p[i] / Tools.Eps));
+      }
+      _hash = res;
     }
 
-    return res;
+    return _hash.Value;
   }
 #endregion
 
