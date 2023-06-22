@@ -65,18 +65,18 @@ public class SubNonSimplex : BaseSubCP {
   /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces. 
   /// </summary>
   /// <param name="faces">Faces to construct the convex polyhedron</param>
-  /// <param name="incidence"></param>
+  /// <param name="incidence">Information about face incidence.</param>
   /// <param name="Vs">Vertices of this convex polyhedron. If null then its construct base on faces.</param>
   public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
     PolyhedronDim = faces.First().PolyhedronDim + 1;
     Type          = SubCPType.NonSimplex;
     Faces         = faces;
 
-    SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
-
-    foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in incidence) {
-      faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-    }
+    // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
+    //
+    // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in incidence) {
+    //   faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
+    // }
 
     if (Vs is null) {
       Vs = new HashSet<SubPoint>();
@@ -86,7 +86,7 @@ public class SubNonSimplex : BaseSubCP {
       }
     }
 
-    FaceIncidence = faceIncidence;
+    FaceIncidence = incidence;
     Vertices      = Vs;
   }
 
