@@ -13,8 +13,13 @@ public class GiftWrapping {
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
     BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
+    if (p.PolyhedronDim == 2) {
+      throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
+    }
+
     HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, p.Basis)));
     HashSet<Edge> Es = new HashSet<Edge>();
+
     foreach (BaseSubCP face in p.Faces!) {
       Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
     }
@@ -28,10 +33,6 @@ public class GiftWrapping {
         break;
       case SubCPType.NonSimplex:
         type = ConvexPolyhedronType.NonSimplex;
-
-        break;
-      case SubCPType.TwoDimensional:
-        type = ConvexPolyhedronType.TwoDimensional;
 
         break;
       default: throw new NotImplementedException();
@@ -70,15 +71,13 @@ public class GiftWrapping {
   /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
   /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space.</param>
   /// <returns>
-  /// The (d-1)-dimensional face and its (d-2)-dimensional edges expressed in terms of d-dimensional points.
-  /// The faces of a lower dimension are not lifted up.
+  /// The BaseSubCP: (d-1)-dimensional polyhedron complex expressed in terms of d-dimensional points.
   /// </returns>
   public static BaseSubCP BuildFace(IEnumerable<SubPoint> S, AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
-    Debug.Assert(FaceBasis.SpaceDim == S.First().Dim - 1, "The basis must lie in (d-1)-dimensional space!");
-
     if (initEdge is not null) {
       Debug.Assert(initEdge.PolyhedronDim == S.First().Dim - 2, "The dimension of the initial edge must equal to (d-2)!");
     }
+    Debug.Assert(FaceBasis.SpaceDim == S.First().Dim - 1, "The basis must lie in (d-1)-dimensional space!");
 
 
     HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
@@ -93,7 +92,9 @@ public class GiftWrapping {
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
-      return GW(inPlane, initEdge).ToPreviousSpace(); //todo 
+      var x =  GW(inPlane, initEdge).ToPreviousSpace(); //todo
+      Debug.Assert(x.Vertices.Count != 8 || FaceBasis.SpaceDim == 3);
+      return x;
     }
   }
 
@@ -148,6 +149,14 @@ public class GiftWrapping {
     return new SubNonSimplex(buildFaces, info);
   }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="S">The swarm of d-dimensional points.</param>
+  /// <param name="face">The (d-1)-dimensional face in d-space.</param>
+  /// <param name="buildFaces">Set of (d-1)-dimensional faces in d-space.</param>
+  /// <param name="buildIncidence">Dictionary (d-2)-dimensional edge in d-space -->
+  /// pair of (d-1)-dimensional faces in d-space.</param>
   public static void DFS_step(IEnumerable<SubPoint>  S
                             , BaseSubCP              face
                             , ref HashSet<BaseSubCP> buildFaces
@@ -167,6 +176,7 @@ public class GiftWrapping {
     foreach (BaseSubCP edge in face.Faces) {
       if (buildIncidence[edge].F2 is null) {
         BaseSubCP nextFace = RollOverEdge(S, face, edge);
+
         buildFaces.Add(nextFace);
         DFS_step(S, nextFace, ref buildFaces, ref buildIncidence);
       }
@@ -185,7 +195,7 @@ public class GiftWrapping {
     Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
     Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
     Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "The dimension of the edge must equals to d-2!");
-    
+
     AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
     AffineBasis basis_F   = new AffineBasis(edgeBasis);
     basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
@@ -205,7 +215,7 @@ public class GiftWrapping {
       if (!v.IsZero) {
         double dot = v * basis_F.Basis.Last(); //По идее это должен быть нужный нам вектор, перпенд. E и лежащий в F 
 
-        if (dot < minDot) {
+        if (Tools.LT(dot, minDot)) {
           minDot = dot;
           r      = v;
         }
@@ -263,7 +273,7 @@ public class GiftWrapping {
         } else {
           double dot = v * tempV.First();
 
-          if (dot < minDot) {
+          if (Tools.LT(dot, minDot)) {
             minDot = dot;
             r      = v;
             sMin   = s;
