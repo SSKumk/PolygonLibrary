@@ -269,7 +269,7 @@ public class Point : IComparable<Point> {
       for (int i = 0; i < d; i++) {
         // res = HashCode.Combine(res, (int)(_p[i] * 1e8));
         //todo Сравнение по точности и генерация Хешей используют фактически разное количество знаков
-        res = HashCode.Combine(res, (int)(_p[i] / Tools.Eps));
+        res = HashCode.Combine(res, Math.Round(_p[i] / Tools.Eps));
       }
       _hash = res;
     }
