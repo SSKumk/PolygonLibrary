@@ -72,4 +72,13 @@ public class HashSetTests {
     Console.WriteLine(code2);
   }
 
+  [Test]
+  public void PointHashTest() {
+    Point p1 = new Point(new[] { 0.99999999999, 1, 1 });
+    Point p2 = new Point(new[] { 1.0, 1, 1 });
+    
+    Console.WriteLine(p1.GetHashCode());
+    Console.WriteLine(p2.GetHashCode());
+  }
+
 }
