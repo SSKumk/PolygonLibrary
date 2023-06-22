@@ -93,7 +93,6 @@ public class GiftWrapping {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
       var x =  GW(inPlane, initEdge).ToPreviousSpace(); //todo
-      Debug.Assert(x.Vertices.Count != 8 || FaceBasis.SpaceDim == 3);
       return x;
     }
   }
