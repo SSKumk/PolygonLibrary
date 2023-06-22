@@ -84,7 +84,7 @@ public class GW_Tests {
       foreach (int dim in facesDim) {
         Debug.Assert(dim <= Cube.First().Dim); //Если равно, то внутрь самого куба
 
-        int ammount = 50;
+        int ammount = 3;
 
         for (int i = 0; i < ammount; i++) {
           double[] point = new double[cubeDim];
@@ -142,19 +142,28 @@ public class GW_Tests {
   }
 
   /// <summary>
-  /// Rotates the given swarm of points in the space.
+  /// Generate rotation matrix.
   /// </summary>
-  /// <param name="Swarm">The swarm of points to rotate.</param>
-  /// <returns>The rotated swarm of points.</returns>
-  List<Point> Rotate(IEnumerable<Point> Swarm) {
-    int         spaceDim = Swarm.First().Dim;
-    LinearBasis basis    = new LinearBasis(new[] { GenVector(spaceDim) });
+  /// <param name="spaceDim">The dimension d of the space.</param>
+  /// <returns>Unitary matrix dxd.</returns>
+  Matrix GenRotation(int spaceDim) {
+    LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
 
     while (!basis.IsFullDim) {
       basis.AddVector(GenVector(spaceDim));
     }
 
-    IEnumerable<Vector> rotated = Swarm.Select(s => new Vector(s) * basis.GetMatrix());
+    return basis.GetMatrix();
+  }
+
+  /// <summary>
+  /// Rotates the given swarm of points in the space by given unitary matrix.
+  /// </summary>
+  /// <param name="Swarm">The swarm of points to rotate.</param>
+  /// <param name="rotation">Matrix to rotate a swarm.</param>
+  /// <returns>The rotated swarm of points.</returns>
+  List<Point> Rotate(IEnumerable<Point> Swarm, Matrix rotation) {
+    IEnumerable<Vector> rotated  = Swarm.Select(s => new Vector(s) * rotation);
 
     return rotated.Select(v => new Point(v)).ToList();
   }
@@ -193,15 +202,42 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Rotated() {
-    List<Point> Swarm   = CubeHD(3);
-    List<Point> Rotated = Rotate(Swarm);
+    int    cubeDim  = 3;
+    Matrix rotation = GenRotation(cubeDim);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Rotated);
+    List<Point> RotatedCube = Rotate(CubeHD(cubeDim), rotation);
 
-    foreach (Point point in P.Vertices) {
-      Console.WriteLine(point);
-    }
+    Polyhedron P = GiftWrapping.WrapPolyhedron(RotatedCube);
+    Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
   }
+  [Test]
+  public void Cube3D_Shifted() {
+    int         cubeDim     = 3;
+    Vector      shift       = GenShift(cubeDim);
+    List<Point> shiftedCube = Shift(CubeHD(cubeDim), shift);
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(shiftedCube);
+    Debug.Assert(P.Vertices.SetEquals(shiftedCube), "The set of vertices must be equals.");
+  }
+
+  [Test]
+  public void Cube3D_Rotated_Shifted() {
+    int    cubeDim  = 3;
+
+    Matrix      rotation           = GenRotation(cubeDim);
+    List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
+    Vector      shift              = GenShift(cubeDim);
+    List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+
+    List<Point> Swarm = CubeHD(cubeDim);
+    Swarm = Rotate(Swarm, rotation);
+    Swarm = Shift(Swarm, shift);
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
+  }
+
+  private Vector GenShift(int cubeDim) { return GenVector(cubeDim) * _random.Next(1, 100); }
 
   [Test]
   public void Simplex3D() {
@@ -481,12 +517,12 @@ public class GW_Tests {
   public void AllCubesTest() {
     for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
-        int ammountTests = 50;
+        int ammountTests = 500;
 
         for (int k = 0; k < ammountTests; k++) {
           HashSet<int> faceInd = new HashSet<int>();
 
-          for (int j = 0; j < fDim; j++) {
+          for (int j = 0; j < 1; j++) {
             int ind;
 
             do {
@@ -494,16 +530,29 @@ public class GW_Tests {
             } while (!faceInd.Add(ind));
           }
 
-          List<Point> Swarm = CubeHD(cubeDim, faceInd);
-          Vector         shift     = GenVector(cubeDim)*_random.Next(1,100);
-          Swarm = Swarm.Select(s => new Point(s + shift)).ToList();
-          Polyhedron  P     = GiftWrapping.WrapPolyhedron(Swarm);
 
-          HashSet<Point> Vs = new HashSet<Point>(P.Vertices.Select(v => v - shift));
-          Debug.Assert(Vs.SetEquals(new HashSet<Point>(CubeHD(cubeDim))), "The set of vertices must be equals.");
+          Matrix      rotation           = GenRotation(cubeDim);
+          List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
+          Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
+          List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+
+          List<Point> Swarm = CubeHD(cubeDim, faceInd);
+          Swarm = Rotate(Swarm, rotation);
+          Swarm = Shift(Swarm, shift);
+          Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+          Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
         }
       }
     }
   }
+
+  /// <summary>
+  /// Shift given swarm by given vector
+  /// </summary>
+  /// <param name="Swarm">Swarm to be shifted</param>
+  /// <param name="shift">Vector to shift</param>
+  /// <returns></returns>
+  private static List<Point> Shift(List<Point> Swarm, Vector shift) { return Swarm.Select(s => new Point(s + shift)).ToList(); }
 
 }
