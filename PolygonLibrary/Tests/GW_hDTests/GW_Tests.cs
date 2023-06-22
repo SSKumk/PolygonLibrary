@@ -57,7 +57,7 @@ public class GW_Tests {
   /// <param name="cubeDim">The dimension of the hypercube.</param>
   /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
   /// <returns>A list of points representing the hypercube.</returns>
-  List<Point> CubeHD(int cubeDim, List<int>? facesDim = null) {
+  List<Point> CubeHD(int cubeDim, IEnumerable<int>? facesDim = null) {
     List<List<double>> cube_prev = new List<List<double>>();
     List<List<double>> cube      = new List<List<double>>();
     cube_prev.Add(new List<double>() { 0 });
@@ -114,7 +114,7 @@ public class GW_Tests {
               point[j] = GenIn();
             }
           }
-          Console.WriteLine(new Point(point));
+          // Console.WriteLine(new Point(point));
           Cube.Add(new Point(point));
         }
       }
@@ -158,10 +158,6 @@ public class GW_Tests {
 
     return rotated.Select(v => new Point(v)).ToList();
   }
-
-  // HashSet<Face> CubeFaceHD(int cubeDim, int faceDim) {
-  //   
-  // }
 
   [Test]
   public void GenCubeHDTest() {
@@ -386,11 +382,48 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
-    List<Point> Swarm = CubeHD(4, new List<int>() { 1, 2, 3, 4 });
+    List<Point> Swarm = CubeHD
+      (
+       4
+     , new List<int>()
+         {
+           1
+         , 2
+         , 3
+         , 4
+         }
+      );
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
     Debug.Assert(P.Vertices.SetEquals(CubeHD(4)), "The set of vertices must be equals.");
+
+    foreach (Point point in P.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void Cube_6D_withAll() {
+    const int cubeDim = 6;
+
+    List<Point> Swarm = CubeHD
+      (
+       cubeDim
+     , new List<int>()
+         {
+           1
+         , 2
+         , 3
+         , 4
+         , 5
+         , 6
+         }
+      );
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Debug.Assert(P.Vertices.SetEquals(CubeHD(cubeDim)), "The set of vertices must be equals.");
 
     foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
@@ -441,6 +474,35 @@ public class GW_Tests {
 
     foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
+    }
+  }
+
+  [Test]
+  public void AllCubesTest() {
+    for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
+      for (int fDim = 0; fDim <= cubeDim; fDim++) {
+        int ammountTests = 50;
+
+        for (int k = 0; k < ammountTests; k++) {
+          HashSet<int> faceInd = new HashSet<int>();
+
+          for (int j = 0; j < fDim; j++) {
+            int ind;
+
+            do {
+              ind = _random.Next(1, cubeDim + 1);
+            } while (!faceInd.Add(ind));
+          }
+
+          List<Point> Swarm = CubeHD(cubeDim, faceInd);
+          Vector         shift     = GenVector(cubeDim)*_random.Next(1,100);
+          Swarm = Swarm.Select(s => new Point(s + shift)).ToList();
+          Polyhedron  P     = GiftWrapping.WrapPolyhedron(Swarm);
+
+          HashSet<Point> Vs = new HashSet<Point>(P.Vertices.Select(v => v - shift));
+          Debug.Assert(Vs.SetEquals(new HashSet<Point>(CubeHD(cubeDim))), "The set of vertices must be equals.");
+        }
+      }
     }
   }
 
