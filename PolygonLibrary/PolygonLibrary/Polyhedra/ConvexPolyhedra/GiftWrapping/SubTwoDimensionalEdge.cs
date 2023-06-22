@@ -14,9 +14,7 @@ public class SubTwoDimensionalEdge : BaseSubCP {
   public override SubIncidenceInfo?      FaceIncidence => null;
   public override AffineBasis?        Basis         { get; set; }
 
-  public override BaseSubCP ToPreviousSpace() {
-    return new SubTwoDimensionalEdge(first.Parent!, second.Parent!);
-  }
+  public override BaseSubCP ToPreviousSpace() => new SubTwoDimensionalEdge(first.Parent!, second.Parent!);
 
   public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
     this.first    = first;

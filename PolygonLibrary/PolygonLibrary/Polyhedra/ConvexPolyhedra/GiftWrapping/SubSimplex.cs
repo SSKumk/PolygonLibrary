@@ -76,9 +76,7 @@ internal class SubSimplex : BaseSubCP {
   /// Lifts a simplex to the previous space.
   /// </summary>
   /// <returns>A simplex in (d+1)-space.</returns>
-  public override BaseSubCP ToPreviousSpace() {
-    return new SubSimplex(Vertices.Select(v => v.Parent)!);
-  }
+  public override BaseSubCP ToPreviousSpace() => new SubSimplex(Vertices.Select(v => v.Parent)!);
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SubSimplex"/> class with the specified set of vertices and dimension.
