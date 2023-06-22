@@ -72,7 +72,7 @@ public abstract class BaseSubCP {
   /// <summary>
   /// todo БАЗИС ???? ГРАНИ ????
   /// </summary>
-  public abstract AffineBasis Basis { get; set; }
+  public abstract AffineBasis? Basis { get; set; }
 
 
   /// <summary>
