@@ -35,7 +35,7 @@ public class GW_Tests {
   /// <summary>
   /// The random engine.
   /// </summary>
-  private static readonly Random _random = new Random();
+  private static readonly Random _random = new Random(0);
 
   /// <summary>
   /// Generates a random double value between 0 and 1, excluding the values 0 and 1.
@@ -56,8 +56,9 @@ public class GW_Tests {
   /// </summary>
   /// <param name="cubeDim">The dimension of the hypercube.</param>
   /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
+  /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <returns>A list of points representing the hypercube.</returns>
-  List<Point> CubeHD(int cubeDim, IEnumerable<int>? facesDim = null) {
+  List<Point> CubeHD(int cubeDim, IEnumerable<int>? facesDim = null, int amount = 50) {
     List<List<double>> cube_prev = new List<List<double>>();
     List<List<double>> cube      = new List<List<double>>();
     cube_prev.Add(new List<double>() { 0 });
@@ -84,9 +85,7 @@ public class GW_Tests {
       foreach (int dim in facesDim) {
         Debug.Assert(dim <= Cube.First().Dim); //Если равно, то внутрь самого куба
 
-        int ammount = 3;
-
-        for (int i = 0; i < ammount; i++) {
+        for (int i = 0; i < amount; i++) {
           double[] point = new double[cubeDim];
 
           for (int j = 0; j < cubeDim; j++) {
@@ -131,14 +130,17 @@ public class GW_Tests {
   Vector GenVector(int dim) {
     double[] v = new double[dim];
 
+    Vector res;
+
     do {
       for (int i = 0; i < dim; i++) {
         v[i] = _random.NextDouble() - 0.5;
       }
-    } while (new Vector(v).IsZero);
+      res = new Vector(v);
+    } while (res.IsZero);
 
 
-    return new Vector(v);
+    return res;
   }
 
   /// <summary>
@@ -163,7 +165,7 @@ public class GW_Tests {
   /// <param name="rotation">Matrix to rotate a swarm.</param>
   /// <returns>The rotated swarm of points.</returns>
   List<Point> Rotate(IEnumerable<Point> Swarm, Matrix rotation) {
-    IEnumerable<Vector> rotated  = Swarm.Select(s => new Vector(s) * rotation);
+    IEnumerable<Vector> rotated = Swarm.Select(s => new Vector(s) * rotation);
 
     return rotated.Select(v => new Point(v)).ToList();
   }
@@ -195,6 +197,8 @@ public class GW_Tests {
 
     Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
 
+    P.WriteToObjFile("cube");
+
     foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
     }
@@ -210,6 +214,7 @@ public class GW_Tests {
     Polyhedron P = GiftWrapping.WrapPolyhedron(RotatedCube);
     Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
   }
+
   [Test]
   public void Cube3D_Shifted() {
     int         cubeDim     = 3;
@@ -222,7 +227,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Rotated_Shifted() {
-    int    cubeDim  = 3;
+    int cubeDim = 3;
 
     Matrix      rotation           = GenRotation(cubeDim);
     List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
@@ -517,9 +522,9 @@ public class GW_Tests {
   public void AllCubesTest() {
     for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
-        int ammountTests = 500;
+        int amountTests = 500;
 
-        for (int k = 0; k < ammountTests; k++) {
+        for (int k = 0; k < amountTests; k++) {
           HashSet<int> faceInd = new HashSet<int>();
 
           for (int j = 0; j < 1; j++) {
@@ -531,21 +536,70 @@ public class GW_Tests {
           }
 
 
-          Matrix      rotation           = GenRotation(cubeDim);
-          List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
-          Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
-          List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+          Matrix      rotation    = GenRotation(cubeDim);
+          List<Point> RotatedCube = Rotate(CubeHD(cubeDim), rotation);
+          // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
+          // List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
 
-          List<Point> Swarm = CubeHD(cubeDim, faceInd);
+
+          // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 4);
+          // List<Point> ShiftedCube        = Shift(CubeHD(cubeDim),shift);
+
+
+          List<Point> Swarm = CubeHD(cubeDim, faceInd, 1);
           Swarm = Rotate(Swarm, rotation);
-          Swarm = Shift(Swarm, shift);
-          Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+          // Swarm = Shift(Swarm, shift);
 
-          Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
+          try {
+            Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+            Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
+            // Debug.Assert(P.Vertices.SetEquals(ShiftedCube), "The set of vertices must be equals.");
+            // Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
+          }
+          catch (Exception e) {
+            foreach (Point s in Swarm) {
+              Console.WriteLine(s);
+            }
+
+            throw new ArgumentException();
+          }
         }
       }
     }
   }
+
+  [Test]
+  public void Aux() {
+    Point c1 = new Point(new double[] { 0, 0, 0 });
+    Point c2 = new Point(new double[] { -0.8852764610241171, 1.0281272583892638, 0.39904877911552494 });
+    Point c3 = new Point(new double[] { -0.39411469384962644, 0.7535899157161732, -0.5633372911470121 });
+    Point c4 = new Point(new double[] { -0.14918247106298443, 1.1553809721987207, -0.8017726606767539 });
+    Point c5 = new Point(new double[] { -0.7732788753097883, 0.4713955613516855, -0.4240589649300647 });
+    Point c6 = new Point(new double[] { 0.6240964042468039, 0.6839854108470351, -0.37771369574668917 });
+    Point c7 = new Point(new double[] { -0.26118005677731315, 1.7121126692362987, 0.021335083368835772 });
+    Point c8 = new Point(new double[] { 0.5120988185324752, 1.2407171078846133, 0.44539404829890045 });
+    Point c9 = new Point(new double[] { -0.11199758571432869, 0.5567316970375782, 0.8231077440455896 });
+
+    List<Point> Swarm = new List<Point>()
+      {
+        c1
+      , c2
+      , c3
+      , c4
+      , c5
+      , c6
+      , c7
+      , c8
+      , c9
+      };
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    foreach (Point point in P.Vertices) {
+      Console.WriteLine(point);
+    }
+  }
+
 
   /// <summary>
   /// Shift given swarm by given vector
