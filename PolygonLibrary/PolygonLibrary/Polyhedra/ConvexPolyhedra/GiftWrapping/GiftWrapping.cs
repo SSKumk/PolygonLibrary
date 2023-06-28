@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using AVLUtils;
 using PolygonLibrary.Basics;
@@ -12,6 +13,16 @@ public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
     BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+
+    if (p.Vertices.Count != 8) {
+      foreach (Point point in p.OriginalVertices) {
+        Console.WriteLine(point);
+        // Console.WriteLine(point.ToStringBySpace());
+      }
+
+      throw new ArgumentException();
+    }
+
 
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
@@ -92,7 +103,8 @@ public class GiftWrapping {
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
-      var x =  GW(inPlane, initEdge).ToPreviousSpace(); //todo
+      var x = GW(inPlane, initEdge).ToPreviousSpace(); //todo
+
       return x;
     }
   }
@@ -231,7 +243,8 @@ public class GiftWrapping {
   }
 
   /// <summary>
-  /// Procedure 
+  /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+  /// and all other points lies for a one side from it.
   /// </summary>
   /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
   /// <returns>
@@ -253,44 +266,41 @@ public class GiftWrapping {
     HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
 
     double    minDot;
-    Vector?   r = null;
-    SubPoint? sMin;
+    SubPoint? sExtr;
 
     while (tempV.Any()) {
+      Vector t = tempV.First();
+      tempV.RemoveFirst();
       minDot = double.MaxValue;
-      sMin   = null;
+      sExtr  = null;
 
       foreach (SubPoint s in S) {
         if (Viewed.Contains(s)) {
           continue;
         }
 
-        Vector v = Vector.OrthonormalizeAgainstBasis(s - origin, Basis.Basis);
+        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, Basis.Basis, tempV);
 
-        if (v.IsZero) {
+        if (n.IsZero) {
           Viewed.Add(s);
         } else {
-          double dot = v * tempV.First();
+          double dot = n * t;
 
           if (Tools.LT(dot, minDot)) {
             minDot = dot;
-            r      = v;
-            sMin   = s;
+            sExtr  = s;
           }
         }
       }
 
-      if (sMin is null) {
+      if (sExtr is null) {
         return Basis;
       }
 
-      Viewed.Add(sMin);
-      tempV.RemoveFirst();
-      Basis.AddVectorToBasis(r!, false);
+      Viewed.Add(sExtr);
+      Basis.AddVectorToBasis(sExtr - origin);
+      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, Basis.Basis)); //todo ??????????
     }
-
-    // HyperPlane hyperPlane = new HyperPlane(Basis); // Мы гарантируем, что все точки лежат с одной стороны от этой плоскости
-    // hyperPlane.OrientNormal(hyperPlane.FilterNotIn(S).First(),false);
 
     return Basis;
   }
