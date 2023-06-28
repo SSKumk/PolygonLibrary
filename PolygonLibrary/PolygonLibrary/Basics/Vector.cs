@@ -76,7 +76,6 @@ public class Vector : IComparable<Vector> {
   /// <param name="v">The vector to be converted</param>
   /// <returns>The resultant array</returns>
   public static explicit operator double[](Vector v) => v._v;
-
 #endregion
 
 #region Comparing
@@ -252,12 +251,12 @@ public class Vector : IComparable<Vector> {
 
 #region Functions related to Vectors
   /// <summary>
-  /// Orthonormalizes the given vector against the given basis and returns the result.
+  /// Orthonormalizes the given vector against the given basis.
   /// </summary>
   /// <param name="v">The input vector to orthonormalize.</param>
   /// <param name="Basis">The basis to orthonormalize against.</param>
-  /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector</returns>
-  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) { //todo на LinearBasis заменить
+  /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector.</returns>
+  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
     foreach (Vector bvec in Basis) {
       Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
 
@@ -265,6 +264,33 @@ public class Vector : IComparable<Vector> {
     }
 
     return v.NormalizeZero();
+  }
+
+  /// <summary>
+  /// Orthonormalizes the given vector against given two bases. Order of bases is important.
+  /// </summary>
+  /// <param name="v">The input vector to orthonormalize.</param>
+  /// <param name="Basis1">The first basis to orthonormalize against.</param>
+  /// <param name="Basis2">The second basis to orthonormalize against.</param>
+  /// <returns></returns>
+  public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
+    return OrthonormalizeAgainstBasis(OrthonormalizeAgainstBasis(v, Basis1), Basis2);
+  }
+
+  /// <summary>
+  /// Orthonormalizes the given collection of vectors against the given basis.
+  /// </summary>
+  /// <param name="Vs">The input collection of vectors to orthonormalize.</param>
+  /// <param name="Basis">The basis to orthonormalize against.</param>
+  /// <returns>The resulting collection of orthonormalized vectors. If the basis is empty returns normalized vectors.</returns>
+  public static IEnumerable<Vector> OrthonormalizeAgainstBasis(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
+    List<Vector> res = new List<Vector>();
+
+    foreach (Vector v in Vs) {
+      res.Add(OrthonormalizeAgainstBasis(v, Basis, res));
+    }
+
+    return res;
   }
 
   /// <summary>
@@ -414,21 +440,21 @@ public class Vector : IComparable<Vector> {
   /// </summary>
   /// <param name="p">The point on which constructor construct the vector</param>
   public Vector(Point p) : this((double[])p) { }
-  
+
   /// <summary>
   /// Constructor to a multidimensional vector from a two-dimensional vector
   /// </summary>
   /// <param name="v">The vector to be copied</param>
   /// <returns>The resultant vector</returns>
-  public Vector(Vector2D v) : this(new double[] { v[0], v[1] }){}
-  
+  public Vector(Vector2D v) : this(new double[] { v[0], v[1] }) { }
+
   /// <summary>
   /// Constructor to a multidimensional vector from a two-dimensional point
   /// </summary>
   /// <param name="p">The point to be copied</param>
   /// <returns>The resultant vector</returns>
-  public Vector(Point2D p) : this(new double[] { p.x, p.y }){}
-  
+  public Vector(Point2D p) : this(new double[] { p.x, p.y }) { }
+
   /// <summary>
   /// Computing fields
   /// </summary>
