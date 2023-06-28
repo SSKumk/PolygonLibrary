@@ -9,37 +9,42 @@
 
 % Packages
 \usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} % AMS
-\usepackage{mathrsfs} % \mathscr{}
+\usepackage{mathrsfs} % \mathscr{} ажурный шрифт
 
+\usepackage{indentfirst} %абзацный отступ
+\usepackage{ifthen}      %поддержка \ifthanelse{}{}{}
 \usepackage{graphicx}
 \usepackage{verbatim}
-\usepackage{indentfirst}
 \usepackage[shortcuts]{extdash}
-\usepackage{ifthen}
 
 
 \newcommand{\R}[1][]{% R - евклидово пространство
   \ifthenelse{\equal{#1}{}}%
   {\mathbb{R}}%
   {\mathbb{R}^{#1}}}
-\newcommand{\A}[1]{\mathbb{A}^{#1}} % A - аффинное пространство
-\newcommand{\Swarm}{\mathcal{S}} % Swarm - рой точек
-\newcommand{\Polyhedron}{\mathcal{P}} % Polyhedron - многогранник
+\newcommand{\A}[1]{\mathbb{A}^{#1}}           % A - аффинное пространство
+\newcommand{\Swarm}{\mathcal{S}}              % Swarm - рой точек
+\newcommand{\Polyhedron}{\mathcal{P}}         % Polyhedron - многогранник
 \newcommand{\PolyhedronComplex}{\mathcal{PC}} % Polyhedron Complex - многогранник
-\newcommand{\Facet}{\mathcal{F}} % Facet - грань
-\newcommand{\Edge}{\mathcal{E}} % Edge - ребро
-\newcommand{\Basis}{\mathcal{B}} % Basis - базис
-\newcommand{\Viewed}{\mathcal{V}} % Viewed - множество просмотренных точек
-\newcommand{\Normal}{\mathcal{N}} % Normal - нормаль
-\newcommand{\origin}{o} % Origin - наименьшая точка в лексикографическом порядке
+\newcommand{\Facet}{\mathcal{F}}              % Facet - грань
+\newcommand{\Edge}{\mathcal{E}}               % Edge - ребро
+\newcommand{\Basis}{\mathcal{B}}              % Basis - базис
+\newcommand{\Viewed}{\mathcal{V}}             % Viewed - множество просмотренных точек
+\newcommand{\Normal}{\mathcal{N}}             % Normal - нормаль
+\newcommand{\origin}{o}                       % Origin - наименьшая точка в лексикографическом порядке
 
-\newcommand\norm[1]{\left\lVert#1\right\rVert} %Норма
 
-\newcommand{\TempVec}{\mathbf{T}(\Basis)} % Temprary vector - множество временных векторов базиса
-\newcommand{\FinalVec}{\mathbf{F}(\Basis)} % Final vector - множество финальных векторов базиса
-\newcommand{\BasisOf}[1]{\mathbf{B}(#1)} % Basis of - базис множества
-\newcommand{\Plane}{\mathcal{L}} % Плоскость
-\newcommand{\SwarmPoint}{s} % Точка роя
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}             % Норма
+\newcommand{\set}[1]{\left\{ #1 \right\}}                    % Скобки множества
+\newcommand{\scalprod}[2]{\left\langle #1, #2 \right\rangle} % Скалярное произведение
+
+
+\newcommand{\TempVec}{\mathbf{T}}  % Temprary vector - множество временных векторов базиса
+\newcommand{\FinalVec}{\mathbf{F}} % Final vector - множество финальных векторов базиса
+\newcommand{\BasisOf}[1]{\mathbf{B}(#1)}   % Basis of - базис множества
+\newcommand{\Plane}{\mathcal{L}}           % Плоскость
+\newcommand{\SwarmPoint}{s}                % Точка роя
+
 
 
 \begin{document}
@@ -91,6 +96,7 @@
 
 
 \section{Построение начальной грани $\Polyhedron$}
+  Пусть $\Swarm \subset \R[d]$ -- рой $d$-мерных точек в $d$-мерном пространстве.
   Пусть $\Basis$ -- базис текущей плоскости. Построение начальной грани состоит из двух шагов. Первый -- поиск аффинной плоскости, содержащей какую-либо грань выпуклой оболочки $\Polyhedron$. Второй -- поиск вершин этой грани. Построение аффинной плоскости заключается в последовательном повороте некоторой начальной плоскости, проходящей через одну точку роя. Каждый поворот аффинной плоскости заключается в подмене одного вектора из её базиса так, чтобы она проходила через ещё хотя бы одну точку роя. Когда очередная плоскость содержит $d$ линейно независимых точек, искомая плоскость построена.
 
   Временные векторы базиса $\TempVec$ -- векторы из этого множества могут быть заменены.
@@ -103,16 +109,17 @@
     \begin{enumerate}
       \item Выберем точку $\origin \in \Swarm$, минимальную в лексикографическом порядке (она гарантировано будет вершиной $\Polyhedron$);
 
-      \item Проведём через $\origin=(o_i)_{i = 1}^{d}$ плоскость $\Plane$ перпендикулярно первому базисному вектору пространства. (Все точки роя $\Swarm$ гарантированно лежат не левее этой плоскости.) Составим базис этой плоскости $\Basis = \{ \vec e_i \}_{i=2}^d$. Положим $\FinalVec = \varnothing$, $\TempVec = \Basis$.
-      \item Обозначим $\Viewed$ -- множество просмотренных вершин плоскости $\Plane$. Положим $\Viewed = \{ o \}$.
+      \item Проведём через $\origin=(o_i)_{i = 1}^{d}$ плоскость $\Plane$ перпендикулярно первому базисному вектору пространства. (Все точки роя $\Swarm$ гарантированно лежат не левее этой плоскости.) Составим базис этой плоскости $\Basis = \set{\vec e_i}_{i=2}^d$. Положим $\FinalVec = \varnothing$, $\TempVec = \Basis$, dim$(\TempVec) = d-1$.
+      \item Обозначим $\Viewed$ -- множество просмотренных вершин плоскости $\Plane$. Положим $\Viewed =\set{o}$.
       \item Пока $\TempVec \neq \varnothing$, повторяем:
       \begin{enumerate}
-        \item Возьмём произвольный $\vec t \in \TempVec$.
-        \item Возьмём произвольную точку $s \in \Swarm$, $s \notin \Viewed$. Пусть $\vec r$ есть результат ортонормирования вектора $s - o$ на фоне набора $\FinalVec$. Если набор $\FinalVec \cup \{ \vec r \, \}$ линейно зависим, то добавляем точку $s$ в множество $\Viewed$ и переходим на шаг~\ref{item:search}.
+        \item Возьмём произвольный $\vec t \in \TempVec$. Удалим этот вектор $\TempVec = \TempVec \setminus \set{\vec t \,}$. Будем вращать вокруг ребра, базис которого образован следующим образом: $E = \FinalVec \cup \TempVec$
+        \item Возьмём произвольную точку $s \in \Swarm$, $s \notin \Viewed$. Пусть $\vec n$ есть результат ортонормирования вектора $s - o$ на фоне набора $E$. Если набор $E \cup \set{\vec n}$ линейно зависим, то добавляем точку $s$ в множество $\Viewed$ и переходим на шаг~\ref{item:search}.
         \label{item:search}
-        \item Найдём точку $s_* \in \Swarm$ такую, что $s_* \notin \Viewed$, и угол между $\vec r_*$ и $\vec t$ наибольший среди всех точек роя, где $\vec r_*$ есть результат ортонормирования вектора $s_* - o$ на фоне набора $\FinalVec$. Если таких точек несколько можно выбрать любую.
-        \item Если точка $s_*$ не нашлась, это означает, что весь рой~$\Swarm$ лежит в аффинном подпространстве размерности меньше~$d$. В этом случае или алгоритм прекращает работу, если целью было найти выпуклую оболочку полной размерности, или переходит к построению выпуклой оболочки роя~$\Swarm$ в найденном аффинном подпространстве.
-        \item Иначе, $\TempVec = \TempVec \setminus \{ \vec t \, \}$, $\FinalVec = \FinalVec \cup \{ \vec r_* \, \}$, $\Basis = \TempVec \cup \FinalVec$. Добавим точку~$s_*$ в множество $\Viewed$.
+        \item Найдём точку $s_* \in \Swarm$ такую, что $s_* \notin \Viewed$, и угол между $\vec n_*$ и $\vec t$ наибольший среди всех точек роя (то есть скалярное произведение $\scalprod{\vec n_*}{\vec t}$ наименьшее), где $\vec n_* = (s_* - o)_{\text{ОН}(E)}$ есть результат ортонормирования вектора $s_* - o$ на фоне набора $E$.
+        \item Если точка $s_*$ не нашлась, это означает, что весь рой~$\Swarm$ лежит в аффинном подпространстве размерности меньше~$d-1$. В этом случае или алгоритм прекращает работу, если целью было найти выпуклую оболочку полной размерности, или переходит к построению выпуклой оболочки роя~$\Swarm$ в найденном аффинном подпространстве.
+        \item  Если таких точек несколько, то можно выбрать любую. Ортонормируем вектор $s_* - o$ на фоне базиса $\FinalVec$ и обозначим его $\vec v$. Добавим его в финальный базис $\FinalVec = \FinalVec \cup \set{\vec v}$. Пересчитаем $\TempVec$ на фоне $\FinalVec$.
+        Добавим точку~$s_*$ в множество $\Viewed$.
       \end{enumerate}
       \item Конец процедуры.
     \end{enumerate}
@@ -166,8 +173,8 @@
     Дано: текущая грань $\Facet$ и ребро $\Edge$ текущей грани, через которое происходит перекатывание, $(o, \Basis_{\Facet})$~-- аффинный базис плоскости содержащей грань $\Facet$.
 
     \begin{enumerate}
-      \item Пересчитаем аффинный базис $(o, \Basis_{\Facet})$ в другой $(p, \Basis'_{\Facet})$ такой, что $p \in \Edge$, первые $d-2$ вектора базиса $\Basis'_{\Facet}$ есть базис $\Basis_{\Edge}$ ребра $\Edge$, и $(d-1)$-й вектор $\vec f$ из $\Basis'_{\Facet}$ ортогонален $\Edge$.
-      \item Находим точку $s \in \Swarm$ такую, что $s \notin \Facet$, вектор $\vec r$ есть результат ортонормирования вектора $s - p$ на фоне базиса $\Basis_{\Edge}$, и угол между векторами $\vec f$ и $\vec r$ наибольший среди всех точек роя. Если таких точек несколько можно выбрать любую.
+      \item Пересчитаем аффинный базис $(o, \Basis_{\Facet})$ в другой $(p, \Basis'_{\Facet})$ такой, что $p \in \Edge$, первые $d-2$ вектора базиса $\Basis'_{\Facet}$ есть базис $\Basis_{\Edge}$ ребра $\Edge$, и $(d-1)$-й вектор $\vec v$ из $\Basis'_{\Facet}$ ортогонален $\Edge$.
+      \item Находим точку $s \in \Swarm$ такую, что $s \notin \Facet$, вектор $\vec r$ есть результат ортонормирования вектора $s - p$ на фоне базиса $\Basis_{\Edge}$, и угол между векторами $\vec v$ и $\vec r$ наибольший среди всех точек роя. Если таких точек несколько можно выбрать любую.
       \item Выполняем построение новой грани $\Facet'$ на точках роя, попавших в плоскость $\Plane'$, проходящую через ребро $\Edge$ и точку $s$ (см. процедуру~\ref{subsec:FacetConstruction}). В этой процедуре следует учесть, что ребро $\Edge$ гарантированно является $(d-2)$\=/гранью конструируемой $(d-1)$\=/грани: нет нужды запускать процедуру построения начальной грани.
     \end{enumerate}
 
