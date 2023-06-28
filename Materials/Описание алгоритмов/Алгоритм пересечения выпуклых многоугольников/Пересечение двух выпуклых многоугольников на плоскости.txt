@@ -1,0 +1,102 @@
+Вход:  P и Q -- выпуклые многоугольники на плоскости.
+Выход: R = P пересечь Q
+Выбрать произвольно вершину p in P и q in Q
+inside := Unknown   // InP, InQ, Unknown
+R := empty;
+Повторять
+  hat_p = p - p_pred
+  hat_q = q - q_pred
+  crossInfo := Пересечь(hat_p, hat_q)
+  //пересечение = [f, s];    I(nner), E(nd), B(egin)
+  // fTypeSP === fTypeS1, fTypeSQ === fTypeS2, sTypeSP, sTypeSQ 
+  Выставляем флаг:
+    if crossType == SINGLE_POINT
+      then
+        if      p in H+(hat_q) then inside := InP
+        else if q in H+(hat_p) then inside := InQ
+  Конец Выставления флага.
+  
+  Добавление точки-внутреннего-пересечения:
+    if SINGLE_POINT && fTypeSP == I && fTypeSQ == I 
+    then AddPoint(f)
+  Конец Добавления точки
+
+  skewP = hat_p ^ hat_q  // Косое произведение
+  
+  //Проверяем случай заведомого отсутствия "мясистого" пересечения
+  if skewP == 0 && hat_p * hat_q < 0 && p not in H+(hat_q) && q not in H+(hat_p)
+  then R := empty; EXIT;
+  
+  Движение по контуру и добавление точки-вершины
+    NO_CROSS: 
+      MoveGeneric();
+    SINGLE_POINT:
+      multiwayIF:
+        | fTypeSP != E && fTypeSQ == E // hat_q носом не в носик hat_p
+            then AddPoint(f); Move(q); inside := Unknown // f == q
+        | fTypeSP == E && fTypeSQ != E // hat_p носом не в носик hat_q
+            then AddPoint(f); Move(p); inside := Unknown  // f == p
+        | fTypeSP == E && fTypeSQ == E  //Носик в носик
+            then AddPoint(f); Move(p); Move(q); inside := Unknown
+        | otherwise
+            then MoveGeneric();
+      
+    OVERLAP:
+      multiwayIF:
+        | sTypeSP == E && sTypeSQ == I
+            then AddPoint(p); Move(p); inside := InP
+        | sTypeSP == I && sTypeSQ == E 
+            then AddPoint(q); Move(q); inside := InQ
+        | sTypeSP == E && sTypeSQ == E 
+            then AddPoint(s); Move(p); Move(q); inside := Unknown 
+  Конец Движения по контуру
+Пока счётчик < 2 * (|P| + |Q|)
+
+if R == empty then check(P sub Q);  check(Q sub P); 
+
+Процедуры: 
+AddPoint(v):
+  if R != empty && v == R[0]
+    then EXIT
+    else R <- v;  
+Move(counterV):
+  counterV++;
+MoveGeneric():
+  if skewP >= 0
+    then if q in H+(hat_p) 
+      then
+        if inside == InP
+          then AddPoint(p)
+        Move(p)
+      else \\ q not in H+(hat_p) 
+        if inside == InQ
+          then AddPoint(q)
+        Move(q)
+    else if p in H+(hat_q) 
+      then
+        if inside == InQ
+          then AddPoint(q)
+        Move(q)
+      else \\ p not in H+(hat_q) 
+        if inside == InP
+          then AddPoint(p)
+        Move(p)
+
+
+
+
+
+
+
+if (усл1) { блок1 }
+else if (усл2) { блок2 }
+else if (усл2) { блок2 }
+else if (усл2) { блок2 }
+else if (усл2) { блок2 }
+
+else {блок-else}
+
+
+
+
+

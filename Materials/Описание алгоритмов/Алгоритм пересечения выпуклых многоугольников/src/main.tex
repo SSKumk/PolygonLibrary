@@ -1,0 +1,178 @@
+% Preamble
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{cmap}                   % поиск в PDF
+\usepackage[T2A]{fontenc}           % кодировка
+\usepackage[utf8]{inputenc}         % кодировка исходного текста
+\usepackage[english,russian]{babel} % локализация и переносы
+\usepackage[a4paper, margin=20mm]{geometry}
+
+% Packages
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} % AMS
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{algorithmicx}
+\usepackage{verbatim}
+\usepackage{indentfirst}
+
+
+% Добавляем свои блоки
+\makeatletter
+\algblock[ALGORITHMBLOCK]{BeginAlgorithm}{EndAlgorithm}
+\algblock[BLOCK]{BeginBlock}{EndBlock}
+\makeatother
+
+\floatname{algorithm}{Алгоритм}
+
+
+% Перевод команд псевдокода
+\algrenewcommand\algorithmicwhile{\textbf{До тех пока}}
+\algrenewcommand\algorithmicdo{\textbf{выполнять}}
+\algrenewcommand\algorithmicrepeat{\textbf{повторять}}
+\algrenewcommand\algorithmicuntil{\textbf{пока не выполняется:}}
+\algrenewcommand\algorithmicend{\textbf{Конец}}
+\algrenewcommand\algorithmicif{\textbf{если}}
+\algrenewcommand\algorithmicelse{\textbf{иначе}}
+\algrenewcommand\algorithmicthen{\textbf{тогда}}
+\algrenewcommand\algorithmicfor{\textbf{Цикл}}
+\algrenewcommand\algorithmicforall{\textbf{Выполнить для всех}}
+\algrenewcommand\algorithmicfunction{\textbf{Функция}}
+\algrenewcommand\algorithmicprocedure{\textbf{Процедура}}
+\algrenewcommand\algorithmicloop{\textbf{Зациклить}}
+\algrenewcommand\algorithmicrequire{\textbf{Условия:}}
+\algrenewcommand\algorithmicensure{\textbf{Обеспечивающие условия:}}
+\algrenewcommand\algorithmicreturn{\textbf{Возвратить}}
+\algrenewtext{EndWhile}{\textbf{Конец цикла}}
+\algrenewtext{EndLoop}{\textbf{Конец зацикливания}}
+\algrenewtext{EndFor}{\textbf{Конец цикла}}
+\algrenewtext{EndFunction}{\textbf{Конец функции}}
+\algrenewtext{EndProcedure}{\textbf{Конец процедуры}}
+\algrenewtext{EndIf}{\textbf{конец если}} %Конец условия
+\algrenewtext{EndFor}{\textbf{Конец цикла}}
+\algrenewtext{BeginAlgorithm}{\textbf{Начало алгоритма}}
+\algrenewtext{EndAlgorithm}{\textbf{Конец алгоритма}}
+\algrenewtext{ElsIf}{\textbf{иначе если }}
+
+
+
+\newcommand{\p}{\hat{p}}
+\newcommand{\q}{\hat{q}}
+\newcommand{\skewp}{\wedge} %skew -- косой, наклонный; (p)roduct
+\newcommand{\dotp}[2]{\langle #1, #2 \rangle} %skew -- косой, наклонный; (p)roduct
+\newcommand{\hp}[1]{H^+(#1\/)}
+\newcommand{\hpc}[1]{\bar{H}^+(#1\/)}
+
+\def\`{\kern 1pt}
+
+% Document
+\begin{document}
+
+\section*{Алгоритм пересечения двух выпуклых \\ многоугольников}
+
+Предполагаем, что используется аффинная плоскость, то есть векторы прикладываются не обязательно к началу координат. Для ненулевого вектора $a$ обозначим $(a)$ прямую, имеющую направляющий вектор, параллельный $a$, и проходящую через начало вектора $a$ (или, что то же самое, проходящую через точки начала и конца вектора $a$). Для вектора~$a$ обозначим $[a]$ отрезок, соединяющий начальную и конечную точки~$a$. Для векторов $a$ и $b$ обозначим $\dotp{a}{b}$ их скалярное произведение: $\dotp{a}{b} = a_x b_x + a_y b_y$. Для векторов $a$ и $b$ обозначим $a \skewp b$ их антисимметричное (косое) произведение: $a \skewp b = a_x b_y - a_y b_x$.
+
+Пусть даны два выпуклых многоугольника $P$ и $Q$ с наборами вершин $V(P) = [p_0,p_1,\ldots,p_{n-1}]$ и $V(Q) = [q_0,q_1,\ldots,q_{k-1}]$, заданные цикличными списками своих вершин в порядке обхода против часовой стрелки. Полагаем, что в многоугольниках все внутренние углы \textit{строго} меньше~$180^\circ$.
+
+Пусть $p \in V(P)$, $q \in V(Q)$ произвольные вершины $P$ и $Q$, соответственно. Обозначим $p_-$ точку предшествующую $p$, а $p_+$ следующую за $p$ в циклическом порядке. Вектор из $p_-$ в $p$ обозначим $\p$. Для $q$ аналогично.
+
+$\hp{\p}$~--- открытая левая полуплоскость, задаваемая вектором $\p$\`:
+$$
+\hp{\p} = \{x \in \mathbb{R}^2 \ | \  \p \skewp (x - p_-) > 0\}.
+$$
+
+Если выполняются общие предположения, то правила перемещения векторов описываются следующей таблицей:
+$$
+\begin{array}{ccc}
+    \hline
+    \p \skewp \q & \text { Условие полуплоскости } & \text { Двигаем } \\
+    \hline
+    \geqslant 0  & q \in \hp{\p}                   & p                 \\
+    \geqslant 0  & q \notin \hp{\p}                & q                 \\
+    \hline
+    <0           & p \in \hp{\q}                   & q                 \\
+    <0           & p \notin \hp{\q}                & p                 \\
+    \hline
+\end{array}
+\label{table:AdvanceRules}
+$$
+
+
+\begin{algorithm}
+    \caption{Алгоритм пересечения двух выпуклых многоугольников}\label{alg:IntersectionTwoConvPolyg}
+    \begin{algorithmic}[1]
+        \State Вход:  $P$ и $Q$
+        \State Выход: $R = P \cap Q$
+        \State Выбрать произвольно $p \in V(P)$ и $q \in V(Q)$
+        \State $V(R) \gets \varnothing$
+        \State \texttt{inside} $\gets$ \texttt{unknown}
+        \Repeat
+            \State (\texttt{crossType}, \texttt{point}) $\gets$ Пересечь($[\p]$, $[\q]$)
+            \If{\texttt{crossType} $\equiv SinglePoint$}
+                \If{\texttt{point} совпадает с первой точкой в $V(R)$}
+                    \State закончить алгоритм
+                \ElsIf
+                        {$p \in$ $\hp{\q}$} \textbf{тогда} \texttt{inside} $\gets$ \texttt{inP}
+                \ElsIf
+                        {$q \in$ $\hp{\p}$} \textbf{тогда} \texttt{inside} $\gets$ \texttt{inQ}
+                    \State \Comment иначе \texttt{inside} не меняется.
+                \EndIf
+                \State \Call{Добавить}{\texttt{point}}
+            \EndIf
+
+            \Statex
+            \State \texttt{cross} $\gets \text{sign}(\p \skewp \q \,)$
+            \If{\texttt{crossType} $\equiv Overlap$ И $\langle \p, \q \, \rangle < 0$}
+                \State $V(R) \gets \varnothing$
+                \State закончить алгоритм
+%            \ElsIf
+%                    {\texttt{cross} = 0 И $p \notin \hpc{\q}$ И $q \notin \hpc{\p}$}
+%                \Comment Эвристика, ускоряющая обнаружение пустоты пересечения в некоторой ситуации необщего положения; можно обойтись без неё.
+%                \State $V(R) \gets \varnothing$
+%                \State закончить алгоритм
+            \ElsIf
+                    {\texttt{crossType} $\equiv Overlap$}
+                \State \Call{Двигать}{$p$, ЛОЖЬ}.
+            \ElsIf
+                    {\texttt{cross} $\geqslant$ 0}
+                \If{$q \in \hp{\p}$}
+                    \State  \Call{Двигать}{$p$, \texttt{inside} $\equiv$ \texttt{inP}}
+                \Else
+                    \State \Call{Двигать}{$q$, \texttt{inside} $\equiv$ \texttt{inQ}}
+                \EndIf
+            \Else
+                \Comment {если \texttt{cross} < 0}
+                \If{$p \in \hp{\q}$}
+                    \State  \Call{Двигать}{$q$, \texttt{inside} $\equiv$ \texttt{inQ}}
+                \Else
+                    \State \Call{Двигать}{$p$, \texttt{inside} $\equiv$ \texttt{inP}}
+                \EndIf
+            \EndIf
+        \Until{Оба списка пройдены ИЛИ один из них пройден два раза}
+        \State Если $V(R) \equiv \varnothing$, то обработать случаи, $P \subset Q$, $Q \subset P$, $R \equiv \varnothing$. Делается за логарифм двоичным поиском по углу.
+        \algstore{bkbreak}
+    \end{algorithmic}
+
+
+\end{algorithm}
+\begin{algorithm}
+    \begin{algorithmic}
+        \algrestore{bkbreak}
+        \Procedure{Добавить}{Вершина $v$}
+            \If{$V(R) \equiv \varnothing$ ИЛИ $v \neq$ последней точке в $V(R)$}
+                \State $V(R) \gets v$
+            \EndIf
+        \EndProcedure
+
+        \Statex
+        \Procedure{Двигать}{Вершина $v$, флаг\_Выводить}
+            \If{флаг\_Выводить}
+                \State \Call{Добавить}{$v$}
+            \EndIf
+            \State перейти к следующей вершине многоугольника, соответствующего вершине $v$.
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\end{document}
