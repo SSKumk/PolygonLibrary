@@ -197,7 +197,7 @@ public class GW_Tests {
 
     Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
 
-    P.WriteToObjFile("cube");
+    //P.WriteToObjFile("cube");
 
     foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
@@ -472,7 +472,7 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube_7D() { //todo Понять, почему неверно заворачивает.
+  public void Cube_7D() {
     const int   cubeDim = 7;
     List<Point> Swarm   = CubeHD(cubeDim);
 
@@ -520,14 +520,14 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
+    for (int cubeDim = 5; cubeDim < 6; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
         int amountTests = 500;
 
         for (int k = 0; k < amountTests; k++) {
           HashSet<int> faceInd = new HashSet<int>();
 
-          for (int j = 0; j < 1; j++) {
+          for (int j = 0; j < fDim; j++) {
             int ind;
 
             do {
@@ -536,10 +536,10 @@ public class GW_Tests {
           }
 
 
-          Matrix      rotation    = GenRotation(cubeDim);
-          List<Point> RotatedCube = Rotate(CubeHD(cubeDim), rotation);
-          // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
-          // List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+          Matrix      rotation           = GenRotation(cubeDim);
+          List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
+          Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
+          List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
 
 
           // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 4);
@@ -548,13 +548,13 @@ public class GW_Tests {
 
           List<Point> Swarm = CubeHD(cubeDim, faceInd, 1);
           Swarm = Rotate(Swarm, rotation);
-          // Swarm = Shift(Swarm, shift);
+          Swarm = Shift(Swarm, shift);
+          Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
           try {
-            Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-            Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
+            // Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
             // Debug.Assert(P.Vertices.SetEquals(ShiftedCube), "The set of vertices must be equals.");
-            // Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
+            Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
           }
           catch (Exception e) {
             foreach (Point s in Swarm) {
@@ -597,6 +597,25 @@ public class GW_Tests {
 
     foreach (Point point in P.Vertices) {
       Console.WriteLine(point);
+    }
+  }
+
+
+  [Test]
+  public void DependencyOnPoints() {
+    Stopwatch stopwatch = new Stopwatch();
+    const int cubeDim   = 6;
+
+    for (int i = 1; i < 1e7; i *= 10) {
+      List<Point> Swarm = CubeHD(cubeDim, new[] { cubeDim }, i);
+
+      stopwatch.Start();
+      Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+      stopwatch.Stop();
+
+      TimeSpan elapsed = stopwatch.Elapsed;
+      //Console.WriteLine($"i = {i}. Время выполнения: {elapsed.TotalSeconds}");
+      Console.WriteLine($"{i}; {elapsed.TotalSeconds}");
     }
   }
 
