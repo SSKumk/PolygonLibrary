@@ -78,6 +78,10 @@ internal class SubSimplex : BaseSubCP {
   /// <returns>A simplex in (d+1)-space.</returns>
   public override BaseSubCP ToPreviousSpace() => new SubSimplex(Vertices.Select(v => v.Parent)!);
 
+  public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+    return new SubSimplex(Vertices.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original)));
+  }
+
   /// <summary>
   /// Initializes a new instance of the <see cref="SubSimplex"/> class with the specified set of vertices and dimension.
   /// </summary>

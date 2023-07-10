@@ -22,7 +22,14 @@ public class SubIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F
 /// <b>NonSimplex</b> - the polyhedron is a complex structure
 /// <para><b>TwoDimensional</b> - the polyhedron is a 2D-plane polygon</para>
 /// </summary>
-public enum SubCPType { Simplex, NonSimplex, TwoDimensional, OneDimensional }
+public enum SubCPType {
+
+  Simplex
+, NonSimplex
+, TwoDimensional
+, OneDimensional
+
+}
 
 /// <summary>
 /// Represents the d-dimensional convex polyhedron
@@ -33,7 +40,7 @@ public abstract class BaseSubCP {
   /// Gets the dimension of the space in which the polyhedron is treated.
   /// </summary>
   public int SpaceDim => Vertices.First().Dim;
-  
+
   /// <summary>
   /// Gets the dimension of the polyhedron.
   /// </summary>
@@ -68,7 +75,7 @@ public abstract class BaseSubCP {
   /// The second face can be equal to null if it is not constructed yet. 
   /// </summary>
   public abstract SubIncidenceInfo? FaceIncidence { get; }
-  
+
   /// <summary>
   /// todo БАЗИС ???? ГРАНИ ????
   /// </summary>
@@ -81,6 +88,9 @@ public abstract class BaseSubCP {
   /// </summary>
   /// <returns>The d-dimensional polyhedron in (d+1)-dimensional space.</returns>
   public abstract BaseSubCP ToPreviousSpace();
+
+
+  public abstract BaseSubCP ProjectTo(AffineBasis aBasis);
 
 
   /// <summary>

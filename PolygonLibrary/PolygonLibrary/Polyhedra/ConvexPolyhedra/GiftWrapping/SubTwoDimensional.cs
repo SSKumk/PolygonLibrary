@@ -22,6 +22,10 @@ public class SubTwoDimensional : BaseSubCP {
     return new SubTwoDimensional(Vs);
   }
 
+  public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+    return new SubTwoDimensional(VerticesList.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original)).ToList());
+  }
+
   public SubTwoDimensional(List<SubPoint> Vs) {
     Debug.Assert(Vs.Count > 2, $"At least three points must be to construct TwoDimensional! Found {Vs.Count}");
 

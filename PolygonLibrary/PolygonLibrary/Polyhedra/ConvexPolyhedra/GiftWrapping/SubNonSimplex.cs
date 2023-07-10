@@ -61,6 +61,13 @@ public class SubNonSimplex : BaseSubCP {
     return new SubNonSimplex(faces, FaceIncidence!);
   }
 
+  public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+   IEnumerable<SubPoint> Vs    = Vertices.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original));
+   HashSet<BaseSubCP>    faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
+   
+    return new SubNonSimplex(faces, FaceIncidence!, new HashSet<SubPoint>(Vs));
+  }
+
   /// <summary>
   /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces. 
   /// </summary>

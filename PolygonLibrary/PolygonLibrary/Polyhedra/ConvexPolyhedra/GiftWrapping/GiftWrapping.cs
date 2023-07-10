@@ -13,17 +13,7 @@ public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
     BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
-
-    if (p.Vertices.Count != 8) {
-      foreach (Point point in p.OriginalVertices) {
-        Console.WriteLine(point);
-        // Console.WriteLine(point.ToStringBySpace());
-      }
-
-      throw new ArgumentException();
-    }
-
-
+    
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
     }
@@ -91,8 +81,8 @@ public class GiftWrapping {
     Debug.Assert(FaceBasis.SpaceDim == S.First().Dim - 1, "The basis must lie in (d-1)-dimensional space!");
 
 
-    HyperPlane     hyperPlane = new HyperPlane(FaceBasis); //todo если хотим сохранить, то можно сформировать в вызывающей процедуре
-    List<SubPoint> inPlane    = new List<SubPoint>();      //todo заметим, хранение разумно только на самом верхнем уровне
+    HyperPlane     hyperPlane = new HyperPlane(FaceBasis); 
+    List<SubPoint> inPlane    = new List<SubPoint>();      
 
     foreach (SubPoint s in S) {
       if (hyperPlane.Contains(s)) {
@@ -103,9 +93,7 @@ public class GiftWrapping {
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
-      var x = GW(inPlane, initEdge).ToPreviousSpace(); //todo
-
-      return x;
+      return GW(inPlane, initEdge?.ProjectTo(FaceBasis)).ToPreviousSpace();
     }
   }
 
@@ -239,7 +227,7 @@ public class GiftWrapping {
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
 
-    return BuildFace(S, newF_aBasis); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
+    return BuildFace(S, newF_aBasis, edge); 
   }
 
   /// <summary>
