@@ -109,7 +109,7 @@ public class AffineSpaceTests {
     AffineBasis basis = new AffineBasis(origin);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
-    Assert.That(basis, Is.Empty, "The linear basis associated with the affine basis should be initially empty.");
+    Assert.That(basis.Basis, Is.Empty, "The linear basis associated with the affine basis should be initially empty.");
     Assert.That(basis.IsFullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
     Assert.That(basis.IsEmpty, Is.True, "The affine basis should be empty if no vectors are added.");
   }
@@ -382,10 +382,10 @@ public class AffineSpaceTests {
 
     HashSet<Point> expected = new HashSet<Point>
       {
-        new Point(new double[] { 0, 0, 0, 0 })
-      , new Point(new double[] { 1, 0, 0, 0 })
-      , new Point(new double[] { 0, 1, 0, 0 })
-      , new Point(new double[] { 1, 1, 0, 0 })
+        new Point(new double[] { 0, 0 })
+      , new Point(new double[] { 1, 0 })
+      , new Point(new double[] { 0, 1 })
+      , new Point(new double[] { 1, 1 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
