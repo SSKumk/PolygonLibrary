@@ -13,17 +13,7 @@ public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
     BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
-
-    if (p.Vertices.Count != 8) {
-      foreach (Point point in p.OriginalVertices) {
-        Console.WriteLine(point);
-        // Console.WriteLine(point.ToStringBySpace());
-      }
-
-      throw new ArgumentException();
-    }
-
-
+    
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
     }
@@ -103,7 +93,10 @@ public class GiftWrapping {
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
     } else {
-      var x = GW(inPlane, initEdge).ToPreviousSpace(); //todo
+      // if (inPlane.First().Dim > 2) {todo vvvvvvvvvvvvvvvvv
+      //   initEdge = initEdge.ProjectToSpace(FaceBasis);
+      // }
+      var x = GW(inPlane, initEdge).ToPreviousSpace();
 
       return x;
     }
@@ -207,8 +200,8 @@ public class GiftWrapping {
     Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
     Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "The dimension of the edge must equals to d-2!");
 
-    AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
-    AffineBasis basis_F   = new AffineBasis(edgeBasis);
+    AffineBasis edgeBasis = new AffineBasis(edge.Vertices); //dim = d-2
+    AffineBasis basis_F   = new AffineBasis(edgeBasis); // dim = d-1
     basis_F.AddPointToBasis(face.Vertices.First(p => !edge.Vertices.Contains(p)));
 
 
@@ -217,7 +210,6 @@ public class GiftWrapping {
 
     double  minDot;
     Vector? r = null;
-
     minDot = double.MaxValue;
 
     foreach (SubPoint s in S) {
@@ -239,7 +231,7 @@ public class GiftWrapping {
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
 
-    return BuildFace(S, newF_aBasis); //todo Научиться проектировать ребро в базис плоскости будущей грани , edge.ProjectTo(basis_F)
+    return BuildFace(S, newF_aBasis);
   }
 
   /// <summary>

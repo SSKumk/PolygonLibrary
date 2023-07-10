@@ -82,6 +82,15 @@ public abstract class BaseSubCP {
   /// <returns>The d-dimensional polyhedron in (d+1)-dimensional space.</returns>
   public abstract BaseSubCP ToPreviousSpace();
 
+  // /// <summary>
+  // /// Converts current k-dimensional polyhedron in d-dimensional space (k less d) to k-dimensional polyhedron in (d-1)-dimensional space.
+  // /// </summary>
+  // /// <param name="basis">The affine basis of (d-1)-dimensional space.</param>
+  // /// <returns>The k-dimensional polyhedron in (d-1)-dimensional space.</returns>
+  // public BaseSubCP ProjectToSpace(AffineBasis basis) {
+  //   Vertices.Select()
+  // }
+
 
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.

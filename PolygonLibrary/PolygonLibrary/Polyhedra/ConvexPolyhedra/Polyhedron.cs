@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
@@ -222,6 +223,32 @@ public class Polyhedron : BaseConvexPolyhedron {
       return new ConvexPolygon(Basis.ProjectPoints(Vertices));
     } else {
       return new ConvexPolygon(basis.ProjectPoints(Vertices));
+    }
+  }
+
+  public void WriteToObjFile(string name, string? path = null) {
+#if DEBUG
+    if (PolyhedronDim != 3) {
+      throw new ArgumentException($"The dimension of the polyhedron must equal to 3. Found = {PolyhedronDim}.");
+    }
+#endif
+
+    List<Point> Vs = Vertices.ToList();
+    path ??= Directory.GetCurrentDirectory();
+
+    using StreamWriter sw = new StreamWriter($"{path}{name}.obj");
+
+    foreach (Point point in Vs) {
+      sw.WriteLine($"v {point.ToStringBySpace()}");
+    }
+
+    foreach (Face face in Faces) {
+      sw.Write("f ");
+
+      foreach (Point point in face.Vertices) {
+        sw.Write($"{Vs.IndexOf(point)} ");
+      }
+      sw.WriteLine();
     }
   }
 

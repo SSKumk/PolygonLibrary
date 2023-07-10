@@ -520,14 +520,17 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
-      for (int fDim = 0; fDim <= cubeDim; fDim++) {
-        int amountTests = 500;
+    for (int cubeDim = 3; cubeDim < 8; cubeDim++) {
+      for (int fDim = 0; fDim <= 0; fDim++) {
+        // for (int fDim = 0; fDim <= cubeDim; fDim++) {
+        TimeSpan time = new TimeSpan(0);
+
+        int amountTests = 1;
 
         for (int k = 0; k < amountTests; k++) {
           HashSet<int> faceInd = new HashSet<int>();
 
-          for (int j = 0; j < 1; j++) {
+          for (int j = 0; j < fDim; j++) {
             int ind;
 
             do {
@@ -536,27 +539,35 @@ public class GW_Tests {
           }
 
 
-          Matrix      rotation    = GenRotation(cubeDim);
-          List<Point> RotatedCube = Rotate(CubeHD(cubeDim), rotation);
-          // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
-          // List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+          Matrix      rotation           = GenRotation(cubeDim);
+          List<Point> RotatedCube        = Rotate(CubeHD(cubeDim), rotation);
+          Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
+          List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
 
 
           // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 4);
           // List<Point> ShiftedCube        = Shift(CubeHD(cubeDim),shift);
 
 
-          List<Point> Swarm = CubeHD(cubeDim, faceInd, 1);
+          List<Point> Swarm = CubeHD(cubeDim, faceInd, 1); //todo ТОЧКИ НАКИДЫВАЮТСЯ ТУТ
           Swarm = Rotate(Swarm, rotation);
-          // Swarm = Shift(Swarm, shift);
+          Swarm = Shift(Swarm, shift);
 
           try {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-            Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
+
+            stopwatch.Stop();
+            TimeSpan elapsed = stopwatch.Elapsed;
+            time += elapsed;
+
+            // Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
             // Debug.Assert(P.Vertices.SetEquals(ShiftedCube), "The set of vertices must be equals.");
-            // Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
+            Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
           }
-          catch (Exception e) {
+          catch (Exception) {
             foreach (Point s in Swarm) {
               Console.WriteLine(s);
             }
@@ -564,6 +575,7 @@ public class GW_Tests {
             throw new ArgumentException();
           }
         }
+        Console.WriteLine($"Cube dim = {cubeDim}, fDim = {fDim}. Elapsed on average: {time.TotalSeconds/amountTests}");
       }
     }
   }
