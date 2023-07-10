@@ -279,7 +279,7 @@ public class Vector2D : IComparable<Vector2D> {
       throw new ArgumentException($"{obj} is not a Vector2D!");
     }
 #endif
-    return CompareTo(v) == 0;
+    return CompareTo((Vector2D)obj) == 0;
   }
 
   public override string ToString() => "(" + x + ";" + y + ")";

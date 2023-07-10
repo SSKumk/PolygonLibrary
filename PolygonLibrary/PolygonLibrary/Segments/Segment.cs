@@ -308,7 +308,7 @@ public class Segment : IComparable<Segment> {
       throw new ArgumentException($"{obj} is ot a Segment!");
     }
 #endif
-    return p1 == segment.p1 && p2 == segment.p2;
+    return p1 == ((Segment)obj).p1 && p2 == ((Segment)obj).p2;
   }
 
   public override int GetHashCode() {

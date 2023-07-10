@@ -246,7 +246,7 @@ public class Point : IComparable<Point> {
       throw new ArgumentException($"{obj} is not a Point.");
     }
 #endif
-    return CompareTo(point) == 0;
+    return CompareTo((Point)obj) == 0;
   }
 
   public override string ToString() {

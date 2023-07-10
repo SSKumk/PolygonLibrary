@@ -183,7 +183,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException($"{obj} is not a Matrix.");
     }
 #endif
-    return Equals(matrix);
+    return Equals((Matrix)obj);
   }
 
   public bool Equals(Matrix? m) {

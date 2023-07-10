@@ -354,7 +354,7 @@ public class Vector : IComparable<Vector> {
       throw new ArgumentException($"{obj} is not a Vector!");
     }
 #endif
-    return CompareTo(vector) == 0;
+    return CompareTo((Vector)obj) == 0;
   }
 
   public override string ToString() {

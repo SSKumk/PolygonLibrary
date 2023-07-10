@@ -189,7 +189,7 @@ public class Point2D : IComparable<Point2D> {
       throw new ArgumentException($"{obj} is not a Point2D!");
     }
 #endif
-    return CompareTo(point2D) == 0;
+    return CompareTo((Point2D)obj) == 0;
   }
 
   public override string ToString() => "{" + x + ";" + y + "}";
