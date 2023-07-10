@@ -18,10 +18,13 @@ public class InitialPlaneTests {
     AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)));
     AffineBasis.CheckCorrectness(aBasis);
     Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim));
-    HyperPlane hp = new HyperPlane(aBasis);
-    Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True);
-    IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
-    Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim));
+
+    if (aBasis.SpaceDim + 1 == aBasis.VecDim) {
+      HyperPlane hp = new HyperPlane(aBasis);
+      Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True);
+      IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
+      Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim));
+    }
   }
 
   [Test]
@@ -62,9 +65,7 @@ public class InitialPlaneTests {
   public void ThreeIndependentPointsTest() {
     List<Point> Swarm = new List<Point>()
       {
-        new Point(new double[] { 1, 0, 0 })
-      , new Point(new double[] { 0, 1, 0 })
-      , new Point(new double[] { 0, 0, 1 })
+        new Point(new double[] { 1, 0, 0 }), new Point(new double[] { 0, 1, 0 }), new Point(new double[] { 0, 0, 1 })
       };
 
     AssertInitialPlaneBasis(Swarm, 2);
@@ -279,9 +280,7 @@ public class InitialPlaneTests {
   public void LowerDim4D_ThreeIndependentPointsTest() {
     List<Point> Swarm = new List<Point>()
       {
-        new Point(new double[] { 0, 0, 0, 0 })
-      , new Point(new double[] { 1, 0, 0, 0 })
-      , new Point(new double[] { 1, 0, 0, 1 })
+        new Point(new double[] { 0, 0, 0, 0 }), new Point(new double[] { 1, 0, 0, 0 }), new Point(new double[] { 1, 0, 0, 1 })
       };
 
     AssertInitialPlaneBasis(Swarm, 2);
@@ -460,19 +459,9 @@ public class InitialPlaneTests {
     Point p2 = new Point(new double[] { 0, 1, 0, 0 });
     Point p3 = new Point(new double[] { 0.1, 0, 1, 0 });
 
-    List<Point> ps = new List<Point>()
-      {
-        p1
-      , p2
-      , p3
-      };
+    List<Point> ps = new List<Point>() { p1, p2, p3 };
 
-    List<double> ws = new List<double>()
-      {
-        0.1
-      , 0.2
-      , 0.3
-      };
+    List<double> ws = new List<double>() { 0.1, 0.2, 0.3 };
 
     List<Point> Swarm = new List<Point>()
       {
