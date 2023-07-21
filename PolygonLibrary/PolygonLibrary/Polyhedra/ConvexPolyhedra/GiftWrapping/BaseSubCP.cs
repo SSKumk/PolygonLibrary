@@ -68,6 +68,11 @@ public abstract class BaseSubCP {
   /// Gets the set of (d-1)-dimensional faces of the polyhedron.
   /// </summary>
   public abstract HashSet<BaseSubCP>? Faces { get; }
+  
+  /// <summary>
+  /// The outward normal of the (d-1)-dimensional polyhedron (face). 
+  /// </summary>
+  public Vector? Normal { get; set; }
 
 
   /// <summary>

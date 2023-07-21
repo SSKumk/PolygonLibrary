@@ -131,18 +131,6 @@ public class HyperPlane {
   }
 
   /// <summary>
-  /// Copy constructor that creates a copy of the given hyperplane.
-  /// </summary>
-  /// <param name="hp">The hyperplane to be copied.</param>
-  public HyperPlane(HyperPlane hp) {
-    Origin        = hp.Origin;
-    _dim          = Origin.Dim - 1;
-    _affineBasis  = hp._affineBasis;
-    _normal       = hp._normal;
-    _constantTerm = hp._constantTerm;
-  }
-
-  /// <summary>
   /// Method to orient normal of the plane.
   /// </summary>
   /// <param name="point">Point should belong to the semi-space.</param>

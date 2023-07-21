@@ -73,6 +73,7 @@ public class SubNonSimplex : BaseSubCP {
   /// </summary>
   /// <param name="faces">Faces to construct the convex polyhedron</param>
   /// <param name="incidence">Information about face incidence.</param>
+  /// <param name="n"></param>
   /// <param name="Vs">Vertices of this convex polyhedron. If null then its construct base on faces.</param>
   public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
     PolyhedronDim = faces.First().PolyhedronDim + 1;

@@ -520,7 +520,7 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    for (int cubeDim = 5; cubeDim < 6; cubeDim++) {
+    for (int cubeDim = 3; cubeDim < 4; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
         int amountTests = 500;
 
@@ -604,7 +604,7 @@ public class GW_Tests {
   [Test]
   public void DependencyOnPoints() {
     Stopwatch stopwatch = new Stopwatch();
-    const int cubeDim   = 6;
+    const int cubeDim   = 5;
 
     for (int i = 1; i < 1e7; i *= 10) {
       List<Point> Swarm = CubeHD(cubeDim, new[] { cubeDim }, i);
