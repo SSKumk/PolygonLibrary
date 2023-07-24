@@ -18,7 +18,7 @@ public class GiftWrapping {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
     }
 
-    HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, p.Basis)));
+    HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
     HashSet<Edge> Es = new HashSet<Edge>();
 
     foreach (BaseSubCP face in p.Faces!) {
@@ -39,8 +39,7 @@ public class GiftWrapping {
       default: throw new NotImplementedException();
     }
 
-    return new Polyhedron
-      (p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, p.Basis, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
+    return new Polyhedron(p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
   }
 
   /*
@@ -76,7 +75,11 @@ public class GiftWrapping {
   /// <returns>
   /// The BaseSubCP: (d-1)-dimensional polyhedron complex expressed in terms of d-dimensional points.
   /// </returns>
-  public static BaseSubCP BuildFace(IEnumerable<SubPoint> S, AffineBasis FaceBasis, Vector n, Vector? r = null, BaseSubCP? initEdge = null) {
+  public static BaseSubCP BuildFace(IEnumerable<SubPoint> S
+                                  , AffineBasis           FaceBasis
+                                  , Vector                n
+                                  , Vector?               r        = null
+                                  , BaseSubCP?            initEdge = null) {
     if (initEdge is not null) {
       Debug.Assert(initEdge.PolyhedronDim == S.First().Dim - 2, "The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
@@ -99,8 +102,9 @@ public class GiftWrapping {
       BaseSubCP? prj = initEdge?.ProjectTo(FaceBasis);
 
       if (prj is not null) { // 
-        prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim,FaceBasis.SpaceDim);
+        prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
       }
+
       return GW(inPlane, prj).ToPreviousSpace();
     }
   }
@@ -127,21 +131,7 @@ public class GiftWrapping {
       // AffineBasis initBasis = BuildInitialPlane(S, out n);
       HyperPlane hp = new HyperPlane(initBasis);
       Vector     n  = hp.Normal;
-
-      
-      foreach (SubPoint s in S) {
-        double dot = (s - initBasis.Origin) * n;
-
-        if (dot < 0) {
-          break;
-        }
-
-        if (dot > 0) {
-          n = -n;
-
-          break;
-        }
-      }
+      OrientNormal(S, ref n, initBasis.Origin);
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
         throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
@@ -161,8 +151,8 @@ public class GiftWrapping {
     Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
     Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
-    
-    
+
+
     //todo Вписать Базис обычный. Подумать над SubBasis (скорее всего никуда не деться от него ...)
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
     TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
@@ -239,6 +229,7 @@ public class GiftWrapping {
     foreach (SubPoint s in S) {
       Vector so = s - edgeBasis.Origin;
       Vector u  = (so * v) * v + (so * face.Normal) * face.Normal;
+      u = u.NormalizeZero();
 
       if (!u.IsZero) {
         double dot = v * u;
@@ -255,25 +246,35 @@ public class GiftWrapping {
 
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
-    n = (r! * face.Normal) * v + (r! * v) * face.Normal;
+    n = (r! * face.Normal) * v - (r! * v) * face.Normal;
+    n = n.Normalize();
+    OrientNormal(S, ref n, edgeBasis.Origin);
 
-    foreach (SubPoint s in S) {
-      double dot = (s - edgeBasis.Origin) * n;
 
-      if (dot < 0) {
+    return BuildFace(S, newF_aBasis, n, r, edge);
+  }
+
+
+  /// <summary>
+  /// Orients the normal outward to the given swarm.
+  /// </summary>
+  /// <param name="S">The swarm to orient on.</param>
+  /// <param name="n">The normal to orient.</param>
+  /// <param name="origin">A point from S.</param>
+  private static void OrientNormal(IEnumerable<Point> S, ref Vector n, Point origin) {
+    foreach (Point s in S) {
+      double dot = (s - origin) * n;
+
+      if (Tools.LT(dot)) {
         break;
       }
 
-      if (dot > 0) {
+      if (Tools.GT(dot)) {
         n = -n;
 
         break;
       }
     }
-
-
-
-    return BuildFace(S, newF_aBasis, n, r,edge);
   }
 
   /// <summary>
