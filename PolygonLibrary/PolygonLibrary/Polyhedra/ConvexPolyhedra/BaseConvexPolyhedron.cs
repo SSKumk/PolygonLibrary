@@ -40,10 +40,6 @@ public abstract class BaseConvexPolyhedron {
   /// </summary>
   public abstract HashSet<Point> Vertices { get; }
   
-  /// <summary>
-  /// The affine basis of the polyhedron
-  /// </summary>
-  public abstract AffineBasis Basis { get; }
   
   /// <summary>
   /// Determines whether the specified object is equal to convex polyhedron.

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using PolygonLibrary.Basics;
 using PolygonLibrary.Polygons.ConvexPolygons;
 using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
@@ -21,19 +22,20 @@ public class IncidenceInfo : Dictionary<Edge, (Face F1, Face F2)> {
        (
         info.Select
           (
-           x => new KeyValuePair<Edge, (Face F1, Face F2)>
-             (
-              new Edge(x.Key.OriginalVertices)
-            , (new Face(x.Value.F1.OriginalVertices, x.Value.F1.Basis), new Face(x.Value.F2.OriginalVertices, x.Value.F2.Basis))
-             )
+           x => {
+             Debug.Assert(x.Value.F1.Normal is not null, "x.Value.F1.Normal != null");
+             Debug.Assert(x.Value.F2.Normal is not null, "x.Value.F2.Normal != null");
+
+
+             return new KeyValuePair<Edge, (Face F1, Face F2)>
+               (
+                new Edge(x.Key.OriginalVertices)
+              , (new Face(x.Value.F1.OriginalVertices, x.Value.F1.Normal), new Face(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
+               );
+           }
           )
        )
     ) { }
-
-  /// <summary>
-  /// Base constructor
-  /// </summary>
-  public IncidenceInfo() { }
 
 }
 
@@ -44,10 +46,12 @@ public class FansInfo : Dictionary<Point, HashSet<Face>> {
   public FansInfo(HashSet<BaseSubCP> Fs) {
     foreach (BaseSubCP F in Fs) {
       foreach (Point vertex in F.OriginalVertices) {
+        Debug.Assert(F.Normal is not null, "F.Normal != null");
+
         if (TryGetValue(vertex, out HashSet<Face>? value)) {
-          value.Add(new Face(F.OriginalVertices, F.Basis));
+          value.Add(new Face(F.OriginalVertices, F.Normal));
         } else {
-          base.Add(vertex, new HashSet<Face>() { new Face(F.OriginalVertices, F.Basis) });
+          base.Add(vertex, new HashSet<Face>() { new Face(F.OriginalVertices, F.Normal) });
         }
       }
     }
@@ -59,14 +63,11 @@ public class Face {
 
   public HashSet<Point> Vertices { get; }
 
-  public AffineBasis Basis { get; }
+  public Vector Normal { get; }
 
-  public Vector? Normal = null;
-
-  public Face(IEnumerable<Point> Vs, AffineBasis affineBasis) {
+  public Face(IEnumerable<Point> Vs, Vector normal) {
     Vertices = new HashSet<Point>(Vs);
-    // Basis    = new AffineBasis(affineBasis);
-    Basis = affineBasis;
+    Normal   = normal;
   }
 
   /// <summary>
@@ -173,11 +174,6 @@ public class Polyhedron : BaseConvexPolyhedron {
   public override HashSet<Point> Vertices { get; }
 
   /// <summary>
-  /// Gets the affine basis of polyhedron.
-  /// </summary>
-  public override AffineBasis Basis { get; }
-
-  /// <summary>
   /// Gets the faces of polyhedron
   /// </summary>
   public HashSet<Face> Faces { get; }
@@ -197,7 +193,6 @@ public class Polyhedron : BaseConvexPolyhedron {
                   , IEnumerable<Face>    faces
                   , IEnumerable<Edge>    edges
                   , ConvexPolyhedronType type
-                  , AffineBasis          basis
                   , IncidenceInfo        faceIncidence
                   , FansInfo             fans) {
     Vertices      = new HashSet<Point>(Vs);
@@ -205,24 +200,17 @@ public class Polyhedron : BaseConvexPolyhedron {
     Faces         = new HashSet<Face>(faces);
     Edges         = new HashSet<Edge>(edges);
     Type          = type;
-    // Basis         = new AffineBasis(basis);
-    Basis         = basis;
     FaceIncidence = new IncidenceInfo(faceIncidence);
     Fans          = new FansInfo(fans);
   }
 
-  public ConvexPolygon ToConvexPolygon(AffineBasis? basis = null) {
+  public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
 #if DEBUG
     if (PolyhedronDim != 2) {
       throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolyhedronDim}.");
     }
 #endif
-
-    if (basis is null) {
-      return new ConvexPolygon(Basis.ProjectPoints(Vertices));
-    } else {
-      return new ConvexPolygon(basis.ProjectPoints(Vertices));
-    }
+    return new ConvexPolygon(basis.ProjectPoints(Vertices));
   }
 
 }
