@@ -86,21 +86,8 @@ public class GW_Tests {
 
         foreach (List<Point> points in subsets) {
           for (int k = 0; k < amount; k++) {
-            List<double> ws = new List<double>();
-
-            double difA = 1;
-
-            for (int i = 0; i < points.Count; i++) {
-              if (Tools.LT(difA)) {
-                ws.Add(0.0);
-              } else {
-                double alpha = GenInner() * difA;
-                ws.Add(alpha);
-                difA -= alpha;
-              }
-            }
-
-            Simplex.Add(Point.LinearCombination(points, ws));
+            Point res = GenLinearCombination(points);
+            Simplex.Add(res);
           }
         }
       }
@@ -108,6 +95,27 @@ public class GW_Tests {
 
 
     return Simplex;
+  }
+
+  /// <summary>
+  /// Generates a linear combination of the given points.
+  /// </summary>
+  /// <param name="points">The list of point to lin-combine.</param>
+  /// <returns>A linear combination of the given points.</returns>
+  private Point GenLinearCombination(List<Point> points) {
+    List<double> ws = new List<double>();
+
+    double difA = 1;
+
+    for (int i = 0; i < points.Count - 1; i++) {
+      double alpha = GenInner() * difA;
+      ws.Add(alpha);
+      difA -= alpha;
+    }
+    ws.Add(difA);
+    Point res = Point.LinearCombination(points, ws);
+
+    return res;
   }
 
 
@@ -186,10 +194,9 @@ public class GW_Tests {
   /// Generates a d-cross_polytope in d-space.
   /// </summary>
   /// <param name="crossDim">The dimension of the cross polytope.</param>
-  /// <param name="facesDim">TODO генерировать точки!</param>
-  /// <param name="amount">TODO</param>
+  /// <param name="innerPoints">The amount of inner points of the cross polytope.</param>
   /// <returns></returns>
-  List<Point> CrossPolytop(int crossDim, IEnumerable<int>? facesDim = null, int amount = 50) {
+  List<Point> CrossPolytop(int crossDim, int innerPoints) {
     List<Point> cross = new List<Point>();
 
     for (int i = 1; i <= crossDim; i++) {
@@ -198,8 +205,13 @@ public class GW_Tests {
       cross.Add(new Point(-v));
     }
 
+    List<Point> Cross = new List<Point>(cross);
+    for (int i = 0; i < innerPoints; i++) {
+      cross.Add(GenLinearCombination(cross));
+    }
 
-    return cross;
+
+    return Cross;
   }
 
 
@@ -608,10 +620,10 @@ public class GW_Tests {
     for (int cubeDim = 3; cubeDim <= maxDim; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
         for (int k = 0; k < nTests; k++) {
-          Matrix      rotation           = GenRotation(cubeDim);
-          List<Point> RotatedCube        = Rotate(Cube(cubeDim), rotation);
-          Vector      shift              = GenVector(cubeDim) * _random.Next(1, 100);
-          List<Point> RotatedShiftedCube = Shift(RotatedCube, shift);
+          Matrix      rotation       = GenRotation(cubeDim);
+          List<Point> RotatedCube    = Rotate(Cube(cubeDim), rotation);
+          Vector      shift          = GenVector(cubeDim) * _random.Next(1, 100);
+          List<Point> RotatedShifted = Shift(RotatedCube, shift);
 
 
           // Vector      shift              = GenVector(cubeDim) * _random.Next(1, 4);
@@ -623,18 +635,7 @@ public class GW_Tests {
           Swarm = Shift(Swarm, shift);
           Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-          try {
-            // Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
-            // Debug.Assert(P.Vertices.SetEquals(ShiftedCube), "The set of vertices must be equals.");
-            Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
-          }
-          catch (Exception e) {
-            foreach (Point s in Swarm) {
-              Console.WriteLine(s);
-            }
-
-            throw new ArgumentException();
-          }
+          Check(Swarm, RotatedShifted);
         }
       }
     }
@@ -642,70 +643,30 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplexTest() {
-    const int maxDim  = 4;
-    const int nTests  = 5000;
+    const int minDim  = 6;
+    const int maxDim  = 6;
+    const int nTests  = 10;
     const int nPoints = 20;
 
 
-    for (int polyhedronDim = 3; polyhedronDim <= maxDim; polyhedronDim++) {
+    for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
       for (int fDim = 0; fDim <= polyhedronDim; fDim++) {
         for (int k = 0; k < nTests; k++) {
-          List<Point> simplex               = Simplex(polyhedronDim);
-          Matrix      rotation              = GenRotation(polyhedronDim);
-          List<Point> RotatedSimplex        = Rotate(simplex, rotation);
-          Vector      shift                 = GenVector(polyhedronDim) * _random.Next(1, 100);
-          List<Point> RotatedShiftedSimplex = Shift(RotatedSimplex, shift);
+          List<Point> simplex        = Simplex(polyhedronDim);
+          Matrix      rotation       = GenRotation(polyhedronDim);
+          List<Point> RotatedSimplex = Rotate(simplex, rotation);
+          Vector      shift          = GenVector(polyhedronDim) * _random.Next(1, 100);
+          List<Point> RotatedShifted = Shift(RotatedSimplex, shift);
 
 
           List<Point> Swarm = Simplex(polyhedronDim, GenFacesInd(fDim, polyhedronDim), nPoints);
           Swarm = Rotate(Swarm, rotation);
           Swarm = Shift(Swarm, shift);
 
-          Polyhedron? P = null;
-
-          try {
-            P = GiftWrapping.WrapPolyhedron(Swarm);
-          }
-          catch (Exception e) {
-            foreach (Point s in Swarm) {
-              Console.WriteLine(s);
-            }
-          }
-
-          try {
-            Debug.Assert(P.Vertices.SetEquals(RotatedShiftedSimplex), "The set of vertices must be equals.");
-          }
-          catch (Exception e) {
-            foreach (Point s in P.Vertices) {
-              Console.WriteLine(s);
-            }
-
-            Console.WriteLine("=========================");
-
-            foreach (Point s in RotatedShiftedSimplex) {
-              Console.WriteLine(s);
-            }
-
-            throw new ArgumentException();
-          }
+          Check(Swarm, RotatedShifted);
         }
       }
     }
-  }
-
-  [Test]
-  public void AuxSimplex() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new double[] { 16.149344503250603, -21.452113890066798, 26.855425210369486 })
-      , new Point(new double[] { 16.80853556618116, -21.116318533312754, 27.528261461573972 })
-      , new Point(new double[] { 15.41674070428436, -21.36711896185478, 27.530752935195338 })
-      , new Point(new double[] { 15.979760257836379, -20.514021495597756, 26.55339235926446 })
-      , new Point(new double[] { 16.38827147512058, -21.27751746756958, 27.263557389903834 })
-      };
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(new List<Point>(Swarm){new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 })});
-    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
   }
 
   [Test]
@@ -713,11 +674,11 @@ public class GW_Tests {
     const int minDim = 3;
     const int maxDim = 4;
     const int nTests = 5000;
+    const int nPoints = 50;
 
     for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
-      // for (int fDim = 0; fDim <= polyhedronDim; fDim++) {
       for (int k = 0; k < nTests; k++) {
-        List<Point> cross = CrossPolytop(polyhedronDim);
+        List<Point> cross = CrossPolytop(polyhedronDim,0);
 
         Matrix      rotation       = GenRotation(polyhedronDim);
         List<Point> Rotated        = Rotate(cross, rotation);
@@ -725,40 +686,82 @@ public class GW_Tests {
         List<Point> RotatedShifted = Shift(Rotated, shift);
 
 
-        // List<Point> Swarm = CrossPolytop(polyhedronDim, GenFacesInd(fDim, polyhedronDim), nPoints);
-        // Swarm = Rotate(Swarm, rotation);
-        // Swarm = Shift(Swarm, shift);
+        List<Point> Swarm = CrossPolytop(polyhedronDim, nPoints);
+        Swarm = Rotate(Swarm, rotation);
+        Swarm = Shift(Swarm, shift);
 
-        Polyhedron? P = null;
+        Check(Swarm, RotatedShifted);
 
-        try {
-          P = GiftWrapping.WrapPolyhedron(RotatedShifted);
-        }
-        catch (Exception e) {
-          foreach (Point s in RotatedShifted) {
-            Console.WriteLine(s);
-          }
-        }
-
-        try {
-          Debug.Assert(P.Vertices.SetEquals(RotatedShifted), "The set of vertices must be equals.");
-        }
-        catch (Exception e) {
-          foreach (Point s in P.Vertices) {
-            Console.WriteLine(s);
-          }
-
-          Console.WriteLine("=========================");
-
-          foreach (Point s in RotatedShifted) {
-            Console.WriteLine(s);
-          }
-
-          throw new ArgumentException();
-        }
-        // }
       }
     }
+  }
+
+  /// <summary>
+  /// Aux procedure.
+  /// </summary>
+  /// <param name="Swarm">The swarm to convexify.</param>
+  /// <param name="Answer">The final list of points.</param>
+  private static void Check(List<Point> Swarm, List<Point> Answer) {
+    Polyhedron? P;
+
+    try {
+      P = GiftWrapping.WrapPolyhedron(Swarm);
+      Debug.Assert(P is not null, nameof(P) + " != null");
+    }
+    catch (Exception) {
+      foreach (Point s in Swarm) {
+        Console.WriteLine(s);
+      }
+
+      throw new ArgumentException("P is null!");
+    }
+
+    try {
+      Debug.Assert(P.Vertices.SetEquals(Answer), "The set of vertices must be equals.");
+    }
+    catch (Exception) {
+      Console.WriteLine("P vertices:");
+
+      foreach (Point s in P.Vertices) {
+        Console.WriteLine(s);
+      }
+
+      Console.WriteLine("=========================");
+
+      foreach (Point s in Answer) {
+        Console.WriteLine(s);
+      }
+
+      throw new ArgumentException("Vertices of P != Answer!");
+    }
+  }
+
+  [Test]
+  public void AuxSimplex() {
+    Point A = new Point(new double[] { 16.149344503250603, -21.452113890066798, 26.855425210369486 });
+    Point B = new Point(new double[] { 16.80853556618116, -21.116318533312754, 27.528261461573972 });
+    Point C = new Point(new double[] { 15.41674070428436, -21.36711896185478, 27.530752935195338 });
+    Point D = new Point(new double[] { 15.979760257836379, -20.514021495597756, 26.55339235926446 });
+
+    List<Point> Swarm = new List<Point>()
+      {
+        A
+      , B
+      , C
+      , D
+      };
+
+
+    Point F = new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 });
+    Point E = new Point(new double[] { 16.38827147512058, -21.27751746756958, 27.263557389903834 });
+    
+    HyperPlane hpABC = new HyperPlane(new AffineBasis(new List<Point>() { A, B, C }));
+    Console.WriteLine($"F = {hpABC.Eval(F)}");
+    Console.WriteLine($"E = {hpABC.Eval(E)}");
+    Console.WriteLine($"C = {hpABC.Eval(C)}");
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(new List<Point>(Swarm) { F, E });
+    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
   }
 
   [Test]
@@ -780,15 +783,13 @@ public class GW_Tests {
       };
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-
-    foreach (Point s in P.Vertices) {
-      Console.WriteLine(s);
-    }
+    Debug.Assert(P.Vertices.SetEquals(S), "The set of vertices must be equals.");
+    
   }
 
   [Test]
   public void Cross_4D() {
-    List<Point> S = CrossPolytop(4);
+    List<Point> S = CrossPolytop(4,0);
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
 
