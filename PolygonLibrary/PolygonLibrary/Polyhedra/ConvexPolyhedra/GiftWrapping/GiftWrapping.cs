@@ -42,28 +42,6 @@ public class GiftWrapping {
     return new Polyhedron(p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
   }
 
-  /*
-   * Сделать типа фабрика
-   *
-   * Face ConstructConvexSwarm()
-   *
-   * Polyhedron ConstructPolyhedron()
-   * 
-   * PolyhedralComplex ConstructPolyhedralComplex()
-   * 
-   * И приватный конструктор (мб кидать исключение)
-   *   Если было исключение, то перехватывать и что-то делать.
-   *
-   * хотелось бы иметь локальное хранилище глобальных переменных
-   *
-   * Сделать экземпляр класса:
-   *  - bool удалось или нет
-   *  - многогранник? = null
-   *  - базис? = null
-   */
-
-  public static BaseSubCP ToConvex(IEnumerable<Point> Swarm) { return GW(Swarm.Select(s => new SubPoint(s, null, s))); }
-
   /// <summary>
   /// 
   /// </summary>
@@ -123,6 +101,10 @@ public class GiftWrapping {
     if (S.First().Dim == 2) {
       List<Point2D> convexPolygon2D = Convexification.ArcHull2D(S.Select(s => new SubPoint2D(s)));
 
+      if (convexPolygon2D.Count == 3) {
+        return new SubSimplex(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
+      }
+
       return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
     }
 
@@ -153,19 +135,23 @@ public class GiftWrapping {
     Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
 
 
-    //todo Вписать Базис обычный. Подумать над SubBasis (скорее всего никуда не деться от него ...)
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
+    HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>(initFace.Vertices);
     TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
 
-    DFS_step(S, initFace, ref buildFaces, ref buildIncidence);
+    DFS_step(S, initFace, ref buildFaces, ref buildPoints, ref buildIncidence);
 
-    SubIncidenceInfo info = new SubIncidenceInfo();
+    SubIncidenceInfo incidence = new SubIncidenceInfo();
 
     foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
-      info.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
+      incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
     }
 
-    return new SubNonSimplex(buildFaces, info);
+    if (buildFaces.Count == S.First().Dim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) {
+      return new SubSimplex(buildPoints, buildFaces, incidence);
+    }
+
+    return new SubNonSimplex(buildFaces, incidence, buildPoints);
   }
 
   /// <summary>
@@ -174,11 +160,13 @@ public class GiftWrapping {
   /// <param name="S">The swarm of d-dimensional points.</param>
   /// <param name="face">The (d-1)-dimensional face in d-space.</param>
   /// <param name="buildFaces">Set of (d-1)-dimensional faces in d-space.</param>
+  /// <param name="buildPoints"></param>
   /// <param name="buildIncidence">Dictionary (d-2)-dimensional edge in d-space -->
-  /// pair of (d-1)-dimensional faces in d-space.</param>
+  ///   pair of (d-1)-dimensional faces in d-space.</param>
   public static void DFS_step(IEnumerable<SubPoint>  S
                             , BaseSubCP              face
                             , ref HashSet<BaseSubCP> buildFaces
+                            , ref HashSet<SubPoint>  buildPoints
                             , ref TempIncidenceInfo  buildIncidence) {
     foreach (BaseSubCP edge in face.Faces!) {
       if (buildIncidence.ContainsKey(edge)) {
@@ -197,7 +185,8 @@ public class GiftWrapping {
         BaseSubCP nextFace = RollOverEdge(S, face, edge, out Vector n);
         nextFace.Normal = n;
         buildFaces.Add(nextFace);
-        DFS_step(S, nextFace, ref buildFaces, ref buildIncidence);
+        buildPoints.UnionWith(nextFace.Vertices);
+        DFS_step(S, nextFace, ref buildFaces, ref buildPoints, ref buildIncidence);
       }
     }
   }
