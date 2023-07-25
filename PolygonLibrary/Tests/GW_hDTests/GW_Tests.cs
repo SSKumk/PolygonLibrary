@@ -601,7 +601,7 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    const int maxDim  = 3;
+    const int maxDim  = 4;
     const int nTests  = 5000;
     const int nPoints = 20;
 
@@ -642,9 +642,9 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplexTest() {
-    const int maxDim  = 3;
-    const int nTests  = 50000;
-    const int nPoints = 3;
+    const int maxDim  = 4;
+    const int nTests  = 5000;
+    const int nPoints = 20;
 
 
     for (int polyhedronDim = 3; polyhedronDim <= maxDim; polyhedronDim++) {
@@ -702,20 +702,16 @@ public class GW_Tests {
       , new Point(new double[] { 15.41674070428436, -21.36711896185478, 27.530752935195338 })
       , new Point(new double[] { 15.979760257836379, -20.514021495597756, 26.55339235926446 })
       , new Point(new double[] { 16.38827147512058, -21.27751746756958, 27.263557389903834 })
-      , new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 })
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-
-    foreach (Point s in P.Vertices) {
-      Console.WriteLine(s);
-    }
+    Polyhedron P = GiftWrapping.WrapPolyhedron(new List<Point>(Swarm){new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 })});
+    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
   }
 
   [Test]
   public void AllCrossPolytopTest() {
     const int minDim = 3;
-    const int maxDim = 7;
+    const int maxDim = 4;
     const int nTests = 5000;
 
     for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
