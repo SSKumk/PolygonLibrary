@@ -67,8 +67,8 @@
 
     <ItemGroup>
         <Reference Include="AVLUtils">
-            <!--             <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net7.0\AVLUtils.dll</HintPath> -->
-            <HintPath>..\..\AVLUtils\AVLUtils\bin\Release\net7.0\AVLUtils.dll</HintPath>
+                         <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net7.0\AVLUtils.dll</HintPath> 
+<!--            <HintPath>..\..\AVLUtils\AVLUtils\bin\Release\net7.0\AVLUtils.dll</HintPath>-->
         </Reference>
     </ItemGroup>
 
