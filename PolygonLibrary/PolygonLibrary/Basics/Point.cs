@@ -250,14 +250,14 @@ public class Point : IComparable<Point> {
   }
 
   public override string ToString() {
-    string res = "{" + _p[0].ToString(CultureInfo.InvariantCulture);
+    string res = "(" + _p[0].ToString(CultureInfo.InvariantCulture);
     int    d   = Dim, i;
 
     for (i = 1; i < d; i++) {
-      res += ";" + _p[i].ToString(CultureInfo.InvariantCulture);
+      res += "," + _p[i].ToString(CultureInfo.InvariantCulture);
     }
 
-    res += "}";
+    res += ")";
 
     return res;
   }
