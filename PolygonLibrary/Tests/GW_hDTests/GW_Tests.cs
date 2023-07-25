@@ -94,7 +94,7 @@ public class GW_Tests {
               if (Tools.LT(difA)) {
                 ws.Add(0.0);
               } else {
-                double alpha = _random.NextDouble() * difA;
+                double alpha = GenInner() * difA;
                 ws.Add(alpha);
                 difA -= alpha;
               }
@@ -181,6 +181,27 @@ public class GW_Tests {
 
     return Cube;
   }
+
+  /// <summary>
+  /// Generates a d-cross_polytope in d-space.
+  /// </summary>
+  /// <param name="crossDim">The dimension of the cross polytope.</param>
+  /// <param name="facesDim">TODO генерировать точки!</param>
+  /// <param name="amount">TODO</param>
+  /// <returns></returns>
+  List<Point> CrossPolytop(int crossDim, IEnumerable<int>? facesDim = null, int amount = 50) {
+    List<Point> cross = new List<Point>();
+
+    for (int i = 1; i <= crossDim; i++) {
+      Vector v = Vector.CreateOrth(crossDim, i);
+      cross.Add(new Point(v));
+      cross.Add(new Point(-v));
+    }
+
+
+    return cross;
+  }
+
 
   /// <summary>
   /// Generates a non-zero random vector of the specified dimension.
@@ -580,8 +601,9 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    const int maxDim = 4;
-    const int nTests = 500;
+    const int maxDim  = 3;
+    const int nTests  = 5000;
+    const int nPoints = 20;
 
     for (int cubeDim = 3; cubeDim <= maxDim; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
@@ -596,7 +618,7 @@ public class GW_Tests {
           // List<Point> ShiftedCube        = Shift(Cube(cubeDim),shift);
 
 
-          List<Point> Swarm = Cube(cubeDim, GenFacesInd(fDim, cubeDim), 1);
+          List<Point> Swarm = Cube(cubeDim, GenFacesInd(fDim, cubeDim), nPoints);
           Swarm = Rotate(Swarm, rotation);
           Swarm = Shift(Swarm, shift);
           Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
@@ -618,45 +640,29 @@ public class GW_Tests {
     }
   }
 
-
-  [Test]
-  public void DependencyOnPoints() {
-    Stopwatch stopwatch = new Stopwatch();
-    const int cubeDim   = 3;
-
-    for (int i = 1; i < 1e7; i *= 10) {
-      List<Point> Swarm = Cube(cubeDim, new[] { cubeDim }, i);
-
-      stopwatch.Start();
-      Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-      stopwatch.Stop();
-
-      TimeSpan elapsed = stopwatch.Elapsed;
-      //Console.WriteLine($"i = {i}. Время выполнения: {elapsed.TotalSeconds}");
-      Console.WriteLine($"{i}; {elapsed.TotalSeconds}");
-    }
-  }
-
-
   [Test]
   public void AllSimplexTest() {
-    const int maxDim = 3;
-    const int nTests = 50000;
+    const int maxDim  = 3;
+    const int nTests  = 50000;
+    const int nPoints = 3;
 
-    for (int simplexDim = 3; simplexDim <= maxDim; simplexDim++) {
-      for (int fDim = 0; fDim < simplexDim; fDim++) {
+
+    for (int polyhedronDim = 3; polyhedronDim <= maxDim; polyhedronDim++) {
+      for (int fDim = 0; fDim <= polyhedronDim; fDim++) {
         for (int k = 0; k < nTests; k++) {
-          Matrix      rotation              = GenRotation(simplexDim);
-          List<Point> RotatedSimplex        = Rotate(Simplex(simplexDim), rotation);
-          Vector      shift                 = GenVector(simplexDim) * _random.Next(1, 100);
+          List<Point> simplex               = Simplex(polyhedronDim);
+          Matrix      rotation              = GenRotation(polyhedronDim);
+          List<Point> RotatedSimplex        = Rotate(simplex, rotation);
+          Vector      shift                 = GenVector(polyhedronDim) * _random.Next(1, 100);
           List<Point> RotatedShiftedSimplex = Shift(RotatedSimplex, shift);
 
 
-          List<Point> Swarm = Simplex(simplexDim, GenFacesInd(fDim, simplexDim), 2);
+          List<Point> Swarm = Simplex(polyhedronDim, GenFacesInd(fDim, polyhedronDim), nPoints);
           Swarm = Rotate(Swarm, rotation);
           Swarm = Shift(Swarm, shift);
 
           Polyhedron? P = null;
+
           try {
             P = GiftWrapping.WrapPolyhedron(Swarm);
           }
@@ -670,7 +676,7 @@ public class GW_Tests {
             Debug.Assert(P.Vertices.SetEquals(RotatedShiftedSimplex), "The set of vertices must be equals.");
           }
           catch (Exception e) {
-            foreach (Point s in Swarm) {
+            foreach (Point s in P.Vertices) {
               Console.WriteLine(s);
             }
 
@@ -687,6 +693,121 @@ public class GW_Tests {
     }
   }
 
+  [Test]
+  public void AuxSimplex() {
+    List<Point> Swarm = new List<Point>()
+      {
+        new Point(new double[] { 16.149344503250603, -21.452113890066798, 26.855425210369486 })
+      , new Point(new double[] { 16.80853556618116, -21.116318533312754, 27.528261461573972 })
+      , new Point(new double[] { 15.41674070428436, -21.36711896185478, 27.530752935195338 })
+      , new Point(new double[] { 15.979760257836379, -20.514021495597756, 26.55339235926446 })
+      , new Point(new double[] { 16.38827147512058, -21.27751746756958, 27.263557389903834 })
+      , new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 })
+      };
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    foreach (Point s in P.Vertices) {
+      Console.WriteLine(s);
+    }
+  }
+
+  [Test]
+  public void AllCrossPolytopTest() {
+    const int minDim = 3;
+    const int maxDim = 7;
+    const int nTests = 5000;
+
+    for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
+      // for (int fDim = 0; fDim <= polyhedronDim; fDim++) {
+      for (int k = 0; k < nTests; k++) {
+        List<Point> cross = CrossPolytop(polyhedronDim);
+
+        Matrix      rotation       = GenRotation(polyhedronDim);
+        List<Point> Rotated        = Rotate(cross, rotation);
+        Vector      shift          = GenVector(polyhedronDim) * _random.Next(1, 100);
+        List<Point> RotatedShifted = Shift(Rotated, shift);
+
+
+        // List<Point> Swarm = CrossPolytop(polyhedronDim, GenFacesInd(fDim, polyhedronDim), nPoints);
+        // Swarm = Rotate(Swarm, rotation);
+        // Swarm = Shift(Swarm, shift);
+
+        Polyhedron? P = null;
+
+        try {
+          P = GiftWrapping.WrapPolyhedron(RotatedShifted);
+        }
+        catch (Exception e) {
+          foreach (Point s in RotatedShifted) {
+            Console.WriteLine(s);
+          }
+        }
+
+        try {
+          Debug.Assert(P.Vertices.SetEquals(RotatedShifted), "The set of vertices must be equals.");
+        }
+        catch (Exception e) {
+          foreach (Point s in P.Vertices) {
+            Console.WriteLine(s);
+          }
+
+          Console.WriteLine("=========================");
+
+          foreach (Point s in RotatedShifted) {
+            Console.WriteLine(s);
+          }
+
+          throw new ArgumentException();
+        }
+        // }
+      }
+    }
+  }
+
+  [Test]
+  public void SomePolytop_3D() {
+    List<Point> S = new List<Point>()
+      {
+        new Point(new double[] { 1, 0, 1 })
+      , new Point(new double[] { 1, 0, -1 })
+      , new Point(new double[] { 1.25, -1, 1 })
+      , new Point(new double[] { 1.25, -1, -1 })
+      , new Point(new double[] { 0.25, -1, 1 })
+      , new Point(new double[] { 0.25, -1, -1 })
+      , new Point(new double[] { -1, 0, 1 })
+      , new Point(new double[] { -1, 0, -1 })
+      , new Point(new double[] { -1.25, 1, 1 })
+      , new Point(new double[] { -1.25, 1, -1 })
+      , new Point(new double[] { -0.25, 1, 1 })
+      , new Point(new double[] { -0.25, 1, -1 })
+      };
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+
+    foreach (Point s in P.Vertices) {
+      Console.WriteLine(s);
+    }
+  }
+
+  [Test]
+  public void Cross_4D() {
+    List<Point> S = CrossPolytop(4);
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+
+    foreach (Point s in P.Vertices) {
+      Console.WriteLine(s);
+    }
+  }
+
+
+  /// <summary>
+  /// Generates a set of random face dimension-indices for a polyhedron.
+  /// </summary>
+  /// <param name="fDim">The number of face indices to generate.</param>
+  /// <param name="polyhedronDim">The dimension of the polyhedron.</param>
+  /// <returns>A HashSet containing the randomly generated face dimension-indices.</returns>
   private static HashSet<int> GenFacesInd(int fDim, int polyhedronDim) {
     HashSet<int> faceInd = new HashSet<int>();
 
@@ -709,5 +830,23 @@ public class GW_Tests {
   /// <param name="shift">Vector to shift</param>
   /// <returns></returns>
   private static List<Point> Shift(List<Point> Swarm, Vector shift) { return Swarm.Select(s => new Point(s + shift)).ToList(); }
+
+  // [Test]
+  // public void DependencyOnPoints() {
+  //   Stopwatch stopwatch = new Stopwatch();
+  //   const int cubeDim   = 3;
+  //
+  //   for (int i = 1; i < 1e7; i *= 10) {
+  //     List<Point> Swarm = Cube(cubeDim, new[] { cubeDim }, i);
+  //
+  //     stopwatch.Start();
+  //     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+  //     stopwatch.Stop();
+  //
+  //     TimeSpan elapsed = stopwatch.Elapsed;
+  //     //Console.WriteLine($"i = {i}. Время выполнения: {elapsed.TotalSeconds}");
+  //     Console.WriteLine($"{i}; {elapsed.TotalSeconds}");
+  //   }
+  // }
 
 }
