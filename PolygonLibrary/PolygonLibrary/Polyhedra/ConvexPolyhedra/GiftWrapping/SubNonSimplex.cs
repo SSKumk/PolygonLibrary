@@ -37,14 +37,6 @@ public class SubNonSimplex : BaseSubCP {
   /// </summary>
   public override SubIncidenceInfo? FaceIncidence { get; }
 
-
-  private AffineBasis? _basis = null;
-
-  /// <summary>
-  /// todo ???????????????????
-  /// </summary>
-  public override AffineBasis? Basis { get; set; }
-
   /// <summary>
   /// 
   /// </summary>
@@ -73,7 +65,6 @@ public class SubNonSimplex : BaseSubCP {
   /// </summary>
   /// <param name="faces">Faces to construct the convex polyhedron</param>
   /// <param name="incidence">Information about face incidence.</param>
-  /// <param name="n"></param>
   /// <param name="Vs">Vertices of this convex polyhedron. If null then its construct base on faces.</param>
   public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
     PolyhedronDim = faces.First().PolyhedronDim + 1;

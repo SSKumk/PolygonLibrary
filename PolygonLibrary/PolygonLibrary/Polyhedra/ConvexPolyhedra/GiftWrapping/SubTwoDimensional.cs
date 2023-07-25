@@ -14,8 +14,6 @@ public class SubTwoDimensional : BaseSubCP {
   public override HashSet<BaseSubCP>? Faces         { get; }
   public override SubIncidenceInfo?      FaceIncidence => null;
 
-  public override AffineBasis? Basis { get; set; }
-
   public override BaseSubCP ToPreviousSpace() {
     List<SubPoint> Vs = new List<SubPoint>(VerticesList.Select(v => v.Parent)!);
 

@@ -44,16 +44,13 @@ internal class SubSimplex : BaseSubCP {
 
           foreach (SubPoint vertex in Vertices) {
             SubPoint[] faceVert = Vertices.Where(v => !v.Equals(vertex)).ToArray();
-            if (PolyhedronDim == 2)
-            {
+
+            if (PolyhedronDim == 2) {
               BaseSubCP edge = new SubTwoDimensionalEdge(faceVert[0], faceVert[1]);
               _faces.Add(edge);
-            }
-            else
-            {
-             BaseSubCP simplex = new SubSimplex(faceVert);
-            _faces.Add(simplex);
-              
+            } else {
+              BaseSubCP simplex = new SubSimplex(faceVert);
+              _faces.Add(simplex);
             }
           }
         }
@@ -63,14 +60,10 @@ internal class SubSimplex : BaseSubCP {
   }
 
   /// <summary>
-  /// Null for a Simplex.
+  /// Information about face incidence.
   /// </summary>
   public override SubIncidenceInfo? FaceIncidence { get; }
 
-  /// <summary>
-  /// todo ???????????????????
-  /// </summary>
-  public override AffineBasis? Basis { get; set; }
 
   /// <summary>
   /// Lifts a simplex to the previous space.
@@ -86,13 +79,16 @@ internal class SubSimplex : BaseSubCP {
   /// Initializes a new instance of the <see cref="SubSimplex"/> class with the specified set of vertices and dimension.
   /// </summary>
   /// <param name="simplex">The set of vertices of the simplex.</param>
-  public SubSimplex(IEnumerable<SubPoint> simplex) {
+  /// <param name="faces">The set of faces of the simplex.</param>
+  /// <param name="incidence">Information about face incidence.</param>
+  public SubSimplex(IEnumerable<SubPoint> simplex, HashSet<BaseSubCP>? faces = null, SubIncidenceInfo? incidence = null) {
     Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
 
     PolyhedronDim = simplex.Count() - 1;
     Type          = SubCPType.Simplex;
     Vertices      = new HashSet<SubPoint>(simplex);
-    FaceIncidence = null;
+    _faces        = faces;
+    FaceIncidence = incidence;
   }
 
 }

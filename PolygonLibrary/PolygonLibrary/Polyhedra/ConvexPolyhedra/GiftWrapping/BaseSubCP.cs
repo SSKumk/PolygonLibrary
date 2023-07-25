@@ -81,11 +81,6 @@ public abstract class BaseSubCP {
   /// </summary>
   public abstract SubIncidenceInfo? FaceIncidence { get; }
 
-  /// <summary>
-  /// todo БАЗИС ???? ГРАНИ ????
-  /// </summary>
-  public abstract AffineBasis? Basis { get; set; }
-
 
   /// <summary>
   /// Converts current d-dimensional polyhedron in d-dimensional space to d-dimensional polyhedron in (d+1)-dimensional space.
