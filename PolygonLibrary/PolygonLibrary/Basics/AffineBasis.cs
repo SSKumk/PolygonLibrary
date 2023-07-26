@@ -227,6 +227,21 @@ public class AffineBasis {
   }
 
   /// <summary>
+  /// Gets the basis vectors as a list of points.
+  /// </summary>
+  /// <returns>The list of points representing the basis vectors.</returns>
+  public List<Point> GetBasisAsPoints() {
+    List<Point> points = new List<Point>();
+
+    foreach (Vector bvec in Basis) {
+      points.Add(new Point(bvec));
+    }
+
+    return points;
+  }
+
+
+  /// <summary>
   /// Aux method to check then the basis is correct
   /// </summary>
   /// <param name="affineBasis">Basis to be checked</param>
