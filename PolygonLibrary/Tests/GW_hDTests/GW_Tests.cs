@@ -17,20 +17,6 @@ public class GW_Tests {
   private static readonly Random _random = new Random(0);
 
   /// <summary>
-  /// Generates a random double value between 0 and 1, excluding the values 0 and 1.
-  /// </summary>
-  /// <returns>The generated random double value.</returns>
-  double GenInner() {
-    double w = _random.NextDouble();
-
-    while (Tools.EQ(w) || Tools.EQ(w, 1)) {
-      w = _random.NextDouble();
-    }
-
-    return w;
-  }
-
-  /// <summary>
   /// Finds all subsets of a given length for an array.
   /// </summary>
   /// <typeparam name="T">The type of the array elements.</typeparam>
@@ -61,13 +47,85 @@ public class GW_Tests {
   }
 
   /// <summary>
+  /// Generates a random double value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
+  /// </summary>
+  /// <returns>The generated random double value.</returns>
+  private double GenInner() {
+    double w = _random.NextDouble();
+
+    while (Tools.EQ(w) || Tools.EQ(w, 1)) {
+      w = _random.NextDouble();
+    }
+
+    return w;
+  }
+
+  /// <summary>
+  /// Generates an affine combination of points. Default coefficients in (0,1).
+  /// </summary>
+  /// <param name="points">The list of points to combine.</param>
+  /// <param name="mult">The multiplier for each coefficient. Default is 1.</param>
+  /// <param name="shift">The shift for each coefficient. Default is 0.</param>
+  /// <returns>The resulting point.</returns>
+  private Point GenAffineCombination(List<Point> points, int mult = 1, int shift = 0) {
+    List<double> ws = new List<double>();
+
+    for (int i = 0; i < points.Count; i++) {
+      ws.Add(GenInner() * mult + shift);
+    }
+    Point res = Point.LinearCombination(points, ws);
+
+    return res;
+  }
+
+  /// <summary>
+  /// Generates a linear combination of the given points.
+  /// </summary>
+  /// <param name="points">The list of point to lin-combine.</param>
+  /// <returns>A linear combination of the given points.</returns>
+  private Point GenLinearCombination(List<Point> points) {
+    List<double> ws = new List<double>();
+
+    double difA = 1;
+    for (int i = 0; i < points.Count - 1; i++) {
+      double alpha = GenInner() * difA;
+      ws.Add(alpha);
+      difA -= alpha;
+    }
+    ws.Add(difA);
+    Point res = Point.LinearCombination(points, ws);
+
+    return res;
+  }
+
+  /// <summary>
+  /// Generates a set of random face dimension-indices for a polyhedron.
+  /// </summary>
+  /// <param name="fDim">The number of face indices to generate.</param>
+  /// <param name="polyhedronDim">The dimension of the polyhedron.</param>
+  /// <returns>A HashSet containing the randomly generated face dimension-indices.</returns>
+  private static HashSet<int> GenFacesInd(int fDim, int polyhedronDim) {
+    HashSet<int> faceInd = new HashSet<int>();
+
+    for (int j = 0; j < fDim; j++) {
+      int ind;
+
+      do {
+        ind = _random.Next(1, polyhedronDim + 1);
+      } while (!faceInd.Add(ind));
+    }
+
+    return faceInd;
+  }
+
+  /// <summary>
   /// Generates a d-simplex in d-space. 
   /// </summary>
   /// <param name="simplexDim">The dimension of the simplex.</param>
   /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <returns>A list of points representing the simplex.</returns>
-  List<Point> Simplex(int simplexDim, IEnumerable<int>? facesDim = null, int amount = 50) {
+  private List<Point> Simplex(int simplexDim, IEnumerable<int>? facesDim = null, int amount = 50) {
     List<Point> simplex = new List<Point> { new Point(new double[simplexDim]) };
 
     for (int i = 0; i < simplexDim; i++) {
@@ -97,27 +155,6 @@ public class GW_Tests {
     return Simplex;
   }
 
-  /// <summary>
-  /// Generates a linear combination of the given points.
-  /// </summary>
-  /// <param name="points">The list of point to lin-combine.</param>
-  /// <returns>A linear combination of the given points.</returns>
-  private Point GenLinearCombination(List<Point> points) {
-    List<double> ws = new List<double>();
-
-    double difA = 1;
-
-    for (int i = 0; i < points.Count - 1; i++) {
-      double alpha = GenInner() * difA;
-      ws.Add(alpha);
-      difA -= alpha;
-    }
-    ws.Add(difA);
-    Point res = Point.LinearCombination(points, ws);
-
-    return res;
-  }
-
 
   /// <summary>
   /// Generates a full-dimension hypercube in the specified dimension.
@@ -126,7 +163,7 @@ public class GW_Tests {
   /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <returns>A list of points representing the hypercube.</returns>
-  List<Point> Cube(int cubeDim, IEnumerable<int>? facesDim = null, int amount = 50) {
+  private List<Point> Cube(int cubeDim, IEnumerable<int>? facesDim = null, int amount = 50) {
     List<List<double>> cube_prev = new List<List<double>>();
     List<List<double>> cube      = new List<List<double>>();
     cube_prev.Add(new List<double>() { 0 });
@@ -196,7 +233,7 @@ public class GW_Tests {
   /// <param name="crossDim">The dimension of the cross polytope.</param>
   /// <param name="innerPoints">The amount of inner points of the cross polytope.</param>
   /// <returns></returns>
-  List<Point> CrossPolytop(int crossDim, int innerPoints) {
+  private List<Point> CrossPolytop(int crossDim, int innerPoints) {
     List<Point> cross = new List<Point>();
 
     for (int i = 1; i <= crossDim; i++) {
@@ -206,6 +243,7 @@ public class GW_Tests {
     }
 
     List<Point> Cross = new List<Point>(cross);
+
     for (int i = 0; i < innerPoints; i++) {
       cross.Add(GenLinearCombination(cross));
     }
@@ -216,11 +254,11 @@ public class GW_Tests {
 
 
   /// <summary>
-  /// Generates a non-zero random vector of the specified dimension.
+  /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5) \ {0}.
   /// </summary>
   /// <param name="dim">The dimension of the vector.</param>
-  /// <returns>A random vector. Each coordinate: [-0.5, 0.5) \ {0}.</returns>
-  Vector GenVector(int dim) {
+  /// <returns>A random vector.</returns>
+  private static Vector GenVector(int dim) {
     double[] v = new double[dim];
 
     Vector res;
@@ -241,7 +279,7 @@ public class GW_Tests {
   /// </summary>
   /// <param name="spaceDim">The dimension d of the space.</param>
   /// <returns>Unitary matrix dxd.</returns>
-  Matrix GenRotation(int spaceDim) {
+  private static Matrix GenRotation(int spaceDim) {
     LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
 
     while (!basis.IsFullDim) {
@@ -257,11 +295,26 @@ public class GW_Tests {
   /// <param name="Swarm">The swarm of points to rotate.</param>
   /// <param name="rotation">Matrix to rotate a swarm.</param>
   /// <returns>The rotated swarm of points.</returns>
-  List<Point> Rotate(IEnumerable<Point> Swarm, Matrix rotation) {
+  private static List<Point> Rotate(IEnumerable<Point> Swarm, Matrix rotation) {
     IEnumerable<Vector> rotated = Swarm.Select(s => new Vector(s) * rotation);
 
     return rotated.Select(v => new Point(v)).ToList();
   }
+
+  /// <summary>
+  /// Generates a random non-zero vector, each coordinate [-50, 50] \ {0}.
+  /// </summary>
+  /// <param name="dim">The dimension of the vector.</param>
+  /// <returns>A random non-zero vector.</returns>
+  private static Vector GenShift(int dim) { return GenVector(dim) * _random.Next(1, 100); }
+
+  /// <summary>
+  /// Shift given swarm by given vector
+  /// </summary>
+  /// <param name="Swarm">Swarm to be shifted</param>
+  /// <param name="shift">Vector to shift</param>
+  /// <returns></returns>
+  private static List<Point> Shift(List<Point> Swarm, Vector shift) { return Swarm.Select(s => new Point(s + shift)).ToList(); }
 
   [Test]
   public void GenCubeHDTest() {
@@ -287,22 +340,34 @@ public class GW_Tests {
     List<Point> Swarm = Cube(3);
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-
     Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+  }
 
-    //P.WriteToObjFile("cube");
+  [Test]
+  public void Cube3D_Rotated_Z45() {
+    List<Point>  Swarm = Cube(3);
+    const double angle = Math.PI / 4;
+    double       sin   = Math.Sin(angle);
+    double       cos   = Math.Cos(angle);
 
-    foreach (Point point in P.Vertices) {
-      Console.WriteLine(point);
-    }
+    double[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
+
+    List<Point> Rotated = Rotate(Swarm, new Matrix(rotationZ45));
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Rotated);
+    Debug.Assert(P.Vertices.SetEquals(Rotated), "The set of vertices must be equals.");
   }
 
   [Test]
   public void Cube3D_Rotated() {
     int    cubeDim  = 3;
     Matrix rotation = GenRotation(cubeDim);
-
+    
     List<Point> RotatedCube = Rotate(Cube(cubeDim), rotation);
+
+    foreach (Point p in RotatedCube) {
+      Console.WriteLine(p);
+    }
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(RotatedCube);
     Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
@@ -333,27 +398,6 @@ public class GW_Tests {
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
     Debug.Assert(P.Vertices.SetEquals(RotatedShiftedCube), "The set of vertices must be equals.");
-  }
-
-  private Vector GenShift(int cubeDim) { return GenVector(cubeDim) * _random.Next(1, 100); }
-
-  [Test]
-  public void Simplex3D() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new double[] { 0, 0, 0 })
-      , new Point(new double[] { 1, 0, 0 })
-      , new Point(new double[] { 0, 1, 0 })
-      , new Point(new double[] { 0, 0, 1 })
-      };
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-
-    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
-
-    foreach (Point point in P.Vertices) {
-      Console.WriteLine(point);
-    }
   }
 
   [Test]
@@ -578,8 +622,20 @@ public class GW_Tests {
     }
   }
 
+  [Test]
+  public void Simplex3D() {
+    List<Point> Swarm = new List<Point>()
+      {
+        new Point(new double[] { 0, 0, 0 })
+      , new Point(new double[] { 1, 0, 0 })
+      , new Point(new double[] { 0, 1, 0 })
+      , new Point(new double[] { 0, 0, 1 })
+      };
 
-  //todo и дальше в том же духе ...
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+  }
 
   [Test]
   public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
@@ -613,11 +669,12 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    const int maxDim  = 4;
-    const int nTests  = 5000;
-    const int nPoints = 20;
+    const int minDim  = 3;
+    const int maxDim  = 6;
+    const int nTests  = 100;
+    const int nPoints = 5;
 
-    for (int cubeDim = 3; cubeDim <= maxDim; cubeDim++) {
+    for (int cubeDim = minDim; cubeDim <= maxDim; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
         for (int k = 0; k < nTests; k++) {
           Matrix      rotation       = GenRotation(cubeDim);
@@ -643,9 +700,9 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplexTest() {
-    const int minDim  = 6;
-    const int maxDim  = 6;
-    const int nTests  = 10;
+    const int minDim  = 3;
+    const int maxDim  = 8;
+    const int nTests  = 100;
     const int nPoints = 20;
 
 
@@ -671,14 +728,14 @@ public class GW_Tests {
 
   [Test]
   public void AllCrossPolytopTest() {
-    const int minDim = 3;
-    const int maxDim = 4;
-    const int nTests = 5000;
+    const int minDim  = 3;
+    const int maxDim  = 3;
+    const int nTests  = 5000;
     const int nPoints = 50;
 
     for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
       for (int k = 0; k < nTests; k++) {
-        List<Point> cross = CrossPolytop(polyhedronDim,0);
+        List<Point> cross = CrossPolytop(polyhedronDim, 0);
 
         Matrix      rotation       = GenRotation(polyhedronDim);
         List<Point> Rotated        = Rotate(cross, rotation);
@@ -691,7 +748,6 @@ public class GW_Tests {
         Swarm = Shift(Swarm, shift);
 
         Check(Swarm, RotatedShifted);
-
       }
     }
   }
@@ -737,34 +793,6 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AuxSimplex() {
-    Point A = new Point(new double[] { 16.149344503250603, -21.452113890066798, 26.855425210369486 });
-    Point B = new Point(new double[] { 16.80853556618116, -21.116318533312754, 27.528261461573972 });
-    Point C = new Point(new double[] { 15.41674070428436, -21.36711896185478, 27.530752935195338 });
-    Point D = new Point(new double[] { 15.979760257836379, -20.514021495597756, 26.55339235926446 });
-
-    List<Point> Swarm = new List<Point>()
-      {
-        A
-      , B
-      , C
-      , D
-      };
-
-
-    Point F = new Point(new double[] { 16.159975630929436, -21.45179235917561, 26.856069499133856 });
-    Point E = new Point(new double[] { 16.38827147512058, -21.27751746756958, 27.263557389903834 });
-    
-    HyperPlane hpABC = new HyperPlane(new AffineBasis(new List<Point>() { A, B, C }));
-    Console.WriteLine($"F = {hpABC.Eval(F)}");
-    Console.WriteLine($"E = {hpABC.Eval(E)}");
-    Console.WriteLine($"C = {hpABC.Eval(C)}");
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(new List<Point>(Swarm) { F, E });
-    Debug.Assert(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
-  }
-
-  [Test]
   public void SomePolytop_3D() {
     List<Point> S = new List<Point>()
       {
@@ -784,49 +812,53 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
     Debug.Assert(P.Vertices.SetEquals(S), "The set of vertices must be equals.");
-    
   }
 
   [Test]
   public void Cross_4D() {
-    List<Point> S = CrossPolytop(4,0);
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    List<Point> S = CrossPolytop(4, 0);
+    Polyhedron  P = GiftWrapping.WrapPolyhedron(S);
 
     foreach (Point s in P.Vertices) {
       Console.WriteLine(s);
     }
   }
 
-
-  /// <summary>
-  /// Generates a set of random face dimension-indices for a polyhedron.
-  /// </summary>
-  /// <param name="fDim">The number of face indices to generate.</param>
-  /// <param name="polyhedronDim">The dimension of the polyhedron.</param>
-  /// <returns>A HashSet containing the randomly generated face dimension-indices.</returns>
-  private static HashSet<int> GenFacesInd(int fDim, int polyhedronDim) {
-    HashSet<int> faceInd = new HashSet<int>();
-
-    for (int j = 0; j < fDim; j++) {
-      int ind;
-
-      do {
-        ind = _random.Next(1, polyhedronDim + 1);
-      } while (!faceInd.Add(ind));
+  [Test]
+  public void PlanesTest_3D() {
+    Point        origin  = new Point(new double[] { 0, 0, 0 });
+    List<Vector> Normals = new List<Vector>();
+    do { //todo придумать как генерировать не взаимоисключающие плоскости
+      Normals.Clear();
+      for (int i = 0; i < 5; i++) {
+        Normals.Add(GenVector(3));
+      }
+    } while (Normals.Aggregate((acc, x) => acc + x).IsZero);
+    
+    List<HyperPlane> hyperPlanes = new List<HyperPlane>();
+    foreach (Vector normal in Normals) {
+      hyperPlanes.Add(new HyperPlane(origin, normal));
     }
 
-    return faceInd;
+    List<Point> Swarm = new List<Point>();
+
+    foreach (HyperPlane hp in hyperPlanes) {
+      for (int i = 0; i < 10; i++) {
+        Point p;
+        do {
+          p = GenAffineCombination(hp.AffineBasis.GetBasisAsPoints(), 100, -50);
+        } while (hyperPlanes.All(HP => HP.Eval(p) <= 0));
+        Swarm.Add(p);
+      }
+    }
+    
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+    
+    Console.WriteLine("Надо как-то проверять!");
+
+    
   }
 
-
-  /// <summary>
-  /// Shift given swarm by given vector
-  /// </summary>
-  /// <param name="Swarm">Swarm to be shifted</param>
-  /// <param name="shift">Vector to shift</param>
-  /// <returns></returns>
-  private static List<Point> Shift(List<Point> Swarm, Vector shift) { return Swarm.Select(s => new Point(s + shift)).ToList(); }
 
   // [Test]
   // public void DependencyOnPoints() {
