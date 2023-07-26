@@ -16,7 +16,7 @@ public class GiftWrapping {
 
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
-    }
+    } //todo Может TwoDimensional сделать у многогранника?
 
     HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
     HashSet<Edge> Es = new HashSet<Edge>();
@@ -43,7 +43,7 @@ public class GiftWrapping {
   }
 
   /// <summary>
-  /// 
+  /// Builds next face of the polyhedron.
   /// </summary>
   /// <param name="S">The swarm of d-dimensional points for some d.</param>
   /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
@@ -66,13 +66,17 @@ public class GiftWrapping {
 
 
     HyperPlane     hyperPlane = new HyperPlane(FaceBasis.Origin, n);
-    List<SubPoint> inPlane    = new List<SubPoint>();
+    // HyperPlane     hyperPlane = new HyperPlane(FaceBasis);
+    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
+                              .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original)).ToList();
 
-    foreach (SubPoint s in S) {
-      if (hyperPlane.Contains(s)) {
-        inPlane.Add(new SubPoint(s.ProjectTo(FaceBasis), s, s.Original));
-      }
-    }
+    // foreach (SubPoint s in S) {
+    //   if (hyperPlane.Contains(s)) {
+    //     inPlane.Add(new SubPoint(s.ProjectTo(FaceBasis), s, s.Original));
+    //   }
+    // }
+
+    Debug.Assert(inPlane.Count >= 3, "In plane must be at least 3 points!");
 
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
@@ -109,26 +113,22 @@ public class GiftWrapping {
     }
 
     if (initFace is null) {
-      AffineBasis initBasis = BuildInitialPlane(S);
-      // AffineBasis initBasis = BuildInitialPlane(S, out n);
-      HyperPlane hp = new HyperPlane(initBasis);
-      Vector     n  = hp.Normal;
-      OrientNormal(S, ref n, initBasis.Origin);
+      AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
+
+      // AffineBasis initBasis = BuildInitialPlane(S);
+      // HyperPlane hp = new HyperPlane(initBasis);
+      // Vector     n  = hp.Normal;
+      // OrientNormal(S, ref n, initBasis.Origin);
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
         throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
       }
 
+      //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
       initFace        = BuildFace(S, initBasis, n);
       initFace.Normal = n;
     }
-
-
-    //todo По-хорошему бы выкинуть из роя точки, лежащие в плоскости начальной грани, но не являющиеся её вершинами
-    // IEnumerable<SubPoint> S1 = S.Where(s => ... ); 
-
     Debug.Assert(initFace.Normal is not null, "n is not null");
-
     Debug.Assert(initFace.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
     Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
@@ -236,13 +236,79 @@ public class GiftWrapping {
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
     n = (r! * face.Normal) * v - (r! * v) * face.Normal;
-    n = n.Normalize();
+    
+    Debug.Assert(Tools.EQ(n.Length, 1), "Tools.EQ(n.Length, 1)");
+    
     OrientNormal(S, ref n, edgeBasis.Origin);
 
 
     return BuildFace(S, newF_aBasis, n, r, edge);
   }
 
+
+  // /// <summary>
+  // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+  // /// and all other points lies for a one side from it.
+  // /// </summary>
+  // /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+  // /// <param name="n">The outward normal to the initial plane.</param>
+  // /// <returns>
+  // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+  // /// </returns>
+  // public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
+  //   Debug.Assert(S.Any(), "The swarm must has at least one point!");
+  //
+  //   SubPoint           origin = S.Min(p => p)!;
+  //   LinkedList<Vector> tempV  = new LinkedList<Vector>();
+  //   AffineBasis        FinalV = new AffineBasis(origin);
+  //
+  //   int dim = FinalV.VecDim;
+  //
+  //   for (int i = 1; i < dim; i++) {
+  //     tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+  //   }
+  //
+  //   HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+  //
+  //   double    minDot;
+  //   SubPoint? sExtr;
+  //
+  //   while (tempV.Any()) {
+  //     Vector t = tempV.First();
+  //     tempV.RemoveFirst();
+  //     minDot = double.MaxValue;
+  //     sExtr  = null;
+  //
+  //     foreach (SubPoint s in S) {
+  //       if (Viewed.Contains(s)) {
+  //         continue;
+  //       }
+  //
+  //       Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
+  //
+  //       if (n.IsZero) {
+  //         Viewed.Add(s);
+  //       } else {
+  //         double dot = n * t;
+  //
+  //         if (Tools.LT(dot, minDot)) {
+  //           minDot = dot;
+  //           sExtr  = s;
+  //         }
+  //       }
+  //     }
+  //
+  //     if (sExtr is null) {
+  //       return FinalV;
+  //     }
+  //
+  //     Viewed.Add(sExtr);
+  //     FinalV.AddVectorToBasis(sExtr - origin);
+  //     tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis)); //todo ??????????
+  //   }
+  //
+  //   return FinalV;
+  // }
 
   /// <summary>
   /// Orients the normal outward to the given swarm.
@@ -275,45 +341,58 @@ public class GiftWrapping {
   /// <returns>
   /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
   /// </returns>
-  public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
+  public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
     Debug.Assert(S.Any(), "The swarm must has at least one point!");
 
     SubPoint           origin = S.Min(p => p)!;
-    LinkedList<Vector> tempV  = new LinkedList<Vector>();
+    LinkedList<Vector> TempV  = new LinkedList<Vector>();
     AffineBasis        FinalV = new AffineBasis(origin);
 
     int dim = FinalV.VecDim;
 
     for (int i = 1; i < dim; i++) {
-      tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+      TempV.AddLast(Vector.CreateOrth(dim, i + 1));
     }
+
+    double[] n_arr = new double[dim];
+    n_arr[0] = -1;
+
+    for (int i = 1; i < dim; i++) {
+      n_arr[i] = 0;
+    }
+    n = new Vector(n_arr);
 
     HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
 
     double    minDot;
     SubPoint? sExtr;
 
-    while (tempV.Any()) {
-      Vector t = tempV.First();
-      tempV.RemoveFirst();
+    while (TempV.Any()) {
+      Vector t = TempV.First();
+      TempV.RemoveFirst();
       minDot = double.MaxValue;
       sExtr  = null;
+
+      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis);
+      Vector? r = null;
 
       foreach (SubPoint s in S) {
         if (Viewed.Contains(s)) {
           continue;
         }
 
-        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
+        Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
 
-        if (n.IsZero) {
+        if (u.IsZero) {
           Viewed.Add(s);
         } else {
-          double dot = n * t;
+          u = u.Normalize();
+          double dot = v * u;
 
           if (Tools.LT(dot, minDot)) {
             minDot = dot;
             sExtr  = s;
+            r      = u;
           }
         }
       }
@@ -324,100 +403,14 @@ public class GiftWrapping {
 
       Viewed.Add(sExtr);
       FinalV.AddVectorToBasis(sExtr - origin);
-      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis)); //todo ??????????
+
+      n = (r! * n) * v - (r! * v) * n;
+
+
+      OrientNormal(S, ref n, origin);
     }
 
     return FinalV;
   }
-
-  // /// <summary>
-  // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-  // /// and all other points lies for a one side from it.
-  // /// </summary>
-  // /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-  // /// <param name="n">The outward normal to the initial plane.</param>
-  // /// <returns>
-  // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
-  // /// </returns>
-  // public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
-  //   Debug.Assert(S.Any(), "The swarm must has at least one point!");
-  //
-  //   SubPoint           origin = S.Min(p => p)!;
-  //   LinkedList<Vector> TempV  = new LinkedList<Vector>();
-  //   AffineBasis        FinalV = new AffineBasis(origin);
-  //
-  //   int dim = FinalV.VecDim;
-  //
-  //   for (int i = 1; i < dim; i++) {
-  //     TempV.AddLast(Vector.CreateOrth(dim, i + 1));
-  //   }
-  //
-  //   double[] n_arr = new double[dim];
-  //   n_arr[0] = -1;
-  //
-  //   for (int i = 1; i < dim; i++) {
-  //     n_arr[i] = 0;
-  //   }
-  //   n = new Vector(n_arr);
-  //
-  //   HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-  //
-  //   double    minDot;
-  //   SubPoint? sExtr;
-  //
-  //   while (TempV.Any()) {
-  //     Vector t = TempV.First();
-  //     TempV.RemoveFirst();
-  //     minDot = double.MaxValue;
-  //     sExtr  = null;
-  //
-  //     Vector v = Vector.OrthonormalizeAgainstBasis(t, TempV);
-  //     Vector? u = null;
-  //
-  //     foreach (SubPoint s in S) {
-  //       if (Viewed.Contains(s)) {
-  //         continue;
-  //       }
-  //
-  //       u = ((s - origin) * v) * v + ((s - origin) * n) * n;
-  //
-  //       if (u.IsZero) {
-  //         Viewed.Add(s);
-  //       } else {
-  //         double dot = v * u;
-  //
-  //         if (Tools.LT(dot, minDot)) {
-  //           minDot = dot;
-  //           sExtr  = s;
-  //         }
-  //       }
-  //     }
-  //
-  //     if (sExtr is null) {
-  //       return FinalV;
-  //     }
-  //
-  //     Viewed.Add(sExtr);
-  //     FinalV.AddVectorToBasis(u!, false);
-  //
-  //     n = (u! * n) * v + (u! * v) * n;
-  //
-  //     foreach (SubPoint s in S) {
-  //       double dot = new Vector(s) * n;
-  //
-  //       if (dot < 0) {
-  //         break;
-  //       }
-  //
-  //       if (dot > 0) {
-  //         n = -n;
-  //
-  //         break;
-  //       }
-  //     }
-  //   }
-  //
-  //   return FinalV;
-  // }
 
 }
