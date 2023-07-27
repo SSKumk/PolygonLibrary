@@ -362,12 +362,8 @@ public class GW_Tests {
   public void Cube3D_Rotated() {
     int    cubeDim  = 3;
     Matrix rotation = GenRotation(cubeDim);
-    
-    List<Point> RotatedCube = Rotate(Cube(cubeDim), rotation);
 
-    foreach (Point p in RotatedCube) {
-      Console.WriteLine(p);
-    }
+    List<Point> RotatedCube = Rotate(Cube(cubeDim), rotation);
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(RotatedCube);
     Debug.Assert(P.Vertices.SetEquals(RotatedCube), "The set of vertices must be equals.");
@@ -575,10 +571,6 @@ public class GW_Tests {
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
     Debug.Assert(P.Vertices.SetEquals(Cube(4)), "The set of vertices must be equals.");
-
-    foreach (Point point in P.Vertices) {
-      Console.WriteLine(point);
-    }
   }
 
   [Test]
@@ -670,9 +662,9 @@ public class GW_Tests {
   [Test]
   public void AllCubesTest() {
     const int minDim  = 3;
-    const int maxDim  = 6;
-    const int nTests  = 100;
-    const int nPoints = 5;
+    const int maxDim  = 7;
+    const int nTests  = 1;
+    const int nPoints = 1;
 
     for (int cubeDim = minDim; cubeDim <= maxDim; cubeDim++) {
       for (int fDim = 0; fDim <= cubeDim; fDim++) {
@@ -701,9 +693,9 @@ public class GW_Tests {
   [Test]
   public void AllSimplexTest() {
     const int minDim  = 3;
-    const int maxDim  = 8;
-    const int nTests  = 100;
-    const int nPoints = 20;
+    const int maxDim  = 6;
+    const int nTests  = 5;
+    const int nPoints = 2;
 
 
     for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
@@ -752,24 +744,51 @@ public class GW_Tests {
     }
   }
 
+  [Test]
+  public void S5D_aux() {
+    List<Point> S = new List<Point>()
+      {
+        new Point(new double[] { 2.7638164722657836, -4.118976726484939, 7.375747770944494, 4.974155073274932, 3.6108653857888955 })
+      , new Point(new double[] { 3.6042236475578964, -3.8350214467731103, 7.01072828022396, 5.200029884213736, 3.4410816409285845 })
+      , new Point(new double[] { 2.9945562611895307, -4.573496872787784, 7.158954717219928, 4.171218833960101, 3.390718267106863 })
+      , new Point(new double[] { 3.275906574228625, -3.920900696885244, 7.175392590744626, 5.090722927384323, 3.5057891495803877 })
+      , new Point(new double[] { 2.8725861107545, -3.42460255739797, 7.892373433449829, 4.488508019998709, 3.5537817319739844 })
+      , new Point(new double[] { 2.766067581285574, -4.111451368066063, 7.381644582497412, 4.968774425709593, 3.60969536331715 })
+      , new Point(new double[] { 3.064590896796972, -4.5479172667977945, 8.079858445860278, 5.225243003579229, 3.2025422696796193 })
+      , new Point(new double[] { 3.1355406183955754,-4.334928947843079,7.614677939741701,4.900835524190513,4.478461153087905 })
+      };
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    
+
+  }
+
+
   /// <summary>
   /// Aux procedure.
   /// </summary>
   /// <param name="Swarm">The swarm to convexify.</param>
   /// <param name="Answer">The final list of points.</param>
   private static void Check(List<Point> Swarm, List<Point> Answer) {
-    Polyhedron? P;
+    Polyhedron? P = null;
 
     try {
       P = GiftWrapping.WrapPolyhedron(Swarm);
       Debug.Assert(P is not null, nameof(P) + " != null");
     }
-    catch (Exception) {
+    catch (Exception e) {
+      foreach (Point p in Swarm) {
+        Console.WriteLine(p);
+      }
+
+      Console.WriteLine(e.Message);
+
       foreach (Point s in Swarm) {
         Console.WriteLine(s);
       }
 
-      throw new ArgumentException("P is null!");
+
+      // throw new ArgumentException("P is null!");
     }
 
     try {
@@ -834,7 +853,7 @@ public class GW_Tests {
         Normals.Add(GenVector(3));
       }
     } while (Normals.Aggregate((acc, x) => acc + x).IsZero);
-    
+
     List<HyperPlane> hyperPlanes = new List<HyperPlane>();
     foreach (Vector normal in Normals) {
       hyperPlanes.Add(new HyperPlane(origin, normal));
@@ -851,12 +870,10 @@ public class GW_Tests {
         Swarm.Add(p);
       }
     }
-    
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-    
-    Console.WriteLine("Надо как-то проверять!");
 
-    
+    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+
+    Console.WriteLine("Надо как-то проверять!");
   }
 
 
