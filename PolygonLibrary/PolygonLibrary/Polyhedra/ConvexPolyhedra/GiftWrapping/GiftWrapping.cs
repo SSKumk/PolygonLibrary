@@ -58,17 +58,20 @@ public class GiftWrapping {
                                   , Vector                n
                                   , Vector?               r        = null
                                   , BaseSubCP?            initEdge = null) {
+#if DEBUG
+    int SDim = S.First().Dim;
+#endif
+
     if (initEdge is not null) {
-      Debug.Assert(initEdge.PolyhedronDim == S.First().Dim - 2, "The dimension of the initial edge must equal to (d-2)!");
+      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
     }
-    Debug.Assert(FaceBasis.SpaceDim == S.First().Dim - 1, "The basis must lie in (d-1)-dimensional space!");
+    Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "The basis must lie in (d-1)-dimensional space!");
 
 
-    HyperPlane     hyperPlane = new HyperPlane(FaceBasis.Origin, n);
+    HyperPlane hyperPlane = new HyperPlane(FaceBasis.Origin, n);
     // HyperPlane     hyperPlane = new HyperPlane(FaceBasis);
-    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
-                              .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original)).ToList();
+    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s)).Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original)).ToList();
 
     // foreach (SubPoint s in S) {
     //   if (hyperPlane.Contains(s)) {
@@ -76,7 +79,7 @@ public class GiftWrapping {
     //   }
     // }
 
-    Debug.Assert(inPlane.Count >= 3, "In plane must be at least 3 points!");
+    Debug.Assert(inPlane.Count >= SDim, "In plane must be at least d points!");
 
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
@@ -114,10 +117,13 @@ public class GiftWrapping {
 
     if (initFace is null) {
       AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
+      HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
+      List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
+
 
       // AffineBasis initBasis = BuildInitialPlane(S);
-      // HyperPlane hp = new HyperPlane(initBasis);
-      // Vector     n  = hp.Normal;
+      // HyperPlane  hp        = new HyperPlane(initBasis);
+      // Vector      n         = hp.Normal;
       // OrientNormal(S, ref n, initBasis.Origin);
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
@@ -209,18 +215,17 @@ public class GiftWrapping {
     SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
     Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
-    double  minDot;
-    Vector? r = null;
-    minDot = double.MaxValue;
+    Vector? r      = null;
+    double  minDot = double.MaxValue;
 
     Debug.Assert(face.Normal is not null, "face.Normal != null");
 
     foreach (SubPoint s in S) {
       Vector so = s - edgeBasis.Origin;
       Vector u  = (so * v) * v + (so * face.Normal) * face.Normal;
-      u = u.NormalizeZero();
 
       if (!u.IsZero) {
+        u = u.Normalize();
         double dot = v * u;
 
         if (Tools.LT(dot, minDot)) {
@@ -236,16 +241,16 @@ public class GiftWrapping {
     Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
 
     n = (r! * face.Normal) * v - (r! * v) * face.Normal;
-    
+
     Debug.Assert(Tools.EQ(n.Length, 1), "Tools.EQ(n.Length, 1)");
-    
+
     OrientNormal(S, ref n, edgeBasis.Origin);
 
 
     return BuildFace(S, newF_aBasis, n, r, edge);
   }
 
-
+  //
   // /// <summary>
   // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
   // /// and all other points lies for a one side from it.
@@ -343,52 +348,52 @@ public class GiftWrapping {
   /// </returns>
   public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
     Debug.Assert(S.Any(), "The swarm must has at least one point!");
-
+  
     SubPoint           origin = S.Min(p => p)!;
     LinkedList<Vector> TempV  = new LinkedList<Vector>();
     AffineBasis        FinalV = new AffineBasis(origin);
-
+  
     int dim = FinalV.VecDim;
-
+  
     for (int i = 1; i < dim; i++) {
       TempV.AddLast(Vector.CreateOrth(dim, i + 1));
     }
-
+  
     double[] n_arr = new double[dim];
     n_arr[0] = -1;
-
+  
     for (int i = 1; i < dim; i++) {
       n_arr[i] = 0;
     }
     n = new Vector(n_arr);
-
-    HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-
+  
+    // HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+  
     double    minDot;
     SubPoint? sExtr;
-
+  
     while (TempV.Any()) {
       Vector t = TempV.First();
       TempV.RemoveFirst();
       minDot = double.MaxValue;
       sExtr  = null;
-
-      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis);
+  
+      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new []{n});
       Vector? r = null;
-
+  
       foreach (SubPoint s in S) {
-        if (Viewed.Contains(s)) {
-          continue;
-        }
-
+        // if (Viewed.Contains(s)) {
+          // continue;
+        // }
+  
         Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
-
+  
         if (u.IsZero) {
-          Viewed.Add(s);
+          // Viewed.Add(s);
         } else {
           u = u.Normalize();
           double dot = v * u;
-
+  
           if (Tools.LT(dot, minDot)) {
             minDot = dot;
             sExtr  = s;
@@ -396,20 +401,21 @@ public class GiftWrapping {
           }
         }
       }
-
+  
       if (sExtr is null) {
         return FinalV;
       }
-
-      Viewed.Add(sExtr);
+  
+      // Viewed.Add(sExtr);
       FinalV.AddVectorToBasis(sExtr - origin);
-
+  
       n = (r! * n) * v - (r! * v) * n;
-
-
+      
+  
+  
       OrientNormal(S, ref n, origin);
     }
-
+  
     return FinalV;
   }
 
