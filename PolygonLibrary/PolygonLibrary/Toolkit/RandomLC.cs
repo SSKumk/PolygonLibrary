@@ -53,20 +53,20 @@ public class RandomLC {
   }
 
   /// <summary>
-  /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue).
+  /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue].
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
-  /// <param name="rb">The upper bound of the range (exclusive).</param>
+  /// <param name="rb">The upper bound of the range (inclusive).</param>
   /// <returns>The generated random integer.</returns>
-  public int NextInt(int lb = 0, int rb = int.MaxValue) { return (int)(Rand() % int.MaxValue) % (lb + rb) + lb; }
+  public int NextInt(int lb = 0, int rb = int.MaxValue) { return (int)(Rand() % int.MaxValue) % (rb - lb + 1) + lb; }
 
   /// <summary>
-  /// Generates the next random double within the specified range [a = 0, b = 1).
+  /// Generates the next random double within the specified range [a = 0, b = 1].
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
-  /// <param name="rb">The upper bound of the range (exclusive).</param>
+  /// <param name="rb">The upper bound of the range (inclusive).</param>
   /// <returns>The generated random double.</returns>
-  public double NextDouble(double lb = 0, double rb = 1) { return Rand() / (double)uint.MaxValue * (rb - lb) + lb; }
+  public double NextDouble(double lb = 0, double rb = 1) { return Rand() / (double)uint.MaxValue * (rb - lb + 1) + lb; }
 
 }
 
