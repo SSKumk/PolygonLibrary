@@ -145,7 +145,7 @@ namespace PolygonLibrary.Toolkit
         lower = new List<Point2D>();
 
       // Sorting the points
-      swarmSort.Sort();
+      swarmSort.Sort(Point2D.CompareToNoEps);
 
       // Remove the duplicates
       foreach (Point2D p in swarmSort)
