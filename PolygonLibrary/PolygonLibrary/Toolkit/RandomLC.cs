@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 
 namespace PolygonLibrary.Toolkit;
 
@@ -19,24 +18,19 @@ public class RandomLC {
   private const uint c = 1013904223;
 
   /// <summary>
-  /// Current value
-  /// </summary>
-  private uint seed;
-
-  /// <summary>
   /// Gets current value of generator.
   /// </summary>
   /// <returns>The current state-value.</returns>
-  public uint GetSeed() { return seed; }
+  public uint Seed { get; private set; }
 
   /// <summary>
   /// Generates the next random number based on the current seed value.
   /// </summary>
   /// <returns>The generated random number.</returns>
   private uint Rand() {
-    seed = seed * a + c;
+    Seed = Seed * a + c;
 
-    return seed;
+    return Seed;
   }
 
   /// <summary>
@@ -45,9 +39,9 @@ public class RandomLC {
   /// <param name="initSeed">The initial seed value. If not provided, the current system time is used.</param>
   public RandomLC(uint? initSeed = null) {
     if (initSeed is null) {
-      seed = (uint)DateTime.Now.Ticks;
+      Seed = (uint)DateTime.Now.Ticks;
     } else {
-      seed = (uint)initSeed;
+      Seed = (uint)initSeed;
     }
   }
 
