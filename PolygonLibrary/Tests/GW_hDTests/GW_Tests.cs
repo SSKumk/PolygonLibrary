@@ -787,22 +787,18 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    // var x = new List<Point2D>() { new Point2D(1, 1e-5), new Point2D(0.5, 0), new Point2D(1, -1e-17) };
-    //  x.Sort();
-    // Console.WriteLine(string.Join(", ", x));
-
-    List<Point2D> S = new List<Point2D>()
-      {
-        new Point2D(0, 0)
-      , new Point2D(1.2258222706569017, -4.85722573273506E-17)
-      , new Point2D(1.2293137478570382, 0.3202558730518721)
-      , new Point2D(1.2293137419301374, 0.3202558833175651)
-      , new Point2D(1.2293563013567925, 7.979727989493313E-17)
-      , new Point2D(1.4142135623730951, -7.632783294297951E-17)
-      , new Point2D(0.7071067811865474, 1.2247448713915892)
-      };
-
-    var res = Convexification.ArcHull2D(S);
+    // List<Point2D> S = new List<Point2D>()
+    //   {
+    //     new Point2D(0, 0)
+    //   , new Point2D(1.2258222706569017, -4.85722573273506E-17)
+    //   , new Point2D(1.2293137478570382, 0.3202558730518721)
+    //   , new Point2D(1.2293137419301374, 0.3202558833175651)
+    //   , new Point2D(1.2293563013567925, 7.979727989493313E-17)
+    //   , new Point2D(1.4142135623730951, -7.632783294297951E-17)
+    //   , new Point2D(0.7071067811865474, 1.2247448713915892)
+    //   };
+    //
+    // var res = Convexification.ArcHull2D(S);
 
 
     const uint seed    = 2636375307;
