@@ -11,8 +11,11 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 public class GiftWrapping {
 
-  public static Polyhedron WrapPolyhedron(IEnumerable<Point> Swarm) {
-    BaseSubCP p = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+  public static Polyhedron WrapPolyhedron(IEnumerable<Point> SwarmOrig) {
+    
+    //todo в нашем понимании удалять точки-дубли
+    IEnumerable<Point> Swarm = SwarmOrig;
+    BaseSubCP     p     = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
@@ -63,10 +66,10 @@ public class GiftWrapping {
 #endif
 
     if (initEdge is not null) {
-      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "The dimension of the initial edge must equal to (d-2)!");
+      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
     }
-    Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "The basis must lie in (d-1)-dimensional space!");
+    Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "BuildFace: The basis must lie in (d-1)-dimensional space!");
 
 
     HyperPlane hyperPlane = new HyperPlane(FaceBasis.Origin, n);
@@ -79,7 +82,7 @@ public class GiftWrapping {
     //   }
     // }
 
-    Debug.Assert(inPlane.Count >= SDim, "In plane must be at least d points!");
+    Debug.Assert(inPlane.Count >= SDim, "BuildFace: In plane must be at least d points!");
 
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
@@ -134,11 +137,12 @@ public class GiftWrapping {
       initFace        = BuildFace(S, initBasis, n);
       initFace.Normal = n;
     }
-    Debug.Assert(initFace.Normal is not null, "n is not null");
-    Debug.Assert(initFace.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
-    Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
-    Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
-    Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges must equals to d-2!");
+    Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
+    Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
+    Debug.Assert(initFace.SpaceDim == S.First().Dim, "The initFace must lie in d-dimensional space!");
+    Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the initFace must lie in d-dimensional space!");
+    Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the initFace must equals to d-1!");
+    Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges of initFace must equal to d-2!");
 
 
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
@@ -206,10 +210,10 @@ public class GiftWrapping {
   /// <param name="n"></param>
   /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
   public static BaseSubCP RollOverEdge(IEnumerable<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
-    Debug.Assert(face.SpaceDim == S.First().Dim, "The face must lie in d-dimensional space!");
-    Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the face must lie in d-dimensional space!");
-    Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "The dimension of the face must equals to d-1!");
-    Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "The dimension of the edge must equals to d-2!");
+    Debug.Assert(face.SpaceDim == S.First().Dim, "RollOverEdge: The face must lie in d-dimensional space!");
+    Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
+    Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "RollOverEdge: The dimension of the face must equal to d-1!");
+    Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "RollOverEdge: The dimension of the edge must equal to d-2!");
 
     AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
     SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
@@ -218,7 +222,8 @@ public class GiftWrapping {
     Vector? r      = null;
     double  minDot = double.MaxValue;
 
-    Debug.Assert(face.Normal is not null, "face.Normal != null");
+    Debug.Assert(face.Normal is not null, "RollOverEdge: face.Normal is null");
+    Debug.Assert(!face.Normal.IsZero, "RollOverEdge: face.Normal has zero length");
 
     foreach (SubPoint s in S) {
       Vector so = s - edgeBasis.Origin;
@@ -238,11 +243,11 @@ public class GiftWrapping {
     AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
     newF_aBasis.AddVectorToBasis(r!, false);
 
-    Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "The dimension of the basis of new F' must equals to F dimension!");
+    Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "RollOverEdge: The dimension of the basis of new F' must equals to F dimension!");
 
     n = (r! * face.Normal) * v - (r! * v) * face.Normal;
 
-    Debug.Assert(Tools.EQ(n.Length, 1), "Tools.EQ(n.Length, 1)");
+    Debug.Assert(Tools.EQ(n.Length, 1), "RollOverEdge: New normal is not of length 1.");
 
     OrientNormal(S, ref n, edgeBasis.Origin);
 
@@ -347,8 +352,8 @@ public class GiftWrapping {
   /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
   /// </returns>
   public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
-    Debug.Assert(S.Any(), "The swarm must has at least one point!");
-  
+    Debug.Assert(S.Any(), "BuildInitialPlane: The swarm must has at least one point!");
+
     SubPoint           origin = S.Min(p => p)!;
     LinkedList<Vector> TempV  = new LinkedList<Vector>();
     AffineBasis        FinalV = new AffineBasis(origin);
