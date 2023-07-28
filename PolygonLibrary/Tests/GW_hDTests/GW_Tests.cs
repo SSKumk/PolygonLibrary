@@ -109,7 +109,7 @@ public class GW_Tests {
   /// </summary>
   /// <param name="points">The list of point to lin-combine.</param>
   /// <returns>A linear combination of the given points.</returns>
-  private Point GenLinearCombination(List<Point> points) {
+  private Point GenConvexCombination(List<Point> points) {
     List<double> ws = new List<double>();
 
     double difA = 1;
@@ -119,6 +119,9 @@ public class GW_Tests {
       difA -= alpha;
     }
     ws.Add(difA);
+
+    Debug.Assert(Tools.EQ(ws.Sum(), 1), "GenConvexCombination: sum of weights does not equal 1.");
+
     Point res = Point.LinearCombination(points, ws);
 
     return res;
@@ -170,7 +173,7 @@ public class GW_Tests {
 
         foreach (List<Point> points in subsets) {
           for (int k = 0; k < amount; k++) {
-            Point res = GenLinearCombination(points);
+            Point res = GenConvexCombination(points);
             Simplex.Add(res);
           }
         }
@@ -270,7 +273,7 @@ public class GW_Tests {
     List<Point> Cross = new List<Point>(cross);
 
     for (int i = 0; i < innerPoints; i++) {
-      cross.Add(GenLinearCombination(cross));
+      cross.Add(GenConvexCombination(cross));
     }
 
 
@@ -385,7 +388,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Rotated() {
-    uint   saveSeed = _random.GetSeed();
+    uint   saveSeed = _random.Seed;
     int    cubeDim  = 3;
     Matrix rotation = GenRotation(cubeDim);
 
@@ -397,7 +400,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Shifted() {
-    uint        saveSeed    = _random.GetSeed();
+    uint        saveSeed    = _random.Seed;
     int         cubeDim     = 3;
     Vector      shift       = GenShift(cubeDim);
     List<Point> ShiftedCube = Shift(Cube(cubeDim), shift);
@@ -408,7 +411,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Rotated_Shifted() {
-    uint saveSeed = _random.GetSeed();
+    uint saveSeed = _random.Seed;
     int  cubeDim  = 3;
 
     Matrix      rotation           = GenRotation(cubeDim);
@@ -698,7 +701,7 @@ public class GW_Tests {
       List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, cubeDim).ToList());
       foreach (List<int> fID in fIDs) {
         for (int k = 0; k < nTests; k++) { //todo Может nTests и не нужен, так как есть fIDs
-          uint saveSeed = _random.GetSeed();
+          uint saveSeed = _random.Seed;
 
           List<Point> cube = Cube(cubeDim);
 
@@ -726,15 +729,15 @@ public class GW_Tests {
   public void AllSimplexTest() {
     const int minDim  = 3;
     const int maxDim  = 3;
-    const int nTests  = 1;
-    const int nPoints = 1000;
+    const int nTests  = 1000;
+    const int nPoints = 3;
 
 
     for (int simplexDim = minDim; simplexDim <= maxDim; simplexDim++) {
       List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, simplexDim).ToList());
       foreach (List<int> fID in fIDs) {
         for (int k = 0; k < nTests; k++) {
-          uint saveSeed = _random.GetSeed();
+          uint saveSeed = _random.Seed;
 
           List<Point> simplex = Simplex(simplexDim);
 
@@ -762,7 +765,7 @@ public class GW_Tests {
 
     for (int crossDim = minDim; crossDim <= maxDim; crossDim++) {
       for (int k = 0; k < nTests; k++) {
-        uint saveSeed = _random.GetSeed();
+        uint saveSeed = _random.Seed;
 
         List<Point> cross = CrossPolytop(crossDim);
 
@@ -784,23 +787,41 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const uint seed    = 2642205987;
-    const int  PDim    = 6;
-    const int  nPoints = 10;
-    List<int>  fID     = new List<int>() { 1, 5, 6 };
+    // var x = new List<Point2D>() { new Point2D(1, 1e-5), new Point2D(0.5, 0), new Point2D(1, -1e-17) };
+    //  x.Sort();
+    // Console.WriteLine(string.Join(", ", x));
+
+    List<Point2D> S = new List<Point2D>()
+      {
+        new Point2D(0, 0)
+      , new Point2D(1.2258222706569017, -4.85722573273506E-17)
+      , new Point2D(1.2293137478570382, 0.3202558730518721)
+      , new Point2D(1.2293137419301374, 0.3202558833175651)
+      , new Point2D(1.2293563013567925, 7.979727989493313E-17)
+      , new Point2D(1.4142135623730951, -7.632783294297951E-17)
+      , new Point2D(0.7071067811865474, 1.2247448713915892)
+      };
+
+    var res = Convexification.ArcHull2D(S);
+
+
+    const uint seed    = 2636375307;
+    const int  PDim    = 3;
+    const int  nPoints = 500;
+    const bool isCube  = false;
+    List<int>  fID     = new List<int>() { 1 };
 
 
     _random = new RandomLC(seed);
-    List<Point> polytop = Cube(PDim);
+
+    List<Point> polytop = isCube ? Cube(PDim) : Simplex(PDim);
 
     Matrix      rotation       = GenRotation(PDim);
-    List<Point> RotatedCube    = Rotate(polytop, rotation);
+    List<Point> RotatedPolytop = Rotate(polytop, rotation);
     Vector      shift          = GenVector(PDim) * _random.NextInt(1, 10);
-    List<Point> RotatedShifted = Shift(RotatedCube, shift);
+    List<Point> RotatedShifted = Shift(RotatedPolytop, shift);
 
-
-    // List<Point> Swarm = Cube(PDim, fID, nPoints);
-    List<Point> Swarm = Simplex(PDim, fID, nPoints);
+    List<Point> Swarm = isCube ? Cube(PDim, fID, nPoints) : Simplex(PDim, fID, nPoints);
 
     Swarm = Rotate(Swarm, rotation);
     Swarm = Shift(Swarm, shift);
@@ -826,18 +847,18 @@ public class GW_Tests {
                           , List<int>   fID) {
     Polyhedron? P = null;
 
-    try {
-      P = GiftWrapping.WrapPolyhedron(Swarm);
-      Debug.Assert(P is not null, nameof(P) + " != null");
-    }
-    catch (Exception e) {
-      Console.WriteLine("Gift wrapping does not success!");
-      WriteInfo(seed, PDim, nPoints, fID);
-
-      Console.WriteLine(e.Message);
-
-      throw new ArgumentException("Error in gift wrapping!");
-    }
+    // try {
+    P = GiftWrapping.WrapPolyhedron(Swarm);
+    Debug.Assert(P is not null, nameof(P) + " != null");
+    // }
+    // catch (Exception e) {
+    //   Console.WriteLine("Gift wrapping does not success!");
+    //   WriteInfo(seed, PDim, nPoints, fID);
+    //
+    //   Console.WriteLine(e.Message);
+    //
+    //   throw new ArgumentException("Error in gift wrapping!");
+    // }
 
     try {
       Debug.Assert(P.Vertices.SetEquals(Answer), "The set of vertices must be equals.");
