@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace PolygonLibrary.Toolkit;
 
@@ -26,9 +27,7 @@ public class RandomLC {
   /// Gets current value of generator.
   /// </summary>
   /// <returns>The current state-value.</returns>
-  public uint GetSeed() {
-    return seed;
-  }
+  public uint GetSeed() { return seed; }
 
   /// <summary>
   /// Generates the next random number based on the current seed value.
@@ -61,12 +60,12 @@ public class RandomLC {
   public int NextInt(int lb = 0, int rb = int.MaxValue) { return (int)(Rand() % int.MaxValue) % (rb - lb + 1) + lb; }
 
   /// <summary>
-  /// Generates the next random double within the specified range [a = 0, b = 1].
+  /// Generates the next random double within the specified range [a = 0, b = 1).
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
-  /// <param name="rb">The upper bound of the range (inclusive).</param>
+  /// <param name="rb">The upper bound of the range (exclusive).</param>
   /// <returns>The generated random double.</returns>
-  public double NextDouble(double lb = 0, double rb = 1) { return Rand() / (double)uint.MaxValue * (rb - lb + 1) + lb; }
+  public double NextDouble(double lb = 0, double rb = 1) { return Rand() / (double)uint.MaxValue * (rb - lb) + lb; }
 
 }
 
