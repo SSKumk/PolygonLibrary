@@ -258,7 +258,7 @@ public class GW_Tests {
   /// <param name="crossDim">The dimension of the cross polytope.</param>
   /// <param name="innerPoints">The amount of inner points of the cross polytope.</param>
   /// <returns></returns>
-  private List<Point> CrossPolytop(int crossDim, int innerPoints) {
+  private List<Point> CrossPolytop(int crossDim, int innerPoints = 0) {
     List<Point> cross = new List<Point>();
 
     for (int i = 1; i <= crossDim; i++) {
@@ -689,15 +689,15 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    const int minDim  = 3;
-    const int maxDim  = 4;
+    const int minDim  = 4;
+    const int maxDim  = 6;
     const int nTests  = 1;
-    const int nPoints = 1;
+    const int nPoints = 100;
 
     for (int cubeDim = minDim; cubeDim <= maxDim; cubeDim++) {
       List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, cubeDim).ToList());
-      foreach (List<int> fId in fIDs) {
-        for (int k = 0; k < nTests; k++) {
+      foreach (List<int> fID in fIDs) {
+        for (int k = 0; k < nTests; k++) { //todo Может nTests и не нужен, так как есть fIDs
           uint saveSeed = _random.GetSeed();
 
           List<Point> cube = Cube(cubeDim);
@@ -712,84 +712,86 @@ public class GW_Tests {
           // List<Point> ShiftedCube        = Shift(Cube(cubeDim),shift);
 
 
-          List<Point> Swarm = Cube(cubeDim, fId, nPoints);
+          List<Point> Swarm = Cube(cubeDim, fID, nPoints);
           Swarm = Rotate(Swarm, rotation);
           Swarm = Shift(Swarm, shift);
 
-          Check(Swarm, RotatedShifted, saveSeed, cubeDim, nPoints, fId);
+          Check(Swarm, RotatedShifted, saveSeed, cubeDim, nPoints, fID);
         }
       }
     }
   }
-  //
-  // [Test]
-  // public void AllSimplexTest() {
-  //   const int minDim  = 3;
-  //   const int maxDim  = 6;
-  //   const int nTests  = 5;
-  //   const int nPoints = 2;
-  //
-  //
-  //   for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
-  //     for (int fDim = 0; fDim <= polyhedronDim; fDim++) {
-  //       for (int k = 0; k < nTests; k++) {
-  //         uint saveSeed = _random.GetSeed();
-  //
-  //         List<Point> simplex        = Simplex(polyhedronDim);
-  //         Matrix      rotation       = GenRotation(polyhedronDim);
-  //         List<Point> RotatedSimplex = Rotate(simplex, rotation);
-  //         Vector      shift          = GenVector(polyhedronDim) * _random.NextInt(1, 10);
-  //         List<Point> RotatedShifted = Shift(RotatedSimplex, shift);
-  //
-  //
-  //         List<Point> Swarm = Simplex(polyhedronDim, GenFacesInd(fDim, polyhedronDim), nPoints);
-  //         Swarm = Rotate(Swarm, rotation);
-  //         Swarm = Shift(Swarm, shift);
-  //
-  //         Check(Swarm, RotatedShifted, saveSeed, TODO, TODO, TODO);
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // [Test]
-  // public void AllCrossPolytopTest() {
-  //   const int minDim  = 3;
-  //   const int maxDim  = 3;
-  //   const int nTests  = 5000;
-  //   const int nPoints = 50;
-  //
-  //   for (int polyhedronDim = minDim; polyhedronDim <= maxDim; polyhedronDim++) {
-  //     for (int k = 0; k < nTests; k++) {
-  //       uint saveSeed = _random.GetSeed();
-  //
-  //       List<Point> cross          = CrossPolytop(polyhedronDim, 0);
-  //       Matrix      rotation       = GenRotation(polyhedronDim);
-  //       List<Point> Rotated        = Rotate(cross, rotation);
-  //       Vector      shift          = GenVector(polyhedronDim) * _random.NextInt(1, 10);
-  //       List<Point> RotatedShifted = Shift(Rotated, shift);
-  //
-  //
-  //       List<Point> Swarm = CrossPolytop(polyhedronDim, nPoints);
-  //       Swarm = Rotate(Swarm, rotation);
-  //       Swarm = Shift(Swarm, shift);
-  //
-  //       Check(Swarm, RotatedShifted, saveSeed, TODO, TODO, TODO);
-  //     }
-  //   }
-  // }
+
+  [Test]
+  public void AllSimplexTest() {
+    const int minDim  = 3;
+    const int maxDim  = 3;
+    const int nTests  = 1;
+    const int nPoints = 1000;
+
+
+    for (int simplexDim = minDim; simplexDim <= maxDim; simplexDim++) {
+      List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, simplexDim).ToList());
+      foreach (List<int> fID in fIDs) {
+        for (int k = 0; k < nTests; k++) {
+          uint saveSeed = _random.GetSeed();
+
+          List<Point> simplex = Simplex(simplexDim);
+
+          Matrix      rotation       = GenRotation(simplexDim);
+          List<Point> RotatedSimplex = Rotate(simplex, rotation);
+          Vector      shift          = GenVector(simplexDim) * _random.NextInt(1, 10);
+          List<Point> RotatedShifted = Shift(RotatedSimplex, shift);
+
+          List<Point> Swarm = Simplex(simplexDim, fID, nPoints);
+          Swarm = Rotate(Swarm, rotation);
+          Swarm = Shift(Swarm, shift);
+
+          Check(Swarm, RotatedShifted, saveSeed, simplexDim, nPoints, fID);
+        }
+      }
+    }
+  }
+
+  [Test]
+  public void AllCrossPolytopTest() {
+    const int minDim  = 3;
+    const int maxDim  = 3;
+    const int nTests  = 5000;
+    const int nPoints = 50;
+
+    for (int crossDim = minDim; crossDim <= maxDim; crossDim++) {
+      for (int k = 0; k < nTests; k++) {
+        uint saveSeed = _random.GetSeed();
+
+        List<Point> cross = CrossPolytop(crossDim);
+
+        Matrix      rotation       = GenRotation(crossDim);
+        List<Point> Rotated        = Rotate(cross, rotation);
+        Vector      shift          = GenVector(crossDim) * _random.NextInt(1, 10);
+        List<Point> RotatedShifted = Shift(Rotated, shift);
+
+
+        List<Point> Swarm = CrossPolytop(crossDim, nPoints);
+        Swarm = Rotate(Swarm, rotation);
+        Swarm = Shift(Swarm, shift);
+
+        Check(Swarm, RotatedShifted, saveSeed, crossDim, nPoints, new List<int>() { crossDim });
+      }
+    }
+  }
 
 
   [Test]
   public void Aux() {
-    const int seed    = 408928405;
-    const int PDim    = 3;
-    const int nPoints = 1;
-    List<int> fID     = new List<int>() { 1, 2 };
+    const uint seed    = 2642205987;
+    const int  PDim    = 6;
+    const int  nPoints = 10;
+    List<int>  fID     = new List<int>() { 1, 5, 6 };
 
 
     _random = new RandomLC(seed);
-    List<Point> polytop  = Cube(PDim);
+    List<Point> polytop = Cube(PDim);
 
     Matrix      rotation       = GenRotation(PDim);
     List<Point> RotatedCube    = Rotate(polytop, rotation);
@@ -797,7 +799,9 @@ public class GW_Tests {
     List<Point> RotatedShifted = Shift(RotatedCube, shift);
 
 
-    List<Point> Swarm = Cube(PDim, fID, nPoints);
+    // List<Point> Swarm = Cube(PDim, fID, nPoints);
+    List<Point> Swarm = Simplex(PDim, fID, nPoints);
+
     Swarm = Rotate(Swarm, rotation);
     Swarm = Shift(Swarm, shift);
 
@@ -831,8 +835,8 @@ public class GW_Tests {
       WriteInfo(seed, PDim, nPoints, fID);
 
       Console.WriteLine(e.Message);
-      throw new ArgumentException("Error in gift wrapping!");
 
+      throw new ArgumentException("Error in gift wrapping!");
     }
 
     try {
@@ -843,6 +847,7 @@ public class GW_Tests {
       WriteInfo(seed, PDim, nPoints, fID);
 
       Console.WriteLine(e.Message);
+
       throw new ArgumentException("The set of vertices must be equals.");
     }
   }
@@ -852,7 +857,7 @@ public class GW_Tests {
     Console.WriteLine($"The PDim = {PDim}");
     Console.WriteLine($"The nPoints = {nPoints}");
     Console.WriteLine("The fID:");
-    Console.WriteLine(string.Join(" ", fID));
+    Console.WriteLine(string.Join(", ", fID));
   }
 
   [Test]
