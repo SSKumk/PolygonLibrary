@@ -34,7 +34,7 @@ public partial class ConvexPolygon : BasicPolygon {
         ComputeSF();
       }
 
-      return _sf;
+      return _sf!;
     }
     protected set => _sf = value;
   }

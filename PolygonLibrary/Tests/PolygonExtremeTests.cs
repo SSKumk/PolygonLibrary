@@ -108,9 +108,9 @@ public class PolygonExtremeTests {
     Assert.Multiple(() => {
       for (int i = 0; i < testAnglesDeg.Length; i++) {
         Console.WriteLine(i);
-        Assert.That(res[i, 0].Equals(cp.Vertices[ansInds[i, 0]]), $"{i}/0");
+        Assert.That(res[i, 0]!.Equals(cp.Vertices[ansInds[i, 0]]), $"{i}/0");
         if (ansInds[i, 1] != -1) {
-          Assert.That(res[i, 1].Equals(cp.Vertices[ansInds[i, 1]]), $"{i}/1");
+          Assert.That(res[i, 1]!.Equals(cp.Vertices[ansInds[i, 1]]), $"{i}/1");
         }
       }
     });
