@@ -251,6 +251,8 @@ public class GiftWrapping {
 
     OrientNormal(S, ref n, edgeBasis.Origin);
 
+    HyperPlane hp = new HyperPlane(edgeBasis.Origin, n);
+    List<int>  j  = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
 
     return BuildFace(S, newF_aBasis, n, r, edge);
   }
