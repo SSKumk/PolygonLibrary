@@ -693,9 +693,9 @@ public class GW_Tests {
   [Test]
   public void AllCubesTest() {
     const int minDim  = 3;
-    const int maxDim  = 3;
-    const int nTests  = 1;
-    const int nPoints = 1;
+    const int maxDim  = 6;
+    const int nTests  = 10;
+    const int nPoints = 100;
 
     for (int cubeDim = minDim; cubeDim <= maxDim; cubeDim++) {
       List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, cubeDim).ToList());
@@ -728,9 +728,9 @@ public class GW_Tests {
   [Test]
   public void AllSimplexTest() {
     const int minDim  = 3;
-    const int maxDim  = 3;
-    const int nTests  = 1000;
-    const int nPoints = 1;
+    const int maxDim  = 6;
+    const int nTests  = 10;
+    const int nPoints = 100;
 
 
     for (int simplexDim = minDim; simplexDim <= maxDim; simplexDim++) {
@@ -759,8 +759,8 @@ public class GW_Tests {
   [Test]
   public void AllCrossPolytopTest() {
     const int minDim  = 3;
-    const int maxDim  = 3;
-    const int nTests  = 5000;
+    const int maxDim  = 6;
+    const int nTests  = 10;
     const int nPoints = 50;
 
     for (int crossDim = minDim; crossDim <= maxDim; crossDim++) {
