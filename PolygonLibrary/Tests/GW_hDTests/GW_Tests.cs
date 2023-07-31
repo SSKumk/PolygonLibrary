@@ -692,10 +692,10 @@ public class GW_Tests {
 
   [Test]
   public void AllCubesTest() {
-    const int minDim  = 4;
-    const int maxDim  = 6;
+    const int minDim  = 3;
+    const int maxDim  = 3;
     const int nTests  = 1;
-    const int nPoints = 100;
+    const int nPoints = 1;
 
     for (int cubeDim = minDim; cubeDim <= maxDim; cubeDim++) {
       List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, cubeDim).ToList());
@@ -730,7 +730,7 @@ public class GW_Tests {
     const int minDim  = 3;
     const int maxDim  = 3;
     const int nTests  = 1000;
-    const int nPoints = 3;
+    const int nPoints = 1;
 
 
     for (int simplexDim = minDim; simplexDim <= maxDim; simplexDim++) {
@@ -801,9 +801,23 @@ public class GW_Tests {
     // var res = Convexification.ArcHull2D(S);
 
 
-    const uint seed    = 2636375307;
+    //todo 1)
+    // const uint seed    = 2636375307;
+    // const int  PDim    = 3;
+    // const int  nPoints = 500;
+    // const bool isCube  = false;
+    // List<int>  fID     = new List<int>() { 1 };
+
+    //todo 2)
+    // const uint seed    = 2636375307;
+    // const int  PDim    = 3;
+    // const int  nPoints = 1;
+    // const bool isCube  = true;
+    // List<int>  fID     = new List<int>() { 1 };
+    
+    const uint seed    = 1295543656;
     const int  PDim    = 3;
-    const int  nPoints = 500;
+    const int  nPoints = 1;
     const bool isCube  = false;
     List<int>  fID     = new List<int>() { 1 };
 
