@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using PolygonLibrary.Toolkit;
 
 namespace PolygonLibrary.Basics;
@@ -11,14 +12,14 @@ namespace PolygonLibrary.Basics;
 /// It is connected ideologically to the class Vector2D of planar vectors
 /// </summary>
 public class Point2D : IComparable<Point2D> {
-  #region Comparing
 
+#region Comparing
   /// <summary>
   /// Point comparer realizing the lexicographic order; coordinates are compared by precision
   /// </summary>
   /// <param name="v">The point to be compared with</param>
   /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-  public static int CompareToNoEps (Point2D v1, Point2D v2) {
+  public static int CompareToNoEps(Point2D v1, Point2D v2) {
     int xRes = v1.x.CompareTo(v2.x);
     if (xRes != 0) {
       return xRes;
@@ -26,7 +27,7 @@ public class Point2D : IComparable<Point2D> {
       return v1.y.CompareTo(v2.y);
     }
   }
-  
+
   /// <summary>
   /// Point comparer realizing the lexicographic order; coordinates are compared by precision
   /// </summary>
@@ -89,11 +90,9 @@ public class Point2D : IComparable<Point2D> {
   /// <param name="p2">The second point</param>
   /// <returns>true, if p1 &lt;= p2; false, otherwise</returns>
   public static bool operator <=(Point2D p1, Point2D p2) => p1.CompareTo(p2) <= 0;
+#endregion
 
-  #endregion
-
-  #region Access properties
-
+#region Access properties
   /// <summary>
   /// The abscissa
   /// </summary>
@@ -110,24 +109,23 @@ public class Point2D : IComparable<Point2D> {
   /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
   /// <returns>The value of the corresponding component</returns>
   public double this[int i] {
-    get {
+    get
+      {
 #if DEBUG
-      return i switch
-        {
-          0 => x
-        , 1 => y
-        , _ => throw new IndexOutOfRangeException()
-        };
+        return i switch
+                 {
+                   0 => x
+                 , 1 => y
+                 , _ => throw new IndexOutOfRangeException()
+                 };
 #else
       return i == 0 ? x : y;
 #endif
-    }
+      }
   }
+#endregion
 
-  #endregion
-
-  #region Miscellaneous procedures
-
+#region Miscellaneous procedures
   /// <summary>
   /// Distance to the origin
   /// </summary>
@@ -153,11 +151,9 @@ public class Point2D : IComparable<Point2D> {
   /// <param name="p2">The second point</param>
   /// <returns>The square of the distance between the given points</returns>
   public static double Dist2(Point2D p1, Point2D p2) => Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2);
+#endregion
 
-  #endregion
-
-  #region Convertors
-
+#region Convertors
   /// <summary>
   /// Explicit convertor to a two-dimensional point from a two-dimensional vector
   /// </summary>
@@ -192,11 +188,9 @@ public class Point2D : IComparable<Point2D> {
 #endif
     return new Point2D(v[0], v[1]);
   }
+#endregion
 
-  #endregion
-
-  #region Overrides
-
+#region Overrides
   public override bool Equals(object? obj) {
 #if DEBUG
     if (obj is not Point2D point2D) {
@@ -206,18 +200,19 @@ public class Point2D : IComparable<Point2D> {
     return CompareTo((Point2D)obj) == 0;
   }
 
-  public override string ToString() => "{" + x + ";" + y + "}";
+  public override string ToString() =>
+    "(" + x.ToString(CultureInfo.InvariantCulture) + "," + y.ToString(CultureInfo.InvariantCulture) + ")";
 
   public override int GetHashCode() {
     int res = 0;
     res = HashCode.Combine(res, (int)(x / Tools.Eps));
     res = HashCode.Combine(res, (int)(y / Tools.Eps));
+
     return res;
   }
 #endregion
 
-  #region Constructors
-
+#region Constructors
   /// <summary>
   /// The default construct producing the origin point 
   /// </summary>
@@ -253,11 +248,9 @@ public class Point2D : IComparable<Point2D> {
     x = v.x;
     y = v.y;
   }
+#endregion
 
-  #endregion
-
-  #region Operators
-
+#region Operators
   /// <summary>
   /// Linear combination of two points 
   /// </summary>
@@ -279,8 +272,12 @@ public class Point2D : IComparable<Point2D> {
   /// <param name="p3">The third point</param>
   /// <param name="w3">The weight of the third point</param>
   /// <returns>The resultant point</returns>
-  public static Point2D LinearCombination(Point2D p1, double w1, Point2D p2, double w2, Point2D p3, double w3) =>
-    new Point2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
+  public static Point2D LinearCombination(Point2D p1
+                                        , double  w1
+                                        , Point2D p2
+                                        , double  w2
+                                        , Point2D p3
+                                        , double  w3) => new Point2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 
   /// <summary>
   /// Linear combination of a collection of points 
@@ -289,9 +286,9 @@ public class Point2D : IComparable<Point2D> {
   /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
   /// <returns>The resultant point</returns>
   public static Point2D LinearCombination(IEnumerable<Point2D> ps, IEnumerable<double> ws) {
-    IEnumerator<Point2D> enPoint = ps.GetEnumerator();
-    IEnumerator<double> enWeight = ws.GetEnumerator();
-    double x = 0, y = 0;
+    IEnumerator<Point2D> enPoint  = ps.GetEnumerator();
+    IEnumerator<double>  enWeight = ws.GetEnumerator();
+    double               x        = 0, y = 0;
     while (enPoint.MoveNext() && enWeight.MoveNext()) {
       x += enPoint.Current.x * enWeight.Current;
       y += enPoint.Current.y * enWeight.Current;
@@ -364,15 +361,13 @@ public class Point2D : IComparable<Point2D> {
 #endif
     return new Point2D(p.x / a, p.y / a);
   }
+#endregion
 
-  #endregion
-
-  #region Point constants
-
+#region Point constants
   /// <summary>
   /// The zero vector
   /// </summary>
   public static readonly Point2D Origin = new Point2D(0, 0);
+#endregion
 
-  #endregion
 }
