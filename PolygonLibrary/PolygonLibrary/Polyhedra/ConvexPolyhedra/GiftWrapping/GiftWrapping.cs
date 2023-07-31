@@ -109,7 +109,7 @@ public class GiftWrapping {
   /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
   public static BaseSubCP GW(IEnumerable<SubPoint> S, BaseSubCP? initFace = null) {
     if (S.First().Dim == 2) {
-      List<Point2D> convexPolygon2D = Convexification.ArcHull2D(S.Select(s => new SubPoint2D(s)));
+      List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
       if (convexPolygon2D.Count == 3) {
         return new SubSimplex(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
