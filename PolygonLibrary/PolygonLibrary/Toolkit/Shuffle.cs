@@ -23,7 +23,8 @@ public abstract partial class Tools
     Random rnd = ownRnd ?? _random;
     for (int i = 0; i < n; i++)
     {
-      int r = i + (int)(rnd.NextDouble() * (n - i));
+      // int r = i + (int)(rnd.NextDouble() * (n - i));
+      int r = rnd.Next(0, i + 1);
       (array[r], array[i]) = (array[i], array[r]);
     }
   }
