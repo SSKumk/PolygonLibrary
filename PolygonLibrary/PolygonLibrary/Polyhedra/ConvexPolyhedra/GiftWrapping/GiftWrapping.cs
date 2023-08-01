@@ -13,7 +13,6 @@ public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> SwarmOrig) {
     
-    //todo в нашем понимании удалять точки-дубли
     IEnumerable<Point> Swarm = SwarmOrig;
     BaseSubCP     p     = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
