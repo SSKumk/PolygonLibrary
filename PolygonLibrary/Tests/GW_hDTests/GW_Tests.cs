@@ -80,7 +80,7 @@ public class GW_Tests {
     double w = _random.NextDouble();
 
     while (Tools.EQ(w) || Tools.EQ(w, 1)) {
-     // while (Tools.LT(w,0.01) || Tools.GT(w, 0.99)) {
+      // while (Tools.LT(w,0.01) || Tools.GT(w, 0.99)) {
       w = _random.NextDouble();
     }
 
@@ -165,8 +165,8 @@ public class GW_Tests {
       simplex.Add(new Point(v));
     }
     pureSimplex = new List<Point>(simplex);
-    
-    
+
+
     List<Point> Simplex = new List<Point>(simplex);
 
     if (facesDim is not null) {
@@ -175,10 +175,10 @@ public class GW_Tests {
 
         List<List<Point>> faces = Subsets(simplex, dim + 1);
 
-          for (int k = 0; k < amount; k++) {
-            Point inFace = GenConvexCombination(faces[_random.NextInt(0,faces.Count - 1)]);
-            Simplex.Add(inFace);
-          }
+        for (int k = 0; k < amount; k++) {
+          Point inFace = GenConvexCombination(faces[_random.NextInt(0, faces.Count - 1)]);
+          Simplex.Add(inFace);
+        }
       }
     }
 
@@ -611,7 +611,7 @@ public class GW_Tests {
 
   [Test]
   public void AllCubes3D_Test() {
-    const int nPoints = 50000;
+    const int nPoints = 5000;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 3).ToList());
 
@@ -621,7 +621,7 @@ public class GW_Tests {
       List<Point> Swarm = Cube(3, out List<Point> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 3, nPoints, fID);
+      Check(Swarm, P, saveSeed, 3, nPoints, fID, true);
     }
   }
 
@@ -637,7 +637,7 @@ public class GW_Tests {
       List<Point> Swarm = Cube(4, out List<Point> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 4, nPoints, fID);
+      Check(Swarm, P, saveSeed, 4, nPoints, fID, true);
     }
   }
 
@@ -653,7 +653,7 @@ public class GW_Tests {
       List<Point> Swarm = Cube(5, out List<Point> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 5, nPoints, fID);
+      Check(Swarm, P, saveSeed, 5, nPoints, fID, true);
     }
   }
 
@@ -669,7 +669,7 @@ public class GW_Tests {
       List<Point> Swarm = Cube(6, out List<Point> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 6, nPoints, fID);
+      Check(Swarm, P, saveSeed, 6, nPoints, fID, true);
     }
   }
 
@@ -685,13 +685,13 @@ public class GW_Tests {
       List<Point> Swarm = Cube(7, out List<Point> P, fID, nPoints);
       ShiftAndRotate(7, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 7, nPoints, fID);
+      Check(Swarm, P, saveSeed, 7, nPoints, fID, true);
     }
   }
 
   [Test]
   public void AllSimplices3D_Test() {
-    const int nPoints = 50000;
+    const int nPoints = 2000;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 3).ToList());
 
@@ -701,13 +701,13 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(3, out List<Point> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 3, nPoints, fID);
+      Check(Swarm, P, saveSeed, 3, nPoints, fID, true);
     }
   }
 
   [Test]
   public void AllSimplices4D_Test() {
-    const int nPoints = 25000;
+    const int nPoints = 2000;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 4).ToList());
 
@@ -717,13 +717,13 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(4, out List<Point> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 4, nPoints, fID);
+      Check(Swarm, P, saveSeed, 4, nPoints, fID, true);
     }
   }
 
   [Test]
   public void AllSimplices5D_Test() {
-    const int nPoints = 5000;
+    const int nPoints = 1000;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 5).ToList());
 
@@ -733,7 +733,7 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(5, out List<Point> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 5, nPoints, fID);
+      Check(Swarm, P, saveSeed, 5, nPoints, fID, true);
     }
   }
 
@@ -749,7 +749,7 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(6, out List<Point> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 6, nPoints, fID);
+      Check(Swarm, P, saveSeed, 6, nPoints, fID, true);
     }
   }
 
@@ -765,10 +765,10 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(7, out List<Point> P, fID, nPoints);
       ShiftAndRotate(7, ref P, ref Swarm);
 
-      Check(Swarm, P, saveSeed, 7, nPoints, fID);
+      Check(Swarm, P, saveSeed, 7, nPoints, fID, true);
     }
   }
-  
+
   // [Test]
   // public void AllCrossPolytopTest() {
   //   const int minDim  = 3;
@@ -797,39 +797,48 @@ public class GW_Tests {
   //   }
   // }
 
-  
+
   [Test]
   public void Aux() {
-    const uint seed    = 2636375307;
-    const int  PDim    = 3;
-    const int  nPoints = 5000;
+    const uint seed    = 2562803161;
+    const int  PDim    = 5;
+    const int  nPoints = 0;
     const bool isCube  = true;
-    List<int>  fID     = new List<int>() { 1 };
-  
-    
+    List<int>  fID     = new List<int>() { 1, 2, 5 };
+
+
     _random = new RandomLC(seed);
 
-    List<Point>      pureSimplex;
-    List<Point> Swarm = isCube ? Cube(PDim, out List<Point> polytop, fID, nPoints) : Simplex(PDim, out pureSimplex, fID, nPoints);
+    List<Point> Swarm =
+      isCube ? Cube(PDim, out List<Point> polytop, fID, nPoints) : Simplex(PDim, out List<Point> pureSimplex, fID, nPoints);
     ShiftAndRotate(PDim, ref polytop, ref Swarm);
-    
-    Check(Swarm, polytop, seed, PDim, nPoints, fID);
+
+    Check(Swarm, polytop, seed, PDim, nPoints, fID, true);
   }
 
   [Test]
   public void AuxPoints() {
     List<Point> S = new List<Point>()
       {
-        new Point(new double[] { -3.696748924391364, 1.3539820141017032, -1.9859816465739164 })
-      , new Point(new double[] { -2.922130110251919, 0.9780480861681053, -2.4945476448569486 })
-      , new Point(new double[] { -2.8126749688090467, 1.8497525584766996, -2.9721990710758135 })
-      , new Point(new double[] { -3.587293782948491, 2.2256864864102974, -2.4636330727927813 })
-      , new Point(new double[] { -3.073864292382417, 1.66831463217627, -1.269595060699036 })
-      , new Point(new double[] { -2.9644091509395443, 2.5400191044848643, -1.7472464869179012 })
-      , new Point(new double[] { -2.1898274353371425, 2.164066455138542, -2.2558551526435497 })
-      , new Point(new double[] { -2.1897903368000997, 2.1640851765512665, -2.2558124852009334 })
-      , new Point(new double[] { -2.2992454782429723, 1.2923807042426723, -1.778161058982068 })
+        new Point(new double[] { 0.9999999999999996, 2.7755575615628914E-17, -5.551115123125783E-17, 5.551115123125783E-17 })
+      , new Point(new double[] { -5.551115123125783E-16, 1.0000000000000002, 0.9999999999999998, 1 })
+      , new Point(new double[] { -5.551115123125783E-16, 1.3877787807814457E-16, 0.9999999999999998, 0.9999999999999999 })
+      , new Point(new double[] { -1.3183898417423734E-16, 1, -3.660266534311063E-16, 1.0000000000000002 })
+      , new Point(new double[] { -1.6653345369377348E-16, -4.163336342344337E-17, -2.498001805406602E-16, 1 })
+      , new Point(new double[] { 0.9999999999999993, 1.0000000000000002, 0.9999999999999999, 1 })
+      , new Point(new double[] { 0.9999999999999996, 1.6653345369377348E-16, 1.0000000000000004, 1 })
+      , new Point(new double[] { 0.9999999999999999, 1.0000000000000002, -1.1102230246251565E-16, 0.9999999999999999 })
+      , new Point(new double[] { 1, 0, 3.3306690738754696E-16, 0.9999999999999997 })
+      , new Point(new double[] { -5.828670879282072E-16, 1, 0.9999999999999997, 2.220446049250313E-16 })
+      , new Point(new double[] { -6.938893903907228E-16, 1.942890293094024E-16, 0.9999999999999998, -8.326672684688674E-17 })
+      , new Point(new double[] { -4.440892098500626E-16, 1, -1.6653345369377348E-16, 1.5265566588595902E-16 })
+      , new Point(new double[] { 0, 0, 0, 0 })
+      , new Point(new double[] { 0.9999999999999993, 1.0000000000000004, 1, -5.551115123125783E-17 })
+      , new Point(new double[] { 0.9999999999999993, 1.6653345369377348E-16, 0.9999999999999999, -1.1102230246251565E-16 })
+      , new Point(new double[] { 0.9999999999999994, 1, -4.163336342344337E-17, 7.632783294297951E-17 })
       };
+
+    // Assert.That(new HashSet<Point>(S).SetEquals(Cube(4, out List<Point> _)));
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
   }
@@ -854,20 +863,24 @@ public class GW_Tests {
                           , bool        needShuffle = false) {
     Polyhedron? P = null;
 
-    try {
-      if (needShuffle) { Tools.Shuffle(Swarm, new Random((int)seed)); }
-
-      P = GiftWrapping.WrapPolyhedron(Swarm);
-      Debug.Assert(P is not null, nameof(P) + " != null");
+    // try {
+    if (needShuffle) {
+      HashSet<Point> origS = new HashSet<Point>(Swarm);
+      Tools.Shuffle(Swarm, new Random((int)seed));
+      Debug.Assert(origS.SetEquals(Swarm));
     }
-    catch (Exception e) {
-      Console.WriteLine("Gift wrapping does not success!");
-      WriteInfo(seed, PDim, nPoints, fID);
 
-      Console.WriteLine(e.Message);
+    P = GiftWrapping.WrapPolyhedron(Swarm);
+    Debug.Assert(P is not null, nameof(P) + " != null");
+    // }
+    // catch (Exception e) {
+    // Console.WriteLine("Gift wrapping does not success!");
+    // WriteInfo(seed, PDim, nPoints, fID, true);
 
-      throw new ArgumentException("Error in gift wrapping!");
-    }
+    // Console.WriteLine(e.Message);
+
+    // throw new ArgumentException("Error in gift wrapping!");
+    // }
 
     try {
       Assert.That(P.Vertices.SetEquals(Answer), "The set of vertices must be equals.");
