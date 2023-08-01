@@ -188,6 +188,21 @@ public class GrahamScanTests {
 
     Assert.That(new HashSet<Point2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
   }
+  [Test]
+  public void ClosePoints2Test() {
+    List<Point2D> S = new List<Point2D>()
+      {
+        new Point2D(1,1.0000000000000002)
+      , new Point2D(1,1.6653345369377348E-16)
+      , new Point2D(0,0)
+      , new Point2D(5.955924281381142E-05,1)
+      , new Point2D(1.6653345369377348E-16,1)
+      };
+
+    List<Point2D> res = Convexification.GrahamHull(S);
+
+    Assert.That(new HashSet<Point2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
+  }
   
 
   [Test]
