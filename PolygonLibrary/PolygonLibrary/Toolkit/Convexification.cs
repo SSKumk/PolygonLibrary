@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PolygonLibrary.Basics;
@@ -225,15 +226,15 @@ public class Convexification {
         continue;
       }
 
-      Vector2D vp  = origin - p;
-      double   dot = l * vp.Normalize();
+      Vector2D vp  = p - origin;
+      double   angle = Math.Acos(l * vp.Normalize());
 
-      swarmDict.TryGetValue(dot, out Point2D? ph);
+      swarmDict.TryGetValue(angle, out Point2D? ph);
       if (ph is null) {
-        swarmDict.Add(dot, p);
+        swarmDict.Add(angle, p);
       } else {
         if (vp.Length > (origin - ph).Length) {
-          swarmDict[dot] = p;
+          swarmDict[angle] = p;
         }
       }
     }
