@@ -373,8 +373,6 @@ public class GiftWrapping {
     }
     n = new Vector(n_arr);
   
-    // HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-  
     double    minDot;
     SubPoint? sExtr;
   
@@ -388,15 +386,10 @@ public class GiftWrapping {
       Vector? r = null;
   
       foreach (SubPoint s in S) {
-        // if (Viewed.Contains(s)) {
-          // continue;
-        // }
   
         Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
   
-        if (u.IsZero) {
-          // Viewed.Add(s);
-        } else {
+        if (!u.IsZero) {
           u = u.Normalize();
           double dot = v * u;
   
@@ -412,11 +405,13 @@ public class GiftWrapping {
         return FinalV;
       }
   
-      // Viewed.Add(sExtr);
-      FinalV.AddVectorToBasis(sExtr - origin);
+      bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+      
+      Debug.Assert(isAdded, "BuildInitialPlane: The new vector of FinalV is linear combination of FinalV vectors!");
   
       n = (r! * n) * v - (r! * v) * n;
       
+      Debug.Assert(!n.IsZero, "BuildInitialPlane: Normal is zero!");
   
   
       OrientNormal(S, ref n, origin);
