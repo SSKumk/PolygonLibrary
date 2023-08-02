@@ -12,9 +12,8 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> SwarmOrig) {
-    
     IEnumerable<Point> Swarm = SwarmOrig;
-    BaseSubCP     p     = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+    BaseSubCP          p     = GW(Swarm.Select(s => new SubPoint(s, null, s)));
 
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
@@ -41,7 +40,8 @@ public class GiftWrapping {
       default: throw new NotImplementedException();
     }
 
-    return new Polyhedron(p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
+    return new Polyhedron
+      (p.OriginalVertices, p.PolyhedronDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
   }
 
   /// <summary>
@@ -65,21 +65,18 @@ public class GiftWrapping {
 #endif
 
     if (initEdge is not null) {
-      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
+      Debug.Assert
+        (initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
     }
     Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "BuildFace: The basis must lie in (d-1)-dimensional space!");
 
 
     HyperPlane hyperPlane = new HyperPlane(FaceBasis.Origin, n);
-    // HyperPlane     hyperPlane = new HyperPlane(FaceBasis);
-    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s)).Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original)).ToList();
+    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
+                              .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
+                              .ToList();
 
-    // foreach (SubPoint s in S) {
-    //   if (hyperPlane.Contains(s)) {
-    //     inPlane.Add(new SubPoint(s.ProjectTo(FaceBasis), s, s.Original));
-    //   }
-    // }
 
     Debug.Assert(inPlane.Count >= SDim, "BuildFace: In plane must be at least d points!");
 
@@ -119,9 +116,11 @@ public class GiftWrapping {
 
     if (initFace is null) {
       AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
+      
       HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
       List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
-
+      Debug.Assert(j.All(x => x <= 0), "GW: Some points outside the initial plane!");
+      int k = j.Count(x => x == 0);
 
       // AffineBasis initBasis = BuildInitialPlane(S);
       // HyperPlane  hp        = new HyperPlane(initBasis);
@@ -129,7 +128,8 @@ public class GiftWrapping {
       // OrientNormal(S, ref n, initBasis.Origin);
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
-        throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
+        throw
+          new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
       }
 
       //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
@@ -139,9 +139,17 @@ public class GiftWrapping {
     Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
     Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
     Debug.Assert(initFace.SpaceDim == S.First().Dim, "The initFace must lie in d-dimensional space!");
-    Debug.Assert(initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the initFace must lie in d-dimensional space!");
+    Debug.Assert
+      (
+       initFace.Faces!.All(F => F.SpaceDim == S.First().Dim)
+     , "All edges of the initFace must lie in d-dimensional space!"
+      );
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the initFace must equals to d-1!");
-    Debug.Assert(initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2), "The dimension of all edges of initFace must equal to d-2!");
+    Debug.Assert
+      (
+       initFace.Faces!.All(F => F.PolyhedronDim == S.First().Dim - 2)
+     , "The dimension of all edges of initFace must equal to d-2!"
+      );
 
 
     HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
@@ -210,7 +218,11 @@ public class GiftWrapping {
   /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
   public static BaseSubCP RollOverEdge(IEnumerable<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
     Debug.Assert(face.SpaceDim == S.First().Dim, "RollOverEdge: The face must lie in d-dimensional space!");
-    Debug.Assert(face.Faces!.All(F => F.SpaceDim == S.First().Dim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
+    Debug.Assert
+      (
+       face.Faces!.All(F => F.SpaceDim == S.First().Dim)
+     , "RollOverEdge: All edges of the face must lie in d-dimensional space!"
+      );
     Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "RollOverEdge: The dimension of the face must equal to d-1!");
     Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "RollOverEdge: The dimension of the edge must equal to d-2!");
 
@@ -219,7 +231,7 @@ public class GiftWrapping {
     Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
     Vector? r      = null;
-    double  minDot = double.MaxValue;
+    double  maxAngle = double.MinValue;
 
     Debug.Assert(face.Normal is not null, "RollOverEdge: face.Normal is null");
     Debug.Assert(!face.Normal.IsZero, "RollOverEdge: face.Normal has zero length");
@@ -230,10 +242,11 @@ public class GiftWrapping {
 
       if (!u.IsZero) {
         u = u.Normalize();
-        double dot = v * u;
+        double angle = Math.Acos(v * u);
+        // double dot = v * u;
 
-        if (Tools.LT(dot, minDot)) {
-          minDot = dot;
+        if (Tools.GT(angle, maxAngle)) {
+          maxAngle = angle;
           r      = u;
         }
       }
@@ -242,7 +255,11 @@ public class GiftWrapping {
     AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
     newF_aBasis.AddVectorToBasis(r!, false);
 
-    Debug.Assert(newF_aBasis.SpaceDim == face.PolyhedronDim, "RollOverEdge: The dimension of the basis of new F' must equals to F dimension!");
+    Debug.Assert
+      (
+       newF_aBasis.SpaceDim == face.PolyhedronDim
+     , "RollOverEdge: The dimension of the basis of new F' must equals to F dimension!"
+      );
 
     n = (r! * face.Normal) * v - (r! * v) * face.Normal;
 
@@ -358,65 +375,61 @@ public class GiftWrapping {
     SubPoint           origin = S.Min(p => p)!;
     LinkedList<Vector> TempV  = new LinkedList<Vector>();
     AffineBasis        FinalV = new AffineBasis(origin);
-  
+
     int dim = FinalV.VecDim;
-  
+
     for (int i = 1; i < dim; i++) {
       TempV.AddLast(Vector.CreateOrth(dim, i + 1));
     }
-  
+
     double[] n_arr = new double[dim];
     n_arr[0] = -1;
-  
+
     for (int i = 1; i < dim; i++) {
       n_arr[i] = 0;
     }
     n = new Vector(n_arr);
-  
-    double    minDot;
-    SubPoint? sExtr;
-  
+
     while (TempV.Any()) {
       Vector t = TempV.First();
       TempV.RemoveFirst();
-      minDot = double.MaxValue;
-      sExtr  = null;
-  
-      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new []{n});
+      double    maxAngle = double.MinValue;
+      SubPoint? sExtr    = null;
+
+      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
       Vector? r = null;
-  
+
       foreach (SubPoint s in S) {
-  
         Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
-  
+
         if (!u.IsZero) {
           u = u.Normalize();
-          double dot = v * u;
-  
-          if (Tools.LT(dot, minDot)) {
-            minDot = dot;
+          double angle = Math.Acos(v * u);
+
+          if (Tools.GT(angle, maxAngle)) {
+            maxAngle = angle;
             sExtr  = s;
             r      = u;
           }
         }
       }
-  
+
       if (sExtr is null) {
         return FinalV;
       }
-  
+
       bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-      
+
       Debug.Assert(isAdded, "BuildInitialPlane: The new vector of FinalV is linear combination of FinalV vectors!");
-  
+
       n = (r! * n) * v - (r! * v) * n;
-      
+
       Debug.Assert(!n.IsZero, "BuildInitialPlane: Normal is zero!");
-  
-  
+
+
       OrientNormal(S, ref n, origin);
     }
-  
+
     return FinalV;
   }
 
