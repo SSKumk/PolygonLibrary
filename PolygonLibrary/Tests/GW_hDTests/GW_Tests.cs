@@ -182,10 +182,7 @@ public class GW_Tests {
   /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <returns>A list of points representing the simplex.</returns>
-  private List<Point> Simplex(int               simplexDim
-                            , out List<Point>   pureSimplex
-                            , IEnumerable<int>? facesDim = null
-                            , int               amount   = 1) {
+  private List<Point> Simplex(int simplexDim, out List<Point> pureSimplex, IEnumerable<int>? facesDim = null, int amount = 1) {
     List<Point> simplex = new List<Point> { new Point(new double[simplexDim]) };
 
     for (int i = 0; i < simplexDim; i++) {
@@ -206,10 +203,7 @@ public class GW_Tests {
   /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <returns>A list of points representing the simplex.</returns>
-  private List<Point> SimplexRND(int               simplexDim
-                               , out List<Point>   pureSimplex
-                               , IEnumerable<int>? facesDim = null
-                               , int               amount   = 1) {
+  private List<Point> SimplexRND(int simplexDim, out List<Point> pureSimplex, IEnumerable<int>? facesDim = null, int amount = 1) {
     List<Point> simplex = new List<Point>();
     do {
       for (int i = 0; i < simplexDim + 1; i++) {
@@ -222,7 +216,7 @@ public class GW_Tests {
 
 
     pureSimplex = new List<Point>(simplex);
-    
+
     return AddPointsToSimplex(facesDim, amount, simplex);
   }
 
@@ -385,9 +379,7 @@ public class GW_Tests {
   /// <param name="Swarm">Swarm to be shifted</param>
   /// <param name="shift">Vector to shift</param>
   /// <returns></returns>
-  private static List<Point> Shift(List<Point> Swarm, Vector shift) {
-    return Swarm.Select(s => new Point(s + shift)).ToList();
-  }
+  private static List<Point> Shift(List<Point> Swarm, Vector shift) { return Swarm.Select(s => new Point(s + shift)).ToList(); }
 
   [Test]
   public void GenCubeHDTest() {
@@ -410,10 +402,9 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D() {
-    List<Point> Swarm = Cube(3, out List<Point> _);
+    List<Point> Swarm = Cube(3, out List<Point> cube);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-    Assert.That(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+    SwarmSuffle(Swarm, cube);
   }
 
   [Test]
@@ -428,7 +419,7 @@ public class GW_Tests {
     List<Point> Rotated = Rotate(Swarm, new Matrix(rotationZ45));
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Rotated);
-    Assert.That(P.Vertices.SetEquals(Rotated), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(Rotated), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -440,7 +431,7 @@ public class GW_Tests {
     List<Point> RotatedCube = Rotate(Cube(cubeDim, out List<Point> _), rotation);
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(RotatedCube);
-    Assert.That(P.Vertices.SetEquals(RotatedCube), $"The set of vertices must be equals. Seed = {saveSeed}");
+    Assert.That(P.Vertices.SetEquals(RotatedCube), $"The set of vertices must be equal. Seed = {saveSeed}");
   }
 
   [Test]
@@ -451,7 +442,7 @@ public class GW_Tests {
     List<Point> ShiftedCube = Shift(Cube(cubeDim, out List<Point> _), shift);
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(ShiftedCube);
-    Assert.That(P.Vertices.SetEquals(ShiftedCube), $"The set of vertices must be equals. Seed = {saveSeed}");
+    Assert.That(P.Vertices.SetEquals(ShiftedCube), $"The set of vertices must be equal. Seed = {saveSeed}");
   }
 
   [Test]
@@ -472,7 +463,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(RotatedShiftedCube), $"The set of vertices must be equals. Seed = {saveSeed}");
+    Assert.That(P.Vertices.SetEquals(RotatedShiftedCube), $"The set of vertices must be equal. Seed = {saveSeed}");
   }
 
   [Test]
@@ -481,7 +472,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -490,7 +481,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -499,7 +490,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -508,7 +499,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -517,7 +508,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -526,9 +517,24 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
+  [Test]
+  public void Cube4D() {
+    List<Point> Swarm = Cube(4, out List<Point> cube);
+
+    SwarmSuffle(cube, Swarm);
+  }
+
+  private static void SwarmSuffle(List<Point> cube, List<Point> Swarm) {
+    for (int i = 0; i < 10 * cube.Count; i++) {
+      uint saveSeed = _random.Seed;
+      Tools.Shuffle(Swarm, _random);
+      Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+      Assert.That(P.Vertices.SetEquals(cube), $"The set of vertices must be equal.\nSeed: {saveSeed}");
+    }
+  }
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D() {
@@ -536,7 +542,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
 
@@ -546,7 +552,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -555,7 +561,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -564,7 +570,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -573,7 +579,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -582,7 +588,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -602,7 +608,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -617,7 +623,7 @@ public class GW_Tests {
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
 
-    Assert.That(P.Vertices.SetEquals(Swarm), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(Swarm), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -780,7 +786,7 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplices6D_Test() {
-    const int nPoints = 0;
+    const int nPoints = 5;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 6).ToList());
 
@@ -790,7 +796,6 @@ public class GW_Tests {
       List<Point> Swarm = Simplex(6, out List<Point> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref Swarm);
 
-      //Check(Swarm, P, saveSeed, 6, nPoints, fID, true);
       Check(Swarm, P, saveSeed, 6, nPoints, fID, true);
     }
   }
@@ -813,38 +818,36 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplicesRND_3D_Test() {
-    const int nPoints = 1;
+    const int nPoints = 3;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 3).ToList());
 
-    for (int i = 0; i < 1e5; i++) {
-      // foreach (List<int> fID in fIDs) {
-      uint      saveSeed = _random.Seed;
-      List<int> fID      = new List<int>() { 1 };
+    for (int i = 0; i < 1e4; i++) {
+      foreach (List<int> fID in fIDs) {
+        uint saveSeed = _random.Seed;
 
-      List<Point> Swarm = SimplexRND(3, out List<Point> P, fID, nPoints);
+        List<Point> Swarm = SimplexRND(3, out List<Point> P, fID, nPoints);
 
-      Check(Swarm, P, saveSeed, 3, nPoints, fID, true);
-      // }
+        Check(Swarm, P, saveSeed, 3, nPoints, fID, true);
+      }
     }
   }
 
   [Test]
   public void AllSimplicesRND_4D_Test() {
-    const int nPoints = 2;
+    const int nPoints = 4;
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 4).ToList());
 
     for (int i = 0; i < 1e4; i++) {
-      // foreach (List<int> fID in fIDs) {
+      foreach (List<int> fID in fIDs) {
+        // List<int> fID      = new List<int>() { 1 };
+        uint saveSeed = _random.Seed;
 
-      List<int> fID      = new List<int>() { 1 };
-      uint      saveSeed = _random.Seed;
+        List<Point> Swarm = SimplexRND(4, out List<Point> P, fID, nPoints);
 
-      List<Point> Swarm = SimplexRND(4, out List<Point> P, fID, nPoints);
-
-      Check(Swarm, P, saveSeed, 4, nPoints, fID, true);
-      // }
+        Check(Swarm, P, saveSeed, 4, nPoints, fID, true);
+      }
     }
   }
 
@@ -914,42 +917,33 @@ public class GW_Tests {
 
   [Test]
   public void AuxPoints() {
-    // List<Point> S = new List<Point>()
-    //   {
-    //     new Point(new double[] { 0.9999999999999996, 2.7755575615628914E-17, -5.551115123125783E-17, 5.551115123125783E-17 })
-    //   , new Point(new double[] { -5.551115123125783E-16, 1.0000000000000002, 0.9999999999999998, 1 })
-    //   , new Point(new double[] { -5.551115123125783E-16, 1.3877787807814457E-16, 0.9999999999999998, 0.9999999999999999 })
-    //   , new Point(new double[] { -1.3183898417423734E-16, 1, -3.660266534311063E-16, 1.0000000000000002 })
-    //   , new Point(new double[] { -1.6653345369377348E-16, -4.163336342344337E-17, -2.498001805406602E-16, 1 })
-    //   , new Point(new double[] { 0.9999999999999993, 1.0000000000000002, 0.9999999999999999, 1 })
-    //   , new Point(new double[] { 0.9999999999999996, 1.6653345369377348E-16, 1.0000000000000004, 1 })
-    //   , new Point(new double[] { 0.9999999999999999, 1.0000000000000002, -1.1102230246251565E-16, 0.9999999999999999 })
-    //   , new Point(new double[] { 1, 0, 3.3306690738754696E-16, 0.9999999999999997 })
-    //   , new Point(new double[] { -5.828670879282072E-16, 1, 0.9999999999999997, 2.220446049250313E-16 })
-    //   , new Point(new double[] { -6.938893903907228E-16, 1.942890293094024E-16, 0.9999999999999998, -8.326672684688674E-17 })
-    //   , new Point(new double[] { -4.440892098500626E-16, 1, -1.6653345369377348E-16, 1.5265566588595902E-16 })
-    //   , new Point(new double[] { 0, 0, 0, 0 })
-    //   , new Point(new double[] { 0.9999999999999993, 1.0000000000000004, 1, -5.551115123125783E-17 })
-    //   , new Point(new double[] { 0.9999999999999993, 1.6653345369377348E-16, 0.9999999999999999, -1.1102230246251565E-16 })
-    //   , new Point(new double[] { 0.9999999999999994, 1, -4.163336342344337E-17, 7.632783294297951E-17 })
-    //   };
     List<Point> S = new List<Point>()
       {
-        new Point(new double[] { -1.980064489466435, 2.9872748292594156, -4.180556189998251 })
-      , new Point(new double[] { -1.6113520557358647, 1.8560766040094747, -3.8464289313181492 })
-      , new Point(new double[] { 0.42698253770987127, -4.532841988730441, 3.5492071459417254 })
-      , new Point(new double[] { -1.921639002173103, 2.7851811388067538, -2.710060894579053 })
-      , new Point(new double[] { -1.3995652148499071, 1.0700363307423044, 4.581756107411756 })
-      , new Point(new double[] { -0.058344149742821094, -2.937086091362193, -0.866344411826307 })
-      , new Point(new double[] { -2.0655917462579887, 3.2581024147239757, -4.72065229428016 })
+        new Point(new double[] { 0.9999999999999993,1.0000000000000002,0.9999999999999999,1})
+      , new Point(new double[] { 0,0,0,0})
+      , new Point(new double[] { 1,0,3.3306690738754696E-16,0.9999999999999997})
+      , new Point(new double[] { 0.9999999999999994,1,-4.163336342344337E-17,7.632783294297951E-17})
+      , new Point(new double[] { -5.551115123125783E-16,1.3877787807814457E-16,0.9999999999999998,0.9999999999999999})
+      , new Point(new double[] { -5.828670879282072E-16,1,0.9999999999999997,2.220446049250313E-16})
+      , new Point(new double[] { 0.9999999999999996,1.6653345369377348E-16,1.0000000000000004,1})
+      , new Point(new double[] { -4.440892098500626E-16,1,-1.6653345369377348E-16,1.5265566588595902E-16})
+      , new Point(new double[] { 0.9999999999999993,1.0000000000000004,1,-5.551115123125783E-17})
+      , new Point(new double[] { 0.9999999999999993,1.6653345369377348E-16,0.9999999999999999,-1.1102230246251565E-16})
+      , new Point(new double[] { 0.9999999999999996,2.7755575615628914E-17,-5.551115123125783E-17,5.551115123125783E-17})
+      , new Point(new double[] { -1.3183898417423734E-16,1,-3.660266534311063E-16,1.0000000000000002})
+      , new Point(new double[] { -1.6653345369377348E-16,-4.163336342344337E-17,-2.498001805406602E-16,1})
+      , new Point(new double[] { 0.9999999999999999,1.0000000000000002,-1.1102230246251565E-16,0.9999999999999999})
+      , new Point(new double[] { -6.938893903907228E-16,1.942890293094024E-16,0.9999999999999998,-8.326672684688674E-17})
+      , new Point(new double[] { -5.551115123125783E-16,1.0000000000000002,0.9999999999999998,1})
       };
 
-    // Assert.That(new HashSet<Point>(S).SetEquals(Cube(3, out List<Point> cube)));
+
+    Assert.That(new HashSet<Point>(S).SetEquals(Cube(4, out List<Point> cube)));
 
     // for (int i = 0; i < 10 * S.Count; i++) {
-    // Tools.Shuffle(S);
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-    // Assert.That(P.Vertices.SetEquals(cube));
+      // Tools.Shuffle(S);
+      Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+      Assert.That(P.Vertices.SetEquals(cube));
     // }
   }
 
@@ -976,7 +970,7 @@ public class GW_Tests {
     try {
       if (needShuffle) {
         HashSet<Point> origS = new HashSet<Point>(Swarm);
-        Tools.Shuffle(Swarm, new Random((int)seed));
+        Tools.Shuffle(Swarm, _random);
         Debug.Assert(origS.SetEquals(Swarm));
       }
 
@@ -993,7 +987,7 @@ public class GW_Tests {
     }
 
     try {
-      Assert.That(P.Vertices.SetEquals(Answer), "The set of vertices must be equals.");
+      Assert.That(P.Vertices.SetEquals(Answer), "The set of vertices must be equal.");
     }
     catch (Exception e) {
       Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
@@ -1001,7 +995,7 @@ public class GW_Tests {
 
       Console.WriteLine(e.Message);
 
-      throw new ArgumentException("The set of vertices must be equals.");
+      throw new ArgumentException("The set of vertices must be equal.");
     }
   }
 
@@ -1049,7 +1043,7 @@ public class GW_Tests {
       };
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-    Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equals.");
+    Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -1062,38 +1056,39 @@ public class GW_Tests {
     }
   }
 
-  [Test]
-  public void PlanesTest_3D() {
-    Point        origin  = new Point(new double[] { 0, 0, 0 });
-    List<Vector> Normals = new List<Vector>();
-    do { //todo придумать как генерировать не взаимоисключающие плоскости
-      Normals.Clear();
-      for (int i = 0; i < 5; i++) {
-        Normals.Add(GenVector(3));
-      }
-    } while (Normals.Aggregate((acc, x) => acc + x).IsZero);
-
-    List<HyperPlane> hyperPlanes = new List<HyperPlane>();
-    foreach (Vector normal in Normals) {
-      hyperPlanes.Add(new HyperPlane(origin, normal));
-    }
-
-    List<Point> Swarm = new List<Point>();
-
-    foreach (HyperPlane hp in hyperPlanes) {
-      for (int i = 0; i < 10; i++) {
-        Point p;
-        do {
-          p = GenAffineCombination(hp.AffineBasis.GetBasisAsPoints(), 100, -50);
-        } while (hyperPlanes.All(HP => HP.Eval(p) <= 0));
-        Swarm.Add(p);
-      }
-    }
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-
-    Console.WriteLine("Надо как-то проверять!");
-  }
+  //
+  // [Test]
+  // public void PlanesTest_3D() {
+  //   Point        origin  = new Point(new double[] { 0, 0, 0 });
+  //   List<Vector> Normals = new List<Vector>();
+  //   do { //todo придумать как генерировать не взаимоисключающие плоскости
+  //     Normals.Clear();
+  //     for (int i = 0; i < 5; i++) {
+  //       Normals.Add(GenVector(3));
+  //     }
+  //   } while (Normals.Aggregate((acc, x) => acc + x).IsZero);
+  //
+  //   List<HyperPlane> hyperPlanes = new List<HyperPlane>();
+  //   foreach (Vector normal in Normals) {
+  //     hyperPlanes.Add(new HyperPlane(origin, normal));
+  //   }
+  //
+  //   List<Point> Swarm = new List<Point>();
+  //
+  //   foreach (HyperPlane hp in hyperPlanes) {
+  //     for (int i = 0; i < 10; i++) {
+  //       Point p;
+  //       do {
+  //         p = GenAffineCombination(hp.AffineBasis.GetBasisAsPoints(), 100, -50);
+  //       } while (hyperPlanes.All(HP => HP.Eval(p) <= 0));
+  //       Swarm.Add(p);
+  //     }
+  //   }
+  //
+  //   Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
+  //
+  //   Console.WriteLine("Надо как-то проверять!");
+  // }
 
 
   // [Test]
