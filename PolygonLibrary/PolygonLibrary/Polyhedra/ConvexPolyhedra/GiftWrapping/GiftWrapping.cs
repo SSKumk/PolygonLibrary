@@ -115,17 +115,22 @@ public class GiftWrapping {
     }
 
     if (initFace is null) {
-      AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
-      
-      HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
+      // AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
+
+      // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
+      // List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
+      // Debug.Assert(j.All(x => x <= 0), "GW: Some points outside the initial plane!");
+      // int k = j.Count(x => x == 0);
+
+      AffineBasis initBasis = BuildInitialPlane(S);
+      HyperPlane  hp        = new HyperPlane(initBasis);
+      Vector      n         = hp.Normal;
+      OrientNormal(S, ref n, initBasis.Origin);
+      hp.OrientNormal(initBasis.Origin + n, true);
+
+      //todo Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
       List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
       Debug.Assert(j.All(x => x <= 0), "GW: Some points outside the initial plane!");
-      int k = j.Count(x => x == 0);
-
-      // AffineBasis initBasis = BuildInitialPlane(S);
-      // HyperPlane  hp        = new HyperPlane(initBasis);
-      // Vector      n         = hp.Normal;
-      // OrientNormal(S, ref n, initBasis.Origin);
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
         throw
@@ -230,7 +235,7 @@ public class GiftWrapping {
     SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
     Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
-    Vector? r      = null;
+    Vector? r        = null;
     double  maxAngle = double.MinValue;
 
     Debug.Assert(face.Normal is not null, "RollOverEdge: face.Normal is null");
@@ -247,7 +252,7 @@ public class GiftWrapping {
 
         if (Tools.GT(angle, maxAngle)) {
           maxAngle = angle;
-          r      = u;
+          r        = u;
         }
       }
     }
@@ -273,70 +278,76 @@ public class GiftWrapping {
     return BuildFace(S, newF_aBasis, n, r, edge);
   }
 
-  //
-  // /// <summary>
-  // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-  // /// and all other points lies for a one side from it.
-  // /// </summary>
-  // /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-  // /// <param name="n">The outward normal to the initial plane.</param>
-  // /// <returns>
-  // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
-  // /// </returns>
-  // public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
-  //   Debug.Assert(S.Any(), "The swarm must has at least one point!");
-  //
-  //   SubPoint           origin = S.Min(p => p)!;
-  //   LinkedList<Vector> tempV  = new LinkedList<Vector>();
-  //   AffineBasis        FinalV = new AffineBasis(origin);
-  //
-  //   int dim = FinalV.VecDim;
-  //
-  //   for (int i = 1; i < dim; i++) {
-  //     tempV.AddLast(Vector.CreateOrth(dim, i + 1));
-  //   }
-  //
-  //   HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-  //
-  //   double    minDot;
-  //   SubPoint? sExtr;
-  //
-  //   while (tempV.Any()) {
-  //     Vector t = tempV.First();
-  //     tempV.RemoveFirst();
-  //     minDot = double.MaxValue;
-  //     sExtr  = null;
-  //
-  //     foreach (SubPoint s in S) {
-  //       if (Viewed.Contains(s)) {
-  //         continue;
-  //       }
-  //
-  //       Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
-  //
-  //       if (n.IsZero) {
-  //         Viewed.Add(s);
-  //       } else {
-  //         double dot = n * t;
-  //
-  //         if (Tools.LT(dot, minDot)) {
-  //           minDot = dot;
-  //           sExtr  = s;
-  //         }
-  //       }
-  //     }
-  //
-  //     if (sExtr is null) {
-  //       return FinalV;
-  //     }
-  //
-  //     Viewed.Add(sExtr);
-  //     FinalV.AddVectorToBasis(sExtr - origin);
-  //     tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis)); //todo ??????????
-  //   }
-  //
-  //   return FinalV;
-  // }
+
+  /// <summary>
+  /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+  /// and all other points lies for a one side from it.
+  /// </summary>
+  /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+  /// <returns>
+  /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+  /// </returns>
+  public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
+    Debug.Assert(S.Any(), "The swarm must has at least one point!");
+
+    SubPoint           origin = S.Min(p => p)!;
+    LinkedList<Vector> tempV  = new LinkedList<Vector>();
+    AffineBasis        FinalV = new AffineBasis(origin);
+
+    int dim = FinalV.VecDim;
+
+    for (int i = 1; i < dim; i++) {
+      tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+    }
+
+    HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+
+    double    maxAngle;
+    // double    minDot;
+    SubPoint? sExtr;
+
+    while (tempV.Any()) {
+      Vector t = tempV.First();
+      tempV.RemoveFirst();
+      maxAngle = double.MinValue;
+      // minDot = double.MaxValue;
+      sExtr  = null;
+
+      foreach (SubPoint s in S) {
+        if (Viewed.Contains(s)) {
+          continue;
+        }
+
+        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
+
+        if (n.IsZero) {
+          Viewed.Add(s);
+        } else {
+          double dot = n * t;
+          double angle = Math.Acos(n * t);
+
+          // if (Tools.LT(dot, minDot)) {
+          // minDot = dot;
+          // sExtr  = s;
+          // }
+          if (Tools.GT(angle, maxAngle)) {
+            maxAngle = angle;
+            sExtr  = s;
+          }
+        }
+      }
+
+      if (sExtr is null) {
+        return FinalV;
+      }
+
+      Viewed.Add(sExtr);
+      FinalV.AddVectorToBasis(sExtr - origin);
+      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+    }
+
+    return FinalV;
+  }
 
   /// <summary>
   /// Orients the normal outward to the given swarm.
@@ -360,77 +371,77 @@ public class GiftWrapping {
     }
   }
 
-  /// <summary>
-  /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-  /// and all other points lies for a one side from it.
-  /// </summary>
-  /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-  /// <param name="n">The outward normal to the initial plane.</param>
-  /// <returns>
-  /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
-  /// </returns>
-  public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
-    Debug.Assert(S.Any(), "BuildInitialPlane: The swarm must has at least one point!");
-
-    SubPoint           origin = S.Min(p => p)!;
-    LinkedList<Vector> TempV  = new LinkedList<Vector>();
-    AffineBasis        FinalV = new AffineBasis(origin);
-
-    int dim = FinalV.VecDim;
-
-    for (int i = 1; i < dim; i++) {
-      TempV.AddLast(Vector.CreateOrth(dim, i + 1));
-    }
-
-    double[] n_arr = new double[dim];
-    n_arr[0] = -1;
-
-    for (int i = 1; i < dim; i++) {
-      n_arr[i] = 0;
-    }
-    n = new Vector(n_arr);
-
-    while (TempV.Any()) {
-      Vector t = TempV.First();
-      TempV.RemoveFirst();
-      double    maxAngle = double.MinValue;
-      SubPoint? sExtr    = null;
-
-      Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
-      Vector? r = null;
-
-      foreach (SubPoint s in S) {
-        Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
-
-        if (!u.IsZero) {
-          u = u.Normalize();
-          double angle = Math.Acos(v * u);
-
-          if (Tools.GT(angle, maxAngle)) {
-            maxAngle = angle;
-            sExtr  = s;
-            r      = u;
-          }
-        }
-      }
-
-      if (sExtr is null) {
-        return FinalV;
-      }
-
-      bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-
-      Debug.Assert(isAdded, "BuildInitialPlane: The new vector of FinalV is linear combination of FinalV vectors!");
-
-      n = (r! * n) * v - (r! * v) * n;
-
-      Debug.Assert(!n.IsZero, "BuildInitialPlane: Normal is zero!");
-
-
-      OrientNormal(S, ref n, origin);
-    }
-
-    return FinalV;
-  }
+  // /// <summary>
+  // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+  // /// and all other points lies for a one side from it.
+  // /// </summary>
+  // /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+  // /// <param name="n">The outward normal to the initial plane.</param>
+  // /// <returns>
+  // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+  // /// </returns>
+  // public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
+  //   Debug.Assert(S.Any(), "BuildInitialPlane: The swarm must has at least one point!");
+  //
+  //   SubPoint           origin = S.Min(p => p)!;
+  //   LinkedList<Vector> TempV  = new LinkedList<Vector>();
+  //   AffineBasis        FinalV = new AffineBasis(origin);
+  //
+  //   int dim = FinalV.VecDim;
+  //
+  //   for (int i = 1; i < dim; i++) {
+  //     TempV.AddLast(Vector.CreateOrth(dim, i + 1));
+  //   }
+  //
+  //   double[] n_arr = new double[dim];
+  //   n_arr[0] = -1;
+  //
+  //   for (int i = 1; i < dim; i++) {
+  //     n_arr[i] = 0;
+  //   }
+  //   n = new Vector(n_arr);
+  //
+  //   while (TempV.Any()) {
+  //     Vector t = TempV.First();
+  //     TempV.RemoveFirst();
+  //     double    maxAngle = double.MinValue;
+  //     SubPoint? sExtr    = null;
+  //
+  //     Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
+  //     Vector? r = null;
+  //
+  //     foreach (SubPoint s in S) {
+  //       Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
+  //
+  //       if (!u.IsZero) {
+  //         u = u.Normalize();
+  //         double angle = Math.Acos(v * u);
+  //
+  //         if (Tools.GT(angle, maxAngle)) {
+  //           maxAngle = angle;
+  //           sExtr    = s;
+  //           r        = u;
+  //         }
+  //       }
+  //     }
+  //
+  //     if (sExtr is null) {
+  //       return FinalV;
+  //     }
+  //
+  //     bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+  //
+  //     Debug.Assert(isAdded, "BuildInitialPlane: The new vector of FinalV is linear combination of FinalV vectors!");
+  //
+  //     n = (r! * n) * v - (r! * v) * n;
+  //
+  //     Debug.Assert(!n.IsZero, "BuildInitialPlane: Normal is zero!");
+  //
+  //
+  //     OrientNormal(S, ref n, origin);
+  //   }
+  //
+  //   return FinalV;
+  // }
 
 }
