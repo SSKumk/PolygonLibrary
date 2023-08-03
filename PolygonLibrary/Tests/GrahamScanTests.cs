@@ -8,7 +8,7 @@ public class GrahamScanTests {
 
   [Test]
   public void SimpleScanCHTest() {
-    Random? r = new Random(10);
+    RandomLC? r = new RandomLC(10);
 
     List<Point2D> expected = new List<Point2D>(), orig = new List<Point2D>();
 
@@ -46,7 +46,7 @@ public class GrahamScanTests {
 
   [Test]
   public void SquareScanCHTest() {
-    Random? r = new Random(10);
+    RandomLC? r = new RandomLC(10);
 
     List<Point2D> expected = new List<Point2D>(), orig = new List<Point2D>();
 
@@ -100,7 +100,7 @@ public class GrahamScanTests {
 
   [Test]
   public void HexagonScanCHTest() {
-    Random? r = new Random(10);
+    RandomLC? r = new RandomLC(10);
 
     List<Point2D> expected = new List<Point2D>(), orig = new List<Point2D>();
 
