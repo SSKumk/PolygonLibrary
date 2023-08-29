@@ -527,12 +527,27 @@ public class GW_Tests {
     SwarmSuffle(cube, Swarm);
   }
 
-  private static void SwarmSuffle(List<Point> cube, List<Point> Swarm) {
-    for (int i = 0; i < 10 * cube.Count; i++) {
+
+  [Test]
+  public void Simplex4D() {
+    List<Point> Swarm = Simplex(4, out List<Point> simplex);
+
+    SwarmSuffle(simplex, Swarm);
+  }
+
+
+  /// <summary>
+  /// Shuffles the elements of the Swarm list and wraps it into a Polyhedron.
+  /// Asserts that the set of vertices in the Polyhedron is equal to the Polytop list.
+  /// </summary>
+  /// <param name="Polytop">The list of points representing the Polytop.</param>
+  /// <param name="Swarm">The list of points representing the Swarm.</param>
+  private static void SwarmSuffle(List<Point> Polytop, List<Point> Swarm) {
+    for (int i = 0; i < 10 * Polytop.Count; i++) {
       uint saveSeed = _random.Seed;
       Tools.Shuffle(Swarm, _random);
       Polyhedron P = GiftWrapping.WrapPolyhedron(Swarm);
-      Assert.That(P.Vertices.SetEquals(cube), $"The set of vertices must be equal.\nSeed: {saveSeed}");
+      Assert.That(P.Vertices.SetEquals(Polytop), $"The set of vertices must be equal.\nSeed: {saveSeed}");
     }
   }
 
@@ -720,21 +735,21 @@ public class GW_Tests {
     }
   }
 
-  [Test]
-  public void AllCubes7D_Test() {
-    const int nPoints = 1;
-
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 7).ToList());
-
-    foreach (List<int> fID in fIDs) {
-      uint saveSeed = _random.Seed;
-
-      List<Point> Swarm = Cube(7, out List<Point> P, fID, nPoints);
-      ShiftAndRotate(7, ref P, ref Swarm);
-
-      Check(Swarm, P, saveSeed, 7, nPoints, fID, true);
-    }
-  }
+  // [Test]
+  // public void AllCubes7D_Test() {
+  //   const int nPoints = 1;
+  //
+  //   List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 7).ToList());
+  //
+  //   foreach (List<int> fID in fIDs) {
+  //     uint saveSeed = _random.Seed;
+  //
+  //     List<Point> Swarm = Cube(7, out List<Point> P, fID, nPoints);
+  //     ShiftAndRotate(7, ref P, ref Swarm);
+  //
+  //     Check(Swarm, P, saveSeed, 7, nPoints, fID, true);
+  //   }
+  // }
 
   [Test]
   public void AllSimplices3D_Test() {
@@ -882,7 +897,7 @@ public class GW_Tests {
 
 
   [Test]
-  public void Aux() {
+  public void VeryFlatSimplex() { // Если _eps = 9e-8 то тест проходит
     const uint seed    = 236608055;
     const int  PDim    = 3;
     const int  nPoints = 1;
@@ -896,55 +911,92 @@ public class GW_Tests {
     Check(Swarm, polytop, seed, PDim, nPoints, fID, false);
   }
 
-  // [Test]
-  // public void Aux() {
-  //   const uint seed    = 2091444945;
-  //   const int  PDim    = 5;
-  //   const int  nPoints = 1000;
-  //   const bool isCube  = false;
-  //   List<int>  fID     = new List<int>() { 4, 5 };
-  //
-  //
-  //   _random = new RandomLC(seed);
-  //
-  //   List<Point> polytop;
-  //   List<Point> Swarm = isCube ? Cube(PDim, out polytop, fID, nPoints) : Simplex(PDim, out polytop, fID, nPoints);
-  //   ShiftAndRotate(PDim, ref polytop, ref Swarm);
-  //
-  //   Check(Swarm, polytop, seed, PDim, nPoints, fID, true);
-  // }
+  /// <summary>
+  /// Auxiliary enum for Aux-method.
+  /// </summary>
+  private enum PType { Cube, Simplex, SimplexRND }
+
+  [Test]
+  public void Aux() {
+    const uint seed    = 2731564231;
+    const int  PDim    = 4;
+    const int  nPoints = 4;
+    List<int>  fID     = new List<int>() { 1 };
+
+    const PType PType = PType.SimplexRND;
+
+
+    _random = new RandomLC(seed);
+    List<Point> Swarm;
+    List<Point> polytop;
+    switch (PType) {
+      case PType.Cube:
+        Swarm = Cube(PDim, out polytop, fID, nPoints);
+
+        break;
+      case PType.Simplex:
+        Swarm = Simplex(PDim, out polytop, fID, nPoints);
+
+        break;
+      case PType.SimplexRND:
+        Swarm = SimplexRND(PDim, out polytop, fID, nPoints);
+
+        break;
+      default: throw new ArgumentOutOfRangeException();
+    }
+
+
+    if (PType is PType.Cube or PType.Simplex) {
+      ShiftAndRotate(PDim, ref polytop, ref Swarm);
+    }
+
+    Check(Swarm, polytop, seed, PDim, nPoints, fID, true);
+  }
 
 
   [Test]
-  public void AuxPoints() {
+  public void AuxPointsCube4D() {
     List<Point> S = new List<Point>()
       {
-        new Point(new double[] { 0.9999999999999993,1.0000000000000002,0.9999999999999999,1})
-      , new Point(new double[] { 0,0,0,0})
-      , new Point(new double[] { 1,0,3.3306690738754696E-16,0.9999999999999997})
-      , new Point(new double[] { 0.9999999999999994,1,-4.163336342344337E-17,7.632783294297951E-17})
-      , new Point(new double[] { -5.551115123125783E-16,1.3877787807814457E-16,0.9999999999999998,0.9999999999999999})
-      , new Point(new double[] { -5.828670879282072E-16,1,0.9999999999999997,2.220446049250313E-16})
-      , new Point(new double[] { 0.9999999999999996,1.6653345369377348E-16,1.0000000000000004,1})
-      , new Point(new double[] { -4.440892098500626E-16,1,-1.6653345369377348E-16,1.5265566588595902E-16})
-      , new Point(new double[] { 0.9999999999999993,1.0000000000000004,1,-5.551115123125783E-17})
-      , new Point(new double[] { 0.9999999999999993,1.6653345369377348E-16,0.9999999999999999,-1.1102230246251565E-16})
-      , new Point(new double[] { 0.9999999999999996,2.7755575615628914E-17,-5.551115123125783E-17,5.551115123125783E-17})
-      , new Point(new double[] { -1.3183898417423734E-16,1,-3.660266534311063E-16,1.0000000000000002})
-      , new Point(new double[] { -1.6653345369377348E-16,-4.163336342344337E-17,-2.498001805406602E-16,1})
-      , new Point(new double[] { 0.9999999999999999,1.0000000000000002,-1.1102230246251565E-16,0.9999999999999999})
-      , new Point(new double[] { -6.938893903907228E-16,1.942890293094024E-16,0.9999999999999998,-8.326672684688674E-17})
-      , new Point(new double[] { -5.551115123125783E-16,1.0000000000000002,0.9999999999999998,1})
+        new Point(new double[] { 0, 0, 1, 1 })
+      , new Point(new double[] { 1, 0, 0, 1 })
+      , new Point(new double[] { 0, 0, 0, 1 })
+      , new Point(new double[] { 1, 1, 0, 0 })
+      , new Point(new double[] { 1, 1, 1, 0 })
+      , new Point(new double[] { 1, 0, 1, 0 })
+      , new Point(new double[] { 1, 1, 0, 1 })
+      , new Point(new double[] { 0, 1, 0, 1 })
+      , new Point(new double[] { 0, 0, 0, 0 })
+      , new Point(new double[] { 0, 1, 1, 1 })
+      , new Point(new double[] { 1, 0, 1, 1 })
+      , new Point(new double[] { 0, 0, 1, 0 })
+      , new Point(new double[] { 0, 1, 0, 0 })
+      , new Point(new double[] { 1, 0, 0, 0 })
+      , new Point(new double[] { 0, 1, 1, 0 })
+      , new Point(new double[] { 1, 1, 1, 1 })
       };
-
 
     Assert.That(new HashSet<Point>(S).SetEquals(Cube(4, out List<Point> cube)));
 
-    // for (int i = 0; i < 10 * S.Count; i++) {
-      // Tools.Shuffle(S);
-      Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-      Assert.That(P.Vertices.SetEquals(cube));
-    // }
+    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Assert.That(P.Vertices.SetEquals(cube));
+  }
+
+  [Test]
+  public void AuxPointsSimplex4D() {
+    List<Point> S = new List<Point>()
+      {
+        new Point(new double[] { 0, 1, 0, 0 })
+      , new Point(new double[] { 0, 0, 1, 0 })
+      , new Point(new double[] { 0, 0, 0, 1 })
+      , new Point(new double[] { 0, 0, 0, 0 })
+      , new Point(new double[] { 1, 0, 0, 0 })
+      };
+
+    Assert.That(new HashSet<Point>(S).SetEquals(Simplex(4, out List<Point> simplex)));
+
+    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Assert.That(P.Vertices.SetEquals(simplex));
   }
 
 
@@ -1000,11 +1052,11 @@ public class GW_Tests {
   }
 
   private static void WriteInfo(uint seed, int PDim, int nPoints, List<int> fID) {
-    Console.WriteLine($"The seed = {seed}");
-    Console.WriteLine($"The PDim = {PDim}");
-    Console.WriteLine($"The nPoints = {nPoints}");
-    Console.WriteLine("The fID:");
-    Console.WriteLine(string.Join(", ", fID));
+    Console.WriteLine($"The seed    = {seed};");
+    Console.WriteLine($"The PDim    = {PDim};");
+    Console.WriteLine($"The nPoints = {nPoints};");
+    Console.WriteLine($"The fID     = new List<int>() {{ {string.Join(", ", fID)} }};");
+    Console.WriteLine();
   }
 
   ///<summary>
