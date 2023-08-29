@@ -131,7 +131,6 @@ public class GiftWrapping {
       hp.OrientNormal(initBasis.Origin + n, true);
 
 
-
 #if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
       Dictionary<SubPoint, double> badPoints = new Dictionary<SubPoint, double>();
       foreach (SubPoint s in S) {
@@ -311,6 +310,7 @@ public class GiftWrapping {
     double maxAngle;
     // double    minDot;
     SubPoint? sExtr;
+    Vector?   nStar = null;
 
     while (tempV.Any()) {
       Vector t = tempV.First();
@@ -324,22 +324,23 @@ public class GiftWrapping {
           continue;
         }
 
-        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
-
-        if (n.IsZero) {
+        Vector n0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
+        if (n0.IsZero) {
           Viewed.Add(s);
-        } else {
-          double dot   = n * t;
-          double angle = Math.Acos(n * t);
 
-          // if (Tools.LT(dot, minDot)) {
-          // minDot = dot;
-          // sExtr  = s;
-          // }
-          if (Tools.GT(angle, maxAngle)) {
-            maxAngle = angle;
-            sExtr    = s;
-          }
+          continue;
+        }
+
+        Vector n = Vector.OrthonormalizeAgainstBasis(n0, tempV);
+        if (n.IsZero) {
+          continue;
+        }
+
+        double angle = Math.Acos(n * t);
+        if (Tools.GT(angle, maxAngle)) {
+          maxAngle = angle;
+          sExtr    = s;
+          nStar    = n;
         }
       }
 
@@ -348,9 +349,9 @@ public class GiftWrapping {
       }
 
       Viewed.Add(sExtr);
-      bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+      bool isAdded = FinalV.AddVectorToBasis(nStar!, false);
       Debug.Assert(isAdded, "BuildInitialPlane: Vector was not added to FinalV!");
-      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+      // tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
     }
 
     return FinalV;
