@@ -65,8 +65,7 @@ public class GiftWrapping {
 #endif
 
     if (initEdge is not null) {
-      Debug.Assert
-        (initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
+      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
     }
     Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "BuildFace: The basis must lie in (d-1)-dimensional space!");
@@ -89,6 +88,7 @@ public class GiftWrapping {
         prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
       }
 
+      
       return GW(inPlane, prj).ToPreviousSpace();
     }
   }
@@ -116,25 +116,23 @@ public class GiftWrapping {
 
     if (initFace is null) {
       // AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
-
+      // Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
       // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
-      // List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
-      // Debug.Assert(j.All(x => x <= 0), "GW: Some points outside the initial plane!");
-      // int k = j.Count(x => x == 0);
 
       AffineBasis initBasis = BuildInitialPlane(S);
+      Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
       HyperPlane  hp        = new HyperPlane(initBasis);
       Vector      n         = hp.Normal;
       OrientNormal(S, ref n, initBasis.Origin);
       hp.OrientNormal(initBasis.Origin + n, true);
 
+
+
       //todo Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
-      List<int>   j         = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
-      Debug.Assert(j.All(x => x <= 0), "GW: Some points outside the initial plane!");
+      Debug.Assert(hp.AllAtOneSide(S).Item1, "GW: Some points outside the initial plane!");
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
-        throw
-          new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
+        throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
       }
 
       //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
@@ -145,10 +143,7 @@ public class GiftWrapping {
     Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
     Debug.Assert(initFace.SpaceDim == S.First().Dim, "The initFace must lie in d-dimensional space!");
     Debug.Assert
-      (
-       initFace.Faces!.All(F => F.SpaceDim == S.First().Dim)
-     , "All edges of the initFace must lie in d-dimensional space!"
-      );
+      (initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the initFace must lie in d-dimensional space!");
     Debug.Assert(initFace.PolyhedronDim == S.First().Dim - 1, "The dimension of the initFace must equals to d-1!");
     Debug.Assert
       (
@@ -224,10 +219,7 @@ public class GiftWrapping {
   public static BaseSubCP RollOverEdge(IEnumerable<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
     Debug.Assert(face.SpaceDim == S.First().Dim, "RollOverEdge: The face must lie in d-dimensional space!");
     Debug.Assert
-      (
-       face.Faces!.All(F => F.SpaceDim == S.First().Dim)
-     , "RollOverEdge: All edges of the face must lie in d-dimensional space!"
-      );
+      (face.Faces!.All(F => F.SpaceDim == S.First().Dim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
     Debug.Assert(face.PolyhedronDim == S.First().Dim - 1, "RollOverEdge: The dimension of the face must equal to d-1!");
     Debug.Assert(edge.PolyhedronDim == S.First().Dim - 2, "RollOverEdge: The dimension of the edge must equal to d-2!");
 
@@ -287,89 +279,68 @@ public class GiftWrapping {
   /// <returns>
   /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
   /// </returns>
-  public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
-    Debug.Assert(S.Any(), "The swarm must has at least one point!");
+   public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
+     Debug.Assert(S.Any(), "The swarm must has at least one point!");
 
-    SubPoint           origin = S.Min(p => p)!;
-    LinkedList<Vector> tempV  = new LinkedList<Vector>();
-    AffineBasis        FinalV = new AffineBasis(origin);
+     SubPoint           origin = S.Min(p => p)!;
+     LinkedList<Vector> tempV  = new LinkedList<Vector>();
+     AffineBasis        FinalV = new AffineBasis(origin);
 
-    int dim = FinalV.VecDim;
+     int dim = FinalV.VecDim;
 
-    for (int i = 1; i < dim; i++) {
-      tempV.AddLast(Vector.CreateOrth(dim, i + 1));
-    }
+     for (int i = 1; i < dim; i++) {
+       tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+     }
 
-    HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+     // HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
 
-    double    maxAngle;
-    // double    minDot;
-    SubPoint? sExtr;
+     double maxAngle;
+     // double    minDot;
+     SubPoint? sExtr;
 
-    while (tempV.Any()) {
-      Vector t = tempV.First();
-      tempV.RemoveFirst();
-      maxAngle = double.MinValue;
-      // minDot = double.MaxValue;
-      sExtr  = null;
+     while (tempV.Any()) {
+       Vector t = tempV.First();
+       tempV.RemoveFirst();
+       maxAngle = double.MinValue;
+       // minDot = double.MaxValue;
+       sExtr = null;
 
-      foreach (SubPoint s in S) {
-        if (Viewed.Contains(s)) {
-          continue;
-        }
+       foreach (SubPoint s in S) {
+         // if (Viewed.Contains(s)) {
+           // continue;
+         // }
 
-        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
+         Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
 
-        if (n.IsZero) {
-          Viewed.Add(s);
-        } else {
-          double dot = n * t;
-          double angle = Math.Acos(n * t);
+         if (n.IsZero) {
+           // Viewed.Add(s);
+         } else {
+           double dot   = n * t;
+           double angle = Math.Acos(n * t);
 
-          // if (Tools.LT(dot, minDot)) {
-          // minDot = dot;
-          // sExtr  = s;
-          // }
-          if (Tools.GT(angle, maxAngle)) {
-            maxAngle = angle;
-            sExtr  = s;
-          }
-        }
-      }
+           // if (Tools.LT(dot, minDot)) {
+           // minDot = dot;
+           // sExtr  = s;
+           // }
+           if (Tools.GT(angle, maxAngle)) {
+             maxAngle = angle;
+             sExtr    = s;
+           }
+         }
+       }
 
-      if (sExtr is null) {
-        return FinalV;
-      }
+       if (sExtr is null) {
+         return FinalV;
+       }
 
-      Viewed.Add(sExtr);
-      FinalV.AddVectorToBasis(sExtr - origin);
-      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
-    }
+       // Viewed.Add(sExtr);
+       bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+       Debug.Assert(isAdded, "BuildInitialPlane: Vector was not added to FinalV!");
+       tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+     }
 
-    return FinalV;
-  }
-
-  /// <summary>
-  /// Orients the normal outward to the given swarm.
-  /// </summary>
-  /// <param name="S">The swarm to orient on.</param>
-  /// <param name="n">The normal to orient.</param>
-  /// <param name="origin">A point from S.</param>
-  private static void OrientNormal(IEnumerable<Point> S, ref Vector n, Point origin) {
-    foreach (Point s in S) {
-      double dot = (s - origin) * n;
-
-      if (Tools.LT(dot)) {
-        break;
-      }
-
-      if (Tools.GT(dot)) {
-        n = -n;
-
-        break;
-      }
-    }
-  }
+     return FinalV;
+   }
 
   // /// <summary>
   // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
@@ -443,5 +414,27 @@ public class GiftWrapping {
   //
   //   return FinalV;
   // }
+
+  /// <summary>
+  /// Orients the normal outward to the given swarm.
+  /// </summary>
+  /// <param name="S">The swarm to orient on.</param>
+  /// <param name="n">The normal to orient.</param>
+  /// <param name="origin">A point from S.</param>
+  private static void OrientNormal(IEnumerable<Point> S, ref Vector n, Point origin) {
+    foreach (Point s in S) {
+      double dot = (s - origin) * n;
+
+      if (Tools.LT(dot)) {
+        break;
+      }
+
+      if (Tools.GT(dot)) {
+        n = -n;
+
+        break;
+      }
+    }
+  }
 
 }
