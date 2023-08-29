@@ -18,13 +18,13 @@ public class InitialPlaneTests {
     AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)));
     // AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)), out Vector n);
     AffineBasis.CheckCorrectness(aBasis);
-    Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim));
+    Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim), $"The expected dimension of initial basis is {planeDim}. Found {aBasis.SpaceDim}.");
 
     if (aBasis.SpaceDim + 1 == aBasis.VecDim) {
       HyperPlane hp = new HyperPlane(aBasis);
-      Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True);
+      Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True, "Some points outside the initial plane!");
       IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
-      Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim));
+      Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "In initial plane must be at least 3 points!");
     }
   }
 
@@ -217,6 +217,31 @@ public class InitialPlaneTests {
       };
 
     AssertInitialPlaneBasis(Swarm, 2);
+  }
+
+  [Test]
+  public void Cube4DTest() {
+    List<Point> Swarm = new List<Point>()
+      {
+        new Point(new double[] {0,0,1,1})
+      , new Point(new double[] {1,0,0,1})
+      , new Point(new double[] {0,0,0,1})
+      , new Point(new double[] {1,1,0,0})
+      , new Point(new double[] {1,1,1,0})
+      , new Point(new double[] {1,0,1,0})
+      , new Point(new double[] {1,1,0,1})
+      , new Point(new double[] {0,1,0,1})
+      , new Point(new double[] {0,0,0,0})
+      , new Point(new double[] {0,1,1,1})
+      , new Point(new double[] {1,0,1,1})
+      , new Point(new double[] {0,0,1,0})
+      , new Point(new double[] {0,1,0,0})
+      , new Point(new double[] {1,0,0,0})
+      , new Point(new double[] {0,1,1,0})
+      , new Point(new double[] {1,1,1,1})
+      };
+
+    AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
