@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using PolygonLibrary.Toolkit;
 
@@ -358,11 +359,11 @@ public class Vector : IComparable<Vector> {
   }
 
   public override string ToString() {
-    string res = "(" + _v[0];
+    string res = "(" + _v[0].ToString(CultureInfo.InvariantCulture);
     int    d   = Dim, i;
 
     for (i = 1; i < d; i++) {
-      res += ";" + _v[i];
+      res += "," + _v[i].ToString(CultureInfo.InvariantCulture);
     }
 
     res += ")";
