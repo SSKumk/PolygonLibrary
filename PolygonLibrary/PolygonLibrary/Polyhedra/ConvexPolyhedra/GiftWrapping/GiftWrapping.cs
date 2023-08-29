@@ -12,8 +12,8 @@ namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 public class GiftWrapping {
 
   public static Polyhedron WrapPolyhedron(IEnumerable<Point> SwarmOrig) {
-    IEnumerable<Point> Swarm = SwarmOrig;
-    BaseSubCP          p     = GW(Swarm.Select(s => new SubPoint(s, null, s)));
+    HashSet<SubPoint> Swarm = new HashSet<SubPoint>(SwarmOrig.Select(s => new SubPoint(s, null, s)));
+    BaseSubCP         p     = GW(Swarm);
 
     if (p.PolyhedronDim == 2) {
       throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
@@ -55,7 +55,7 @@ public class GiftWrapping {
   /// <returns>
   /// The BaseSubCP: (d-1)-dimensional polyhedron complex expressed in terms of d-dimensional points.
   /// </returns>
-  public static BaseSubCP BuildFace(IEnumerable<SubPoint> S
+  public static BaseSubCP BuildFace(ref HashSet<SubPoint> S
                                   , AffineBasis           FaceBasis
                                   , Vector                n
                                   , Vector?               r        = null
@@ -72,9 +72,9 @@ public class GiftWrapping {
 
 
     HyperPlane hyperPlane = new HyperPlane(FaceBasis.Origin, n);
-    List<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
-                              .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
-                              .ToList();
+    HashSet<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
+                                 .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
+                                 .ToHashSet();
 
 
     Debug.Assert(inPlane.Count >= SDim, "BuildFace: In plane must be at least d points!");
@@ -84,12 +84,16 @@ public class GiftWrapping {
     } else {
       BaseSubCP? prj = initEdge?.ProjectTo(FaceBasis);
 
-      if (prj is not null) { // 
+      if (prj is not null) { //
         prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
       }
 
-      
-      return GW(inPlane, prj).ToPreviousSpace();
+      BaseSubCP         buildedFace = GW(inPlane, prj).ToPreviousSpace();
+      HashSet<SubPoint> toRemove    = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
+      toRemove.ExceptWith(buildedFace.Vertices);
+      S.ExceptWith(toRemove);
+
+      return buildedFace;
     }
   }
 
@@ -103,7 +107,7 @@ public class GiftWrapping {
   /// </param>
   /// <returns>d-dimensional convex sub polyhedron, which is the convex hull of the given swarm.</returns>
   /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
-  public static BaseSubCP GW(IEnumerable<SubPoint> S, BaseSubCP? initFace = null) {
+  public static BaseSubCP GW(HashSet<SubPoint> S, BaseSubCP? initFace = null) {
     if (S.First().Dim == 2) {
       List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
@@ -121,22 +125,32 @@ public class GiftWrapping {
 
       AffineBasis initBasis = BuildInitialPlane(S);
       Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
-      HyperPlane  hp        = new HyperPlane(initBasis);
-      Vector      n         = hp.Normal;
+      HyperPlane hp = new HyperPlane(initBasis);
+      Vector     n  = hp.Normal;
       OrientNormal(S, ref n, initBasis.Origin);
       hp.OrientNormal(initBasis.Origin + n, true);
 
 
 
-      //todo Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
-      Debug.Assert(hp.AllAtOneSide(S).Item1, "GW: Some points outside the initial plane!");
+#if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
+      Dictionary<SubPoint, double> badPoints = new Dictionary<SubPoint, double>();
+      foreach (SubPoint s in S) {
+        double d = hp.Eval(s);
+        if (Tools.GT(d)) {
+          badPoints[s] = d;
+        }
+      }
+      if (badPoints.Any()) {
+        throw new ArgumentException("GW: Some points outside the initial plane!");
+      }
+#endif
 
       if (initBasis.SpaceDim < initBasis.VecDim - 1) {
         throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
       }
 
       //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
-      initFace        = BuildFace(S, initBasis, n);
+      initFace        = BuildFace(ref S, initBasis, n);
       initFace.Normal = n;
     }
     Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
@@ -172,7 +186,7 @@ public class GiftWrapping {
   }
 
   /// <summary>
-  /// 
+  ///
   /// </summary>
   /// <param name="S">The swarm of d-dimensional points.</param>
   /// <param name="face">The (d-1)-dimensional face in d-space.</param>
@@ -180,7 +194,7 @@ public class GiftWrapping {
   /// <param name="buildPoints"></param>
   /// <param name="buildIncidence">Dictionary (d-2)-dimensional edge in d-space -->
   ///   pair of (d-1)-dimensional faces in d-space.</param>
-  public static void DFS_step(IEnumerable<SubPoint>  S
+  public static void DFS_step(HashSet<SubPoint>      S
                             , BaseSubCP              face
                             , ref HashSet<BaseSubCP> buildFaces
                             , ref HashSet<SubPoint>  buildPoints
@@ -209,14 +223,14 @@ public class GiftWrapping {
   }
 
   /// <summary>
-  /// 
+  ///
   /// </summary>
   /// <param name="S">Swarm in d-dimensional space.</param>
   /// <param name="face">(d-1)-dimensional face in d-dimensional space.</param>
   /// <param name="edge">(d-2)-dimensional edge in d-dimensional space.</param>
   /// <param name="n"></param>
   /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
-  public static BaseSubCP RollOverEdge(IEnumerable<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
+  public static BaseSubCP RollOverEdge(HashSet<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
     Debug.Assert(face.SpaceDim == S.First().Dim, "RollOverEdge: The face must lie in d-dimensional space!");
     Debug.Assert
       (face.Faces!.All(F => F.SpaceDim == S.First().Dim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
@@ -267,7 +281,7 @@ public class GiftWrapping {
     HyperPlane hp = new HyperPlane(edgeBasis.Origin, n);
     List<int>  j  = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
 
-    return BuildFace(S, newF_aBasis, n, r, edge);
+    return BuildFace(ref S, newF_aBasis, n, r, edge);
   }
 
 
@@ -279,68 +293,68 @@ public class GiftWrapping {
   /// <returns>
   /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
   /// </returns>
-   public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S) {
-     Debug.Assert(S.Any(), "The swarm must has at least one point!");
+  public static AffineBasis BuildInitialPlane(HashSet<SubPoint> S) {
+    Debug.Assert(S.Any(), "The swarm must has at least one point!");
 
-     SubPoint           origin = S.Min(p => p)!;
-     LinkedList<Vector> tempV  = new LinkedList<Vector>();
-     AffineBasis        FinalV = new AffineBasis(origin);
+    SubPoint           origin = S.Min(p => p)!;
+    LinkedList<Vector> tempV  = new LinkedList<Vector>();
+    AffineBasis        FinalV = new AffineBasis(origin);
 
-     int dim = FinalV.VecDim;
+    int dim = FinalV.VecDim;
 
-     for (int i = 1; i < dim; i++) {
-       tempV.AddLast(Vector.CreateOrth(dim, i + 1));
-     }
+    for (int i = 1; i < dim; i++) {
+      tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+    }
 
-     // HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+    HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
 
-     double maxAngle;
-     // double    minDot;
-     SubPoint? sExtr;
+    double maxAngle;
+    // double    minDot;
+    SubPoint? sExtr;
 
-     while (tempV.Any()) {
-       Vector t = tempV.First();
-       tempV.RemoveFirst();
-       maxAngle = double.MinValue;
-       // minDot = double.MaxValue;
-       sExtr = null;
+    while (tempV.Any()) {
+      Vector t = tempV.First();
+      tempV.RemoveFirst();
+      maxAngle = double.MinValue;
+      // minDot = double.MaxValue;
+      sExtr = null;
 
-       foreach (SubPoint s in S) {
-         // if (Viewed.Contains(s)) {
-           // continue;
-         // }
+      foreach (SubPoint s in S) {
+        if (Viewed.Contains(s)) {
+          continue;
+        }
 
-         Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
+        Vector n = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis, tempV);
 
-         if (n.IsZero) {
-           // Viewed.Add(s);
-         } else {
-           double dot   = n * t;
-           double angle = Math.Acos(n * t);
+        if (n.IsZero) {
+          Viewed.Add(s);
+        } else {
+          double dot   = n * t;
+          double angle = Math.Acos(n * t);
 
-           // if (Tools.LT(dot, minDot)) {
-           // minDot = dot;
-           // sExtr  = s;
-           // }
-           if (Tools.GT(angle, maxAngle)) {
-             maxAngle = angle;
-             sExtr    = s;
-           }
-         }
-       }
+          // if (Tools.LT(dot, minDot)) {
+          // minDot = dot;
+          // sExtr  = s;
+          // }
+          if (Tools.GT(angle, maxAngle)) {
+            maxAngle = angle;
+            sExtr    = s;
+          }
+        }
+      }
 
-       if (sExtr is null) {
-         return FinalV;
-       }
+      if (sExtr is null) {
+        return FinalV;
+      }
 
-       // Viewed.Add(sExtr);
-       bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-       Debug.Assert(isAdded, "BuildInitialPlane: Vector was not added to FinalV!");
-       tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
-     }
+      Viewed.Add(sExtr);
+      bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+      Debug.Assert(isAdded, "BuildInitialPlane: Vector was not added to FinalV!");
+      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+    }
 
-     return FinalV;
-   }
+    return FinalV;
+  }
 
   // /// <summary>
   // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
@@ -351,7 +365,7 @@ public class GiftWrapping {
   // /// <returns>
   // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
   // /// </returns>
-  // public static AffineBasis BuildInitialPlane(IEnumerable<SubPoint> S, out Vector n) {
+  // public static AffineBasis BuildInitialPlane(HashSet<SubPoint> S, out Vector n) {
   //   Debug.Assert(S.Any(), "BuildInitialPlane: The swarm must has at least one point!");
   //
   //   SubPoint           origin = S.Min(p => p)!;
