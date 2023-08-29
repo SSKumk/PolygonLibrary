@@ -408,6 +408,30 @@ public class GW_Tests {
   }
 
   [Test]
+  public void CubeAux() { // todo ОПЯТЬ вращаем не во круг того ребра!!!
+    Point       origin = new Point(3);
+    Vector      v1     = new Vector(new double[] { 0.5, 1, 1 });
+    Vector      v2     = new Vector(new double[] { 1, 0.5, 1 });
+    Vector      v3     = new Vector(new double[] { 1, 1, 0.5 });
+
+    List<Point> Swarm = new List<Point>()
+      {
+        origin
+      , origin + v1
+      , origin + v2
+      , origin + v3
+      , origin + v1 + v2
+      , origin + v1 + v3
+      , origin + v2 + v3
+      , origin + v1 + v2 + v3
+      };
+
+    SwarmSuffle(Swarm, Swarm);
+  }
+
+
+
+  [Test]
   public void Cube3D_Rotated_Z45() {
     List<Point>  Swarm = Cube(3, out List<Point> _);
     const double angle = Math.PI / 4;
