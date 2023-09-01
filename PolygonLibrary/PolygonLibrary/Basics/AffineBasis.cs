@@ -126,6 +126,18 @@ public class AffineBasis {
   }
 
   /// <summary>
+  /// Checks if a point belongs to the affine subspace defined by the basis.
+  /// </summary>
+  /// <param name="p">Point to be checked.</param>
+  /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
+  public bool Contains(Point p) {
+    Debug.Assert(p.Dim == VecDim, "AffineBasis.Contains: The dimension of a point does not match to the vector dimension of the affine basis.");
+
+    Vector res =  Vector.OrthonormalizeAgainstBasis(p - Origin, Basis);
+    return res.IsZero;
+  }
+
+  /// <summary>
   /// Construct the new affine basis with the specified origin point.
   /// </summary>
   /// <param name="o">The origin point of the affine basis.</param>
