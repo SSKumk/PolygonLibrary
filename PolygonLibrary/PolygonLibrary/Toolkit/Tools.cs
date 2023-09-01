@@ -22,7 +22,7 @@ public partial class Tools {
   /// <summary>
   /// Absolute accuracy for comparison
   /// </summary>
-  private static double _eps = 1e-8;
+  private static double _eps = 1e-10;
 
   /// <summary>
   /// Property to deal with the accuracy
