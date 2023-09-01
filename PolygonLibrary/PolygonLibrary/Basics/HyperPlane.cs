@@ -71,6 +71,8 @@ public class HyperPlane {
               break;
             }
           }
+          Debug.Assert(_normal is not null, "HyperPlane: Computation of the normal on the basis of the affine basis of the plane gives null vector reference!");
+          Debug.Assert(!_normal.IsZero, "HyperPlane: Computation of the normal on the basis of the affine basis of the plane gives zero vector!");
         }
 
         return _normal!;
