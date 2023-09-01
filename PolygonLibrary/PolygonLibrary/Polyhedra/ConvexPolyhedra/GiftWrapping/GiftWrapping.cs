@@ -65,19 +65,21 @@ public class GiftWrapping {
 #endif
 
     if (initEdge is not null) {
-      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, "BuildFace: The dimension of the initial edge must equal to (d-2)!");
+      Debug.Assert(initEdge.PolyhedronDim == SDim - 2, $"BuildFace (dim = {S.First().Dim}): The dimension of the initial edge must equal to (d-2)!");
       initEdge.Normal = r;
     }
-    Debug.Assert(FaceBasis.SpaceDim == SDim - 1, "BuildFace: The basis must lie in (d-1)-dimensional space!");
+    Debug.Assert(FaceBasis.SpaceDim == SDim - 1, $"BuildFace (dim = {S.First().Dim}): The basis must lie in (d-1)-dimensional space!");
 
 
-    HyperPlane hyperPlane = new HyperPlane(FaceBasis.Origin, n);
-    HashSet<SubPoint> inPlane = S.Where(s => hyperPlane.Contains(s))
+    var        x          = S.Select(FaceBasis.Contains);
+    HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
+    HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s))
                                  .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
                                  .ToHashSet();
+    var xx = S.Select(hp.Eval);
 
 
-    Debug.Assert(inPlane.Count >= SDim, "BuildFace: In plane must be at least d points!");
+    Debug.Assert(inPlane.Count >= SDim, $"BuildFace (dim = {S.First().Dim}): In plane must be at least d points!");
 
     if (inPlane.Count == FaceBasis.VecDim) {
       return new SubSimplex(inPlane.Select(p => p.Parent!));
@@ -124,7 +126,7 @@ public class GiftWrapping {
       // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
 
       AffineBasis initBasis = BuildInitialPlane(S);
-      Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
+      Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, $"GW (dim = {S.First().Dim}): The dimension of the initial plane must be equal to d-1");
       HyperPlane hp = new HyperPlane(initBasis);
       Vector     n  = hp.Normal;
       OrientNormal(S, ref n, initBasis.Origin);
@@ -140,7 +142,7 @@ public class GiftWrapping {
         }
       }
       if (badPoints.Any()) {
-        throw new ArgumentException("GW: Some points outside the initial plane!");
+        throw new ArgumentException($"GW (dim = {S.First().Dim}): Some points outside the initial plane!");
       }
 #endif
 
@@ -241,10 +243,11 @@ public class GiftWrapping {
     Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
     Vector? r        = null;
+    SubPoint?  sStar    = null;
     double  maxAngle = double.MinValue;
 
-    Debug.Assert(face.Normal is not null, "RollOverEdge: face.Normal is null");
-    Debug.Assert(!face.Normal.IsZero, "RollOverEdge: face.Normal has zero length");
+    Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {S.First().Dim}): face.Normal is null");
+    Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {S.First().Dim}): face.Normal has zero length");
 
     foreach (SubPoint s in S) {
       Vector so = s - edgeBasis.Origin;
@@ -258,6 +261,7 @@ public class GiftWrapping {
         if (Tools.GT(angle, maxAngle)) {
           maxAngle = angle;
           r        = u;
+          sStar    = s;
         }
       }
     }
@@ -268,17 +272,27 @@ public class GiftWrapping {
     Debug.Assert
       (
        newF_aBasis.SpaceDim == face.PolyhedronDim
-     , "RollOverEdge: The dimension of the basis of new F' must equals to F dimension!"
+     , $"RollOverEdge (dim = {S.First().Dim}): The dimension of the basis of new F' must equals to F dimension!"
       );
 
-    n = (r! * face.Normal) * v - (r! * v) * face.Normal;
+    List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
+    newF_aBasis = new AffineBasis(newPlane);
+    HyperPlane hp = new HyperPlane(newF_aBasis);
+    n  = hp.Normal;
+    OrientNormal(S, ref n, newF_aBasis.Origin);
+    hp.OrientNormal(newF_aBasis.Origin + n, true);
 
-    Debug.Assert(Tools.EQ(n.Length, 1), "RollOverEdge: New normal is not of length 1.");
+    // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
+
+    Debug.Assert(Tools.EQ(n.Length, 1), $"RollOverEdge (dim = {S.First().Dim}): New normal is not of length 1.");
 
     OrientNormal(S, ref n, edgeBasis.Origin);
 
-    HyperPlane hp = new HyperPlane(edgeBasis.Origin, n);
-    List<int>  j  = S.Select(s => Tools.Sign(hp.Eval(s))).ToList();
+    HyperPlane hpHelp = new HyperPlane(edgeBasis.Origin, n);
+    List<double>  j  = S.Select(s => hpHelp.Eval(s)).ToList();
+
+    var x  = new AffineBasis(new List<Point>() { S.ToList()[1], S.ToList()[3] });
+    var xx = Vector.OrthonormalizeAgainstBasis(S.ToList()[2] - S.ToList()[1], x.Basis);
 
     return BuildFace(ref S, newF_aBasis, n, r, edge);
   }
@@ -310,7 +324,6 @@ public class GiftWrapping {
     double maxAngle;
     // double    minDot;
     SubPoint? sExtr;
-    Vector?   nStar = null;
 
     while (tempV.Any()) {
       Vector t = tempV.First();
@@ -340,7 +353,6 @@ public class GiftWrapping {
         if (Tools.GT(angle, maxAngle)) {
           maxAngle = angle;
           sExtr    = s;
-          nStar    = n;
         }
       }
 
@@ -349,9 +361,9 @@ public class GiftWrapping {
       }
 
       Viewed.Add(sExtr);
-      bool isAdded = FinalV.AddVectorToBasis(nStar!, false);
+      bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
       Debug.Assert(isAdded, "BuildInitialPlane: Vector was not added to FinalV!");
-      // tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+      tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
     }
 
     return FinalV;
