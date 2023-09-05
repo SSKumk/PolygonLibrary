@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using PolygonLibrary.Toolkit;
+using System.Numerics;
+using PolygonLibrary;
 
 // TODO: Uncomment when segments are ready
 // using PolygonLibrary.Segments;
 
 
-namespace PolygonLibrary.Basics;
+namespace PolygonLibrary;
 
+public partial class Geometry<TNum>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+
+  
 /// <summary>
 /// A call of a straight line in the plane
 /// </summary>
@@ -17,17 +22,17 @@ public class Line2D {
   /// <summary>
   /// The property of the coefficient A in the general equation of the line
   /// </summary>
-  public double A { get; protected set; }
+  public TNum A { get; protected set; }
 
   /// <summary>
   /// The property of the coefficient B in the general equation of the line
   /// </summary>
-  public double B { get; protected set; }
+  public TNum B { get; protected set; }
 
   /// <summary>
   /// The property of the coefficient C in the general equation of the line
   /// </summary>
-  public double C { get; protected set; }
+  public TNum C { get; protected set; }
 
   /// <summary>
   /// The property of the directional vector of the line
@@ -45,11 +50,11 @@ public class Line2D {
   /// Default constructor that produces the abscissa axis
   /// </summary>
   public Line2D() {
-    A      = 0;
-    B      = 1;
-    C      = 0;
-    Direct = new Vector2D(1, 0);
-    Normal = new Vector2D(0, 1);
+    A      = Zero;
+    B      = One;
+    C      = Zero;
+    Direct = new Vector2D(One, Zero);
+    Normal = new Vector2D(Zero, One);
   }
 
   /// <summary>
@@ -127,7 +132,7 @@ public class Line2D {
   private void PointAndDirect(Point2D p, Vector2D v, Point2D p1) {
     PointAndDirect(p, v);
 
-    double val = this[p1];
+    TNum val = this[p1];
     if (Tools.EQ(val)) {
       throw new ArgumentException("The point that should define the positive halfplane belongs to the line");
     }
@@ -189,7 +194,7 @@ public class Line2D {
   /// </summary>
   /// <param name="p">The point where to compute the function value</param>
   /// <returns>The computed value</returns>
-  public double this[Point2D p] => A * p.x + B * p.y + C;
+  public TNum this[Point2D p] => A * p.x + B * p.y + C;
 
   /// <summary>
   /// Checks whether the line passes through the given point
@@ -247,7 +252,7 @@ public class Line2D {
   /// <param name="res">The intersection point (if exists and unique)</param>
   /// <returns>The type of imposition of the lines (crossing, parallel, overlapping) </returns>
   public static LineCrossType Intersect(Line2D l1, Line2D l2, out Point2D? res) {
-    double d = l1.A * l2.B - l1.B * l2.A, d1 = -(l1.C * l2.B - l2.C * l1.B), d2 = -(l1.A * l2.C - l1.C * l2.A);
+    TNum d = l1.A * l2.B - l1.B * l2.A, d1 = -(l1.C * l2.B - l2.C * l1.B), d2 = -(l1.A * l2.C - l1.C * l2.A);
     if (Tools.NE(d)) {
       res = new Point2D(d1 / d, d2 / d);
       return LineCrossType.SinglePoint;
@@ -263,3 +268,6 @@ public class Line2D {
 #endregion
 
 }
+
+}
+
