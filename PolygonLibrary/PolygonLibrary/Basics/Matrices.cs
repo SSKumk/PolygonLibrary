@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using PolygonLibrary.Toolkit;
+using System.Numerics;
+using PolygonLibrary;
 
-namespace PolygonLibrary.Basics;
+namespace PolygonLibrary;
+
+public partial class Geometry<TNum>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+
 
 /// <summary>
 /// Class of a matrix. Indices are assumed to be zero-based
@@ -13,7 +18,7 @@ public class Matrix : IEquatable<Matrix> {
   /// <summary>
   /// The internal linear storage of the matrix as a one-dimensional array
   /// </summary>
-  private readonly double[] _m;
+  private readonly TNum[] _m;
 
   /// <summary>
   /// Number of rows of the matrix
@@ -31,7 +36,7 @@ public class Matrix : IEquatable<Matrix> {
   /// <param name="i">The row counted from zero</param>
   /// <param name="j">The column counted from zero</param>
   /// <returns>The value of the corresponding component</returns>
-  public double this[int i, int j] {
+  public TNum this[int i, int j] {
     get
       {
 #if DEBUG
@@ -52,9 +57,9 @@ public class Matrix : IEquatable<Matrix> {
   /// </summary>
   /// <param name="m">The matrix to be converted</param>
   /// <returns>The resultant array</returns>
-  public static implicit operator double[,](Matrix m) {
+  public static implicit operator TNum[,](Matrix m) {
     int       i, j, k = 0, r = m.Rows, c = m.Cols;
-    double[,] res     = new double[r, c];
+    TNum[,] res     = new TNum[r, c];
 
     for (i = 0; i < r; i++) {
       for (j = 0; j < c; j++, k++) {
@@ -70,7 +75,7 @@ public class Matrix : IEquatable<Matrix> {
   /// </summary>
   /// <param name="m">Array to be converted</param>
   /// <returns>The resultant matrix</returns>
-  public static explicit operator Matrix(double[,] m) => new Matrix(m);
+  public static explicit operator Matrix(TNum[,] m) => new Matrix(m);
 #endregion
 
 #region Constructors
@@ -90,7 +95,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException("Dimension of a matrix cannot be non-positive");
     }
 #endif
-    _m   = new double[n * m];
+    _m   = new TNum[n * m];
     Rows = n;
     Cols = m;
   }
@@ -102,7 +107,7 @@ public class Matrix : IEquatable<Matrix> {
   /// <param name="n">Number of rows</param>
   /// <param name="m">Number of columns</param>
   /// <param name="ar">The array</param>
-  public Matrix(int n, int m, double[] ar) {
+  public Matrix(int n, int m, TNum[] ar) {
 #if DEBUG
     if (n <= 0) {
       throw new ArgumentException("Number of rows should be positive");
@@ -129,7 +134,7 @@ public class Matrix : IEquatable<Matrix> {
   /// Constructor on the basis of a two-dimensional array
   /// </summary>
   /// <param name="nm">The new array</param>
-  public Matrix(double[,] nm) {
+  public Matrix(TNum[,] nm) {
 #if DEBUG
     if (nm.Length <= 0) {
       throw new ArgumentException("Number of matrix elements should be positive");
@@ -150,10 +155,10 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException("Matrix cannot have a non-positive number of columns");
     }
 #endif
-    _m = new double[Rows * Cols];
+    _m = new TNum[Rows * Cols];
     int k = 0;
 
-    foreach (double el in nm) {
+    foreach (TNum el in nm) {
       _m[k] = el;
       k++;
     }
@@ -166,10 +171,10 @@ public class Matrix : IEquatable<Matrix> {
   public Matrix(Matrix m) {
     Rows = m.Rows;
     Cols = m.Cols;
-    _m   = new double[Rows * Cols];
+    _m   = new TNum[Rows * Cols];
     int k = 0;
 
-    foreach (double el in m._m) {
+    foreach (TNum el in m._m) {
       _m[k] = el;
       k++;
     }
@@ -230,8 +235,9 @@ public class Matrix : IEquatable<Matrix> {
     res = HashCode.Combine(res, Rows);
     res = HashCode.Combine(res, Cols);
 
-    foreach (double el in _m) {
-      res = HashCode.Combine(res, (int)(el / Tools.Eps));
+    foreach (TNum el in _m) {
+      res = HashCode.Combine(res, (el / Tools.Eps));
+      // res = HashCode.Combine(res, (int)(el / Tools.Eps)); todo Что делать с ХЕШем?
     }
 
     return res;
@@ -246,7 +252,7 @@ public class Matrix : IEquatable<Matrix> {
   /// <returns>The opposite vector</returns>
   public static Matrix operator -(Matrix m) {
     int      d  = m.Rows * m.Cols, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
       nv[i] = -m._m[i];
@@ -268,7 +274,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d  = m1.Rows * m1.Cols, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
       nv[i] = m1._m[i] + m2._m[i];
@@ -290,7 +296,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d  = m1.Rows * m1.Cols, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
       nv[i] = m1._m[i] - m2._m[i];
@@ -305,9 +311,9 @@ public class Matrix : IEquatable<Matrix> {
   /// <param name="a">The numeric factor</param>
   /// <param name="m">The matrix factor</param>
   /// <returns>The product</returns>
-  public static Matrix operator *(double a, Matrix m) {
+  public static Matrix operator *(TNum a, Matrix m) {
     int      d  = m.Rows * m.Cols, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
       nv[i] = a * m._m[i];
@@ -322,7 +328,7 @@ public class Matrix : IEquatable<Matrix> {
   /// <param name="m">The matrix factor</param>
   /// <param name="a">The numeric factor</param>
   /// <returns>The product</returns>
-  public static Matrix operator *(Matrix m, double a) => a * m;
+  public static Matrix operator *(Matrix m, TNum a) => a * m;
 
   /// <summary>
   /// Division of a matrix by a number
@@ -330,14 +336,14 @@ public class Matrix : IEquatable<Matrix> {
   /// <param name="m">The matrix dividend</param>
   /// <param name="a">The numeric divisor</param>
   /// <returns>The product</returns>
-  public static Matrix operator /(Matrix m, double a) {
+  public static Matrix operator /(Matrix m, TNum a) {
 #if DEBUG
     if (Tools.EQ(a)) {
       throw new DivideByZeroException();
     }
 #endif
     int      d  = m.Rows * m.Cols, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
       nv[i] = m._m[i] / a;
@@ -359,7 +365,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
     }
 #endif
-    double[] res = new double[m.Rows];
+    TNum[] res = new TNum[m.Rows];
     int      r   = m.Rows, c = m.Cols, i, j, k = 0;
 
     for (i = 0; i < r; i++) {
@@ -384,7 +390,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
     }
 #endif
-    double[] res = new double[m.Cols];
+    TNum[] res = new TNum[m.Cols];
     int      r   = m.Rows, c = m.Cols, i, j, k;
 
     for (i = 0; i < c; i++) {
@@ -409,7 +415,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException("Cannot multiply a matrix and a point of improper dimensions");
     }
 #endif
-    double[] res = new double[m.Rows];
+    TNum[] res = new TNum[m.Rows];
     int      r   = m.Rows, c = m.Cols, i, j, k = 0;
 
     for (i = 0; i < r; i++) {
@@ -434,7 +440,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      r   = m1.Rows, c = m2.Cols, d = r * c, temp = m1.Cols, i, j, k, m1Ind, m1Start, m2Ind, resInd = 0;
-    double[] res = new double[d];
+    TNum[] res = new TNum[d];
 
     for (i = 0, m1Start = 0; i < r; i++, m1Start += temp) {
       for (j = 0; j < c; j++, resInd++) {
@@ -460,7 +466,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      r  = m1.Rows, c1 = m1.Cols, c2 = m2.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < r; i++) {
       for (j = 0; j < c1; j++, k++, k1++) {
@@ -488,14 +494,14 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d  = (m1.Rows + m2.Rows) * m1.Cols, k = 0;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
-    foreach (double el in m1._m) {
+    foreach (TNum el in m1._m) {
       nv[k] = el;
       k++;
     }
 
-    foreach (double el in m2._m) {
+    foreach (TNum el in m2._m) {
       nv[k] = el;
       k++;
     }
@@ -518,7 +524,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      c   = Cols, d = r * c, k = 0, ind, i, j;
-    double[] res = new double[d];
+    TNum[] res = new TNum[d];
 
     for (i = 0; i < rows.Length; i++) {
       for (j = 0, ind = rows[i] * c; j < c; j++, ind++, k++) {
@@ -542,7 +548,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      r   = Rows, d = r * c, k = 0, start, i, j;
-    double[] res = new double[d];
+    TNum[] res = new TNum[d];
 
     for (i = 0, start = 0; i < r; i++, start += Cols) {
       for (j = 0; j < c; j++, k++) {
@@ -571,7 +577,7 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d   = r * c, k = 0, start, i, j;
-    double[] res = new double[d];
+    TNum[] res = new TNum[d];
 
     for (i = 0; i < r; i++) {
       start = rows[i] * Cols;
@@ -643,17 +649,17 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d  = n * m, i;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
-      nv[i] = 1;
+      nv[i] = Geometry<TNum>.One;
     }
 
     return new Matrix(n, m, nv);
   }
 
   /// <summary>
-  /// Return unit square matrix n-by-n 
+  /// Return unit square matrix n-by-n
   /// </summary>
   /// <param name="n">Size of the matrix</param>
   /// <returns>The resultant matrix</returns>
@@ -667,7 +673,7 @@ public class Matrix : IEquatable<Matrix> {
   }
 
   /// <summary>
-  /// Return rectangular unite matrix n-by-m 
+  /// Return rectangular unite matrix n-by-m
   /// </summary>
   /// <param name="n">Number of rows</param>
   /// <param name="m">Number of columns</param>
@@ -683,14 +689,14 @@ public class Matrix : IEquatable<Matrix> {
     }
 #endif
     int      d  = n * m, i, j, k = 0;
-    double[] nv = new double[d];
+    TNum[] nv = new TNum[d];
 
     for (i = 0; i < n; i++) {
       for (j = 0; j < m; j++, k++) {
         if (i == j) {
-          nv[k] = 1;
+          nv[k] = Geometry<TNum>.One;
         } else {
-          nv[k] = 0;
+          nv[k] = Geometry<TNum>.Zero;
         }
       }
     }
@@ -698,5 +704,7 @@ public class Matrix : IEquatable<Matrix> {
     return new Matrix(n, m, nv);
   }
 #endregion
+
+}
 
 }
