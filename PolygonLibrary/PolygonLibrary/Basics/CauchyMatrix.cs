@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Numerics;
 using AVLUtils;
-using PolygonLibrary.Toolkit;
+using PolygonLibrary;
 
-namespace PolygonLibrary.Basics
-{
+namespace PolygonLibrary;
+
+public partial class Geometry<TNum>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+
+
   /// <summary>
-  /// Class that provides computation of the fundamental Cauchy matrix 
+  /// Class that provides computation of the fundamental Cauchy matrix
   /// for the given constant square matrix.
   /// The integration is made by the 4th order Runge-Kutta method
   /// with the fixed given time step
@@ -18,22 +22,22 @@ namespace PolygonLibrary.Basics
     /// Double comparer based on epsilon comparison.
     /// Necessary for the internal storage
     /// </summary>
-    protected class TimeComparer : IComparer<double>
+    protected class TimeComparer : IComparer<TNum>
     {
-      public int Compare(double a, double b) => Tools.CMP(a, b);
+      public int Compare(TNum a, TNum b) => Tools.CMP(a, b);
     }
 
     #region Internal data
     /// <summary>
-    /// The main storage: Cauchy matrix values (the value in the dictionary) 
+    /// The main storage: Cauchy matrix values (the value in the dictionary)
     /// for distinct instants (the keys in the dictionary)
     /// </summary>
-    private readonly AVLDictionary<double, Matrix> _ms;
+    private readonly AVLDictionary<TNum, Matrix> _ms;
 
     /// <summary>
     /// The instant, to which the initial value is connected
     /// </summary>
-    private readonly double T;
+    private readonly TNum T;
 
     /// <summary>
     /// The matrix, for which the Cauchy matrix is computed
@@ -43,7 +47,7 @@ namespace PolygonLibrary.Basics
     /// <summary>
     /// Maximal time step in the integration scheme
     /// </summary>
-    private readonly double dt;
+    private readonly TNum dt;
     #endregion
 
     #region Constructors
@@ -53,7 +57,7 @@ namespace PolygonLibrary.Basics
     /// <param name="nA">A square matrix</param>
     /// <param name="nT">The final instant</param>
     /// <param name="ndt">The time step</param>
-    public CauchyMatrix(Matrix nA, double nT, double ndt)
+    public CauchyMatrix(Matrix nA, TNum nT, TNum ndt)
     {
 #if DEBUG
       if (nA.Rows != nA.Cols) {
@@ -63,27 +67,27 @@ namespace PolygonLibrary.Basics
       A = nA;
       T = nT;
       dt = ndt;
-      _ms = new AVLDictionary<double, Matrix>(new TimeComparer());
+      _ms = new AVLDictionary<TNum, Matrix>(new TimeComparer());
       _ms[T] = Matrix.Eye(A.Rows);
     }
     #endregion
 
     #region The getting functions
     /// <summary>
-    /// Indexer that gives the Cauchy matrix for given instant. 
+    /// Indexer that gives the Cauchy matrix for given instant.
     /// It is based on the GetAt function
     /// </summary>
     /// <param name="t">The time instant, at which it is necessary to get the Cauchy matrix</param>
     /// <returns>The Cauchy matrix at the given instant</returns>
-    public Matrix this[double t] => GetAt(t);
+    public Matrix this[TNum t] => GetAt(t);
 
     /// <summary>
-    /// Function that gives the Cauchy matrix for given instant. 
+    /// Function that gives the Cauchy matrix for given instant.
     /// It is used in the indexer
     /// </summary>
     /// <param name="t">The time instant, at which it is necessary to get the Cauchy matrix</param>
     /// <returns>The Cauchy matrix at the given instant</returns>
-    private Matrix GetAt(double t)
+    private Matrix GetAt(TNum t)
     {
       if (!_ms.ContainsKey(t)) {
         ComputeAt(t);
@@ -98,18 +102,18 @@ namespace PolygonLibrary.Basics
     /// This function is called only if there is no the matrix for the given instant!
     /// </summary>
     /// <param name="t">The instant, at which the Cauchy matrix should be computed</param>
-    private void ComputeAt(double t)
+    private void ComputeAt(TNum t)
     {
       // Find the instants neighbouring to t (if they are in the storage)
-      KeyValuePair<double, Matrix>
-        leftVal = new KeyValuePair<double, Matrix>(),
-        rightVal = new KeyValuePair<double, Matrix>();
+      KeyValuePair<TNum, Matrix>
+        leftVal = new KeyValuePair<TNum, Matrix>(),
+        rightVal = new KeyValuePair<TNum, Matrix>();
 
       // Flags showing whether the corresponding neighbor instants are in the storage
       bool leftExists = false, rightExists = false;
 
       // Current instant
-      double tCur;
+      TNum tCur;
 
       // Current matrix value
       Matrix mCur;
@@ -127,7 +131,7 @@ namespace PolygonLibrary.Basics
       }
 
       // Setting the flag of integration direction
-      bool forward = leftExists && (!rightExists || Tools.LT(Math.Abs(leftVal.Key - t), Math.Abs(rightVal.Key - t)));
+      bool forward = leftExists && (!rightExists || Tools.LT(TNum.Abs(leftVal.Key - t), TNum.Abs(rightVal.Key - t)));
 
       // Setting the initial values for the integration
       if (forward)
@@ -143,27 +147,27 @@ namespace PolygonLibrary.Basics
 
       // Flag defining the integration loop repetition;
       // do the integration if the period is not less than the time step
-      bool flag = Tools.GE(Math.Abs(t - tCur), dt);
+      bool flag = Tools.GE(TNum.Abs(t - tCur), dt);
 
       // The integration loop
       if (forward)
       {
         while (flag)
         {
-          mCur = RungeKuttaStep(mCur, -dt);
-          tCur += dt;
-          _ms[tCur] = mCur;
-          flag = Tools.GE(Math.Abs(t - tCur), dt);
+          mCur      =  RungeKuttaStep(mCur, -dt);
+          tCur      += dt;
+          _ms[tCur] =  mCur;
+          flag      =  Tools.GE(TNum.Abs(t - tCur), dt);
         }
       }
       else
       {
         while (flag)
         {
-          mCur = RungeKuttaStep(mCur, dt);
-          tCur -= dt;
-          _ms[tCur] = mCur;
-          flag = Tools.GE(Math.Abs(t - tCur), dt);
+          mCur      =  RungeKuttaStep(mCur, dt);
+          tCur      -= dt;
+          _ms[tCur] =  mCur;
+          flag      =  Tools.GE(TNum.Abs(t - tCur), dt);
         }
       }
       mCur = RungeKuttaStep(mCur, t - tCur);
@@ -176,15 +180,16 @@ namespace PolygonLibrary.Basics
     /// <param name="cur">Current value of the matrix</param>
     /// <param name="curTimeStep">Time step</param>
     /// <returns>The result of integration</returns>
-    private Matrix RungeKuttaStep(Matrix cur, double curTimeStep)
+    private Matrix RungeKuttaStep(Matrix cur, TNum curTimeStep)
     {
       Matrix
         K1 = A * cur,
-        K2 = A * (cur + (curTimeStep / 2) * K1),
-        K3 = A * (cur + (curTimeStep / 2) * K2),
+        K2 = A * (cur + (curTimeStep / Geometry<TNum>.Two) * K1),
+        K3 = A * (cur + (curTimeStep / Geometry<TNum>.Two) * K2),
         K4 = A * (cur + curTimeStep * K3);
-      return cur + (curTimeStep / 6) * (K1 + 2 * K2 + 2 * K3 + K4);
+      return cur + (curTimeStep / Geometry<TNum>.Six) * (K1 + Geometry<TNum>.Two * K2 + Geometry<TNum>.Two * K3 + K4);
     }
     #endregion
   }
+
 }
