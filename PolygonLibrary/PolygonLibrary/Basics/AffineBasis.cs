@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-namespace PolygonLibrary.Basics;
+namespace PolygonLibrary;
 
 public partial class Geometry<TNum>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
