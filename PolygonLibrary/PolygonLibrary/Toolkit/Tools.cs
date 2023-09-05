@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Toolkit;
+namespace PolygonLibrary;
 
 public partial class Geometry<TNum>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+
+  private static readonly TNum Zero = TNum.AdditiveIdentity;
+  private static readonly TNum One  = TNum.MultiplicativeIdentity;
+  private static readonly TNum Two  = TNum.MultiplicativeIdentity + TNum.MultiplicativeIdentity;
+  private static readonly TNum Six  = Two + Two + Two;
 
   /// <summary>
   /// Class with general purpose procedures
