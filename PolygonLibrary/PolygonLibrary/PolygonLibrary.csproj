@@ -85,4 +85,8 @@
         <Content Include="Segments\Bentley-Ottmann\YStructure.cs_store" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="TYoshimura.DoubleDouble" Version="2.8.6" />
+    </ItemGroup>
+
 </Project>
