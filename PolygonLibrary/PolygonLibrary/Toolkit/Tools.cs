@@ -85,6 +85,11 @@ public partial class Geometry<TNum, TConv>
     public static readonly TNum Zero = TNum.AdditiveIdentity;
 
     /// <summary>
+    /// Represents the Half of One-value of TNum ('0.5').
+    /// </summary>
+    public static readonly TNum HalfOne = TConv.FromDouble(0.5);
+
+    /// <summary>
     /// Represents the One-value of TNum ('1').
     /// </summary>
     public static readonly TNum One = TNum.MultiplicativeIdentity;
