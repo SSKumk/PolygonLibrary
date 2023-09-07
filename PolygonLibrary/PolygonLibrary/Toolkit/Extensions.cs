@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CGLibrary.Toolkit;
+namespace CGLibrary;
 
 /// <summary>
 /// Extensions to standard ListOfT container
@@ -189,7 +189,7 @@ public static class ListExtensions
 	/// <typeparam name="T">Array element type</typeparam>
 	/// <param name="array">Array to shuffle</param>
 	/// <param name="ownRnd">A random generator. If is not passed, some internal generator will be used</param>
-	public static void Shuffle<T>(List<T> array, RandomLC? ownRnd = null)
+	public static void Shuffle<T>(this List<T> array, RandomLC? ownRnd = null)
 	{
 		int      n   = array.Count;
 		RandomLC rnd = ownRnd ?? new RandomLC();
