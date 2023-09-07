@@ -113,6 +113,11 @@ public partial class Geometry<TNum, TConv>
     /// Represents half of the value of PI.
     /// </summary>
     public static readonly TNum HalfPI = PI / Two;
+
+    /// <summary>
+    /// Represents doubled value of the PI.
+    /// </summary>
+    public static readonly TNum PI2 = PI * Two;
 #endregion
 
 #region Double comparison
