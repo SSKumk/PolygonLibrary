@@ -1,9 +1,14 @@
 using System;
 using System.Diagnostics;
+using System.Numerics;
 
 
-namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+namespace CGLibrary;
 
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 /// <summary>
 /// Represents a point in a subspace greater than 2.
 /// </summary>
@@ -84,7 +89,7 @@ public class SubPoint : Point {
   /// <param name="np">The projected point</param>
   /// <param name="parent">The point from which the current point was projected</param>
   /// <param name="original">The point from which all parents point were projected</param>
-  public SubPoint(double[] np, SubPoint? parent, Point original) : base(np) {
+  public SubPoint(TNum[] np, SubPoint? parent, Point original) : base(np) {
     Original = original;
     Parent   = parent;
   }
@@ -126,4 +131,4 @@ public class SubPoint : Point {
   //   return new SubPoint(projectPoint, new SubPoint(p, null, p), p);
   // }
 
-}
+} }
