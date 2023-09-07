@@ -3,16 +3,10 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
-  where TConv : INumConvertor<TNum> {
-
 /// <summary>
 /// Represents a linear congruential random number generator.
 /// </summary>
 public class RandomLC {
-
-  private TNum MaxValue = TConv.FromUInt(uint.MaxValue);
 
   /// <summary>
   /// Multiplier
@@ -34,7 +28,7 @@ public class RandomLC {
   /// Generates the next random number based on the current seed value.
   /// </summary>
   /// <returns>The generated random number.</returns>
-  private uint Rand() {
+  internal uint Rand() {
     Seed = Seed * a + c;
 
     return Seed;
@@ -58,7 +52,7 @@ public class RandomLC {
   /// <param name="lb">The lower bound of the range (inclusive).</param>
   /// <param name="rb">The upper bound of the range (inclusive).</param>
   /// <returns>The generated random integer.</returns>
-  public int NextInt(int lb = 0, int rb = int.MaxValue) { return (int)(Rand() % int.MaxValue) % (rb - lb + 1) + lb; }
+  public int NextInt(int lb = 0, int rb = int.MaxValue) => (int)(Rand() % int.MaxValue) % (rb - lb + 1) + lb;
 
   /// <summary>
   /// Generates the next random double within the specified range [a = 0, b = 1).
@@ -66,18 +60,36 @@ public class RandomLC {
   /// <param name="lb">The lower bound of the range (inclusive).</param>
   /// <param name="rb">The upper bound of the range (exclusive).</param>
   /// <returns>The generated random double.</returns>
-  public double NextDouble(double lb = 0, double rb = 1) { return Rand() * (rb - lb) / uint.MaxValue + lb; }
+  public double NextDouble(double lb = 0, double rb = 1) => Rand() * (rb - lb) / uint.MaxValue + lb;
+
+}
+
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Generates the next random precise number within the specified range.
+  /// Represents a linear congruential random precise-number generator.
   /// </summary>
-  /// <param name="lb">The lower bound of the range (inclusive).</param>
-  /// <param name="rb">The upper bound of the range (exclusive).</param>
-  /// <returns>The generated random precise number.</returns>
-  public TNum NextPrecise(TNum lb, TNum rb) {
-    return TConv.FromUInt(Rand()) / MaxValue * (rb - lb) + lb;
+  public class GRandomLC : RandomLC {
+
+    private readonly TNum MaxValue = TConv.FromUInt(uint.MaxValue);
+
+    /// <summary>
+    /// Generates the next random precise-number within the [0,1) range.
+    /// </summary>
+    /// <returns>The generated random precise number.</returns>
+    public TNum NextPrecise() => NextPrecise(Tools.Zero, Tools.One);
+
+    /// <summary>
+    /// Generates the next random precise-number within the specified range.
+    /// </summary>
+    /// <param name="lb">The lower bound of the range (inclusive).</param>
+    /// <param name="rb">The upper bound of the range (exclusive).</param>
+    /// <returns>The generated random precise number.</returns>
+    public TNum NextPrecise(TNum lb, TNum rb) => TConv.FromUInt(Rand()) / MaxValue * (rb - lb) + lb;
+
   }
-}
 
 }
-
