@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using static CGLibrary.Geometry<double, DConvertor>;
 
 namespace Tests;
 
@@ -6,10 +7,10 @@ namespace Tests;
 public class VectorsTests {
   [Test]
   public void AngleTest() {
-    double sq3 = Math.Sqrt(3) / 2.0;
-    G.Vector2D[] v = new G.Vector2D[] {
-      new G.Vector2D(1, 0), new G.Vector2D(sq3, 0.5), new G.Vector2D(0.5, sq3), new G.Vector2D(0, 1), new G.Vector2D(-1, 1)
-      , new G.Vector2D(-1, 0), new G.Vector2D(-0.5, -sq3), new G.Vector2D(0, -1), new G.Vector2D(0.5, -sq3)
+    double sq3 = double.Sqrt(3) / 2.0;
+    Vector2D[] v = new Vector2D[] {
+      new Vector2D(1, 0), new Vector2D(sq3, 0.5), new Vector2D(0.5, sq3), new Vector2D(0, 1), new Vector2D(-1, 1)
+      , new Vector2D(-1, 0), new Vector2D(-0.5, -sq3), new Vector2D(0, -1), new Vector2D(0.5, -sq3)
     };
     int[,] p = new int[,] {
       { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 }, { 6, 6 }, { 7, 7 }, { 8, 8 }, { 0, 1 }, { 0, 2 }
@@ -22,32 +23,32 @@ public class VectorsTests {
     };
 
     for (int i = 0; i < res.Length; i++) {
-      double r = G.Vector2D.Angle2PI(v[p[i, 0]], v[p[i, 1]]);
-      Assert.That(G.Tools.EQ(r, res[i] * Math.PI / 180.0),
+      double r = Vector2D.Angle2PI(v[p[i, 0]], v[p[i, 1]]);
+      Assert.That(Tools.EQ(r, res[i] * Tools.PI / 180.0),
         "Direct angle: test #" + i + " has failed");
     }
 
     for (int i = 9; i < res.Length; i++) {
-      double r = G.Vector2D.Angle2PI(v[p[i, 1]], v[p[i, 0]]);
-      Assert.That(G.Tools.EQ(2 * Math.PI - r, res[i] * Math.PI / 180.0),
+      double r = Vector2D.Angle2PI(v[p[i, 1]], v[p[i, 0]]);
+      Assert.That(Tools.EQ(2 * Tools.PI - r, res[i] * Tools.PI / 180.0),
         "Back angle: test #" + i + " has failed");
     }
   }
 
   [Test]
   public void IsBetweenTest() {
-    double pi = Math.PI;
-    G.Vector2D
-      v0 = G.Vector2D.FromPolar(-pi, 1)
-      , v1 = G.Vector2D.FromPolar(-7 * pi / 8, 1)
-      , v2 = G.Vector2D.FromPolar(-3 * pi / 4, 1)
-      , v3 = G.Vector2D.FromPolar(-pi / 2, 1)
-      , v4 = G.Vector2D.FromPolar(-pi / 4, 1)
-      , v5 = G.Vector2D.FromPolar(0, 1)
-      , v6 = G.Vector2D.FromPolar(pi / 4, 1)
-      , v7 = G.Vector2D.FromPolar(pi / 2, 1)
-      , v8 = G.Vector2D.FromPolar(3 * pi / 4, 1)
-      , v9 = G.Vector2D.FromPolar(7 * pi / 8, 1)
+    double pi = Tools.PI;
+    Vector2D
+      v0 = Vector2D.FromPolar(-pi, 1)
+      , v1 = Vector2D.FromPolar(-7 * pi / 8, 1)
+      , v2 = Vector2D.FromPolar(-3 * pi / 4, 1)
+      , v3 = Vector2D.FromPolar(-pi / 2, 1)
+      , v4 = Vector2D.FromPolar(-pi / 4, 1)
+      , v5 = Vector2D.FromPolar(0, 1)
+      , v6 = Vector2D.FromPolar(pi / 4, 1)
+      , v7 = Vector2D.FromPolar(pi / 2, 1)
+      , v8 = Vector2D.FromPolar(3 * pi / 4, 1)
+      , v9 = Vector2D.FromPolar(7 * pi / 8, 1)
       ;
 
     Assert.Multiple(() => {

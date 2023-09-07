@@ -1,5 +1,7 @@
 using NUnit.Framework;
 
+using CGLibrary;
+using static CGLibrary.Geometry<double, DConvertor>;
 namespace Tests;
 
 [TestFixture]
@@ -11,7 +13,7 @@ public class HyperPlaneTests {
     Vector     normal     = new Vector(new double[] { 1, 1, 1 });
     HyperPlane hyperplane = new HyperPlane(origin, normal);
 
-    AffineBasis.CheckCorrectness(hyperplane.AffineBasis);
+    AffineBasis.CheckCorrectness(hyperplane.ABasis);
   }
 
   [Test]
@@ -25,7 +27,7 @@ public class HyperPlaneTests {
     AffineBasis affineBasis = new AffineBasis(new Point(new double[] { 1, 1, 1 }), vectors);
     HyperPlane  hyperplane  = new HyperPlane(affineBasis);
 
-    AffineBasis.CheckCorrectness(hyperplane.AffineBasis);
+    AffineBasis.CheckCorrectness(hyperplane.ABasis);
   }
 
   [Test]

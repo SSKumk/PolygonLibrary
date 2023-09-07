@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
-
+using CGLibrary;
+using static CGLibrary.Geometry<double, DConvertor>;
 namespace Tests; 
 
 [TestFixture]
@@ -7,13 +8,13 @@ public class PolygonExtremeTests {
   [Test]
   public void PolygonExtremeTest1() {
     // Polygon has no normal codirected with E1
-    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon cp = G.PolygonTools.Circle(0, 0, 1, 10);
+    ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10);
     double[] testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342, 350 };
-    G.Vector2D[] testDirs = new G.Vector2D[testAnglesDeg.Length];
-    G.Point2D?[,] res = new G.Point2D[testAnglesDeg.Length, 2];
+    Vector2D[] testDirs = new Vector2D[testAnglesDeg.Length];
+    Point2D?[,] res = new Point2D[testAnglesDeg.Length, 2];
     for (int i = 0; i < testAnglesDeg.Length; i++) {
-      double alpha = testAnglesDeg[i] * Math.PI / 180;
-      testDirs[i] = new G.Vector2D(5 * Math.Cos(alpha), 5 * Math.Sin(alpha));
+      double alpha = testAnglesDeg[i] * Tools.PI / 180;
+      testDirs[i] = new Vector2D(5 * double.Cos(alpha), 5 * double.Sin(alpha));
       cp.GetExtremeElements(testDirs[i], out res[i, 0], out res[i, 1]);
     }
 
@@ -32,13 +33,13 @@ public class PolygonExtremeTests {
   [Test]
   public void PolygonExtremeTest2() {
     // Polygon has a normal codirected with E1
-    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon cp            = G.PolygonTools.Circle(0, 0, 1, 10, Math.PI / 10);
+    ConvexPolygon cp            = PolygonTools.Circle(0, 0, 1, 10, Tools.PI / 10);
     double[]   testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342 };
-    G.Vector2D[] testDirs      = new G.Vector2D[testAnglesDeg.Length];
-    G.Point2D?[,]res           = new G.Point2D?[testAnglesDeg.Length, 2];
+    Vector2D[] testDirs      = new Vector2D[testAnglesDeg.Length];
+    Point2D?[,]res           = new Point2D?[testAnglesDeg.Length, 2];
     for (int i = 0; i < testAnglesDeg.Length; i++) {
-      double alpha = testAnglesDeg[i] * Math.PI / 180;
-      testDirs[i] = new G.Vector2D(5 * Math.Cos(alpha), 5 * Math.Sin(alpha));
+      double alpha = testAnglesDeg[i] * Tools.PI / 180;
+      testDirs[i] = new Vector2D(5 * double.Cos(alpha), 5 * double.Sin(alpha));
       cp.GetExtremeElements(testDirs[i], out res[i, 0], out res[i, 1]);
     }
 

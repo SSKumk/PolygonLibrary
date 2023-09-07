@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The affine basis associated with the hyperplane.
     /// </summary>
-    public AffineBasis AffineBasis {
+    public AffineBasis ABasis {
       get
         {
           if (_affineBasis is null) {

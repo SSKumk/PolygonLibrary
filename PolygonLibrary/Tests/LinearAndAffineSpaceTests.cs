@@ -1,5 +1,6 @@
 using NUnit.Framework;
-
+using CGLibrary;
+using static CGLibrary.Geometry<double, DConvertor>;
 namespace Tests;
 
 [TestFixture]
@@ -93,7 +94,7 @@ public class AffineSpaceTests {
   /// <param name="basis">Basis to be checked</param>
   private static void CheckVectorsLength(AffineBasis basis) {
     foreach (Vector bvec in basis.Basis) {
-      Assert.That(G.Tools.CMP(bvec.Length, 1), Is.EqualTo(0), "All vectors in the basis must have an unit length.");
+      Assert.That(Tools.CMP(bvec.Length, 1), Is.EqualTo(0), "All vectors in the basis must have an unit length.");
     }
   }
 

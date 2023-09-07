@@ -1,11 +1,13 @@
 ﻿using NUnit.Framework;
 
+using CGLibrary;
+using static CGLibrary.Geometry<double, DConvertor>;
 namespace Tests;
 
 [TestFixture]
 public class PolylineTests {
-  private List<G.Point2D> ps1 = new List<G.Point2D>() {
-    new G.Point2D(0, 0), new G.Point2D(1, 0), new G.Point2D(1, 1), new G.Point2D(0, 1)
+  private List<Point2D> ps1 = new List<Point2D>() {
+    new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1)
   };
 
   [Test]
@@ -13,8 +15,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 - 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 - 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -29,8 +31,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 - 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, 0.1);
+      double x = 1 - 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -45,8 +47,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -61,8 +63,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 + 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 + 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p), Is.False
           , "${i}th test: the polyline does contain the point, which should not contain");
@@ -77,8 +79,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 + 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, 0.1);
+      double x = 1 + 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -93,8 +95,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = -1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = -1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -122,15 +124,15 @@ public class PolylineTests {
   public void PolylineContainsTest1h() {
     Polyline line = new Polyline(ps1, PolylineOrientation.Counterclockwise, false, false);
     Assert.Multiple(() => {
-      Assert.That(line.ContainsPoint(new G.Point2D(1, 0.5)));
-      Assert.That(line.ContainsPointInside(new G.Point2D(1, 0.5)), Is.False);
-      Assert.That(line.ContainsPoint(new G.Point2D(1.0000001, 0.5)), Is.False);
-      Assert.That(line.ContainsPointInside(new G.Point2D(1.0000001, 0.5)), Is.False);
+      Assert.That(line.ContainsPoint(new Point2D(1, 0.5)));
+      Assert.That(line.ContainsPointInside(new Point2D(1, 0.5)), Is.False);
+      Assert.That(line.ContainsPoint(new Point2D(1.0000001, 0.5)), Is.False);
+      Assert.That(line.ContainsPointInside(new Point2D(1.0000001, 0.5)), Is.False);
     });
   }
 
-  private List<G.Point2D> ps2 = new List<G.Point2D>() {
-    new G.Point2D(0, 0), new G.Point2D(1, 0), new G.Point2D(1, 1), new G.Point2D(0, 1), new G.Point2D(0.1, 0.5)
+  private List<Point2D> ps2 = new List<Point2D>() {
+    new Point2D(0, 0), new Point2D(1, 0), new Point2D(1, 1), new Point2D(0, 1), new Point2D(0.1, 0.5)
   };
 
   [Test]
@@ -138,8 +140,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 - 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 - 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -154,8 +156,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 - 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, 0.1);
+      double x = 1 - 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -170,8 +172,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -186,8 +188,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(0.1 + x, 0.5);
+      double x = 1 / double.Pow(2, i);
+      Point2D p = new Point2D(0.1 + x, 0.5);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , "${i}th test: the polyline does not contain the point, which should contain");
@@ -202,8 +204,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 + 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = 1 + 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -218,8 +220,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 + 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, 0.1);
+      double x = 1 + 1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, 0.1);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -234,8 +236,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = -1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(x, x);
+      double x = -1 / double.Pow(2, i);
+      Point2D p = new Point2D(x, x);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -250,8 +252,8 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     for (int i = 1; i <= 10; i++) {
-      double x = 1 / Math.Pow(2, i);
-      G.Point2D p = new G.Point2D(0.1 - x, 0.5);
+      double x = 1 / double.Pow(2, i);
+      Point2D p = new Point2D(0.1 - x, 0.5);
       Assert.Multiple(() => {
         Assert.That(line.ContainsPoint(p)
           , Is.False, "${i}th test: the polyline does contain the point, which should not contain");
@@ -280,12 +282,12 @@ public class PolylineTests {
     Polyline line = new Polyline(ps2, PolylineOrientation.Counterclockwise, false, false);
 
     Assert.Multiple(() => {
-      Assert.That(line.ContainsPoint(new G.Point2D(0.05, 0.75)));
-      Assert.That(line.ContainsPointInside(new G.Point2D(0.05, 0.75)), Is.False);
-      Assert.That(line.ContainsPoint(new G.Point2D(1, 0.5)));
-      Assert.That(line.ContainsPointInside(new G.Point2D(1, 0.5)), Is.False);
-      Assert.That(line.ContainsPoint(new G.Point2D(1.0000001, 0.5)), Is.False);
-      Assert.That(line.ContainsPointInside(new G.Point2D(1.0000001, 0.5)), Is.False);
+      Assert.That(line.ContainsPoint(new Point2D(0.05, 0.75)));
+      Assert.That(line.ContainsPointInside(new Point2D(0.05, 0.75)), Is.False);
+      Assert.That(line.ContainsPoint(new Point2D(1, 0.5)));
+      Assert.That(line.ContainsPointInside(new Point2D(1, 0.5)), Is.False);
+      Assert.That(line.ContainsPoint(new Point2D(1.0000001, 0.5)), Is.False);
+      Assert.That(line.ContainsPointInside(new Point2D(1.0000001, 0.5)), Is.False);
     });
   }
 }

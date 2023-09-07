@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using static CGLibrary.Geometry<double, DConvertor>;
 
 
 namespace Tests.GW_hDTests;
