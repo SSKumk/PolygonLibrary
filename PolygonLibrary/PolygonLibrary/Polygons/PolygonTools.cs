@@ -133,6 +133,16 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon Circle(Point2D center, TNum R, int n) => Circle(center.x, center.y, R, n, Tools.Zero);
 
+    /// <summary>
+    /// Method for generating an approximation for the circle as a right n-polygon.
+    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// </summary>
+    /// <param name="x">The abscissa of the center.</param>
+    /// <param name="y">The ordinate of the center.</param>
+    /// <param name="R">The radius.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
+    /// <returns>The appropriate polygon.</returns>
+    public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n) => Circle(x, y, R, n,Tools.Zero);
     
     /// <summary>
     /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
