@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using CGLibrary.Polygons.ConvexPolygons;
 
 namespace CGLibrary;
 
@@ -18,9 +17,9 @@ public partial class Geometry<TNum, TConv>
     /// If the points are located on a vertical or horizontal line, a segment or a point is generated
     /// (a polygon with two or one vertices)
     /// </summary>
-    /// <param name="v1">One vertex from a pair of opposite vertices</param>
-    /// <param name="v2">Another vertex from a pair of opposite vertices</param>
-    /// <returns>The appropriate polygon</returns>
+    /// <param name="v1">One vertex from a pair of opposite vertices.</param>
+    /// <param name="v2">Another vertex from a pair of opposite vertices.</param>
+    /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon RectangleParallel(Point2D v1, Point2D v2) => RectangleParallel(v1.x, v1.y, v2.x, v2.y);
 
     /// <summary>
@@ -29,13 +28,13 @@ public partial class Geometry<TNum, TConv>
     /// If the points are located on a vertical or horizontal line, a segment or a point is generated
     /// (a polygon with two or one vertices)
     /// </summary>
-    /// <param name="x1o">The abscissa of the first vertex</param>
-    /// <param name="y1o">The ordinate of the first vertex</param>
-    /// <param name="x2o">The abscissa of the second vertex</param>
-    /// <param name="y2o">The ordinate of the second vertex</param>
-    /// <returns>The appropriate polygon</returns>
+    /// <param name="x1o">The abscissa of the first vertex.</param>
+    /// <param name="y1o">The ordinate of the first vertex.</param>
+    /// <param name="x2o">The abscissa of the second vertex.</param>
+    /// <param name="y2o">The ordinate of the second vertex.</param>
+    /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon RectangleParallel(TNum x1o, TNum y1o, TNum x2o, TNum y2o) {
-      TNum        x1 = TNum.Min(x1o, x2o), x2 = TNum.Max(x1o, x2o), y1 = TNum.Min(y1o, y2o), y2 = TNum.Max(y1o, y2o);
+      TNum          x1 = TNum.Min(x1o, x2o), x2 = TNum.Max(x1o, x2o), y1 = TNum.Min(y1o, y2o), y2 = TNum.Max(y1o, y2o);
       List<Point2D> vs = new List<Point2D>();
 
       if (Tools.EQ(x1, x2) || Tools.EQ(y1, y2)) {
@@ -61,11 +60,11 @@ public partial class Geometry<TNum, TConv>
     /// If the points are located on a vertical or horizontal line, a segment or a point is generated
     /// (a polygon with two or one vertices)
     /// </summary>
-    /// <param name="p1">One vertex from a pair of opposite vertices</param>
-    /// <param name="p2">Another vertex from a pair of opposite vertices</param>
+    /// <param name="p1">One vertex from a pair of opposite vertices.</param>
+    /// <param name="p2">Another vertex from a pair of opposite vertices.</param>
     /// <param name="alpha">Turn angle (in radians): angle between the Ox or Oy axis and 
-    /// the rectangle sides</param>
-    /// <returns>The appropriate polygon</returns>
+    /// the rectangle sides.</param>
+    /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon RectangleTurned(Point2D p1, Point2D p2, TNum alpha) => RectangleTurned
       (p1.x, p1.y, p2.x, p2.y, alpha);
 
@@ -75,13 +74,13 @@ public partial class Geometry<TNum, TConv>
     /// If the points are located on a vertical or horizontal line, a segment or a point is generated
     /// (a polygon with two or one vertices)
     /// </summary>
-    /// <param name="x1o">The abscissa of the first vertex</param>
-    /// <param name="y1o">The ordinate of the first vertex</param>
-    /// <param name="x2o">The abscissa of the second vertex</param>
-    /// <param name="y2o">The ordinate of the second vertex</param>
+    /// <param name="x1o">The abscissa of the first vertex.</param>
+    /// <param name="y1o">The ordinate of the first vertex.</param>
+    /// <param name="x2o">The abscissa of the second vertex.</param>
+    /// <param name="y2o">The ordinate of the second vertex.</param>
     /// <param name="alpha">Turn angle (in radians): angle between the Ox or Oy axis and 
-    /// the rectangle sides</param>
-    /// <returns>The appropriate polygon</returns>
+    /// the rectangle sides.</param>
+    /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon RectangleTurned(TNum x1o, TNum y1o, TNum x2o, TNum y2o, TNum alpha) {
       // If the points coincide, return a single-pointed polygon
       if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o)) {
@@ -89,18 +88,24 @@ public partial class Geometry<TNum, TConv>
       }
 
       TNum dvx = x2o - x1o
-           , dvy = y2o - y1o
-           , a   = dvx * TNum.Cos(alpha) + dvy * TNum.Sin(alpha)
-           , b   = TNum.Cos(alpha) * dvy - TNum.Sin(alpha) * dvx;
+         , dvy = y2o - y1o
+         , a   = dvx * TNum.Cos(alpha) + dvy * TNum.Sin(alpha)
+         , b   = TNum.Cos(alpha) * dvy - TNum.Sin(alpha) * dvx;
+
       TNum[,] ar = new TNum[3, 3]
         {
-          { TNum.Cos(alpha), -TNum.Sin(alpha), x1o }, { TNum.Sin(alpha), TNum.Cos(alpha), y1o }, { 0, 0, 1 }
+          { TNum.Cos(alpha), -TNum.Sin(alpha), x1o }
+        , { TNum.Sin(alpha), TNum.Cos(alpha), y1o }
+        , { Tools.Zero, Tools.Zero, Tools.One }
         };
+
       Matrix mapMatrix = new Matrix(ar);
+
       TNum[] ar_v0 = new TNum[3] { Tools.Zero, Tools.Zero, Tools.One }
-             , ar_v1 = new TNum[3] { a, Tools.Zero, Tools.One }
-             , ar_v2 = new TNum[3] { a, b, Tools.One }
-             , ar_v3 = new TNum[3] { Tools.Zero, b, Tools.One };
+           , ar_v1 = new TNum[3] { a, Tools.Zero, Tools.One }
+           , ar_v2 = new TNum[3] { a, b, Tools.One }
+           , ar_v3 = new TNum[3] { Tools.Zero, b, Tools.One };
+
       Vector v0o = new Vector(ar_v0)
            , v0  = mapMatrix * v0o
            , v1o = new Vector(ar_v1)
@@ -122,35 +127,72 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Method for generating an approximation for the circle as a right n-polygon.
     /// If the radius equals zero, a one-pointed polygon is generated.
-    /// The polygon can be turned by some angle around the center.
     /// </summary>
     /// <param name="center">Center point of the circle</param>
-    /// <param name="R">The radius</param>
-    /// <param name="n">Number of vertices in the resultant polygon</param>
-    /// <param name="a0">The additional turn angle</param>
-    /// <returns>The appropriate polygon</returns>
-    public static ConvexPolygon Circle(Point2D center, TNum R, int n, TNum a0 = 0) => Circle(center.x, center.y, R, n, a0);
+    /// <param name="R">The radius.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
+    /// <returns>The appropriate polygon.</returns>
+    public static ConvexPolygon Circle(Point2D center, TNum R, int n) => Circle(center.x, center.y, R, n, Tools.Zero);
 
+    
+    /// <summary>
+    /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
+    /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
+    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// The polygon can be turned by some angle around the center.
+    /// </summary>
+    /// <param name="x">The abscissa of the center.</param>
+    /// <param name="y">The ordinate of the center.</param>
+    /// <param name="a">One semiaxis.</param>
+    /// <param name="b">Other semiaxis.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
+    /// <param name="phi">The angle of turn of the entire ellipse</param>
+    /// <returns>The appropriate polygon.</returns>
+    public static ConvexPolygon Ellipse(TNum x
+                                      , TNum y
+                                      , TNum a
+                                      , TNum b
+                                      , int  n
+                                      , TNum phi
+                                      ) => Ellipse(x,y,a,b,n,phi, Tools.Zero);
+    
+    /// <summary>
+    /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
+    /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
+    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// </summary>
+    /// <param name="x">The abscissa of the center.</param>
+    /// <param name="y">The ordinate of the center.</param>
+    /// <param name="a">One semiaxis.</param>
+    /// <param name="b">Other semiaxis.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
+    /// <returns>The appropriate polygon.</returns>
+    public static ConvexPolygon Ellipse(TNum x
+                                      , TNum y
+                                      , TNum a
+                                      , TNum b
+                                      , int  n) => Ellipse(x,y,a,b,n,Tools.Zero, Tools.Zero);
+#region Fuctions without default arguments
     /// <summary>
     /// Method for generating an approximation for the circle as a right n-polygon.
     /// If the radius equals zero, a one-pointed polygon is generated.
     /// The polygon can be turned by some angle around the center.
     /// </summary>
-    /// <param name="x">The abscissa of the center</param>
-    /// <param name="y">The ordinate of the center</param>
-    /// <param name="R">The radius</param>
-    /// <param name="n">Number of vertices in the resultant polygon</param>
+    /// <param name="x">The abscissa of the center.</param>
+    /// <param name="y">The ordinate of the center.</param>
+    /// <param name="R">The radius.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
     /// <param name="a0">The additional turn angle</param>
-    /// <returns>The appropriate polygon</returns>
-    public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n, TNum a0 = 0) {
+    /// <returns>The appropriate polygon.</returns>
+    public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n, TNum a0) {
       if (Tools.EQ(R)) {
         return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
       }
 
       List<Point2D> res = new List<Point2D>();
-      TNum        da  = 2 * TNum.PI / n;
+      TNum          da  = Tools.Two * Tools.PI / TConv.FromInt(n);
       for (int i = 0; i < n; i++) {
-        res.Add(new Point2D(x + R * TNum.Cos(i * da + a0), y + R * TNum.Sin(i * da + a0)));
+        res.Add(new Point2D(x + R * TNum.Cos(TConv.FromInt(i) * da + a0), y + R * TNum.Sin(TConv.FromInt(i) * da + a0)));
       }
 
       return new ConvexPolygon(res, false);
@@ -160,23 +202,23 @@ public partial class Geometry<TNum, TConv>
     /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
     /// If the radius equals zero, a one-pointed polygon is generated.
-    /// The polygon can be turned by some angle around the center.
+    /// The polygon can be turned by some angle around the center and for some angle around zeroth vertex.
     /// </summary>
-    /// <param name="x">The abscissa of the center</param>
-    /// <param name="y">The ordinate of the center</param>
-    /// <param name="a">One semiaxis</param>
-    /// <param name="b">Other semiaxis</param>
-    /// <param name="n">Number of vertices in the resultant polygon</param>
+    /// <param name="x">The abscissa of the center.</param>
+    /// <param name="y">The ordinate of the center.</param>
+    /// <param name="a">One semiaxis.</param>
+    /// <param name="b">Other semiaxis.</param>
+    /// <param name="n">Number of vertices in the resultant polygon.</param>
     /// <param name="phi">The angle of turn of the entire ellipse</param>
-    /// <param name="a0">THe additional angle for turn of the zeroth vertex</param>
-    /// <returns>The appropriate polygon</returns>
+    /// <param name="a0">THe additional angle for turn of the zeroth vertex.</param>
+    /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon Ellipse(TNum x
                                       , TNum y
                                       , TNum a
                                       , TNum b
-                                      , int    n
-                                      , TNum phi = 0
-                                      , TNum a0  = 0) {
+                                      , int  n
+                                      , TNum phi
+                                      , TNum a0 ) {
       if (Tools.EQ(a)) {
         if (Tools.EQ(b)) {
           return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
@@ -207,12 +249,14 @@ public partial class Geometry<TNum, TConv>
       TNum          da     = Tools.Two * Tools.PI / TConv.FromInt(n);
       Point2D       center = new Point2D(x, y);
       for (int i = 0; i < n; i++) {
-        Vector2D v = new Vector2D(a * TNum.Cos(TConv.FromInt(i) * da + a0), b * TNum.Sin(TConv.FromInt(i) * da + a0)), v1 = v.Turn(phi);
+        Vector2D v  = new Vector2D(a * TNum.Cos(TConv.FromInt(i) * da + a0), b * TNum.Sin(TConv.FromInt(i) * da + a0))
+               , v1 = v.Turn(phi);
         res.Add(new Point2D(center + v1));
       }
 
       return new ConvexPolygon(res, false);
     }
+#endregion
 
   }
 
