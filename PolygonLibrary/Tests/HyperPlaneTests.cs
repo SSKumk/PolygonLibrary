@@ -1,7 +1,4 @@
 using NUnit.Framework;
-using System.Collections.Generic;
-using CGLibrary.Basics;
-using CGLibrary.Toolkit;
 
 namespace Tests;
 

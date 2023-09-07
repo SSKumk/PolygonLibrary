@@ -38,7 +38,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 1, "Test #01: too few crossing points!");
       numberOfSegs = new int[] { 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -51,7 +51,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 2, "Test #02: too few crossing points!");
       numberOfSegs = new int[] { 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -64,7 +64,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 2, "Test #03: too few crossing points!");
       numberOfSegs = new int[] { 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -77,7 +77,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 4, "Test #04: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -90,7 +90,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 6, "Test #05: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -103,7 +103,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #06: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 3, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -116,7 +116,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #07: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 3, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -129,7 +129,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #08: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -143,7 +143,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #09: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -156,7 +156,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #10: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 3, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -173,7 +173,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #11: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 5, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -186,7 +186,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #12: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 5, 3 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -200,7 +200,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #13: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 5, 4 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -215,7 +215,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #14: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 5, 6 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -228,7 +228,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 12, "Test #15: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 3, 3, 2, 2, 3, 2, 2, 5, 7, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -244,7 +244,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 2, "Test #100: too few crossing points!");
       numberOfSegs = new int[] { 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -258,7 +258,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 5, "Test #101: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 4, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -272,7 +272,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 6, "Test #102: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 6, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -286,7 +286,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #103: too few crossing points!");
       numberOfSegs = new int[] { 2, 2, 2, 8, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -300,7 +300,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #104: too few crossing points!");
       numberOfSegs = new int[] { 2, 4, 2, 10, 2, 2, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -314,7 +314,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 7, "Test #105: too few crossing points!");
       numberOfSegs = new int[] { 2, 4, 2, 12, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -329,7 +329,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 9, "Test #106: too few crossing points!");
       numberOfSegs = new int[] { 2, 4, 2, 3, 15, 3, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -342,7 +342,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 9, "Test #107: too few crossing points!");
       numberOfSegs = new int[] { 3, 5, 3, 3, 15, 3, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -355,7 +355,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 9, "Test #108: too few crossing points!");
       numberOfSegs = new int[] { 3, 5, 3, 3, 16, 3, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -368,7 +368,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 9, "Test #109: too few crossing points!");
       numberOfSegs = new int[] { 3, 5, 3, 4, 17, 3, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -381,7 +381,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 9, "Test #110: too few crossing points!");
       numberOfSegs = new int[] { 3, 5, 3, 4, 18, 4, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,
@@ -394,7 +394,7 @@ namespace ToolsTests
       Assert.IsTrue(crosser.crossPoints.Count >= 11, "Test #111: too few crossing points!");
       numberOfSegs = new int[] { 4, 5, 3, 5, 3, 4, 18, 5, 2, 4, 2 };
       intEn = numberOfSegs.GetEnumerator();
-      foreach (KeyValuePair<Point2D, SortedSet<int>> pair in crosser.crossPoints)
+      foreach (KeyValuePair<G.Point2D, SortedSet<int>> pair in crosser.crossPoints)
       {
         intEn.MoveNext();
         Assert.IsTrue(pair.Value.Count == (int)intEn.Current,

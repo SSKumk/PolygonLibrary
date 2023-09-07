@@ -1,6 +1,4 @@
 using NUnit.Framework;
-using CGLibrary.Basics;
-using CGLibrary.Toolkit;
 
 namespace Tests.GW_hDTests;
 

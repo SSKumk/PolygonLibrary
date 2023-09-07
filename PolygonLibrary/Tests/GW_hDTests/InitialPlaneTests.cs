@@ -1,7 +1,4 @@
-using System.Diagnostics;
 using NUnit.Framework;
-using CGLibrary.Basics;
-using CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 
 namespace Tests.GW_hDTests;

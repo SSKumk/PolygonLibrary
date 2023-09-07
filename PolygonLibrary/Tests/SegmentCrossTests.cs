@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using CGLibrary.Basics;
 
 
 namespace Tests;
@@ -9,17 +8,17 @@ public class SegmentCrossTests {
   [Test]
   public void SegmentContainsPointTest() {
     double a = 0.531;
-    Point2D[] p = new Point2D[]
-      { /* 0 */ new Point2D(1, 2)
-      , /* 1 */ new Point2D(5, 4)
-      , /* 2 */ new Point2D(3, 3)
-      , /* 3 */ new Point2D(1 + 2 * a, 2 + a)
-      , /* 4 */ new Point2D(1 + 2 * a, 2 + a + 1e-8)
-      , /* 5 */ new Point2D(1 + 2 * a, 2 + a + 1e-4)
-      , /* 6 */ new Point2D(-1, 1)
-      , /* 7 */ new Point2D(7, 5)
-      , /* 8 */ new Point2D(5, 5)
-      , /* 9 */ new Point2D(-2, 5)
+    G.Point2D[] p = new G.Point2D[]
+      { /* 0 */ new G.Point2D(1, 2)
+      , /* 1 */ new G.Point2D(5, 4)
+      , /* 2 */ new G.Point2D(3, 3)
+      , /* 3 */ new G.Point2D(1 + 2 * a, 2 + a)
+      , /* 4 */ new G.Point2D(1 + 2 * a, 2 + a + 1e-8)
+      , /* 5 */ new G.Point2D(1 + 2 * a, 2 + a + 1e-4)
+      , /* 6 */ new G.Point2D(-1, 1)
+      , /* 7 */ new G.Point2D(7, 5)
+      , /* 8 */ new G.Point2D(5, 5)
+      , /* 9 */ new G.Point2D(-2, 5)
       };
     bool[] res = new bool[]
       {
@@ -34,7 +33,7 @@ public class SegmentCrossTests {
       , false
       , false
       };
-    Segment s = new Segment(p[0], p[1]);
+    G.Segment s = new G.Segment(p[0], p[1]);
 
     for (int i = 0; i < 10; i++) {
       Assert.That(res[i], Is.EqualTo(s.ContainsPoint(p[i])), "The ContainsPoint test #" + i + " failed");

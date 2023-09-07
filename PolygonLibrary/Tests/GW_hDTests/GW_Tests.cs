@@ -1,9 +1,5 @@
 using System.Diagnostics;
 using NUnit.Framework;
-using CGLibrary.Basics;
-using CGLibrary.Polyhedra.ConvexPolyhedra;
-using CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
-using CGLibrary.Toolkit;
 
 
 namespace Tests.GW_hDTests;
@@ -81,7 +77,7 @@ public class GW_Tests {
     double w;
     do {
       w = random?.NextDouble() ?? _random.NextDouble();
-    } while (Tools.LT(w, 100 * Tools.Eps) || Tools.GT(w, 1 - 100 * Tools.Eps));
+    } while (G.Tools.LT(w, 100 * G.Tools.Eps) || G.Tools.GT(w, 1 - 100 * G.Tools.Eps));
 
     return w;
   }
@@ -121,7 +117,7 @@ public class GW_Tests {
     }
     ws.Add(difA);
 
-    Debug.Assert(Tools.EQ(ws.Sum(), 1), "GenConvexCombination: sum of weights does not equal 1.");
+    Debug.Assert(G.Tools.EQ(ws.Sum(), 1), "GenConvexCombination: sum of weights does not equal 1.");
 
     Point res = Point.LinearCombination(points, ws);
 
@@ -386,7 +382,7 @@ public class GW_Tests {
           }
 
           for (int j = 0; j < cubeDim; j++) {
-            if (Tools.EQ(point[j], -1)) {
+            if (G.Tools.EQ(point[j], -1)) {
               point[j] = GenInner(random);
             }
           }
@@ -595,7 +591,7 @@ public class GW_Tests {
   private static void SwarmShuffle(List<Point> Polytop, List<Point> S) {
     for (int i = 0; i < 10 * Polytop.Count; i++) {
       uint saveSeed = _random.Seed;
-      Tools.Shuffle(S, _random);
+      G.Tools.Shuffle(S, _random);
       Polyhedron P = GiftWrapping.WrapPolyhedron(S);
       Assert.That(P.Vertices.SetEquals(Polytop), $"The set of vertices must be equal.\nSeed: {saveSeed}");
     }
@@ -1182,7 +1178,7 @@ public class GW_Tests {
     try {
       if (needShuffle) {
         HashSet<Point> origS = new HashSet<Point>(S);
-        Tools.Shuffle(S, new RandomLC(seed));
+        G.Tools.Shuffle(S, new RandomLC(seed));
         Debug.Assert(origS.SetEquals(S));
       }
 
@@ -1223,7 +1219,7 @@ public class GW_Tests {
     Console.WriteLine("List<Point> S = (PDim, out List<Point> polytop, fID, nPoints, seed);");
     if (needShuffle) {
       Console.WriteLine("List<Point> origS = new List<Point>(S);");
-      Console.WriteLine("Tools.Shuffle(S, new RandomLC(seed));");
+      Console.WriteLine("G.Tools.Shuffle(S, new RandomLC(seed));");
     }
     Console.WriteLine();
     Console.WriteLine("Polyhedron P = GiftWrapping.WrapPolyhedron(S);");
@@ -1242,7 +1238,7 @@ public class GW_Tests {
     List<Point> S = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
 
     List<Point> origS = new List<Point>(S);
-    Tools.Shuffle(S, new RandomLC(seed));
+    G.Tools.Shuffle(S, new RandomLC(seed));
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
     Assert.That(P.Vertices.SetEquals(polytop));
   }
@@ -1256,7 +1252,7 @@ public class GW_Tests {
 
     List<Point> S     = SimplexRND(PDim,  out List<Point> polytop, fID, nPoints, seed);
     List<Point> origS = new List<Point>(S);
-    Tools.Shuffle(S, new RandomLC(seed));
+    G.Tools.Shuffle(S, new RandomLC(seed));
 
     var hpABD    = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[1], S[3] }));
     var distABD = S.Select(s => hpABD.Eval(s));

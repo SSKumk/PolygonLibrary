@@ -1,8 +1,4 @@
-using System.Diagnostics;
 using NUnit.Framework;
-using CGLibrary.Basics;
-using CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
-using CGLibrary.Toolkit;
 
 
 namespace Tests.GW_hDTests;
@@ -22,7 +18,7 @@ public class SubClassesTests {
       };
 
     IEnumerable<SubPoint> S                  = Ps.Select(s => new SubPoint(s, new SubPoint(s, null, s), s));
-    List<Point2D>         convexPolygon2D    = Convexification.ArcHull2D(S.Select(s => new SubPoint2D(s)));
+    List<G.Point2D>         convexPolygon2D    = Convexification.ArcHull2D(S.Select(s => new SubPoint2D(s)));
     IEnumerable<SubPoint> subConvexPolygon2D = convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint);
   }
 

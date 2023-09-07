@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
 
-using CGLibrary.Basics;
-using CGLibrary.Polygons;
-using CGLibrary.Toolkit;
-
 namespace Tests;
 
 /// <summary>
@@ -14,8 +10,8 @@ namespace Tests;
 public class RectangleParallelTests {
   [Test]
   public void RectParallelTest1() {
-    Point2D p = new Point2D(1, 2);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p, p);
+    G.Point2D p = new G.Point2D(1, 2);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p, p);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "Point rectangle: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(1), "Point rectangle: too many points in the contour");
@@ -25,9 +21,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest2() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(1, 3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(1, 3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "Vertical segment rectangle 1: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(2), "Vertical segment rectangle 1: wrong number points in the contour");
@@ -36,9 +32,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest3() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(1, 3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(1, 3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "Vertical segment rectangle 2: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(2), "Vertical segment rectangle 2: wrong number points in the contour");
@@ -47,9 +43,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest4() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, 2);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, 2);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "Horizontal segment rectangle 1: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(2)
@@ -59,9 +55,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest5() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, 2);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, 2);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "Horizontal segment rectangle 2: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(2)
@@ -71,9 +67,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest6() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, 3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, 3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "LL-RU rectangle 1: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(4), "LL-RU rectangle 1: wrong number points in the contour");
@@ -82,9 +78,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest7() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, 3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, 3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "LL-RU rectangle 2: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(4), "LL-RU rectangle 2: wrong number points in the contour");
@@ -93,9 +89,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest8() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, -3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p1, p2);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, -3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "LU-RL rectangle 1: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(4), "LU-RL rectangle 1: wrong number points in the contour");
@@ -104,9 +100,9 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest9() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(5, -3);
-    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleParallel(p2, p1);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(5, -3);
+    CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple(() => {
       Assert.That(r.Contours, Has.Count.EqualTo(1), "LU-RL rectangle 2: too many contours");
       Assert.That(r.Contour, Has.Count.EqualTo(4), "LU-RL rectangle 2: wrong number points in the contour");
@@ -118,10 +114,10 @@ public class RectangleParallelTests {
 public class RectangleTurnedTests {
   [Test]
   public void RectTurnedTest1() {
-    Point2D p = new Point2D(1, 2);
+    G.Point2D p = new G.Point2D(1, 2);
     for (int i = 0; i <= 6; i++) {
       double a = i * Math.PI / 6;
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p, p, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p, p, a);
       Assert.Multiple(() => {
         Assert.That(r.Contours, Has.Count.EqualTo(1)
           , "Turned rectangle, alpha = " + a + ", i = " + i + ": too many contours");
@@ -135,17 +131,17 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest2() {
-    Point2D
-      p1 = new Point2D(1, 2), p2 = new Point2D(1, 4);
+    G.Point2D
+      p1 = new G.Point2D(1, 2), p2 = new G.Point2D(1, 4);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.That(r.Contours, Has.Count.EqualTo(1),
         "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
-      if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI)) {
+      if (G.Tools.NE(a) && G.Tools.NE(a, Math.PI / 2) && G.Tools.NE(a, Math.PI)) {
         Assert.That(r.Contour, Has.Count.EqualTo(4),
           "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
 
@@ -154,15 +150,15 @@ public class RectangleTurnedTests {
           j = k - 1;
           l = (k + 1) % r.Contour.Count;
 
-          Vector2D
+          G.Vector2D
             e1o = r.Contour[k] - r.Contour[j]
             , e2o = r.Contour[l] - r.Contour[k]
             , e1 = e1o.Normalize()
             , e2 = e2o.Normalize();
 
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         }
       } else {
@@ -174,17 +170,17 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest3() {
-    Point2D
-      p2 = new Point2D(1, 2), p1 = new Point2D(1, 4);
+    G.Point2D
+      p2 = new G.Point2D(1, 2), p1 = new G.Point2D(1, 4);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.That(r.Contours, Has.Count.EqualTo(1),
         "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
-      if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI)) {
+      if (G.Tools.NE(a) && G.Tools.NE(a, Math.PI / 2) && G.Tools.NE(a, Math.PI)) {
         Assert.That(r.Contour, Has.Count.EqualTo(4),
           "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
 
@@ -193,15 +189,15 @@ public class RectangleTurnedTests {
           j = k - 1;
           l = (k + 1) % r.Contour.Count;
 
-          Vector2D
+          G.Vector2D
             e1o = r.Contour[k] - r.Contour[j]
             , e2o = r.Contour[l] - r.Contour[k]
             , e1 = e1o.Normalize()
             , e2 = e2o.Normalize();
 
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         }
       } else {
@@ -213,17 +209,17 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest4() {
-    Point2D
-      p1 = new Point2D(2, 1), p2 = new Point2D(4, 1);
+    G.Point2D
+      p1 = new G.Point2D(2, 1), p2 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.That(r.Contours, Has.Count.EqualTo(1),
         "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
-      if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI)) {
+      if (G.Tools.NE(a) && G.Tools.NE(a, Math.PI / 2) && G.Tools.NE(a, Math.PI)) {
         Assert.That(r.Contour, Has.Count.EqualTo(4),
           "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
 
@@ -232,15 +228,15 @@ public class RectangleTurnedTests {
           j = k - 1;
           l = (k + 1) % r.Contour.Count;
 
-          Vector2D
+          G.Vector2D
             e1o = r.Contour[k] - r.Contour[j]
             , e2o = r.Contour[l] - r.Contour[k]
             , e1 = e1o.Normalize()
             , e2 = e2o.Normalize();
 
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         }
       } else {
@@ -252,17 +248,17 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest5() {
-    Point2D
-      p2 = new Point2D(2, 1), p1 = new Point2D(4, 1);
+    G.Point2D
+      p2 = new G.Point2D(2, 1), p1 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.That(r.Contours, Has.Count.EqualTo(1),
         "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
-      if (Tools.NE(a) && Tools.NE(a, Math.PI / 2) && Tools.NE(a, Math.PI)) {
+      if (G.Tools.NE(a) && G.Tools.NE(a, Math.PI / 2) && G.Tools.NE(a, Math.PI)) {
         Assert.That(r.Contour, Has.Count.EqualTo(4),
           "Turned rectangle, alpha = " + a + ", i = " + i + ": too many points in the contour");
 
@@ -271,15 +267,15 @@ public class RectangleTurnedTests {
           j = k - 1;
           l = (k + 1) % r.Contour.Count;
 
-          Vector2D
+          G.Vector2D
             e1o = r.Contour[k] - r.Contour[j]
             , e2o = r.Contour[l] - r.Contour[k]
             , e1 = e1o.Normalize()
             , e2 = e2o.Normalize();
 
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         }
       } else {
@@ -291,14 +287,14 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest6() {
-    Point2D
-      p1 = new Point2D(-2, 0), p2 = new Point2D(4, 1);
+    G.Point2D
+      p1 = new G.Point2D(-2, 0), p2 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.Multiple(() => {
         Assert.That(r.Contours, Has.Count.EqualTo(1),
           "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
@@ -310,15 +306,15 @@ public class RectangleTurnedTests {
         j = k - 1;
         l = (k + 1) % r.Contour.Count;
 
-        Vector2D
+        G.Vector2D
           e1o = r.Contour[k] - r.Contour[j]
           , e2o = r.Contour[l] - r.Contour[k]
           , e1 = e1o.Normalize()
           , e2 = e2o.Normalize();
         Assert.Multiple(() => {
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         });
       }
@@ -327,14 +323,14 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest7() {
-    Point2D
-      p2 = new Point2D(-2, 0), p1 = new Point2D(4, 1);
+    G.Point2D
+      p2 = new G.Point2D(-2, 0), p1 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.Multiple(() => {
         Assert.That(r.Contours, Has.Count.EqualTo(1),
           "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
@@ -346,15 +342,15 @@ public class RectangleTurnedTests {
         j = k - 1;
         l = (k + 1) % r.Contour.Count;
 
-        Vector2D
+        G.Vector2D
           e1o = r.Contour[k] - r.Contour[j]
           , e2o = r.Contour[l] - r.Contour[k]
           , e1 = e1o.Normalize()
           , e2 = e2o.Normalize();
         Assert.Multiple(() => {
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         });
       }
@@ -363,14 +359,14 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest8() {
-    Point2D
-      p1 = new Point2D(-2, 3), p2 = new Point2D(4, 1);
+    G.Point2D
+      p1 = new G.Point2D(-2, 3), p2 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.Multiple(() => {
         Assert.That(r.Contours, Has.Count.EqualTo(1),
           "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
@@ -382,15 +378,15 @@ public class RectangleTurnedTests {
         j = k - 1;
         l = (k + 1) % r.Contour.Count;
 
-        Vector2D
+        G.Vector2D
           e1o = r.Contour[k] - r.Contour[j]
           , e2o = r.Contour[l] - r.Contour[k]
           , e1 = e1o.Normalize()
           , e2 = e2o.Normalize();
         Assert.Multiple(() => {
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         });
       }
@@ -399,14 +395,14 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest9() {
-    Point2D
-      p2 = new Point2D(-2, 3), p1 = new Point2D(4, 1);
+    G.Point2D
+      p2 = new G.Point2D(-2, 3), p1 = new G.Point2D(4, 1);
     const int N = 9;
     const double a0 = Math.PI / N;
 
     for (int i = 0; i <= N; i++) {
       double a = i * a0, cos = Math.Abs(Math.Cos(a));
-      CGLibrary.Polygons.ConvexPolygons.ConvexPolygon r = PolygonTools.RectangleTurned(p1, p2, a);
+      CGLibrary.Polygons.ConvexPolygons.G.ConvexPolygon r = G.PolygonTools.RectangleTurned(p1, p2, a);
       Assert.Multiple(() => {
         Assert.That(r.Contours, Has.Count.EqualTo(1),
           "Turned rectangle, alpha = " + a + ", i = " + i + ", i = " + i + ": too many contours");
@@ -418,15 +414,15 @@ public class RectangleTurnedTests {
         j = k - 1;
         l = (k + 1) % r.Contour.Count;
 
-        Vector2D
+        G.Vector2D
           e1o = r.Contour[k] - r.Contour[j]
           , e2o = r.Contour[l] - r.Contour[k]
           , e1 = e1o.Normalize()
           , e2 = e2o.Normalize();
         Assert.Multiple(() => {
-          Assert.That(Tools.EQ(Math.Abs(e1 * Vector2D.E1), cos) || Tools.EQ(Math.Abs(e1 * Vector2D.E2), cos),
+          Assert.That(G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E1), cos) || G.Tools.EQ(Math.Abs(e1 * G.Vector2D.E2), cos),
             "Turned rectangle, alpha = " + a + ", i = " + i + ": the edge " + e1o + " has wrong slope");
-          Assert.That(Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
+          Assert.That(G.Tools.EQ(e1 * e2), "Turned rectangle, alpha = " + a + ", i = " + i + ": the edges " + e1o +
                                          " and " + e2o + " are not orthogonal");
         });
       }
