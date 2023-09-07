@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using CGLibrary.Polygons.ConvexPolygons;
 
 namespace CGLibrary.Toolkit;
 
@@ -190,14 +189,14 @@ public static class ListExtensions
 	/// <typeparam name="T">Array element type</typeparam>
 	/// <param name="array">Array to shuffle</param>
 	/// <param name="ownRnd">A random generator. If is not passed, some internal generator will be used</param>
-	public static void Shuffle<T>(List<T> array, Random? ownRnd = null)
+	public static void Shuffle<T>(List<T> array, RandomLC? ownRnd = null)
 	{
 		int      n   = array.Count;
-		Random rnd = ownRnd ?? new Random();
+		RandomLC rnd = ownRnd ?? new RandomLC();
 		for (int i = 0; i < n; i++)
 		{
-			int r = rnd.Next(0, i + 1);
-			// int r = rnd.NextInt(0, i);
+			// int r = rnd.Next(0, i + 1);
+			int r = rnd.NextInt(0, i);
 			(array[r], array[i]) = (array[i], array[r]);
 		}
 	}
