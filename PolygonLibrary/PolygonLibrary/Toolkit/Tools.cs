@@ -279,13 +279,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="x">The value which sign should be found</param>
     /// <returns>The sign of x</returns>
     public static int Sign(TNum x) {
-      if (Tools.EQ(x)) {
+      if (EQ(x)) {
         return 0;
-      } else if (Tools.GT(x)) {
-        return +1;
-      } else {
-        return -1;
       }
+      if (GT(x)) {
+        return +1;
+      }
+
+      return -1;
     }
 
     /// <summary>
