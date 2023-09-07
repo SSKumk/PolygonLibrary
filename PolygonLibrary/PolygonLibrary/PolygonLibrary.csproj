@@ -52,7 +52,6 @@
         <Compile Include="Toolkit\Convexification.cs" />
         <Compile Include="Toolkit\Extensions.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
-        <Compile Include="Toolkit\Shuffle.cs" />
         <Compile Include="Toolkit\Tools.cs" />
     </ItemGroup>
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using AVLUtils;
-using CGLibrary;
 
 namespace CGLibrary;
 

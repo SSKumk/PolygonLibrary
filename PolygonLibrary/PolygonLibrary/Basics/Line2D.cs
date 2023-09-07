@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using CGLibrary;
 
 // TODO: Uncomment when segments are ready
 // using PolygonLibrary.Segments;
