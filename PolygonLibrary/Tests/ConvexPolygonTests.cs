@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Diagnostics;
 
-using PolygonLibrary.Basics;
-using PolygonLibrary.Segments;
-using PolygonLibrary.Toolkit;
-using PolygonLibrary.Polygons;
-using PolygonLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Basics;
+
+using CGLibrary.Toolkit;
+using CGLibrary.Polygons;
+using CGLibrary.Polygons.ConvexPolygons;
 
 namespace Tests
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 /// <summary>
 /// Represents a point in a subspace greater than 2.

@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class of multidimensional vector
@@ -57,7 +58,7 @@ public partial class Geometry<TNum>
       get
         {
           if (length is null) {
-            TNum res = Zero;
+            TNum res = Tools.Zero;
 
             for (int i = 0; i < Dim; i++) {
               res += _v[i] * _v[i];
@@ -247,7 +248,7 @@ public partial class Geometry<TNum>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
     public static TNum Angle(Vector v1, Vector v2) {
       if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
-        return Zero;
+        return Tools.Zero;
       } else {
         return TNum.Acos((v1 * v2) / v1.Length / v2.Length);
       }
@@ -604,7 +605,7 @@ public partial class Geometry<TNum>
         throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
       }
 #endif
-      TNum res = Zero;
+      TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
         res += v1._v[i] * v2._v[i];

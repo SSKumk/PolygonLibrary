@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace PolygonLibrary.Toolkit
+namespace CGLibrary.Toolkit
 {
   /// <summary>
   /// A class that can logically concatenate a number of enumerables with the same type of elements 

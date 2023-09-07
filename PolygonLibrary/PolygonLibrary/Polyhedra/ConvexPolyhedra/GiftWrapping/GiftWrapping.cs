@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AVLUtils;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Toolkit;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 public class GiftWrapping {
 

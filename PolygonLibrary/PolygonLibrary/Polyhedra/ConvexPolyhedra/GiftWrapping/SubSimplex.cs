@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 /// <summary>
 /// Represents a simplex, which is a convex polyhedron with (d + 1) vertices in d-dimensional space.

@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.

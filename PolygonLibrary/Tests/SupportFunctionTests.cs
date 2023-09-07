@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using static System.Math;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
-using PolygonLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Basics;
+using CGLibrary.Toolkit;
+using CGLibrary.Polygons.ConvexPolygons;
 
 namespace Tests {
   [TestFixture]

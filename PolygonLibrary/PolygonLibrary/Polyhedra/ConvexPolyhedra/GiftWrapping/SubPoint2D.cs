@@ -1,6 +1,6 @@
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping; 
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping; 
 
 /// <summary>
 /// Auxiliary class that represents the two-dimensional points in 2D-space

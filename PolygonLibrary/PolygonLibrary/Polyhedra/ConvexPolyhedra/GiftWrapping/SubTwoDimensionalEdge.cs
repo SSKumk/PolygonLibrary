@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 public class SubTwoDimensionalEdge : BaseSubCP {
 

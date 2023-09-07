@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
-using PolygonLibrary.Segments;
 
-namespace PolygonLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Toolkit;
+
+
+namespace CGLibrary.Polygons.ConvexPolygons;
 
 /// <summary>
 /// Class of a convex polygon

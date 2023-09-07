@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Basics;
+using CGLibrary.Toolkit;
 
 namespace Tests;
 

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons;
+using CGLibrary.Basics;
+using CGLibrary.Polygons;
 
 namespace Tests; 
 

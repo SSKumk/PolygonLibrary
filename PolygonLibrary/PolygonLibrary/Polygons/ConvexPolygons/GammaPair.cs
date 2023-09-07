@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Polygons.ConvexPolygons; 
+using CGLibrary.Toolkit;
+
+namespace CGLibrary.Polygons.ConvexPolygons; 
 
 /// <summary>
 /// Class for storing a pair (normal;value of function)

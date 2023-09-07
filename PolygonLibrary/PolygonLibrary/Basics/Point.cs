@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class of point in multidimensional space (elements of multidimensional affine space).
@@ -185,7 +186,7 @@ public partial class Geometry<TNum>
           TNum res;
           int  i, d = Dim;
 
-          for (i = 0, res = Zero; i < d; i++) {
+          for (i = 0, res = Tools.Zero; i < d; i++) {
             res += _p[i] * _p[i];
           }
 
@@ -246,11 +247,11 @@ public partial class Geometry<TNum>
 #region Overrides
     public override bool Equals(object? obj) {
 #if DEBUG
-      if (obj is not Point point) {
+      if (obj is not Point) {
         throw new ArgumentException($"{obj} is not a Point.");
       }
 #endif
-      return CompareTo((Point)obj) == 0;
+      return CompareTo((Point)obj!) == 0;
     }
 
     public override string ToString() {
@@ -343,7 +344,7 @@ public partial class Geometry<TNum>
     /// Copying constructor from a two-dimensional vector
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Point(Geometry<TNum>.Vector2D v) => _p = new TNum[2] { v.x, v.y };
+    public Point(Vector2D v) => _p = new TNum[2] { v.x, v.y };
 #endregion
 
 #region Operators

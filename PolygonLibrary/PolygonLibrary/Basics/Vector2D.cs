@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class of vectors in the plane
@@ -35,8 +36,7 @@ public partial class Geometry<TNum>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
-    public static bool operator ==(Vector2D v1, Vector2D v2) =>
-      Tools.EQ(v1.x, v2.x) && Tools.EQ(v1.y, v2.y);
+    public static bool operator ==(Vector2D v1, Vector2D v2) => Tools.EQ(v1.x, v2.x) && Tools.EQ(v1.y, v2.y);
 
     /// <summary>
     /// Non-equality of vectors
@@ -96,11 +96,11 @@ public partial class Geometry<TNum>
     /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
     /// <returns>The value of the corresponding component</returns>
     public TNum this[int i] => i switch
-                                   {
-                                     0 => x
-                                   , 1 => y
-                                   , _ => throw new IndexOutOfRangeException()
-                                   };
+                                 {
+                                   0 => x
+                                 , 1 => y
+                                 , _ => throw new IndexOutOfRangeException()
+                                 };
 
 
     /// <summary>
@@ -120,6 +120,10 @@ public partial class Geometry<TNum>
         }
     }
 
+    /// <summary>
+    /// Property showing if the vector2D is zero vector
+    /// </summary>
+    public bool IsZero => Tools.EQ(Length);
 
     /// <summary>
     /// The polar angle field
@@ -133,10 +137,10 @@ public partial class Geometry<TNum>
       get
         {
           if (polarAngle is null) {
-            polarAngle = TNum.Atan2(y, x);
+            polarAngle = Tools.Atan2(y, x);
             // КОСТЫЛИЩЕ - DUCT TAPE
-            if (Tools.EQ(PolarAngle, -TNum.PI))
-              polarAngle = TNum.PI;
+            if (Tools.EQ(PolarAngle, -Tools.PI))
+              polarAngle = -Tools.PI;
           }
 
           return polarAngle.Value;
@@ -156,7 +160,7 @@ public partial class Geometry<TNum>
     /// </exception>
     public Vector2D Normalize() {
 #if DEBUG
-      if (Tools.EQ(Length)) {
+      if (IsZero) {
         throw new DivideByZeroException();
       }
 #endif
@@ -169,13 +173,7 @@ public partial class Geometry<TNum>
     /// <returns>
     /// The normalized vector. If the vector is zero, then zero is returned
     /// </returns>
-    public Vector2D NormalizeZero() {
-      if (Tools.EQ(Length)) {
-        return this;
-      }
-
-      return new Vector2D(x / Length, y / Length);
-    }
+    public Vector2D NormalizeZero() => IsZero ? this : new Vector2D(x / Length, y / Length);
 
 
     /// <summary>
@@ -225,12 +223,12 @@ public partial class Geometry<TNum>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
     public static TNum Angle(Vector2D v1, Vector2D v2) {
-      if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
-        return Geometry<TNum>.Zero;
+      if (v1.IsZero || v2.IsZero) {
+        return Tools.Zero;
       } else {
         TNum s = (v1 ^ v2), c = (v1 * v2);
 
-        return TNum.Atan2(s, c);
+        return Tools.Atan2(s, c);
       }
     }
 
@@ -243,7 +241,7 @@ public partial class Geometry<TNum>
     public static TNum Angle2PI(Vector2D v1, Vector2D v2) {
       TNum a = Angle(v1, v2);
 
-      return a < Geometry<TNum>.Zero ? a + Geometry<TNum>.Two * TNum.PI : a;
+      return a < Geometry<TNum, TConv>.Tools.Zero ? a + Tools.Two * Tools.PI : a;
     }
 #endregion
 
@@ -312,8 +310,8 @@ public partial class Geometry<TNum>
     /// The default construct producing the zero vector
     /// </summary>
     public Vector2D() {
-      x = Geometry<TNum>.Zero;
-      y = Geometry<TNum>.Zero;
+      x = Geometry<TNum, TConv>.Tools.Zero;
+      y = Geometry<TNum, TConv>.Tools.Zero;
     }
 
     /// <summary>
@@ -341,8 +339,7 @@ public partial class Geometry<TNum>
     /// <param name="angle">The polar angle (in radians!)</param>
     /// <param name="radius">The radius (can be negative!)</param>
     /// <returns>The resultant vector</returns>
-    public static Vector2D FromPolar(TNum angle, TNum radius) =>
-      new Vector2D(radius * TNum.Cos(angle), radius * TNum.Sin(angle));
+    public static Vector2D FromPolar(TNum angle, TNum radius) => new Vector2D(radius * TNum.Cos(angle), radius * TNum.Sin(angle));
 #endregion
 
 #region Operators
@@ -422,8 +419,7 @@ public partial class Geometry<TNum>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are parallel; false, otherwise</returns>
-    public static bool AreParallel(Vector2D v1, Vector2D v2) => Tools.EQ
-      (TNum.Abs(v1 * v2), v1.Length * v2.Length);
+    public static bool AreParallel(Vector2D v1, Vector2D v2) => Tools.EQ(TNum.Abs(v1 * v2), v1.Length * v2.Length);
 
     /// <summary>
     /// Codirectionality of vectors
@@ -439,8 +435,7 @@ public partial class Geometry<TNum>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are counterdirected; false, otherwise</returns>
-    public static bool AreCounterdirected(Vector2D v1, Vector2D v2) => Tools.EQ
-      (v1 * v2, -v1.Length * v2.Length);
+    public static bool AreCounterdirected(Vector2D v1, Vector2D v2) => Tools.EQ(v1 * v2, -v1.Length * v2.Length);
 
     /// <summary>
     /// Orthogonality of vectors
@@ -448,9 +443,7 @@ public partial class Geometry<TNum>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are orthogonal; false, otherwise</returns>
-    public static bool AreOrthogonal(Vector2D v1, Vector2D v2) => Tools.EQ
-                                                                    (v1.Length) || Tools.EQ
-                                                                    (v2.Length) || Tools.EQ
+    public static bool AreOrthogonal(Vector2D v1, Vector2D v2) => v1.IsZero || v2.IsZero || Tools.EQ
                                                                     (TNum.Abs(v1 * v2 / v1.Length / v1.Length));
 #endregion
 
@@ -458,17 +451,17 @@ public partial class Geometry<TNum>
     /// <summary>
     /// The zero vector
     /// </summary>
-    public static readonly Vector2D Zero = new Vector2D(Geometry<TNum>.Zero, Geometry<TNum>.Zero);
+    public static readonly Vector2D Zero = new Vector2D(Tools.Zero, Tools.Zero);
 
     /// <summary>
     /// The first unit vector
     /// </summary>
-    public static readonly Vector2D E1 = new Vector2D(Geometry<TNum>.One, Geometry<TNum>.Zero);
+    public static readonly Vector2D E1 = new Vector2D(Tools.One, Tools.Zero);
 
     /// <summary>
     /// The second unit vector
     /// </summary>
-    public static readonly Vector2D E2 = new Vector2D(Geometry<TNum>.Zero, Geometry<TNum>.One);
+    public static readonly Vector2D E2 = new Vector2D(Tools.Zero, Tools.One);
 #endregion
 
   }

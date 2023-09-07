@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using PolygonLibrary.Basics;
+
 using System.Linq;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 /// <summary>
 /// Type of temporary storage of face incidence information

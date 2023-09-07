@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using PolygonLibrary.Basics;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
 /// <summary>
 /// Non simplex 3 and higher dimension

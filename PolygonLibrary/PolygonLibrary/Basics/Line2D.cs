@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
 // TODO: Uncomment when segments are ready
 // using PolygonLibrary.Segments;
 
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   
 /// <summary>
@@ -50,11 +51,11 @@ public class Line2D {
   /// Default constructor that produces the abscissa axis
   /// </summary>
   public Line2D() {
-    A      = Zero;
-    B      = One;
-    C      = Zero;
-    Direct = new Vector2D(One, Zero);
-    Normal = new Vector2D(Zero, One);
+    A      = Tools.Zero;
+    B      = Tools.One;
+    C      = Tools.Zero;
+    Direct = new Vector2D(Tools.One, Tools.Zero);
+    Normal = new Vector2D(Tools.Zero, Tools.One);
   }
 
   /// <summary>

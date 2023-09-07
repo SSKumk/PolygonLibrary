@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons.ConvexPolygons;
-using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+using CGLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
+
+namespace CGLibrary.Polyhedra.ConvexPolyhedra;
 
 /// <summary>
 /// Type of permanent storage of face incidence information.

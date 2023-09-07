@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Segments;
+using CGLibrary.Basics;
+
 
 namespace Tests;
 

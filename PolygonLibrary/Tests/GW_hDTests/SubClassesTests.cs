@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using NUnit.Framework;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Basics;
+using CGLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping;
+using CGLibrary.Toolkit;
 
 
 namespace Tests.GW_hDTests;

@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons;
-using PolygonLibrary.Polygons.ConvexPolygons;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Basics;
+using CGLibrary.Polygons;
+using CGLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Toolkit;
 
 namespace Tests;
 

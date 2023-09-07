@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
 
 /// <summary>
@@ -652,7 +653,7 @@ public class Matrix : IEquatable<Matrix> {
     TNum[] nv = new TNum[d];
 
     for (i = 0; i < d; i++) {
-      nv[i] = Geometry<TNum>.One;
+      nv[i] = Tools.One;
     }
 
     return new Matrix(n, m, nv);
@@ -694,9 +695,9 @@ public class Matrix : IEquatable<Matrix> {
     for (i = 0; i < n; i++) {
       for (j = 0; j < m; j++, k++) {
         if (i == j) {
-          nv[k] = Geometry<TNum>.One;
+          nv[k] = Tools.One;
         } else {
-          nv[k] = Geometry<TNum>.Zero;
+          nv[k] = Tools.Zero;
         }
       }
     }

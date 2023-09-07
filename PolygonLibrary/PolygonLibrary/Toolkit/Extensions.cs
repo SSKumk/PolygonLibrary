@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Polygons.ConvexPolygons;
 
-namespace PolygonLibrary.Toolkit; 
+namespace CGLibrary.Toolkit;
 
 /// <summary>
 /// Extensions to standard ListOfT container
@@ -185,6 +184,23 @@ public static class ListExtensions
 		return list[list.NormalizeIndex(i)];
 	}
 
+	/// <summary>
+	/// Shuffle the array using the Durstenfeld's algorithm
+	/// </summary>
+	/// <typeparam name="T">Array element type</typeparam>
+	/// <param name="array">Array to shuffle</param>
+	/// <param name="ownRnd">A random generator. If is not passed, some internal generator will be used</param>
+	public static void Shuffle<T>(List<T> array, Random? ownRnd = null)
+	{
+		int      n   = array.Count;
+		Random rnd = ownRnd ?? new Random();
+		for (int i = 0; i < n; i++)
+		{
+			int r = rnd.Next(0, i + 1);
+			// int r = rnd.NextInt(0, i);
+			(array[r], array[i]) = (array[i], array[r]);
+		}
+	}
 }
 
 /// <summary>

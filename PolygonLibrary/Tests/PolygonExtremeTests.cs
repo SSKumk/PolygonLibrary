@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons;
+using CGLibrary.Basics;
+using CGLibrary.Polygons;
 
 namespace Tests; 
 
@@ -9,7 +9,7 @@ public class PolygonExtremeTests {
   [Test]
   public void PolygonExtremeTest1() {
     // Polygon has no normal codirected with E1
-    PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10);
+    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon cp = PolygonTools.Circle(0, 0, 1, 10);
     double[] testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342, 350 };
     Vector2D[] testDirs = new Vector2D[testAnglesDeg.Length];
     Point2D?[,] res = new Point2D[testAnglesDeg.Length, 2];
@@ -34,7 +34,7 @@ public class PolygonExtremeTests {
   [Test]
   public void PolygonExtremeTest2() {
     // Polygon has a normal codirected with E1
-    PolygonLibrary.Polygons.ConvexPolygons.ConvexPolygon cp            = PolygonTools.Circle(0, 0, 1, 10, Math.PI / 10);
+    CGLibrary.Polygons.ConvexPolygons.ConvexPolygon cp            = PolygonTools.Circle(0, 0, 1, 10, Math.PI / 10);
     double[]   testAnglesDeg = new double[] { 0, 18, 36, 54, 72, 342 };
     Vector2D[] testDirs      = new Vector2D[testAnglesDeg.Length];
     Point2D?[,]res           = new Point2D?[testAnglesDeg.Length, 2];

@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Polygons.ConvexPolygons;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Basics;
+using CGLibrary.Polygons.ConvexPolygons;
+using CGLibrary.Toolkit;
 
 namespace Tests;
 

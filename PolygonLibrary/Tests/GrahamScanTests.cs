@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Basics;
+using CGLibrary.Toolkit;
 
 namespace Tests {
 [TestFixtureAttribute]

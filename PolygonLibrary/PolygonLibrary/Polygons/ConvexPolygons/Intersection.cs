@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Segments;
-using PolygonLibrary.Toolkit;
 
-namespace PolygonLibrary.Polygons.ConvexPolygons;
+
+using CGLibrary.Toolkit;
+
+namespace CGLibrary.Polygons.ConvexPolygons;
 
 public partial class ConvexPolygon {
 

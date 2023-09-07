@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using PolygonLibrary.Basics;
+
 using System.Linq;
 
-namespace PolygonLibrary.Polyhedra.ConvexPolyhedra;
+namespace CGLibrary.Polyhedra.ConvexPolyhedra;
 
 /// <summary>
 /// <para><b>Simplex</b> - the polyhedron is a simplex</para>

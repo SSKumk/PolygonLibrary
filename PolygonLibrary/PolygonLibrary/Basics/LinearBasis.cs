@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Orthonormal basis
@@ -161,7 +162,7 @@ public partial class Geometry<TNum>
     public static void CheckCorrectness(LinearBasis linearBasis) {
 #if DEBUG
       foreach (Vector bvec in linearBasis.Basis) {
-        Debug.Assert(Tools.EQ(bvec.Length, One), "All vectors in the basis must have a unit length.");
+        Debug.Assert(Tools.EQ(bvec.Length, Tools.One), "All vectors in the basis must have a unit length.");
       }
 
       for (int i = 0; i < linearBasis.BasisDim - 1; i++) {

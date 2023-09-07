@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using PolygonLibrary.Basics;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Toolkit;
 
-namespace PolygonLibrary.Polygons.ConvexPolygons;
+
+namespace CGLibrary.Polygons.ConvexPolygons;
 
 /// <summary>
 /// Class of a support function defined as an array of pairs (normal;value)

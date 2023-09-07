@@ -1,11 +1,18 @@
 using System;
+using System.Numerics;
 
-namespace PolygonLibrary.Toolkit;
+namespace CGLibrary;
+
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
 /// <summary>
 /// Represents a linear congruential random number generator.
 /// </summary>
 public class RandomLC {
+
+  private TNum MaxValue = TConv.FromUInt(uint.MaxValue);
 
   /// <summary>
   /// Multiplier
@@ -59,7 +66,18 @@ public class RandomLC {
   /// <param name="lb">The lower bound of the range (inclusive).</param>
   /// <param name="rb">The upper bound of the range (exclusive).</param>
   /// <returns>The generated random double.</returns>
-  public double NextDouble(double lb = 0, double rb = 1) { return Rand() / (double)uint.MaxValue * (rb - lb) + lb; }
+  public double NextDouble(double lb = 0, double rb = 1) { return Rand() * (rb - lb) / uint.MaxValue + lb; }
+
+  /// <summary>
+  /// Generates the next random precise number within the specified range.
+  /// </summary>
+  /// <param name="lb">The lower bound of the range (inclusive).</param>
+  /// <param name="rb">The upper bound of the range (exclusive).</param>
+  /// <returns>The generated random precise number.</returns>
+  public TNum NextPrecise(TNum lb, TNum rb) {
+    return TConv.FromUInt(Rand()) / MaxValue * (rb - lb) + lb;
+  }
+}
 
 }
 

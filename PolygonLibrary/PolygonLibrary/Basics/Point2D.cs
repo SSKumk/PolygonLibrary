@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class of points (elements of affine space) in the plane.
@@ -138,7 +139,7 @@ public partial class Geometry<TNum>
     /// <summary>
     /// The polar angle of the point
     /// </summary>
-    public TNum PolarAngle => TNum.Atan2(y, x);
+    public TNum PolarAngle => Tools.Atan2(y, x);
 
     /// <summary>
     /// Compute the distance between two points
@@ -154,7 +155,7 @@ public partial class Geometry<TNum>
     /// <param name="p1">The first point</param>
     /// <param name="p2">The second point</param>
     /// <returns>The square of the distance between the given points</returns>
-    public static TNum Dist2(Point2D p1, Point2D p2) => TNum.Pow(p1.x - p2.x, Two) + TNum.Pow(p1.y - p2.y, Two);
+    public static TNum Dist2(Point2D p1, Point2D p2) => TNum.Pow(p1.x - p2.x, Tools.Two) + TNum.Pow(p1.y - p2.y, Tools.Two);
   #endregion
 
   #region Convertors
@@ -223,8 +224,8 @@ public partial class Geometry<TNum>
     /// The default construct producing the origin point
     /// </summary>
     public Point2D() {
-      x = Zero;
-      y = Zero;
+      x = Tools.Zero;
+      y = Tools.Zero;
     }
 
     /// <summary>
@@ -294,7 +295,7 @@ public partial class Geometry<TNum>
     public static Point2D LinearCombination(IEnumerable<Point2D> ps, IEnumerable<TNum> ws) {
       IEnumerator<Point2D> enPoint  = ps.GetEnumerator();
       IEnumerator<TNum>  enWeight = ws.GetEnumerator();
-      TNum               x        = Zero, y = Zero;
+      TNum               x        = Tools.Zero, y = Tools.Zero;
       while (enPoint.MoveNext() && enWeight.MoveNext()) {
         x += enPoint.Current.x * enWeight.Current;
         y += enPoint.Current.y * enWeight.Current;
@@ -373,7 +374,7 @@ public partial class Geometry<TNum>
     /// <summary>
     /// The zero vector
     /// </summary>
-    public static readonly Point2D Origin = new Point2D(Zero, Zero);
+    public static readonly Point2D Origin = new Point2D(Tools.Zero, Tools.Zero);
   #endregion
 
   }

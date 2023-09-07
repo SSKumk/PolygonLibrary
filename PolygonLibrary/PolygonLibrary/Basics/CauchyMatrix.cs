@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Numerics;
 using AVLUtils;
-using PolygonLibrary;
+using CGLibrary;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
 
   /// <summary>
@@ -184,10 +185,10 @@ public partial class Geometry<TNum>
     {
       Matrix
         K1 = A * cur,
-        K2 = A * (cur + (curTimeStep / Geometry<TNum>.Two) * K1),
-        K3 = A * (cur + (curTimeStep / Geometry<TNum>.Two) * K2),
+        K2 = A * (cur + (curTimeStep / Tools.Two) * K1),
+        K3 = A * (cur + (curTimeStep / Tools.Two) * K2),
         K4 = A * (cur + curTimeStep * K3);
-      return cur + (curTimeStep / Geometry<TNum>.Six) * (K1 + Geometry<TNum>.Two * K2 + Geometry<TNum>.Two * K3 + K4);
+      return cur + (curTimeStep / Tools.Six) * (K1 + Tools.Two * K2 + Tools.Two * K3 + K4);
     }
     #endregion
   }

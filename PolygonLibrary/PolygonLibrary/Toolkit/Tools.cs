@@ -4,33 +4,114 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-namespace PolygonLibrary;
+namespace CGLibrary;
 
-public partial class Geometry<TNum>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum> {
+/// <summary>
+/// Represents an interface for converting between TNum and other numeric types.
+/// </summary>
+/// <typeparam name="TNum">The type of number.</typeparam>
+public interface INumConvertor<TNum> where TNum : INumber<TNum> {
 
-  private static readonly TNum Zero = TNum.AdditiveIdentity;
-  private static readonly TNum One  = TNum.MultiplicativeIdentity;
-  private static readonly TNum Two  = TNum.MultiplicativeIdentity + TNum.MultiplicativeIdentity;
-  private static readonly TNum Six  = Two + Two + Two;
+  /// <summary>
+  /// Converts a TNum value to a double.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted double value.</returns>
+  public static abstract double ToDouble(TNum from);
+
+  /// <summary>
+  /// Converts a double value to TNum.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted TNum value.</returns>
+  public static abstract TNum FromDouble(double from);
+
+  /// <summary>
+  /// Converts a TNum value to an integer.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted integer value.</returns>
+  public static abstract int ToInt(TNum from);
+
+  /// <summary>
+  /// Converts an integer value to TNum.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted TNum value.</returns>
+  public static abstract TNum FromInt(int from);
+
+  /// <summary>
+  /// Converts a TNum value to an unsigned integer.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted unsigned integer value.</returns>
+  public static abstract uint ToUInt(TNum from);
+
+  /// <summary>
+  /// Converts an unsigned integer value to TNum.
+  /// </summary>
+  /// <param name="from">The value to convert.</param>
+  /// <returns>The converted TNum value.</returns>
+  public static abstract TNum FromUInt(uint from);
+
+}
+
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class with general purpose procedures
   /// </summary>
   public partial class Tools {
 
-#region Constants
-    // /// <summary>
-    // /// The constant 2*PI
-    // /// </summary>
-    // public /* static */ const TNum PI2 = 2 * Math.PI;
-#endregion
+#region Fields
+    /// <summary>
+    /// The random generator.
+    /// </summary>
+    public static readonly RandomLC rnd = new RandomLC();
 
-#region Double comparison
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps;
+    private static TNum _eps = TConv.FromDouble(1e-8);
+#endregion
+
+#region Constants
+    /// <summary>
+    /// Represents the Zero-value of TNum ('0').
+    /// </summary>
+    public static readonly TNum Zero = TNum.AdditiveIdentity;
+
+    /// <summary>
+    /// Represents the One-value of TNum ('1').
+    /// </summary>
+    public static readonly TNum One = TNum.MultiplicativeIdentity;
+
+    /// <summary>
+    /// Represents the value 2.
+    /// </summary>
+    public static readonly TNum Two = TNum.MultiplicativeIdentity + TNum.MultiplicativeIdentity;
+
+    /// <summary>
+    /// Represents the value 6.
+    /// </summary>
+    public static readonly TNum Six = Two + Two + Two;
+
+    /// <summary>
+    /// Represents the value of PI.
+    /// </summary>
+    public static readonly TNum PI = TNum.Abs(TNum.Acos(-One));
+
+    /// <summary>
+    /// Represents half of the value of PI.
+    /// </summary>
+    public static readonly TNum HalfPI = PI / Two;
+#endregion
+
+#region Double comparison
+
 
     /// <summary>
     /// Property to deal with the accuracy
@@ -42,7 +123,7 @@ public partial class Geometry<TNum>
         {
 #if DEBUG
           if (value <= TNum.AdditiveIdentity) {
-            throw new ArgumentOutOfRangeException("Non-positive precision parameter");
+            throw new ArgumentOutOfRangeException("Tools Eps: Non-positive precision parameter");
           }
 #endif
           _eps = value;
@@ -55,13 +136,14 @@ public partial class Geometry<TNum>
     /// <param name="a">The number.</param>
     /// <returns>+1, if a &gt; b; -1, if a &lt; b; 0, otherwise.</returns>
     public static int CMP(TNum a) {
-      if (Tools.EQ(a, TNum.AdditiveIdentity)) {
+      if (EQ(a)) {
         return 0;
-      } else if (a > TNum.AdditiveIdentity) {
-        return +1;
-      } else {
-        return -1;
       }
+      if (GT(a)) {
+        return +1;
+      }
+
+      return -1;
     }
 
     /// <summary>
@@ -108,15 +190,15 @@ public partial class Geometry<TNum>
     /// "Greater" comparison.
     /// </summary>
     /// <param name="a">The number.</param>
-    /// <returns><c>true</c>, if a &gt;= eps; <c>false</c>, otherwise.</returns>
-    public static bool GT(TNum a) => a >= _eps;
+    /// <returns><c>true</c>, if a &gt; eps; <c>false</c>, otherwise.</returns>
+    public static bool GT(TNum a) => a > _eps;
 
     /// <summary>
     /// "Greater" comparison.
     /// </summary>
     /// <param name="a">The first number.</param>
     /// <param name="b">The second number.</param>
-    /// <returns><c>true</c>, if a &gt;= b+eps; <c>false</c>, otherwise.</returns>
+    /// <returns><c>true</c>, if a &gt; b+eps; <c>false</c>, otherwise.</returns>
     public static bool GT(TNum a, TNum b) => GT(a - b);
 
     /// <summary>
@@ -124,7 +206,7 @@ public partial class Geometry<TNum>
     /// </summary>
     /// <param name="a">The number.</param>
     /// <returns><c>true</c>, if a &gt;= -eps; <c>false</c>, otherwise.</returns>
-    public static bool GE(TNum a) => a > -_eps;
+    public static bool GE(TNum a) => a >= -_eps;
 
     /// <summary>
     /// "Greater or equal" comparison.
@@ -138,30 +220,30 @@ public partial class Geometry<TNum>
     /// "Less" comparison.
     /// </summary>
     /// <param name="a">The number.</param>
-    /// <returns><c>true</c>, if a &lt;= -eps; <c>false</c>, otherwise.</returns>
-    public static bool LT(TNum a) => a <= -_eps;
+    /// <returns><c>true</c>, if a &lt; -eps; <c>false</c>, otherwise.</returns>
+    public static bool LT(TNum a) => a < -_eps;
 
     /// <summary>
     /// "Less" comparison.
     /// </summary>
     /// <param name="a">The first number.</param>
     /// <param name="b">The second number.</param>
-    /// <returns><c>true</c>, if a &lt;= b-eps; <c>false</c>, otherwise.</returns>
+    /// <returns><c>true</c>, if a &lt; b-eps; <c>false</c>, otherwise.</returns>
     public static bool LT(TNum a, TNum b) => LT(a - b);
 
     /// <summary>
     /// "Less or equal" comparison.
     /// </summary>
     /// <param name="a">The first number.</param>
-    /// <returns><c>true</c>, if a &lt; eps; <c>false</c>, otherwise.</returns>
-    public static bool LE(TNum a) => a < _eps;
+    /// <returns><c>true</c>, if a &lt;= eps; <c>false</c>, otherwise.</returns>
+    public static bool LE(TNum a) => a <= _eps;
 
     /// <summary>
     /// "Less or equal" comparison.
     /// </summary>
     /// <param name="a">The first number.</param>
     /// <param name="b">The second number.</param>
-    /// <returns><c>true</c>, if a &lt; b+eps; <c>false</c>, otherwise.</returns>
+    /// <returns><c>true</c>, if a &lt;= b+eps; <c>false</c>, otherwise.</returns>
     public static bool LE(TNum a, TNum b) => LE(a - b);
 
     /// <summary>
@@ -208,6 +290,28 @@ public partial class Geometry<TNum>
     /// <param name="a">The first object</param>
     /// <param name="b">The second object</param>
     public static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
+
+    /// <summary> //todo Проверить в каких диапазонах он живёт!
+    /// Calculates the angle, in radians, between the positive x-axis and the point (x, y).
+    /// </summary>
+    /// <param name="y">The y-coordinate of the point.</param>
+    /// <param name="x">The x-coordinate of the point.</param>
+    /// <returns>The angle, in radians, between the positive x-axis and the point (x, y).</returns>
+    public static TNum Atan2(TNum y, TNum x) {
+      if (EQ(x) && EQ(y)) {
+        return Zero;
+      }
+
+      if (TNum.Abs(x) >= TNum.Abs(y)) {
+        TNum yx = y / x;
+
+        return GE(x) ? TNum.Atan(yx) : (GE(y) ? TNum.Atan(yx) + PI : TNum.Atan(yx) - PI);
+      } else {
+        TNum xy = x / y;
+
+        return GE(y) ? (HalfPI - TNum.Atan(xy)) : (-HalfPI - TNum.Atan(xy));
+      }
+    }
 
     /// <summary>
     /// Projecting a set of n-dimensional points to the plane by means of a matrix 2 x n
