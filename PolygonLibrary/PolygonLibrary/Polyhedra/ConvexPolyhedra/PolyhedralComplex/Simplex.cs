@@ -8,7 +8,7 @@
 // namespace PolygonLibrary.Polyhedra.ConvexPolyhedra.PolyhedralComplex;
 //
 // /// <summary>
-// /// Represents a simplex, which is a convex polyhedron with (d + 1) vertices in d-dimensional space.
+// /// Represents a simplex, which is a convex polytop with (d + 1) vertices in d-dimensional space.
 // /// </summary>
 // public class Simplex : BaseConvexPolyhedron {
 //
@@ -18,7 +18,7 @@
 //   public override int Dim { get; }
 //
 //   /// <summary>
-//   /// Gets the type of the convex polyhedron.
+//   /// Gets the type of the convex polytop.
 //   /// </summary>
 //   public override ConvexPolyhedronType Type { get; }
 //

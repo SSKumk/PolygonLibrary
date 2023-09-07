@@ -7,31 +7,31 @@
 // public class NonSimplex : BaseConvexPolyhedron {
 //
 //   /// <summary>
-//   /// Gets the dimension of the polyhedron.
+//   /// Gets the dimension of the polytop.
 //   /// </summary>
 //   public override int Dim { get; }
 //
 //
 //   /// <summary>
-//   /// Gets the type of the convex polyhedron.
+//   /// Gets the type of the convex polytop.
 //   /// </summary>
 //   public override ConvexPolyhedronType Type { get; }
 //
 //   /// <summary>
-//   /// Gets the set of vertices of the polyhedron.
+//   /// Gets the set of vertices of the polytop.
 //   /// </summary>
 //   public override HashSet<Point> Vertices { get; }
 //
 //   /// <summary>
-//   /// Gets the set of (d-1)-dimensional faces of the polyhedron.
+//   /// Gets the set of (d-1)-dimensional faces of the polytop.
 //   /// </summary>
 //   public override HashSet<BaseConvexPolyhedron> Faces { get; }
 //
 //   /// <summary>
 //   /// Construct a new instance of the <see cref="NonSimplex"/> class based on it's faces. 
 //   /// </summary>
-//   /// <param name="faces">Faces to construct the convex polyhedron</param>
-//   /// <param name="Vs">The vertices of polyhedron. </param>
+//   /// <param name="faces">Faces to construct the convex polytop</param>
+//   /// <param name="Vs">The vertices of polytop. </param>
 //   /// <param name="incid">The information about neighbours-faces of edges.</param>
 //   /// <param name="fansInfo">The information about faces incident to this point.</param>
 //   public NonSimplex(HashSet<BaseConvexPolyhedron> faces
