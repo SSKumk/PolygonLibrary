@@ -79,7 +79,7 @@ public class GW_Tests {
   private ddouble GenInner(GRandomLC? random = null) {
     ddouble w;
     do {
-      w = random?.NextDouble() ?? _random.NextDouble();
+      w = random?.NextPrecise() ?? _random.NextPrecise();
     } while (Tools.LT(w, 100 * Tools.Eps) || Tools.GT(w, 1 - 100 * Tools.Eps));
 
     return w;
@@ -194,7 +194,7 @@ public class GW_Tests {
     GRandomLC rnd = random ?? _random;
     do {
       for (int i = 0; i < dim; i++) {
-        v[i] = rnd.NextDouble() - 0.5;
+        v[i] = rnd.NextPrecise() - 0.5;
       }
       res = new Vector(v);
     } while (res.IsZero);
@@ -1232,22 +1232,21 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Aux1() {
-    const uint seed    = 4191642331;
+  public void Aux() {
+    const uint seed    = 752772192;
     const int  PDim    = 3;
     const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 1, 2 };
+    List<int>  fID     = new List<int>() { 1, 2, 3 };
 
-    List<Point> S = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
-
+    List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
     List<Point> origS = new List<Point>(S);
     S.Shuffle(new GRandomLC(seed));
+
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
     Assert.That(P.Vertices.SetEquals(polytop));
   }
-
   [Test]
-  public void Aux() {
+  public void SomeAux() {
     const uint seed    = 2056099428;
     const int  PDim    = 3;
     const int  nPoints = 1;
