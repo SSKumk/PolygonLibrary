@@ -128,7 +128,7 @@ public partial class Geometry<TNum, TConv>
     /// String representation of the pair
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => "[" + Normal + ";" + Value + "]";
+    public override string ToString() => $"[{Normal};{Value}]";
 
     /// <summary>
     /// Computing the point, which is intersection of lines defined by two pairs.

@@ -310,7 +310,7 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
-    public override string ToString() => "[" + p1 + ";" + p2 + "]";
+    public override string ToString() => $"[{p1};{p2}]";
 
     public override bool Equals(object? obj) {
 #if DEBUG

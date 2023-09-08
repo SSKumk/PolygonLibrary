@@ -291,7 +291,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       return CompareTo((Vector2D)obj) == 0;
     }
 
-    public override string ToString() => "(" + x + ";" + y + ")";
+    public override string ToString() => $"({x};{y})";
 
     public override int GetHashCode() {
       int res = 0;

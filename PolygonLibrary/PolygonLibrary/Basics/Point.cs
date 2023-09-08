@@ -253,11 +253,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     public override string ToString() {
-      string res = "(" + _p[0];
+      string res = $"({_p[0]}";
       int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
-        res += "," + _p[i];
+        res += $",{_p[i]}";
       }
 
       res += ")";
