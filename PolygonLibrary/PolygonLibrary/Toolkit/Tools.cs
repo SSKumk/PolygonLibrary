@@ -74,7 +74,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-8);
+    private static TNum _eps = TConv.FromDouble(1e-10);
 #endregion
 
 #region Constants
