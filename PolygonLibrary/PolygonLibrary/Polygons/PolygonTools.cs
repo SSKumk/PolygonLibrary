@@ -86,15 +86,17 @@ public partial class Geometry<TNum, TConv>
         return new ConvexPolygon(new Point2D[] { new Point2D(x1o, y1o) }, false);
       }
 
+      (TNum sn, TNum cs) = TNum.SinCos(alpha);
+
       TNum dvx = x2o - x1o
          , dvy = y2o - y1o
-         , a   = dvx * TNum.Cos(alpha) + dvy * TNum.Sin(alpha)
-         , b   = TNum.Cos(alpha) * dvy - TNum.Sin(alpha) * dvx;
+         , a   = dvx * cs + dvy * sn
+         , b   = cs * dvy - sn * dvx;
 
       TNum[,] ar = new TNum[3, 3]
         {
-          { TNum.Cos(alpha), -TNum.Sin(alpha), x1o }
-        , { TNum.Sin(alpha), TNum.Cos(alpha), y1o }
+          { cs, -sn, x1o }
+        , { sn, cs, y1o }
         , { Tools.Zero, Tools.Zero, Tools.One }
         };
 
@@ -143,9 +145,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">Number of vertices in the resultant polygon.</param>
     /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n) => Circle(x, y, R, n,Tools.Zero);
-    
+
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
+    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
     /// If the radius equals zero, a one-pointed polygon is generated.
     /// The polygon can be turned by some angle around the center.
@@ -164,9 +166,9 @@ public partial class Geometry<TNum, TConv>
                                       , int  n
                                       , TNum phi
                                       ) => Ellipse(x,y,a,b,n,phi, Tools.Zero);
-    
+
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
+    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
     /// If the radius equals zero, a one-pointed polygon is generated.
     /// </summary>
@@ -208,7 +210,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices 
+    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
     /// If the radius equals zero, a one-pointed polygon is generated.
     /// The polygon can be turned by some angle around the center and for some angle around zeroth vertex.
@@ -232,23 +234,26 @@ public partial class Geometry<TNum, TConv>
         if (Tools.EQ(b)) {
           return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
         } else {
+          (TNum sn, TNum cs) = TNum.SinCos(phi);
           return new ConvexPolygon
             (
              new Point2D[]
                {
-                 new Point2D(x + a * TNum.Cos(phi), y + a * TNum.Sin(phi))
-               , new Point2D(x - a * TNum.Cos(phi), y - a * TNum.Sin(phi))
+                 new Point2D(x + a * cs, y + a * sn)
+               , new Point2D(x - a * cs, y - a * sn)
                }
            , false
             );
         }
-      } else if (Tools.EQ(b)) {
+      }
+      if (Tools.EQ(b)) {
+        (TNum sn, TNum cs) = TNum.SinCos(phi);
         return new ConvexPolygon
           (
            new Point2D[]
              {
-               new Point2D(x + b * TNum.Sin(phi), y + b * TNum.Cos(phi))
-             , new Point2D(x - b * TNum.Sin(phi), y - b * TNum.Cos(phi))
+               new Point2D(x + b * sn, y + b * cs)
+             , new Point2D(x - b * sn, y - b * cs)
              }
          , false
           );

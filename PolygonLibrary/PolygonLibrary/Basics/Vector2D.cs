@@ -193,7 +193,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="angle">The turn angle</param>
     /// <returns>The turned vector</returns>
     public Vector2D Turn(TNum angle) {
-      TNum cs = TNum.Cos(angle), sn = TNum.Sin(angle);
+      (TNum sn, TNum cs) = TNum.SinCos(angle);
+      // TNum cs = TNum.Cos(angle), sn = TNum.Sin(angle);
 
       return new Vector2D(cs * x - sn * y, sn * x + cs * y);
     }
