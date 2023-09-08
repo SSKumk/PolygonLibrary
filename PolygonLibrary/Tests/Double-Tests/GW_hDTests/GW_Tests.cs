@@ -1185,7 +1185,7 @@ public class GW_Tests {
       }
 
       P = GiftWrapping.WrapPolyhedron(S);
-      Debug.Assert(P is not null, nameof(P) + " != null");
+      Debug.Assert(P is not null, nameof(P) + " is null");
     }
     catch (Exception e) {
       Console.WriteLine("Gift wrapping does not success!");
