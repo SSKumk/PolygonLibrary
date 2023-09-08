@@ -120,8 +120,6 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Double comparison
-
-
     /// <summary>
     /// Property to deal with the accuracy
     /// </summary>
