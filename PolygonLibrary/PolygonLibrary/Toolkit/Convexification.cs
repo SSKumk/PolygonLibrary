@@ -225,7 +225,7 @@ public partial class Geometry<TNum, TConv>
       Vector2D l      = new Vector2D(Tools.Zero, -Tools.One);
       Debug.Assert(origin is not null, "GrahamHull: swarmOrig.Min() is null!");
 
-      Tools.DoubleComparer              doubleComparer = new Tools.DoubleComparer(Tools.Eps);
+      Tools.DoubleComparer            doubleComparer = new Tools.DoubleComparer(Tools.Eps);
       SortedDictionary<TNum, Point2D> swarmDict = new SortedDictionary<TNum, Point2D>(doubleComparer) { { -Tools.One, origin } };
 
       foreach (Point2D p in swarmOrig) {
@@ -234,7 +234,7 @@ public partial class Geometry<TNum, TConv>
         }
 
         Vector2D vp    = p - origin;
-        TNum   angle = TNum.Acos(l * vp.Normalize());
+        TNum     angle = Vector2D.Angle(l, vp);
 
         swarmDict.TryGetValue(angle, out Point2D? ph);
         if (ph is null) {
