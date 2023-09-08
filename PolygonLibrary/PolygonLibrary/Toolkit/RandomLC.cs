@@ -74,6 +74,15 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class GRandomLC : RandomLC {
 
+    /// <summary>
+    /// Initializes a new instance of the GRandomLC class.
+    /// </summary>
+    /// <param name="initSeed">The initial seed value for the random number generator. If null, a random seed will be used.</param>
+    public GRandomLC(uint? initSeed = null) : base(initSeed) { }
+
+    /// <summary>
+    /// Maximal value of the UInt expressed in TNum-type.
+    /// </summary>
     private readonly TNum MaxValue = TConv.FromUInt(uint.MaxValue);
 
     /// <summary>
