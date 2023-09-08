@@ -4,6 +4,7 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
 
 namespace DoubleDoubleTests;
 
+//todo ВАЖНО. Сделать качественное тестирование HashCode для всех типов данных
 [TestFixture]
 public class HashSetTests {
 
@@ -72,11 +73,14 @@ public class HashSetTests {
 
   [Test]
   public void PointHashTest() {
-    Point p1 = new Point(new ddouble[] { 0.99999999999, 1, 1 });
+    Point p1 = new Point(new ddouble[] { 1 - Tools.Eps / 10, 1, 1 });
     Point p2 = new Point(new ddouble[] { 1.0, 1, 1 });
-    
-    Console.WriteLine(p1.GetHashCode());
-    Console.WriteLine(p2.GetHashCode());
+
+    Point p11 = new Point(new ddouble[] { 1 - Tools.Eps, 1, 1 });
+    Point p22 = new Point(new ddouble[] { 1.0, 1, 1 });
+
+    Assert.That(p1.GetHashCode() == p2.GetHashCode(), "p1 hashcode must be equal p2 hashcode!");
+    Assert.That(p11.GetHashCode() != p22.GetHashCode(), "p11 hashcode must be different from p22 hashcode!");
   }
 
 }
