@@ -269,13 +269,12 @@ public partial class Geometry<TNum, TConv>
         Vector u  = (so * v) * v + (so * face.Normal) * face.Normal;
 
         if (!u.IsZero) {
-          u = u.Normalize();
-          TNum angle = TNum.Acos(v * u);
-          // double dot = v * u;
+          // TNum angle = TNum.Acos(v * u);
+          TNum angle = Vector.Angle(v, u);
 
           if (Tools.GT(angle, maxAngle)) {
             maxAngle = angle;
-            r        = u;
+            r        = u.Normalize();
             sStar    = s;
           }
         }
@@ -364,7 +363,8 @@ public partial class Geometry<TNum, TConv>
             continue;
           }
 
-          TNum angle = TNum.Acos(n * t);
+          // TNum angle = TNum.Acos(n * t);
+          TNum angle = Vector.Angle(n, t);
           if (Tools.GT(angle, maxAngle)) {
             maxAngle = angle;
             sExtr    = s;
