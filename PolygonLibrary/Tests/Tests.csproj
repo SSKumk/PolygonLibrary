@@ -14,7 +14,6 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
         <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
-        <PackageReference Include="TYoshimura.DoubleDouble" Version="2.8.6" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,9 +32,11 @@
     <ItemGroup>
         <None Remove="_Store\**" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Folder Include="ConvexPolyhedra\" />
+        <Reference Include="DoubleDouble">
+            <HintPath>..\DoubleDouble.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>
