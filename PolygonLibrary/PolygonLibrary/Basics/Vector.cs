@@ -6,7 +6,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
@@ -248,7 +249,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
         return Tools.Zero;
       } else {
-        return TNum.Acos((v1 * v2) / v1.Length / v2.Length);
+        TNum dot = (v1 * v2) / v1.Length / v2.Length;
+        if (!(Tools.GE(dot, -Tools.One) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+          throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
+        }
+        if (Tools.EQ(dot, -Tools.One) && dot <= -Tools.One) {
+          return TNum.Pi;
+        }
+        if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+          return TNum.Zero;
+        }
+
+        return TNum.Acos(dot);
       }
     }
 #endregion
@@ -362,11 +374,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     public override string ToString() {
-      string res = "(" + _v[0];
+      string res = $"({_v[0]}";
       int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
-        res += "," + _v[i];
+        res += $",{_v[i]}";
       }
 
       res += ")";
@@ -489,7 +501,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="v">The vector to be reversed</param>
     /// <returns>The opposite vector</returns>
     public static Vector operator -(Vector v) {
-      int      d  = v.Dim, i;
+      int    d  = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -550,7 +562,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="v">The vector factor</param>
     /// <returns>The product</returns>
     public static Vector operator *(TNum a, Vector v) {
-      int      d  = v.Dim, i;
+      int    d  = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -580,7 +592,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new DivideByZeroException();
       }
 #endif
-      int      d  = v.Dim, i;
+      int    d  = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
