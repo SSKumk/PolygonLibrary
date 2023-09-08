@@ -270,10 +270,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         int res = 0, d = Dim;
 
         for (int i = 0; i < d; i++) {
-          // res = HashCode.Combine(res, (int)(_p[i] * 1e8));
           //todo Сравнение по точности и генерация Хешей используют фактически разное количество знаков
-          res = HashCode.Combine(res, (_p[i] / Tools.Eps));
-          // res = HashCode.Combine(res, TNum.Round(_p[i] / Tools.Eps)); //todo Что делать с ХЭШем?
+          res = HashCode.Combine(res, TNum.Round(_p[i] / Tools.Eps));
         }
         _hash = res;
       }

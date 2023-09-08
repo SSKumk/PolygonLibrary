@@ -236,8 +236,7 @@ public class Matrix : IEquatable<Matrix> {
     res = HashCode.Combine(res, Cols);
 
     foreach (TNum el in _m) {
-      res = HashCode.Combine(res, (el / Tools.Eps));
-      // res = HashCode.Combine(res, (int)(el / Tools.Eps)); todo Что делать с ХЕШем?
+      res = HashCode.Combine(res, TNum.Round(el / Tools.Eps));
     }
 
     return res;

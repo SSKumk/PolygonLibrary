@@ -390,8 +390,7 @@ public partial class Geometry<TNum, TConv>
       int res = 0, d = Dim;
 
       for (int i = 0; i < d; i++) {
-        //todo ВОЗМОЖНО НАДО ПРИВОДИТЬ К int, НО МОЖЕТ И ТАК СОЙДЕТ!!!
-        res = HashCode.Combine(res, (_v[i] / Tools.Eps));
+        res = HashCode.Combine(res, TNum.Round(_v[i] / Tools.Eps));
       }
 
       return res;

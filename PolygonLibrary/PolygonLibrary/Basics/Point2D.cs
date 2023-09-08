@@ -206,10 +206,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
     public override int GetHashCode() {
       int res = 0;
-      res = HashCode.Combine(res, (x / Tools.Eps));
-      res = HashCode.Combine(res, (y / Tools.Eps));
-      // res = HashCode.Combine(res, (int)(x / Tools.Eps)); //todo Что делать с ХЭШем?
-      // res = HashCode.Combine(res, (int)(y / Tools.Eps));
+      res = HashCode.Combine(res, TNum.Round(x / Tools.Eps));
+      res = HashCode.Combine(res, TNum.Round(y / Tools.Eps));
 
       return res;
     }
