@@ -129,11 +129,13 @@ public partial class Geometry<TNum, TConv>
       }
 
       if (initFace is null) {
-        // AffineBasis initBasis = BuildInitialPlane(S, out Vector n);
+        //Uncomment to include Garret Swart Initial Plane.
+        // AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
         // Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
         // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
 
-        AffineBasis initBasis = BuildInitialPlane(S);
+        //Uncomment to include Ours Initial Plane.
+        AffineBasis initBasis = BuildInitialPlaneUs(S);
         Debug.Assert
           (
            initBasis.SpaceDim + 1 == S.First().Dim
@@ -244,14 +246,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n"></param>
     /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
     public static BaseSubCP RollOverEdge(HashSet<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
-      Debug.Assert(face.SpaceDim == S.First().Dim, "RollOverEdge: The face must lie in d-dimensional space!");
+#if DEBUG
+      int spaceDim = S.First().Dim;
+#endif
+      Debug.Assert(face.SpaceDim == spaceDim, "RollOverEdge: The face must lie in d-dimensional space!");
       Debug.Assert
-        (
-         face.Faces!.All(F => F.SpaceDim == S.First().Dim)
-       , "RollOverEdge: All edges of the face must lie in d-dimensional space!"
-        );
-      Debug.Assert(face.PolytopDim == S.First().Dim - 1, "RollOverEdge: The dimension of the face must equal to d-1!");
-      Debug.Assert(edge.PolytopDim == S.First().Dim - 2, "RollOverEdge: The dimension of the edge must equal to d-2!");
+        (face.Faces!.All(F => F.SpaceDim == spaceDim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
+      Debug.Assert
+        (face.PolytopDim == spaceDim - 1, $"RollOverEdge (dim = {spaceDim}): The dimension of the face must equal to d-1!");
+      Debug.Assert
+        (edge.PolytopDim == spaceDim - 2, $"RollOverEdge (dim = {spaceDim}): The dimension of the edge must equal to d-2!");
 
       AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
       SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
@@ -261,15 +265,14 @@ public partial class Geometry<TNum, TConv>
       SubPoint? sStar    = null;
       TNum      maxAngle = -Tools.Six; // Something small
 
-      Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {S.First().Dim}): face.Normal is null");
-      Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {S.First().Dim}): face.Normal has zero length");
+      Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
+      Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
       foreach (SubPoint s in S) {
         Vector so = s - edgeBasis.Origin;
         Vector u  = (so * v) * v + (so * face.Normal) * face.Normal;
 
         if (!u.IsZero) {
-          // TNum angle = TNum.Acos(v * u);
           TNum angle = Vector.Angle(v, u);
 
           if (Tools.GT(angle, maxAngle)) {
@@ -286,11 +289,12 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (
          newF_aBasis.SpaceDim == face.PolytopDim
-       , $"RollOverEdge (dim = {S.First().Dim}): The dimension of the basis of new F' must equals to F dimension!"
+       , $"RollOverEdge (dim = {spaceDim}): The dimension of the basis of new F' must equals to F dimension!"
         );
 
       List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
       newF_aBasis = new AffineBasis(newPlane);
+
       HyperPlane hp = new HyperPlane(newF_aBasis);
       n = hp.Normal;
       OrientNormal(S, ref n, newF_aBasis.Origin);
@@ -298,7 +302,7 @@ public partial class Geometry<TNum, TConv>
 
       // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
 
-      Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {S.First().Dim}): New normal is not of length 1.");
+      Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
       OrientNormal(S, ref n, edgeBasis.Origin);
 
@@ -320,8 +324,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
     /// </returns>
-    public static AffineBasis BuildInitialPlane(HashSet<SubPoint> S) {
-      Debug.Assert(S.Any(), $"GW.BuildInitialPlane (dim = {S.First().Dim}): The swarm must has at least one point!");
+    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S) {
+      Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
 
       SubPoint           origin = S.Min(p => p)!;
       LinkedList<Vector> tempV  = new LinkedList<Vector>();
@@ -336,14 +340,12 @@ public partial class Geometry<TNum, TConv>
       HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
 
       TNum maxAngle;
-      // double    minDot;
       SubPoint? sExtr;
 
       while (tempV.Any()) {
         Vector t = tempV.First();
         tempV.RemoveFirst();
         maxAngle = -Tools.Six;
-        // minDot = double.MaxValue;
         sExtr = null;
 
         foreach (SubPoint s in S) {
@@ -377,8 +379,84 @@ public partial class Geometry<TNum, TConv>
 
         Viewed.Add(sExtr);
         bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-        Debug.Assert(isAdded, $"GW.BuildInitialPlane (dim = {S.First().Dim}): Vector was not added to FinalV!");
+        Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
         tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+      }
+
+      return FinalV;
+    }
+
+    /// <summary>
+    /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+    /// and all other points lies for a one side from it.
+    /// </summary>
+    /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+    /// <param name="n">The outward normal to the initial plane.</param>
+    /// <returns>
+    /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+    /// </returns>
+    public static AffineBasis BuildInitialPlaneSwart(HashSet<SubPoint> S, out Vector n) {
+      Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The swarm must has at least one point!");
+
+      SubPoint           origin = S.Min(p => p)!;
+      LinkedList<Vector> TempV  = new LinkedList<Vector>();
+      AffineBasis        FinalV = new AffineBasis(origin);
+
+      int dim = FinalV.VecDim;
+
+      for (int i = 1; i < dim; i++) {
+        TempV.AddLast(Vector.CreateOrth(dim, i + 1));
+      }
+
+      TNum[] n_arr = new TNum[dim];
+      n_arr[0] = -Tools.One;
+
+      for (int i = 1; i < dim; i++) {
+        n_arr[i] = Tools.Zero;
+      }
+      n = new Vector(n_arr);
+
+      while (TempV.Any()) {
+        Vector t = TempV.First();
+        TempV.RemoveFirst();
+        TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
+        SubPoint? sExtr    = null;
+
+        Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
+        Vector? r = null;
+
+        foreach (SubPoint s in S) {
+          Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
+
+          if (!u.IsZero) {
+            TNum angle = Vector.Angle(v, u);
+
+            if (Tools.GT(angle, maxAngle)) {
+              maxAngle = angle;
+              sExtr    = s;
+              r        = u.Normalize();
+            }
+          }
+        }
+
+        if (sExtr is null) {
+          return FinalV;
+        }
+
+        bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+
+        Debug.Assert
+          (
+           isAdded
+         , $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The new vector of FinalV is linear combination of FinalV vectors!"
+          );
+
+        n = (r! * n) * v - (r! * v) * n;
+
+        Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {S.First().Dim}): Normal is zero!");
+
+
+        OrientNormal(S, ref n, origin);
       }
 
       return FinalV;
