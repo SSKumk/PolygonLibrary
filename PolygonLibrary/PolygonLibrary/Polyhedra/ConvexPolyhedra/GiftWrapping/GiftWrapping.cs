@@ -20,7 +20,7 @@ public partial class Geometry<TNum, TConv>
 
       if (p.PolytopDim == 2) {
         throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
-      } //todo Может TwoDimensional сделать у многогранника?
+      }
 
       HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
       HashSet<Edge> Es = new HashSet<Edge>();
@@ -45,6 +45,166 @@ public partial class Geometry<TNum, TConv>
 
       return new Polyhedron
         (p.OriginalVertices, p.PolytopDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
+    }
+
+    /// <summary>
+    /// Procedure performing convexification of a swarm of d-dimensional points for some d.
+    /// </summary>
+    /// <param name="S">The swarm of d-dimensional points to be convexified.</param>
+    /// <param name="initFace">
+    /// If not null, then this is some (d-1)-dimensional face in terms of d-dimensional space of the convex hull to be constructed.
+    /// All (d-2)-dimensional edges also expressed in terms of d-space
+    /// </param>
+    /// <returns>d-dimensional convex sub polytop, which is the convex hull of the given swarm.</returns>
+    /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
+    public static BaseSubCP GW(HashSet<SubPoint> S, BaseSubCP? initFace = null) {
+#if DEBUG
+      int spaceDim = S.First().Dim;
+#endif
+      if (spaceDim == 2) {
+        List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
+
+        if (convexPolygon2D.Count == 3) {
+          return new SubSimplex(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
+        }
+
+        return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
+      }
+
+      if (initFace is null) {
+        //Uncomment to include Garret Swart Initial Plane.
+        // AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
+        // Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
+        // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
+
+        //Uncomment to include Ours Initial Plane.
+        AffineBasis initBasis = BuildInitialPlaneUs(S);
+        Debug.Assert
+          (initBasis.SpaceDim + 1 == spaceDim, $"GW (dim = {spaceDim}): The dimension of the initial plane must be equal to d-1");
+        HyperPlane hp = new HyperPlane(initBasis);
+        Vector     n  = hp.Normal;
+        OrientNormal(S, ref n, initBasis.Origin);
+        hp.OrientNormal(initBasis.Origin + n, true);
+
+
+#if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
+        Dictionary<SubPoint, TNum> badPoints = new Dictionary<SubPoint, TNum>();
+        foreach (SubPoint s in S) {
+          TNum d = hp.Eval(s);
+          if (Tools.GT(d)) {
+            badPoints[s] = d;
+          }
+        }
+        if (badPoints.Any()) {
+          throw new ArgumentException($"GW (dim = {spaceDim}): Some points outside the initial plane!");
+        }
+#endif
+
+        if (initBasis.SpaceDim < initBasis.VecDim - 1) {
+          throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
+        }
+
+        //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
+        initFace        = BuildFace(ref S, initBasis, n);
+        initFace.Normal = n;
+      }
+      Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
+      Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
+      Debug.Assert(initFace.SpaceDim == spaceDim, "The initFace must lie in d-dimensional space!");
+      Debug.Assert
+        (initFace.Faces!.All(F => F.SpaceDim == spaceDim), "All edges of the initFace must lie in d-dimensional space!");
+      Debug.Assert(initFace.PolytopDim == spaceDim - 1, "The dimension of the initFace must equals to d-1!");
+      Debug.Assert
+        (initFace.Faces!.All(F => F.PolytopDim == spaceDim - 2), "The dimension of all edges of initFace must equal to d-2!");
+
+
+      HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
+      HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>(initFace.Vertices);
+      TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
+
+      DFS_step(S, initFace, ref buildFaces, ref buildPoints, ref buildIncidence);
+
+      SubIncidenceInfo incidence = new SubIncidenceInfo();
+
+      foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
+        incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
+      }
+
+      if (buildFaces.Count == spaceDim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) {
+        return new SubSimplex(buildPoints, buildFaces, incidence);
+      }
+
+      return new SubNonSimplex(buildFaces, incidence, buildPoints);
+    }
+
+    /// <summary>
+    /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+    /// and all other points lies for a one side from it.
+    /// </summary>
+    /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+    /// <returns>
+    /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+    /// </returns>
+    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S) {
+      Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
+
+      SubPoint           origin = S.Min(p => p)!;
+      LinkedList<Vector> tempV  = new LinkedList<Vector>();
+      AffineBasis        FinalV = new AffineBasis(origin);
+
+      int dim = FinalV.VecDim;
+
+      for (int i = 1; i < dim; i++) {
+        tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+      }
+
+      HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+
+      TNum      maxAngle;
+      SubPoint? sExtr;
+
+      while (tempV.Any()) {
+        Vector t = tempV.First();
+        tempV.RemoveFirst();
+        maxAngle = -Tools.Six;
+        sExtr    = null;
+
+        foreach (SubPoint s in S) {
+          if (Viewed.Contains(s)) {
+            continue;
+          }
+
+          Vector n0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
+          if (n0.IsZero) {
+            Viewed.Add(s);
+
+            continue;
+          }
+
+          Vector n = Vector.OrthonormalizeAgainstBasis(n0, tempV);
+          if (n.IsZero) {
+            continue;
+          }
+
+          // TNum angle = TNum.Acos(n * t);
+          TNum angle = Vector.Angle(n, t);
+          if (Tools.GT(angle, maxAngle)) {
+            maxAngle = angle;
+            sExtr    = s;
+          }
+        }
+
+        if (sExtr is null) {
+          return FinalV;
+        }
+
+        Viewed.Add(sExtr);
+        bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+        Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
+        tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+      }
+
+      return FinalV;
     }
 
     /// <summary>
@@ -79,12 +239,12 @@ public partial class Geometry<TNum, TConv>
         (FaceBasis.SpaceDim == SDim - 1, $"BuildFace (dim = {S.First().Dim}): The basis must lie in (d-1)-dimensional space!");
 
 
-      var        x  = S.Select(FaceBasis.Contains);
+      // var        x  = S.Select(FaceBasis.Contains);
       HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
       HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s))
                                    .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
                                    .ToHashSet();
-      var xx = S.Select(hp.Eval);
+      // var xx = S.Select(hp.Eval);
 
 
       Debug.Assert(inPlane.Count >= SDim, $"BuildFace (dim = {S.First().Dim}): In plane must be at least d points!");
@@ -105,99 +265,6 @@ public partial class Geometry<TNum, TConv>
 
         return buildedFace;
       }
-    }
-
-    /// <summary>
-    /// Procedure performing convexification of a swarm of d-dimensional points for some d.
-    /// </summary>
-    /// <param name="S">The swarm of d-dimensional points to be convexified.</param>
-    /// <param name="initFace">
-    /// If not null, then this is some (d-1)-dimensional face in terms of d-dimensional space of the convex hull to be constructed.
-    /// All (d-2)-dimensional edges also expressed in terms of d-space
-    /// </param>
-    /// <returns>d-dimensional convex sub polytop, which is the convex hull of the given swarm.</returns>
-    /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
-    public static BaseSubCP GW(HashSet<SubPoint> S, BaseSubCP? initFace = null) {
-      if (S.First().Dim == 2) {
-        List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
-
-        if (convexPolygon2D.Count == 3) {
-          return new SubSimplex(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
-        }
-
-        return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
-      }
-
-      if (initFace is null) {
-        //Uncomment to include Garret Swart Initial Plane.
-        // AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
-        // Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
-        // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
-
-        //Uncomment to include Ours Initial Plane.
-        AffineBasis initBasis = BuildInitialPlaneUs(S);
-        Debug.Assert
-          (
-           initBasis.SpaceDim + 1 == S.First().Dim
-         , $"GW (dim = {S.First().Dim}): The dimension of the initial plane must be equal to d-1"
-          );
-        HyperPlane hp = new HyperPlane(initBasis);
-        Vector     n  = hp.Normal;
-        OrientNormal(S, ref n, initBasis.Origin);
-        hp.OrientNormal(initBasis.Origin + n, true);
-
-
-#if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
-        Dictionary<SubPoint, TNum> badPoints = new Dictionary<SubPoint, TNum>();
-        foreach (SubPoint s in S) {
-          TNum d = hp.Eval(s);
-          if (Tools.GT(d)) {
-            badPoints[s] = d;
-          }
-        }
-        if (badPoints.Any()) {
-          throw new ArgumentException($"GW (dim = {S.First().Dim}): Some points outside the initial plane!");
-        }
-#endif
-
-        if (initBasis.SpaceDim < initBasis.VecDim - 1) {
-          throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
-        }
-
-        //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
-        initFace        = BuildFace(ref S, initBasis, n);
-        initFace.Normal = n;
-      }
-      Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
-      Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
-      Debug.Assert(initFace.SpaceDim == S.First().Dim, "The initFace must lie in d-dimensional space!");
-      Debug.Assert
-        (initFace.Faces!.All(F => F.SpaceDim == S.First().Dim), "All edges of the initFace must lie in d-dimensional space!");
-      Debug.Assert(initFace.PolytopDim == S.First().Dim - 1, "The dimension of the initFace must equals to d-1!");
-      Debug.Assert
-        (
-         initFace.Faces!.All(F => F.PolytopDim == S.First().Dim - 2)
-       , "The dimension of all edges of initFace must equal to d-2!"
-        );
-
-
-      HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
-      HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>(initFace.Vertices);
-      TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
-
-      DFS_step(S, initFace, ref buildFaces, ref buildPoints, ref buildIncidence);
-
-      SubIncidenceInfo incidence = new SubIncidenceInfo();
-
-      foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
-        incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-      }
-
-      if (buildFaces.Count == S.First().Dim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) {
-        return new SubSimplex(buildPoints, buildFaces, incidence);
-      }
-
-      return new SubNonSimplex(buildFaces, incidence, buildPoints);
     }
 
     /// <summary>
@@ -315,76 +382,6 @@ public partial class Geometry<TNum, TConv>
       return BuildFace(ref S, newF_aBasis, n, r, edge);
     }
 
-
-    /// <summary>
-    /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-    /// and all other points lies for a one side from it.
-    /// </summary>
-    /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-    /// <returns>
-    /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
-    /// </returns>
-    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S) {
-      Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
-
-      SubPoint           origin = S.Min(p => p)!;
-      LinkedList<Vector> tempV  = new LinkedList<Vector>();
-      AffineBasis        FinalV = new AffineBasis(origin);
-
-      int dim = FinalV.VecDim;
-
-      for (int i = 1; i < dim; i++) {
-        tempV.AddLast(Vector.CreateOrth(dim, i + 1));
-      }
-
-      HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-
-      TNum maxAngle;
-      SubPoint? sExtr;
-
-      while (tempV.Any()) {
-        Vector t = tempV.First();
-        tempV.RemoveFirst();
-        maxAngle = -Tools.Six;
-        sExtr = null;
-
-        foreach (SubPoint s in S) {
-          if (Viewed.Contains(s)) {
-            continue;
-          }
-
-          Vector n0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
-          if (n0.IsZero) {
-            Viewed.Add(s);
-
-            continue;
-          }
-
-          Vector n = Vector.OrthonormalizeAgainstBasis(n0, tempV);
-          if (n.IsZero) {
-            continue;
-          }
-
-          // TNum angle = TNum.Acos(n * t);
-          TNum angle = Vector.Angle(n, t);
-          if (Tools.GT(angle, maxAngle)) {
-            maxAngle = angle;
-            sExtr    = s;
-          }
-        }
-
-        if (sExtr is null) {
-          return FinalV;
-        }
-
-        Viewed.Add(sExtr);
-        bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-        Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
-        tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
-      }
-
-      return FinalV;
-    }
 
     /// <summary>
     /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
