@@ -5,7 +5,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
@@ -160,18 +161,19 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public static void CheckCorrectness(LinearBasis linearBasis) {
 #if DEBUG
       foreach (Vector bvec in linearBasis.Basis) {
-        Debug.Assert(Tools.EQ(bvec.Length, Tools.One), "All vectors in the basis must have a unit length.");
+        Debug.Assert(Tools.EQ(bvec.Length, Tools.One), "Linear Basis: All vectors in the basis must have a unit length.");
       }
 
       for (int i = 0; i < linearBasis.BasisDim - 1; i++) {
         for (int k = i + 1; k < linearBasis.BasisDim; k++) {
           Debug.Assert
-            (Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k]), "All pairwise different vectors must be orthogonal.");
+            (
+             Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k])
+           , "Linear Basis: All pairwise different vectors must be orthogonal."
+            );
         }
       }
 #endif
     }
-
   }
-
 }
