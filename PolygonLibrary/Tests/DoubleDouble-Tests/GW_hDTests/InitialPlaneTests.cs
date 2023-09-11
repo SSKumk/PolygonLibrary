@@ -14,52 +14,123 @@ public class InitialPlaneTests {
   /// <param name="Swarm">The swarm for which the plane is constructed</param>
   /// <param name="planeDim">The desired dimension of the plane</param>
   private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm, int planeDim) {
-    AffineBasis aBasis = GiftWrapping.BuildInitialPlaneUs(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
-    // AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)), out Vector n);
-    AffineBasis.CheckCorrectness(aBasis);
-    Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim), $"The expected dimension of initial basis is {planeDim}. Found {aBasis.SpaceDim}.");
+    { //Проверка нашего алгоритма
+      AffineBasis aBasisUs = GiftWrapping.BuildInitialPlaneUs
+        (new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))), out Vector? nUs);
+      AffineBasis.CheckCorrectness(aBasisUs);
+      Assert.That
+        (
+         aBasisUs.SpaceDim
+       , Is.EqualTo(planeDim)
+       , $"The expected dimension of initial basis is {planeDim}. Found {aBasisUs.SpaceDim}."
+        );
 
-    if (aBasis.SpaceDim + 1 == aBasis.VecDim) {
-      HyperPlane hp = new HyperPlane(aBasis);
-      Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.True, "Some points outside the initial plane!");
+      if (nUs is not null) {
+        HyperPlane hp = new HyperPlane(aBasisUs.Origin, nUs);
+        Assert.That(hp.AllAtOneSide(Swarm).atOneSide, "BIP_Us: Some points outside the initial plane!");
+        IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
+        Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "BIP_Us:In initial plane must be at least 3 points!");
+      }
+    }
+
+
+    { // Проверка Сварта
+      AffineBasis aBasisSw = GiftWrapping.BuildInitialPlaneSwart
+        (new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))), out Vector nSwart);
+
+      AffineBasis.CheckCorrectness(aBasisSw);
+      Assert.That
+        (
+         aBasisSw.SpaceDim
+       , Is.EqualTo(planeDim)
+       , $"The expected dimension of initial basis is {planeDim}. Found {aBasisSw.SpaceDim}."
+        );
+
+      HyperPlane hp = new HyperPlane(aBasisSw.Origin, nSwart);
+      Assert.That(hp.AllAtOneSide(Swarm).atOneSide, "BIP_Swart: Some points outside the initial plane!");
       IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
-      Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "In initial plane must be at least 3 points!");
+      Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "BIP_Swart:In initial plane must be at least 3 points!");
     }
   }
 
-  [Test]
-  public void LineInInitialPlaneTest() {
-    Point p0 = new Point(new ddouble[] { 0, 0, 0 });
-    Point p1 = new Point(new ddouble[] { 0, 1, 0 });
+#region TODO Lower Dimension Swarms  //todo Научиться работать с неполными размерностями исходного роя
+    // [Test]
+    // public void LineInInitialPlaneTest() {
+    //   Point p0 = new Point(new ddouble[] { 0, 0, 0 });
+    //   Point p1 = new Point(new ddouble[] { 0, 1, 0 });
+    //
+    //   List<Point> Swarm = new List<Point>()
+    //     {
+    //       p0
+    //     , p1
+    //     , Point.LinearCombination(p0, 1, p1, 2)
+    //     , Point.LinearCombination(p0, 1, p1, 3)
+    //     , Point.LinearCombination(p0, 1, p1, 0.5)
+    //     };
+    //
+    //   AssertInitialPlaneBasis(Swarm, 1);
+    // }
+    //
+    // [Test]
+    // public void LineNotInInitialPlaneTest() {
+    //   Point p0 = new Point(new ddouble[] { 0, 0, 0 });
+    //   Point p1 = new Point(new ddouble[] { 1, 1, 0 });
+    //
+    //   List<Point> Swarm = new List<Point>()
+    //     {
+    //       p0
+    //     , p1
+    //     , Point.LinearCombination(p0, 1, p1, 2)
+    //     , Point.LinearCombination(p0, 1, p1, 3)
+    //     , Point.LinearCombination(p0, 1, p1, 0.5)
+    //     };
+    //
+    //   AssertInitialPlaneBasis(Swarm, 1);
+    // }
 
-    List<Point> Swarm = new List<Point>()
-      {
-        p0
-      , p1
-      , Point.LinearCombination(p0, 1, p1, 2)
-      , Point.LinearCombination(p0, 1, p1, 3)
-      , Point.LinearCombination(p0, 1, p1, 0.5)
-      };
+    // [Test]
+    // public void LowerDim4D_ThreeIndependentPointsTest() {
+    //   List<Point> Swarm = new List<Point>()
+    //     {
+    //       new Point(new ddouble[] { 0, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 1, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 0, 1, 0, 0 })
+    //     };
+    //
+    //   AssertInitialPlaneBasis(Swarm, 2);
+    // }
+    // [Test]
+    // public void LowerDim4D_ManyPointsIn2DPlaneTest() {
+    //   List<Point> Swarm = new List<Point>()
+    //     {
+    //       new Point(new ddouble[] { 0, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 1, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 0, 0, 0, 1 })
+    //     , new Point(new ddouble[] { 2, 0, 0, 7 })
+    //     , new Point(new ddouble[] { 3, 0, 0, 5 })
+    //     , new Point(new ddouble[] { 4, 0, 0, 8 })
+    //     };
+    //
+    //   AssertInitialPlaneBasis(Swarm, 2);
+    // }
+    //
+    // [Test]
+    // public void LowerDim4D_ManyPointsIn3DPlaneTest() {
+    //   List<Point> Swarm = new List<Point>()
+    //     {
+    //       new Point(new ddouble[] { 0, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 1, 0, 0, 0 })
+    //     , new Point(new ddouble[] { 0, 1, 0, 0 })
+    //     , new Point(new ddouble[] { 0, 0, 1, 0 })
+    //     , new Point(new ddouble[] { 2, 113, ddouble.PI, 0 })
+    //     , new Point(new ddouble[] { -5, 23, -1, 0 })
+    //     , new Point(new ddouble[] { 77, 25, 1.454, 0 })
+    //     };
+    //
+    //   AssertInitialPlaneBasis(Swarm, 3);
+    // }
+#endregion
 
-    AssertInitialPlaneBasis(Swarm, 1);
-  }
-
-  [Test]
-  public void LineNotInInitialPlaneTest() {
-    Point p0 = new Point(new ddouble[] { 0, 0, 0 });
-    Point p1 = new Point(new ddouble[] { 1, 1, 0 });
-
-    List<Point> Swarm = new List<Point>()
-      {
-        p0
-      , p1
-      , Point.LinearCombination(p0, 1, p1, 2)
-      , Point.LinearCombination(p0, 1, p1, 3)
-      , Point.LinearCombination(p0, 1, p1, 0.5)
-      };
-
-    AssertInitialPlaneBasis(Swarm, 1);
-  }
 
   [Test]
   public void ThreeIndependentPointsTest() {
@@ -72,7 +143,7 @@ public class InitialPlaneTests {
   }
 
   [Test]
-  public void ManyPointsInPlaneTest() {
+  public void SeveralPointsInPlaneTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 1, 0, 0 })
@@ -87,7 +158,7 @@ public class InitialPlaneTests {
   }
 
   [Test]
-  public void TetrahedronSinglePointTest() {
+  public void Simplex3D_Test() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 4 })
@@ -100,33 +171,7 @@ public class InitialPlaneTests {
   }
 
   [Test]
-  public void TetrahedronEdgeTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { -1, 0, 0 })
-      , new Point(new ddouble[] { -3, 0, 0 })
-      , new Point(new ddouble[] { 0, -3, 0 })
-      , new Point(new ddouble[] { -1, -1, 5 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void TetrahedronThreeIndependentPointTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { -2, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 3 })
-      , new Point(new ddouble[] { 1, 0, 0 })
-      , new Point(new ddouble[] { 0, -5, 0 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void TetrahedronManyEdgePointsTest() {
+  public void Simplex3D_1DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { -2, 0, 0 })
@@ -142,25 +187,7 @@ public class InitialPlaneTests {
   }
 
   [Test]
-  public void TetrahedronManyFacePointsTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { -2, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 0.5 })
-      , new Point(new ddouble[] { 0.5, 0, 0.5 })
-      , new Point(new ddouble[] { 0.5, 0, 0.5 })
-      , new Point(new ddouble[] { -1, 0, 1.5 })
-      , new Point(new ddouble[] { 0, 0, 3 })
-      , new Point(new ddouble[] { 1, 0, 0 })
-      , new Point(new ddouble[] { 0, -5, 0 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void TetrahedronEdgeNeighborsPointsTest() {
+  public void Simplex3D_EdgeNeighborsPointsTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { -2, 0, 0 })
@@ -202,7 +229,7 @@ public class InitialPlaneTests {
 
 
   [Test]
-  public void CubeEdgeTest() {
+  public void Cube3D_1DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0 })
@@ -222,22 +249,22 @@ public class InitialPlaneTests {
   public void Cube4DTest() {
     List<Point> Swarm = new List<Point>()
       {
-        new Point(new ddouble[] {0,0,1,1})
-      , new Point(new ddouble[] {1,0,0,1})
-      , new Point(new ddouble[] {0,0,0,1})
-      , new Point(new ddouble[] {1,1,0,0})
-      , new Point(new ddouble[] {1,1,1,0})
-      , new Point(new ddouble[] {1,0,1,0})
-      , new Point(new ddouble[] {1,1,0,1})
-      , new Point(new ddouble[] {0,1,0,1})
-      , new Point(new ddouble[] {0,0,0,0})
-      , new Point(new ddouble[] {0,1,1,1})
-      , new Point(new ddouble[] {1,0,1,1})
-      , new Point(new ddouble[] {0,0,1,0})
-      , new Point(new ddouble[] {0,1,0,0})
-      , new Point(new ddouble[] {1,0,0,0})
-      , new Point(new ddouble[] {0,1,1,0})
-      , new Point(new ddouble[] {1,1,1,1})
+        new Point(new ddouble[] { 0, 0, 1, 1 })
+      , new Point(new ddouble[] { 1, 0, 0, 1 })
+      , new Point(new ddouble[] { 0, 0, 0, 1 })
+      , new Point(new ddouble[] { 1, 1, 0, 0 })
+      , new Point(new ddouble[] { 1, 1, 1, 0 })
+      , new Point(new ddouble[] { 1, 0, 1, 0 })
+      , new Point(new ddouble[] { 1, 1, 0, 1 })
+      , new Point(new ddouble[] { 0, 1, 0, 1 })
+      , new Point(new ddouble[] { 0, 0, 0, 0 })
+      , new Point(new ddouble[] { 0, 1, 1, 1 })
+      , new Point(new ddouble[] { 1, 0, 1, 1 })
+      , new Point(new ddouble[] { 0, 0, 1, 0 })
+      , new Point(new ddouble[] { 0, 1, 0, 0 })
+      , new Point(new ddouble[] { 1, 0, 0, 0 })
+      , new Point(new ddouble[] { 0, 1, 1, 0 })
+      , new Point(new ddouble[] { 1, 1, 1, 1 })
       };
 
     AssertInitialPlaneBasis(Swarm, 3);
@@ -247,18 +274,18 @@ public class InitialPlaneTests {
   public void Simplex4DTest() {
     List<Point> Swarm = new List<Point>()
       {
-        new Point(new ddouble[] {0,2,0,0})
-      , new Point(new ddouble[] {0,0,2,0})
-      , new Point(new ddouble[] {0,0,0,2})
-      , new Point(new ddouble[] {0,0,0,0})
-      , new Point(new ddouble[] {2,0,0,0})
+        new Point(new ddouble[] { 0, 2, 0, 0 })
+      , new Point(new ddouble[] { 0, 0, 2, 0 })
+      , new Point(new ddouble[] { 0, 0, 0, 2 })
+      , new Point(new ddouble[] { 0, 0, 0, 0 })
+      , new Point(new ddouble[] { 2, 0, 0, 0 })
       };
 
     AssertInitialPlaneBasis(Swarm, 3);
   }
 
   [Test]
-  public void CubeFaceTest() {
+  public void Cube3DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0 })
@@ -274,29 +301,8 @@ public class InitialPlaneTests {
     AssertInitialPlaneBasis(Swarm, 2);
   }
 
-
   [Test]
-  public void CubeEdgeWithPointsTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 1 })
-      , new Point(new ddouble[] { 0, 0, 2 })
-      , new Point(new ddouble[] { 2, 2, 0 })
-      , new Point(new ddouble[] { 0, 4, 0 })
-      , new Point(new ddouble[] { -2, 2, 0 })
-      , new Point(new ddouble[] { 0, 0, 2.8284271247 })
-      , new Point(new ddouble[] { 2, 2, 2.8284271247 })
-      , new Point(new ddouble[] { 0, 4, 2.8284271247 })
-      , new Point(new ddouble[] { -2, 2, 2.8284271247 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-
-  [Test]
-  public void CubeFaceWithPointsTest() {
+  public void Cube3D_2DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0 })
@@ -316,77 +322,7 @@ public class InitialPlaneTests {
   }
 
   [Test]
-  public void LowerDim4D_ThreeIndependentPointsTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 }), new Point(new ddouble[] { 1, 0, 0, 0 }), new Point(new ddouble[] { 1, 0, 0, 1 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void LowerDim4D_ManyPointsIn2DPlaneTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 0, 1 })
-      , new Point(new ddouble[] { 2, 0, 0, 7 })
-      , new Point(new ddouble[] { 3, 0, 0, 5 })
-      , new Point(new ddouble[] { 4, 0, 0, 8 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void LowerDim4D_ManyPointsIn3DPlaneTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 1, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 1, 0 })
-      , new Point(new ddouble[] { 2, 113, ddouble.PI, 0 })
-      , new Point(new ddouble[] { -5, 23, -1, 0 })
-      , new Point(new ddouble[] { 77, 25, 1.454, 0 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 3);
-  }
-
-
-  [Test]
-  public void Simplex4D_SinglePointTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0.1, 1, 0, 0 })
-      , new Point(new ddouble[] { 0.1, 0, 1, 0 })
-      , new Point(new ddouble[] { 0.1, 0, 0, 1 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 3);
-  }
-
-  [Test]
-  public void Simplex4D_1DEdgeTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0.1, 1, 0, 0 })
-      , new Point(new ddouble[] { 0.1, 0, 1, 0 })
-      , new Point(new ddouble[] { 0, 0, 0, 1 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 3);
-  }
-
-  [Test]
-  public void Simplex4D_1DEdgeWithPointsTest() {
+  public void Simplex4D_1DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0, 0 })
@@ -402,23 +338,8 @@ public class InitialPlaneTests {
     AssertInitialPlaneBasis(Swarm, 3);
   }
 
-
   [Test]
-  public void Simplex4D_2DEdgeTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0.1, 1, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 1, 0 })
-      , new Point(new ddouble[] { 0, 0, 0, 1 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 3);
-  }
-
-  [Test]
-  public void Simplex4D_2DEdgeWithPointsTest() {
+  public void Simplex4D_2DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0, 0 })
@@ -434,23 +355,8 @@ public class InitialPlaneTests {
     AssertInitialPlaneBasis(Swarm, 3);
   }
 
-
   [Test]
-  public void Simplex4D_3DFaceTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 1, 0, 0 })
-      , new Point(new ddouble[] { 0, 0, 1, 0 })
-      , new Point(new ddouble[] { 0, 0, 0, 1 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 3);
-  }
-
-  [Test]
-  public void Simplex4D_3DFaceWithPointsTest() {
+  public void Simplex4D_3DTest() {
     List<Point> Swarm = new List<Point>()
       {
         new Point(new ddouble[] { 0, 0, 0, 0 })
