@@ -14,7 +14,7 @@ public class InitialPlaneTests {
   /// <param name="Swarm">The swarm for which the plane is constructed</param>
   /// <param name="planeDim">The desired dimension of the plane</param>
   private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm, int planeDim) {
-    AffineBasis aBasis = GiftWrapping.BuildInitialPlane(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
+    AffineBasis aBasis = GiftWrapping.BuildInitialPlaneUs(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
     // AffineBasis aBasis = GiftWrapping.BuildInitialPlane(Swarm.Select(s => new SubPoint(s, null, s)), out Vector n);
     AffineBasis.CheckCorrectness(aBasis);
     Assert.That(aBasis.SpaceDim, Is.EqualTo(planeDim), $"The expected dimension of initial basis is {planeDim}. Found {aBasis.SpaceDim}.");
