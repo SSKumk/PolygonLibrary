@@ -1160,7 +1160,7 @@ public class GW_Tests {
 
 
   /// <summary>
-  /// Aux procedure.
+  /// Procedure checks the answer obtained by Gift Wrapping algorithm and the answer given by user.
   /// </summary>
   /// <param name="S">The swarm to convexify.</param>
   /// <param name="Answer">The final list of points.</param>
@@ -1192,9 +1192,7 @@ public class GW_Tests {
       Console.WriteLine("Gift wrapping does not success!");
       GenTest(seed, PDim, nPoints, fID, needShuffle);
 
-      Console.WriteLine(e.Message);
-
-      throw new ArgumentException("Error in gift wrapping!");
+      throw new ArgumentException($"Error in gift wrapping!\n{e.Message}");
     }
 
     try {
@@ -1241,6 +1239,15 @@ public class GW_Tests {
     List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
     List<Point> origS = new List<Point>(S);
     S.Shuffle(new GRandomLC(seed));
+
+    var hp1   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[2] }));
+    var dist1 = origS.Select(s => hp1.Eval(s));
+    var hp2   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[3] }));
+    var dist2 = origS.Select(s => hp2.Eval(s));
+    var hp3   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[2], origS[3] }));
+    var dist3 = origS.Select(s => hp3.Eval(s));
+    var hp4   = new HyperPlane(new AffineBasis(new List<Point>() { origS[1], origS[2], origS[3] }));
+    var dist4 = origS.Select(s => hp4.Eval(s));
 
     Polyhedron P = GiftWrapping.WrapPolyhedron(S);
     Assert.That(P.Vertices.SetEquals(polytop));
