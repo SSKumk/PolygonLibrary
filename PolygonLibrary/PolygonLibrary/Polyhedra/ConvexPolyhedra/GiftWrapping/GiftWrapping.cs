@@ -78,16 +78,17 @@ public partial class Geometry<TNum, TConv>
         // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
 
         //Uncomment to include Ours Initial Plane.
-        AffineBasis initBasis = BuildInitialPlaneUs(S);
+        AffineBasis initBasis = BuildInitialPlaneUs(S, out Vector? n);
+        if (n is null) {
+          throw new ArgumentException
+            ($"GW (dim = {spaceDim}): Swarm is flat! Use GW algorithm in suitable space. (dim S = {initBasis.SpaceDim})");
+        }
         Debug.Assert
           (initBasis.SpaceDim + 1 == spaceDim, $"GW (dim = {spaceDim}): The dimension of the initial plane must be equal to d-1");
-        HyperPlane hp = new HyperPlane(initBasis);
-        Vector     n  = hp.Normal;
-        OrientNormal(S, ref n, initBasis.Origin);
-        hp.OrientNormal(initBasis.Origin + n, true);
 
 
 #if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
+        HyperPlane                 hp        = new HyperPlane(initBasis);
         Dictionary<SubPoint, TNum> badPoints = new Dictionary<SubPoint, TNum>();
         foreach (SubPoint s in S) {
           TNum d = hp.Eval(s);
@@ -139,13 +140,15 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-    /// and all other points lies for a one side from it.
+    /// and all other points lies for a one side from it. Also finds outward normal.
+    /// If the dimension of the plane less than d-1 than the normal is null.
     /// </summary>
     /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+    /// <param name="n">The outward normal to the initial plane. Null if the dimension of the plane less than d-1.</param>
     /// <returns>
     /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
     /// </returns>
-    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S) {
+    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S, out Vector? n) {
       Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
 
       SubPoint           origin = S.Min(p => p)!;
@@ -166,6 +169,7 @@ public partial class Geometry<TNum, TConv>
       while (tempV.Any()) {
         Vector t = tempV.First();
         tempV.RemoveFirst();
+
         maxAngle = -Tools.Six;
         sExtr    = null;
 
@@ -174,20 +178,20 @@ public partial class Geometry<TNum, TConv>
             continue;
           }
 
-          Vector n0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
-          if (n0.IsZero) {
+          Vector u0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
+          if (u0.IsZero) {
             Viewed.Add(s);
 
             continue;
           }
 
-          Vector n = Vector.OrthonormalizeAgainstBasis(n0, tempV);
-          if (n.IsZero) {
+          Vector u = Vector.OrthonormalizeAgainstBasis(u0, tempV);
+          if (u.IsZero) {
             continue;
           }
 
           // TNum angle = TNum.Acos(n * t);
-          TNum angle = Vector.Angle(n, t);
+          TNum angle = Vector.Angle(u, t);
           if (Tools.GT(angle, maxAngle)) {
             maxAngle = angle;
             sExtr    = s;
@@ -195,6 +199,8 @@ public partial class Geometry<TNum, TConv>
         }
 
         if (sExtr is null) {
+          n = null;
+
           return FinalV;
         }
 
@@ -203,6 +209,11 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
         tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
       }
+
+      HyperPlane hp = new HyperPlane(FinalV);
+      n = hp.Normal;
+      OrientNormal(S, ref n, FinalV.Origin);
+      hp.OrientNormal(FinalV.Origin + n, true);
 
       return FinalV;
     }
@@ -419,6 +430,7 @@ public partial class Geometry<TNum, TConv>
         TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
         SubPoint? sExtr    = null;
 
+        // todo Так на фоне чего тут надо ортогонализировать?
         Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
         Vector? r = null;
 
