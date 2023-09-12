@@ -109,6 +109,8 @@ public partial class Geometry<TNum, TConv>
         initFace        = BuildFace(ref S, initBasis, n);
         initFace.Normal = n;
       }
+
+#region Debug
       Debug.Assert(initFace.Normal is not null, "initFace.Normal is null.");
       Debug.Assert(!initFace.Normal.IsZero, "initFace.Normal has zero length.");
       Debug.Assert(initFace.SpaceDim == spaceDim, "The initFace must lie in d-dimensional space!");
@@ -117,7 +119,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(initFace.PolytopDim == spaceDim - 1, "The dimension of the initFace must equals to d-1!");
       Debug.Assert
         (initFace.Faces!.All(F => F.PolytopDim == spaceDim - 2), "The dimension of all edges of initFace must equal to d-2!");
-
+#endregion
 
       HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
       HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>(initFace.Vertices);
@@ -210,10 +212,7 @@ public partial class Geometry<TNum, TConv>
         tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
       }
 
-      HyperPlane hp = new HyperPlane(FinalV);
-      n = hp.Normal;
-      OrientNormal(S, ref n, FinalV.Origin);
-      hp.OrientNormal(FinalV.Origin + n, true);
+      n = CalcOuterNormal(S, FinalV);
 
       return FinalV;
     }
@@ -293,16 +292,25 @@ public partial class Geometry<TNum, TConv>
                               , ref HashSet<SubPoint>  buildPoints
                               , ref TempIncidenceInfo  buildIncidence) {
       foreach (BaseSubCP edge in face.Faces!) {
-        if (buildIncidence.ContainsKey(edge)) {
-          if (buildIncidence[edge].F1.GetHashCode() <= face.GetHashCode()) {
-            buildIncidence[edge] = (buildIncidence[edge].F1, face);
-          } else {
-            buildIncidence[edge] = (face, buildIncidence[edge].F1);
-          }
+        if (buildIncidence.TryGetValue(edge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
+          buildIncidence[edge] = E.F1.GetHashCode() <= face.GetHashCode() ? (E.F1, face) : (face, E.F1);
         } else {
           buildIncidence.Add(edge, (face, null));
         }
       }
+
+      // Немного переписал цикл, вроде должен тем же самым остаться.
+      // foreach (BaseSubCP edge in face.Faces!) {
+      //   if (buildIncidence.ContainsKey(edge)) {
+      //     if (buildIncidence[edge].F1.GetHashCode() <= face.GetHashCode()) {
+      //       buildIncidence[edge] = (buildIncidence[edge].F1, face);
+      //     } else {
+      //       buildIncidence[edge] = (face, buildIncidence[edge].F1);
+      //     }
+      //   } else {
+      //     buildIncidence.Add(edge, (face, null));
+      //   }
+      // }
 
       foreach (BaseSubCP edge in face.Faces) {
         if (buildIncidence[edge].F2 is null) {
@@ -327,9 +335,12 @@ public partial class Geometry<TNum, TConv>
 #if DEBUG
       int spaceDim = S.First().Dim;
 #endif
-      Debug.Assert(face.SpaceDim == spaceDim, "RollOverEdge: The face must lie in d-dimensional space!");
+      Debug.Assert(face.SpaceDim == spaceDim, $"RollOverEdge (dim = {spaceDim}): The face must lie in d-dimensional space!");
       Debug.Assert
-        (face.Faces!.All(F => F.SpaceDim == spaceDim), "RollOverEdge: All edges of the face must lie in d-dimensional space!");
+        (
+         face.Faces!.All(F => F.SpaceDim == spaceDim)
+       , $"RollOverEdge (dim = {spaceDim}): All edges of the face must lie in d-dimensional space!"
+        );
       Debug.Assert
         (face.PolytopDim == spaceDim - 1, $"RollOverEdge (dim = {spaceDim}): The dimension of the face must equal to d-1!");
       Debug.Assert
@@ -373,24 +384,24 @@ public partial class Geometry<TNum, TConv>
       List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
       newF_aBasis = new AffineBasis(newPlane);
 
-      HyperPlane hp = new HyperPlane(newF_aBasis);
-      n = hp.Normal;
-      OrientNormal(S, ref n, newF_aBasis.Origin);
-      hp.OrientNormal(newF_aBasis.Origin + n, true);
-
-      // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
-
+      n = CalcOuterNormal(S, newF_aBasis);
       Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
-      OrientNormal(S, ref n, edgeBasis.Origin);
-
-      HyperPlane hpHelp = new HyperPlane(edgeBasis.Origin, n);
-      List<TNum> j      = S.Select(s => hpHelp.Eval(s)).ToList();
-
-      var x  = new AffineBasis(new List<Point>() { S.ToList()[1], S.ToList()[3] });
-      var xx = Vector.OrthonormalizeAgainstBasis(S.ToList()[2] - S.ToList()[1], x.Basis);
 
       return BuildFace(ref S, newF_aBasis, n, r, edge);
+    }
+
+    /// <summary>
+    /// Calculates the outer normal vector of a given set of points.
+    /// </summary>
+    /// <param name="S">The set of points.</param>
+    /// <param name="planeBasis">The basis of the plane.</param>
+    /// <returns>The outer normal vector.</returns>
+    private static Vector CalcOuterNormal(IEnumerable<SubPoint> S, AffineBasis planeBasis) {
+      Vector n = new HyperPlane(planeBasis).Normal;
+      OrientNormal(S, ref n, planeBasis.Origin);
+
+      return n;
     }
 
 
