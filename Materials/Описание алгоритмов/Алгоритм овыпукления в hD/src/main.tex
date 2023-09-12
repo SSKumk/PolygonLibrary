@@ -185,11 +185,11 @@
       \item Обозначим $\Viewed$ -- множество просмотренных вершин плоскости $\Plane$. Положим $\Viewed =\set{o}$.
 
 
-      \item Пока $\TempVec \neq \varnothing$, повторяем:
+      \item Пока $\TempVec_k \neq \varnothing$, повторяем:
 
 
       \begin{enumerate}
-        \item Возьмём произвольный $\vec t \in \TempVec$. Удалим вектор $\vec t$ из $\TempVec$: $\TempVec \leftarrow \TempVec \setminus \set{\vec t \,}$. Будем вращать вокруг ребра, аффинный базис которого есть $(o, E)$, где $E = \FinalVec_k \cup \TempVec_k$.
+        \item Возьмём произвольный $\vec t \in \TempVec_k$. Удалим вектор $\vec t$ из $\TempVec_k$: $\TempVec_k \leftarrow \TempVec_k \setminus \set{\vec t \,}$. Будем вращать вокруг ребра, аффинный базис которого есть $(o, E)$, где $E = \FinalVec_k \cup \TempVec_k$.
 
 
         \begin{enumerate}
@@ -200,7 +200,7 @@
           \label{item:searchUs}
 
 
-          \item Иначе вычислим вектор $\vec u = \ONorm{\vec u_F}{\TempVec}$. Если $\vec u = \ZVec$, то есть набор $\TempVec \cup \set{\vec u_F}$ линейно зависим, то переходим на шаг~\ref{item:searchUs}. (В этом случае мы не добавляем точку во множество просмотренных вершин, так как она ещё может пригодиться).
+          \item Иначе вычислим вектор $\vec u = \ONorm{\vec u_F}{\TempVec_k}$. Если $\vec u = \ZVec$, то есть набор $\TempVec_k \cup \set{\vec u_F}$ линейно зависим, то переходим на шаг~\ref{item:searchUs}. (В этом случае мы не добавляем точку во множество просмотренных вершин, так как она ещё может пригодиться).
 
 
           \item Иначе вычислим угол между $\vec u$ и $\vec t$. Если он больше текущего максимума, то запомнить текущий угол и данную точку $s$. Угол между двумя векторами может быть вычислен как арккосинус от скалярного произведения векторов делённых на их длину. Переходим на шаг~\ref{item:searchUs}.
