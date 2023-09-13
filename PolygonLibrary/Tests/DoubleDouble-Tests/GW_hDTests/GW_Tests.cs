@@ -77,7 +77,7 @@ public class GW_Tests {
   /// </summary>
   /// <returns>The generated random ddouble value.</returns>
   private ddouble GenInner(GRandomLC? random = null) {
-    ddouble threshold = 0.10;
+    ddouble threshold = 0.01;
     // ddouble threshold = 100*Tools.Eps;
     ddouble w      = random?.NextPrecise(threshold, 1 - threshold) ?? _random.NextPrecise(threshold, 1 - threshold);
 

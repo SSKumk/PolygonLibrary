@@ -76,10 +76,9 @@ public class GW_Tests {
   /// </summary>
   /// <returns>The generated random double value.</returns>
   private double GenInner(RandomLC? random = null) {
-    double w;
-    do {
-      w = random?.NextDouble() ?? _random.NextDouble();
-    } while (Tools.LT(w, 100 * Tools.Eps) || Tools.GT(w, 1 - 100 * Tools.Eps));
+    double threshold = 0.01;
+    // ddouble threshold = 100*Tools.Eps;
+    double w = random?.NextDouble(threshold, 1 - threshold) ?? _random.NextDouble(threshold, 1 - threshold);
 
     return w;
   }
