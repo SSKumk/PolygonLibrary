@@ -15,6 +15,7 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class HyperPlane {
 
+#region Data and Properties
     /// <summary>
     /// The point through which the hyperplane passes.
     /// </summary>
@@ -109,7 +110,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     private TNum? _constantTerm = null;
+#endregion
 
+#region Constructors
     /// <summary>
     /// Constructs a hyperplane from a given point and normal vector.
     /// </summary>
@@ -144,7 +147,9 @@ public partial class Geometry<TNum, TConv>
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
       }
     }
+#endregion
 
+#region Functions
     /// <summary>
     /// Method to orient normal of the plane.
     /// </summary>
@@ -228,6 +233,7 @@ public partial class Geometry<TNum, TConv>
 
       return (isAtOneSide, sign);
     }
+#endregion
 
   }
 

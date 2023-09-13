@@ -5,7 +5,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
@@ -14,6 +15,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// </summary>
   public class AffineBasis {
 
+#region Data and Properties
     /// <summary>
     /// The linear basis associated with the affine basis.
     /// </summary>
@@ -54,7 +56,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Gets the current basis of the affine space
     /// </summary>
     public List<Vector> Basis => _basis.Basis;
+#endregion
 
+#region Functions
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
     /// </summary>
@@ -110,7 +114,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Debug.Assert
         (VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
 
-      Vector   t  = point - Origin;
+      Vector t  = point - Origin;
       TNum[] np = new TNum[SpaceDim];
 
       for (int i = 0; i < SpaceDim; i++) {
@@ -148,6 +152,23 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       return res.IsZero;
     }
 
+
+    /// <summary>
+    /// Gets the basis vectors as a list of points.
+    /// </summary>
+    /// <returns>The list of points representing the basis vectors.</returns>
+    public List<Point> GetBasisAsPoints() {
+      List<Point> points = new List<Point>();
+
+      foreach (Vector bvec in Basis) {
+        points.Add(new Point(bvec));
+      }
+
+      return points;
+    }
+#endregion
+
+#region Constructors
     /// <summary>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
@@ -248,20 +269,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         _basis.AddVector(bvec, false);
       }
     }
-
-    /// <summary>
-    /// Gets the basis vectors as a list of points.
-    /// </summary>
-    /// <returns>The list of points representing the basis vectors.</returns>
-    public List<Point> GetBasisAsPoints() {
-      List<Point> points = new List<Point>();
-
-      foreach (Vector bvec in Basis) {
-        points.Add(new Point(bvec));
-      }
-
-      return points;
-    }
+#endregion
 
 
     /// <summary>
@@ -275,4 +283,5 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
   }
+
 }
