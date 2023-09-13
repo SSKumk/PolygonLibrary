@@ -1228,18 +1228,7 @@ public class GW_Tests {
     Console.WriteLine();
   }
 
-  [Test]
-  public void Aux() {
-    List<Point> S = new List<Point>()
-      {
-        new Point(new ddouble[] { 1, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 1 })
-      , new Point(new ddouble[] { 0, 0, 1 })
-      , new Point(new ddouble[] { 0, 0, 0 })
-      };
 
-    Polytop x = GiftWrapping.WrapPolytop(S);
-  }
 
   // [Test]
   // public void Aux() {
