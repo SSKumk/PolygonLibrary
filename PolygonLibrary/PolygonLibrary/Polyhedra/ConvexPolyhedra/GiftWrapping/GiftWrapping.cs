@@ -73,12 +73,11 @@ public partial class Geometry<TNum, TConv>
 
       if (initFace is null) {
         //Uncomment to include Garret Swart Initial Plane.
-        // AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
-        // Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
-        // HyperPlane  hp        = new HyperPlane(initBasis, (initBasis.Origin + n, true));
+        AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
+        Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
 
         //Uncomment to include Ours Initial Plane.
-        AffineBasis initBasis = BuildInitialPlaneUs(S, out Vector? n);
+        // AffineBasis initBasis = BuildInitialPlaneUs(S, out Vector? n);
         if (n is null) {
           throw new ArgumentException
             ($"GW (dim = {spaceDim}): Swarm is flat! Use GW algorithm in suitable space. (dim S = {initBasis.SpaceDim})");
@@ -88,7 +87,7 @@ public partial class Geometry<TNum, TConv>
 
 
 #if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
-        HyperPlane                 hp        = new HyperPlane(initBasis);
+        HyperPlane                 hp        = new HyperPlane(initBasis.Origin, n);
         Dictionary<SubPoint, TNum> badPoints = new Dictionary<SubPoint, TNum>();
         foreach (SubPoint s in S) {
           TNum d = hp.Eval(s);
@@ -427,13 +426,7 @@ public partial class Geometry<TNum, TConv>
         TempV.AddLast(Vector.CreateOrth(dim, i + 1));
       }
 
-      TNum[] n_arr = new TNum[dim];
-      n_arr[0] = -Tools.One;
-
-      for (int i = 1; i < dim; i++) {
-        n_arr[i] = Tools.Zero;
-      }
-      n = new Vector(n_arr);
+      n = -Vector.CreateOrth(dim,1);
 
       while (TempV.Any()) {
         Vector t = TempV.First();
@@ -443,6 +436,7 @@ public partial class Geometry<TNum, TConv>
 
         // todo Так на фоне чего тут надо ортогонализировать?
         Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
+        Debug.Assert(!v.IsZero, $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The vector orthogonal to the rotation edge is zero!");
         Vector? r = null;
 
         foreach (SubPoint s in S) {
