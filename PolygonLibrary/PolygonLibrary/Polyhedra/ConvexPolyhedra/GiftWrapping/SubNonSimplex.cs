@@ -74,8 +74,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
     public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
-      Type          = SubCPType.NonSimplex;
-      Faces         = faces;
+      Type       = SubCPType.NonSimplex;
+      Faces      = faces;
 
       // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
       //

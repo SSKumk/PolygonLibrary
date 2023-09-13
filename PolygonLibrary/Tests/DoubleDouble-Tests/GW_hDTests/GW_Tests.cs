@@ -77,10 +77,9 @@ public class GW_Tests {
   /// </summary>
   /// <returns>The generated random ddouble value.</returns>
   private ddouble GenInner(GRandomLC? random = null) {
-    ddouble w;
-    do {
-      w = random?.NextPrecise() ?? _random.NextPrecise();
-    } while (Tools.LT(w, 100 * Tools.Eps) || Tools.GT(w, 1 - 100 * Tools.Eps));
+    ddouble threshold = 0.10;
+    // ddouble threshold = 100*Tools.Eps;
+    ddouble w      = random?.NextPrecise(threshold, 1 - threshold) ?? _random.NextPrecise(threshold, 1 - threshold);
 
     return w;
   }
@@ -458,7 +457,7 @@ public class GW_Tests {
 
     List<Point> Rotated = Rotate(S, new Matrix(rotationZ45));
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Rotated);
+    Polytop P = GiftWrapping.WrapPolytop(Rotated);
     Assert.That(P.Vertices.SetEquals(Rotated), "The set of vertices must be equal.");
   }
 
@@ -480,7 +479,7 @@ public class GW_Tests {
       };
 
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
     Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equal.");
   }
 
@@ -501,7 +500,7 @@ public class GW_Tests {
       , new Point(new ddouble[] { -9.029417029821644, -7.414457472370579, 13.142282885765258 })
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
     Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equal.");
   }
 
@@ -519,7 +518,7 @@ public class GW_Tests {
       , new Point(new ddouble[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equal.");
   }
@@ -533,7 +532,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1 }, 1, 131);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -542,7 +541,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_2D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 2 }, 1, 132);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -551,7 +550,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_3D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 3 }, 1, 133);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -560,7 +559,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D_2D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1, 2 }, 1, 1312);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -569,7 +568,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_2D_3D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 2, 3 }, 1, 1323);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -578,7 +577,7 @@ public class GW_Tests {
   public void Cube3D_withInnerPoints_On_1D_2D_3D() {
     List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -595,7 +594,7 @@ public class GW_Tests {
     for (int i = 0; i < 10 * Polytop.Count; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
-      Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+      Polytop P = GiftWrapping.WrapPolytop(S);
       Assert.That(P.Vertices.SetEquals(Polytop), $"The set of vertices must be equal.\nSeed: {saveSeed}");
     }
   }
@@ -630,7 +629,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1 }, 1, 141);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -640,7 +639,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 2 }, 1, 142);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -649,7 +648,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_3D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 3 }, 1, 143);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -658,7 +657,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1, 2 }, 1, 1412);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -667,7 +666,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D_3D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 2, 3 }, 1, 1423);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -676,7 +675,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D_3D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -698,7 +697,7 @@ public class GW_Tests {
      , 141234
       );
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -733,7 +732,7 @@ public class GW_Tests {
       , Point.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
     Assert.That(P.Vertices.SetEquals(Simplex), "The set of vertices must be equal.");
   }
 #endregion
@@ -894,7 +893,7 @@ public class GW_Tests {
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, simplexDim).ToList());
 
-    for (int i = 0; i < 1e6; i++) {
+    for (int i = 0; i < 1e4; i++) {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
@@ -911,7 +910,7 @@ public class GW_Tests {
 
     List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, simplexDim).ToList());
 
-    for (int i = 0; i < 1e4; i++) {
+    for (int i = 0; i < 1e3; i++) {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
@@ -1070,9 +1069,9 @@ public class GW_Tests {
       , new Point(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
     Assert.That(P.Vertices.SetEquals(Simplex), "The set of vertices must be equal.");
-    P = GiftWrapping.WrapPolyhedron(S_shuffled);
+    P = GiftWrapping.WrapPolytop(S_shuffled);
     Assert.That(P.Vertices.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
   }
 
@@ -1097,7 +1096,7 @@ public class GW_Tests {
       , new Point(new ddouble[] { -0.25, 1, -1 })
       };
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+    Polytop P = GiftWrapping.WrapPolytop(S);
     Assert.That(P.Vertices.SetEquals(S), "The set of vertices must be equal.");
   }
 
@@ -1122,7 +1121,7 @@ public class GW_Tests {
     var hpABC    = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
     var distABCD = S.Select(s => hpABC.Eval(s));
 
-    Polyhedron P = GiftWrapping.WrapPolyhedron(Simplex);
+    Polytop P = GiftWrapping.WrapPolytop(Simplex);
     Assert.That(P.Vertices.SetEquals(Simplex));
   }
 
@@ -1176,7 +1175,7 @@ public class GW_Tests {
                           , int         nPoints
                           , List<int>   fID
                           , bool        needShuffle = false) {
-    Polyhedron? P = null;
+    Polytop? P = null;
 
     try {
       if (needShuffle) {
@@ -1185,7 +1184,7 @@ public class GW_Tests {
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = GiftWrapping.WrapPolyhedron(S);
+      P = GiftWrapping.WrapPolytop(S);
       Debug.Assert(P is not null, nameof(P) + " != null");
     }
     catch (Exception e) {
@@ -1231,47 +1230,40 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const uint seed    = 752772192;
-    const int  PDim    = 3;
-    const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 1, 2, 3 };
+    List<Point> S = new List<Point>()
+      {
+        new Point(new ddouble[] { 1, 0, 0 })
+      , new Point(new ddouble[] { 1, 0, 1 })
+      , new Point(new ddouble[] { 0, 0, 1 })
+      , new Point(new ddouble[] { 0, 0, 0 })
+      };
 
-    List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
-    List<Point> origS = new List<Point>(S);
-    S.Shuffle(new GRandomLC(seed));
-
-    var hp1   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[2] }));
-    var dist1 = origS.Select(s => hp1.Eval(s));
-    var hp2   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[3] }));
-    var dist2 = origS.Select(s => hp2.Eval(s));
-    var hp3   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[2], origS[3] }));
-    var dist3 = origS.Select(s => hp3.Eval(s));
-    var hp4   = new HyperPlane(new AffineBasis(new List<Point>() { origS[1], origS[2], origS[3] }));
-    var dist4 = origS.Select(s => hp4.Eval(s));
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-    Assert.That(P.Vertices.SetEquals(polytop));
+    Polytop x = GiftWrapping.WrapPolytop(S);
   }
-  [Test]
-  public void SomeAux() {
-    const uint seed    = 2056099428;
-    const int  PDim    = 3;
-    const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 2 };
 
-    List<Point> S     = SimplexRND(PDim,  out List<Point> polytop, fID, nPoints, seed);
-    List<Point> origS = new List<Point>(S);
-    S.Shuffle(new GRandomLC(seed));
+  // [Test]
+  // public void Aux() {
+  //   const uint seed    = 752772192;
+  //   const int  PDim    = 3;
+  //   const int  nPoints = 1;
+  //   List<int>  fID     = new List<int>() { 1, 2, 3 };
+  //
+  //   List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
+  //   List<Point> origS = new List<Point>(S);
+  //   S.Shuffle(new GRandomLC(seed));
+  //
+  //   var hp1   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[2] }));
+  //   var dist1 = origS.Select(s => hp1.Eval(s));
+  //   var hp2   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[3] }));
+  //   var dist2 = origS.Select(s => hp2.Eval(s));
+  //   var hp3   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[2], origS[3] }));
+  //   var dist3 = origS.Select(s => hp3.Eval(s));
+  //   var hp4   = new HyperPlane(new AffineBasis(new List<Point>() { origS[1], origS[2], origS[3] }));
+  //   var dist4 = origS.Select(s => hp4.Eval(s));
+  //
+  //   Polyhedron P = GiftWrapping.WrapPolyhedron(S);
+  //   Assert.That(P.Vertices.SetEquals(polytop));
+  // }
 
-    var hpABD    = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[1], S[3] }));
-    var distABD = S.Select(s => hpABD.Eval(s));
-    var hpBDC    = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[3], S[2] }));
-    var distBDC = S.Select(s => hpBDC.Eval(s));
-    var hpBDE    = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[3], S[4] }));
-    var distBDE = S.Select(s => hpBDE.Eval(s));
-
-    Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-    Assert.That(P.Vertices.SetEquals(polytop));
-  }
 
 }

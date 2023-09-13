@@ -14,12 +14,12 @@ public partial class Geometry<TNum, TConv>
 
   public class GiftWrapping {
 
-    public static Polyhedron WrapPolyhedron(IEnumerable<Point> SwarmOrig) {
+    public static Polytop WrapPolytop(IEnumerable<Point> SwarmOrig) {
       HashSet<SubPoint> Swarm = new HashSet<SubPoint>(SwarmOrig.Select(s => new SubPoint(s, null, s)));
       BaseSubCP         p     = GW(Swarm);
 
       if (p.PolytopDim == 2) {
-        throw new ArgumentException("P is TwoDimensional! Use ArcHull instead.");
+        throw new ArgumentException("WrapPolytop: P is TwoDimensional! Use ArcHull instead.");
       }
 
       HashSet<Face> Fs = new HashSet<Face>(p.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
@@ -43,7 +43,7 @@ public partial class Geometry<TNum, TConv>
         default: throw new NotImplementedException();
       }
 
-      return new Polyhedron
+      return new Polytop
         (p.OriginalVertices, p.PolytopDim, Fs, Es, type, new IncidenceInfo(p.FaceIncidence!), new FansInfo(p.Faces!));
     }
 
@@ -74,10 +74,10 @@ public partial class Geometry<TNum, TConv>
       if (initFace is null) {
         //Uncomment to include Garret Swart Initial Plane.
         AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
-        Debug.Assert(initBasis.SpaceDim + 1 == S.First().Dim, "GW: The dimension of the initial plane must be equal to d-1");
 
         //Uncomment to include Ours Initial Plane.
         // AffineBasis initBasis = BuildInitialPlaneUs(S, out Vector? n);
+
         if (n is null) {
           throw new ArgumentException
             ($"GW (dim = {spaceDim}): Swarm is flat! Use GW algorithm in suitable space. (dim S = {initBasis.SpaceDim})");
@@ -104,7 +104,6 @@ public partial class Geometry<TNum, TConv>
           throw new NotImplementedException(); //todo Может стоит передавать флаг, что делать если рой не полной размерности.
         }
 
-        //todo ИДЕЯ. Может при возврате из подпространства убирать точки из 'S'? Грань мы знаем, точки в плоскости грани там тоже знаем.
         initFace        = BuildFace(ref S, initBasis, n);
         initFace.Normal = n;
       }
@@ -390,19 +389,6 @@ public partial class Geometry<TNum, TConv>
       return BuildFace(ref S, newF_aBasis, n, r, edge);
     }
 
-    /// <summary>
-    /// Calculates the outer normal vector of a given set of points.
-    /// </summary>
-    /// <param name="S">The set of points.</param>
-    /// <param name="planeBasis">The basis of the plane.</param>
-    /// <returns>The outer normal vector.</returns>
-    private static Vector CalcOuterNormal(IEnumerable<SubPoint> S, AffineBasis planeBasis) {
-      Vector n = new HyperPlane(planeBasis).Normal;
-      OrientNormal(S, ref n, planeBasis.Origin);
-
-      return n;
-    }
-
 
     /// <summary>
     /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
@@ -414,36 +400,33 @@ public partial class Geometry<TNum, TConv>
     /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
     /// </returns>
     public static AffineBasis BuildInitialPlaneSwart(HashSet<SubPoint> S, out Vector n) {
-      Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The swarm must has at least one point!");
+      int spaceDim = S.First().Dim;
+      Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
-      SubPoint           origin = S.Min(p => p)!;
-      LinkedList<Vector> TempV  = new LinkedList<Vector>();
-      AffineBasis        FinalV = new AffineBasis(origin);
+      SubPoint    origin = S.Min(p => p)!;
+      AffineBasis FinalV = new AffineBasis(origin);
 
-      int dim = FinalV.VecDim;
+      n = -Vector.CreateOrth(spaceDim, 1);
 
-      for (int i = 1; i < dim; i++) {
-        TempV.AddLast(Vector.CreateOrth(dim, i + 1));
-      }
-
-      n = -Vector.CreateOrth(dim,1);
-
-      while (TempV.Any()) {
-        Vector t = TempV.First();
-        TempV.RemoveFirst();
+      while (FinalV.SpaceDim < spaceDim - 1) {
         TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
         SubPoint? sExtr    = null;
 
-        // todo Так на фоне чего тут надо ортогонализировать?
-        Vector  v = Vector.OrthonormalizeAgainstBasis(t, FinalV.Basis, new[] { n });
-        Debug.Assert(!v.IsZero, $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The vector orthogonal to the rotation edge is zero!");
-        Vector? r = null;
+        Vector e;
+        int    i = 0;
+        do {
+          i++;
+          e = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis, new[] { n });
+        } while (e.IsZero && i <= spaceDim);
+        Debug.Assert
+          (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
+        Vector? r = null;
         foreach (SubPoint s in S) {
-          Vector u = ((s - origin) * v) * v + ((s - origin) * n) * n;
+          Vector u = ((s - origin) * e) * e + ((s - origin) * n) * n;
 
           if (!u.IsZero) {
-            TNum angle = Vector.Angle(v, u);
+            TNum angle = Vector.Angle(e, u);
 
             if (Tools.GT(angle, maxAngle)) {
               maxAngle = angle;
@@ -462,18 +445,42 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert
           (
            isAdded
-         , $"BuildInitialPlaneSwart (dim = {S.First().Dim}): The new vector of FinalV is linear combination of FinalV vectors!"
+         , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
-        n = (r! * n) * v - (r! * v) * n;
-
-        Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {S.First().Dim}): Normal is zero!");
-
-
+        n = (r! * n) * e - (r! * e) * n;
         OrientNormal(S, ref n, origin);
+        Vector normal = n;
+        if (S.All(s => new HyperPlane(origin, normal).Contains(s))) {
+          throw new ArgumentException
+            (
+             $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
+            );
+        }
+
+        Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {spaceDim}): Normal is zero!");
       }
 
       return FinalV;
+    }
+
+    /// <summary>
+    /// Calculates the outer normal vector of a given set of points.
+    /// </summary>
+    /// <param name="S">The set of points.</param>
+    /// <param name="planeBasis">The basis of the plane.</param>
+    /// <returns>The outer normal vector.</returns>
+    private static Vector CalcOuterNormal(IEnumerable<SubPoint> S, AffineBasis planeBasis) {
+      HyperPlane hp = new HyperPlane(planeBasis);
+      Vector     n  = hp.Normal;
+      OrientNormal(S, ref n, planeBasis.Origin);
+
+      if (S.All(s => hp.Contains(s))) {
+        throw new ArgumentException
+          ("BIP.CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension.");
+      }
+
+      return n;
     }
 
     /// <summary>

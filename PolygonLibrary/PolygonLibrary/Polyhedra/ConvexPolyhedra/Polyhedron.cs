@@ -160,7 +160,7 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  public class Polyhedron : BaseConvexPolyhedron {
+  public class Polytop : BaseConvexPolyhedron {
 
     /// <summary>
     /// Gets the dimension of the polytop.
@@ -192,7 +192,7 @@ public partial class Geometry<TNum, TConv>
     public FansInfo Fans { get; }
 
 
-    public Polyhedron(IEnumerable<Point>   Vs
+    public Polytop(IEnumerable<Point>   Vs
                     , int                  polyhedronDim
                     , IEnumerable<Face>    faces
                     , IEnumerable<Edge>    edges
