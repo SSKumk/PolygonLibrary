@@ -132,30 +132,30 @@ public class InitialPlaneTests {
 #endregion
 
 
-  [Test]
-  public void ThreeIndependentPointsTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 1, 0, 0 }), new Point(new ddouble[] { 0, 1, 0 }), new Point(new ddouble[] { 0, 0, 1 })
-      };
+  // [Test]  При вычислении внешней нормали проверяется, что есть точка вне начальной плоскости. Тут это не верно.
+  // public void ThreeIndependentPointsTest() {
+  //   List<Point> Swarm = new List<Point>()
+  //     {
+  //       new Point(new ddouble[] { 1, 0, 0 }), new Point(new ddouble[] { 0, 1, 0 }), new Point(new ddouble[] { 0, 0, 1 })
+  //     };
+  //
+  //   AssertInitialPlaneBasis(Swarm, 2);
+  // }
 
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
-
-  [Test]
-  public void SeveralPointsInPlaneTest() {
-    List<Point> Swarm = new List<Point>()
-      {
-        new Point(new ddouble[] { 1, 0, 0 })
-      , new Point(new ddouble[] { 0, 1, 0 })
-      , new Point(new ddouble[] { 0, 0, 0 })
-      , new Point(new ddouble[] { 2, 4, 0 })
-      , new Point(new ddouble[] { -3, 1, 0 })
-      , new Point(new ddouble[] { -9, -2, 0 })
-      };
-
-    AssertInitialPlaneBasis(Swarm, 2);
-  }
+  // [Test]  При вычислении внешней нормали проверяется, что есть точка вне начальной плоскости. Тут это не верно.
+  // public void SeveralPointsInPlaneTest() {
+  //   List<Point> Swarm = new List<Point>()
+  //     {
+  //       new Point(new ddouble[] { 1, 0, 0 })
+  //     , new Point(new ddouble[] { 0, 1, 0 })
+  //     , new Point(new ddouble[] { 0, 0, 0 })
+  //     , new Point(new ddouble[] { 2, 4, 0 })
+  //     , new Point(new ddouble[] { -3, 1, 0 })
+  //     , new Point(new ddouble[] { -9, -2, 0 })
+  //     };
+  //
+  //   AssertInitialPlaneBasis(Swarm, 2);
+  // }
 
   [Test]
   public void Simplex3D_Test() {

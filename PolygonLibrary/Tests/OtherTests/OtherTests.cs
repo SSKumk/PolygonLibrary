@@ -1,3 +1,4 @@
+using CGLibrary;
 using NUnit.Framework;
 using DoubleDouble;
 
@@ -12,6 +13,7 @@ public class OtherTests {
   public void Atan2Test() {
     var x = ddouble.Atan2(-1e-15, -1);
     var y = double.Atan2(-1e-15, -1);
+
     Console.WriteLine(x);
     Console.WriteLine(y);
   }
