@@ -16,25 +16,25 @@ public partial class Geometry<TNum, TConv>
   /// Type of permanent storage of face incidence information.
   /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
   /// </summary>
-  public class IncidenceInfo : Dictionary<Edge, (Face F1, Face F2)> {
+  public class IncidenceInfo : Dictionary<Edge, (Facet F1, Facet F2)> {
 
     public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
 
     public IncidenceInfo(SubIncidenceInfo info) : base
       (
-       new Dictionary<Edge, (Face F1, Face F2)>
+       new Dictionary<Edge, (Facet F1, Facet F2)>
          (
           info.Select
             (
              x => {
-               Debug.Assert(x.Value.F1.Normal is not null, "x.Value.F1.Normal != null");
-               Debug.Assert(x.Value.F2.Normal is not null, "x.Value.F2.Normal != null");
+               Debug.Assert(x.Value.F1.Normal is not null, "IncidenceInfo: Normal to the first tuple component is null!");
+               Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: Normal to the second tuple component is null!");
 
 
-               return new KeyValuePair<Edge, (Face F1, Face F2)>
+               return new KeyValuePair<Edge, (Facet F1, Facet F2)>
                  (
                   new Edge(x.Key.OriginalVertices)
-                , (new Face(x.Value.F1.OriginalVertices, x.Value.F1.Normal), new Face(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
+                , (new Facet(x.Value.F1.OriginalVertices, x.Value.F1.Normal), new Facet(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
                  );
              }
             )
@@ -43,7 +43,7 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  public class FansInfo : Dictionary<Point, HashSet<Face>> {
+  public class FansInfo : Dictionary<Point, HashSet<Facet>> {
 
     public FansInfo(FansInfo fansInfo) : base(fansInfo) { }
 
@@ -52,10 +52,10 @@ public partial class Geometry<TNum, TConv>
         foreach (Point vertex in F.OriginalVertices) {
           Debug.Assert(F.Normal is not null, "F.Normal != null");
 
-          if (TryGetValue(vertex, out HashSet<Face>? value)) {
-            value.Add(new Face(F.OriginalVertices, F.Normal));
+          if (TryGetValue(vertex, out HashSet<Facet>? value)) {
+            value.Add(new Facet(F.OriginalVertices, F.Normal));
           } else {
-            base.Add(vertex, new HashSet<Face>() { new Face(F.OriginalVertices, F.Normal) });
+            base.Add(vertex, new HashSet<Facet>() { new Facet(F.OriginalVertices, F.Normal) });
           }
         }
       }
@@ -63,13 +63,13 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  public class Face {
+  public class Facet {
 
     public HashSet<Point> Vertices { get; }
 
     public Vector Normal { get; }
 
-    public Face(IEnumerable<Point> Vs, Vector normal) {
+    public Facet(IEnumerable<Point> Vs, Vector normal) {
       Vertices = new HashSet<Point>(Vs);
       Normal   = normal;
     }
@@ -85,7 +85,7 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      Face other = (Face)obj;
+      Facet other = (Facet)obj;
 
       return this.Vertices.SetEquals(other.Vertices);
     }
@@ -180,7 +180,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the faces of polytop
     /// </summary>
-    public HashSet<Face> Faces { get; }
+    public HashSet<Facet> Facets { get; }
 
     /// <summary>
     /// Gets the set of the edges of polytop.
@@ -194,14 +194,14 @@ public partial class Geometry<TNum, TConv>
 
     public Polytop(IEnumerable<Point>   Vs
                     , int                  polyhedronDim
-                    , IEnumerable<Face>    faces
+                    , IEnumerable<Facet>    faces
                     , IEnumerable<Edge>    edges
                     , ConvexPolyhedronType type
                     , IncidenceInfo        faceIncidence
                     , FansInfo             fans) {
       Vertices      = new HashSet<Point>(Vs);
       PolyhedronDim = polyhedronDim;
-      Faces         = new HashSet<Face>(faces);
+      Facets         = new HashSet<Facet>(faces);
       Edges         = new HashSet<Edge>(edges);
       Type          = type;
       FaceIncidence = new IncidenceInfo(faceIncidence);
