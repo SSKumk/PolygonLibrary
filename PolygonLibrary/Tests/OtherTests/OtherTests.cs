@@ -95,6 +95,18 @@ public class OtherTests {
       foreach (int dim in facesDim) {
         List<List<int>> allPoints = Subsets(vectorsInds, cubeDim - dim); //todo dim = cubeDim отдельно обработать
 
+        if (cubeDim == dim) {
+          for (int i = 0; i < amount; i++) {
+            double[] point = new double[cubeDim];
+            for (int j = 0; j < cubeDim; j++) {
+              point[j] = GenInner(random);
+            }
+            Cube.Add(new G.Point(point));
+          }
+          continue;
+        }
+
+        // Если размерность грани, куда нужно поместить точку меньше размерности куба
         foreach (List<int> fixedInd in allPoints) {
           List<G.Point> smallCube = OtherTests.Cube(cubeDim - dim, out List<G.Point> _, 0);
           foreach (G.Point pointCube in smallCube) {
@@ -140,11 +152,29 @@ public class OtherTests {
     Console.WriteLine(y);
   }
 
+  private List<DG.Point> ToDDPoints(List<G.Point> from) {
+    return from.Select
+      (
+       p => {
+         ddouble[] pDD = new ddouble[p.Dim];
+         for (int i = 0; i < p.Dim; i++) {
+           pDD[i] = p[i];
+         }
+
+         return new DG.Point(pDD);
+       }
+      ).ToList();
+  }
 
   [Test]
   public void FindEtalon() {
-    var x = Cube(4, out List<G.Point> pureCube, 0, new[] { 1 }, 1);
-    Console.WriteLine();
+    List<G.Point> cube4D_double = Cube(4, out List<G.Point> pureCube_double, 0, new[] { 1,2,3,4 }, 1);
+    List<DG.Point> cube4D_double_double = ToDDPoints(Cube(4, out List<G.Point> _, 0, new[] { 1,2,3,4 }, 1));
+
+    var P1 = G.GiftWrapping.WrapPolytop(cube4D_double);
+    var P2 = DG.GiftWrapping.WrapPolytop(cube4D_double_double);
+
+
   }
 
 }
