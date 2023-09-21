@@ -5,7 +5,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
@@ -204,6 +205,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     /// <summary>
+    /// Get internal storage of the Point.
+    /// </summary>
+    /// <returns>Array of elements of the Point.</returns>
+    public List<TNum> GetAsList() => new List<TNum>(_p);
+
+    /// <summary>
     /// Storage of the flag showing whether the point is zero
     /// </summary>
     private bool? isZero;
@@ -374,8 +381,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
     /// <returns>The resultant point</returns>
     public static Point LinearCombination(IEnumerable<Point> ps, IEnumerable<TNum> ws) {
-      IEnumerator<Point>  enPoint  = ps.GetEnumerator();
-      IEnumerator<TNum> enWeight = ws.GetEnumerator();
+      IEnumerator<Point> enPoint  = ps.GetEnumerator();
+      IEnumerator<TNum>  enWeight = ws.GetEnumerator();
 
 #if DEBUG
       if (!enPoint.MoveNext()) {
@@ -391,7 +398,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 #endif
 
 
-      int      dim    = enPoint.Current.Dim;
+      int    dim    = enPoint.Current.Dim;
       TNum[] coords = new TNum[dim];
 
       do {
@@ -417,7 +424,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be reversed</param>
     /// <returns>The opposite point</returns>
     public static Point operator -(Point p) {
-      int      d  = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -500,7 +507,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point factor</param>
     /// <returns>The product</returns>
     public static Point operator *(TNum a, Point p) {
-      int      d  = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -530,7 +537,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new DivideByZeroException();
       }
 #endif
-      int      d  = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
