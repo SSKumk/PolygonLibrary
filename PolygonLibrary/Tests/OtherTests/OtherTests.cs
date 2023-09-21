@@ -10,6 +10,7 @@ namespace OtherTests;
 
 [TestFixture]
 public class OtherTests {
+
   /// <summary>
   /// Finds all subsets of a given length for an array.
   /// </summary>
@@ -41,11 +42,14 @@ public class OtherTests {
   }
 
   /// <summary>
-  /// Generates a random ddouble value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
+  /// Generates a random TNum value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
   /// </summary>
-  /// <returns>The generated random ddouble value.</returns>
-  private static double GenInner(RandomLC rnd) {
-    return rnd.NextInt(1, 999) / 1000.0;
+  /// <returns>The generated random TNum value.</returns>
+  private static TNum GenInner<TNum, TConv>(RandomLC rnd)
+    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+    IFloatingPoint<TNum>
+    where TConv : INumConvertor<TNum> {
+    return TConv.FromInt(rnd.NextInt(1, 999)) / TConv.FromDouble(1000.0);
   }
 
   /// <summary>
@@ -57,25 +61,27 @@ public class OtherTests {
   /// <param name="amount">The amount of points to be placed into random set of faces of faceDim dimension.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
-  private static List<Geometry<TNum, TConv>.Point> Cube<TNum, TConv>(int cubeDim, out List<Geometry<TNum, TConv>.Point> pureCube, uint? seed
-                                                                   , IEnumerable<int>? facesDim = null, int amount = 1)
+  private static List<Geometry<TNum, TConv>.Point> Cube<TNum, TConv>(int                                   cubeDim
+                                                                   , out List<Geometry<TNum, TConv>.Point> pureCube
+                                                                   , uint?                                 seed
+                                                                   , IEnumerable<int>?                     facesDim = null
+                                                                   , int                                   amount   = 1)
     where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
     IFloatingPoint<TNum>
     where TConv : INumConvertor<TNum> {
     if (cubeDim == 1) {
       List<Geometry<TNum, TConv>.Point> oneDimCube = new List<Geometry<TNum, TConv>.Point>()
         {
-          new Geometry<TNum, TConv>.Point(new TNum[] { TNum.Zero })
-        , new Geometry<TNum, TConv>.Point(new TNum[] { TNum.One })
+          new Geometry<TNum, TConv>.Point(new TNum[] { TNum.Zero }), new Geometry<TNum, TConv>.Point(new TNum[] { TNum.One })
         };
       pureCube = oneDimCube;
 
       return oneDimCube;
     }
 
-    RandomLC random = new RandomLC(seed);
+    RandomLC         random    = new RandomLC(seed);
     List<List<TNum>> cube_prev = new List<List<TNum>>();
-    List<List<TNum>> cube = new List<List<TNum>>();
+    List<List<TNum>> cube      = new List<List<TNum>>();
     cube_prev.Add(new List<TNum>() { TNum.Zero });
     cube_prev.Add(new List<TNum>() { TNum.One });
 
@@ -98,7 +104,7 @@ public class OtherTests {
 
     pureCube = new List<Geometry<TNum, TConv>.Point>(Cube);
 
-    if (facesDim is not null) { // накидываем точки на грани нужных размерностей
+    if (facesDim is not null) {                                      // накидываем точки на грани нужных размерностей
       List<int> vectorsInds = Enumerable.Range(0, cubeDim).ToList(); // генерируем список [0,1,2, ... , cubeDim - 1]
       foreach (int dim in facesDim) {
         List<List<int>> allPoints = Subsets(vectorsInds, cubeDim - dim); //todo dim = cubeDim отдельно обработать
@@ -107,7 +113,7 @@ public class OtherTests {
           for (int i = 0; i < amount; i++) {
             TNum[] point = new TNum[cubeDim];
             for (int j = 0; j < cubeDim; j++) {
-              point[j] = TConv.FromDouble(GenInner(random));
+              point[j] = GenInner<TNum, TConv>(random);
             }
 
             Cube.Add(new Geometry<TNum, TConv>.Point(point));
@@ -118,13 +124,13 @@ public class OtherTests {
 
         // Если размерность грани, куда нужно поместить точку меньше размерности куба
         foreach (List<int> fixedInd in allPoints) {
-          List<G.Point> smallCube = OtherTests.Cube(cubeDim - dim, out List<G.Point> _, 0);
-          foreach (G.Point pointCube in smallCube) {
+          List<Geometry<TNum, TConv>.Point> smallCube = OtherTests.Cube(cubeDim - dim, out List<Geometry<TNum, TConv>.Point> _, 0);
+          foreach (Geometry<TNum, TConv>.Point pointCube in smallCube) {
             for (int k = 0; k < amount; k++) {
-              double[] point = new double[cubeDim];
-              int s = 0;
+              TNum[] point = new TNum[cubeDim];
+              int      s     = 0;
               for (int j = 0; j < cubeDim; j++) {
-                point[j] = -1;
+                point[j] = -TNum.One;
               }
 
               foreach (int ind in fixedInd) { // на выделенных местах размещаем 1-ки и 0-ки
@@ -133,12 +139,12 @@ public class OtherTests {
               }
 
               for (int j = 0; j < cubeDim; j++) {
-                if (G.Tools.EQ(point[j], -1)) {
-                  point[j] = GenInner(random);
+                if (Geometry<TNum, TConv>.Tools.EQ(point[j], -TNum.One)) {
+                  point[j] = GenInner<TNum,TConv>(random);
                 }
               }
 
-              Cube.Add(new G.Point(point));
+              Cube.Add(new Geometry<TNum, TConv>.Point(point));
             }
           }
         }
@@ -165,23 +171,31 @@ public class OtherTests {
     Console.WriteLine(y);
   }
 
-  private List<DG.Point> ToDDPoints(List<G.Point> from) {
-    return from.Select(p => {
-      ddouble[] pDD = new ddouble[p.Dim];
-      for (int i = 0; i < p.Dim; i++) {
-        pDD[i] = p[i];
-      }
+  private List<G.Point> ToDPoints(List<DG.Point> from) {
+    return from.Select
+                (
+                 p => {
+                   double[] pDD = new double[p.Dim];
+                   for (int i = 0; i < p.Dim; i++) {
+                     pDD[i] = (double)p[i];
+                   }
 
-      return new DG.Point(pDD);
-    }).ToList();
+                   return new G.Point(pDD);
+                 }
+                )
+               .ToList();
   }
 
   [Test]
   public void FindEtalon() {
-    List<G.Point> cube4D_double = Cube(4, out List<G.Point> pureCube_double, 0, new[] { 1, 2, 3, 4 }, 1);
-    List<DG.Point> cube4D_double_double = ToDDPoints(cube4D_double);
+    List<DG.Point> cube4D_double_double = Cube(4, out List<DG.Point> pureCube_double, 0, new[] { 1, 2, 3, 4 }, 1);
+    List<G.Point> cube4D_double = ToDPoints(cube4D_double_double);
 
     var P1 = G.GiftWrapping.WrapPolytop(cube4D_double);
     var P2 = DG.GiftWrapping.WrapPolytop(cube4D_double_double);
+
+    Console.WriteLine($"{P1.Faces.First().Normal + G.Vector.CreateOrth(4, 4)}");
+    Console.WriteLine(P2.Faces.First().Normal + DG.Vector.CreateOrth(4,4));
   }
+
 }
