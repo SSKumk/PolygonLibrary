@@ -395,18 +395,18 @@ public partial class Geometry<TNum, TConv>
     /// and all other points lies for a one side from it.
     /// </summary>
     /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-    /// <param name="n">The outward normal to the initial plane.</param>
+    /// <param name="normal">The outward normal to the initial plane.</param>
     /// <returns>
     /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
     /// </returns>
-    public static AffineBasis BuildInitialPlaneSwart(HashSet<SubPoint> S, out Vector n) {
+    public static AffineBasis BuildInitialPlaneSwart(HashSet<SubPoint> S, out Vector normal) {
       int spaceDim = S.First().Dim;
       Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
       SubPoint    origin = S.Min(p => p)!;
       AffineBasis FinalV = new AffineBasis(origin);
 
-      n = -Vector.CreateOrth(spaceDim, 1);
+      Vector n = -Vector.CreateOrth(spaceDim, 1);
 
       while (FinalV.SpaceDim < spaceDim - 1) {
         TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
@@ -414,9 +414,10 @@ public partial class Geometry<TNum, TConv>
 
         Vector e;
         int    i = 0;
+        Vector[] nBasis = new[] { n };
         do {
           i++;
-          e = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis, new[] { n });
+          e = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis, nBasis);
         } while (e.IsZero && i <= spaceDim);
         Debug.Assert
           (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
@@ -437,6 +438,7 @@ public partial class Geometry<TNum, TConv>
         }
 
         if (sExtr is null) {
+          normal = n;
           return FinalV;
         }
 
@@ -448,19 +450,30 @@ public partial class Geometry<TNum, TConv>
          , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
+        /*
+        i = 0;
+        do {
+          i++;
+          n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
+        } while (n.IsZero && i <= spaceDim);
+        */
+        
         n = (r! * n) * e - (r! * e) * n;
+
         OrientNormal(S, ref n, origin);
-        Vector normal = n;
-        if (S.All(s => new HyperPlane(origin, normal).Contains(s))) {
+        if (S.All(s => new HyperPlane(origin, n).Contains(s))) {
           throw new ArgumentException
             (
              $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
             );
         }
+        
+        // ToDo: Compare n and nHonest
 
         Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {spaceDim}): Normal is zero!");
       }
 
+      normal = n;
       return FinalV;
     }
 
