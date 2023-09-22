@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 
@@ -23,9 +24,8 @@ public enum PolylineOrientation {
 
 }
 
-public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>

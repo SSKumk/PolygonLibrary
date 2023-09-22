@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
@@ -128,7 +129,7 @@ public partial class Geometry<TNum, TConv>
     /// String representation of the pair
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => $"[{Normal};{Value}]";
+    public override string ToString() => $"[{Normal};{Value.ToString(null, CultureInfo.InvariantCulture)}]";
 
     /// <summary>
     /// Computing the point, which is intersection of lines defined by two pairs.

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
 
@@ -214,11 +215,11 @@ public class Matrix : IEquatable<Matrix> {
     int    k   = 0, i, j;
 
     for (i = 0; i < Rows; i++) {
-      res += " [" + _m[k];
+      res += $" [{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
       k++;
 
       for (j = 1; j < Cols; j++) {
-        res += ", " + _m[k];
+        res += $", {_m[k].ToString(null, CultureInfo.InvariantCulture)}";
         k++;
       }
 

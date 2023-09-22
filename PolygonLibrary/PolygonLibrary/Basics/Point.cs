@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
@@ -260,11 +260,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     public override string ToString() {
-      string res = $"({_p[0]}";
+      string res = $"({_p[0].ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
-        res += $",{_p[i]}";
+        res += $",{_p[i].ToString(null, CultureInfo.InvariantCulture)}";
       }
 
       res += ")";

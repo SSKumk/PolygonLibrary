@@ -7,9 +7,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>
+public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public class GiftWrapping {
@@ -450,14 +449,14 @@ public partial class Geometry<TNum, TConv>
          , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
-        /*
-        i = 0;
-        do {
-          i++;
-          n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
-        } while (n.IsZero && i <= spaceDim);
-        */
-        
+
+        // i = 0;
+        // do {
+        //   i++;
+        //   n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
+        // } while (n.IsZero && i <= spaceDim);
+
+
         n = (r! * n) * e - (r! * e) * n;
 
         OrientNormal(S, ref n, origin);
