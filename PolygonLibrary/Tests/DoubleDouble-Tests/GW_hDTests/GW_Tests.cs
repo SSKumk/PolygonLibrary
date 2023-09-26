@@ -1,64 +1,16 @@
 using System.Diagnostics;
 using CGLibrary;
-// using Tests.ToolsTests;
 using DoubleDouble;
 using NUnit.Framework;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
-using static Tests.ToolsTests.ToolsTests<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests.GW_hDTests;
 
 [TestFixture]
 public class GW_Tests {
-
-  /// <summary>
-  /// The random engine.
-  /// </summary>
-  private static GRandomLC _random = new GRandomLC();
-
-#region Auxiliary functions
-
-  //
-  // /// <summary>
-  // /// Generates an affine combination of points. Default coefficients in (0,1).
-  // /// </summary>
-  // /// <param name="points">The list of points to combine.</param>
-  // /// <param name="mult">The multiplier for each coefficient. Default is 1.</param>
-  // /// <param name="shift">The shift for each coefficient. Default is 0.</param>
-  // /// <returns>The resulting point.</returns>
-  // private Point GenAffineCombination(List<Point> points, int mult = 1, int shift = 0) {
-  //   List<ddouble> ws = new List<ddouble>();
-  //
-  //   for (int i = 0; i < points.Count; i++) {
-  //     ws.Add(GenInner() * mult + shift);
-  //   }
-  //   Point res = Point.LinearCombination(points, ws);
-  //
-  //   return res;
-  // }
-
-  //
-  // /// <summary>
-  // /// Generates a set of random face dimension-indices for a polyhedron.
-  // /// </summary>
-  // /// <param name="fCount">The number of face indices to generate.</param>
-  // /// <param name="polyhedronDim">The dimension of the polyhedron.</param>
-  // /// <returns>A HashSet containing the randomly generated face dimension-indices.</returns>
-  // private static HashSet<int> GenFacesInd(int fCount, int polyhedronDim) {
-  //   HashSet<int> faceInd = new HashSet<int>();
-  //
-  //   for (int j = 0; j < fCount; j++) {
-  //     int ind;
-  //
-  //     do {
-  //       ind = _random.NextInt(1, polyhedronDim);
-  //     } while (!faceInd.Add(ind));
-  //   }
-  //
-  //   return faceInd;
-  // }
-#endregion
 
 #region Auxiliary tests
   [Test]
@@ -85,10 +37,10 @@ public class GW_Tests {
 #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
   public void Cube3D_Rotated_Z45() {
-    List<Point>  S     = Cube(3, out List<Point> _);
-    ddouble angle = Tools.PI / 4;
-    ddouble       sin   = ddouble.Sin(angle);
-    ddouble       cos   = ddouble.Cos(angle);
+    List<Point> S     = Cube(3, out List<Point> _);
+    ddouble     angle = Tools.PI / 4;
+    ddouble     sin   = ddouble.Sin(angle);
+    ddouble     cos   = ddouble.Cos(angle);
 
     ddouble[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
@@ -602,8 +554,6 @@ public class GW_Tests {
     const int  nPoints = 1;
     List<int>  fID     = new List<int>() { 2, 3, 4 };
 
-    _random = new GRandomLC(seed);
-
     List<Point> S = new List<Point>()
       {
         new Point(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
@@ -738,9 +688,6 @@ public class GW_Tests {
   }
 
 
-  /// <summary>
-  /// Что-то не работает. Надо смотреть
-  /// </summary>
   [Test]
   public void VeryFlatSimplex() {
     List<Point> Simplex = new List<Point>()
@@ -752,8 +699,8 @@ public class GW_Tests {
       };
 
     List<Point> S = new List<Point>(Simplex);
-    // Point       p = new Point(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
-    // S.Add(p);
+    Point       p = new Point(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
+    S.Add(p);
 
     var hpABC    = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
     var distABCD = S.Select(s => hpABC.Eval(s));
@@ -788,12 +735,6 @@ public class GW_Tests {
     SwarmShuffle(S, S);
   }
 #endregion
-
-  /// <summary>
-  /// Auxiliary enum for Aux-method.
-  /// </summary>
-  private enum PType { Cube, Simplex, SimplexRND }
-
 
   /// <summary>
   /// Procedure checks the answer obtained by Gift Wrapping algorithm and the answer given by user.
@@ -866,7 +807,6 @@ public class GW_Tests {
   }
 
 
-
   // [Test]
   // public void Aux() {
   //   const uint seed    = 752772192;
@@ -890,6 +830,5 @@ public class GW_Tests {
   //   Polyhedron P = GiftWrapping.WrapPolyhedron(S);
   //   Assert.That(P.Vertices.SetEquals(polytop));
   // }
-
 
 }

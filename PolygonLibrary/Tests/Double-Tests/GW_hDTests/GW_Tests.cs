@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using CGLibrary;
 using NUnit.Framework;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 
 
-namespace DoubleTests;
-
+namespace Tests.Double_Tests.GW_hDTests {
 [TestFixture]
 public class GW_Tests {
 
@@ -13,414 +14,6 @@ public class GW_Tests {
   /// The random engine.
   /// </summary>
   private static RandomLC _random = new RandomLC();
-
-#region Auxiliary functions
-  /// <summary>
-  /// Finds all subsets of a given length for an array.
-  /// </summary>
-  /// <typeparam name="T">The type of the array elements.</typeparam>
-  /// <param name="arr">The input array.</param>
-  /// <param name="subsetLength">The length of the subsets.</param>
-  /// <returns>A list of subsets of the specified length.</returns>
-  private static List<List<T>> Subsets<T>(IReadOnlyList<T> arr, int subsetLength) {
-    List<List<T>> subsets = new List<List<T>>();
-
-    void FindSubset(List<T> currentSubset, int currentIndex) {
-      if (currentSubset.Count == subsetLength) {
-        subsets.Add(new List<T>(currentSubset));
-
-        return;
-      }
-
-      if (currentIndex == arr.Count) {
-        return;
-      }
-
-      FindSubset(new List<T>(currentSubset) { arr[currentIndex] }, currentIndex + 1);
-      FindSubset(new List<T>(currentSubset), currentIndex + 1);
-    }
-
-    FindSubset(new List<T>(), 0);
-
-    return subsets;
-  }
-
-  /// <summary>
-  /// Generates all subsets of a given list.
-  /// </summary>
-  /// <typeparam name="T">The type of elements in the list.</typeparam>
-  /// <param name="arr">The input list.</param>
-  /// <returns>A list of all subsets of the input list.</returns>
-  private static List<List<T>> AllSubsets<T>(IReadOnlyList<T> arr) {
-    List<List<T>> subsets      = new List<List<T>>();
-    int           totalSubsets = 1 << arr.Count;
-
-    for (int i = 0; i < totalSubsets; i++) {
-      List<T> subset = new List<T>();
-
-      for (int j = 0; j < arr.Count; j++) {
-        if ((i & (1 << j)) != 0) {
-          subset.Add(arr[j]);
-        }
-      }
-
-      subsets.Add(subset);
-    }
-
-    return subsets;
-  }
-
-
-  /// <summary>
-  /// Generates a random double value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
-  /// </summary>
-  /// <returns>The generated random double value.</returns>
-  private double GenInner(RandomLC? random = null) {
-    double threshold = 0.01;
-    // ddouble threshold = 100*Tools.Eps;
-    double w = random?.NextDouble(threshold, 1 - threshold) ?? _random.NextDouble(threshold, 1 - threshold);
-
-    return w;
-  }
-
-  /// <summary>
-  /// Generates an affine combination of points. Default coefficients in (0,1).
-  /// </summary>
-  /// <param name="points">The list of points to combine.</param>
-  /// <param name="mult">The multiplier for each coefficient. Default is 1.</param>
-  /// <param name="shift">The shift for each coefficient. Default is 0.</param>
-  /// <returns>The resulting point.</returns>
-  private Point GenAffineCombination(List<Point> points, int mult = 1, int shift = 0) {
-    List<double> ws = new List<double>();
-
-    for (int i = 0; i < points.Count; i++) {
-      ws.Add(GenInner() * mult + shift);
-    }
-    Point res = Point.LinearCombination(points, ws);
-
-    return res;
-  }
-
-  /// <summary>
-  /// Generates a linear combination of the given points.
-  /// </summary>
-  /// <param name="points">The list of point to lin-combine.</param>
-  /// <param name="random">The random to be used. If null, the _random be used.</param>
-  /// <returns>A linear combination of the given points.</returns>
-  private Point GenConvexCombination(List<Point> points, RandomLC? random = null) {
-    List<double> ws = new List<double>();
-
-    double difA = 1;
-    for (int i = 0; i < points.Count - 1; i++) {
-      double alpha = GenInner(random) * difA;
-      ws.Add(alpha);
-      difA -= alpha;
-    }
-    ws.Add(difA);
-
-    Debug.Assert(Tools.EQ(ws.Sum(), 1), "GenConvexCombination: sum of weights does not equal 1.");
-
-    Point res = Point.LinearCombination(points, ws);
-
-    return res;
-  }
-
-  /// <summary>
-  /// Generates a set of random face dimension-indices for a polyhedron.
-  /// </summary>
-  /// <param name="fCount">The number of face indices to generate.</param>
-  /// <param name="polyhedronDim">The dimension of the polyhedron.</param>
-  /// <returns>A HashSet containing the randomly generated face dimension-indices.</returns>
-  private static HashSet<int> GenFacesInd(int fCount, int polyhedronDim) {
-    HashSet<int> faceInd = new HashSet<int>();
-
-    for (int j = 0; j < fCount; j++) {
-      int ind;
-
-      do {
-        ind = _random.NextInt(1, polyhedronDim);
-      } while (!faceInd.Add(ind));
-    }
-
-    return faceInd;
-  }
-
-  /// <summary>
-  /// Adds points to an existing simplex.
-  /// </summary>
-  /// <param name="facesDim">The dimensions of the faces where points will be added. If null, no points will be added.</param>
-  /// <param name="amount">The number of points to add on each faceDim.</param>
-  /// <param name="simplex">The initial simplex to which points will be added.</param>
-  /// <param name="random">The random to be used. If null, the _random be used.</param>
-  /// <returns>A new simplex with the added points.</returns>
-  private List<Point> AddPointsToSimplex(IEnumerable<int>?    facesDim
-                                       , int                  amount
-                                       , IReadOnlyList<Point> simplex
-                                       , RandomLC?            random = null) {
-    RandomLC rnd = random ?? _random;
-
-    List<Point> Simplex = new List<Point>(simplex);
-
-    if (facesDim is not null) {
-      foreach (int dim in facesDim) {
-        Debug.Assert(dim <= simplex[0].Dim);
-
-        List<List<Point>> faces = Subsets(simplex, dim + 1);
-
-        for (int k = 0; k < amount; k++) {
-          int   ind    = rnd.NextInt(0, faces.Count - 1);
-          Point inFace = GenConvexCombination(faces[ind], random);
-          Simplex.Add(inFace);
-        }
-      }
-    }
-
-    return Simplex;
-  }
-
-  /// <summary>
-  /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5] \ {0}.
-  /// </summary>
-  /// <param name="dim">The dimension of the vector.</param>
-  /// <param name="random">If null then _random be used.</param>
-  /// <returns>A random vector.</returns>
-  private static Vector GenVector(int dim, RandomLC? random = null) {
-    double[] v = new double[dim];
-
-    Vector res;
-
-    RandomLC rnd = random ?? _random;
-    do {
-      for (int i = 0; i < dim; i++) {
-        v[i] = rnd.NextDouble() - 0.5;
-      }
-      res = new Vector(v);
-    } while (res.IsZero);
-
-
-    return res;
-  }
-
-  /// <summary>
-  /// Generate rotation matrix.
-  /// </summary>
-  /// <param name="spaceDim">The dimension d of the space.</param>
-  /// <returns>Unitary matrix dxd.</returns>
-  private static Matrix GenRotation(int spaceDim) {
-    LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
-
-    while (!basis.IsFullDim) {
-      basis.AddVector(GenVector(spaceDim));
-    }
-
-    return basis.GetMatrix();
-  }
-
-  /// <summary>
-  /// Rotates the given swarm of points in the space by given unitary matrix.
-  /// </summary>
-  /// <param name="S">The swarm of points to rotate.</param>
-  /// <param name="rotation">Matrix to rotate a swarm.</param>
-  /// <returns>The rotated swarm of points.</returns>
-  private static List<Point> Rotate(IEnumerable<Point> S, Matrix rotation) {
-    IEnumerable<Vector> rotated = S.Select(s => new Vector(s) * rotation);
-
-    return rotated.Select(v => new Point(v)).ToList();
-  }
-
-  /// <summary>
-  /// Generates a random non-zero vector, each coordinate [-50, 50] \ {0}.
-  /// </summary>
-  /// <param name="dim">The dimension of the vector.</param>
-  /// <returns>A random non-zero vector.</returns>
-  private static Vector GenShift(int dim) { return GenVector(dim) * _random.NextInt(1, 100); }
-
-  /// <summary>
-  /// Shift given swarm by given vector
-  /// </summary>
-  /// <param name="S">S to be shifted</param>
-  /// <param name="shift">Vector to shift</param>
-  /// <returns></returns>
-  private static List<Point> Shift(List<Point> S, Vector shift) { return S.Select(s => new Point(s + shift)).ToList(); }
-
-
-  ///<summary>
-  /// Method applies a rotation and a shift to two lists of points.
-  ///</summary>
-  ///<param name="PDim">The dimension of the space in which the points exist.</param>
-  ///<param name="P">A reference to the list of points to be transformed.</param>
-  ///<param name="S">A reference to the list of points representing the swarm to be transformed.</param>
-  private static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S) {
-    Matrix rotation = GenRotation(PDim);
-    Vector shift    = GenVector(PDim) * _random.NextInt(1, 10);
-
-    P = Rotate(P, rotation);
-    P = Shift(P, shift);
-
-    S = Rotate(S, rotation);
-    S = Shift(S, shift);
-  }
-#endregion
-
-#region Main Generators
-  /// <summary>
-  /// Generates a d-ortho-based-simplex in d-space.
-  /// </summary>
-  /// <param name="simplexDim">The dimension of the simplex.</param>
-  /// <param name="pureSimplex">Only vertices of the simplex.</param>
-  /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
-  /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
-  /// <returns>A list of points representing the simplex.</returns>
-  private List<Point> Simplex(int simplexDim, out List<Point> pureSimplex, IEnumerable<int>? facesDim = null, int amount = 1) {
-    List<Point> simplex = new List<Point> { new Point(new double[simplexDim]) };
-
-    for (int i = 0; i < simplexDim; i++) {
-      double[] v = new double[simplexDim];
-      v[i] = 1;
-      simplex.Add(new Point(v));
-    }
-    pureSimplex = new List<Point>(simplex);
-
-    return AddPointsToSimplex(facesDim, amount, simplex);
-  }
-
-  /// <summary>
-  /// Generates a d-simplex in d-space.
-  /// </summary>
-  /// <param name="simplexDim">The dimension of the simplex.</param>
-  /// <param name="pureSimplex">Only vertices of the simplex.</param>
-  /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
-  /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
-  /// <param name="seed">The seed to be placed into RandomLC. If null, the _random be used.</param>
-  /// <returns>A list of points representing the simplex.</returns>
-  private List<Point> SimplexRND(int               simplexDim
-                               , out List<Point>   pureSimplex
-                               , IEnumerable<int>? facesDim = null
-                               , int               amount   = 1
-                               , uint?             seed     = null) {
-    RandomLC random = seed is null ? _random : new RandomLC(seed);
-
-
-    List<Point> simplex = new List<Point>();
-    do {
-      for (int i = 0; i < simplexDim + 1; i++) {
-        simplex.Add(new Point(10 * GenVector(simplexDim, random)));
-      }
-    } while (!new AffineBasis(simplex).IsFullDim);
-    List<Point> aux = new List<Point>(simplex);
-    aux.RemoveAt(0);
-    Debug.Assert(new HyperPlane(new AffineBasis(aux)).FilterIn(simplex).Count() != simplex.Count);
-
-
-    pureSimplex = new List<Point>(simplex);
-
-    return AddPointsToSimplex(facesDim, amount, simplex, random);
-  }
-
-  /// <summary>
-  /// Generates a full-dimension hypercube in the specified dimension.
-  /// </summary>
-  /// <param name="cubeDim">The dimension of the hypercube.</param>
-  /// <param name="pureCube">The list of cube vertices of given dimension.</param>
-  /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
-  /// <param name="amount">The amount of points to be placed into random set of faces of faceDim dimension.</param>
-  /// <param name="seed">The seed to be placed into RandomLC. If null, the _random be used.</param>
-  /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
-  private List<Point> Cube(int               cubeDim
-                         , out List<Point>   pureCube
-                         , IEnumerable<int>? facesDim = null
-                         , int               amount   = 1
-                         , uint?             seed     = null) {
-    RandomLC random = seed is null ? _random : new RandomLC(seed);
-
-    List<List<double>> cube_prev = new List<List<double>>();
-    List<List<double>> cube      = new List<List<double>>();
-    cube_prev.Add(new List<double>() { 0 });
-    cube_prev.Add(new List<double>() { 1 });
-
-    for (int i = 1; i < cubeDim; i++) {
-      cube.Clear();
-
-      foreach (List<double> coords in cube_prev) {
-        cube.Add(new List<double>(coords) { 0 });
-        cube.Add(new List<double>(coords) { 1 });
-      }
-      cube_prev = new List<List<double>>(cube);
-    }
-
-    List<Point> Cube = new List<Point>();
-
-    foreach (List<double> v in cube) {
-      Cube.Add(new Point(v.ToArray()));
-    }
-    pureCube = new List<Point>(Cube);
-
-    if (facesDim is not null) { // накидываем точки на грани нужных размерностей
-      foreach (int dim in facesDim) {
-        Debug.Assert(dim <= Cube.First().Dim);
-
-        for (int i = 0; i < amount; i++) {
-          double[] point = new double[cubeDim];
-
-          for (int j = 0; j < cubeDim; j++) {
-            point[j] = -1;
-          }
-
-          HashSet<int> constInd = new HashSet<int>();
-
-          for (int j = 0; j < cubeDim - dim; j++) {
-            int ind;
-
-            do {
-              ind = random.NextInt(0, cubeDim - 1);
-            } while (!constInd.Add(ind));
-          }
-
-          int zeroOrOne = random.NextInt(0, 1);
-
-          foreach (int ind in constInd) {
-            point[ind] = zeroOrOne;
-          }
-
-          for (int j = 0; j < cubeDim; j++) {
-            if (Tools.EQ(point[j], -1)) {
-              point[j] = GenInner(random);
-            }
-          }
-          Cube.Add(new Point(point));
-        }
-      }
-    }
-
-    return Cube;
-  }
-
-  /// <summary>
-  /// Generates a d-cross_polytope in d-space.
-  /// </summary>
-  /// <param name="crossDim">The dimension of the cross polytope.</param>
-  /// <param name="innerPoints">The amount of inner points of the cross polytope.</param>
-  /// <returns></returns>
-  private List<Point> CrossPolytop(int crossDim, int innerPoints = 0) {
-    List<Point> cross = new List<Point>();
-
-    for (int i = 1; i <= crossDim; i++) {
-      Vector v = Vector.CreateOrth(crossDim, i);
-      cross.Add(new Point(v));
-      cross.Add(new Point(-v));
-    }
-
-    List<Point> Cross = new List<Point>(cross);
-
-    for (int i = 0; i < innerPoints; i++) {
-      cross.Add(GenConvexCombination(cross));
-    }
-
-
-    return Cross;
-  }
-#endregion
-
 
 #region Auxiliary tests
   [Test]
@@ -447,10 +40,10 @@ public class GW_Tests {
 #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
   public void Cube3D_Rotated_Z45() {
-    List<Point>  S     = Cube(3, out List<Point> _);
-    double angle = Tools.PI / 4;
-    double       sin   = double.Sin(angle);
-    double       cos   = double.Cos(angle);
+    List<Point> S     = Cube(3, out List<Point> _);
+    double      angle = Tools.PI / 4;
+    double      sin   = double.Sin(angle);
+    double      cos   = double.Cos(angle);
 
     double[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
@@ -741,7 +334,7 @@ public class GW_Tests {
   public void AllCubes3D_TestRND() {
     const int nPoints = 5000;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 3).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -757,7 +350,7 @@ public class GW_Tests {
   public void AllCubes4D_TestRND() {
     const int nPoints = 2000;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 4).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -773,7 +366,7 @@ public class GW_Tests {
   public void AllCubes5D_TestRND() {
     const int nPoints = 5;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 5).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -789,7 +382,7 @@ public class GW_Tests {
   public void AllCubes6D_TestRND() {
     const int nPoints = 2;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 6).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -807,7 +400,7 @@ public class GW_Tests {
   public void AllSimplices3D_TestRND() {
     const int nPoints = 2000;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 3).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -823,7 +416,7 @@ public class GW_Tests {
   public void AllSimplices4D_TestRND() {
     const int nPoints = 2000;
 
-    List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 4).ToList());
+    List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
@@ -840,7 +433,7 @@ public class GW_Tests {
   // public void AllSimplices5D_TestRND() {
   //   const int nPoints = 1000;
   //
-  //   List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 5).ToList());
+  //   List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
   //
   //   foreach (List<int> fID in fIDs) {
   //     uint saveSeed = _random.Seed;
@@ -856,7 +449,7 @@ public class GW_Tests {
   // public void AllSimplices6D_TestRND() {
   //   const int nPoints = 5;
   //
-  //   List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 6).ToList());
+  //   List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
   //
   //   foreach (List<int> fID in fIDs) {
   //     uint saveSeed = _random.Seed;
@@ -872,7 +465,7 @@ public class GW_Tests {
   // public void AllSimplices7D_TestRND() {
   //   const int nPoints = 2;
   //
-  //   List<List<int>> fIDs = AllSubsets(Enumerable.Range(1, 7).ToList());
+  //   List<List<int>> fIDs = Enumerable.Range(1, 7).ToList().AllSubsets();
   //
   //   foreach (List<int> fID in fIDs) {
   //     uint saveSeed = _random.Seed;
@@ -1102,8 +695,8 @@ public class GW_Tests {
   }
 
 
-
-  // [Test] Не хватает точности double-ов для успешного решения этих задач
+  //Не хватает точности double-ов для успешного решения этих задач
+  // [Test]
   // public void VeryFlatSimplex() {
   //   List<Point> Simplex = new List<Point>()
   //     {
@@ -1114,8 +707,8 @@ public class GW_Tests {
   //     };
   //
   //   List<Point> S = new List<Point>(Simplex);
-  //   // Point       p = new Point(new double[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
-  //   // S.Add(p);
+  //   Point       p = new Point(new double[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
+  //   S.Add(p);
   //
   //   var hpABC    = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
   //   var distABCD = S.Select(s => hpABC.Eval(s));
@@ -1230,4 +823,5 @@ public class GW_Tests {
   }
 
 
+}
 }
