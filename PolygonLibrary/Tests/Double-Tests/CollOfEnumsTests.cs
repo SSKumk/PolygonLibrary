@@ -1,9 +1,7 @@
-﻿using NUnit.Framework;
-using CGLibrary;
+﻿using CGLibrary.Toolkit;
+using NUnit.Framework;
 
-using CGLibrary.Toolkit;
-
-namespace DoubleTests; 
+namespace Tests.Double_Tests; 
 
 [TestFixture]
 public class CollOfEnumsTests

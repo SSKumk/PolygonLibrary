@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
-using CGLibrary;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
-namespace DoubleTests;
+namespace Tests.Double_Tests; 
 
 [TestFixture]
 public class SegmentCrossTests {
@@ -22,7 +21,7 @@ public class SegmentCrossTests {
       , /* 8 */ new Point2D(5, 5)
       , /* 9 */ new Point2D(-2, 5)
       };
-    bool[]    res = new bool[] { true, true, true, true, true, false, false, false, false, false };
+    bool[]  res = new bool[] { true, true, true, true, true, false, false, false, false, false };
     Segment s   = new Segment(p[0], p[1]);
 
     for (int i = 0; i < 10; i++) {

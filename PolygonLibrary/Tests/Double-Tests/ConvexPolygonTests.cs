@@ -1,9 +1,7 @@
-﻿using NUnit.Framework;
-using System.Diagnostics;
-
-using CGLibrary;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
-namespace DoubleTests; 
+﻿using System.Diagnostics;
+using NUnit.Framework;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+namespace Tests.Double_Tests; 
 
 [TestFixture]
 public partial class ConvexPolygonTests

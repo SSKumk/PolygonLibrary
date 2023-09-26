@@ -1,8 +1,7 @@
-using NUnit.Framework;
-using CGLibrary;
 using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
-namespace DoubleDoubleTests;
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+namespace Tests.DoubleDouble_Tests; 
 
 [TestFixture]
 public class LinearSpaceTests {

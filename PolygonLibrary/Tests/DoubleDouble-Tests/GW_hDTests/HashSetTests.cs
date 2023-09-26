@@ -1,8 +1,8 @@
 using DoubleDouble;
 using NUnit.Framework;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests.GW_hDTests; 
 
 //todo ВАЖНО. Сделать качественное тестирование HashCode для всех типов данных
 [TestFixture]

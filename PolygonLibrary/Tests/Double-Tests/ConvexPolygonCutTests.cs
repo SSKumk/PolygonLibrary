@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
 
-namespace DoubleTests;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
+namespace Tests.Double_Tests;
+
+using static CGLibrary.Geometry<double, DConvertor>;
 
 public partial class ConvexPolygonTests {
 

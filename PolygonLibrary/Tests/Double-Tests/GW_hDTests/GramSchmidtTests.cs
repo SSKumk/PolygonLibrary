@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
-namespace DoubleTests;
+namespace Tests.Double_Tests.GW_hDTests; 
 
 [TestFixture]
 public class GramSchmidtTests {

@@ -6,7 +6,8 @@ using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 
 
-namespace Tests.Double_Tests.GW_hDTests {
+namespace Tests.Double_Tests.GW_hDTests;
+
 [TestFixture]
 public class GW_Tests {
 
@@ -823,5 +824,4 @@ public class GW_Tests {
   }
 
 
-}
 }

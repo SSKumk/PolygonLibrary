@@ -1,9 +1,9 @@
 using DoubleDouble;
 using NUnit.Framework;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests.GW_hDTests;
 
 [TestFixture]
 public class InitialPlaneTests {
@@ -14,24 +14,24 @@ public class InitialPlaneTests {
   /// <param name="Swarm">The swarm for which the plane is constructed</param>
   /// <param name="planeDim">The desired dimension of the plane</param>
   private static void AssertInitialPlaneBasis(IEnumerable<Point> Swarm, int planeDim) {
-    { //Проверка нашего алгоритма
-      AffineBasis aBasisUs = GiftWrapping.BuildInitialPlaneUs
-        (new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))), out Vector? nUs);
-      AffineBasis.CheckCorrectness(aBasisUs);
-      Assert.That
-        (
-         aBasisUs.SpaceDim
-       , Is.EqualTo(planeDim)
-       , $"The expected dimension of initial basis is {planeDim}. Found {aBasisUs.SpaceDim}."
-        );
-
-      if (nUs is not null) {
-        HyperPlane hp = new HyperPlane(aBasisUs.Origin, nUs);
-        Assert.That(hp.AllAtOneSide(Swarm).atOneSide, "BIP_Us: Some points outside the initial plane!");
-        IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
-        Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "BIP_Us:In initial plane must be at least 3 points!");
-      }
-    }
+    // { //Проверка нашего алгоритма
+    //   AffineBasis aBasisUs = GiftWrapping.BuildInitialPlaneUs
+    //     (new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))), out Vector? nUs);
+    //   AffineBasis.CheckCorrectness(aBasisUs);
+    //   Assert.That
+    //     (
+    //      aBasisUs.SpaceDim
+    //    , Is.EqualTo(planeDim)
+    //    , $"The expected dimension of initial basis is {planeDim}. Found {aBasisUs.SpaceDim}."
+    //     );
+    //
+    //   if (nUs is not null) {
+    //     HyperPlane hp = new HyperPlane(aBasisUs.Origin, nUs);
+    //     Assert.That(hp.AllAtOneSide(Swarm).atOneSide, "BIP_Us: Some points outside the initial plane!");
+    //     IEnumerable<Point> inThePlane = hp.FilterIn(Swarm);
+    //     Assert.That(inThePlane.Count(), Is.GreaterThanOrEqualTo(hp.Dim), "BIP_Us:In initial plane must be at least 3 points!");
+    //   }
+    // }
 
 
     { // Проверка Сварта

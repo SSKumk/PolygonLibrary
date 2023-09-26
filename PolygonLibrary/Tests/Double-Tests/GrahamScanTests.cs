@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
-using CGLibrary;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
+﻿using CGLibrary;
+using NUnit.Framework;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
-namespace DoubleTests; 
+namespace Tests.Double_Tests; 
 
-[TestFixtureAttribute]
+[TestFixture]
 public class GrahamScanTests {
 
   [Test]

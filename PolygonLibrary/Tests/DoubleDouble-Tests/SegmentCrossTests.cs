@@ -1,9 +1,8 @@
-﻿using NUnit.Framework;
-using CGLibrary;
-using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+﻿using DoubleDouble;
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests; 
 
 [TestFixture]
 public class SegmentCrossTests {
@@ -23,7 +22,7 @@ public class SegmentCrossTests {
       , /* 8 */ new Point2D(5, 5)
       , /* 9 */ new Point2D(-2, 5)
       };
-    bool[]    res = new bool[] { true, true, true, true, true, false, false, false, false, false };
+    bool[]  res = new bool[] { true, true, true, true, true, false, false, false, false, false };
     Segment s   = new Segment(p[0], p[1]);
 
     for (int i = 0; i < 10; i++) {

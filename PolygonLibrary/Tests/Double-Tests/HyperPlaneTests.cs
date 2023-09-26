@@ -1,8 +1,6 @@
 using NUnit.Framework;
-
-using CGLibrary;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
-namespace DoubleTests;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+namespace Tests.Double_Tests; 
 
 [TestFixture]
 public class HyperPlaneTests {
@@ -89,7 +87,7 @@ public class HyperPlaneTests {
 
     Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.False);
 
-    IEnumerable<Point> inPlane = hp.FilterIn(Swarm); 
+    IEnumerable<Point> inPlane    = hp.FilterIn(Swarm); 
     IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm);
 
     Assert.That(hp.AllAtOneSide(inPlane), Is.EqualTo((true,0)));

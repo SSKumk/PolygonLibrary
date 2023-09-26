@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
-using CGLibrary;
+﻿using CGLibrary;
 using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace DoubleDoubleTests; 
+namespace Tests.DoubleDouble_Tests; 
 
 [TestFixture]
 public class QuickHullTests {

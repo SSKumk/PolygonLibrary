@@ -1,9 +1,8 @@
-﻿using NUnit.Framework;
-using CGLibrary;
-using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+﻿using DoubleDouble;
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests; 
 
 /// <summary>
 ///This is a test class for ToolsTests and is intended

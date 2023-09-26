@@ -1,10 +1,8 @@
-﻿using NUnit.Framework;
-using System.Diagnostics;
-
-using CGLibrary;
+﻿using System.Diagnostics;
 using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
-namespace DoubleDoubleTests; 
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+namespace Tests.DoubleDouble_Tests; 
 
 [TestFixture]
 public partial class ConvexPolygonTests
@@ -506,7 +504,7 @@ public partial class ConvexPolygonTests
 	public void WeightTest1()
 	{
 		ConvexPolygon cp = new ConvexPolygon(ps1, true);
-		ddouble        s  = cp.Square;
+		ddouble       s  = cp.Square;
 
 		Assert.IsTrue(Tools.EQ(s, 4), "WeightTest1: wrong square");
 	}

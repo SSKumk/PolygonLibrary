@@ -1,11 +1,10 @@
 using System.Numerics;
 using CGLibrary;
-using Convertors;
 using DoubleDouble;
 using NUnit.Framework;
-using ddG = Tests.ToolsTests.ToolsTests<DoubleDouble.ddouble, Convertors.DDConvertor>;
-using dG = Tests.ToolsTests.ToolsTests<double, Convertors.DConvertor>;
-using static Tests.ToolsTests.ToolsTests<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using ddG = Tests.ToolsTests. TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using dG = Tests.ToolsTests.  TestsPolytopes<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
 namespace Tests.OtherTests;
@@ -51,13 +50,13 @@ public class OtherTests {
   [Test]
   public void FindEtalon_3D() {
     int        cubeDim = 3;
-    ddG.Matrix x1x2    = ddG.MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
-    ddG.Matrix x1x3    = ddG.MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
+    ddG.Matrix x1x2    = MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
+    ddG.Matrix x1x3    = MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
 
     ddG.Matrix x1x2x1x3 = x1x2 * x1x3;
 
-    List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out List<ddG.Point> _, new[] { 1, 2, 3 }, 5, 0, true);
-    var             cube_DD_rotated     = ddG.Rotate(cube_DD, x1x2x1x3);
+    List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out _, new[] { 1, 2, 3 }, 5, 0, true);
+    var             cube_DD_rotated     = Rotate(cube_DD, x1x2x1x3);
     List<dG.Point>  cube_double_rotated = ToDPoints(cube_DD_rotated);
 
 
@@ -71,14 +70,14 @@ public class OtherTests {
   [Test]
   public void FindEtalon_4D() {
     int        cubeDim = 4;
-    ddG.Matrix x1x2    = ddG.MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
-    ddG.Matrix x1x3    = ddG.MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
-    ddG.Matrix x1x4    = ddG.MakeRotationMatrix(cubeDim, 1, 4, ddG.Tools.PI / 4);
+    ddG.Matrix x1x2    = MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
+    ddG.Matrix x1x3    = MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
+    ddG.Matrix x1x4    = MakeRotationMatrix(cubeDim, 1, 4, ddG.Tools.PI / 4);
 
     ddG.Matrix x1x2x1x3x1x4 = x1x2 * x1x3 * x1x4;
 
     List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out List<ddG.Point> _, new[] { 1, 2, 3, 4 }, 5, 0, true);
-    var             cube_DD_rotated     = ddG.Rotate(cube_DD, x1x2x1x3x1x4);
+    var             cube_DD_rotated     = Rotate(cube_DD, x1x2x1x3x1x4);
     List<dG.Point>  cube_double_rotated = ToDPoints(cube_DD_rotated);
 
 
@@ -92,18 +91,18 @@ public class OtherTests {
   [Test]
   public void FindEtalon_8D() {
     int        cubeDim = 8;
-    ddG.Matrix x1x2    = ddG.MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
-    ddG.Matrix x1x3    = ddG.MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
-    ddG.Matrix x1x4    = ddG.MakeRotationMatrix(cubeDim, 1, 4, ddG.Tools.PI / 4);
-    ddG.Matrix x1x5    = ddG.MakeRotationMatrix(cubeDim, 1, 5, ddG.Tools.PI / 4);
-    ddG.Matrix x1x6    = ddG.MakeRotationMatrix(cubeDim, 1, 6, ddG.Tools.PI / 4);
-    ddG.Matrix x1x7    = ddG.MakeRotationMatrix(cubeDim, 1, 7, ddG.Tools.PI / 4);
-    ddG.Matrix x1x8    = ddG.MakeRotationMatrix(cubeDim, 1, 8, ddG.Tools.PI / 4);
+    ddG.Matrix x1x2    = MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
+    ddG.Matrix x1x3    = MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
+    ddG.Matrix x1x4    = MakeRotationMatrix(cubeDim, 1, 4, ddG.Tools.PI / 4);
+    ddG.Matrix x1x5    = MakeRotationMatrix(cubeDim, 1, 5, ddG.Tools.PI / 4);
+    ddG.Matrix x1x6    = MakeRotationMatrix(cubeDim, 1, 6, ddG.Tools.PI / 4);
+    ddG.Matrix x1x7    = MakeRotationMatrix(cubeDim, 1, 7, ddG.Tools.PI / 4);
+    ddG.Matrix x1x8    = MakeRotationMatrix(cubeDim, 1, 8, ddG.Tools.PI / 4);
 
     ddG.Matrix x1_x8 = x1x2 * x1x3 * x1x4 * x1x5 * x1x6 * x1x7 * x1x8;
 
     List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out List<ddG.Point> _, new[] { 1, 2, 3, 4 }, 0, 0, true);
-    var             cube_DD_rotated     = ddG.Rotate(cube_DD, x1_x8);
+    var             cube_DD_rotated     = Rotate(cube_DD, x1_x8);
     List<dG.Point>  cube_double_rotated = ToDPoints(cube_DD_rotated);
 
 

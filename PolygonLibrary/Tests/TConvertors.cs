@@ -1,8 +1,7 @@
 using CGLibrary;
 using DoubleDouble;
 
-namespace Convertors;
-
+namespace Tests;
 //todo ТЕСТЫ очередного типа TNum: vvvv
 /*
  * 1) Acos(-1) == +PI, а не -PI

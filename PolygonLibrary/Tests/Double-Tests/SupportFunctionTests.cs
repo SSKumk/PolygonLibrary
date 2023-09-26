@@ -1,8 +1,6 @@
 ﻿using NUnit.Framework;
-
-using CGLibrary;
-using static CGLibrary.Geometry<double, Convertors.DConvertor>;
-namespace DoubleTests; 
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+namespace Tests.Double_Tests; 
 
 [TestFixture]
 public class SupportFunctionTests {

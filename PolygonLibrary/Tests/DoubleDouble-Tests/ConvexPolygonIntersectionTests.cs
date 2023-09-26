@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
-using CGLibrary;
+﻿using CGLibrary;
 using DoubleDouble;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Convertors.DDConvertor>;
+using NUnit.Framework;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace DoubleDoubleTests;
+namespace Tests.DoubleDouble_Tests; 
 
 public partial class ConvexPolygonTests {
 
@@ -242,7 +242,7 @@ public partial class ConvexPolygonTests {
 
   [Category("ConvexPolygonTests"), Test]
   public void Intersection10() {
-    ddouble                               save   = Tools.Eps;
+    ddouble save = Tools.Eps;
     Tools.Eps = 1e-8;
     LinkedList<Point2D>? P_List = squareList;
     LinkedList<Point2D>? Q_List = new LinkedList<Point2D>
