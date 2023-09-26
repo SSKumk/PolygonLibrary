@@ -7,7 +7,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -57,9 +58,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>d-dimensional convex sub polytop, which is the convex hull of the given swarm.</returns>
     /// <exception cref="NotImplementedException">Is thrown if the swarm is not of the full dimension.</exception>
     public static BaseSubCP GW(HashSet<SubPoint> S, BaseSubCP? initFace = null) {
-#if DEBUG
       int spaceDim = S.First().Dim;
-#endif
+
       if (spaceDim == 2) {
         List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
@@ -82,7 +82,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
 
 #if DEBUG //Контролировать НАСКОЛЬКО далеко точки вылетели из плоскости.
-        HyperPlane                 hp        = new HyperPlane(initBasis.Origin, n);
+        HyperPlane                 hp = new HyperPlane(initBasis.Origin, n);
         Dictionary<SubPoint, TNum> badPoints = new Dictionary<SubPoint, TNum>();
         foreach (SubPoint s in S) {
           TNum d = hp.Eval(s);
@@ -228,29 +228,32 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
                                     , BaseSubCP?            initEdge = null) {
 #if DEBUG
       int SDim = S.First().Dim;
+      Debug.Assert
+        (FaceBasis.SpaceDim == SDim - 1, $"BuildFace (dim = {S.First().Dim}): The basis must lie in (d-1)-dimensional space!");
+
 #endif
 
       if (initEdge is not null) {
+#if DEBUG
         Debug.Assert
           (
            initEdge.PolytopDim == SDim - 2
          , $"BuildFace (dim = {S.First().Dim}): The dimension of the initial edge must equal to (d-2)!"
           );
+#endif
+
         initEdge.Normal = r;
       }
-      Debug.Assert
-        (FaceBasis.SpaceDim == SDim - 1, $"BuildFace (dim = {S.First().Dim}): The basis must lie in (d-1)-dimensional space!");
 
 
-      // var        x  = S.Select(FaceBasis.Contains);
       HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
       HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s))
                                    .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
                                    .ToHashSet();
-      // var xx = S.Select(hp.Eval);
 
-
+#if DEBUG
       Debug.Assert(inPlane.Count >= SDim, $"BuildFace (dim = {S.First().Dim}): In plane must be at least d points!");
+#endif
 
       if (inPlane.Count == FaceBasis.VecDim) {
         return new SubSimplex(inPlane.Select(p => p.Parent!));
@@ -327,7 +330,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public static BaseSubCP RollOverEdge(HashSet<SubPoint> S, BaseSubCP face, BaseSubCP edge, out Vector n) {
 #if DEBUG
       int spaceDim = S.First().Dim;
-#endif
+
       Debug.Assert(face.SpaceDim == spaceDim, $"RollOverEdge (dim = {spaceDim}): The face must lie in d-dimensional space!");
       Debug.Assert
         (
@@ -338,7 +341,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         (face.PolytopDim == spaceDim - 1, $"RollOverEdge (dim = {spaceDim}): The dimension of the face must equal to d-1!");
       Debug.Assert
         (edge.PolytopDim == spaceDim - 2, $"RollOverEdge (dim = {spaceDim}): The dimension of the edge must equal to d-2!");
-
+      Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
+      Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
+#endif
       AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
       SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
       Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
@@ -346,9 +351,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Vector?   r        = null;
       SubPoint? sStar    = null;
       TNum      maxAngle = -Tools.Six; // Something small
-
-      Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
-      Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
       foreach (SubPoint s in S) {
         Vector so = s - edgeBasis.Origin;
@@ -368,21 +370,26 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
       newF_aBasis.AddVectorToBasis(r!, false);
 
+#if DEBUG
       Debug.Assert
         (
          newF_aBasis.SpaceDim == face.PolytopDim
        , $"RollOverEdge (dim = {spaceDim}): The dimension of the basis of new F' must equals to F dimension!"
         );
+#endif
+
 
       List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
       newF_aBasis = new AffineBasis(newPlane);
 
       //точно
-      n = CalcOuterNormal(S, newF_aBasis);
+      // n = CalcOuterNormal(S, newF_aBasis);
 
       //Сварт
-      // n = ???
+      n = (r! * face.Normal) * v - (r! * v) * face.Normal;
+#if DEBUG
       Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
+#endif
 
 
       return BuildFace(ref S, newF_aBasis, n, r, edge);
@@ -411,8 +418,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
         SubPoint? sExtr    = null;
 
-        Vector e;
-        int    i = 0;
+        Vector   e;
+        int      i      = 0;
         Vector[] nBasis = new[] { n };
         do {
           i++;
@@ -438,6 +445,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
         if (sExtr is null) {
           normal = n;
+
           return FinalV;
         }
 
@@ -449,15 +457,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
          , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
-
-        //Точная нормаль
-        // i = 0;
-        // do {
-        //   i++;
-        //   n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
-        // } while (n.IsZero && i <= spaceDim);
-
-
         // Нормаль по Сварту
         n = (r! * n) * e - (r! * e) * n;
 
@@ -468,11 +467,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
              $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
             );
         }
-        
+
         Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {spaceDim}): Normal is zero!");
       }
 
       normal = n;
+
       return FinalV;
     }
 

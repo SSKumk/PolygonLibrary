@@ -168,6 +168,33 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
 
     return new Matrix(rotM);
   }
+
+  /// <summary>
+  /// Generates a list of Cartesian coordinates for points on a sphere.
+  /// </summary>
+  /// <param name="thetaDivisions">The number of divisions by zenith angle. Theta in (0, Pi).</param>
+  /// <param name="phiDivisions">The number of divisions by azimuthal angle. Phi in [0, 2*Pi).</param>
+  /// <returns>A list of points on the sphere.</returns>
+  public static List<Point> GeneratePointsOnSphere(int thetaDivisions, int phiDivisions) {
+    List<Point> points    = new List<Point>();
+    TNum        thetaStep = Tools.PI / TConv.FromInt(thetaDivisions);
+    TNum        phiStep   = Tools.PI2 / TConv.FromInt(phiDivisions);
+
+    for (int i = 1; i < thetaDivisions; i++) {
+      TNum theta = thetaStep * TConv.FromInt(i);
+      for (int j = 0; j < phiDivisions; j++) {
+        TNum phi = phiStep * TConv.FromInt(j);
+
+        TNum x   = TNum.Sin(theta) * TNum.Cos(phi);
+        TNum y   = TNum.Sin(theta) * TNum.Sin(phi);
+        TNum z   = TNum.Cos(theta);
+
+        points.Add(new Point(new TNum[] { x, y, z }));
+      }
+    }
+
+    return points;
+  }
 #endregion
 
 }

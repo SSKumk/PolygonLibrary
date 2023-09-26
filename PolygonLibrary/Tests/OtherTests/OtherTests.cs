@@ -31,6 +31,8 @@ public class OtherTests {
   //   Console.WriteLine(y);
   // }
 
+
+
   private List<dG.Point> ToDPoints(List<ddG.Point> from) {
     return from.Select
                 (
@@ -39,11 +41,26 @@ public class OtherTests {
                    for (int i = 0; i < p.Dim; i++) {
                      pDD[i] = (double)p[i];
                    }
-
+  
                    return new dG.Point(pDD);
                  }
                 )
                .ToList();
+  }
+
+
+  [Test]
+  public void FindEtalonRoll_3D() {
+    var pointsOnSphere = GeneratePointsOnSphere(30, 40);
+    Console.WriteLine(pointsOnSphere.Count);
+
+
+    var dPoints  = ToDPoints(pointsOnSphere);
+    // var P1 = dG.GiftWrapping.WrapPolytop(dPoints);
+    var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
+
+    // Console.WriteLine(P1.Faces.Last().Normal);
+    Console.WriteLine(P2.Faces.Last().Normal);
   }
 
 
