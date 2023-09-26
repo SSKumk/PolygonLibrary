@@ -104,7 +104,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="lb">The lower bound of the range (inclusive).</param>
     /// <param name="rb">The upper bound of the range (inclusive).</param>
     /// <returns>The generated random integer represented as TNum.</returns>
-    public TNum NextPreciseInt(int lb, int rb) => TConv.FromInt(NextInt(lb, rb));
+    public TNum NextFromInt(int lb, int rb) => TConv.FromInt(NextInt(lb, rb));
 
   }
 
