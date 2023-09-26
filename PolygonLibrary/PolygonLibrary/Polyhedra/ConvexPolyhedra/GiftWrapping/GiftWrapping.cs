@@ -71,11 +71,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
 
       if (initFace is null) {
-        //Uncomment to include Garret Swart Initial Plane.
         AffineBasis initBasis = BuildInitialPlaneSwart(S, out Vector n);
-
-        //Uncomment to include Ours Initial Plane.
-        // AffineBasis initBasis = BuildInitialPlaneUs(S, out Vector? n);
 
         if (n is null) {
           throw new ArgumentException
@@ -137,82 +133,82 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       return new SubNonSimplex(buildFaces, incidence, buildPoints);
     }
 
-    /// <summary>
-    /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
-    /// and all other points lies for a one side from it. Also finds outward normal.
-    /// If the dimension of the plane less than d-1 than the normal is null.
-    /// </summary>
-    /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
-    /// <param name="n">The outward normal to the initial plane. Null if the dimension of the plane less than d-1.</param>
-    /// <returns>
-    /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
-    /// </returns>
-    public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S, out Vector? n) {
-      Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
-
-      SubPoint           origin = S.Min(p => p)!;
-      LinkedList<Vector> tempV  = new LinkedList<Vector>();
-      AffineBasis        FinalV = new AffineBasis(origin);
-
-      int dim = FinalV.VecDim;
-
-      for (int i = 1; i < dim; i++) {
-        tempV.AddLast(Vector.CreateOrth(dim, i + 1));
-      }
-
-      HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
-
-      TNum      maxAngle;
-      SubPoint? sExtr;
-
-      while (tempV.Any()) {
-        Vector t = tempV.First();
-        tempV.RemoveFirst();
-
-        maxAngle = -Tools.Six;
-        sExtr    = null;
-
-        foreach (SubPoint s in S) {
-          if (Viewed.Contains(s)) {
-            continue;
-          }
-
-          Vector u0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
-          if (u0.IsZero) {
-            Viewed.Add(s);
-
-            continue;
-          }
-
-          Vector u = Vector.OrthonormalizeAgainstBasis(u0, tempV);
-          if (u.IsZero) {
-            continue;
-          }
-
-          // TNum angle = TNum.Acos(n * t);
-          TNum angle = Vector.Angle(u, t);
-          if (Tools.GT(angle, maxAngle)) {
-            maxAngle = angle;
-            sExtr    = s;
-          }
-        }
-
-        if (sExtr is null) {
-          n = null;
-
-          return FinalV;
-        }
-
-        Viewed.Add(sExtr);
-        bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
-        Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
-        tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
-      }
-
-      n = CalcOuterNormal(S, FinalV);
-
-      return FinalV;
-    }
+    // /// <summary>
+    // /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
+    // /// and all other points lies for a one side from it. Also finds outward normal.
+    // /// If the dimension of the plane less than d-1 than the normal is null.
+    // /// </summary>
+    // /// <param name="S">The swarm of d-dimensional points possibly in non general positions.</param>
+    // /// <param name="n">The outward normal to the initial plane. Null if the dimension of the plane less than d-1.</param>
+    // /// <returns>
+    // /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+    // /// </returns>
+    // public static AffineBasis BuildInitialPlaneUs(HashSet<SubPoint> S, out Vector? n) {
+    //   Debug.Assert(S.Any(), $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): The swarm must has at least one point!");
+    //
+    //   SubPoint           origin = S.Min(p => p)!;
+    //   LinkedList<Vector> tempV  = new LinkedList<Vector>();
+    //   AffineBasis        FinalV = new AffineBasis(origin);
+    //
+    //   int dim = FinalV.VecDim;
+    //
+    //   for (int i = 1; i < dim; i++) {
+    //     tempV.AddLast(Vector.CreateOrth(dim, i + 1));
+    //   }
+    //
+    //   HashSet<SubPoint> Viewed = new HashSet<SubPoint>() { origin };
+    //
+    //   TNum      maxAngle;
+    //   SubPoint? sExtr;
+    //
+    //   while (tempV.Any()) {
+    //     Vector t = tempV.First();
+    //     tempV.RemoveFirst();
+    //
+    //     maxAngle = -Tools.Six;
+    //     sExtr    = null;
+    //
+    //     foreach (SubPoint s in S) {
+    //       if (Viewed.Contains(s)) {
+    //         continue;
+    //       }
+    //
+    //       Vector u0 = Vector.OrthonormalizeAgainstBasis(s - origin, FinalV.Basis);
+    //       if (u0.IsZero) {
+    //         Viewed.Add(s);
+    //
+    //         continue;
+    //       }
+    //
+    //       Vector u = Vector.OrthonormalizeAgainstBasis(u0, tempV);
+    //       if (u.IsZero) {
+    //         continue;
+    //       }
+    //
+    //       // TNum angle = TNum.Acos(n * t);
+    //       TNum angle = Vector.Angle(u, t);
+    //       if (Tools.GT(angle, maxAngle)) {
+    //         maxAngle = angle;
+    //         sExtr    = s;
+    //       }
+    //     }
+    //
+    //     if (sExtr is null) {
+    //       n = null;
+    //
+    //       return FinalV;
+    //     }
+    //
+    //     Viewed.Add(sExtr);
+    //     bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+    //     Debug.Assert(isAdded, $"GW.BuildInitialPlaneUs (dim = {S.First().Dim}): Vector was not added to FinalV!");
+    //     tempV = new LinkedList<Vector>(Vector.OrthonormalizeAgainstBasis(tempV, FinalV.Basis));
+    //   }
+    //
+    //   n = CalcOuterNormal(S, FinalV);
+    //
+    //   return FinalV;
+    // }
 
     /// <summary>
     /// Builds next face of the polytop.
@@ -381,7 +377,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
       newF_aBasis = new AffineBasis(newPlane);
 
+      //точно
       n = CalcOuterNormal(S, newF_aBasis);
+
+      //Сварт
+      // n = ???
       Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
 
@@ -450,6 +450,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
           );
 
 
+        //Точная нормаль
         // i = 0;
         // do {
         //   i++;
@@ -457,6 +458,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         // } while (n.IsZero && i <= spaceDim);
 
 
+        // Нормаль по Сварту
         n = (r! * n) * e - (r! * e) * n;
 
         OrientNormal(S, ref n, origin);
@@ -467,8 +469,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
             );
         }
         
-        // ToDo: Compare n and nHonest
-
         Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {spaceDim}): Normal is zero!");
       }
 
