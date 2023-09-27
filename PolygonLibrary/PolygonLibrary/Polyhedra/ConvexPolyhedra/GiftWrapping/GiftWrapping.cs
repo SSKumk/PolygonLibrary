@@ -117,8 +117,31 @@ public partial class Geometry<TNum, TConv>
       HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>() { initFace };
       HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>(initFace.Vertices);
       TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
+      Queue<BaseSubCP>   toProceed      = new Queue<BaseSubCP>();
+      toProceed.Enqueue(initFace);
 
-      DFS_step(S, initFace, ref buildFaces, ref buildPoints, ref buildIncidence);
+      do {
+        BaseSubCP face = toProceed.Dequeue();
+        foreach (BaseSubCP edge in face.Faces!) {
+          if (buildIncidence.TryGetValue(edge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
+            if (E.F2 is not null) { continue; }
+
+            buildIncidence[edge] = E.F1.GetHashCode() <= face.GetHashCode() ? (E.F1, face) : (face, E.F1);
+          } else {
+            buildIncidence.Add(edge, (face, null));
+          }
+        }
+
+        foreach (BaseSubCP edge in face.Faces.Where(edge => buildIncidence[edge].F2 is null)) {
+          BaseSubCP nextFace = RollOverEdge(S, face, edge, out Vector n);
+          nextFace.Normal = n;
+          buildFaces.Add(nextFace);
+          buildPoints.UnionWith(nextFace.Vertices);
+          if (!toProceed.Contains(nextFace)) {
+            toProceed.Enqueue(nextFace);
+          }
+        }
+      } while (toProceed.Count != 0);
 
       SubIncidenceInfo incidence = new SubIncidenceInfo();
 
@@ -294,19 +317,6 @@ public partial class Geometry<TNum, TConv>
           buildIncidence.Add(edge, (face, null));
         }
       }
-
-      // Немного переписал цикл, вроде должен тем же самым остаться.
-      // foreach (BaseSubCP edge in face.Faces!) {
-      //   if (buildIncidence.ContainsKey(edge)) {
-      //     if (buildIncidence[edge].F1.GetHashCode() <= face.GetHashCode()) {
-      //       buildIncidence[edge] = (buildIncidence[edge].F1, face);
-      //     } else {
-      //       buildIncidence[edge] = (face, buildIncidence[edge].F1);
-      //     }
-      //   } else {
-      //     buildIncidence.Add(edge, (face, null));
-      //   }
-      // }
 
       foreach (BaseSubCP edge in face.Faces) {
         if (buildIncidence[edge].F2 is null) {
