@@ -69,11 +69,11 @@ public class OtherTests {
     }
 
 
-    stopwatch.Restart();
-    var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
-    stopwatch.Stop();
-    Console.WriteLine
-    ($"ddouble: {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P2.Faces.Last().Normal}");
+    // stopwatch.Restart();
+    // var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
+    // stopwatch.Stop();
+    // Console.WriteLine
+    // ($"ddouble: {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P2.Faces.Last().Normal}");
 
 
     Console.WriteLine();

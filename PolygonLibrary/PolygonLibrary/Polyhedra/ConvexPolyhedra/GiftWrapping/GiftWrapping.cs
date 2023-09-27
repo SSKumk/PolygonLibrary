@@ -457,8 +457,15 @@ public partial class Geometry<TNum, TConv>
          , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
+        // НАЧАЛЬНАЯ Нормаль Наша
+        i = 0;
+        do {
+          i++;
+          n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
+        } while (n.IsZero && i <= spaceDim);
+
         //НАЧАЛЬНАЯ Нормаль по Сварту
-        n = (r! * n) * e - (r! * e) * n;
+        // n = (r! * n) * e - (r! * e) * n;
 
         OrientNormal(S, ref n, origin);
         if (S.All(s => new HyperPlane(origin, n).Contains(s))) {
