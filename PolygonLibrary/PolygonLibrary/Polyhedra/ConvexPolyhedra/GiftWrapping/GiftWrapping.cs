@@ -382,11 +382,11 @@ public partial class Geometry<TNum, TConv>
       List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
       newF_aBasis = new AffineBasis(newPlane);
 
-      //точно
-      // n = CalcOuterNormal(S, newF_aBasis);
+      //ПЕРЕКАТ точно ЛУЧШЕ точно но в DOUBLE
+      n = CalcOuterNormal(S, newF_aBasis);
 
-      //Сварт
-      n = (r! * face.Normal) * v - (r! * v) * face.Normal;
+      //ПЕРЕКАТ Сварт ЧЕМ "быстро" но в DDOUBLE!!!
+      // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
 #if DEBUG
       Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 #endif
@@ -457,7 +457,7 @@ public partial class Geometry<TNum, TConv>
          , $"BuildInitialPlaneSwart (dim = {spaceDim}): The new vector of FinalV is linear combination of FinalV vectors!"
           );
 
-        // Нормаль по Сварту
+        //НАЧАЛЬНАЯ Нормаль по Сварту
         n = (r! * n) * e - (r! * e) * n;
 
         OrientNormal(S, ref n, origin);

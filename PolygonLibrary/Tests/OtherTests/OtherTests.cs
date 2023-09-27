@@ -1,9 +1,11 @@
+using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 using CGLibrary;
 using DoubleDouble;
 using NUnit.Framework;
-using ddG = Tests.ToolsTests. TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-using dG = Tests.ToolsTests.  TestsPolytopes<double, Tests.DConvertor>;
+using ddG = Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using dG = Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
@@ -11,8 +13,6 @@ namespace Tests.OtherTests;
 
 [TestFixture]
 public class OtherTests {
-
-
 
   // [Test]
   // public void Atan2Test() {
@@ -32,7 +32,6 @@ public class OtherTests {
   // }
 
 
-
   private List<dG.Point> ToDPoints(List<ddG.Point> from) {
     return from.Select
                 (
@@ -41,7 +40,7 @@ public class OtherTests {
                    for (int i = 0; i < p.Dim; i++) {
                      pDD[i] = (double)p[i];
                    }
-  
+
                    return new dG.Point(pDD);
                  }
                 )
@@ -51,16 +50,34 @@ public class OtherTests {
 
   [Test]
   public void FindEtalonRoll_3D() {
-    var pointsOnSphere = GeneratePointsOnSphere(30, 40);
+    var pointsOnSphere = GeneratePointsOnSphere(51, 40);
     Console.WriteLine(pointsOnSphere.Count);
 
 
-    var dPoints  = ToDPoints(pointsOnSphere);
-    // var P1 = dG.GiftWrapping.WrapPolytop(dPoints);
-    var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
+    Stopwatch stopwatch = new Stopwatch();
+    try {
+      var dPoints = ToDPoints(pointsOnSphere);
+      stopwatch.Start();
+      var P1 = dG.GiftWrapping.WrapPolytop(dPoints);
+      stopwatch.Stop();
+      Console.WriteLine
+        ($"Double:  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P1.Faces.Last().Normal}");
+    }
+    catch (Exception e) {
+      Console.WriteLine
+        ($"Double:  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {e.Message}");
+    }
 
-    // Console.WriteLine(P1.Faces.Last().Normal);
-    Console.WriteLine(P2.Faces.Last().Normal);
+
+    stopwatch.Restart();
+    var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
+    stopwatch.Stop();
+    Console.WriteLine
+    ($"ddouble: {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P2.Faces.Last().Normal}");
+
+
+    Console.WriteLine();
+    Console.WriteLine();
   }
 
 
