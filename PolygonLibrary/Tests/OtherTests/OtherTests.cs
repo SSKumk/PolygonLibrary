@@ -50,30 +50,31 @@ public class OtherTests {
 
   [Test]
   public void FindEtalonRoll_3D() {
-    var pointsOnSphere = GeneratePointsOnSphere(51, 40);
+    var pointsOnSphere = GeneratePointsOnSphere(3, 4);
     Console.WriteLine(pointsOnSphere.Count);
 
 
     Stopwatch stopwatch = new Stopwatch();
+    var       dPoints   = ToDPoints(pointsOnSphere);
     try {
-      var dPoints = ToDPoints(pointsOnSphere);
       stopwatch.Start();
-      var P1 = dG.GiftWrapping.WrapPolytop(dPoints);
+      var P1 = new dG.GiftWrapping(dPoints);
       stopwatch.Stop();
       Console.WriteLine
-        ($"Double:  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P1.Faces.Last().Normal}");
+        (
+         $"GW-Class:  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P1.Polytop.Faces.Last().Normal}"
+        );
     }
     catch (Exception e) {
-      Console.WriteLine
-        ($"Double:  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {e.Message}");
+      Console.WriteLine($"GW-Class::  {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {e.Message}");
     }
 
 
-    // stopwatch.Restart();
-    // var P2 = ddG.GiftWrapping.WrapPolytop(pointsOnSphere);
-    // stopwatch.Stop();
-    // Console.WriteLine
-    // ($"ddouble: {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P2.Faces.Last().Normal}");
+    stopwatch.Restart();
+    var P2 = dG.GiftWrapping.WrapPolytop(dPoints);
+    stopwatch.Stop();
+    Console.WriteLine
+      ($"GW not class: {stopwatch.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture)} sec    {P2.Faces.Last().Normal}");
 
 
     Console.WriteLine();
