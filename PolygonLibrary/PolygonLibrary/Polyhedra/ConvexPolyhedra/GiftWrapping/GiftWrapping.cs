@@ -48,7 +48,7 @@ public partial class Geometry<TNum, TConv>
       BuiltPolytop = x.BuiltPolytop;
     }
 
-    public Polytop GetPolytop() {
+    private Polytop GetPolytop() {
       Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
       HashSet<Face> Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
       HashSet<Edge> Es = new HashSet<Edge>();
@@ -84,25 +84,23 @@ public partial class Geometry<TNum, TConv>
     }
 
 
-    public class GiftWrappingMain {
+    private sealed class GiftWrappingMain {
 
 #region Internal fields for GW algorithm
-      private HashSet<SubPoint> S;
-      private int               spaceDim;
+      private readonly HashSet<SubPoint> S;
+      private readonly int               spaceDim;
+      private          BaseSubCP?        initFace;
 
-      private   BaseSubCP? initFace;
-      protected int?       swarmDim;
+      private readonly HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>();
+      private readonly HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>();
+      private readonly TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
 
-      private HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>();
-      private HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>();
-      private TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
-
-      public BaseSubCP BuiltPolytop; // Требуем чтобы сделался
+      public readonly BaseSubCP BuiltPolytop;
 #endregion
 
 #region Constructors
-      public GiftWrappingMain(IEnumerable<SubPoint> Swarm, BaseSubCP? initFace = null) {
-        S             = new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, s.Parent, s)));
+      public GiftWrappingMain(HashSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
+        S             = Swarm;
         spaceDim      = S.First().Dim;
         this.initFace = initFace;
 
@@ -111,7 +109,7 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Main functions
-      public BaseSubCP GW() {
+      private BaseSubCP GW() {
         if (spaceDim == 2) {
           List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
@@ -157,25 +155,30 @@ public partial class Geometry<TNum, TConv>
 
         Queue<BaseSubCP> toTreat = new Queue<BaseSubCP>();
         toTreat.Enqueue(initFace);
+        foreach (BaseSubCP edge in initFace.Faces!) {
+          buildIncidence.Add(edge, (initFace, null));
+        }
 
         do {
           BaseSubCP face = toTreat.Dequeue();
-          foreach (BaseSubCP edge in face.Faces!) {
-            if (buildIncidence.TryGetValue(edge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
-              if (E.F2 is not null) { continue; }
 
-              buildIncidence[edge] = E.F1.GetHashCode() <= face.GetHashCode() ? (E.F1, face) : (face, E.F1);
-            } else {
-              buildIncidence.Add(edge, (face, null));
-            }
-          }
-
-          foreach (BaseSubCP edge in face.Faces.Where(edge => buildIncidence[edge].F2 is null)) {
+          foreach (BaseSubCP edge in face.Faces!.Where(edge => buildIncidence[edge].F2 is null)) {
             BaseSubCP nextFace = RollOverEdge(face, edge, out Vector n);
             nextFace.Normal = n;
+
+            bool hasFreeEdges = false;
+            foreach (BaseSubCP newEdge in nextFace.Faces!) {
+              if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
+                buildIncidence[newEdge] = E.F1.GetHashCode() <= nextFace.GetHashCode() ? (E.F1, nextFace) : (nextFace, E.F1);
+              } else {
+                buildIncidence.Add(newEdge, (nextFace, null));
+                hasFreeEdges = true;
+              }
+            }
+
             buildFaces.Add(nextFace);
             buildPoints.UnionWith(nextFace.Vertices);
-            if (!toTreat.Contains(nextFace)) {
+            if (hasFreeEdges) {
               toTreat.Enqueue(nextFace);
             }
           }
@@ -322,9 +325,10 @@ public partial class Geometry<TNum, TConv>
             prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
           }
 
-          BaseSubCP         buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop.ToPreviousSpace();
+          BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop.ToPreviousSpace();
           buildedFace.Normal = n;
-          HashSet<SubPoint> toRemove    = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
+
+          HashSet<SubPoint> toRemove = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
           toRemove.ExceptWith(buildedFace.Vertices);
           S.ExceptWith(toRemove);
 
@@ -401,21 +405,23 @@ public partial class Geometry<TNum, TConv>
       }
 #endregion
 
-#region Auxilirary functions
+#region Auxiliary functions
       /// <summary>
       /// Calculates the outer normal vector of a given set of points.
       /// </summary>
       /// <param name="planeBasis">The basis of the plane.</param>
       /// <returns>The outer normal vector.</returns>
-      protected Vector CalcOuterNormal(AffineBasis planeBasis) {
+      private Vector CalcOuterNormal(AffineBasis planeBasis) {
         HyperPlane hp = new HyperPlane(planeBasis);
         Vector     n  = hp.Normal;
         OrientNormal(ref n, planeBasis.Origin);
 
+#if DEBUG
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
             ("CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension.");
         }
+#endif
 
         return n;
       }
@@ -425,7 +431,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="normal">The normal to orient.</param>
       /// <param name="origin">A point from S.</param>
-      protected void OrientNormal(ref Vector normal, Point origin) {
+      private void OrientNormal(ref Vector normal, Point origin) {
         foreach (SubPoint s in S) {
           TNum dot = (s - origin) * normal;
 
@@ -549,25 +555,32 @@ public partial class Geometry<TNum, TConv>
       TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
       Queue<BaseSubCP>   toTreat        = new Queue<BaseSubCP>();
       toTreat.Enqueue(initFace);
+      foreach (BaseSubCP edge in initFace.Faces!) {
+        buildIncidence.Add(edge, (initFace, null));
+      }
+
 
       do {
         BaseSubCP face = toTreat.Dequeue();
-        foreach (BaseSubCP edge in face.Faces!) {
-          if (buildIncidence.TryGetValue(edge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
-            if (E.F2 is not null) { continue; }
 
-            buildIncidence[edge] = E.F1.GetHashCode() <= face.GetHashCode() ? (E.F1, face) : (face, E.F1);
-          } else {
-            buildIncidence.Add(edge, (face, null));
-          }
-        }
 
-        foreach (BaseSubCP edge in face.Faces.Where(edge => buildIncidence[edge].F2 is null)) {
+        foreach (BaseSubCP edge in face.Faces!.Where(edge => buildIncidence[edge].F2 is null)) {
           BaseSubCP nextFace = RollOverEdge(S, face, edge, out Vector n);
           nextFace.Normal = n;
+
+          bool hasFreeEdges = false;
+          foreach (BaseSubCP newEdge in nextFace.Faces!) {
+            if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
+              buildIncidence[newEdge] = E.F1.GetHashCode() <= nextFace.GetHashCode() ? (E.F1, nextFace) : (nextFace, E.F1);
+            } else {
+              buildIncidence.Add(newEdge, (nextFace, null));
+              hasFreeEdges = true;
+            }
+          }
+
           buildFaces.Add(nextFace);
           buildPoints.UnionWith(nextFace.Vertices);
-          if (!toTreat.Contains(nextFace)) {
+          if (hasFreeEdges) {
             toTreat.Enqueue(nextFace);
           }
         }
