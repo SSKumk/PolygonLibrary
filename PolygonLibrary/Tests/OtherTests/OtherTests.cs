@@ -50,7 +50,7 @@ public class OtherTests {
 
   [Test]
   public void FindEtalonRoll_3D() {
-    var pointsOnSphere = GeneratePointsOnSphere(3, 4);
+    var pointsOnSphere = GeneratePointsOnSphere(101, 100);
     Console.WriteLine(pointsOnSphere.Count);
 
 
@@ -104,23 +104,23 @@ public class OtherTests {
 
   [Test]
   public void FindEtalon_4D() {
-    int        cubeDim = 4;
+    int        cubeDim = 5;
     ddG.Matrix x1x2    = MakeRotationMatrix(cubeDim, 1, 2, ddG.Tools.PI / 4);
     ddG.Matrix x1x3    = MakeRotationMatrix(cubeDim, 1, 3, ddG.Tools.PI / 4);
     ddG.Matrix x1x4    = MakeRotationMatrix(cubeDim, 1, 4, ddG.Tools.PI / 4);
 
     ddG.Matrix x1x2x1x3x1x4 = x1x2 * x1x3 * x1x4;
 
-    List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out List<ddG.Point> _, new[] { 1, 2, 3, 4 }, 5, 0, true);
+    List<ddG.Point> cube_DD             = ddG.Cube(cubeDim, out List<ddG.Point> _, new[] { 1, 2, 3, 4 }, 5, 1, true);
     var             cube_DD_rotated     = Rotate(cube_DD, x1x2x1x3x1x4);
     List<dG.Point>  cube_double_rotated = ToDPoints(cube_DD_rotated);
 
 
-    var P1 = dG.GiftWrapping.WrapPolytop(cube_double_rotated);
-    var P2 = ddG.GiftWrapping.WrapPolytop(cube_DD_rotated);
+    var P1 = new dG.GiftWrapping(cube_double_rotated);
+    var P2 = dG.GiftWrapping.WrapPolytop(cube_double_rotated);
 
-    Console.WriteLine($"{P1.Faces.First().Normal}");
-    Console.WriteLine(P2.Faces.First().Normal);
+    Console.WriteLine($"{P1.Polytop.Faces.Last().Normal}");
+    Console.WriteLine(P2.Faces.Last().Normal);
   }
 
   [Test]
