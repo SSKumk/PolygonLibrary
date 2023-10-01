@@ -78,14 +78,6 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// Shift given swarm by given vector
-  /// </summary>
-  /// <param name="S">S to be shifted</param>
-  /// <param name="shift">Vector to shift</param>
-  /// <returns></returns>
-  protected static List<Point> Shift(List<Point> S, Vector shift) { return S.Select(s => new Point(s + shift)).ToList(); }
-
-  /// <summary>
   /// Generate rotation matrix.
   /// </summary>
   /// <param name="spaceDim">The dimension d of the space.</param>
