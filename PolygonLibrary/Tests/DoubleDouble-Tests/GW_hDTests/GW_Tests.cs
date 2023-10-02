@@ -705,7 +705,8 @@ public class GW_Tests {
     var hpABC    = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
     var distABCD = S.Select(s => hpABC.Eval(s));
 
-    Polytop P = GiftWrapping.WrapPolytop(Simplex);
+    // Polytop      P = GiftWrapping.WrapPolytop(Simplex);
+    GiftWrapping P = new GiftWrapping(Simplex);
     Assert.That(P.Vertices.SetEquals(Simplex));
   }
 
