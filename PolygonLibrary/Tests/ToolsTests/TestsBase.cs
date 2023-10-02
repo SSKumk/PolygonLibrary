@@ -12,7 +12,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <summary>
   /// The random engine.
   /// </summary>
-  public static readonly GRandomLC _random = new GRandomLC();
+  public static readonly GRandomLC _random = new GRandomLC(0);
 
 #region Auxiliary functions
   /// <summary>
@@ -81,11 +81,12 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// Generate rotation matrix.
   /// </summary>
   /// <param name="spaceDim">The dimension d of the space.</param>
+  /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>Unitary matrix dxd.</returns>
-  private static Matrix GenRotation(int spaceDim) {
+  private static Matrix GenRotation(int spaceDim, GRandomLC? random = null) {
     LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
     while (!basis.IsFullDim) {
-      basis.AddVector(GenVector(spaceDim));
+      basis.AddVector(GenVector(spaceDim,random));
     }
 
     return basis.GetMatrix();
@@ -101,7 +102,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S, uint? seed = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
-    Matrix rotation = GenRotation(PDim);
+    Matrix rotation = GenRotation(PDim, random);
     Vector shift    = GenVector(PDim, random) * _random.NextFromInt(1, 10);
 
     P = Rotate(P, rotation);
