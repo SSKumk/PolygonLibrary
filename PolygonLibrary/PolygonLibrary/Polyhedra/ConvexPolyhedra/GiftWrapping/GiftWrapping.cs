@@ -14,10 +14,14 @@ public partial class Geometry<TNum, TConv>
 
   public class GiftWrapping {
 
-    private BaseSubCP?     BuiltPolytop;
-    private HashSet<Point> SOrig;
-    private Polytop?       _polytop;
-    public  Polytop        Polytop => _polytop ??= GetPolytop();
+    private readonly BaseSubCP      BuiltPolytop;
+    private          HashSet<Point> SOrig;
+
+    private Polytop? _polytop;
+    public  Polytop  Polytop => _polytop ??= GetPolytop();
+
+    public HashSet<Point> Vertices => Polytop.Vertices;
+    // public HashSet<Point> Vertices => BuiltPolytop.OriginalVertices;
 
     private List<HyperPlane>? _HRepr;
 
@@ -37,8 +41,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     private List<Point>? _VRepr;
-
-    public List<Point> VRepresentation => _VRepr ??= Polytop.Vertices.ToList();
+    public  List<Point>  VerticesList => _VRepr ??= BuiltPolytop.OriginalVertices.ToList();
 
 
     //todo public SOME_CLASS PolytopComplex() => throw new NotImplementedException();
@@ -121,11 +124,9 @@ public partial class Geometry<TNum, TConv>
         }
 
 
-        if (initFace is null) {
-          initFace = BuildFace(BuildInitialPlane(out Vector normal), normal);
-          buildFaces.Add(initFace);
-          buildPoints.UnionWith(initFace.Vertices);
-        }
+        initFace ??= BuildFace(BuildInitialPlane(out Vector normal), normal);
+        buildFaces.Add(initFace);
+        buildPoints.UnionWith(initFace.Vertices);
 
 #region Debug
         Debug.Assert(initFace is not null, $"GiftWrapping.GW (space dim = {spaceDim}): initial facet is null!");
@@ -166,6 +167,9 @@ public partial class Geometry<TNum, TConv>
             BaseSubCP nextFace = RollOverEdge(face, edge, out Vector n);
             nextFace.Normal = n;
 
+            buildFaces.Add(nextFace);
+            buildPoints.UnionWith(nextFace.Vertices);
+
             bool hasFreeEdges = false;
             foreach (BaseSubCP newEdge in nextFace.Faces!) {
               if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
@@ -175,9 +179,6 @@ public partial class Geometry<TNum, TConv>
                 hasFreeEdges = true;
               }
             }
-
-            buildFaces.Add(nextFace);
-            buildPoints.UnionWith(nextFace.Vertices);
             if (hasFreeEdges) {
               toTreat.Enqueue(nextFace);
             }
@@ -317,23 +318,25 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
         if (inPlane.Count == FaceBasis.VecDim) {
-          return new SubSimplex(inPlane.Select(p => p.Parent!));
-        } else {
-          BaseSubCP? prj = initEdge?.ProjectTo(FaceBasis);
+          BaseSubCP buildedSimplex = new SubSimplex(inPlane.Select(p => p.Parent!));
+          buildedSimplex.Normal = n;
 
-          if (prj is not null) { //
-            prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
-          }
-
-          BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop.ToPreviousSpace();
-          buildedFace.Normal = n;
-
-          HashSet<SubPoint> toRemove = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
-          toRemove.ExceptWith(buildedFace.Vertices);
-          S.ExceptWith(toRemove);
-
-          return buildedFace;
+          return buildedSimplex;
         }
+
+        BaseSubCP? prj = initEdge?.ProjectTo(FaceBasis);
+        if (prj is not null) { //
+          prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
+        }
+
+        BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop.ToPreviousSpace();
+        buildedFace.Normal = n;
+
+        HashSet<SubPoint> toRemove = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
+        toRemove.ExceptWith(buildedFace.Vertices);
+        S.ExceptWith(toRemove);
+
+        return buildedFace;
       }
 
       /// <summary>
