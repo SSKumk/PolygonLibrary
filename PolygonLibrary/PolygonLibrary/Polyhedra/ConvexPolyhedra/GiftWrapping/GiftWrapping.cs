@@ -107,7 +107,7 @@ public partial class Geometry<TNum, TConv>
         spaceDim      = S.First().Dim;
         this.initFace = initFace;
 
-        BuiltPolytop = GW(); // todo 4Дэ КУБ НЕ ЗАВОРАЧИВАЕТСЯ!!!
+        BuiltPolytop = GW();
       }
 #endregion
 
