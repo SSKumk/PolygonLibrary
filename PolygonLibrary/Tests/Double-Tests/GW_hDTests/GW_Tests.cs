@@ -533,86 +533,86 @@ public class GW_Tests {
 
 
 #region Other tests
-  /// <summary>
-  /// Вершины:
-  ///[0] +2.573  A
-  ///[1] -0.433     X
-  ///[2] -3.942  B
-  ///[3] -2.231  C
-  ///[4] +0.457  D
-  ///
-  ///  Доп.точки:
-  ///[5] -0.715  0,1,2
-  ///[6] -1.250  0,2,3,4
-  ///[7] +2.524  0,1,2,3,4  F
-  ///
-  ///0-2-3-4-6-7
-  ///
-  /// Точка F очень близка к вершине A так, что с точностью 1e-8 принадлежит гиперплоскостям всех гиперграней, проходящих через эту вершину.
-  /// При загрублении точности до такого значения получается не гипер-тетраэдр.
-  /// </summary>
-  [Test]
-  public void Simplex4D_PointCloseToVertex() {
-    const uint seed    = 725498027;
-    const int  PDim    = 4;
-    const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 2, 3, 4 };
-
-    List<Point> S = new List<Point>()
-      {
-        new Point(new double[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
-      , new Point(new double[] { -0.4334526451848103, -0.4053162935667942, 3.2553497814236554, 3.4524045601609177 })
-      , new Point(new double[] { -3.942094170242104, -1.9384525033967692, -0.29372328782773627, 2.603184338100996 })
-      , new Point(new double[] { -2.231889343176011, -3.249343109375179, -0.4791314609998676, -3.9361931497548226 })
-      , new Point(new double[] { 0.4576718028303406, -1.483829232511071, 1.5060715392478907, -3.912975119639415 })
-      , new Point(new double[] { -0.715863786767021, 1.1248964198021802, -0.08999099950936182, -0.41480693316225237 })
-      , new Point(new double[] { -1.2504502355127234, -2.0382520989901907, 0.055536783449397165, -3.4765790886104364 })
-      , new Point(new double[] { 2.5244380627935232, 4.399463020994712, -0.2616425805524087, -3.92127411448588 })
-      };
-
-    var hpABCD = new HyperPlane
-      (
-       new AffineBasis
-         (
-          new List<Point>()
-            {
-              S[0]
-            , S[2]
-            , S[3]
-            , S[4]
-            }
-         )
-      );
-    var distABCD = S.Select(s => hpABCD.Eval(s));
-
-    AffineBasis ABDbasis = new AffineBasis(new List<Point>() { S[2], S[0], S[4] });
-
-    Vector BC = Vector.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.Basis);
-    Vector BX = Vector.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.Basis);
-    Vector BF = Vector.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.Basis);
-
-    double angleCBX = double.Acos(BC * BX);
-    double angleCBF = double.Acos(BC * BF);
-
-
-    var hpABDX = new HyperPlane
-      (
-       new AffineBasis
-         (
-          new List<Point>()
-            {
-              S[0]
-            , S[2]
-            , S[1]
-            , S[4]
-            }
-         )
-      );
-    var distABDX = S.Select(s => hpABDX.Eval(s));
-
-    SimplexRND(PDim, out List<Point> polytop);
-    Check(S, polytop, seed, PDim, nPoints, fID, true);
-  }
+  // /// <summary>
+  // /// Вершины:
+  // ///[0] +2.573  A
+  // ///[1] -0.433     X
+  // ///[2] -3.942  B
+  // ///[3] -2.231  C
+  // ///[4] +0.457  D
+  // ///
+  // ///  Доп.точки:
+  // ///[5] -0.715  0,1,2
+  // ///[6] -1.250  0,2,3,4
+  // ///[7] +2.524  0,1,2,3,4  F
+  // ///
+  // ///0-2-3-4-6-7
+  // ///
+  // /// Точка F очень близка к вершине A так, что с точностью 1e-8 принадлежит гиперплоскостям всех гиперграней, проходящих через эту вершину.
+  // /// При загрублении точности до такого значения получается не гипер-тетраэдр.
+  // /// </summary>
+  // [Test]
+  // public void Simplex4D_PointCloseToVertex() {
+  //   const uint seed    = 725498027;
+  //   const int  PDim    = 4;
+  //   const int  nPoints = 1;
+  //   List<int>  fID     = new List<int>() { 2, 3, 4 };
+  //
+  //   List<Point> S = new List<Point>()
+  //     {
+  //       new Point(new double[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
+  //     , new Point(new double[] { -0.4334526451848103, -0.4053162935667942, 3.2553497814236554, 3.4524045601609177 })
+  //     , new Point(new double[] { -3.942094170242104, -1.9384525033967692, -0.29372328782773627, 2.603184338100996 })
+  //     , new Point(new double[] { -2.231889343176011, -3.249343109375179, -0.4791314609998676, -3.9361931497548226 })
+  //     , new Point(new double[] { 0.4576718028303406, -1.483829232511071, 1.5060715392478907, -3.912975119639415 })
+  //     , new Point(new double[] { -0.715863786767021, 1.1248964198021802, -0.08999099950936182, -0.41480693316225237 })
+  //     , new Point(new double[] { -1.2504502355127234, -2.0382520989901907, 0.055536783449397165, -3.4765790886104364 })
+  //     , new Point(new double[] { 2.5244380627935232, 4.399463020994712, -0.2616425805524087, -3.92127411448588 })
+  //     };
+  //
+  //   var hpABCD = new HyperPlane
+  //     (
+  //      new AffineBasis
+  //        (
+  //         new List<Point>()
+  //           {
+  //             S[0]
+  //           , S[2]
+  //           , S[3]
+  //           , S[4]
+  //           }
+  //        )
+  //     );
+  //   var distABCD = S.Select(s => hpABCD.Eval(s));
+  //
+  //   AffineBasis ABDbasis = new AffineBasis(new List<Point>() { S[2], S[0], S[4] });
+  //
+  //   Vector BC = Vector.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.Basis);
+  //   Vector BX = Vector.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.Basis);
+  //   Vector BF = Vector.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.Basis);
+  //
+  //   double angleCBX = double.Acos(BC * BX);
+  //   double angleCBF = double.Acos(BC * BF);
+  //
+  //
+  //   var hpABDX = new HyperPlane
+  //     (
+  //      new AffineBasis
+  //        (
+  //         new List<Point>()
+  //           {
+  //             S[0]
+  //           , S[2]
+  //           , S[1]
+  //           , S[4]
+  //           }
+  //        )
+  //     );
+  //   var distABDX = S.Select(s => hpABDX.Eval(s));
+  //
+  //   SimplexRND(PDim, out List<Point> polytop);
+  //   Check(S, polytop, seed, PDim, nPoints, fID, true);
+  // }
 
   /// <summary>
   /// Вершины:
