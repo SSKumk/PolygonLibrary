@@ -9,6 +9,16 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
+  public static readonly Polytop Cube3D    = Cube(3);
+  public static readonly Polytop Cube4D    = Cube(4);
+  public static readonly Polytop Simplex3D = Simplex(3);
+  public static readonly Polytop Simplex4D = Simplex(4);
+
+#region Polytopes Fabrics
+  public static Polytop Cube(int    dim) => new GiftWrapping(Cube(dim, out _)).Polytop;
+  public static Polytop Simplex(int dim) => new GiftWrapping(Simplex(dim, out _)).Polytop;
+#endregion
+
   /// <summary>
   /// Generates a full-dimension hypercube in the specified dimension.
   /// </summary>
@@ -200,6 +210,39 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     }
 
     return Simplex;
+  }
+
+  /// <summary>
+  /// Generates a list of Cartesian coordinates for points on a 3D-sphere.
+  /// </summary>
+  /// <param name="thetaDivisions">The number of divisions by zenith angle. Theta in (0, Pi).</param>
+  /// <param name="phiDivisions">The number of divisions by azimuthal angle. Phi in [0, 2*Pi).</param>
+  /// <param name="addPoles">If <c>true</c> adds two pole of the sphere to the resulted list.</param>
+  /// <returns>A list of points on the sphere.</returns>
+  public static List<Point> GeneratePointsOnSphere_3D(int thetaDivisions, int phiDivisions, bool addPoles = false) {
+    List<Point> points = new List<Point>();
+    if (addPoles) {
+      points.Add(new Point(new TNum[] { TNum.Zero, TNum.Zero, TNum.One }));
+      points.Add(new Point(new TNum[] { TNum.Zero, TNum.Zero, -TNum.One }));
+    }
+
+    TNum thetaStep = Tools.PI / TConv.FromInt(thetaDivisions);
+    TNum phiStep   = Tools.PI2 / TConv.FromInt(phiDivisions);
+
+    for (int i = 1; i < thetaDivisions; i++) {
+      TNum theta = thetaStep * TConv.FromInt(i);
+      for (int j = 0; j < phiDivisions; j++) {
+        TNum phi = phiStep * TConv.FromInt(j);
+
+        TNum x = TNum.Sin(theta) * TNum.Cos(phi);
+        TNum y = TNum.Sin(theta) * TNum.Sin(phi);
+        TNum z = TNum.Cos(theta);
+
+        points.Add(new Point(new TNum[] { x, y, z }));
+      }
+    }
+
+    return points;
   }
 
 }
