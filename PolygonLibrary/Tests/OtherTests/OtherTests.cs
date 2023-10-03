@@ -50,7 +50,7 @@ public class OtherTests {
 
   [Test]
   public void FindEtalonRoll_3D() {
-    var pointsOnSphere = GeneratePointsOnSphere(101, 100);
+    var pointsOnSphere = ddG.GeneratePointsOnSphere_3D(101, 100);
     Console.WriteLine(pointsOnSphere.Count);
 
 
