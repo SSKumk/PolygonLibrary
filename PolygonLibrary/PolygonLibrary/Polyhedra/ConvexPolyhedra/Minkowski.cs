@@ -27,17 +27,14 @@ public partial class Geometry<TNum, TConv>
   /// <returns>
   /// Returns a list of vertices that make up the Minkowski sum of the two input polytopes.
   /// </returns>
-  public static List<Point> MinkSum(List<Point> p1, List<Point> p2) {
+  public static Polytop MinkSumCH(Polytop p1, Polytop p2) {
     HashSet<Point> toCH = new HashSet<Point>();
-    foreach (Point v1 in p1) {
-      toCH.UnionWith(Shift(p2, new Vector(v1)));
+    foreach (Point v1 in p1.Vertices) {
+      toCH.UnionWith(Shift(p2.Vertices, new Vector(v1)));
     }
 
-    // return GiftWrapping.WrapPolytop(toCH).Vertices.ToList();
-
-
     GiftWrapping gw = new GiftWrapping(toCH);
-    return gw.Polytop.Vertices.ToList();
+    return gw.Polytop;
   }
 
 }
