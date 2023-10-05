@@ -12,7 +12,7 @@ public class Sandbox {
 
   [Test]
   public void TXT() {
-    string path = "E:\\test.txt";
+    string path = "E:/Temp/from.txt";
     Cube3D.WriteTXT(path);
   }
 
