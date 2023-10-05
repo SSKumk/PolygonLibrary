@@ -29,7 +29,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the dimension of the polytop.
     /// </summary>
-    public abstract int PolyhedronDim { get; }
+    public abstract int PolytopDim { get; }
 
     /// <summary>
     /// Gets the type of the convex polytop.
@@ -44,7 +44,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public abstract HashSet<Point> Vertices { get; }
 
-
     /// <summary>
     /// Determines whether the specified object is equal to convex polytop.
     /// Two polyhedra are equal if they have same dimensions and sets of their vertices are equal.
@@ -58,7 +57,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       BaseConvexPolyhedron other = (BaseConvexPolyhedron)obj;
 
-      if (this.PolyhedronDim != other.PolyhedronDim) {
+      if (this.PolytopDim != other.PolytopDim) {
         return false;
       }
 
@@ -82,11 +81,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
           hash = HashCode.Combine(hash, vertex.GetHashCode());
         }
 
-        _hash = HashCode.Combine(hash, PolyhedronDim);
+        _hash = HashCode.Combine(hash, PolytopDim);
       }
 
       return _hash.Value;
     }
+
+
 
   }
 
