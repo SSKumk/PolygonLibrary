@@ -264,6 +264,22 @@ public partial class Geometry<TNum, TConv>
         return TNum.Acos(dot);
       }
     }
+
+    /// <summary>
+    /// Returns the string contains coordinates of a point in the specified format.
+    /// x0 x1 ... xDim-1
+    /// </summary>
+    /// <returns>The string in the specified format.</returns>
+    public string ToFileFormat() {
+      string res = $"{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
+      int    d   = Dim, i;
+
+      for (i = 1; i < d; i++) {
+        res += $" {_v[i].ToString(null, CultureInfo.InvariantCulture)}";
+      }
+
+      return res;
+    }
 #endregion
 
 #region Functions related to Vectors

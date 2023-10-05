@@ -1,0 +1,15 @@
+Type: Simplex / NoNSimplex
+PDim: uint
+SDim: uint
+
+Vertices: uint
+x0 x1 x2 ... xN
+...
+
+Faces: uint
+N: x0 x1 x2 ... xN
+x0 x1 x2 ... xN
+....
+N: x0 x1 x2 ... xN
+x0 x1 x2 ... xN
+....

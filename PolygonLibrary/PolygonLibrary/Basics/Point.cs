@@ -67,7 +67,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public static explicit operator TNum[](Point p) => p._p;
 #endregion
 
-
 #region Comparing
     /// <summary>
     /// Point comparer realizing the lexicographic order
@@ -244,6 +243,22 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       foreach (Point2D p in listPoint2D)
         res.Add(new Point(p));
+
+      return res;
+    }
+
+    /// <summary>
+    /// Returns the string contains coordinates of a point in the specified format.
+    /// x0 x1 ... xDim-1
+    /// </summary>
+    /// <returns>The string in the specified format.</returns>
+    public string ToFileFormat() {
+      string res = $"{_p[0].ToString(null, CultureInfo.InvariantCulture)}";
+      int    d   = Dim, i;
+
+      for (i = 1; i < d; i++) {
+        res += $" {_p[i].ToString(null, CultureInfo.InvariantCulture)}";
+      }
 
       return res;
     }
