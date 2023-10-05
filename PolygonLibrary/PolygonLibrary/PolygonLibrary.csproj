@@ -43,11 +43,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\Minkowski.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\BaseConvexPolyhedron.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\NonSimplex.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\Simplex.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\PolyhedralComplex\TwoDimensional.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\Polyhedron.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\Polytop.cs" />
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
         <Compile Include="Toolkit\Convexification.cs" />
