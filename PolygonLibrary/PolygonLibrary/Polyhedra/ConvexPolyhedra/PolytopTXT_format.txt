@@ -1,4 +1,4 @@
-Type: Simplex / NoNSimplex
+Type: Simplex or NoNSimplex
 PDim: uint
 SDim: uint
 
