@@ -36,41 +36,86 @@ public class MinkowskiSum {
   }
 #endregion
 
+#region 3D tests with pictures
+    /// <summary>
+    /// Пример из статьи
+    /// Computing the Minkowski sum of convex polytopes in Rd. Sandip Das, S. Swami. 2021г
+    /// </summary>
+    [Test]
+    public void Cube3D_Octahedron45XY() {
+      List<Point> p = GeneratePointsOnSphere_3D(3, 4);
+      List<Point> q = Octahedron3D_list;
+      q = Rotate(q, rotate3D_45XY);
+
+      Polytop P = new GiftWrapping(p).Polytop;
+      Polytop Q = new GiftWrapping(q).Polytop;
+
+      Polytop sum = MinkSumCH(P, Q);
+      sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube3D_Octahedron45XY.txt");
+
+      Assert.That(sum.Faces.Count(F => Tools.EQ(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(8));
+      Assert.That(sum.Faces.Count(F => Tools.GT(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(9));
+      Assert.That(sum.Faces.Count(F => Tools.LT(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(9));
+    }
+
+    [Test]
+    public void Octahedron_Octahedron45XY() {
+      List<Point> p = Octahedron3D_list;
+      List<Point> q = Rotate(p, rotate3D_45XY);
+
+      Polytop P = new GiftWrapping(p).Polytop;
+      Polytop Q = new GiftWrapping(q).Polytop;
+
+      Polytop sum = MinkSumCH(P, Q);
+      sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
+    }
+
+    [Test]
+    public void Pyramid_Pyramid45XY() {
+      List<Point> p = Pyramid3D_list;
+      List<Point> q = Rotate(p, rotate3D_45XY);
+
+      Polytop P = new GiftWrapping(p).Polytop;
+      Polytop Q = new GiftWrapping(q).Polytop;
+
+      // P.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid.txt");
+      // Q.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid45XY.txt");
+
+      Polytop sum = MinkSumCH(P, Q);
+      sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid_Pyramid45XY.txt");
+    }
+
+
+    [Test]
+    public void Cube_Cube45XY() {
+      List<Point> p = Cube3D_list;
+      List<Point> q = Rotate(p, rotate3D_45XY);
+
+      Polytop P = new GiftWrapping(p).Polytop;
+      Polytop Q = new GiftWrapping(q).Polytop;
+
+      Polytop sum = MinkSumCH(P, Q);
+      sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
+    }
+
+
+#endregion
+
+
 #region Other tests
 
-  /// <summary>
-  /// Пример из статьи
-  /// Computing the Minkowski sum of convex polytopes in Rd. Sandip Das, S. Swami. 2018г
-  ///
-  /// Результат см в Геогебре. Проверил глазами -- верно.
-  /// </summary>
   [Test]
-  public void Cube3D_Octahedron() {
-    List<Point> p = GeneratePointsOnSphere_3D(3, 4);
-    List<Point> q = GeneratePointsOnSphere_3D(2, 4, true);
-    q = Rotate(q, MakeRotationMatrix(3, 1, 2, double.Pi / 4));
-
-    // Console.WriteLine($"P has {p.Count} vertices.");
-    // Console.WriteLine($"Q has {q.Count} vertices.");
-    //
-    // Console.WriteLine(string.Join('\n', p));
-    // Console.WriteLine();
-    // Console.WriteLine(string.Join('\n', q));
-    // Console.WriteLine();
+  public void Cube4D_Cube4D45XY() {
+    List<Point> p = Cube4D_list;
+    List<Point> q = Rotate(p, rotate4D_45XY);
 
     Polytop P = new GiftWrapping(p).Polytop;
     Polytop Q = new GiftWrapping(q).Polytop;
 
     Polytop sum = MinkSumCH(P, Q);
-    Console.WriteLine($"MinkSum(P,Q) has {sum.Vertices.Count} vertices.");
-    Console.WriteLine(string.Join('\n', sum.Vertices));
-
-    sum.WriteTXT("E:/Temp/test.txt");
-
-    Assert.That(sum.Faces.Count(F => Tools.EQ(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(8));
-    Assert.That(sum.Faces.Count(F => Tools.GT(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(9));
-    Assert.That(sum.Faces.Count(F => Tools.LT(F.Normal * Vector.CreateOrth(3,3))), Is.EqualTo(9));
+    sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube4D_Cube4D45XY.txt");
   }
+
 
   /// <summary>
   /// Пример из статьи
@@ -79,7 +124,7 @@ public class MinkowskiSum {
   [Test]
   public void WorstCase3D() {
     const int   theta = 2;
-    List<Point> p     = GeneratePointsOnSphere_3D(theta, 30, true);
+    List<Point> p     = GeneratePointsOnSphere_3D(theta, 30, true, true);
     List<Point> q     = Rotate(p, MakeRotationMatrix(3, 1, 3, double.Pi / 2));
 
     Console.WriteLine($"P has {p.Count} vertices.");
