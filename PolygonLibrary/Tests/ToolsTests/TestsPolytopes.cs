@@ -9,13 +9,26 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
-  public static readonly Polytop Cube3D    = Cube(3);
-  public static readonly Polytop Cube4D    = Cube(4);
-  public static readonly Polytop Simplex3D = Simplex(3);
-  public static readonly Polytop Simplex4D = Simplex(4);
+  public static readonly List<Point> Octahedron3D_list = GeneratePointsOnSphere_3D(2, 4, true, true);
+  public static readonly List<Point> Pyramid3D_list    = GeneratePointsOnSphere_3D(2, 4,true);
+  public static readonly List<Point> Cube3D_list       = Cube_list(3);
+  public static readonly List<Point> Cube4D_list       = Cube_list(4);
 
-#region Polytopes Fabrics
-  public static Polytop Cube(int    dim) => new GiftWrapping(Cube(dim, out _)).Polytop;
+
+  public static readonly Polytop Cube3D       = Cube(3);
+  public static readonly Polytop Cube4D       = Cube(4);
+  public static readonly Polytop Simplex3D    = Simplex(3);
+  public static readonly Polytop Simplex4D    = Simplex(4);
+  public static readonly Polytop Octahedron3D = new GiftWrapping(Octahedron3D_list).Polytop;
+
+
+  public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
+  public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
+
+#region Polytopes and Polytopes-list Fabrics
+  public static List<Point> Cube_list(int dim) => Cube(dim, out _);
+
+  public static Polytop Cube(int    dim) => new GiftWrapping(Cube_list(dim)).Polytop;
   public static Polytop Simplex(int dim) => new GiftWrapping(Simplex(dim, out _)).Polytop;
 #endregion
 
@@ -215,14 +228,21 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <summary>
   /// Generates a list of Cartesian coordinates for points on a 3D-sphere.
   /// </summary>
-  /// <param name="thetaDivisions">The number of divisions by zenith angle. Theta in (0, Pi).</param>
+  /// <param name="thetaDivisions">The number of divisions by zenith angle. thetaDivisions should be greater than or equal to 3 for proper calculation.
+  /// Both poles are skipped by default.</param>
   /// <param name="phiDivisions">The number of divisions by azimuthal angle. Phi in [0, 2*Pi).</param>
-  /// <param name="addPoles">If <c>true</c> adds two pole of the sphere to the resulted list.</param>
+  /// <param name="addUpperPole">A boolean flag indicating whether to add the upper pole to the list of points.</param>
+  /// <param name="addBottomPole">A boolean flag indicating whether to add the bottom pole to the list of points.</param>
   /// <returns>A list of points on the sphere.</returns>
-  public static List<Point> GeneratePointsOnSphere_3D(int thetaDivisions, int phiDivisions, bool addPoles = false) {
+  public static List<Point> GeneratePointsOnSphere_3D(int  thetaDivisions
+                                                    , int  phiDivisions
+                                                    , bool addUpperPole  = false
+                                                    , bool addBottomPole = false) {
     List<Point> points = new List<Point>();
-    if (addPoles) {
+    if (addUpperPole) {
       points.Add(new Point(new TNum[] { TNum.Zero, TNum.Zero, TNum.One }));
+    }
+    if (addBottomPole) {
       points.Add(new Point(new TNum[] { TNum.Zero, TNum.Zero, -TNum.One }));
     }
 
