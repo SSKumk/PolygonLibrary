@@ -1,0 +1,17 @@
+Тесты с разными диапазонами генерации точек
+
+Брался AllCubes4D_TestRND с n = 2000.
+
+Всё делится на 10 в нужной степени
+
+Double
+(1,999999999)  Gift wrapping does NOT success!
+(1,99999999)   Gift wrapping does NOT success!
+(1,9999999)    Gift wrapping does NOT success!
+(1,999999)     Gift wrapping does NOT success!
+(1,99999)      Gift wrapping does NOT success!
+
+(1,9999)       Gift wrapping does success!  (25s)
+
+Double Double
+(1,999999999)  Gift wrapping does success!  (1m30s)
