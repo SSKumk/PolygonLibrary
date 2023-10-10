@@ -761,7 +761,7 @@ public class GW_Tests {
                           , int         nPoints
                           , List<int>   fID
                           , bool        needShuffle = false) {
-    Polytop? P = null;
+    ConvexPolytop? P = null;
 
     try {
       if (needShuffle) {
@@ -770,7 +770,7 @@ public class GW_Tests {
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = new GiftWrapping(S).Polytop;
+      P = new GiftWrapping(S).ConvexPolytop;
       Debug.Assert(P is not null, nameof(P) + " is null");
     }
     catch (Exception e) {

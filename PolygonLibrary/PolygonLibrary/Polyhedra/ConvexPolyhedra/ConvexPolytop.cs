@@ -193,7 +193,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a full-dimensional convex polytope in a d-dimensional space.
   /// </summary>
-  public class Polytop : BaseConvexPolyhedron {
+  public class ConvexPolytop : BaseConvexPolyhedron {
 
     /// <summary>
     /// Gets the dimension of the polytope.
@@ -240,7 +240,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="type">The type of the polytope.</param>
     /// <param name="faceIncidence">The incidence information of the faces.</param>
     /// <param name="fans">The fan information of the polytope.</param>
-    public Polytop(IEnumerable<Point>   Vs
+    public ConvexPolytop(IEnumerable<Point>   Vs
                  , int                  polytopDim
                  , IEnumerable<Face>    faces
                  , IEnumerable<Edge>    edges
@@ -269,7 +269,12 @@ public partial class Geometry<TNum, TConv>
       return new ConvexPolygon(basis.ProjectPoints(Vertices));
     }
 
+    /// <summary>
+    /// Writes Polytop to the file in 'PolytopTXT_format'.
+    /// </summary>
+    /// <param name="filePath">The path to the file to write in.</param>
     public void WriteTXT(string filePath) {
+      List<Point> VList = Vertices.ToList();
       using (StreamWriter writer = new StreamWriter(filePath)) {
         writer.Write("Type: ");
         switch (Type) {
@@ -290,12 +295,12 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine($"SDim: {SpaceDim}");
         writer.WriteLine();
         writer.WriteLine($"Vertices: {Vertices.Count}");
-        writer.WriteLine(string.Join('\n', Vertices.Select(v => v.ToFileFormat())));
+        writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
         writer.WriteLine();
         writer.WriteLine($"Faces: {Faces.Count}");
         foreach (Face face in Faces) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
-          writer.WriteLine(string.Join('\n', face.Vertices.Select(v => v.ToFileFormat())));
+          writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
         }
       }
     }
