@@ -76,6 +76,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Swarm">The swarm of points to convexify.</param>
     public GiftWrapping(IEnumerable<Point> Swarm) {
       SOrig = new HashSet<Point>(Swarm);
+
+      AffineBasis AffineS = new AffineBasis(Swarm);
+      if (AffineS.SpaceDim < AffineS.VecDim) {
+        Swarm = AffineS.ProjectPoints(Swarm);
+      }
+
       GiftWrappingMain x = new GiftWrappingMain(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
       BuiltPolytop = x.BuiltPolytop;
     }
@@ -107,7 +113,8 @@ public partial class Geometry<TNum, TConv>
 
         case SubCPType.TwoDimensional:
         case SubCPType.OneDimensional:
-        default: throw new NotImplementedException("Can not build ConvexPolytop from One or Two dimensional!");
+        default:
+          throw new NotImplementedException("Can not build ConvexPolytop from One or Two dimensional!");
       }
 
       return new ConvexPolytop
@@ -289,15 +296,12 @@ public partial class Geometry<TNum, TConv>
             }
           }
 
-          if (sExtr is null) { // Что делать если выпуклая оболочка не полной размерности?
-            throw new ArgumentException($"GW.BIP (dim = {spaceDim}): All points of S lies in initial plane!");
+          // if (sExtr is null) { //Если dim(S) < d - 1 !!!
+          //   GiftWrappingMain lowerP = new GiftWrappingMain(S.Select(s => s.ProjectTo(FinalV)).ToHashSet());
+          //
+          // }
 
-            // normal = n;
-
-            // return FinalV;
-          }
-
-          bool isAdded = FinalV.AddVectorToBasis(sExtr - origin);
+          bool isAdded = FinalV.AddVectorToBasis(sExtr! - origin);
 
           Debug.Assert
             (
