@@ -8,8 +8,8 @@ x0 x1 x2 ... xN
 
 Faces: uint
 N: x0 x1 x2 ... xN
-x0 x1 x2 ... xN
+Vertices index which formed a face [0 1 2 3 ... K]
 ....
 N: x0 x1 x2 ... xN
-x0 x1 x2 ... xN
+ind0 ind1 ind2 ... indN
 ....
