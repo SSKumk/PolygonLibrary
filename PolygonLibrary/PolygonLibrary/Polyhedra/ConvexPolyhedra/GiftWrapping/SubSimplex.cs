@@ -7,38 +7,28 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents a simplex, which is a convex polytop with (d + 1) vertices in d-dimensional space.
+  /// Represents a simplex, which is a convex polytop with (k+1) vertices in d-dimensional space.
   /// </summary>
   internal class SubSimplex : BaseSubCP {
 
     /// <summary>
-    /// Gets the dimension of the simplex.
+    /// Gets the dimension (k) of the simplex.
     /// </summary>
     public override int PolytopDim { get; }
 
     /// <summary>
     /// Gets the type of the convex polytop.
     /// </summary>
-    public override SubCPType Type { get; }
+    public override SubCPType Type => SubCPType.Simplex;
 
     /// <summary>
-    /// Gets the set of vertices of the simplex.
-    /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
-
-
-    /// <summary>
-    /// The set of (d-1)-dimensional faces of a simplex, which are in turn a Simplex.
-    /// </summary>
-    private HashSet<BaseSubCP>? _faces = null;
-
-    /// <summary>
-    /// Gets the set of (d-1)-dimensional faces of the simplex, which are in turn a Simplex.
+    /// Gets the set of (k-1)-dimensional faces of the simplex, which are themselves simplexes.
     /// </summary>
     public override HashSet<BaseSubCP> Faces {
       get
@@ -46,11 +36,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
           if (_faces is null) {
             _faces = new HashSet<BaseSubCP>();
 
-            foreach (SubPoint vertex in Vertices) {
-              SubPoint[] faceVert = Vertices.Where(v => !v.Equals(vertex)).ToArray();
+            foreach (SubZeroDimensional vertex in Vertices) {
+              SubZeroDimensional[] faceVert = Vertices.Where(v => !v.Vertex.Equals(vertex.Vertex)).ToArray();
 
               if (PolytopDim == 2) {
-                BaseSubCP edge = new SubTwoDimensionalEdge(faceVert[0], faceVert[1]);
+                BaseSubCP edge = new SubTwoDimensionalEdge(faceVert[0].Primal!, faceVert[1].Primal!);
                 _faces.Add(edge);
               } else {
                 BaseSubCP simplex = new SubSimplex(faceVert);
@@ -69,14 +59,16 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public override SubIncidenceInfo? FaceIncidence { get; }
 
 
-    /// <summary>
-    /// Lifts a simplex to the previous space.
-    /// </summary>
-    /// <returns>A simplex in (d+1)-space.</returns>
-    public override BaseSubCP ToPreviousSpace() => new SubSimplex(Vertices.Select(v => v.Parent)!);
+    // /// <summary>
+    // /// Lifts a k-simplex to the previous space.
+    // /// </summary>
+    // /// <returns>A k-simplex in (d+1)-space.</returns>
+    // public override BaseSubCP ToPreviousSpace() => new SubSimplex(Vertices.Select(v => v.Parent)!);
 
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubSimplex(Vertices.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original)));
+      return new SubSimplex
+        (Vertices.Select
+           (s => new SubZeroDimensional(new SubPoint(s.Vertex.ProjectTo(aBasis), s.Vertex, s.Vertex.Original), s.Primal)));
     }
 
     /// <summary>
@@ -85,13 +77,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="simplex">The set of vertices of the simplex.</param>
     /// <param name="faces">The set of faces of the simplex.</param>
     /// <param name="incidence">Information about face incidence.</param>
-    public SubSimplex(IEnumerable<SubPoint> simplex, HashSet<BaseSubCP>? faces = null, SubIncidenceInfo? incidence = null) {
+    public SubSimplex(IEnumerable<SubZeroDimensional> simplex, HashSet<BaseSubCP>? faces = null, SubIncidenceInfo? incidence = null) {
       Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
 
-      PolytopDim    = simplex.Count() - 1;
-      Type          = SubCPType.Simplex;
-      Vertices      = new HashSet<SubPoint>(simplex);
-      _faces        = faces;
+      PolytopDim = simplex.Count() - 1;
+      _vertices   = new HashSet<SubZeroDimensional>(simplex);
+      _faces     = faces;
+
       FaceIncidence = incidence;
     }
 

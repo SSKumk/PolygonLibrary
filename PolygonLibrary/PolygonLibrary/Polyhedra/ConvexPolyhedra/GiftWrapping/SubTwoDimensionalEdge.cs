@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
@@ -17,6 +18,16 @@ public partial class Geometry<TNum, TConv>
   public class SubTwoDimensionalEdge : BaseSubCP {
 
     /// <summary>
+    /// The first vertex of the edge.
+    /// </summary>
+    private SubPoint fst;
+
+    /// <summary>
+    /// The second vertex of the edge.
+    /// </summary>
+    private SubPoint snd;
+
+    /// <summary>
     /// Gets the dimension of the edge. It equal to 1.
     /// </summary>
     public override int PolytopDim => 1;
@@ -27,39 +38,37 @@ public partial class Geometry<TNum, TConv>
     public override SubCPType Type => SubCPType.OneDimensional;
 
     /// <summary>
-    /// The faces of 1-dimensional edge is its vertex.
-    /// </summary>
-    public override HashSet<BaseSubCP> Faces { get; }
-
-    /// <summary>
     /// There are no Faces of the 1-dimensional edge.
     /// </summary>
     public override SubIncidenceInfo? FaceIncidence => null;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SubTwoDimensionalEdge"/> class.
+    /// There are two vertices of the 2D-edge.
     /// </summary>
-    /// <param name="first">The first vertex of the edge.</param>
-    /// <param name="second">The second vertex of the edge.</param>
-    public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
-      Faces = new HashSet<BaseSubCP>() { new SubZeroDimensional(first), new SubZeroDimensional(second) };
-    }
+    public override HashSet<SubPoint> Vertices => _vertices ??= new HashSet<SubPoint>() { fst, snd };
+
+    /// <summary>
+    /// There are two faces that matches with Vertices of the 2D-edge.
+    /// </summary>
+    public override HashSet<BaseSubCP> Faces =>
+      _faces ??= new HashSet<BaseSubCP>() { new SubZeroDimensional(fst), new SubZeroDimensional(snd) };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensionalEdge"/> class base on ZeroDimensional.
     /// </summary>
     /// <param name="first">The first vertex of the edge.</param>
     /// <param name="second">The second vertex of the edge.</param>
-    public SubTwoDimensionalEdge(SubZeroDimensional first, SubZeroDimensional second) {
-      Faces = new HashSet<BaseSubCP>() { first, second };
+    public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
+      fst = first;
+      snd = second;
     }
 
-    /// <summary>
-    /// Converts the edge to the previous space.
-    /// </summary>
-    /// <returns>The converted edge in the previous space.</returns>
-    public override BaseSubCP ToPreviousSpace() => new SubTwoDimensionalEdge
-      ((SubZeroDimensional)Faces.First().ToPreviousSpace(), (SubZeroDimensional)Faces.Last().ToPreviousSpace());
+    // /// <summary>
+    // /// Converts the edge to the previous space.
+    // /// </summary>
+    // /// <returns>The converted edge in the previous space.</returns>
+    // public override BaseSubCP ToPreviousSpace() => new SubTwoDimensionalEdge
+    //   ((SubZeroDimensional)Faces.First().ToPreviousSpace(), (SubZeroDimensional)Faces.Last().ToPreviousSpace());
 
     /// <summary>
     /// Projects the edge to the specified affine basis.
@@ -67,14 +76,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected edge.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      SubPoint first  = Faces.First().Vertices.First();
-      SubPoint second = Faces.Last().Vertices.First();
-
       return new SubTwoDimensionalEdge
-        (
-         new SubPoint(first.ProjectTo(aBasis), first, first.Original)
-       , new SubPoint(second.ProjectTo(aBasis), second, second.Original)
-        );
+        (new SubPoint(fst.ProjectTo(aBasis), fst, fst.Original), new SubPoint(snd.ProjectTo(aBasis), snd, snd.Original));
     }
 
   }

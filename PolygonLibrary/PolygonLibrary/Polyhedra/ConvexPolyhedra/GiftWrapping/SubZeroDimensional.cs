@@ -12,7 +12,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents a one-dimensional vertex of a convex polytope expressed in k-space.
+  /// Represents a zero-dimensional vertex of a convex polytope expressed in k-space.
   /// </summary>
   public class SubZeroDimensional : BaseSubCP {
 
@@ -47,9 +47,9 @@ public partial class Geometry<TNum, TConv>
     public override List<Point> Affine => _affine ??= new List<Point> { Vertex };
 
     /// <summary>
-    /// Gets the the vertex. (By conversation).
+    /// Null. (By conversation).
     /// </summary>
-    public override HashSet<BaseSubCP> Faces => _faces ??= new HashSet<BaseSubCP> { new SubZeroDimensional(Vertex) };
+    public override HashSet<BaseSubCP> Faces => null!;
 
     /// <summary>
     /// There are no FaceIncidence of the 0-dimensional vertex.
@@ -62,11 +62,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="vertex">The vertex.</param>
     public SubZeroDimensional(SubPoint vertex) { Vertex = vertex; }
 
-    /// <summary>
-    /// Converts the vertex to the previous space.
-    /// </summary>
-    /// <returns>The converted vertex in the previous space.</returns>
-    public override BaseSubCP ToPreviousSpace() => new SubZeroDimensional(Vertex.Parent!);
+    // /// <summary>
+    // /// Converts the vertex to the previous space.
+    // /// </summary>
+    // /// <returns>The converted vertex in the previous space.</returns>
+    // public override BaseSubCP ToPreviousSpace() => new SubZeroDimensional(Vertex.Parent!, Primal);
 
     /// <summary>
     /// Projects the vertex to the specified affine basis.

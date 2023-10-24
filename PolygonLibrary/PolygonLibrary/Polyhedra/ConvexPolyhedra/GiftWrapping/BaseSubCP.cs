@@ -5,7 +5,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -31,6 +32,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   , NonSimplex
   , TwoDimensional
   , OneDimensional
+  , ZeroDimensional
 
   }
 
@@ -57,10 +59,16 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public abstract SubCPType Type { get; }
 
+
+    /// <summary>
+    /// The set of vertices of the polytop.
+    /// </summary>
+    protected HashSet<SubPoint>? _vertices = null;
+
     /// <summary>
     /// Gets the set of vertices of the polytop.
     /// </summary>
-    public abstract HashSet<SubPoint> Vertices { get; }
+    public virtual HashSet<SubPoint> Vertices => _vertices ??= Faces.SelectMany(F => F.Vertices).ToHashSet();
 
     /// <summary>
     /// Returns set of original points.
@@ -68,14 +76,55 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public HashSet<Point> OriginalVertices => new HashSet<Point>(Vertices.Select(v => v.Original));
 
     /// <summary>
+    /// The set of faces pf the polytop.
+    /// </summary>
+    protected HashSet<BaseSubCP>? _faces = null;
+
+    /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.
     /// </summary>
-    public abstract HashSet<BaseSubCP>? Faces { get; }
+    public virtual HashSet<BaseSubCP> Faces => _faces;
 
     /// <summary>
     /// The outward normal of the (d-1)-dimensional polytop (face).
     /// </summary>
     public Vector? Normal { get; set; }
+
+
+    /// <summary>
+    /// The list represents the affine space of the polytop.
+    /// </summary>
+    protected List<Point>? _affine = null;
+
+
+    /// <summary>
+    /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
+    /// </summary>
+    public virtual List<Point> Affine {
+      get
+        {
+          if (_affine is null) {
+            BaseSubCP   subF   = Faces.First();
+            List<Point> affine = new List<Point>(subF.Affine) { new Point(subF.InnerPoint - InnerPoint) };
+            _affine = affine;
+
+            Console.WriteLine("Affine!");
+          }
+
+          return _affine;
+        }
+    }
+
+    /// <summary>
+    /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
+    /// </summary>
+    protected Point? _innerPoint = null;
+
+    // point(x) = 1/2*(point(y) + point(y')), where y,y' \in Faces, y != y'.
+    public virtual Point InnerPoint => _innerPoint ??= new Point
+                                         (
+                                          (new Vector(Faces.First().InnerPoint) + new Vector(Faces.Last().InnerPoint)) / Tools.Two
+                                         );
 
 
     /// <summary>
@@ -85,12 +134,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public abstract SubIncidenceInfo? FaceIncidence { get; }
 
 
-    /// <summary>
-    /// Converts current d-dimensional polytop in d-dimensional space to d-dimensional polytop in (d+1)-dimensional space.
-    /// Assumed that the corresponding parents of vertices are exist.
-    /// </summary>
-    /// <returns>The d-dimensional polytop in (d+1)-dimensional space.</returns>
-    public abstract BaseSubCP ToPreviousSpace();
+    // /// <summary>
+    // /// Converts current d-dimensional polytop in d-dimensional space to d-dimensional polytop in (d+1)-dimensional space.
+    // /// Assumed that the corresponding parents of vertices are exist.
+    // /// </summary>
+    // /// <returns>The d-dimensional polytop in (d+1)-dimensional space.</returns>
+    // public abstract BaseSubCP ToPreviousSpace();
 
 
     public abstract BaseSubCP ProjectTo(AffineBasis aBasis);

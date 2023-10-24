@@ -380,7 +380,7 @@ public partial class Geometry<TNum, TConv>
           prj.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
         }
 
-        BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop.ToPreviousSpace();
+        BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj).BuiltPolytop;
         buildedFace.Normal = n;
 
         HashSet<SubPoint> toRemove = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);

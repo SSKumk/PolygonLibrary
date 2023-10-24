@@ -7,12 +7,13 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents convex two-dimensional polygons in a two-dimensional space.
+  /// Represents convex two-dimensional polygon in a k-dimensional space.
   /// </summary>
   public class SubTwoDimensional : BaseSubCP {
 
@@ -23,23 +24,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
     /// <summary>
     /// Gets the type of the polygon. It is TwoDimensional.
+    /// If amount of vertices is 3 than it is Simplex.
     /// </summary>
     public override SubCPType Type => SubCPType.TwoDimensional;
 
-    /// <summary>
-    /// Gets the vertices of the polygon.
-    /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
 
     /// <summary>
     /// Gets the list of vertices of the polygon.
     /// </summary>
     public List<SubPoint> VerticesList { get; }
-
-    /// <summary>
-    /// Gets the faces of the polygon.
-    /// </summary>
-    public override HashSet<BaseSubCP>? Faces { get; }
 
     /// <summary>
     /// There are no such information needed: if necessary, the neighborhood of 2d faces is established trivially.
@@ -50,35 +43,33 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
-    /// <param name="Vs">The list of vertices of the polygon.</param>
-    public SubTwoDimensional(List<SubPoint> Vs) {
+    /// <param name="Vs">The list of vertices of the polygon given in clockwise or counter-clockwise order.</param>
+    public SubTwoDimensional(List<SubZeroDimensional> Vs) {
       Debug.Assert
         (
          Vs.Count > 2
        , $"GW-->SubTwoDimensional: At least three points must be used to construct a TwoDimensional! Found {Vs.Count}"
         );
 
-      List<SubPoint> vertices = new List<SubPoint>(Vs);
-      Vertices     = new HashSet<SubPoint>(vertices);
-      VerticesList = vertices;
+      VerticesList = Vs.Select(v => v.Vertex).ToList();
 
-      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
-
-      for (int i = 0; i < Vs.Count - 1; i++) {
-        faces.Add(new SubTwoDimensionalEdge(Vs[i], Vs[i + 1]));
+      List<SubZeroDimensional> ZDimVs = Vs;
+      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP> { new SubTwoDimensionalEdge(ZDimVs[^1].Primal!, ZDimVs[0].Primal!) };
+      for (int i = 0; i < ZDimVs.Count - 1; i++) {
+        faces.Add(new SubTwoDimensionalEdge(ZDimVs[i].Primal!, ZDimVs[i + 1].Primal!));
       }
-      Faces = faces;
+      _faces = faces;
     }
 
-    /// <summary>
-    /// Converts the polygon to the previous space.
-    /// </summary>
-    /// <returns>The converted polygon in the previous space.</returns>
-    public override BaseSubCP ToPreviousSpace() {
-      List<SubPoint> Vs = new List<SubPoint>(VerticesList.Select(v => v.Parent)!);
-
-      return new SubTwoDimensional(Vs);
-    }
+    // /// <summary>
+    // /// Converts the polygon to the previous space.
+    // /// </summary>
+    // /// <returns>The converted polygon in the previous space.</returns>
+    // public override BaseSubCP ToPreviousSpace() {
+    //   List<SubPoint> Vs = new List<SubPoint>(VerticesList.Select(v => v.Parent)!);
+    //
+    //   return new SubTwoDimensional(Vs);
+    // }
 
     /// <summary>
     /// Projects the polygon to the specified affine basis.
@@ -86,7 +77,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubTwoDimensional(VerticesList.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original)).ToList());
+      return new SubTwoDimensional
+        (
+         Vertices.Select
+                  (s => new SubZeroDimensional(new SubPoint(s.Vertex.ProjectTo(aBasis), s.Vertex, s.Vertex.Original), s.Primal))
+                 .ToList()
+        );
     }
 
   }

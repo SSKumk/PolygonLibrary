@@ -6,12 +6,13 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Non simplex 3 and higher dimension
+  /// The polytop that is not a simplex in k-dimensional space (3 and higher dimension).
   /// </summary>
   public class SubNonSimplex : BaseSubCP {
 
@@ -20,22 +21,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public override int PolytopDim { get; }
 
-
     /// <summary>
     /// Gets the type of the convex polytop.
     /// </summary>
-    public override SubCPType Type { get; }
-
-    /// <summary>
-    /// Gets the set of vertices of the polytop.
-    /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
-
-    /// <summary>
-    /// Gets the set of (d-1)-dimensional faces of the polytop.
-    /// </summary>
-    public override HashSet<BaseSubCP> Faces { get; }
-
+    public override SubCPType Type => SubCPType.NonSimplex;
 
     /// <summary>
     /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
@@ -44,38 +33,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public override SubIncidenceInfo? FaceIncidence { get; }
 
     /// <summary>
-    ///
-    /// </summary>
-    /// <returns></returns>
-    public override BaseSubCP ToPreviousSpace() {
-      //todo Поднимать не весь комплекс, а только d-1 и d-2
-      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
-      // SubIncidenceInfo      info  = new SubIncidenceInfo();
-
-      // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in FaceIncidence!) {
-      //   info.Add(pair.Key.ToPreviousSpace(), (pair.Value.F1.ToPreviousSpace(), pair.Value.F2.ToPreviousSpace()));
-      // }
-
-      return new SubNonSimplex(faces, FaceIncidence!);
-    }
-
-    public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      IEnumerable<SubPoint> Vs    = Vertices.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original));
-      HashSet<BaseSubCP>    faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
-
-      return new SubNonSimplex(faces, FaceIncidence!, new HashSet<SubPoint>(Vs));
-    }
-
-    /// <summary>
     /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces.
     /// </summary>
     /// <param name="faces">Faces to construct the convex polytop</param>
     /// <param name="incidence">Information about face incidence.</param>
-    /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
-    public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
+    /// <param name="Vs"></param>
+    public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubZeroDimensional>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
-      Type       = SubCPType.NonSimplex;
-      Faces      = faces;
+      _faces     = faces;
+      _vertices  = Vs; //todo возможно ли, что _vertices != null, а Vs = null и всё сломалось?
 
       // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
       //
@@ -83,16 +49,31 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       //   faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
       // }
 
-      if (Vs is null) {
-        Vs = new HashSet<SubPoint>();
-
-        foreach (BaseSubCP face in faces) {
-          Vs.UnionWith(face.Vertices);
-        }
-      }
-
       FaceIncidence = incidence;
-      Vertices      = Vs;
+    }
+
+    // /// <summary>
+    // /// Converts the polytop to the previous space.
+    // /// </summary>
+    // /// <returns>The converted polytop in the previous space.</returns>
+    // public override BaseSubCP ToPreviousSpace() {
+    //   HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
+    //   // SubIncidenceInfo      info  = new SubIncidenceInfo();
+    //
+    //   // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in FaceIncidence!) {
+    //   //   info.Add(pair.Key.ToPreviousSpace(), (pair.Value.F1.ToPreviousSpace(), pair.Value.F2.ToPreviousSpace()));
+    //   // }
+    //
+    //   return new SubNonSimplex(faces, FaceIncidence!);
+    // }
+
+
+    public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+      IEnumerable<SubZeroDimensional> Vs = Vertices.Select
+        (s => new SubZeroDimensional(new SubPoint(s.Vertex.ProjectTo(aBasis), s.Vertex, s.Vertex.Original), s.Primal));
+      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
+
+      return new SubNonSimplex(faces, FaceIncidence!, new HashSet<SubZeroDimensional>(Vs));
     }
 
   }
