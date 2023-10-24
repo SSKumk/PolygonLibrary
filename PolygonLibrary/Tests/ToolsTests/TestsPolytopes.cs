@@ -10,7 +10,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   public static readonly List<Point> Octahedron3D_list = GeneratePointsOnSphere_3D(2, 4, true, true);
-  public static readonly List<Point> Pyramid3D_list    = GeneratePointsOnSphere_3D(2, 4,true);
+  public static readonly List<Point> Pyramid3D_list    = GeneratePointsOnSphere_3D(2, 4, true);
+  public static readonly List<Point> Simplex3D_list    = Simplex_list(3);
   public static readonly List<Point> Cube3D_list       = Cube_list(3);
   public static readonly List<Point> Cube4D_list       = Cube_list(4);
 
@@ -26,7 +27,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
 
 #region Polytopes and Polytopes-list Fabrics
-  public static List<Point> Cube_list(int dim) => Cube(dim, out _);
+  public static List<Point> Cube_list(int    dim) => Cube(dim, out _);
+  public static List<Point> Simplex_list(int dim) => Simplex(dim, out _);
 
   public static ConvexPolytop Cube(int    dim) => new GiftWrapping(Cube_list(dim)).ConvexPolytop;
   public static ConvexPolytop Simplex(int dim) => new GiftWrapping(Simplex(dim, out _)).ConvexPolytop;
