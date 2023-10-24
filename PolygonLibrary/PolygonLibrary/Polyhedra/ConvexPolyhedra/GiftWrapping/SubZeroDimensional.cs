@@ -29,27 +29,27 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the the vertex.
     /// </summary>
-    public override HashSet<SubPoint> Vertices => new HashSet<SubPoint>() { _vertex };
+    public override HashSet<SubPoint> Vertices => _vertices ??= new HashSet<SubPoint> { Vertex };
 
     /// <summary>
     /// The vertex expressed in k-space.
     /// </summary>
-    public readonly SubPoint _vertex;
+    public SubPoint Vertex { get; }
 
     /// <summary>
     /// The inner point of a vertex is the vertex itself.
     /// </summary>
-    public override Point InnerPoint => new Point(_vertex);
+    public override Point InnerPoint => _innerPoint ??= new Point(Vertex);
 
     /// <summary>
     /// The affine space of a vertex is the vertex itself.
     /// </summary>
-    public override List<Point> Affine => new List<Point>(){_vertex};
+    public override List<Point> Affine => _affine ??= new List<Point> { Vertex };
 
     /// <summary>
     /// Gets the the vertex. (By conversation).
     /// </summary>
-    public override HashSet<BaseSubCP> Faces => new HashSet<BaseSubCP>(){new SubZeroDimensional(_vertex)};
+    public override HashSet<BaseSubCP> Faces => _faces ??= new HashSet<BaseSubCP> { new SubZeroDimensional(Vertex) };
 
     /// <summary>
     /// There are no FaceIncidence of the 0-dimensional vertex.
@@ -60,15 +60,13 @@ public partial class Geometry<TNum, TConv>
     /// Initializes a new instance of the <see cref="SubZeroDimensional"/> class.
     /// </summary>
     /// <param name="vertex">The vertex.</param>
-    public SubZeroDimensional(SubPoint vertex) {
-      _vertex   = vertex;
-    }
+    public SubZeroDimensional(SubPoint vertex) { Vertex = vertex; }
 
     /// <summary>
     /// Converts the vertex to the previous space.
     /// </summary>
     /// <returns>The converted vertex in the previous space.</returns>
-    public override BaseSubCP ToPreviousSpace() => new SubZeroDimensional(_vertex.Parent!);
+    public override BaseSubCP ToPreviousSpace() => new SubZeroDimensional(Vertex.Parent!);
 
     /// <summary>
     /// Projects the vertex to the specified affine basis.
@@ -76,7 +74,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected vertex.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) => new SubZeroDimensional
-      (new SubPoint(_vertex.ProjectTo(aBasis), _vertex, _vertex.Original));
+      (new SubPoint(Vertex.ProjectTo(aBasis), Vertex, Vertex.Original));
 
   }
 
