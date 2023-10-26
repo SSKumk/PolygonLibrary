@@ -24,7 +24,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the type of the convex polytop.
     /// </summary>
-    public override SubCPType Type { get; }
+    public override SubCPType Type => SubCPType.Simplex;
 
     /// <summary>
     /// Gets the set of vertices of the simplex.
@@ -89,7 +89,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
 
       PolytopDim    = simplex.Count() - 1;
-      Type          = SubCPType.Simplex;
       Vertices      = new HashSet<SubPoint>(simplex);
       _faces        = faces;
       FaceIncidence = incidence;

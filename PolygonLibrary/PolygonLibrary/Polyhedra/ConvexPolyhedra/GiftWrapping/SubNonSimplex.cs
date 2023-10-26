@@ -11,7 +11,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Non simplex 3 and higher dimension
+  /// The polytop that is not a simplex in d-dimensional space (3 and higher dimension).
   /// </summary>
   public class SubNonSimplex : BaseSubCP {
 
@@ -24,7 +24,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the type of the convex polytop.
     /// </summary>
-    public override SubCPType Type { get; }
+    public override SubCPType Type => SubCPType.NonSimplex;
 
     /// <summary>
     /// Gets the set of vertices of the polytop.
@@ -74,7 +74,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
     public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
-      Type       = SubCPType.NonSimplex;
       Faces      = faces;
 
       // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();

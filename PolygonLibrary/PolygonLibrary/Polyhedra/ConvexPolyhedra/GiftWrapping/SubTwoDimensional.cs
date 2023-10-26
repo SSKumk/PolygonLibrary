@@ -12,7 +12,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents convex two-dimensional polygons in a two-dimensional space.
+  /// Represents convex two-dimensional polygon in a two-dimensional space.
   /// </summary>
   public class SubTwoDimensional : BaseSubCP {
 
@@ -50,7 +50,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
-    /// <param name="Vs">The list of vertices of the polygon.</param>
+    /// <param name="Vs">The list of vertices of the polygon given in clockwise or counter-clockwise order.</param>
     public SubTwoDimensional(List<SubPoint> Vs) {
       Debug.Assert
         (
