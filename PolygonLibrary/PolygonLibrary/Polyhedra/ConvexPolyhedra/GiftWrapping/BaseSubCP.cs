@@ -21,9 +21,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   public class SubIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
   /// <summary>
-  /// <para><b>Simplex</b> - the polytop is a simplex</para>
-  /// <b>NonSimplex</b> - the polytop is a complex structure
-  /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon</para>
+  /// <para><b>Simplex</b> - the polytop is a simplex.</para>
+  /// <b>NonSimplex</b> - the polytop is a complex structure.
+  /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
+  /// <b>OneDimensional</b> - the polytop is a 1D-segment.
   /// </summary>
   public enum SubCPType {
 
@@ -50,10 +51,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public abstract int PolytopDim { get; }
 
     /// <summary>
-    /// Gets the type of the convex polytop.
-    /// <para><b>Simplex</b> - the polytop is a simplex</para>
-    /// <b>NonSimplex</b> - the polytop is a complex structure
-    /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon</para>
+    /// <para><b>Simplex</b> - the polytop is a simplex.</para>
+    /// <b>NonSimplex</b> - the polytop is a complex structure.
+    /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
+    /// <b>OneDimensional</b> - the polytop is a 1D-segment.
     /// </summary>
     public abstract SubCPType Type { get; }
 

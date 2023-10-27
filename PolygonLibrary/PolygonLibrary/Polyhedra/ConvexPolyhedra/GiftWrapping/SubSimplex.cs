@@ -14,7 +14,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// Represents a simplex, which is a convex polytop with (d + 1) vertices in d-dimensional space.
   /// </summary>
-  internal class SubSimplex : BaseSubCP {
+  public class SubSimplex : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the simplex.
@@ -49,12 +49,29 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
             foreach (SubPoint vertex in Vertices) {
               SubPoint[] faceVert = Vertices.Where(v => !v.Equals(vertex)).ToArray();
 
-              if (PolytopDim == 2) {
-                BaseSubCP edge = new SubTwoDimensionalEdge(faceVert[0], faceVert[1]);
-                _faces.Add(edge);
-              } else {
-                BaseSubCP simplex = new SubSimplex(faceVert);
-                _faces.Add(simplex);
+              switch (PolytopDim) {
+                case 2: _faces.Add(new SubTwoDimensionalEdge(faceVert[0], faceVert[1]));
+
+                  break;
+                case 3: {
+                  AffineBasis plane = new AffineBasis(faceVert);
+//todo А надо ли? Если да, то как правильно задать обход, ведь в пространстве высокой размерности уже как-то не так?
+
+                  SubPoint2D       fst   = new SubPoint2D(faceVert[0].ProjectTo(plane));
+                  SubPoint2D       snd   = new SubPoint2D(faceVert[1].ProjectTo(plane));
+                  SubPoint2D       frd   = new SubPoint2D(faceVert[2].ProjectTo(plane));
+                  _faces.Add
+                    (
+                     Convexification.IsLeft(fst,snd,frd)
+                       ? new SubTwoDimensional(new List<SubPoint>() { faceVert[0], faceVert[1], faceVert[2] })
+                       : new SubTwoDimensional(new List<SubPoint>() { faceVert[0], faceVert[2], faceVert[1] })
+                    );
+
+                  break;
+                }
+                default: _faces.Add(new SubSimplex(faceVert));
+
+                  break;
               }
             }
           }

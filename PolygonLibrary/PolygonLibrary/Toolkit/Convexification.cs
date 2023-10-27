@@ -275,7 +275,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     ///<param name="p2">The second point, representing the end of the line.</param>
     ///<param name="p3">The third point, which is checked for its position relative to the line.</param>
     ///<returns><c>True</c> if point p3 is to the left of the line formed by points p1 and p2, <c>false</c> otherwise.</returns>
-    private static bool IsLeft(Point2D p1, Point2D p2, Point2D p3) {
+    public static bool IsLeft(Point2D p1, Point2D p2, Point2D p3) {
       return Tools.GT((p2 - p1).Normalize() ^ (p3 - p1).Normalize());
     }
 #endregion

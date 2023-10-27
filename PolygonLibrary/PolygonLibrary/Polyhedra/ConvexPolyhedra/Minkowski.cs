@@ -34,7 +34,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     GiftWrapping gw = new GiftWrapping(toCH);
-    return gw.ConvexPolytop;
+    return gw.CPolytop;
   }
 
 }

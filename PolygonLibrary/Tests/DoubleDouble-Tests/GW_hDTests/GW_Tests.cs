@@ -765,7 +765,7 @@ public class GW_Tests {
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = new GiftWrapping(S).ConvexPolytop;
+      P = new GiftWrapping(S).CPolytop;
       Debug.Assert(P is not null, nameof(P) + " != null");
     }
     catch (Exception e) {

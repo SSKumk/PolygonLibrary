@@ -12,6 +12,8 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  //todo Сделать статические методы (вершины, многогранник, комплекс, совокупность всех гиперграней заданной размерности)
+
   /// <summary>
   /// The GiftWrapping class represents a gift wrapping algorithm for convex polytopes.
   /// </summary>
@@ -32,34 +34,84 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private ConvexPolytop? _polytop;
 
-    public ConvexPolytop ConvexPolytop => _polytop ??= GetPolytop();
+    /// <summary>
+    /// Gets the full dimensional polytop.
+    /// </summary>
+    public ConvexPolytop CPolytop => _polytop ??= ConvexPolytop.ConstructFromSubCP(BuiltPolytop);
+
+    public static ConvexPolytop WrapPolytop(IEnumerable<Point> S) {
+      GiftWrapping P = new GiftWrapping(S);
+
+      return P.CPolytop;
+    }
+    // /// <summary>
+    // /// Face lattice structure:
+    // /// The indices of the list are the dimensional of the polytop corresponding to the node of the face lattice.
+    // /// Each element in the list is a dictionary:
+    // /// where the key is the hash of the associated polytop and the value is the polytop which belongs to the node of the face lattice.
+    // /// </summary>
+    // private Dictionary<int, FaceLatticeNode>[]? _faceLattice = null;
+    //
+    // /// <summary>
+    // /// Gets the face lattice.
+    // /// </summary>
+    // public Dictionary<int, FaceLatticeNode>[] FaceLattice => _faceLattice ??= ConstructFaceLattice();
+    //
+    // private Dictionary<int, FaceLatticeNode>[] ConstructFaceLattice() {
+    //   int Dim = BuiltPolytop.PolytopDim;
+    //
+    //   Dictionary<int, FaceLatticeNode>[] faceLattice = new Dictionary<int, FaceLatticeNode>[BuiltPolytop.PolytopDim + 1];
+    //
+    //   // Заполнили самый старший узел.
+    //   FaceLatticeNode firstNode = new FaceLatticeNode(CPolytop);
+    //   faceLattice[Dim].Add(CPolytop.GetHashCode(), firstNode);
+    //
+    //
+    //   for (int d = Dim - 1; d > -1; d--) {
+    //     foreach (BaseSubCP F in BuiltPolytop.Faces!) {
+    //       ConvexPolytop   P    = GetPolytop(F);
+    //       FaceLatticeNode node = new FaceLatticeNode(P);
+    //
+    //       faceLattice[d].Add(P.GetHashCode(),node);
+    //     }
+    //     foreach (KeyValuePair<int,FaceLatticeNode> prevNode in faceLattice[d+1]) {
+    //       foreach (Face F in prevNode.Value.Polytop.Faces) {
+    //         faceLattice[d][F.GetHashCode()]
+    //       }
+    //       prevNode.Value.Sub.Add(node);
+    //       node.Super.Add(prevNode.Value);
+    //
+    //     }
+    //   }
+    //
+    //   return faceLattice;
+    // }
 
     /// <summary>
     /// The vertices of the polytope.
     /// </summary>
-    public HashSet<Point> Vertices => ConvexPolytop.Vertices;
-    // public HashSet<Point> Vertices => BuiltPolytop.OriginalVertices;
+    public HashSet<Point> Vertices => BuiltPolytop.OriginalVertices;
 
 
-    /// <summary>
-    /// Polytop as intersection of negative half-space of hyperplanes.
-    /// </summary>
-    private List<HyperPlane>? _HRepr;
-
-    public List<HyperPlane> HRepresentation {
-      get
-        {
-          if (_HRepr is null) {
-            List<HyperPlane> res = new List<HyperPlane>();
-            foreach (Face facet in ConvexPolytop.Faces) {
-              res.Add(new HyperPlane(facet.Vertices.First(), facet.Normal));
-            }
-            _HRepr = res;
-          }
-
-          return _HRepr;
-        }
-    }
+    // /// <summary>
+    // /// Polytop as intersection of negative half-space of hyperplanes.
+    // /// </summary>
+    // private List<HyperPlane>? _HRepr;
+    //
+    // public List<HyperPlane> HRepresentation {
+    //   get
+    //     {
+    //       if (_HRepr is null) {
+    //         List<HyperPlane> res = new List<HyperPlane>();
+    //         foreach (ConvexPolytop face in CPolytop.Faces) {
+    //           res.Add(new HyperPlane(face.Vertices.First(), face.Normal));
+    //         }
+    //         _HRepr = res;
+    //       }
+    //
+    //       return _HRepr;
+    //     }
+    // }
 
     /// <summary>
     /// Polytop as list of its vertices.
@@ -86,48 +138,66 @@ public partial class Geometry<TNum, TConv>
       BuiltPolytop = x.BuiltPolytop;
     }
 
-    /// <summary>
-    /// Builds the convex polytop using 'builtPolytop' property.
-    /// </summary>
-    /// <returns>The convex polytop.</returns>
-    private ConvexPolytop GetPolytop() {
-      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
-      HashSet<Face> Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
-      HashSet<Edge> Es = new HashSet<Edge>();
 
-      foreach (BaseSubCP face in BuiltPolytop.Faces!) {
-        Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
-      }
-
-      ConvexPolyhedronType type;
-
-      switch (BuiltPolytop.Type) {
-        case SubCPType.Simplex:
-          type = ConvexPolyhedronType.Simplex;
-
-          break;
-        case SubCPType.NonSimplex:
-          type = ConvexPolyhedronType.NonSimplex;
-
-          break;
-
-        case SubCPType.TwoDimensional:
-        case SubCPType.OneDimensional:
-        default:
-          throw new NotImplementedException("Can not build ConvexPolytop from One or Two dimensional!");
-      }
-
-      return new ConvexPolytop
-        (
-         BuiltPolytop.OriginalVertices
-       , BuiltPolytop.PolytopDim
-       , Fs
-       , Es
-       , type
-       , new IncidenceInfo(BuiltPolytop.FaceIncidence!)
-       , new FansInfo(BuiltPolytop.Faces!)
-        );
-    }
+    // /// <summary>
+    // /// Builds the convex polytop using 'builtPolytop' property.
+    // /// </summary>
+    // /// <returns>The convex polytop.</returns>
+    // private static ConvexPolytop GetPolytop(BaseSubCP BuiltP) {
+    //   Debug.Assert(BuiltP is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
+    //   HashSet<Face> Fs = new HashSet<Face>(BuiltP.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
+    //   HashSet<Edge> Es = new HashSet<Edge>();
+    //
+    //   foreach (BaseSubCP face in BuiltP.Faces!) {
+    //     Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
+    //   }
+    //
+    //   switch (BuiltP.Type) {
+    //     case SubCPType.Simplex:
+    //       return new Simplex
+    //         (
+    //          BuiltP.OriginalVertices
+    //        , BuiltP.PolytopDim
+    //        , Fs
+    //        , Es
+    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
+    //        , new FansInfo(BuiltP.Faces!)
+    //         );
+    //
+    //     case SubCPType.NonSimplex:
+    //       return new Polytop
+    //         (
+    //          BuiltP.OriginalVertices
+    //        , BuiltP.PolytopDim
+    //        , Fs
+    //        , Es
+    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
+    //        , new FansInfo(BuiltP.Faces!)
+    //         );
+    //
+    //     case SubCPType.TwoDimensional:
+    //       return new Polygon2D
+    //         (
+    //          BuiltP.OriginalVertices
+    //        , BuiltP.PolytopDim
+    //        , Fs
+    //        , Es
+    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
+    //        , new FansInfo(BuiltP.Faces!)
+    //         );
+    //     case SubCPType.OneDimensional:
+    //       return new PolytopSegment
+    //         (
+    //          BuiltP.OriginalVertices
+    //        , BuiltP.PolytopDim
+    //        , Fs
+    //        , Es
+    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
+    //        , new FansInfo(BuiltP.Faces!)
+    //         );
+    //     default: throw new ArgumentOutOfRangeException();
+    //   }
+    // }
 
 
     /// <summary>
@@ -169,12 +239,10 @@ public partial class Geometry<TNum, TConv>
       private BaseSubCP GW() {
         if (spaceDim == 2) {
           List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
-
-          if (convexPolygon2D.Count == 3) {
-            return new SubSimplex(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
-          }
-
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
+        }
+        if (S.Count == spaceDim + 1) {
+          return new SubSimplex(S);
         }
 
 
@@ -244,7 +312,8 @@ public partial class Geometry<TNum, TConv>
         foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
           incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
         }
-        if (buildFaces.Count == spaceDim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) {
+        // if (buildFaces.Count == spaceDim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) { //todo нужна ли вторая часть???
+        if (buildFaces.Count == spaceDim + 1) {
           return new SubSimplex(buildPoints, buildFaces, incidence);
         }
 
@@ -368,12 +437,12 @@ public partial class Geometry<TNum, TConv>
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
-        if (inPlane.Count == FaceBasis.VecDim) {
-          BaseSubCP buildedSimplex = new SubSimplex(inPlane.Select(p => p.Parent!));
-          buildedSimplex.Normal = n;
-
-          return buildedSimplex;
-        }
+        // if (inPlane.Count == FaceBasis.VecDim) {
+        //   BaseSubCP buildedSimplex = new SubSimplex(inPlane.Select(p => p.Parent!));
+        //   buildedSimplex.Normal = n;
+        //
+        //   return buildedSimplex;
+        // }
 
         BaseSubCP? prj = initEdge?.ProjectTo(FaceBasis);
         if (prj is not null) { //
