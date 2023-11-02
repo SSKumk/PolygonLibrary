@@ -39,53 +39,55 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public ConvexPolytop CPolytop => _polytop ??= ConvexPolytop.ConstructFromSubCP(BuiltPolytop);
 
-    public static ConvexPolytop WrapPolytop(IEnumerable<Point> S) {
-      GiftWrapping P = new GiftWrapping(S);
+    public static ConvexPolytop WrapPolytop(IEnumerable<Point> S) => new GiftWrapping(S).CPolytop;
 
-      return P.CPolytop;
+    public static FaceLattice WrapFaceLattice(IEnumerable<Point> S) => new GiftWrapping(S).FaceLattice;
+
+    private FaceLattice? _faceLattice;
+
+    public FaceLattice FaceLattice => _faceLattice ??= ConstructFL();
+
+    private FaceLattice ConstructFL() {
+      Dictionary<int, FaceLatticeNode> FL = new Dictionary<int, FaceLatticeNode>();
+      FaceLatticeNode top = ConstructFLN(BuiltPolytop, ref FL);
+      return new FaceLattice(BuiltPolytop.OriginalVertices, top);
     }
-    // /// <summary>
-    // /// Face lattice structure:
-    // /// The indices of the list are the dimensional of the polytop corresponding to the node of the face lattice.
-    // /// Each element in the list is a dictionary:
-    // /// where the key is the hash of the associated polytop and the value is the polytop which belongs to the node of the face lattice.
-    // /// </summary>
-    // private Dictionary<int, FaceLatticeNode>[]? _faceLattice = null;
-    //
-    // /// <summary>
-    // /// Gets the face lattice.
-    // /// </summary>
-    // public Dictionary<int, FaceLatticeNode>[] FaceLattice => _faceLattice ??= ConstructFaceLattice();
-    //
-    // private Dictionary<int, FaceLatticeNode>[] ConstructFaceLattice() {
-    //   int Dim = BuiltPolytop.PolytopDim;
-    //
-    //   Dictionary<int, FaceLatticeNode>[] faceLattice = new Dictionary<int, FaceLatticeNode>[BuiltPolytop.PolytopDim + 1];
-    //
-    //   // Заполнили самый старший узел.
-    //   FaceLatticeNode firstNode = new FaceLatticeNode(CPolytop);
-    //   faceLattice[Dim].Add(CPolytop.GetHashCode(), firstNode);
-    //
-    //
-    //   for (int d = Dim - 1; d > -1; d--) {
-    //     foreach (BaseSubCP F in BuiltPolytop.Faces!) {
-    //       ConvexPolytop   P    = GetPolytop(F);
-    //       FaceLatticeNode node = new FaceLatticeNode(P);
-    //
-    //       faceLattice[d].Add(P.GetHashCode(),node);
-    //     }
-    //     foreach (KeyValuePair<int,FaceLatticeNode> prevNode in faceLattice[d+1]) {
-    //       foreach (Face F in prevNode.Value.Polytop.Faces) {
-    //         faceLattice[d][F.GetHashCode()]
-    //       }
-    //       prevNode.Value.Sub.Add(node);
-    //       node.Super.Add(prevNode.Value);
-    //
-    //     }
-    //   }
-    //
-    //   return faceLattice;
-    // }
+
+    private FaceLatticeNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FaceLatticeNode> FL) {
+      if (BSP is SubTwoDimensionalEdge) {
+        FaceLatticeNode seg = new FaceLatticeNode(1, BSP.OriginalVertices);
+        foreach (Point p in seg.Vertices) {
+          if (!FL.ContainsKey(p.GetHashCode())) {
+            FL.Add(p.GetHashCode(), new FaceLatticeNode(0, new HashSet<Point> { p }, p, new List<Point> { p }));
+          }
+          FaceLatticeNode vertex = FL[p.GetHashCode()];
+          seg.AddSub(vertex);
+          vertex.AddSuper(seg);
+        }
+        _ = seg.InnerPoint; // вычислили внутреннюю точку
+        _ = seg.Affine; // вычислили аффинный базис
+        FL.Add(seg.GetHashCode(), seg);
+
+        return seg;
+      }
+      FaceLatticeNode node = new FaceLatticeNode(BSP.PolytopDim, BSP.OriginalVertices);
+      foreach (BaseSubCP subF in BSP.Faces!) {
+        //todo Подумать, как правильно hash сделать у FLN, так чтобы в словаре хорошо ключи искались:
+        int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
+        if (!FL.ContainsKey(hash)) {
+          ConstructFLN(subF, ref FL);
+        }
+        FaceLatticeNode subNode = FL[hash];
+        node.AddSub(subNode);
+        subNode.AddSuper(node);
+      }
+
+      _ = node.InnerPoint; // вычислили внутреннюю точку
+      _ = node.Affine; // вычислили аффинный базис
+      FL.Add(node.GetHashCode(), node);
+
+      return node;
+    }
 
     /// <summary>
     /// The vertices of the polytope.
@@ -119,6 +121,7 @@ public partial class Geometry<TNum, TConv>
     private List<Point>? _VRepr;
 
     public List<Point> VerticesList => _VRepr ??= BuiltPolytop.OriginalVertices.ToList();
+    public VPolytop VPolytop { get; init; }
 
 
     /// <summary>
@@ -136,6 +139,7 @@ public partial class Geometry<TNum, TConv>
 
       GiftWrappingMain x = new GiftWrappingMain(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
       BuiltPolytop = x.BuiltPolytop;
+      VPolytop = new VPolytop(Vertices);
     }
 
 
@@ -205,33 +209,33 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private sealed class GiftWrappingMain {
 
-#region Internal fields for GW algorithm
+      #region Internal fields for GW algorithm
       private readonly HashSet<SubPoint> S;
-      private readonly int               spaceDim;
-      private          BaseSubCP?        initFace;
+      private readonly int spaceDim;
+      private BaseSubCP? initFace;
 
-      private readonly HashSet<BaseSubCP> buildFaces     = new HashSet<BaseSubCP>();
-      private readonly HashSet<SubPoint>  buildPoints    = new HashSet<SubPoint>();
-      private readonly TempIncidenceInfo  buildIncidence = new TempIncidenceInfo();
+      private readonly HashSet<BaseSubCP> buildFaces = new HashSet<BaseSubCP>();
+      private readonly HashSet<SubPoint> buildPoints = new HashSet<SubPoint>();
+      private readonly TempIncidenceInfo buildIncidence = new TempIncidenceInfo();
 
       /// <summary>
       /// The resulted d-polytop in d-space. It holds information about face incidence, vertex -> face incidence,
       /// about (d-1)-faces, vertices and information about all k-faces, 0 &lt; k &lt; d - 1.
       /// </summary>
       public readonly BaseSubCP BuiltPolytop;
-#endregion
+      #endregion
 
-#region Constructors
+      #region Constructors
       public GiftWrappingMain(HashSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
-        S             = Swarm;
-        spaceDim      = S.First().Dim;
+        S = Swarm;
+        spaceDim = S.First().Dim;
         this.initFace = initFace;
 
         BuiltPolytop = GW();
       }
-#endregion
+      #endregion
 
-#region Main functions
+      #region Main functions
       /// <summary>
       /// Executes the gift wrapping algorithm.
       /// </summary>
@@ -250,7 +254,7 @@ public partial class Geometry<TNum, TConv>
         buildFaces.Add(initFace);
         buildPoints.UnionWith(initFace.Vertices);
 
-#region Debug
+        #region Debug
         Debug.Assert(initFace is not null, $"GiftWrapping.GW (space dim = {spaceDim}): initial facet is null!");
         Debug.Assert(initFace.Normal is not null, $"GiftWrapping.GW (space dim = {spaceDim}): initial facet is null.");
         Debug.Assert(!initFace.Normal.IsZero, $"GiftWrapping.GW (space dim = {spaceDim}): initial facet has zero length.");
@@ -274,7 +278,7 @@ public partial class Geometry<TNum, TConv>
            initFace.Faces!.All(F => F.PolytopDim == spaceDim - 2)
          , $"GiftWrapping.GW (space dim = {spaceDim}): The dimension of all edges of initFace must equal to d-2!"
           );
-#endregion
+        #endregion
 
         Queue<BaseSubCP> toTreat = new Queue<BaseSubCP>();
         toTreat.Enqueue(initFace);
@@ -331,17 +335,17 @@ public partial class Geometry<TNum, TConv>
       private AffineBasis BuildInitialPlane(out Vector normal) {
         Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
-        SubPoint    origin = S.Min(p => p)!;
+        SubPoint origin = S.Min(p => p)!;
         AffineBasis FinalV = new AffineBasis(origin);
 
         Vector n = -Vector.CreateOrth(spaceDim, 1);
 
         while (FinalV.SpaceDim < spaceDim - 1) {
-          TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
-          SubPoint? sExtr    = null;
+          TNum maxAngle = -Tools.Six; // "Большое отрицательное число."
+          SubPoint? sExtr = null;
 
-          Vector   e;
-          int      i      = 0;
+          Vector e;
+          int i = 0;
           Vector[] nBasis = new[] { n };
           do {
             i++;
@@ -359,8 +363,8 @@ public partial class Geometry<TNum, TConv>
 
               if (Tools.GT(angle, maxAngle)) {
                 maxAngle = angle;
-                sExtr    = s;
-                r        = u.Normalize();
+                sExtr = s;
+                r = u.Normalize();
               }
             }
           }
@@ -481,24 +485,24 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
-        SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
+        SubPoint f = face.Vertices.First(p => !edge.Vertices.Contains(p));
+        Vector v = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
-        Vector?   r        = null;
-        SubPoint? sStar    = null;
-        TNum      maxAngle = -Tools.Six; // Something small
+        Vector? r = null;
+        SubPoint? sStar = null;
+        TNum maxAngle = -Tools.Six; // Something small
 
         foreach (SubPoint s in S) {
           Vector so = s - edgeBasis.Origin;
-          Vector u  = (so * v) * v + (so * face.Normal) * face.Normal;
+          Vector u = (so * v) * v + (so * face.Normal) * face.Normal;
 
           if (!u.IsZero) {
             TNum angle = Vector.Angle(v, u);
 
             if (Tools.GT(angle, maxAngle)) {
               maxAngle = angle;
-              r        = u.Normalize();
-              sStar    = s;
+              r = u.Normalize();
+              sStar = s;
             }
           }
         }
@@ -526,9 +530,9 @@ public partial class Geometry<TNum, TConv>
 
         return BuildFace(newF_aBasis, n, r, edge);
       }
-#endregion
+      #endregion
 
-#region Auxiliary functions
+      #region Auxiliary functions
       /// <summary>
       /// Calculates the outer normal vector of a given set of points.
       /// </summary>
@@ -536,7 +540,7 @@ public partial class Geometry<TNum, TConv>
       /// <returns>The outer normal vector.</returns>
       private Vector CalcOuterNormal(AffineBasis planeBasis) {
         HyperPlane hp = new HyperPlane(planeBasis);
-        Vector     n  = hp.Normal;
+        Vector n = hp.Normal;
         OrientNormal(ref n, planeBasis.Origin);
 
 #if DEBUG
@@ -569,7 +573,7 @@ public partial class Geometry<TNum, TConv>
           }
         }
       }
-#endregion
+      #endregion
 
     }
 

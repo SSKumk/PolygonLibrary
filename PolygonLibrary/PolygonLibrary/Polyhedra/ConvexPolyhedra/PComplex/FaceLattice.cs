@@ -17,57 +17,118 @@ public partial class Geometry<TNum, TConv>
 
     public HashSet<Point> Points { get; init; }
 
-    public ConvexPolytop Maximum { get; init; }
+    // public List<FaceLatticeNode> Vs {get; init;}
+
+    public FaceLatticeNode Maximum { get; init; }
 
 
-    public FaceLattice(HashSet<Point> Ps, ConvexPolytop Max) {
-      Points  = Ps;
+    public FaceLattice(HashSet<Point> Ps, FaceLatticeNode Max) {
+      Points = Ps;
       Maximum = Max;
     }
 
 
   }
 
-  // /// <summary>
-  // /// The node of the face lattice.
-  // /// </summary>
-  // public class FaceLatticeNode {
-  //
-  //   /// <summary>
-  //   /// The dimensional of the associated polytop.
-  //   /// </summary>
-  //   public int Dim => Polytop.PolytopDim;
-  //
-  //   /// <summary>
-  //   /// Reference to associated polytop to this node.
-  //   /// </summary>
-  //   public ConvexPolytop Polytop { get; } //todo Может ли быть null? если нужен узел с пустым многогранником, то как его представлять?
-  //
-  //   /// <summary>
-  //   ///
-  //   /// </summary>
-  //   public HashSet<Point> Vertices => Polytop.Vertices;
-  //
-  //   /// <summary>
-  //   /// The list of the super-nodes, which Dim = this.Dim + 1.
-  //   /// </summary>
-  //   public List<FaceLatticeNode> Super { get; set; }
-  //
-  //   /// <summary>
-  //   /// The list of the sub-nodes, which Dim = this.Dim - 1.
-  //   /// </summary>
-  //   public List<FaceLatticeNode> Sub { get; set; }
-  //
-  //   /// <summary>
-  //   /// Construct the node of the face lattice.
-  //   /// </summary>
-  //   /// <param name="P">The associated polytop.</param>
-  //   public FaceLatticeNode(ConvexPolytop P) {
-  //     Polytop = P;
-  //     Sub     = new List<FaceLatticeNode>();
-  //     Super   = new List<FaceLatticeNode>();
-  //   }
-  //
-  // }
+  /// <summary>
+  /// The node of the face lattice.
+  /// </summary>
+  public class FaceLatticeNode {
+
+    /// <summary>
+    /// The dimensional of the associated polytop.
+    /// </summary>
+    public int Dim { get; }
+
+    /// <summary>
+    /// Reference to associated polytop to this node.
+    /// </summary>
+    public VPolytop Polytop { get; init; }
+
+    /// <summary>
+    /// The vertices of the polytop.
+    /// </summary>
+    public HashSet<Point> Vertices => Polytop.Vertices;
+
+    /// <summary>
+    /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
+    /// </summary>
+    private Point? _innerPoint = null;
+
+    // point(x) = 1/2*(point(y) + point(y')), where y,y' \in Faces, y != y'.
+    public Point InnerPoint => _innerPoint
+     ??= new Point
+         (
+          (new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two
+         );
+
+
+    /// <summary>
+    /// The list represents the affine space of the polytop.
+    /// </summary>
+    private List<Point>? _affine = null;
+
+
+    /// <summary>
+    /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
+    /// </summary>
+    public virtual List<Point> Affine {
+      get
+      {
+        if (_affine is null) {
+          FaceLatticeNode subF = Sub!.First();
+          List<Point> affine = new List<Point>(subF.Affine) { new Point(subF.InnerPoint - InnerPoint) };
+          _affine = affine;
+
+          // Console.WriteLine("Affine!");
+        }
+
+        return _affine;
+      }
+    }
+
+    /// <summary>
+    /// The list of the super-nodes, which Dim = this.Dim + 1.
+    /// </summary>
+    public List<FaceLatticeNode>? Super { get; protected set; }
+
+    /// <summary>
+    /// The list of the sub-nodes, which Dim = this.Dim - 1.
+    /// </summary>
+    public List<FaceLatticeNode>? Sub { get; protected set; }
+
+    public void AddSub(FaceLatticeNode node) {
+      Sub ??= new List<FaceLatticeNode>();
+      Sub.Add(node);
+    }
+
+    public void AddSuper(FaceLatticeNode node) {
+      Super ??= new List<FaceLatticeNode>();
+      Super.Add(node);
+    }
+
+    public FaceLatticeNode(int dim, VPolytop VP) {
+      Dim = dim;
+      Polytop = VP;
+    }
+
+    public FaceLatticeNode(int dim, HashSet<Point> Vs) {
+      Dim = dim;
+      Polytop = new VPolytop(Vs);
+    }
+
+    public FaceLatticeNode(int dim, HashSet<Point> Vs, Point innerPoint, List<Point> affine) : this(dim, Vs) {
+      _innerPoint = innerPoint;
+      _affine = affine;
+    }
+
+    public override int GetHashCode() {
+      return Polytop.GetHashCode();
+    }
+
+
+    //todo Какой GetHashCode выбрать для FaceLatticeNode?
+
+  }
 
 }

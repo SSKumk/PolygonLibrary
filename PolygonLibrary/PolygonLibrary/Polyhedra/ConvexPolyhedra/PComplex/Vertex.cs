@@ -19,10 +19,10 @@ public partial class Geometry<TNum, TConv>
     public Point Point => Vertices.First();
 
     public Vertex(Point v) {
-      Faces    = null;
-      Edges    = null;
+      Faces = null;
+      Edges = null;
       Vertices = new HashSet<Point>() { v };
-      Super    = null;
+      Super = null;
     }
 
     public override string ToString() { return Vertices.First().ToString(); }

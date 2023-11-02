@@ -28,14 +28,13 @@ public class Sandbox {
     GiftWrapping P = new GiftWrapping(S);
 
   }
-[Test]
+  [Test]
   public void ConvexPolytopTest() {
     // Рой
-    var          p01 = new Point(new double[] { 0, 0, 0 });
-    var          p02 = new Point(new double[] { 1, 0, 0 });
-    var          p03 = new Point(new double[] { 0, 1, 0 });
-    var          p04 = new Point(new double[] { 0, 0, 1 });
-
+    var p01 = new Point(new double[] { 0, 0, 0 });
+    var p02 = new Point(new double[] { 1, 0, 0 });
+    var p03 = new Point(new double[] { 0, 1, 0 });
+    var p04 = new Point(new double[] { 0, 0, 1 });
 
 
     // Изначальные SubPoint-ы
@@ -49,41 +48,35 @@ public class Sandbox {
     var p2 = new Point(new Point2D(1, 0));
     var p3 = new Point(new Point2D(0, 1));
 
-    // ConvexPolytop trl = GiftWrapping.WrapPolytop(new Point[] { p1, p2, p3 });
+    // FaceLattice trl = GiftWrapping.WrapFaceLattice(new Point[] { p1, p2, p3 });
 
-    ConvexPolytop P = GiftWrapping.WrapPolytop(Cube3D_list);
-    // ConvexPolytop  P   = GiftWrapping.WrapPolytop(Cube5D_list);
-    ConvexPolytop bot = P;
+    FaceLattice P = GiftWrapping.WrapFaceLattice(Cube5D_list);
 
-    while (bot.Faces is not null) {
-      bot = bot.Faces.First();
+    FaceLatticeNode top = P.Maximum;
+    FaceLatticeNode bot = top;
+    while (bot.Sub is not null) {
+      bot = bot.Sub.First();
     }
-
-    var x = bot;
-
-    while (x.Super is not null) {
-      x = x.Super.First();
+    FaceLatticeNode? top2 = bot;
+    while (top2.Super is not null) {
+      top2 = top2.Super.Last();
     }
+    Assert.IsTrue(ReferenceEquals(top, top2));
 
-    Console.WriteLine(ReferenceEquals(P,x));
-    // ConvexPolytop simp = GiftWrapping.WrapPolytop(Simplex3D_list);
-    // foreach (ConvexPolytop E in P.Edges) {
-    //   Console.WriteLine(string.Join('-', E.Vertices));
-    // }
-
+    // Assert.IsTrue(false);
 
 
 
 
     // В плоскости p01-p02-p03
-    SubPoint s1 = new SubPoint(p1, s01, p01);
-    SubPoint s2 = new SubPoint(p2, s02, p02);
-    SubPoint s3 = new SubPoint(p3, s03, p03);
+    // SubPoint s1 = new SubPoint(p1, s01, p01);
+    // SubPoint s2 = new SubPoint(p2, s02, p02);
+    // SubPoint s3 = new SubPoint(p3, s03, p03);
 
-    // В плоскости p01-p02-p04
-    SubPoint u1 = new SubPoint(p1, s01, p01);
-    SubPoint u2 = new SubPoint(p2, s02, p02);
-    SubPoint u4 = new SubPoint(p3, s04, p04);
+    // // В плоскости p01-p02-p04
+    // SubPoint u1 = new SubPoint(p1, s01, p01);
+    // SubPoint u2 = new SubPoint(p2, s02, p02);
+    // SubPoint u4 = new SubPoint(p3, s04, p04);
 
     /*
      * Идея с ZeroDimensional оказалась неуспешной. Так как
@@ -109,4 +102,6 @@ public class Sandbox {
     //
     // SubTwoDimensional P2 = new SubTwoDimensional(ch_side);
   }
+
 }
+

@@ -48,6 +48,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\Vertex.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" />
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
         <Compile Include="Toolkit\Convexification.cs" />
