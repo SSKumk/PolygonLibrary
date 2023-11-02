@@ -6,6 +6,7 @@
 *.DotSettings.user
 
 **/.idea/**
+**/.vscode/**
 
 *.dat
 *.bridge
