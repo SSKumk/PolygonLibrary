@@ -52,12 +52,12 @@ public class Sandbox {
 
     FaceLattice P = GiftWrapping.WrapFaceLattice(Cube5D_list);
 
-    FaceLatticeNode top = P.Maximum;
-    FaceLatticeNode bot = top;
+    FLNode top = P.Top;
+    FLNode bot = top;
     while (bot.Sub is not null) {
       bot = bot.Sub.First();
     }
-    FaceLatticeNode? top2 = bot;
+    FLNode? top2 = bot;
     while (top2.Super is not null) {
       top2 = top2.Super.Last();
     }

@@ -19,13 +19,20 @@ public partial class Geometry<TNum, TConv>
 
     // public List<FaceLatticeNode> Vs {get; init;}
 
-    public FaceLatticeNode Maximum { get; init; }
+    public FLNode Top { get; init; }
 
+    public Dictionary<int, FLNode> Lattice { get; init; }
 
-    public FaceLattice(HashSet<Point> Ps, FaceLatticeNode Max) {
+    public FaceLattice(HashSet<Point> Ps, FLNode Maximum) {
       Points = Ps;
-      Maximum = Max;
+      Top = Maximum;
     }
+
+    // public FaceLattice(HashSet<Point> Ps, FLNode Maximum, Dictionary<int, FLNode> lattice) {
+    //   Points = Ps;
+    //   Top = Maximum;
+    //   Lattice = lattice;
+    // }
 
 
   }
@@ -33,7 +40,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// The node of the face lattice.
   /// </summary>
-  public class FaceLatticeNode {
+  public class FLNode {
 
     /// <summary>
     /// The dimensional of the associated polytop.
@@ -43,12 +50,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reference to associated polytop to this node.
     /// </summary>
-    public VPolytop Polytop { get; init; }
+    public VPolytop? Polytop { get; protected set; }
 
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices => Polytop.Vertices;
+    public HashSet<Point> Vertices => Polytop is null ? new HashSet<Point>() : Polytop.Vertices;
 
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
@@ -66,18 +73,19 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The list represents the affine space of the polytop.
     /// </summary>
-    private List<Point>? _affine = null;
+    private AffineBasis? _affine = null;
 
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
     /// </summary>
-    public virtual List<Point> Affine {
+    public AffineBasis Affine {
       get
       {
         if (_affine is null) {
-          FaceLatticeNode subF = Sub!.First();
-          List<Point> affine = new List<Point>(subF.Affine) { new Point(subF.InnerPoint - InnerPoint) };
+          FLNode subF = Sub!.First();
+          AffineBasis affine = new AffineBasis(subF.Affine);
+          affine.AddPointToBasis(new Point(subF.InnerPoint - InnerPoint));
           _affine = affine;
 
           // Console.WriteLine("Affine!");
@@ -90,44 +98,70 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The list of the super-nodes, which Dim = this.Dim + 1.
     /// </summary>
-    public List<FaceLatticeNode>? Super { get; protected set; }
+    public HashSet<FLNode>? Super { get; protected set; }
 
     /// <summary>
     /// The list of the sub-nodes, which Dim = this.Dim - 1.
     /// </summary>
-    public List<FaceLatticeNode>? Sub { get; protected set; }
+    public HashSet<FLNode>? Sub { get; protected set; }
 
-    public void AddSub(FaceLatticeNode node) {
-      Sub ??= new List<FaceLatticeNode>();
+    private HashSet<FLNode>? _allSub = null;
+
+    public HashSet<FLNode>? AllSub {
+      get
+      {
+        if (_allSub is null) {
+          if (Dim == 0) {
+            _allSub = new HashSet<FLNode>() { this };
+          } else {
+            _allSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllSub!)) { this };
+          }
+        }
+        return _allSub;
+      }
+    }
+
+
+    public void AddSub(FLNode node) {
+      Sub ??= new HashSet<FLNode>();
       Sub.Add(node);
     }
 
-    public void AddSuper(FaceLatticeNode node) {
-      Super ??= new List<FaceLatticeNode>();
+    public void AddSuper(FLNode node) {
+      Super ??= new HashSet<FLNode>();
       Super.Add(node);
     }
 
-    public FaceLatticeNode(int dim, VPolytop VP) {
+    public FLNode(int dim) {
       Dim = dim;
-      Polytop = VP;
     }
 
-    public FaceLatticeNode(int dim, HashSet<Point> Vs) {
-      Dim = dim;
+    public FLNode(int dim, Point innerPoint, AffineBasis aBasis) : this(dim) {
+      _innerPoint = innerPoint;
+      _affine = aBasis;
+    }
+
+    public FLNode(int dim, HashSet<Point> Vs) : this(dim) {
       Polytop = new VPolytop(Vs);
     }
 
-    public FaceLatticeNode(int dim, HashSet<Point> Vs, Point innerPoint, List<Point> affine) : this(dim, Vs) {
-      _innerPoint = innerPoint;
-      _affine = affine;
+    public FLNode(int dim, HashSet<Point> Vs, Point innerPoint, AffineBasis aBasis) : this(dim, innerPoint, aBasis) {
+      Polytop = new VPolytop(Vs);
     }
 
-    public override int GetHashCode() {
-      return Polytop.GetHashCode();
+    public override int GetHashCode() => InnerPoint.GetHashCode();
+
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+      FLNode other = (FLNode)obj;
+
+      return this.InnerPoint == other.InnerPoint;
     }
 
-
-    //todo Какой GetHashCode выбрать для FaceLatticeNode?
+    //todo Какой GetHashCode и Equals выбрать для FaceLatticeNode?
 
   }
 

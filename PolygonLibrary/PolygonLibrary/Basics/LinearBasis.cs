@@ -25,11 +25,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public int VecDim {
       get
-        {
-          Debug.Assert(_basis.Any(), "Basis must have at least one vector to determine it dimension");
+      {
+        Debug.Assert(_basis.Any(), "Basis must have at least one vector to determine it dimension");
 
-          return _basis[0].Dim;
-        }
+        return _basis[0].Dim;
+      }
     }
 
     /// <summary>
@@ -37,13 +37,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public bool IsFullDim {
       get
-        {
-          if (_basis.Any())
-            return VecDim == _basis.Count;
-          else {
-            return false;
-          }
+      {
+        if (_basis.Any())
+          return VecDim == _basis.Count;
+        else {
+          return false;
         }
+      }
     }
 
     /// <summary>
@@ -62,11 +62,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="ind">Index to be accessed</param>
     public Vector this[int ind] {
       get
-        {
-          Debug.Assert(ind >= 0 && ind < _basis.Count);
+      {
+        Debug.Assert(ind >= 0 && ind < _basis.Count);
 
-          return _basis[ind];
-        }
+        return _basis[ind];
+      }
     }
 
     /// <summary>
@@ -122,7 +122,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Default constructor
     /// </summary>
-    public LinearBasis() { _basis = new List<Vector>(); }
+    public LinearBasis() => _basis = new List<Vector>();
+
+    /// <summary>
+    /// Copy constructor.
+    /// </summary>
+    /// <param name="linearBasis">The linear basis to be copied.</param>
+    public LinearBasis(LinearBasis linearBasis) {
+      _basis = new List<Vector>(linearBasis.Basis);
+    }
 
     /// <summary>
     /// Based on collection constructor

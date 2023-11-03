@@ -48,42 +48,44 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice FaceLattice => _faceLattice ??= ConstructFL();
 
     private FaceLattice ConstructFL() {
-      Dictionary<int, FaceLatticeNode> FL = new Dictionary<int, FaceLatticeNode>();
-      FaceLatticeNode top = ConstructFLN(BuiltPolytop, ref FL);
+      Dictionary<int, FLNode> FL = new Dictionary<int, FLNode>();
+      FLNode top = ConstructFLN(BuiltPolytop, ref FL);
       return new FaceLattice(BuiltPolytop.OriginalVertices, top);
     }
 
-    private FaceLatticeNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FaceLatticeNode> FL) {
+    private FLNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> FL) {
       if (BSP is SubTwoDimensionalEdge) {
-        FaceLatticeNode seg = new FaceLatticeNode(1, BSP.OriginalVertices);
+        FLNode seg = new FLNode(1, BSP.OriginalVertices);
         foreach (Point p in seg.Vertices) {
           if (!FL.ContainsKey(p.GetHashCode())) {
-            FL.Add(p.GetHashCode(), new FaceLatticeNode(0, new HashSet<Point> { p }, p, new List<Point> { p }));
+            FL.Add(p.GetHashCode(), new FLNode(0, new HashSet<Point> { p }, p, new AffineBasis(p)));
           }
-          FaceLatticeNode vertex = FL[p.GetHashCode()];
+          FLNode vertex = FL[p.GetHashCode()];
           seg.AddSub(vertex);
           vertex.AddSuper(seg);
         }
         _ = seg.InnerPoint; // вычислили внутреннюю точку
         _ = seg.Affine; // вычислили аффинный базис
+        _ = seg.AllSub; // собрали все подграни
         FL.Add(seg.GetHashCode(), seg);
 
         return seg;
       }
-      FaceLatticeNode node = new FaceLatticeNode(BSP.PolytopDim, BSP.OriginalVertices);
+      FLNode node = new FLNode(BSP.PolytopDim, BSP.OriginalVertices);
       foreach (BaseSubCP subF in BSP.Faces!) {
         //todo Подумать, как правильно hash сделать у FLN, так чтобы в словаре хорошо ключи искались:
         int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
         if (!FL.ContainsKey(hash)) {
           ConstructFLN(subF, ref FL);
         }
-        FaceLatticeNode subNode = FL[hash];
+        FLNode subNode = FL[hash];
         node.AddSub(subNode);
         subNode.AddSuper(node);
       }
 
       _ = node.InnerPoint; // вычислили внутреннюю точку
       _ = node.Affine; // вычислили аффинный базис
+      _ = node.AllSub; // собрали все подграни
       FL.Add(node.GetHashCode(), node);
 
       return node;

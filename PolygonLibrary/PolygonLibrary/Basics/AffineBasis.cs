@@ -15,7 +15,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// </summary>
   public class AffineBasis {
 
-#region Data and Properties
+    #region Data and Properties
     /// <summary>
     /// The linear basis associated with the affine basis.
     /// </summary>
@@ -56,9 +56,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Gets the current basis of the affine space
     /// </summary>
     public List<Vector> Basis => _basis.Basis;
-#endregion
+    #endregion
 
-#region Functions
+    #region Functions
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
     /// </summary>
@@ -114,7 +114,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Debug.Assert
         (VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
 
-      Vector t  = point - Origin;
+      Vector t = point - Origin;
       TNum[] np = new TNum[SpaceDim];
 
       for (int i = 0; i < SpaceDim; i++) {
@@ -166,9 +166,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return points;
     }
-#endregion
+    #endregion
 
-#region Constructors
+    #region Constructors
     /// <summary>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
@@ -251,25 +251,30 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Initializes a new instance of the <see cref="AffineBasis"/> class with the specified origin point and linear basis.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
-    /// <param name="lbasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Point o, LinearBasis lbasis) {
+    /// <param name="lBasis">The linear basis associated with the affine basis.</param>
+    public AffineBasis(Point o, LinearBasis lBasis) {
       Origin = o;
-      _basis = lbasis;
+      _basis = new LinearBasis(lBasis);
     }
 
     /// <summary>
     /// Copy constructor.
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
-    public AffineBasis(AffineBasis affineBasis) {
-      Origin = new Point(affineBasis.Origin);
-      _basis = new LinearBasis();
+    public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis) { }
 
-      foreach (Vector bvec in affineBasis.Basis) {
-        _basis.AddVector(bvec, false);
+    /// <summary>
+    /// The basis construct on two affine bases.
+    /// </summary>
+    /// <param name="aBasis1">First affine basis.</param>
+    /// <param name="aBasis2">Second affine basis.</param>
+    public AffineBasis(AffineBasis aBasis1, AffineBasis aBasis2)
+      : this(aBasis1) {
+      foreach (Vector bvec in aBasis2.Basis) {
+        _basis.AddVector(bvec);
       }
     }
-#endregion
+    #endregion
 
 
     /// <summary>
