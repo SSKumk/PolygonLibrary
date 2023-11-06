@@ -48,9 +48,9 @@ public class Sandbox {
     var p2 = new Point(new Point2D(1, 0));
     var p3 = new Point(new Point2D(0, 1));
 
-    // FaceLattice trl = GiftWrapping.WrapFaceLattice(new Point[] { p1, p2, p3 });
+    FaceLattice P = GiftWrapping.WrapFaceLattice(new Point[] { p1, p2, p3 });
 
-    FaceLattice P = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // FaceLattice P = GiftWrapping.WrapFaceLattice(Cube5D_list);
 
     FLNode top = P.Top;
     FLNode bot = top;
@@ -62,45 +62,46 @@ public class Sandbox {
       top2 = top2.Super.Last();
     }
     Assert.IsTrue(ReferenceEquals(top, top2));
-
-    // Assert.IsTrue(false);
-
+  }
 
 
+  [Test]
+  public void MinkSumTest() {
+    // Тестовый пример, собранный руками:
+    // квадрат _+_ отрезок == куб
+    // квадрат в xOy, отрезок в Oz
+    var p0 = new Point(new double[] { 0, 0, 0 });
+    var p1 = new Point(new double[] { 1, 1, 0 });
+    var p2 = new Point(new double[] { 1, 0, 0 });
+    var p3 = new Point(new double[] { 0, 1, 0 });
 
-    // В плоскости p01-p02-p03
-    // SubPoint s1 = new SubPoint(p1, s01, p01);
-    // SubPoint s2 = new SubPoint(p2, s02, p02);
-    // SubPoint s3 = new SubPoint(p3, s03, p03);
+    var p4 = new Point(new double[] { 0, 0, 1 });
 
-    // // В плоскости p01-p02-p04
-    // SubPoint u1 = new SubPoint(p1, s01, p01);
-    // SubPoint u2 = new SubPoint(p2, s02, p02);
-    // SubPoint u4 = new SubPoint(p3, s04, p04);
+    FLNode v0 = new FLNode(0, new HashSet<Point>() { p0 }, p0, new AffineBasis(p0));
+    FLNode v1 = new FLNode(0, new HashSet<Point>() { p1 }, p1, new AffineBasis(p1));
+    FLNode v2 = new FLNode(0, new HashSet<Point>() { p2 }, p2, new AffineBasis(p2));
+    FLNode v3 = new FLNode(0, new HashSet<Point>() { p3 }, p3, new AffineBasis(p3));
+    FLNode v4 = new FLNode(0, new HashSet<Point>() { p4 }, p4, new AffineBasis(p4));
 
-    /*
-     * Идея с ZeroDimensional оказалась неуспешной. Так как
-     * public override HashSet<SubZeroDimensional> Vertices => _vertices ??= new HashSet<SubZeroDimensional> { new SubZeroDimensional(Vertex, Primal) };
-     * Невозможно получить вершину у такого многогранника -- происходит рекурсивное построение самого себя, что выливается в stack overflow.
-     *
-     * Но кажется, что всё можно решить в рамках SubPoint, если при построении 2D-объектов использовать не текущий SubPoint, а
-     * оригинальный (Original), тогда одинаковые рёбра многоугольников, построенных на разных проекциях из исходного роя
-     * будут содержать ссылки на одинаковые точки из исходного роя.
-     */
-    //
-    //
+    FLNode s1 = new FLNode(1, new HashSet<Point>() { p0, p2 }, new HashSet<FLNode>() { v0, v2 });
+    FLNode s2 = new FLNode(1, new HashSet<Point>() { p0, p3 }, new HashSet<FLNode>() { v0, v3 });
+    FLNode s3 = new FLNode(1, new HashSet<Point>() { p1, p2 }, new HashSet<FLNode>() { v1, v2 });
+    FLNode s4 = new FLNode(1, new HashSet<Point>() { p1, p3 }, new HashSet<FLNode>() { v1, v3 });
 
-    // // Овыпукляем p01-p02-p03
-    // var ch_top_help = Convexification.GrahamHull(new List<SubPoint>() { s1, s2, s3 }.Select(s => new SubPoint2D(s)));
-    // var ch_top      = ch_top_help.Select(v => ((SubPoint2D)v).SubPoint.Original).ToList();
-    //
-    // SubTwoDimensional P1 = new SubTwoDimensional(ch_top);
-    //
-    // // Овыпукляем p01-p02-p04
-    // var ch_side_help = Convexification.GrahamHull(new List<SubPoint>() { u1, u2, u4 }.Select(s => new SubPoint2D(s)));
-    // var ch_side      = ch_top_help.Select(v => ((SubPoint2D)v).SubPoint.Original).ToList();
-    //
-    // SubTwoDimensional P2 = new SubTwoDimensional(ch_side);
+    FLNode s5 = new FLNode(1, new HashSet<Point>() { p0, p4 }, new HashSet<FLNode>() { v0, v4 });
+
+    FLNode q1 = new FLNode(2, new HashSet<Point>() { p0, p1, p2, p3 }, new HashSet<FLNode>() { s1, s2, s3, s4 });
+
+    FaceLattice seg1 = new FaceLattice(s1.Vertices, s1);
+    FaceLattice seg2 = new FaceLattice(s2.Vertices, s2);
+    FaceLattice seg5 = new FaceLattice(s5.Vertices, s5);
+
+    FaceLattice squ = new FaceLattice(q1.Vertices, q1);
+
+    // FaceLattice Cube = MinkowskiSDas(squ, seg5);
+
+    FaceLattice Square = MinkowskiSDas(seg1, seg2);
+
   }
 
 }
