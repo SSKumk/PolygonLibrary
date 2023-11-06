@@ -32,6 +32,16 @@ public partial class Geometry<TNum, TConv>
       }
       return _hash.Value;
     }
+
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+      VPolytop other = (VPolytop)obj;
+
+      return this.Vertices.SetEquals(other.Vertices);
+    }
   }
 
 }

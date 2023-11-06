@@ -21,10 +21,10 @@ public partial class Geometry<TNum, TConv>
 
     public List<HashSet<FLNode>> Lattice { get; init; }
 
-    public FaceLattice(HashSet<Point> Ps, FLNode Maximum, List<HashSet<FLNode>> lattice) {
+    public FaceLattice(HashSet<Point> Ps, FLNode Maximum, List<HashSet<FLNode>>? lattice = null) {
       Points = Ps;
       Top = Maximum;
-      Lattice = lattice;
+      Lattice = lattice ?? new List<HashSet<FLNode>>();
     }
 
     // public FaceLattice(HashSet<Point> Ps, FLNode Maximum, Dictionary<int, FLNode> lattice) {
@@ -180,7 +180,7 @@ public partial class Geometry<TNum, TConv>
 
       FLNode other = (FLNode)obj;
 
-      return this.InnerPoint == other.InnerPoint;
+      return this.Polytop.Equals(other.Polytop);
     }
 
     //todo Какой GetHashCode и Equals выбрать для FaceLatticeNode?
