@@ -49,46 +49,48 @@ public partial class Geometry<TNum, TConv>
 
     private FaceLattice ConstructFL() {
       Dictionary<int, FLNode> FL = new Dictionary<int, FLNode>();
-      FLNode top = ConstructFLN(BuiltPolytop, ref FL);
-      return new FaceLattice(BuiltPolytop.OriginalVertices, top);
+      List<HashSet<FLNode>> lattice = new List<HashSet<FLNode>>();
+      for (int i = 0; i < BuiltPolytop.PolytopDim + 1; i++) {
+        lattice.Add(new HashSet<FLNode>());
+      }
+
+      FLNode top = ConstructFLN(BuiltPolytop, ref FL, ref lattice);
+      return new FaceLattice(BuiltPolytop.OriginalVertices, top, lattice);
     }
 
-    private FLNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> FL) {
+    private FLNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> FL, ref List<HashSet<FLNode>> lattice) {
       if (BSP is SubTwoDimensionalEdge) {
-        FLNode seg = new FLNode(1, BSP.OriginalVertices);
-        foreach (Point p in seg.Vertices) {
+        List<FLNode> sub = new List<FLNode>();
+        foreach (Point p in BSP.OriginalVertices) {
           if (!FL.ContainsKey(p.GetHashCode())) {
-            FL.Add(p.GetHashCode(), new FLNode(0, new HashSet<Point> { p }, p, new AffineBasis(p)));
+            FLNode vertex = new FLNode(0, new HashSet<Point> { p }, p, new AffineBasis(p));
+            FL.Add(p.GetHashCode(), vertex);
+            lattice[0].Add(vertex);
           }
-          FLNode vertex = FL[p.GetHashCode()];
-          seg.AddSub(vertex);
-          vertex.AddSuper(seg);
+          sub.Add(FL[p.GetHashCode()]);
         }
-        _ = seg.InnerPoint; // вычислили внутреннюю точку
-        _ = seg.Affine; // вычислили аффинный базис
-        _ = seg.AllSub; // собрали все подграни
+        FLNode seg = new FLNode(1, BSP.OriginalVertices, sub);
         FL.Add(seg.GetHashCode(), seg);
+        lattice[1].Add(seg);
 
         return seg;
-      }
-      FLNode node = new FLNode(BSP.PolytopDim, BSP.OriginalVertices);
-      foreach (BaseSubCP subF in BSP.Faces!) {
-        //todo Подумать, как правильно hash сделать у FLN, так чтобы в словаре хорошо ключи искались:
-        int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
-        if (!FL.ContainsKey(hash)) {
-          ConstructFLN(subF, ref FL);
+      } else {
+        List<FLNode> sub = new List<FLNode>();
+
+        foreach (BaseSubCP subF in BSP.Faces!) {
+          //todo Подумать, как правильно hash сделать у FLN, так чтобы в словаре хорошо ключи искались:
+          int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
+          if (!FL.ContainsKey(hash)) {
+            ConstructFLN(subF, ref FL, ref lattice);
+          }
+          sub.Add(FL[hash]);
         }
-        FLNode subNode = FL[hash];
-        node.AddSub(subNode);
-        subNode.AddSuper(node);
+        FLNode node = new FLNode(BSP.PolytopDim, BSP.OriginalVertices, sub);
+        FL.Add(node.GetHashCode(), node);
+        lattice[node.Dim].Add(node);
+
+        return node;
       }
-
-      _ = node.InnerPoint; // вычислили внутреннюю точку
-      _ = node.Affine; // вычислили аффинный базис
-      _ = node.AllSub; // собрали все подграни
-      FL.Add(node.GetHashCode(), node);
-
-      return node;
     }
 
     /// <summary>

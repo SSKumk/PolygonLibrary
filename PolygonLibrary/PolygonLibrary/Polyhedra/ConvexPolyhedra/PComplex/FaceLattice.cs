@@ -17,15 +17,14 @@ public partial class Geometry<TNum, TConv>
 
     public HashSet<Point> Points { get; init; }
 
-    // public List<FaceLatticeNode> Vs {get; init;}
-
     public FLNode Top { get; init; }
 
-    public Dictionary<int, FLNode> Lattice { get; init; }
+    public List<HashSet<FLNode>> Lattice { get; init; }
 
-    public FaceLattice(HashSet<Point> Ps, FLNode Maximum) {
+    public FaceLattice(HashSet<Point> Ps, FLNode Maximum, List<HashSet<FLNode>> lattice) {
       Points = Ps;
       Top = Maximum;
+      Lattice = lattice;
     }
 
     // public FaceLattice(HashSet<Point> Ps, FLNode Maximum, Dictionary<int, FLNode> lattice) {
@@ -60,40 +59,37 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
-    private Point? _innerPoint = null;
+    // private Point? _innerPoint = null;
 
     // point(x) = 1/2*(point(y) + point(y')), where y,y' \in Faces, y != y'.
-    public Point InnerPoint => _innerPoint
-     ??= new Point
-         (
-          (new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two
-         );
+    public Point InnerPoint { get; }
+    // => _innerPoint
+
 
 
     /// <summary>
     /// The list represents the affine space of the polytop.
     /// </summary>
-    private AffineBasis? _affine = null;
+    // private AffineBasis? _affine = null;
 
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
     /// </summary>
-    public AffineBasis Affine {
-      get
-      {
-        if (_affine is null) {
-          FLNode subF = Sub!.First();
-          AffineBasis affine = new AffineBasis(subF.Affine);
-          affine.AddPointToBasis(new Point(subF.InnerPoint - InnerPoint));
-          _affine = affine;
+    public AffineBasis Affine { get; }
+    // {
+    //   get
+    //   {
+    //     if (_affine is null) {
 
-          // Console.WriteLine("Affine!");
-        }
+    //       _affine = affine;
 
-        return _affine;
-      }
-    }
+    //       // Console.WriteLine("Affine!");
+    //     }
+
+    //     return _affine;
+    //   }
+    // }
 
     /// <summary>
     /// The list of the super-nodes, which Dim = this.Dim + 1.
@@ -132,21 +128,47 @@ public partial class Geometry<TNum, TConv>
       Super.Add(node);
     }
 
-    public FLNode(int dim) {
+
+    // public FLNode(int dim, Point innerPoint, AffineBasis aBasis) : this(dim) {
+    //   _innerPoint = innerPoint;
+    //   _affine = aBasis;
+    // }
+
+    // public FLNode(int dim, HashSet<Point> Vs) : this(dim) {
+    //   Polytop = new VPolytop(Vs);
+    // }
+
+    public FLNode(int dim, HashSet<Point> Vs, Point innerPoint, AffineBasis aBasis) {
       Dim = dim;
-    }
-
-    public FLNode(int dim, Point innerPoint, AffineBasis aBasis) : this(dim) {
-      _innerPoint = innerPoint;
-      _affine = aBasis;
-    }
-
-    public FLNode(int dim, HashSet<Point> Vs) : this(dim) {
       Polytop = new VPolytop(Vs);
+      InnerPoint = innerPoint;
+      Affine = aBasis;
     }
 
-    public FLNode(int dim, HashSet<Point> Vs, Point innerPoint, AffineBasis aBasis) : this(dim, innerPoint, aBasis) {
+    public FLNode(int dim, HashSet<Point> Vs, IEnumerable<FLNode> sub) {
+      Dim = dim;
       Polytop = new VPolytop(Vs);
+      Sub = new HashSet<FLNode>(sub);
+
+      foreach (FLNode subNode in sub) {
+        subNode.AddSuper(this);
+      }
+
+      InnerPoint = new Point
+          (
+           (new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two
+          );
+
+      FLNode subF = Sub!.First();
+      AffineBasis affine = new AffineBasis(subF.Affine);
+      affine.AddPointToBasis(new Point(subF.InnerPoint - InnerPoint));
+      Affine = affine;
+
+      if (Dim == 0) {
+        _allSub = new HashSet<FLNode>() { this };
+      } else {
+        _allSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllSub!)) { this };
+      }
     }
 
     public override int GetHashCode() => Polytop.GetHashCode();

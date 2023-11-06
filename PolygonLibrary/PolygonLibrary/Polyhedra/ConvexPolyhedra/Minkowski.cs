@@ -168,7 +168,7 @@ public partial class Geometry<TNum, TConv>
       }
     }
     PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint).ToHashSet(), CalcInnerPoint(P.Top, Q.Top), affinePQ);
-    return new FaceLattice(PQ.Vertices, PQ);
+    return new FaceLattice(PQ.Vertices, PQ, FL);
   }
 
 }
