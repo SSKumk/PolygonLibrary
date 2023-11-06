@@ -60,13 +60,13 @@ public partial class Geometry<TNum, TConv>
     return AB;
   }
 
-  private Point CalcInnerPoint(FLNode x, FLNode y) => new Point(new Vector(x.InnerPoint) + new Vector(y.InnerPoint));
+  private static Point CalcInnerPoint(FLNode x, FLNode y) => new Point(new Vector(x.InnerPoint) + new Vector(y.InnerPoint));
   // AddIncidence(FL[d + 1], ref node);
   // z --> (x,y)
   // node --> xi,yi
   // xi \in sub(x) && yi \in sub(y)
   // ==> AddSup / AddSuper
-  private void AddIncidence(IEnumerable<FLNode> Nodes, FLNode node, Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
+  private static void AddIncidence(IEnumerable<FLNode> Nodes, FLNode node, Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
     (FLNode xi, FLNode yi) = zTo_xy[node];
 
     foreach (FLNode z in Nodes) {
@@ -79,7 +79,7 @@ public partial class Geometry<TNum, TConv>
       }
     }
   }
-  public FaceLattice MinkowskiSDas(FaceLattice P, FaceLattice Q) {
+  public static FaceLattice MinkowskiSDas(FaceLattice P, FaceLattice Q) {
     AffineBasis affinePQ = new AffineBasis(P.Top.Affine, Q.Top.Affine);
     int dim = affinePQ.SpaceDim;
     // if (dim < P.Top.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
@@ -94,7 +94,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     //? Это точно внутренняя точка PQ ?!
-    FLNode PQ = new FLNode(dim, CalcInnerPoint(P.Top, Q.Top), affinePQ);
+    FLNode PQ = new FLNode(dim, MinkSum(P.Top.Vertices, Q.Top.Vertices), CalcInnerPoint(P.Top, Q.Top), affinePQ);
     zTo_xy.Add(PQ, (P.Top, Q.Top));
     xyToz.Add((P.Top, Q.Top), PQ);
     FL[^1].Add(PQ);

@@ -50,7 +50,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reference to associated polytop to this node.
     /// </summary>
-    public VPolytop? Polytop { get; protected set; }
+    public VPolytop Polytop { get; protected set; }
 
     /// <summary>
     /// The vertices of the polytop.
@@ -149,7 +149,7 @@ public partial class Geometry<TNum, TConv>
       Polytop = new VPolytop(Vs);
     }
 
-    public override int GetHashCode() => InnerPoint.GetHashCode();
+    public override int GetHashCode() => Polytop.GetHashCode();
 
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
