@@ -69,10 +69,23 @@ public partial class Geometry<TNum, TConv>
   private static void AddIncidence(IEnumerable<FLNode> Nodes, FLNode node, Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
     (FLNode xi, FLNode yi) = zTo_xy[node];
 
+    //? Верно ли что надо проверять только на один уровень вниз?
     foreach (FLNode z in Nodes) {
       (FLNode x, FLNode y) = zTo_xy[z];
-      HashSet<FLNode> X = new HashSet<FLNode>(x.Sub!) { x };
-      HashSet<FLNode> Y = new HashSet<FLNode>(y.Sub!) { y };
+
+      HashSet<FLNode> X;
+      if (x.Sub is null) {
+        X = new HashSet<FLNode>() { x };
+      } else {
+        X = new HashSet<FLNode>(x.Sub) { x };
+      }
+      HashSet<FLNode> Y;
+      if (y.Sub is null) {
+        Y = new HashSet<FLNode>() { y };
+      } else {
+        Y = new HashSet<FLNode>(y.Sub) { y };
+      }
+
       if (X.Contains(xi) && Y.Contains(yi)) {
         node.AddSuper(z);
         z.AddSub(node);
@@ -102,8 +115,8 @@ public partial class Geometry<TNum, TConv>
     for (int d = dim - 1; d > -1; d--) {
       foreach (FLNode z in FL[d + 1]) {
         (FLNode x, FLNode y) = zTo_xy[z];
-        List<FLNode> X = x.AllSub!.OrderBy(node => node.Dim).ToList();
-        List<FLNode> Y = y.AllSub!.OrderBy(node => node.Dim).ToList();
+        List<FLNode> X = x.AllSub!.OrderByDescending(node => node.Dim).ToList();
+        List<FLNode> Y = y.AllSub!.OrderByDescending(node => node.Dim).ToList();
         foreach (FLNode xi in X) {
           foreach (FLNode yi in Y) {
 
@@ -114,10 +127,10 @@ public partial class Geometry<TNum, TConv>
             //? А так как 0) ~d^3 может его не первым ставить?
 
             // 0) dim(xi _+_ yi) == dim(z) - 1
-            if (candBasis.SpaceDim > z.Dim) { continue; }
+            if (candBasis.SpaceDim > z.Dim - 1) { continue; }
 
             // first heuristic dim(xi _+_ yi) < dim(z) - 1 ==> нет смысла дальше перебирать
-            if (candBasis.SpaceDim < z.Dim) { break; }
+            if (candBasis.SpaceDim < z.Dim - 1) { break; }
 
             // 1) Lemma 3
             {
@@ -126,8 +139,19 @@ public partial class Geometry<TNum, TConv>
               var innerInPlane = zSpace.ProjectPoint(z.InnerPoint);
               HyperPlane A = new HyperPlane(new AffineBasis(inPlane), (innerInPlane, false));
 
-              HashSet<FLNode> xSuper = new HashSet<FLNode>(x.Super!) { x };
-              HashSet<FLNode> ySuper = new HashSet<FLNode>(y.Super!) { y };
+              HashSet<FLNode> xSuper;
+              if (x.Super is null) {
+                xSuper = new HashSet<FLNode>() { x };
+              } else {
+                xSuper = new HashSet<FLNode>(x.Super) { x };
+              }
+
+              HashSet<FLNode> ySuper;
+              if (y.Super is null) {
+                ySuper = new HashSet<FLNode>() { y };
+              } else {
+                ySuper = new HashSet<FLNode>() { y };
+              }
 
               Point xInPlane = zSpace.ProjectPoint(x.InnerPoint);
               Point yInPlane = zSpace.ProjectPoint(y.InnerPoint);
@@ -158,6 +182,7 @@ public partial class Geometry<TNum, TConv>
             if (xyToz.ContainsKey((xi, yi))) { continue; }
 
             FLNode node = new FLNode(z.Dim - 1, candidate, CalcInnerPoint(xi, yi), candBasis);
+            FL[node.Dim].Add(node);
             zTo_xy.Add(node, (xi, yi));
             xyToz.Add((xi, yi), node);
 
