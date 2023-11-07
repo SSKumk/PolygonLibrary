@@ -261,7 +261,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Copy constructor.
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
-    public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis) { }
+    public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis, false) { }
 
     /// <summary>
     /// The basis construct on two affine bases.
