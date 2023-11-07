@@ -134,6 +134,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The swarm of points to convexify.</param>
     public GiftWrapping(IEnumerable<Point> Swarm) {
+      if (Swarm.Count() == 1) {
+        throw new ArgumentException("GW: At least 2 points must be in Swarm for convexification.");
+      }
+
       SOrig = new HashSet<Point>(Swarm);
       HashSet<SubPoint> S = Swarm.Select(s => new SubPoint(s, null, s)).ToHashSet();
       AffineBasis AffineS = new AffineBasis(S);
