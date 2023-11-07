@@ -21,19 +21,11 @@ public partial class Geometry<TNum, TConv>
 
     public List<HashSet<FLNode>> Lattice { get; init; }
 
-    public FaceLattice(HashSet<Point> Ps, FLNode Maximum, List<HashSet<FLNode>>? lattice = null) {
+    public FaceLattice(HashSet<Point> Ps, FLNode Maximum, List<HashSet<FLNode>> lattice) {
       Points = Ps;
       Top = Maximum;
-      Lattice = lattice ?? new List<HashSet<FLNode>>();
+      Lattice = lattice;
     }
-
-    // public FaceLattice(HashSet<Point> Ps, FLNode Maximum, Dictionary<int, FLNode> lattice) {
-    //   Points = Ps;
-    //   Top = Maximum;
-    //   Lattice = lattice;
-    // }
-
-
   }
 
   /// <summary>
@@ -75,10 +67,25 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public HashSet<FLNode>? Super { get; protected set; }
 
+    public HashSet<FLNode> GetStrictSuper() {
+      if (Super is null) {
+        return new HashSet<FLNode>();
+      } else {
+        return new HashSet<FLNode>(Super);
+      }
+    }
     /// <summary>
     /// The list of the sub-nodes, which Dim = this.Dim - 1.
     /// </summary>
     public HashSet<FLNode>? Sub { get; protected set; }
+
+    public HashSet<FLNode> GetSub() {
+      if (Sub is null) {
+        return new HashSet<FLNode>() { this };
+      } else {
+        return new HashSet<FLNode>(Sub) { this };
+      }
+    }
 
     private HashSet<FLNode>? _allSub = null;
 
