@@ -60,8 +60,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      IEnumerable<SubPoint> Vs    = Vertices.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original));
-      HashSet<BaseSubCP>    faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
+      IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(aBasis));
+      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
 
       return new SubNonSimplex(faces, FaceIncidence!, new HashSet<SubPoint>(Vs));
     }
@@ -74,7 +74,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
     public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
-      Faces      = faces;
+      Faces = faces;
 
       // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
       //
@@ -91,7 +91,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
 
       FaceIncidence = incidence;
-      Vertices      = Vs;
+      Vertices = Vs;
     }
 
   }

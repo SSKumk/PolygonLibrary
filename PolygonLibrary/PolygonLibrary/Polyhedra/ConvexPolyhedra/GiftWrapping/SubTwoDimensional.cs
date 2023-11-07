@@ -59,7 +59,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         );
 
       List<SubPoint> vertices = new List<SubPoint>(Vs);
-      Vertices     = new HashSet<SubPoint>(vertices);
+      Vertices = new HashSet<SubPoint>(vertices);
       VerticesList = vertices;
 
       HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
@@ -86,7 +86,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubTwoDimensional(VerticesList.Select(s => new SubPoint(s.ProjectTo(aBasis), s, s.Original)).ToList());
+      return new SubTwoDimensional(VerticesList.Select(s => s.ProjectTo(aBasis)).ToList());
     }
 
   }

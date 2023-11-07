@@ -29,7 +29,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public override HashSet<SubPoint> Vertices { get; }
 
-    private SubPoint first  { get; }
+    private SubPoint first { get; }
     private SubPoint second { get; }
 
     /// <summary>
@@ -48,7 +48,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="first">The first vertex of the edge.</param>
     /// <param name="second">The second vertex of the edge.</param>
     public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
-      this.first  = first;
+      this.first = first;
       this.second = second;
       HashSet<SubPoint> vertices = new HashSet<SubPoint>() { first, second };
       Vertices = vertices;
@@ -67,8 +67,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The projected edge.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) => new SubTwoDimensionalEdge
       (
-       new SubPoint(first.ProjectTo(aBasis), first, first.Original)
-     , new SubPoint(second.ProjectTo(aBasis), second, second.Original)
+       first.ProjectTo(aBasis)
+     , second.ProjectTo(aBasis)
       );
 
   }
