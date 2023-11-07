@@ -27,18 +27,10 @@ public partial class Geometry<TNum, TConv>
   /// <returns>
   /// Returns a list of vertices that make up the Minkowski sum of the two input polytopes.
   /// </returns>
-  public static ConvexPolytop MinkSumCH(ConvexPolytop p1, ConvexPolytop p2) =>
-    GiftWrapping.WrapPolytop(MinkSum(p1.Vertices, p2.Vertices));
-  //  {
-  //   HashSet<Point> toCH = new HashSet<Point>();
-  //   foreach (Point v1 in p1.Vertices) {
-  //     toCH.UnionWith(Shift(p2.Vertices, new Vector(v1)));
-  //   }
+  public static FaceLattice MinkSumCH(FLNode P, FLNode Q) =>
+    GiftWrapping.WrapFaceLattice(MinkSum(P.Vertices, Q.Vertices));
 
-  //   GiftWrapping gw = new GiftWrapping(toCH);
-  //   return gw.CPolytop;
-  // }
-
+  public static FaceLattice MinkSumCH(FaceLattice P, FaceLattice Q) => MinkSumCH(P.Top, Q.Top);
 
 
 
@@ -73,18 +65,8 @@ public partial class Geometry<TNum, TConv>
     foreach (FLNode z in Nodes) {
       (FLNode x, FLNode y) = zTo_xy[z];
 
-      HashSet<FLNode> X;
-      if (x.Sub is null) {
-        X = new HashSet<FLNode>() { x };
-      } else {
-        X = new HashSet<FLNode>(x.Sub) { x };
-      }
-      HashSet<FLNode> Y;
-      if (y.Sub is null) {
-        Y = new HashSet<FLNode>() { y };
-      } else {
-        Y = new HashSet<FLNode>(y.Sub) { y };
-      }
+      HashSet<FLNode> X = x.GetSub();
+      HashSet<FLNode> Y = y.GetSub();
 
       if (X.Contains(xi) && Y.Contains(yi)) {
         node.AddSuper(z);
@@ -92,11 +74,17 @@ public partial class Geometry<TNum, TConv>
       }
     }
   }
+
+  public static FaceLattice MinkowskiSDas(FaceLattice P, FaceLattice Q) =>
+        MinkowskiSDas(P.Top, Q.Top);
+
   public static FaceLattice MinkowskiSDas(FLNode P, FLNode Q) {
     AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
+    // AffineBasis affinePQ = new AffineBasis(3);
+
     int dim = affinePQ.SpaceDim;
     if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
-      //todo Научиться проектировать FaceLattice в подпространство
+      //! Научиться проектировать FaceLattice в подпространство
       throw new ArgumentException($"dim(P _+_ Q) != d == {P.InnerPoint.Dim}");
       // return MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
     }
@@ -107,7 +95,6 @@ public partial class Geometry<TNum, TConv>
       FL.Add(new HashSet<FLNode>());
     }
 
-    //? Это точно внутренняя точка PQ ?!
     FLNode PQ = new FLNode(dim, MinkSum(P.Vertices, Q.Vertices), CalcInnerPoint(P, Q), affinePQ);
     zTo_xy.Add(PQ, (P, Q));
     xyToz.Add((P, Q), PQ);
@@ -116,6 +103,8 @@ public partial class Geometry<TNum, TConv>
     for (int d = dim - 1; d > -1; d--) {
       foreach (FLNode z in FL[d + 1]) {
         (FLNode p, FLNode q) = zTo_xy[z];
+        AffineBasis zSpace = new AffineBasis(z.Affine);
+        Point innerInPlane = zSpace.ProjectPoint(z.InnerPoint);
         List<FLNode> X = p.AllSub!.OrderByDescending(node => node.Dim).ToList();
         List<FLNode> Y = q.AllSub!.OrderByDescending(node => node.Dim).ToList();
         foreach (FLNode xi in X) {
@@ -127,57 +116,44 @@ public partial class Geometry<TNum, TConv>
             //? Кажется, что условия 0), 1), 2) независимы.
             //? А так как 0) ~d^3 может его не первым ставить?
 
-            // 0) dim(xi _+_ yi) == dim(z) - 1
+            // 0) dim(xi (+) yi) == dim(z) - 1
             if (candBasis.SpaceDim > z.Dim - 1) { continue; }
 
             // first heuristic dim(xi _+_ yi) < dim(z) - 1 ==> нет смысла дальше перебирать
             if (candBasis.SpaceDim < z.Dim - 1) { break; }
 
             // 1) Lemma 3
-            {
-              AffineBasis zSpace = new AffineBasis(z.Affine);
-              var inPlane = zSpace.ProjectPoints(candidate);
-              var innerInPlane = zSpace.ProjectPoint(z.InnerPoint);
-              HyperPlane A = new HyperPlane(new AffineBasis(inPlane), (innerInPlane, false));
+            // {
+            var inPlane = zSpace.ProjectPoints(candidate);
+            HyperPlane A = new HyperPlane(new AffineBasis(inPlane), (innerInPlane, false));
 
-              HashSet<FLNode> xSuper;
-              if (xi.Super is null) {
-                xSuper = new HashSet<FLNode>() { xi };
-              } else {
-                xSuper = new HashSet<FLNode>(xi.Super) { xi };
-              }
+            HashSet<FLNode> xSuper = xi.GetStrictSuper();
+            HashSet<FLNode> ySuper = yi.GetStrictSuper();
 
-              HashSet<FLNode> ySuper;
-              if (yi.Super is null) {
-                ySuper = new HashSet<FLNode>() { yi };
-              } else {
-                ySuper = new HashSet<FLNode>(yi.Super) { yi };
-              }
+            Point xInPlane = zSpace.ProjectPoint(xi.InnerPoint);
+            Point yInPlane = zSpace.ProjectPoint(yi.InnerPoint);
 
-              Point xInPlane = zSpace.ProjectPoint(xi.InnerPoint);
-              Point yInPlane = zSpace.ProjectPoint(yi.InnerPoint);
-
-              //f' > f
-              bool xCheck = true;
-              foreach (FLNode xSup in xSuper) {
-                xCheck = xCheck && A.ContainsNegative(new Point(
-                 new Vector(zSpace.ProjectPoint(xSup.InnerPoint))
-                  +
-                    new Vector(yInPlane)));
-              }
-
-              //g' > g
-              bool yCheck = true;
-              foreach (FLNode ySup in ySuper) {
-                yCheck = yCheck && A.ContainsNegative(new Point(
-                  new Vector(zSpace.ProjectPoint(ySup.InnerPoint))
-                   +
-                    new Vector(xInPlane)));
-              }
-
-
-              if (!(xCheck && yCheck)) { break; }
+            //f' > f
+            bool xCheck = true;
+            foreach (FLNode xSup in xSuper) {
+              xCheck = xCheck && A.ContainsNegative(new Point(
+               new Vector(zSpace.ProjectPoint(xSup.InnerPoint))
+                +
+                  new Vector(yInPlane)));
             }
+
+            //g' > g
+            bool yCheck = true;
+            foreach (FLNode ySup in ySuper) {
+              yCheck = yCheck && A.ContainsNegative(new Point(
+                new Vector(zSpace.ProjectPoint(ySup.InnerPoint))
+                 +
+                  new Vector(xInPlane)));
+            }
+
+
+            if (!(xCheck && yCheck)) { continue; } //? Мб тут как-то хитрее нужно отсечения проводить
+            // }
 
             // 2) Does not already exist in FL
             if (xyToz.ContainsKey((xi, yi))) { continue; }
