@@ -135,78 +135,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Swarm">The swarm of points to convexify.</param>
     public GiftWrapping(IEnumerable<Point> Swarm) {
       SOrig = new HashSet<Point>(Swarm);
-
-      AffineBasis AffineS = new AffineBasis(Swarm);
+      HashSet<SubPoint> S = Swarm.Select(s => new SubPoint(s, null, s)).ToHashSet();
+      AffineBasis AffineS = new AffineBasis(S);
       if (AffineS.SpaceDim < AffineS.VecDim) {
-        Swarm = AffineS.ProjectPoints(Swarm);
+        S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
       }
 
-      GiftWrappingMain x = new GiftWrappingMain(new HashSet<SubPoint>(Swarm.Select(s => new SubPoint(s, null, s))));
+      GiftWrappingMain x = new GiftWrappingMain(S);
       BuiltPolytop = x.BuiltPolytop;
       VPolytop = new VPolytop(Vertices);
     }
-
-
-    // /// <summary>
-    // /// Builds the convex polytop using 'builtPolytop' property.
-    // /// </summary>
-    // /// <returns>The convex polytop.</returns>
-    // private static ConvexPolytop GetPolytop(BaseSubCP BuiltP) {
-    //   Debug.Assert(BuiltP is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
-    //   HashSet<Face> Fs = new HashSet<Face>(BuiltP.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
-    //   HashSet<Edge> Es = new HashSet<Edge>();
-    //
-    //   foreach (BaseSubCP face in BuiltP.Faces!) {
-    //     Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
-    //   }
-    //
-    //   switch (BuiltP.Type) {
-    //     case SubCPType.Simplex:
-    //       return new Simplex
-    //         (
-    //          BuiltP.OriginalVertices
-    //        , BuiltP.PolytopDim
-    //        , Fs
-    //        , Es
-    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
-    //        , new FansInfo(BuiltP.Faces!)
-    //         );
-    //
-    //     case SubCPType.NonSimplex:
-    //       return new Polytop
-    //         (
-    //          BuiltP.OriginalVertices
-    //        , BuiltP.PolytopDim
-    //        , Fs
-    //        , Es
-    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
-    //        , new FansInfo(BuiltP.Faces!)
-    //         );
-    //
-    //     case SubCPType.TwoDimensional:
-    //       return new Polygon2D
-    //         (
-    //          BuiltP.OriginalVertices
-    //        , BuiltP.PolytopDim
-    //        , Fs
-    //        , Es
-    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
-    //        , new FansInfo(BuiltP.Faces!)
-    //         );
-    //     case SubCPType.OneDimensional:
-    //       return new PolytopSegment
-    //         (
-    //          BuiltP.OriginalVertices
-    //        , BuiltP.PolytopDim
-    //        , Fs
-    //        , Es
-    //        , new IncidenceInfo(BuiltP.FaceIncidence!)
-    //        , new FansInfo(BuiltP.Faces!)
-    //         );
-    //     default: throw new ArgumentOutOfRangeException();
-    //   }
-    // }
-
 
     /// <summary>
     /// Perform an gift wrapping algorithm. It holds a necessary fields to construct a d-polytop.
@@ -245,6 +183,9 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <returns>A built polytop.</returns>
       private BaseSubCP GW() {
+        if (spaceDim == 1) {
+          return new SubTwoDimensionalEdge(S.Min()!, S.Max()!);
+        }
         if (spaceDim == 2) {
           List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
@@ -440,7 +381,7 @@ public partial class Geometry<TNum, TConv>
 
         HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
         HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s))
-                                     .Select(s => new SubPoint(s.ProjectTo(FaceBasis), s, s.Original))
+                                     .Select(s => s.ProjectTo(FaceBasis))
                                      .ToHashSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
