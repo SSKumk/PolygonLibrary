@@ -54,7 +54,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices => Polytop is null ? new HashSet<Point>() : Polytop.Vertices;
+    public HashSet<Point> Vertices => Polytop.Vertices;
 
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
@@ -65,31 +65,10 @@ public partial class Geometry<TNum, TConv>
     public Point InnerPoint { get; }
     // => _innerPoint
 
-
-
-    /// <summary>
-    /// The list represents the affine space of the polytop.
-    /// </summary>
-    // private AffineBasis? _affine = null;
-
-
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
     /// </summary>
     public AffineBasis Affine { get; }
-    // {
-    //   get
-    //   {
-    //     if (_affine is null) {
-
-    //       _affine = affine;
-
-    //       // Console.WriteLine("Affine!");
-    //     }
-
-    //     return _affine;
-    //   }
-    // }
 
     /// <summary>
     /// The list of the super-nodes, which Dim = this.Dim + 1.
@@ -128,16 +107,6 @@ public partial class Geometry<TNum, TConv>
       Super.Add(node);
     }
 
-
-    // public FLNode(int dim, Point innerPoint, AffineBasis aBasis) : this(dim) {
-    //   _innerPoint = innerPoint;
-    //   _affine = aBasis;
-    // }
-
-    // public FLNode(int dim, HashSet<Point> Vs) : this(dim) {
-    //   Polytop = new VPolytop(Vs);
-    // }
-
     public FLNode(int dim, HashSet<Point> Vs, Point innerPoint, AffineBasis aBasis) {
       Dim = dim;
       Polytop = new VPolytop(Vs);
@@ -161,7 +130,7 @@ public partial class Geometry<TNum, TConv>
 
       FLNode subF = Sub!.First();
       AffineBasis affine = new AffineBasis(subF.Affine);
-      affine.AddPointToBasis(new Point(subF.InnerPoint - InnerPoint));
+      affine.AddVectorToBasis(subF.InnerPoint - InnerPoint);
       Affine = affine;
 
       if (Dim == 0) {
