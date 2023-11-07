@@ -92,13 +92,14 @@ public partial class Geometry<TNum, TConv>
       }
     }
   }
-  public static FaceLattice MinkowskiSDas(FaceLattice P, FaceLattice Q) {
-    AffineBasis affinePQ = new AffineBasis(P.Top.Affine, Q.Top.Affine);
+  public static FaceLattice MinkowskiSDas(FLNode P, FLNode Q) {
+    AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
     int dim = affinePQ.SpaceDim;
-    // if (dim < P.Top.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
-    //   //todo Научиться проектировать FaceLattice в подпространство
-    //   return MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
-    // }
+    if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
+      //todo Научиться проектировать FaceLattice в подпространство
+      throw new ArgumentException($"dim(P _+_ Q) != d == {P.InnerPoint.Dim}");
+      // return MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
+    }
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
     Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
     List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
@@ -107,16 +108,16 @@ public partial class Geometry<TNum, TConv>
     }
 
     //? Это точно внутренняя точка PQ ?!
-    FLNode PQ = new FLNode(dim, MinkSum(P.Top.Vertices, Q.Top.Vertices), CalcInnerPoint(P.Top, Q.Top), affinePQ);
-    zTo_xy.Add(PQ, (P.Top, Q.Top));
-    xyToz.Add((P.Top, Q.Top), PQ);
+    FLNode PQ = new FLNode(dim, MinkSum(P.Vertices, Q.Vertices), CalcInnerPoint(P, Q), affinePQ);
+    zTo_xy.Add(PQ, (P, Q));
+    xyToz.Add((P, Q), PQ);
     FL[^1].Add(PQ);
 
     for (int d = dim - 1; d > -1; d--) {
       foreach (FLNode z in FL[d + 1]) {
-        (FLNode x, FLNode y) = zTo_xy[z];
-        List<FLNode> X = x.AllSub!.OrderByDescending(node => node.Dim).ToList();
-        List<FLNode> Y = y.AllSub!.OrderByDescending(node => node.Dim).ToList();
+        (FLNode p, FLNode q) = zTo_xy[z];
+        List<FLNode> X = p.AllSub!.OrderByDescending(node => node.Dim).ToList();
+        List<FLNode> Y = q.AllSub!.OrderByDescending(node => node.Dim).ToList();
         foreach (FLNode xi in X) {
           foreach (FLNode yi in Y) {
 
@@ -140,21 +141,21 @@ public partial class Geometry<TNum, TConv>
               HyperPlane A = new HyperPlane(new AffineBasis(inPlane), (innerInPlane, false));
 
               HashSet<FLNode> xSuper;
-              if (x.Super is null) {
-                xSuper = new HashSet<FLNode>() { x };
+              if (xi.Super is null) {
+                xSuper = new HashSet<FLNode>() { xi };
               } else {
-                xSuper = new HashSet<FLNode>(x.Super) { x };
+                xSuper = new HashSet<FLNode>(xi.Super) { xi };
               }
 
               HashSet<FLNode> ySuper;
-              if (y.Super is null) {
-                ySuper = new HashSet<FLNode>() { y };
+              if (yi.Super is null) {
+                ySuper = new HashSet<FLNode>() { yi };
               } else {
-                ySuper = new HashSet<FLNode>() { y };
+                ySuper = new HashSet<FLNode>(yi.Super) { yi };
               }
 
-              Point xInPlane = zSpace.ProjectPoint(x.InnerPoint);
-              Point yInPlane = zSpace.ProjectPoint(y.InnerPoint);
+              Point xInPlane = zSpace.ProjectPoint(xi.InnerPoint);
+              Point yInPlane = zSpace.ProjectPoint(yi.InnerPoint);
 
               //f' > f
               bool xCheck = true;
@@ -192,7 +193,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
     }
-    PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint).ToHashSet(), CalcInnerPoint(P.Top, Q.Top), affinePQ);
+    PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint).ToHashSet(), CalcInnerPoint(P, Q), affinePQ);
     return new FaceLattice(PQ.Vertices, PQ, FL);
   }
 
