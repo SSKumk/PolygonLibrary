@@ -91,7 +91,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="normal">The outward normal vector of the face.</param>
     public Face(IEnumerable<Point> Vs, Vector normal) { //todo может IEnumerable --> HashSet и тогда ещё меньше ссылок будет ??
       Vertices = new HashSet<Point>(Vs);
-      Normal   = normal;
+      Normal = normal;
     }
 
     /// <summary>
@@ -261,12 +261,14 @@ public partial class Geometry<TNum, TConv>
     public HashSet<ConvexPolytop>? Edges { get; protected init; }
 
     public static ConvexPolytop ConstructFromSubCP(BaseSubCP BCP) {
+      //! todo Вернуть ConvexPolytop как только самый верхний уровень описания объекта!
+      throw new NotImplementedException();
       switch (BCP.Type) {
-        case SubCPType.Simplex:        return new Polytop((BCP as SubSimplex)!);
-        case SubCPType.NonSimplex:     return new Polytop((BCP as SubNonSimplex)!);
+        case SubCPType.Simplex: return new Polytop((BCP as SubSimplex)!);
+        case SubCPType.NonSimplex: return new Polytop((BCP as SubNonSimplex)!);
         case SubCPType.TwoDimensional: return new Polygon2D((BCP as SubTwoDimensional)!);
         case SubCPType.OneDimensional: return new PolytopSegment((BCP as SubTwoDimensionalEdge)!);
-        default:                       throw new ArgumentOutOfRangeException(nameof(BCP));
+        default: throw new ArgumentOutOfRangeException(nameof(BCP));
       }
     }
     // /// <summary>
