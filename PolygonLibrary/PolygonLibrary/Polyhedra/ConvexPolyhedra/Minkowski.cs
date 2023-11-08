@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
@@ -84,10 +85,14 @@ public partial class Geometry<TNum, TConv>
 
   public static FaceLattice MinkowskiSDas(FLNode P, FLNode Q) {
     AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
-    //? Что не так с базисами ?! AffineBasis affinePQ = new AffineBasis(3);
 
     int dim = affinePQ.SpaceDim;
-    if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
+    if (dim == 0) {
+      Point s = new Point(new Vector(P.InnerPoint) + new Vector(Q.InnerPoint));
+      return new FaceLattice(s);
+    }
+
+    if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P (+) Q) == d == Размерности пространства
       FaceLattice lowDim = MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
       return lowDim.TranslateToOriginal(affinePQ);
     }
@@ -123,7 +128,7 @@ public partial class Geometry<TNum, TConv>
             // 0) dim(xi (+) yi) == dim(z) - 1
             if (candBasis.SpaceDim > z.Dim - 1) { continue; }
 
-            // first heuristic dim(xi _+_ yi) < dim(z) - 1 ==> нет смысла дальше перебирать
+            // first heuristic dim(xi (+) yi) < dim(z) - 1 ==> нет смысла дальше перебирать
             if (candBasis.SpaceDim < z.Dim - 1) { break; }
 
             // 1) Lemma 3
@@ -173,7 +178,9 @@ public partial class Geometry<TNum, TConv>
         }
       }
     }
-    PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint).ToHashSet(), CalcInnerPoint(P, Q), affinePQ);
+    Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
+
+    // PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint), CalcInnerPoint(P, Q), affinePQ);
     return new FaceLattice(PQ.Vertices, PQ, FL);
   }
 
