@@ -104,24 +104,14 @@ public class Sandbox {
     Assert.IsTrue(ReferenceEquals(top, top2));
   }
 
-  [Test]
-  public void Some() {
-    var p0 = new Point(new double[] { 0 });
-    var p1 = new Point(new double[] { 1 });
-    var p2 = new Point(new double[] { 1, 1, 0, 0 });
-
-    var S = new List<Point>() { p0, p1 };
-    var xx = GiftWrapping.WrapFaceLattice(S);
-  }
 
   [Test]
   public void MinkSumTest() {
 
-    // Тестовый пример, собранный руками:
-    // квадрат _+_ отрезок == куб
     // квадрат в xOy, отрезок в Oz
     var p0 = new Point(new double[] { 0, 0, 0 });
     var p1 = new Point(new double[] { 1, 1, 0 });
+    var p1_ = new Point(new double[] { 2, 2, 0 });
     var p2 = new Point(new double[] { 1, 0, 0 });
     var p3 = new Point(new double[] { 0, 1, 0 });
     var p4 = new Point(new double[] { 0, 0, 1 });
@@ -130,47 +120,52 @@ public class Sandbox {
     List<Point> sqXY = new List<Point>() { p0, p2, p1, p3 };
     List<Point> sqXZ = new List<Point>() { p0, p2, p4, p5 };
 
-    FaceLattice fl_sqXY = GiftWrapping.WrapFaceLattice(sqXY);
-    FaceLattice fl_sqXZ = GiftWrapping.WrapFaceLattice(sqXZ);
+    FaceLattice v0 = new FaceLattice(p0);
+    FaceLattice v1 = new FaceLattice(p1);
+    FaceLattice v4 = new FaceLattice(p4);
 
-    FaceLattice fl_cubeCH = MinkSumCH(fl_sqXY, fl_sqXZ);
-    FaceLattice fl_cubeIN = MinkowskiSDas(fl_sqXY, fl_sqXZ);
+    FaceLattice s1 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1 });
+    FaceLattice s1_ = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1_ });
 
-    // FLNode v0 = new FLNode(0, new HashSet<Point>() { p0 }, p0, new AffineBasis(p0));
-    // FLNode v1 = new FLNode(0, new HashSet<Point>() { p1 }, p1, new AffineBasis(p1));
-    // FLNode v2 = new FLNode(0, new HashSet<Point>() { p2 }, p2, new AffineBasis(p2));
-    // FLNode v3 = new FLNode(0, new HashSet<Point>() { p3 }, p3, new AffineBasis(p3));
-    // FLNode v4 = new FLNode(0, new HashSet<Point>() { p4 }, p4, new AffineBasis(p4));
-    // FLNode v5 = new FLNode(0, new HashSet<Point>() { p5 }, p5, new AffineBasis(p5));
+    FaceLattice s2 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p2 });
+    FaceLattice s3 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p3 });
+    FaceLattice s4 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p4 });
 
-    // FLNode s1 = new FLNode(1, new HashSet<Point>() { p0, p2 }, new HashSet<FLNode>() { v0, v2 });
-    // FLNode s2 = new FLNode(1, new HashSet<Point>() { p0, p3 }, new HashSet<FLNode>() { v0, v3 });
-    // FLNode s3 = new FLNode(1, new HashSet<Point>() { p1, p2 }, new HashSet<FLNode>() { v1, v2 });
-    // FLNode s4 = new FLNode(1, new HashSet<Point>() { p1, p3 }, new HashSet<FLNode>() { v1, v3 });
 
-    // FLNode s5 = new FLNode(1, new HashSet<Point>() { p0, p4 }, new HashSet<FLNode>() { v0, v4 });
-    // FLNode s6 = new FLNode(1, new HashSet<Point>() { p5, p4 }, new HashSet<FLNode>() { v5, v4 });
-    // FLNode s7 = new FLNode(1, new HashSet<Point>() { p2, p5 }, new HashSet<FLNode>() { v2, v5 });
-
-    // FLNode q1 = new FLNode(2, new HashSet<Point>() { p0, p1, p2, p3 }, new HashSet<FLNode>() { s1, s2, s3, s4 });
-    // FLNode q2 = new FLNode(2, new HashSet<Point>() { p0, p2, p4, p5 }, new HashSet<FLNode>() { s1, s5, s6, s7 });
+    FaceLattice q1 = GiftWrapping.WrapFaceLattice(sqXY);
 
     // Начинаем с малых размерностей тестировать:
     // 0:
 
-    // FaceLattice Vertex = MinkowskiSDas(v1, v1); // Ok
-    // FaceLattice Vertex = MinkowskiSDas(v1, v4); // Ok
-    // FaceLattice Segment = MinkowskiSDas(v0, s3);  //? Не Ок пока не умеем сумму не полной размерности!
-    // FaceLattice Square = MinkowskiSDas(v0, q1);     //? Не Ок пока не умеем сумму не полной размерности!
+    // FaceLattice VertexSolo = MinkowskiSDas(v1, v1); // Ok
+    // FaceLattice Vertex = MinkowskiSDas(v4, v1); // Ok
+    // FaceLattice Segment = MinkowskiSDas(v0, s1); // Ок
+    // FaceLattice Square = MinkowskiSDas(v0, q1);  // Ок
 
     // 1:
-    // FaceLattice Segment = MinkowskiSDas(s1, s1); //? Не Ок пока не умеем сумму не полной размерности!
-    // FaceLattice Segment = MinkowskiSDas(s1, s4); //? Не Ок пока не умеем сумму не полной размерности!
-    // FaceLattice Square = MinkowskiSDas(s1, s3);  //? Не Ок
-    // FaceLattice Cube = MinkowskiSDas(s5, q1);  // Ok
+    // FaceLattice SegmentSolo = MinkowskiSDas(s1, s1);  // Ок
+    // FaceLattice Segment = MinkowskiSDas(s1, s1_); // Ок
+    // FaceLattice Square = MinkowskiSDas(s2, s3);  // Ок
+    // FaceLattice Cube = MinkowskiSDas(s2, q1);  // ! error
+
+    //2D-case //! MinkowskiSDas(qu1, vu1); !!
+    {
+      // var u0 = new Point(new double[] { 0, 0 });
+      // var u1 = new Point(new double[] { 1, 0 });
+      // var u2 = new Point(new double[] { 0, 1 });
+
+      // FaceLattice vu1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
+      // FaceLattice vu2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
+
+      // FaceLattice qu1 = MinkowskiSDas(vu1, vu2);
+
+      // FaceLattice double_qu1 = MinkowskiSDas(qu1, vu1);
+
+    }
+
 
     // 2:
-    // FaceLattice Square = MinkowskiSDas(q1, q1); //? Не Ок пока не умеем сумму не полной размерности!
+    // FaceLattice Square = MinkowskiSDas(q1, q1); //! Какая-то хрень получается
 
     // 3:
     // FaceLattice Cube = MinkowskiSDas(MinkowskiSDas(q1, s5).Top, MinkowskiSDas(q1, s5).Top); //! error
@@ -178,6 +173,9 @@ public class Sandbox {
     // FaceLattice Cube = MinkowskiSDas(q1, s5);
 
     // FaceLattice Square = MinkowskiSDas(s1, s2);
+
+    // FaceLattice cube5d = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // FaceLattice Cube5D = MinkowskiSDas(cube5d, cube5d);
 
   }
 
