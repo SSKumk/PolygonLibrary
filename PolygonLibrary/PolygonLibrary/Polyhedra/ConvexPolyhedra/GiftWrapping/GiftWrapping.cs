@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv>
         List<FLNode> sub = new List<FLNode>();
         foreach (Point p in BSP.OriginalVertices) {
           if (!FL.ContainsKey(p.GetHashCode())) {
-            FLNode vertex = new FLNode(0, new HashSet<Point> { p }, p, new AffineBasis(p));
+            FLNode vertex = new FLNode(p);
             FL.Add(p.GetHashCode(), vertex);
             lattice[0].Add(vertex);
           }
