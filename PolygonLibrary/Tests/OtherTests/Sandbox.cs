@@ -12,17 +12,57 @@ namespace Tests.OtherTests;
 public class Sandbox {
 
   [Test]
+  public void FaceLatticeFromGWTest() {
+    Point p0 = new Point(new double[] { 0, 0, 0, 0 });
+    Point p1 = new Point(new double[] { 1, 0, 0, 0 });
+    Point p2 = new Point(new double[] { 0, 1, 0, 0 });
+    Point p3 = new Point(new double[] { 0, 0, 1, 0 });
+    Point p4 = new Point(new double[] { 1, 1, 0, 0 });
+    Point p5 = new Point(new double[] { 0, 1, 1, 0 });
+    Point p6 = new Point(new double[] { 1, 0, 1, 0 });
+    Point p7 = new Point(new double[] { 1, 1, 1, 0 });
+
+    // 0 dim
+    // FaceLattice fl_p0 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0 }); //? правильно ли, что GW не умеет работать с точкой?
+
+    // 1 dim
+    FaceLattice fl_p1p2 = GiftWrapping.WrapFaceLattice(new List<Point>() { p1, p2 });
+
+    // 2 dim
+    FaceLattice fl_p3p5p6p7 = GiftWrapping.WrapFaceLattice(new List<Point>() { p3, p5, p6, p7 });
+
+    // 3 dim
+    FaceLattice fl_all = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1, p2, p3, p4, p5, p6, p7 });
+
+    // Симплекс
+    FaceLattice fl_simplex4D = GiftWrapping.WrapFaceLattice(SimplexRND4D_list);
+    // Вроде FaceLattice на основе GW работает как надо.
+
+
+    // Тестирую проекции:
+    AffineBasis aBasis2D = new AffineBasis(2, 4);
+    AffineBasis aBasis3D = new AffineBasis(3, 4);
+
+    AffineBasis aBasis = new AffineBasis(p7, new List<Vector>() { p1 - p0, p2 - p0 });
+    FaceLattice x = fl_p1p2.ProjectTo(aBasis);
+    FaceLattice y = x.TranslateToOriginal(aBasis);
+
+    // Проекции "туда" и "сюда" вроде работают
+
+  }
+
+  [Test]
   public void LowerGW() {
     HashSet<Point> S = new HashSet<Point>()
       {
-        new Point(new double[] { 0, 0, 0, 0, 0})
-      , new Point(new double[] { 1, 0, 0, 0, 0})
-      , new Point(new double[] { 0, 0, 1, 0, 0})
-      , new Point(new double[] { 0, 0, 0, 1, 0})
-      , new Point(new double[] { 1, 0, 1, 0, 0})
-      , new Point(new double[] { 0, 0, 1, 1, 0})
-      , new Point(new double[] { 1, 0, 0, 1, 0})
-      , new Point(new double[] { 1, 0, 1, 1, 0})
+        new Point(new double[] { 0, 0, 0, 0})
+      , new Point(new double[] { 1, 0, 0, 0})
+      , new Point(new double[] { 0, 1, 0, 0})
+      , new Point(new double[] { 0, 0, 1, 0})
+      , new Point(new double[] { 1, 1, 0, 0})
+      , new Point(new double[] { 0, 1, 1, 0})
+      , new Point(new double[] { 1, 0, 1, 0})
+      , new Point(new double[] { 1, 1, 1, 0})
       };
 
     GiftWrapping P = new GiftWrapping(S);

@@ -10,6 +10,10 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  public class MinkowskiSum {
+
+  }
+
   /// <summary>
   /// Shift given swarm by given vector.
   /// </summary>
@@ -80,14 +84,14 @@ public partial class Geometry<TNum, TConv>
 
   public static FaceLattice MinkowskiSDas(FLNode P, FLNode Q) {
     AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
-    // AffineBasis affinePQ = new AffineBasis(3);
+    //? Что не так с базисами ?! AffineBasis affinePQ = new AffineBasis(3);
 
     int dim = affinePQ.SpaceDim;
     if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P _+_ Q) == d == Размерности пространства
-      //! Научиться проектировать FaceLattice в подпространство
-      throw new ArgumentException($"dim(P _+_ Q) != d == {P.InnerPoint.Dim}");
-      // return MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
+      FaceLattice lowDim = MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
+      return lowDim.TranslateToOriginal(affinePQ);
     }
+
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
     Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
     List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();

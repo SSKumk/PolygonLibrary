@@ -136,6 +136,35 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     /// <summary>
+    /// Translates given point from current coordinate system to the original one.
+    /// </summary>
+    /// <param name="point">The point should be written in terms of this affine basis.</param>
+    /// <returns>The point expressed in terms of the original affine system.</returns>
+    public Point TranslateToOriginal(Point point) {
+      Debug.Assert
+        (SpaceDim == point.Dim, "The dimension of the basis space should be equal to the dimension of the current point.");
+
+      Vector np = new Vector(Origin);
+      int i = 0;
+      foreach (Vector bvec in Basis) {
+        np += point[i] * bvec;
+        i++;
+      }
+      return new Point(np);
+    }
+
+    /// <summary>
+    /// Translates given set of points from current coordinate system to the original one.
+    /// </summary>
+    /// <param name="Ps">Points should be written in terms of this affine basis.</param>
+    /// <returns>Points expressed in terms of the original affine system.</returns>
+    public IEnumerable<Point> TranslateToOriginal(IEnumerable<Point> Ps) {
+      foreach (Point point in Ps) {
+        yield return TranslateToOriginal(point);
+      }
+    }
+
+    /// <summary>
     /// Checks if a point belongs to the affine subspace defined by the basis.
     /// </summary>
     /// <param name="p">Point to be checked.</param>
@@ -191,10 +220,14 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
     }
 
+
     /// <summary>
-    /// Construct the new affine basis of given dimension with d-dim zero origin and d-orth
+    /// Construct the new affine basis for a given dimension using a d-dimensional origin of zero,
+    /// and a given amount of d-orth starting from e1.
     /// </summary>
-    public AffineBasis(int vecDim, int basisDim) {
+    /// <param name="basisDim">The amount of basis vectors in the basis.</param>
+    /// <param name="vecDim">The dimension of the basis vectors.</param>
+    public AffineBasis(int basisDim, int vecDim) {
       Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
 
       Origin = new Point(vecDim);
