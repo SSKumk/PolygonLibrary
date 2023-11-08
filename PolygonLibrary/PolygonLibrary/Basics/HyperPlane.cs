@@ -158,7 +158,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public void OrientNormal(Point point, bool isPositive) {
       TNum res = Eval(point);
 
-      Debug.Assert(Tools.NE(res), "For hyperplane orientation, a point is given, which belongs to the hyperplane");
+      Debug.Assert(Tools.NE(res), "HyperPlane.OrientNormal: A given point belongs to the hyperplane.");
 
       if ((Tools.LT(res) && isPositive) || (Tools.GT(res) && !isPositive)) {
         _normal = -_normal!;
