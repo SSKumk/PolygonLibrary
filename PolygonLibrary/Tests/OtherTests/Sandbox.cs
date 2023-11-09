@@ -148,22 +148,6 @@ public class Sandbox {
     // FaceLattice Square = MinkowskiSDas(s2, s3);  // Ок
     // FaceLattice Cube = MinkowskiSDas(s2, q1);  // ! error
 
-    //2D-case //! MinkowskiSDas(qu1, vu1); !!
-    {
-      // var u0 = new Point(new double[] { 0, 0 });
-      // var u1 = new Point(new double[] { 1, 0 });
-      // var u2 = new Point(new double[] { 0, 1 });
-
-      // FaceLattice vu1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
-      // FaceLattice vu2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
-
-      // FaceLattice qu1 = MinkowskiSDas(vu1, vu2);
-
-      // FaceLattice double_qu1 = MinkowskiSDas(qu1, vu1);
-
-    }
-
-
     // 2:
     // FaceLattice Square = MinkowskiSDas(q1, q1); //! Какая-то хрень получается
 
@@ -174,10 +158,29 @@ public class Sandbox {
 
     // FaceLattice Square = MinkowskiSDas(s1, s2);
 
-    // FaceLattice cube5d = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    // FaceLattice Cube5D = MinkowskiSDas(cube5d, cube5d);
+    FaceLattice cube5d = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    FaceLattice Cube5D = MinkowskiSDas(cube5d, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
+    FaceLattice Cube5D_2 = MinkowskiSDas(cube5d, cube5d);
 
   }
 
+
+  [Test]
+  public void MinkowskiSDas2D() {
+    var u0 = new Point(new double[] { 0, 0 });
+    var u1 = new Point(new double[] { 1, 0 });
+    var u1_ = new Point(new double[] { 2, 0 });
+    var u2 = new Point(new double[] { 0, 1 });
+
+    FaceLattice su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
+    FaceLattice su1_ = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1_ });
+    FaceLattice su2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
+
+    FaceLattice qu1 = MinkowskiSDas(su1, su2);
+
+    FaceLattice double_qu1 = MinkowskiSDas(su1, qu1);
+
+  }
 }
+
 

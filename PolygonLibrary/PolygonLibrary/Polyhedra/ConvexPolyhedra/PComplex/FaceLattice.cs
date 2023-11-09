@@ -15,7 +15,7 @@ public partial class Geometry<TNum, TConv>
 
   public class FaceLattice {
 
-    public HashSet<Point> Points { get; init; }
+    // public HashSet<Point> Points { get; init; }
 
     public FLNode Top { get; init; }
 
@@ -39,29 +39,26 @@ public partial class Geometry<TNum, TConv>
     }
 
     public FaceLattice(Point point) {
-      Points = new HashSet<Point>() { point };
       Top = new FLNode(point);
       Lattice = new List<HashSet<FLNode>>() { new HashSet<FLNode>() { Top } };
     }
 
-    public FaceLattice(IEnumerable<Point> Ps, FLNode Maximum) {
-      Points = new HashSet<Point>(Ps);
+    public FaceLattice(FLNode Maximum) {
       Top = Maximum;
       Lattice = ConstructLattice();
     }
 
-    internal FaceLattice(IEnumerable<Point> Ps, FLNode Maximum, List<HashSet<FLNode>> lattice) {
-      Points = new HashSet<Point>(Ps);
+    internal FaceLattice(FLNode Maximum, List<HashSet<FLNode>> lattice) {
       Top = Maximum;
       Lattice = lattice;
     }
 
     public FaceLattice ProjectTo(AffineBasis aBasis) {
-      return new FaceLattice(aBasis.ProjectPoints(Points).ToHashSet(), Top.ProjectTo(aBasis));
+      return new FaceLattice(Top.ProjectTo(aBasis));
     }
 
     public FaceLattice TranslateToOriginal(AffineBasis aBasis) {
-      return new FaceLattice(aBasis.TranslateToOriginal(Points).ToHashSet(), Top.TranslateToOriginal(aBasis));
+      return new FaceLattice(Top.TranslateToOriginal(aBasis));
     }
 
 
@@ -106,20 +103,39 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public HashSet<FLNode>? Super { get; protected set; }
 
-    public HashSet<FLNode> GetStrictSuper() { //? Как правильно назвать эту функцию?
-      if (Super is null) {
-        return new HashSet<FLNode>();
-      } else {
-        return new HashSet<FLNode>(Super) { };
-      }
+    private HashSet<FLNode>? _allSuper = null;
 
+    private HashSet<FLNode> AllNonStrictSuper {
+      get
+      {
+        if (Super is null) {
+          return new HashSet<FLNode>() { this };
+        }
+
+        return new HashSet<FLNode>(Super.SelectMany(sup => sup.AllNonStrictSuper)) { this };
+      }
     }
+    //! Надо как-то по-разному назвать Sub и Super, а то я путаюсь!
+    public HashSet<FLNode> GetAllNonStrictSuper() => AllNonStrictSuper;
+
+    public HashSet<FLNode> GetAllSuper() {
+      HashSet<FLNode> allSuper = new HashSet<FLNode>(AllNonStrictSuper);
+      allSuper.Remove(this);
+      return allSuper;
+    }
+
+
+
     /// <summary>
     /// The list of the sub-nodes, which Dim = this.Dim - 1.
     /// </summary>
     public HashSet<FLNode>? Sub { get; protected set; }
 
-    public HashSet<FLNode> GetSub() {
+    /// <summary>
+    /// Get the non strict sub facets of the current node.
+    /// </summary>
+    /// <returns>The set of subs with current one.</returns>
+    public HashSet<FLNode> GetImmediateNonStrictSub() { //? Она точно нужна ?
       if (Sub is null) {
         return new HashSet<FLNode>() { this };
       } else {
@@ -127,23 +143,47 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    private HashSet<FLNode>? _allSub = null;
 
-    //! Непонятно, надо ли включать сам узел в AllSub ?!
-    public HashSet<FLNode>? AllSub {
+
+    private HashSet<FLNode>? _allNonStrictSub = null;
+
+    private HashSet<FLNode> AllNonStrictSub {
       get
       {
-        if (_allSub is null) {
+        if (_allNonStrictSub is null) {
           if (Dim == 0) {
-            _allSub = new HashSet<FLNode>() { this };
+            _allNonStrictSub = new HashSet<FLNode>() { this };
           } else {
-            _allSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllSub!)) { this };
+            _allNonStrictSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllNonStrictSub!)) { this };
           }
         }
-        return _allSub;
+        return _allNonStrictSub;
       }
     }
 
+    public HashSet<FLNode> GetAllNonStrictSub() => AllNonStrictSub;
+
+    public HashSet<FLNode> GetAllSub() {
+      HashSet<FLNode> allSub = new HashSet<FLNode>(AllNonStrictSub);
+      allSub.Remove(this);
+      return allSub;
+    }
+
+    public static HashSet<FLNode> GetFromBottomToTop(FLNode bottom, FLNode top, bool excludeBottom = false, bool excludeTop = false) {
+      HashSet<FLNode> res = bottom.GetAllNonStrictSuper();
+      res.IntersectWith(top.GetAllNonStrictSub());
+
+      if (excludeBottom) {
+        res.Remove(bottom);
+      }
+
+      if (excludeTop) {
+        res.Remove(top);
+      }
+
+      return res;
+
+    }
 
     public void AddSub(FLNode node) {
       Sub ??= new HashSet<FLNode>();

@@ -57,25 +57,39 @@ public partial class Geometry<TNum, TConv>
     return AB;
   }
 
-  private static Point CalcInnerPoint(FLNode x, FLNode y) => new Point(new Vector(x.InnerPoint) + new Vector(y.InnerPoint));
-  // AddIncidence(FL[d + 1], ref node);
-  // z --> (x,y)
-  // node --> xi,yi
+  private static Point AddPoints(Point p1, Point p2) => new Point(new Vector(p1) + new Vector(p2));
+
+  private static Point CalcInnerPoint(FLNode x, FLNode y) => AddPoints(x.InnerPoint, y.InnerPoint);
+  // AddIncidence(FL[d + 1], candidate, zTo_xy);
+  // candidate --> xi,yi
+  // for all z \in FL[d+1] --> (x,y)
   // xi \in sub(x) && yi \in sub(y)
   // ==> AddSup / AddSuper
-  private static void AddIncidence(IEnumerable<FLNode> Nodes, FLNode node, Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
-    (FLNode xi, FLNode yi) = zTo_xy[node];
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="Nodes"></param>
+  /// <param name="candidate"></param>
+  /// <param name="x"></param>
+  /// <param name="zTo_xy"></param>
+  private static void AddIncidence(
+          IEnumerable<FLNode> Nodes
+        , FLNode candidate
+        , Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
+
+    (FLNode xi, FLNode yi) = zTo_xy[candidate];
 
     //? Верно ли что надо проверять только на один уровень вниз?
     foreach (FLNode z in Nodes) {
       (FLNode x, FLNode y) = zTo_xy[z];
 
-      HashSet<FLNode> X = x.GetSub();
-      HashSet<FLNode> Y = y.GetSub();
+      HashSet<FLNode> X = x.GetImmediateNonStrictSub();
+      HashSet<FLNode> Y = y.GetImmediateNonStrictSub();
 
       if (X.Contains(xi) && Y.Contains(yi)) {
-        node.AddSuper(z);
-        z.AddSub(node);
+        candidate.AddSuper(z);
+        z.AddSub(candidate);
       }
     }
   }
@@ -111,60 +125,67 @@ public partial class Geometry<TNum, TConv>
 
     for (int d = dim - 1; d > -1; d--) {
       foreach (FLNode z in FL[d + 1]) {
-        (FLNode p, FLNode q) = zTo_xy[z];
+        (FLNode x, FLNode y) = zTo_xy[z];
         AffineBasis zSpace = new AffineBasis(z.Affine);
         Point innerInPlane = zSpace.ProjectPoint(z.InnerPoint);
-        List<FLNode> X = p.AllSub!.OrderByDescending(node => node.Dim).ToList();
-        List<FLNode> Y = q.AllSub!.OrderByDescending(node => node.Dim).ToList();
+
+        //? Теперь я не уверен нужно ли сортировать
+        List<FLNode> X = x.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
+        List<FLNode> Y = y.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
+
         foreach (FLNode xi in X) {
           foreach (FLNode yi in Y) {
 
             HashSet<Point> candidate = MinkSum(xi.Vertices, yi.Vertices);
             AffineBasis candBasis = new AffineBasis(xi.Affine, yi.Affine);
 
-            //? Кажется, что условия 0), 1), 2) независимы.
-            //? А так как 0) ~d^3 может его не первым ставить?
-
             // 0) dim(xi (+) yi) == dim(z) - 1
             if (candBasis.SpaceDim > z.Dim - 1) { continue; }
+
 
             // first heuristic dim(xi (+) yi) < dim(z) - 1 ==> нет смысла дальше перебирать
             if (candBasis.SpaceDim < z.Dim - 1) { break; }
 
+
             // 1) Lemma 3
-            // {
             var inPlane = zSpace.ProjectPoints(candidate);
-            HyperPlane A = new HyperPlane(new AffineBasis(inPlane), (innerInPlane, false));
+            HyperPlane A = new HyperPlane(new AffineBasis(inPlane));
+            if (!A.Contains(innerInPlane)) { // Если внутренняя точка суммы попала на кандидата
+              A.OrientNormal(innerInPlane, false); // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
+            }// else {continue;}
 
-            HashSet<FLNode> xSuper = xi.GetStrictSuper();
-            HashSet<FLNode> ySuper = yi.GetStrictSuper();
+            // Похоже, согласно Лемме 3 нужно брать Super только вплоть до x и y, но не дальше.
+            // то есть, если xi = x (yi = y), то нужно рассмотреть только его.
+            // то есть, например, фиксируем xi. xi + все Sup вплоть до y (но не дальше!)
+            // И более того, не просто Super-ы, а только те, что нестрого меньше x (y).
+            // ? Верно ли, что каждый раз это всего лишь ОДИН супер равный x (y) либо пусто? !НЕТ! (если без эвристик)
+            // ! Нужно собрать узлы подрешётки от x (включительно) до xi (не включая) !
+            HashSet<FLNode> xSuper = FLNode.GetFromBottomToTop(xi, x, true);
+            HashSet<FLNode> ySuper = FLNode.GetFromBottomToTop(yi, y, true);
 
-            Point xInPlane = zSpace.ProjectPoint(xi.InnerPoint);
-            Point yInPlane = zSpace.ProjectPoint(yi.InnerPoint);
+            Point xiInnerInPlane = zSpace.ProjectPoint(xi.InnerPoint);
+            Point yiInnerInPlane = zSpace.ProjectPoint(yi.InnerPoint);
 
-            //f' > f
+            // F = x >= f' > f = xi
             bool xCheck = true;
-            foreach (FLNode xSup in xSuper) {
-              xCheck = xCheck && A.ContainsNegative(new Point(
-               new Vector(zSpace.ProjectPoint(xSup.InnerPoint))
-                +
-                  new Vector(yInPlane)));
+            foreach (Point x_ in xSuper.Select(n => zSpace.ProjectPoint(n.InnerPoint))) {
+              xCheck = xCheck && A.ContainsNegative(AddPoints(x_, yiInnerInPlane));
             }
 
-            //g' > g
+            // G = y >= g' > g = yi
             bool yCheck = true;
-            foreach (FLNode ySup in ySuper) {
-              yCheck = yCheck && A.ContainsNegative(new Point(
-                new Vector(zSpace.ProjectPoint(ySup.InnerPoint))
-                 +
-                  new Vector(xInPlane)));
+            foreach (Point y_ in ySuper.Select(n => zSpace.ProjectPoint(n.InnerPoint))) {
+              yCheck = yCheck && A.ContainsNegative(AddPoints(xiInnerInPlane, y_));
             }
 
+            // ? Нет смысла дальше перебирать подрешётки xi и yi одновременно, НО как это реализовать?!
+            if (!(xCheck && yCheck)) { continue; } //  candidate.Count == 3
 
-            if (!(xCheck && yCheck)) { continue; } //? Мб тут как-то хитрее нужно отсечения проводить
-            // }
 
-            // 2) Does not already exist in FL
+            // 2) Does not already exist in FL //! теперь я перестал понимать этот пункт!
+            // Если брать (xi, yi), то не понятно зачем. Так как разным xi, yi обязательно соответствуют разные грани (возможно невалидные)
+            // то есть в этом случае это выражение не имеет смысла. (всегда ложно).
+            // Если брать (x, y), то тоже получается ерунда, так как z = x (+) y, то есть это выражение всегда истинно.
             if (xyToz.ContainsKey((xi, yi))) { continue; }
 
             FLNode node = new FLNode(z.Dim - 1, candidate, CalcInnerPoint(xi, yi), candBasis);
@@ -172,16 +193,17 @@ public partial class Geometry<TNum, TConv>
             zTo_xy.Add(node, (xi, yi));
             xyToz.Add((xi, yi), node);
 
-
+            // ? Возможно нужно всем парам (Sub(xi), yi) и (xi, Sub(yi)) в качестве узла указать 'node' (По лемме 4)
             AddIncidence(FL[d + 1], node, zTo_xy);
           }
         }
       }
     }
     Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
+    Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
-    // PQ = new FLNode(dim, FL[0].Select(vertex => vertex.InnerPoint), CalcInnerPoint(P, Q), affinePQ);
-    return new FaceLattice(PQ.Vertices, PQ, FL);
+    //! Пересобрать Lattice чтобы убрать лишние точки!
+    return new FaceLattice(PQ, FL);
   }
 
 }
