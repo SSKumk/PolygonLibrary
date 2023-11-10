@@ -44,10 +44,11 @@ public class Sandbox {
     AffineBasis aBasis3D = new AffineBasis(3, 4);
 
     AffineBasis aBasis = new AffineBasis(p7, new List<Vector>() { p1 - p0, p2 - p0 });
-    FaceLattice x = fl_p1p2.ProjectTo(aBasis);
-    FaceLattice y = x.TranslateToOriginal(aBasis);
+    // FaceLattice x = fl_p1p2.ProjectTo(aBasis);
+    // FaceLattice y = x.TranslateToOriginal(aBasis);
 
     // Проекции "туда" и "сюда" вроде работают
+    //! А вот и нет ! У точки Super-ы пропали!
 
   }
 
@@ -111,56 +112,72 @@ public class Sandbox {
     // квадрат в xOy, отрезок в Oz
     var p0 = new Point(new double[] { 0, 0, 0 });
     var p1 = new Point(new double[] { 1, 1, 0 });
-    var p1_ = new Point(new double[] { 2, 2, 0 });
     var p2 = new Point(new double[] { 1, 0, 0 });
     var p3 = new Point(new double[] { 0, 1, 0 });
     var p4 = new Point(new double[] { 0, 0, 1 });
     var p5 = new Point(new double[] { 1, 0, 1 });
 
+    var t1 = new Point(new double[] { 0.5, 0, 0 });
+    var t2 = new Point(new double[] { 0.6, 0.3, 0 });
+    var t3 = new Point(new double[] { 0, 0.8, 0 });
+
     List<Point> sqXY = new List<Point>() { p0, p2, p1, p3 };
     List<Point> sqXZ = new List<Point>() { p0, p2, p4, p5 };
+    List<Point> trigXY = new List<Point>() { t1, t2, t3 };
 
     FaceLattice v0 = new FaceLattice(p0);
     FaceLattice v1 = new FaceLattice(p1);
     FaceLattice v4 = new FaceLattice(p4);
 
     FaceLattice s1 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1 });
-    FaceLattice s1_ = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1_ });
-
     FaceLattice s2 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p2 });
     FaceLattice s3 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p3 });
-    FaceLattice s4 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p4 });
+
+    FaceLattice s5 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p5 });
 
 
     FaceLattice q1 = GiftWrapping.WrapFaceLattice(sqXY);
+    FaceLattice trig1 = GiftWrapping.WrapFaceLattice(trigXY);
+
 
     // Начинаем с малых размерностей тестировать:
     // 0:
+    // Тут надо глазами смотреть, так как GW не умеет работать с роем из одной точки.
+    // FaceLattice VertexSolo = MinkSumSDas(v1, v1); // Ok
+    // FaceLattice Vertex = MinkSumSDas(v4, v1); // Ok
 
-    // FaceLattice VertexSolo = MinkowskiSDas(v1, v1); // Ok
-    // FaceLattice Vertex = MinkowskiSDas(v4, v1); // Ok
-    // FaceLattice Segment = MinkowskiSDas(v0, s1); // Ок
-    // FaceLattice Square = MinkowskiSDas(v0, q1);  // Ок
+    // FaceLattice v0s1 = MinkSumSDas(v0, s1); // Ок
+    // Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1)));
 
-    // 1:
-    // FaceLattice SegmentSolo = MinkowskiSDas(s1, s1);  // Ок
-    // FaceLattice Segment = MinkowskiSDas(s1, s1_); // Ок
-    // FaceLattice Square = MinkowskiSDas(s2, s3);  // Ок
-    // FaceLattice Cube = MinkowskiSDas(s2, q1);  // ! error
+    // FaceLattice v0q1 = MinkSumSDas(v0, q1);  // Ок
+    // Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1)));
 
-    // 2:
-    // FaceLattice Square = MinkowskiSDas(q1, q1); //! Какая-то хрень получается
+    // // 1:
+    // FaceLattice s1s1 = MinkSumSDas(s1, s1);  // Ок
+    // Assert.That(s1s1, Is.EqualTo(MinkSumCH(s1, s1)));
+    // FaceLattice s2s3 = MinkSumSDas(s2, s3);  // Ок
+    // Assert.That(s2s3, Is.EqualTo(MinkSumCH(s2, s3)));
+    // FaceLattice s2q1 = MinkSumSDas(s2, q1);  // ! error (ProjectTo неверный)
+    // Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2, q1)));
 
-    // 3:
-    // FaceLattice Cube = MinkowskiSDas(MinkowskiSDas(q1, s5).Top, MinkowskiSDas(q1, s5).Top); //! error
+    // 2: //! error (ProjectTo неверный)
+    // FaceLattice q1q1 = MinkSumSDas(q1, q1); 
+    // Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1, q1)));
+    // FaceLattice q1trig1 = MinkSumSDas(q1, trig1); //
+    // Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1, trig1)));
 
-    // FaceLattice Cube = MinkowskiSDas(q1, s5);
+    // // 3:
+    // FaceLattice q1s5 = MinkSumSDas(q1, s5);
+    // Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1, s5)));   // Ок
 
-    // FaceLattice Square = MinkowskiSDas(s1, s2);
+    // // High-dim
+    FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
+    // Assert.That(Cube5D, Is.EqualTo(cube5dCH));
 
-    FaceLattice cube5d = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    FaceLattice Cube5D = MinkowskiSDas(cube5d, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
-    FaceLattice Cube5D_2 = MinkowskiSDas(cube5d, cube5d);
+    FaceLattice Cube5D_2 = MinkSumSDas(cube5dCH, cube5dCH);
+    Assert.That(Cube5D_2, Is.EqualTo(MinkSumCH(cube5dCH, cube5dCH)));
+
 
   }
 
@@ -169,17 +186,31 @@ public class Sandbox {
   public void MinkowskiSDas2D() {
     var u0 = new Point(new double[] { 0, 0 });
     var u1 = new Point(new double[] { 1, 0 });
-    var u1_ = new Point(new double[] { 2, 0 });
     var u2 = new Point(new double[] { 0, 1 });
+    var u3 = new Point(new double[] { 1, 1 });
 
     FaceLattice su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
-    FaceLattice su1_ = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1_ });
     FaceLattice su2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
+    FaceLattice su3 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u3 });
 
-    FaceLattice qu1 = MinkowskiSDas(su1, su2);
+    // Единичный квадрат
+    FaceLattice qu1_GW = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1, u2, u3 });
+    FaceLattice qu1 = MinkSumSDas(su1, su2);
+    Assert.That(qu1, Is.EqualTo(qu1_GW));
 
-    FaceLattice double_qu1 = MinkowskiSDas(su1, qu1);
+    // Прямоугольник
+    FaceLattice su1_qu1 = MinkSumSDas(su1, qu1);
+    Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1)));
 
+    // Шестиугольник
+    FaceLattice su3_qu1 = MinkSumSDas(su3, qu1);
+    Assert.That(su3_qu1, Is.EqualTo(MinkSumCH(su3, qu1)));
+
+    // Квадрат в два раза больший
+    FaceLattice double_qu1 = MinkSumSDas(qu1, qu1);
+    Assert.That(double_qu1, Is.EqualTo(MinkSumCH(qu1_GW, qu1_GW)));
+
+    // ВАУ, что-то работает!
   }
 }
 
