@@ -8,6 +8,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
+// todo Разобраться с Equals(), GetHashCode() и IEquatable<T> ! повсюду !
+
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
@@ -53,15 +55,43 @@ public partial class Geometry<TNum, TConv>
       Lattice = lattice;
     }
 
-    public FaceLattice ProjectTo(AffineBasis aBasis) {
-      return new FaceLattice(Top.ProjectTo(aBasis));
-    }
+    // public FaceLattice ProjectTo(AffineBasis aBasis) {
+
+
+
+    // }
 
     public FaceLattice TranslateToOriginal(AffineBasis aBasis) {
       return new FaceLattice(Top.TranslateToOriginal(aBasis));
     }
 
 
+    public override bool Equals(object? obj) {
+      if (obj == null || GetType() != obj.GetType()) {
+        return false;
+      }
+
+      FaceLattice other = (FaceLattice)obj;
+
+      if (this.Lattice.Count != other.Lattice.Count) {
+        return false;
+      }
+
+      bool isEqual = true;
+      for (int i = this.Top.Dim; i > -1; i--) {
+        if (isEqual is false) {
+          break;
+        }
+        isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
+        // ? Возможно надо что-то ещё проверять чтобы хорошо их сравнивать
+        // ? Sub и Super надо проверять! (Но как?)
+        System.Console.WriteLine($"Level i = {i}. Lattice are not equal:");
+        System.Console.WriteLine($"this: {string.Join(' ', this.Lattice[i])}");
+        System.Console.WriteLine($"other: {string.Join(' ', other.Lattice[i])}");
+      }
+
+      return isEqual;
+    }
   }
 
   /// <summary>
@@ -79,6 +109,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public VPolytop Polytop { get; protected set; }
 
+    public void ResetPolytop() { // todo Это противоречит нашей идеи о неизменности объектов! И нужна как вспомогательная вещь!
+      Polytop = new VPolytop(GetAllNonStrictSub().Where(n => n.Dim == 0)
+                                          .Select(n => n.InnerPoint));
+    }
+
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
@@ -91,7 +126,6 @@ public partial class Geometry<TNum, TConv>
 
     // point(x) = 1/2*(point(y) + point(y')), where y,y' \in Faces, y != y'.
     public Point InnerPoint { get; }
-    // => _innerPoint
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
@@ -205,7 +239,6 @@ public partial class Geometry<TNum, TConv>
     public FLNode(int dim, IEnumerable<Point> Vs, Point innerPoint, AffineBasis aBasis) {
       Dim = dim;
       Polytop = new VPolytop(Vs);
-      // InnerPoint = TNum.Sqrt(Tools.Two) / Tools.Two * innerPoint;
       InnerPoint = innerPoint;
       Affine = aBasis;
     }
@@ -219,7 +252,7 @@ public partial class Geometry<TNum, TConv>
         subNode.AddSuper(this);
       }
 
-      InnerPoint = new Point //TNum.Sqrt(Tools.Two) / Tools.Two * 
+      InnerPoint = new Point
           (
            (new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two
           );
@@ -228,26 +261,20 @@ public partial class Geometry<TNum, TConv>
       AffineBasis affine = new AffineBasis(subF.Affine);
       affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
       Affine = affine;
-
-      // if (Dim == 0) {
-      //   _allSub = new HashSet<FLNode>() { this };
-      // } else {
-      //   _allSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllSub!));
-      // }
     }
 
-
-    public FLNode ProjectTo(AffineBasis aBasis) {
-      if (Dim == 0) {
-        Point v_proj = aBasis.ProjectPoint(Vertices.First());
-        return new FLNode(v_proj);
-      }
-      List<FLNode> sub = new List<FLNode>();
-      foreach (FLNode subNode in Sub!) {
-        sub.Add(subNode.ProjectTo(aBasis));
-      }
-      return new FLNode(Dim, sub.SelectMany(n => n.Vertices), sub);
-    }
+    //! Эта хрень НЕверна!
+    // public FLNode ProjectTo(AffineBasis aBasis) {
+    //   if (Dim == 0) {
+    //     Point v_proj = aBasis.ProjectPoint(Vertices.First());
+    //     return new FLNode(v_proj);
+    //   }
+    //   List<FLNode> sub = new List<FLNode>();
+    //   foreach (FLNode subNode in Sub!) {
+    //     sub.Add(subNode.ProjectTo(aBasis));
+    //   }
+    //   return new FLNode(Dim, sub.SelectMany(n => n.Vertices), sub);
+    // }
 
     public FLNode TranslateToOriginal(AffineBasis aBasis) {
       if (Dim == 0) {
@@ -263,6 +290,8 @@ public partial class Geometry<TNum, TConv>
 
     public override int GetHashCode() => Polytop.GetHashCode();
 
+
+    //todo Какой GetHashCode и Equals выбрать для FaceLatticeNode?
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
@@ -270,10 +299,18 @@ public partial class Geometry<TNum, TConv>
 
       FLNode other = (FLNode)obj;
 
+
+      // if (!this.Polytop.Equals(other.Polytop)) {
+      //   System.Console.WriteLine($"this = {string.Join('\n', this.Polytop.Vertices)}");
+      //   System.Console.WriteLine();
+      //   System.Console.WriteLine($"other = {string.Join('\n', other.Polytop.Vertices)}");
+      //   System.Console.WriteLine("NOT EQUAL!");
+
+      // }
+
       return this.Polytop.Equals(other.Polytop);
     }
 
-    //todo Какой GetHashCode и Equals выбрать для FaceLatticeNode?
 
   }
 

@@ -94,10 +94,10 @@ public partial class Geometry<TNum, TConv>
     }
   }
 
-  public static FaceLattice MinkowskiSDas(FaceLattice P, FaceLattice Q) =>
-        MinkowskiSDas(P.Top, Q.Top);
+  public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) =>
+        MinkSumSDas(P.Top, Q.Top);
 
-  public static FaceLattice MinkowskiSDas(FLNode P, FLNode Q) {
+  public static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
     AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
 
     int dim = affinePQ.SpaceDim;
@@ -107,8 +107,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P (+) Q) == d == Размерности пространства
-      FaceLattice lowDim = MinkowskiSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
-      return lowDim.TranslateToOriginal(affinePQ);
+      throw new NotImplementedException();
+      // var x = Q.ProjectTo(affinePQ);
+      // FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
+      // return lowDim.TranslateToOriginal(affinePQ);
     }
 
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
@@ -203,7 +205,12 @@ public partial class Geometry<TNum, TConv>
     Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
     //! Пересобрать Lattice чтобы убрать лишние точки!
-    return new FaceLattice(PQ, FL);
+    foreach (HashSet<FLNode> level in FL) {
+      foreach (FLNode node in level) {
+        node.ResetPolytop();
+      }
+    }
+    return new FaceLattice(FL[dim].First(), FL);
   }
 
 }

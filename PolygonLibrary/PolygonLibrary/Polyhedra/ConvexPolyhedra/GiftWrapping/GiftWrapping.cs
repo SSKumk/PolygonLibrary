@@ -62,6 +62,7 @@ public partial class Geometry<TNum, TConv>
       if (BSP is SubTwoDimensionalEdge) {
         List<FLNode> sub = new List<FLNode>();
         foreach (Point p in BSP.OriginalVertices) {
+          // foreach (Point p in BSP.OriginalVertices.Order()) {
           if (!FL.ContainsKey(p.GetHashCode())) {
             FLNode vertex = new FLNode(p);
             FL.Add(p.GetHashCode(), vertex);
@@ -78,6 +79,7 @@ public partial class Geometry<TNum, TConv>
         List<FLNode> sub = new List<FLNode>();
 
         foreach (BaseSubCP subF in BSP.Faces!) {
+          // foreach (BaseSubCP subF in BSP.Faces!.OrderBy(F => F.Vertices.First())) {
           //todo Подумать, как правильно hash сделать у FLN, так чтобы в словаре хорошо ключи искались:
           int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
           if (!FL.ContainsKey(hash)) {
