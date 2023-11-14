@@ -64,7 +64,7 @@ public partial class Geometry<TNum, TConv>
   // candidate --> xi,yi
   // for all z \in FL[d+1] --> (x,y)
   // xi \in sub(x) && yi \in sub(y)
-  // ==> AddSup / AddSuper
+  // ==> AddSup / AddAbove
 
   /// <summary>
   /// 
@@ -72,33 +72,21 @@ public partial class Geometry<TNum, TConv>
   /// <param name="Nodes"></param>
   /// <param name="candidate"></param>
   /// <param name="x"></param>
-  /// <param name="zTo_xy"></param>
-  private static void AddIncidence(
-          IEnumerable<FLNode> Nodes
-        , FLNode candidate
-        , Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
+  // /// <param name="zTo_xy"></param>
+  // private static void AddIncidence(
+  //         IEnumerable<FLNode> Nodes
+  //       , FLNode candidate
+  //       , Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
 
-    (FLNode xi, FLNode yi) = zTo_xy[candidate];
 
-    //? Верно ли что надо проверять только на один уровень вниз?
-    foreach (FLNode z in Nodes) {
-      (FLNode x, FLNode y) = zTo_xy[z];
-
-      HashSet<FLNode> X = x.GetImmediateNonStrictSub();
-      HashSet<FLNode> Y = y.GetImmediateNonStrictSub();
-
-      if (X.Contains(xi) && Y.Contains(yi)) {
-        candidate.AddSuper(z);
-        z.AddSub(candidate);
-      }
-    }
-  }
+  // }
 
   public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) =>
         MinkSumSDas(P.Top, Q.Top);
 
   public static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
-    AffineBasis affinePQ = new AffineBasis(P.Affine, Q.Affine);
+    AffineBasis affinePQ = new AffineBasis(AddPoints(P.Affine.Origin, Q.Affine.Origin)
+                                          , P.Affine.Basis.Concat(Q.Affine.Basis));
 
     int dim = affinePQ.SpaceDim;
     if (dim == 0) {
@@ -129,7 +117,7 @@ public partial class Geometry<TNum, TConv>
       foreach (FLNode z in FL[d + 1]) {
         (FLNode x, FLNode y) = zTo_xy[z];
         AffineBasis zSpace = new AffineBasis(z.Affine);
-        Point innerInPlane = zSpace.ProjectPoint(z.InnerPoint);
+        Point innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
         //? Теперь я не уверен нужно ли сортировать
         List<FLNode> X = x.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
@@ -139,45 +127,41 @@ public partial class Geometry<TNum, TConv>
           foreach (FLNode yi in Y) {
 
             HashSet<Point> candidate = MinkSum(xi.Vertices, yi.Vertices);
-            AffineBasis candBasis = new AffineBasis(xi.Affine, yi.Affine);
+            AffineBasis candBasis = new AffineBasis(AddPoints(xi.Affine.Origin, yi.Affine.Origin)
+                                          , xi.Affine.Basis.Concat(yi.Affine.Basis));
 
             // 0) dim(xi (+) yi) == dim(z) - 1
-            if (candBasis.SpaceDim > z.Dim - 1) { continue; }
+            if (candBasis.SpaceDim != z.Dim - 1) { continue; }
 
 
             // first heuristic dim(xi (+) yi) < dim(z) - 1 ==> нет смысла дальше перебирать
-            if (candBasis.SpaceDim < z.Dim - 1) { break; }
+            // if (candBasis.SpaceDim < z.Dim - 1) { break; }
 
 
             // 1) Lemma 3
-            var inPlane = zSpace.ProjectPoints(candidate);
-            HyperPlane A = new HyperPlane(new AffineBasis(inPlane));
-            if (!A.Contains(innerInPlane)) { // Если внутренняя точка суммы попала на кандидата
-              A.OrientNormal(innerInPlane, false); // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
-            }// else {continue;}
+            var candidateInAffine_z = zSpace.ProjectPoints(candidate);
+            HyperPlane A = new HyperPlane(new AffineBasis(candidateInAffine_z));
+            if (!A.Contains(innerInAffine_z)) { // Если внутренняя точка суммы попала на кандидата
+              A.OrientNormal(innerInAffine_z, false); // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
+            } // else {continue;}
 
-            // Похоже, согласно Лемме 3 нужно брать Super только вплоть до x и y, но не дальше.
-            // то есть, если xi = x (yi = y), то нужно рассмотреть только его.
-            // то есть, например, фиксируем xi. xi + все Sup вплоть до y (но не дальше!)
-            // И более того, не просто Super-ы, а только те, что нестрого меньше x (y).
-            // ? Верно ли, что каждый раз это всего лишь ОДИН супер равный x (y) либо пусто? !НЕТ! (если без эвристик)
-            // ! Нужно собрать узлы подрешётки от x (включительно) до xi (не включая) !
-            HashSet<FLNode> xSuper = FLNode.GetFromBottomToTop(xi, x, true);
-            HashSet<FLNode> ySuper = FLNode.GetFromBottomToTop(yi, y, true);
+            HashSet<FLNode> xAbove = FLNode.GetFromBottomToTop(xi, x, true);
+            HashSet<FLNode> yAbove = FLNode.GetFromBottomToTop(yi, y, true);
 
-            Point xiInnerInPlane = zSpace.ProjectPoint(xi.InnerPoint);
-            Point yiInnerInPlane = zSpace.ProjectPoint(yi.InnerPoint);
+
 
             // F = x >= f' > f = xi
+            // InnerPoint(f') + InnerPoint(g) \in A^-
             bool xCheck = true;
-            foreach (Point x_ in xSuper.Select(n => zSpace.ProjectPoint(n.InnerPoint))) {
-              xCheck = xCheck && A.ContainsNegative(AddPoints(x_, yiInnerInPlane));
+            foreach (var x_InnerPoint in xAbove.Select(n => n.InnerPoint)) {
+              xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(AddPoints(x_InnerPoint, yi.InnerPoint)));
             }
 
             // G = y >= g' > g = yi
+            // InnerPoint(g') + InnerPoint(f) \in A^-
             bool yCheck = true;
-            foreach (Point y_ in ySuper.Select(n => zSpace.ProjectPoint(n.InnerPoint))) {
-              yCheck = yCheck && A.ContainsNegative(AddPoints(xiInnerInPlane, y_));
+            foreach (var y_InnerPoint in yAbove.Select(n => n.InnerPoint)) {
+              yCheck = yCheck && A.ContainsNegative(zSpace.ProjectPoint(AddPoints(y_InnerPoint, xi.InnerPoint)));
             }
 
             // ? Нет смысла дальше перебирать подрешётки xi и yi одновременно, НО как это реализовать?!
@@ -196,7 +180,17 @@ public partial class Geometry<TNum, TConv>
             xyToz.Add((xi, yi), node);
 
             // ? Возможно нужно всем парам (Sub(xi), yi) и (xi, Sub(yi)) в качестве узла указать 'node' (По лемме 4)
-            AddIncidence(FL[d + 1], node, zTo_xy);
+            foreach (FLNode prevNode in FL[d + 1]) {
+              (FLNode xp, FLNode yq) = zTo_xy[prevNode];
+
+              HashSet<FLNode> Xp = xp.GetAllNonStrictSub();
+              HashSet<FLNode> Yq = yq.GetAllNonStrictSub();
+
+              if (Xp.Contains(xi) && Yq.Contains(yi)) {
+                node.AddAbove(prevNode);
+                prevNode.AddSub(node);
+              }
+            }
           }
         }
       }
@@ -204,7 +198,7 @@ public partial class Geometry<TNum, TConv>
     Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
     Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
-    //! Пересобрать Lattice чтобы убрать лишние точки!
+    //? Пересобираем Lattice чтобы убрать лишние точки! Можно ли так или лучше всё-таки отдельный класс?
     foreach (HashSet<FLNode> level in FL) {
       foreach (FLNode node in level) {
         node.ResetPolytop();
