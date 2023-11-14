@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
         for (int i = 1; i < sortedVs.Count(); i++) {
           hash = HashCode.Combine(hash, sortedVs[i]);
         }
-        Console.Error.WriteLine($"Calc hash");
+        // Console.Error.WriteLine($"Calc hash");
         _hash = hash;
       }
       return _hash.Value;
@@ -42,6 +42,8 @@ public partial class Geometry<TNum, TConv>
 
       return this.Vertices.SetEquals(other.Vertices);
     }
+
+    public override string ToString() => $"Hash = {GetHashCode()}\n" + string.Join('\n', Vertices.Order()) + "\n";
   }
 
 }
