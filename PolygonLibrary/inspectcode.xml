@@ -320,11 +320,14 @@
       <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1139-1145" Line="35" Message="Method 'MinkSumCH' can be made private" />
       <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1182-1183" Line="35" Message="Parameter 'P' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumCH (but other parameters do)" />
       <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1192-1193" Line="35" Message="Parameter 'Q' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumCH (but other parameters do)" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1297-1306" Line="38" Message="Method 'MinkSumCH' is never used" />
       <Issue TypeId="UnusedMember.Local" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1479-1482" Line="44" Message="Method 'Dim' is never used" />
       <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1807-1813" Line="52" Message="Method 'MinkSum' can be made private" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2491-2496" Line="72" Message="Cannot resolve parameter 'Nodes'" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2527-2536" Line="73" Message="Cannot resolve parameter 'candidate'" />
       <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2567-2568" Line="74" Message="Cannot resolve parameter 'x'" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="3467-3473" Line="101" Message="Method 'MinkowskiSDas' can be made private" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2862-2863" Line="84" Message="Parameter 'P' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumSDas (but other parameters do)" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2877-2878" Line="84" Message="Parameter 'Q' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumSDas (but other parameters do)" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2924-2930" Line="87" Message="Method 'MinkSumSDas' can be made private" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="153-162" Line="9" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
       <Issue TypeId="UnusedType.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="635-648" Line="20" Message="Class 'IncidenceInfo' is never used (except inside its declaration)" />
@@ -355,22 +358,26 @@
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="153-162" Line="9" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
-      <Issue TypeId="AutoPropertyCanBeMadeGetOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="597-602" Line="22" Message="Auto-property can be made get-only" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="651-655" Line="24" Message="Auto-property accessor 'Lattice.get' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1351-1357" Line="48" Message="Constructor 'FaceLattice' can be made private" />
-      <Issue TypeId="CSharpWarnings::CS0659" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1874-1880" Line="67" Message="'CGLibrary.Geometry&lt;TNum,TConv&gt;.FaceLattice' overrides Object.Equals(object o) but does not override Object.GetHashCode()" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2711-2717" Line="100" Message="Property 'Polytop' can be made private" />
-      <Issue TypeId="MemberHidesStaticFromOuterClass" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2727-2734" Line="100" Message="Property 'Geometry&lt;TNum,TConv&gt;.VPolytop Polytop' hides class from outer class" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3758-3767" Line="129" Message="Accessor 'Super.set' can be made private" />
-      <Issue TypeId="NotAccessedField.Compiler" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3807-3816" Line="131" Message="Field '_allSuper' is assigned but its value is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4173-4179" Line="144" Message="Method 'GetAllNonStrictSuper' can be made private" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4271-4282" Line="146" Message="Method 'GetAllSuper' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4569-4578" Line="157" Message="Accessor 'Sub.set' can be made private" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5038-5044" Line="173" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="ConvertIfStatementToConditionalTernaryExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5167-5169" Line="179" Message="Convert into '?:' expression" />
-      <Issue TypeId="RedundantSuppressNullableWarningExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5361-5362" Line="182" Message="The nullable warning suppression expression is redundant" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5527-5533" Line="191" Message="Method 'GetAllSub' can be made private" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8312-8319" Line="283" Message="Non-readonly property referenced in 'GetHashCode()'" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="540-546" Line="20" Message="Property 'Points' is never used" />
+      <Issue TypeId="AutoPropertyCanBeMadeGetOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="596-601" Line="22" Message="Auto-property can be made get-only" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="611-617" Line="24" Message="Property 'Lattice' can be made private" />
+      <Issue TypeId="AutoPropertyCanBeMadeGetOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="655-660" Line="24" Message="Auto-property can be made get-only" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1350-1356" Line="48" Message="Constructor 'FaceLattice' can be made private" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1688-1707" Line="64" Message="Method 'TranslateToOriginal' is never used" />
+      <Issue TypeId="CSharpWarnings::CS0659" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1831-1837" Line="69" Message="'CGLibrary.Geometry&lt;TNum,TConv&gt;.FaceLattice' overrides Object.Equals(object o) but does not override Object.GetHashCode()" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2850-2856" Line="105" Message="Property 'Polytop' can be made private" />
+      <Issue TypeId="MemberHidesStaticFromOuterClass" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2866-2873" Line="105" Message="Property 'Geometry&lt;TNum,TConv&gt;.VPolytop Polytop' hides class from outer class" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3855-3864" Line="130" Message="Accessor 'Above.set' can be made private" />
+      <Issue TypeId="NotAccessedField.Compiler" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3904-3913" Line="132" Message="Field '_allAbove' is assigned but its value is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4201-4207" Line="144" Message="Method 'GetAllNonStrictAbove' can be made private" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4299-4310" Line="146" Message="Method 'GetAllAbove' is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4597-4606" Line="157" Message="Accessor 'Sub.set' can be made private" />
+      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5066-5072" Line="173" Message="Initializing field by default value is redundant" />
+      <Issue TypeId="ConvertIfStatementToConditionalTernaryExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5195-5197" Line="179" Message="Convert into '?:' expression" />
+      <Issue TypeId="RedundantSuppressNullableWarningExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5389-5390" Line="182" Message="The nullable warning suppression expression is redundant" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5578-5587" Line="191" Message="Method 'GetAllSub' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8266-8275" Line="282" Message="Method 'PolytopEq' is never used" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8373-8380" Line="284" Message="Non-readonly property referenced in 'GetHashCode()'" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="151-160" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
@@ -397,9 +404,8 @@
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="149-158" Line="7" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="650-655" Line="24" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="UseCollectionCountProperty" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="842-844" Line="27" Message="Replace 'Enumerable.Count()' invocation with collection count property access" />
-      <Issue TypeId="RedundantStringInterpolation" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="952-953" Line="30" Message="Redundant string interpolation" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="976-981" Line="31" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="1013-1018" Line="33" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="979-984" Line="31" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="1016-1021" Line="33" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Segments\Segment.cs" Offset="78-87" Line="5" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Segments'" />
       <Issue TypeId="NotAccessedField.Global" File="PolygonLibrary\Segments\Segment.cs" Offset="2051-2053" Line="94" Message="Field 's1' is assigned but its value is never used" />
       <Issue TypeId="NotAccessedField.Global" File="PolygonLibrary\Segments\Segment.cs" Offset="2166-2168" Line="99" Message="Field 's2' is assigned but its value is never used" />
@@ -799,28 +805,29 @@
       <Issue TypeId="RedundantUsingDirective" File="Tests\OtherTests\Sandbox.cs" Offset="56-72" Line="3" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="Tests\OtherTests\Sandbox.cs" Offset="231-297" Line="7" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="Tests\OtherTests\Sandbox.cs" Offset="299-315" Line="8" Message="Using directive is not required by the code and can be safely removed" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1073-1080" Line="29" Message="Local variable 'fl_p1p2' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1176-1187" Line="32" Message="Local variable 'fl_p3p5p6p7' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1291-1297" Line="35" Message="Local variable 'fl_all' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1420-1432" Line="38" Message="Local variable 'fl_simplex4D' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1590-1598" Line="43" Message="Local variable 'aBasis2D' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1641-1649" Line="44" Message="Local variable 'aBasis3D' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1830-1831" Line="48" Message="Local variable 'y' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2421-2422" Line="68" Message="Local variable 'P' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2764-2767" Line="81" Message="Local variable 's01' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2809-2812" Line="82" Message="Local variable 's02' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2854-2857" Line="83" Message="Local variable 's03' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2899-2902" Line="84" Message="Local variable 's04' is never used" />
-      <Issue TypeId="VariableCanBeNotNullable" File="Tests\OtherTests\Sandbox.cs" Offset="3384-3385" Line="100" Message="'top2' can be declared as non-nullable" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4051-4055" Line="121" Message="Local variable 'sqXZ' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4115-4117" Line="123" Message="Local variable 'v0' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4158-4160" Line="124" Message="Local variable 'v1' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4201-4203" Line="125" Message="Local variable 'v4' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4246-4248" Line="127" Message="Local variable 's1' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4328-4331" Line="128" Message="Local variable 's1_' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4496-4498" Line="131" Message="Local variable 's3' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4578-4580" Line="132" Message="Local variable 's4' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="5222-5226" Line="149" Message="Local variable 'Cube' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="6261-6264" Line="177" Message="Local variable 'su3' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="1694-1700" Line="46" Message="Local variable 'aBasis' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2475-2476" Line="69" Message="Local variable 'P' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2818-2821" Line="82" Message="Local variable 's01' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2863-2866" Line="83" Message="Local variable 's02' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2908-2911" Line="84" Message="Local variable 's03' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="2953-2956" Line="85" Message="Local variable 's04' is never used" />
+      <Issue TypeId="VariableCanBeNotNullable" File="Tests\OtherTests\Sandbox.cs" Offset="3438-3439" Line="101" Message="'top2' can be declared as non-nullable" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4216-4220" Line="125" Message="Local variable 'sqXZ' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4340-4342" Line="128" Message="Local variable 'v0' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4383-4385" Line="129" Message="Local variable 'v1' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4426-4428" Line="130" Message="Local variable 'v4' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4471-4473" Line="132" Message="Local variable 's1' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4553-4555" Line="133" Message="Local variable 's2' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4635-4637" Line="134" Message="Local variable 's3' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4719-4721" Line="136" Message="Local variable 's5' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4805-4807" Line="139" Message="Local variable 'q1' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4863-4868" Line="140" Message="Local variable 'trig1' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsBase.cs" Offset="2601-2609" Line="74" Message="Method 'GenShift' is never used" />
       <Issue TypeId="MemberCanBeProtected.Global" File="Tests\ToolsTests\TestsBase.cs" Offset="5326-5332" Line="138" Message="Method 'MakeRotationMatrix' can be made protected" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="386-403" Line="12" Message="Field 'Octahedron3D_list' is never used" />
@@ -828,7 +835,6 @@
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="583-597" Line="14" Message="Field 'Simplex3D_list' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="733-744" Line="16" Message="Field 'Cube3D_list' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="799-810" Line="17" Message="Field 'Cube4D_list' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="865-876" Line="18" Message="Field 'Cube5D_list' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1312-1325" Line="28" Message="Field 'rotate3D_45XY' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1418-1431" Line="29" Message="Field 'rotate4D_45XY' is never used" />
       <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1544-1550" Line="32" Message="Method 'Cube_list' can be made private" />
