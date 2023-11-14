@@ -17,7 +17,7 @@ public partial class Geometry<TNum, TConv>
 
   public class FaceLattice {
 
-    // public HashSet<Point> Points { get; init; }
+    public HashSet<Point> Points => Top.Vertices;
 
     public FLNode Top { get; init; }
 
@@ -79,15 +79,9 @@ public partial class Geometry<TNum, TConv>
 
       bool isEqual = true;
       for (int i = this.Top.Dim; i > -1; i--) {
-        if (isEqual is false) {
-          break;
-        }
         isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
-        // ? Возможно надо что-то ещё проверять чтобы хорошо их сравнивать
-        // ? Sub и Super надо проверять! (Но как?)
-        System.Console.WriteLine($"Level i = {i}. Lattice are not equal:");
-        System.Console.WriteLine($"this: {string.Join(' ', this.Lattice[i])}");
-        System.Console.WriteLine($"other: {string.Join(' ', other.Lattice[i])}");
+        System.Console.WriteLine($"Lattice are not equal: level i = {i}.");
+        if (isEqual == false) { break; }
       }
 
       return isEqual;
@@ -122,9 +116,6 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
-    // private Point? _innerPoint = null;
-
-    // point(x) = 1/2*(point(y) + point(y')), where y,y' \in Faces, y != y'.
     public Point InnerPoint { get; }
 
     /// <summary>
@@ -135,27 +126,26 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The list of the super-nodes, which Dim = this.Dim + 1.
     /// </summary>
-    public HashSet<FLNode>? Super { get; protected set; }
+    public HashSet<FLNode>? Above { get; protected set; }
 
-    private HashSet<FLNode>? _allSuper = null;
+    private HashSet<FLNode>? _allAbove = null;
 
-    private HashSet<FLNode> AllNonStrictSuper {
+    private HashSet<FLNode> AllNonStrictAbove {
       get
       {
-        if (Super is null) {
+        if (Above is null) {
           return new HashSet<FLNode>() { this };
         }
 
-        return new HashSet<FLNode>(Super.SelectMany(sup => sup.AllNonStrictSuper)) { this };
+        return new HashSet<FLNode>(Above.SelectMany(sup => sup.AllNonStrictAbove)) { this };
       }
     }
-    //! Надо как-то по-разному назвать Sub и Super, а то я путаюсь!
-    public HashSet<FLNode> GetAllNonStrictSuper() => AllNonStrictSuper;
+    public HashSet<FLNode> GetAllNonStrictAbove() => AllNonStrictAbove;
 
-    public HashSet<FLNode> GetAllSuper() {
-      HashSet<FLNode> allSuper = new HashSet<FLNode>(AllNonStrictSuper);
-      allSuper.Remove(this);
-      return allSuper;
+    public HashSet<FLNode> GetAllAbove() {
+      HashSet<FLNode> allAbove = new HashSet<FLNode>(AllNonStrictAbove);
+      allAbove.Remove(this);
+      return allAbove;
     }
 
 
@@ -204,7 +194,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     public static HashSet<FLNode> GetFromBottomToTop(FLNode bottom, FLNode top, bool excludeBottom = false, bool excludeTop = false) {
-      HashSet<FLNode> res = bottom.GetAllNonStrictSuper();
+      HashSet<FLNode> res = bottom.GetAllNonStrictAbove();
       res.IntersectWith(top.GetAllNonStrictSub());
 
       if (excludeBottom) {
@@ -224,9 +214,9 @@ public partial class Geometry<TNum, TConv>
       Sub.Add(node);
     }
 
-    public void AddSuper(FLNode node) {
-      Super ??= new HashSet<FLNode>();
-      Super.Add(node);
+    public void AddAbove(FLNode node) {
+      Above ??= new HashSet<FLNode>();
+      Above.Add(node);
     }
 
     public FLNode(Point vertex) {
@@ -249,7 +239,7 @@ public partial class Geometry<TNum, TConv>
       Sub = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
-        subNode.AddSuper(this);
+        subNode.AddAbove(this);
       }
 
       InnerPoint = new Point
@@ -288,10 +278,13 @@ public partial class Geometry<TNum, TConv>
       return new FLNode(Dim, sub.SelectMany(n => n.Vertices), sub);
     }
 
+    public bool PolytopEq(FLNode other) => this.Polytop.Equals(other.Polytop);
+
     public override int GetHashCode() => Polytop.GetHashCode();
 
 
     //todo Какой GetHashCode и Equals выбрать для FaceLatticeNode?
+    // ! Верно ли, что Polytop.GetHashCode() == Polytop.Equals()?
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
@@ -299,6 +292,41 @@ public partial class Geometry<TNum, TConv>
 
       FLNode other = (FLNode)obj;
 
+      // 1) this.Above == other.Above
+      if (this.Above is null && other.Above is not null) { return false; }
+      if (this.Above is not null && other.Above is null) { return false; }
+
+      bool isEqual = true;
+      var thisAbovePHash = this.Above?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
+      var otherAbovePHash = other.Above?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
+
+
+      if (thisAbovePHash is not null && otherAbovePHash is not null) {
+        isEqual = isEqual && thisAbovePHash.SetEquals(otherAbovePHash);
+      }
+      if (!isEqual) {
+        Console.WriteLine("Above!");
+        Console.WriteLine($"This:  {string.Join('\n', this.Above!.Select(n => n.Polytop))}");
+        Console.WriteLine($"Other: {string.Join('\n', other.Above!.Select(n => n.Polytop))}");
+        return false;
+      }
+
+      // 2) this.Sub == other.Sub
+      if (this.Sub is null && other.Sub is not null) { return false; }
+      if (this.Sub is not null && other.Sub is null) { return false; }
+
+      var thisSubPHash = this.Sub?.Select(s => s.Polytop.GetHashCode()).ToHashSet();
+      var otherSubPHash = other.Sub?.Select(s => s.Polytop.GetHashCode()).ToHashSet();
+
+      if (thisSubPHash is not null && otherSubPHash is not null) {
+        isEqual = isEqual && thisSubPHash.SetEquals(otherSubPHash);
+      }
+      if (!isEqual) {
+        Console.WriteLine(value: "Below!");
+        Console.WriteLine($"This:  {string.Join('\n', this.Sub!.Select(n => n.Polytop))}");
+        Console.WriteLine($"Other: {string.Join('\n', other.Sub!.Select(n => n.Polytop))}");
+        return false;
+      }
 
       // if (!this.Polytop.Equals(other.Polytop)) {
       //   System.Console.WriteLine($"this = {string.Join('\n', this.Polytop.Vertices)}");
@@ -308,6 +336,7 @@ public partial class Geometry<TNum, TConv>
 
       // }
 
+      // 3) this == other
       return this.Polytop.Equals(other.Polytop);
     }
 
