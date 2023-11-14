@@ -296,17 +296,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="affineBasis">The affine basis to be copied.</param>
     public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis, false) { }
 
-    /// <summary>
-    /// The basis construct on two affine bases.
-    /// </summary>
-    /// <param name="aBasis1">First affine basis.</param>
-    /// <param name="aBasis2">Second affine basis.</param>
-    public AffineBasis(AffineBasis aBasis1, AffineBasis aBasis2)
-      : this(aBasis1) {
-      foreach (Vector bvec in aBasis2.Basis) {
-        _basis.AddVector(bvec);
-      }
-    }
     #endregion
 
 
