@@ -99,8 +99,8 @@ public class Sandbox {
       bot = bot.Sub.First();
     }
     FLNode? top2 = bot;
-    while (top2.Super is not null) {
-      top2 = top2.Super.Last();
+    while (top2.Above is not null) {
+      top2 = top2.Above.Last();
     }
     Assert.IsTrue(ReferenceEquals(top, top2));
   }
@@ -166,14 +166,17 @@ public class Sandbox {
     // FaceLattice q1trig1 = MinkSumSDas(q1, trig1); //
     // Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1, trig1)));
 
-    // // 3:
-    // FaceLattice q1s5 = MinkSumSDas(q1, s5);
-    // Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1, s5)));   // Ок
+    // 3:
+    FaceLattice q1s5 = MinkSumSDas(q1, s5);
+    Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1, s5)));   // Ок
 
-    // // High-dim
+
+
+
+    // High-dim
     FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    // FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
-    // Assert.That(Cube5D, Is.EqualTo(cube5dCH));
+    FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
+    Assert.That(Cube5D, Is.EqualTo(cube5dCH));
 
     FaceLattice Cube5D_2 = MinkSumSDas(cube5dCH, cube5dCH);
     Assert.That(Cube5D_2, Is.EqualTo(MinkSumCH(cube5dCH, cube5dCH)));
@@ -203,11 +206,11 @@ public class Sandbox {
     Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1)));
 
     // Шестиугольник
-    FaceLattice su3_qu1 = MinkSumSDas(su3, qu1);
-    Assert.That(su3_qu1, Is.EqualTo(MinkSumCH(su3, qu1)));
+    FaceLattice su3_qu1 = MinkSumSDas(su3, qu1_GW);
+    Assert.That(su3_qu1, Is.EqualTo(MinkSumCH(su3, qu1_GW)));
 
     // Квадрат в два раза больший
-    FaceLattice double_qu1 = MinkSumSDas(qu1, qu1);
+    FaceLattice double_qu1 = MinkSumSDas(qu1_GW, qu1_GW);
     Assert.That(double_qu1, Is.EqualTo(MinkSumCH(qu1_GW, qu1_GW)));
 
     // ВАУ, что-то работает!
