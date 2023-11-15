@@ -55,7 +55,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       FLNode top = ConstructFLN(BuiltPolytop, ref FL, ref lattice);
-      return new FaceLattice(top, lattice);
+      return new FaceLattice(lattice);
     }
 
     private FLNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> FL, ref List<HashSet<FLNode>> lattice) {
@@ -70,7 +70,7 @@ public partial class Geometry<TNum, TConv>
           }
           sub.Add(FL[p.GetHashCode()]);
         }
-        FLNode seg = new FLNode(1, BSP.OriginalVertices, sub);
+        FLNode seg = new FLNode(sub);
         FL.Add(seg.GetHashCode(), seg);
         lattice[1].Add(seg);
 
@@ -87,7 +87,7 @@ public partial class Geometry<TNum, TConv>
           }
           sub.Add(FL[hash]);
         }
-        FLNode node = new FLNode(BSP.PolytopDim, BSP.OriginalVertices, sub);
+        FLNode node = new FLNode(sub);
         FL.Add(node.GetHashCode(), node);
         lattice[node.Dim].Add(node);
 

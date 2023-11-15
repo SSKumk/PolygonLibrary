@@ -108,7 +108,7 @@ public partial class Geometry<TNum, TConv>
       FL.Add(new HashSet<FLNode>());
     }
 
-    FLNode PQ = new FLNode(dim, MinkSum(P.Vertices, Q.Vertices), CalcInnerPoint(P, Q), affinePQ);
+    FLNode PQ = new FLNode(MinkSum(P.Vertices, Q.Vertices), CalcInnerPoint(P, Q), affinePQ);
     zTo_xy.Add(PQ, (P, Q));
     xyToz.Add((P, Q), PQ);
     FL[^1].Add(PQ);
@@ -174,7 +174,7 @@ public partial class Geometry<TNum, TConv>
             // Если брать (x, y), то тоже получается ерунда, так как z = x (+) y, то есть это выражение всегда истинно.
             if (xyToz.ContainsKey((xi, yi))) { continue; }
 
-            FLNode node = new FLNode(z.Dim - 1, candidate, CalcInnerPoint(xi, yi), candBasis);
+            FLNode node = new FLNode(candidate, CalcInnerPoint(xi, yi), candBasis);
             FL[node.Dim].Add(node);
             zTo_xy.Add(node, (xi, yi));
             xyToz.Add((xi, yi), node);
@@ -204,7 +204,7 @@ public partial class Geometry<TNum, TConv>
         node.ResetPolytop();
       }
     }
-    return new FaceLattice(FL[dim].First(), FL);
+    return new FaceLattice(FL);
   }
 
 }

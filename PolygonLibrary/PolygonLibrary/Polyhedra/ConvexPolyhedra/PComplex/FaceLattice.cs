@@ -50,16 +50,40 @@ public partial class Geometry<TNum, TConv>
       Lattice = ConstructLattice();
     }
 
-    internal FaceLattice(FLNode Maximum, List<HashSet<FLNode>> lattice) {
-      Top = Maximum;
+    public FaceLattice(List<HashSet<FLNode>> lattice) {
+      Top = lattice[^1].First();
       Lattice = lattice;
     }
 
-    // public FaceLattice ProjectTo(AffineBasis aBasis) {
+    public FaceLattice ProjectTo(AffineBasis aBasis) {
+      List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
+      for (int i = 0; i < Top.Dim + 1; i++) {
+        newFL.Add(new HashSet<FLNode>());
+      }
 
+      Dictionary<FLNode, FLNode> oldToNew = new Dictionary<FLNode, FLNode>();
 
+      foreach (FLNode vertex in Lattice[0]) {
+        FLNode newVertex = new FLNode(aBasis.ProjectPoint(vertex.Vertices.First()));
+        oldToNew.Add(vertex, newVertex);
+        newFL[0].Add(newVertex);
+      }
 
-    // }
+      for (int i = 1; i < newFL.Count; i++) {
+        foreach (FLNode node in Lattice[i]) {
+          List<FLNode> sub = new List<FLNode>(node.Sub!);
+          List<FLNode> newSub = sub.Select(n => oldToNew[n]).ToList();
+
+          FLNode newNode = new FLNode(newSub);
+          oldToNew.Add(node, newNode);
+          newFL[i].Add(newNode);
+        }
+      }
+
+      // ! не доделал. аккуратно посмотреть !
+
+      return new FaceLattice(newFL);
+    }
 
     public FaceLattice TranslateToOriginal(AffineBasis aBasis) {
       return new FaceLattice(Top.TranslateToOriginal(aBasis));
@@ -96,7 +120,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The dimensional of the associated polytop.
     /// </summary>
-    public int Dim { get; }
+    public int Dim => Affine.SpaceDim;
 
     /// <summary>
     /// Reference to associated polytop to this node.
@@ -220,22 +244,19 @@ public partial class Geometry<TNum, TConv>
     }
 
     public FLNode(Point vertex) {
-      Dim = 0;
       Polytop = new VPolytop(new List<Point>() { vertex });
       InnerPoint = vertex;
       Affine = new AffineBasis(vertex);
     }
 
-    public FLNode(int dim, IEnumerable<Point> Vs, Point innerPoint, AffineBasis aBasis) {
-      Dim = dim;
+    public FLNode(IEnumerable<Point> Vs, Point innerPoint, AffineBasis aBasis) {
       Polytop = new VPolytop(Vs);
       InnerPoint = innerPoint;
       Affine = aBasis;
     }
 
-    public FLNode(int dim, IEnumerable<Point> Vs, IEnumerable<FLNode> sub) {
-      Dim = dim;
-      Polytop = new VPolytop(Vs);
+    public FLNode(IEnumerable<FLNode> sub) {
+      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices));
       Sub = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
@@ -275,7 +296,7 @@ public partial class Geometry<TNum, TConv>
       foreach (FLNode subNode in Sub!) {
         sub.Add(subNode.TranslateToOriginal(aBasis));
       }
-      return new FLNode(Dim, sub.SelectMany(n => n.Vertices), sub);
+      return new FLNode(sub.SelectMany(n => n.Vertices), sub);
     }
 
     public bool PolytopEq(FLNode other) => this.Polytop.Equals(other.Polytop);
