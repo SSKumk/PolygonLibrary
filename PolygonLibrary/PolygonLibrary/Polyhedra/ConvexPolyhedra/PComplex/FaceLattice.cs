@@ -63,6 +63,7 @@ public partial class Geometry<TNum, TConv>
 
       Dictionary<FLNode, FLNode> oldToNew = new Dictionary<FLNode, FLNode>();
 
+      //Отдельно обрабатываем случай d == 0
       foreach (FLNode vertex in Lattice[0]) {
         FLNode newVertex = new FLNode(aBasis.ProjectPoint(vertex.Vertices.First()));
         oldToNew.Add(vertex, newVertex);
@@ -71,8 +72,7 @@ public partial class Geometry<TNum, TConv>
 
       for (int i = 1; i < newFL.Count; i++) {
         foreach (FLNode node in Lattice[i]) {
-          List<FLNode> sub = new List<FLNode>(node.Sub!);
-          List<FLNode> newSub = sub.Select(n => oldToNew[n]).ToList();
+          List<FLNode> newSub = node.Sub!.Select(n => oldToNew[n]).ToList();
 
           FLNode newNode = new FLNode(newSub);
           oldToNew.Add(node, newNode);
@@ -296,7 +296,7 @@ public partial class Geometry<TNum, TConv>
       foreach (FLNode subNode in Sub!) {
         sub.Add(subNode.TranslateToOriginal(aBasis));
       }
-      return new FLNode(sub.SelectMany(n => n.Vertices), sub);
+      return new FLNode(sub);
     }
 
     public bool PolytopEq(FLNode other) => this.Polytop.Equals(other.Polytop);

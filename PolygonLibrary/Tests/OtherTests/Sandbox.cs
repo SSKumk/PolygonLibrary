@@ -129,59 +129,57 @@ public class Sandbox {
     FaceLattice v1 = new FaceLattice(p1);
     FaceLattice v4 = new FaceLattice(p4);
 
-    FaceLattice s1 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1 });
-    FaceLattice s2 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p2 });
-    FaceLattice s3 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p3 });
+    FaceLattice s1_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1 });
+    FaceLattice s2_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p2 });
+    FaceLattice s3_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p3 });
 
-    FaceLattice s5 = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p5 });
-
-
-    FaceLattice q1 = GiftWrapping.WrapFaceLattice(sqXY);
-    FaceLattice trig1 = GiftWrapping.WrapFaceLattice(trigXY);
+    FaceLattice s5_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p5 });
 
 
-    // Начинаем с малых размерностей тестировать:
-    // 0:
-    // Тут надо глазами смотреть, так как GW не умеет работать с роем из одной точки.
-    // FaceLattice VertexSolo = MinkSumSDas(v1, v1); // Ok
-    // FaceLattice Vertex = MinkSumSDas(v4, v1); // Ok
+    FaceLattice q1_GW = GiftWrapping.WrapFaceLattice(sqXY);
+    FaceLattice trig1_GW = GiftWrapping.WrapFaceLattice(trigXY);
 
-    // FaceLattice v0s1 = MinkSumSDas(v0, s1); // Ок
-    // Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1)));
 
-    // FaceLattice v0q1 = MinkSumSDas(v0, q1);  // Ок
-    // Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1)));
+    // // Начинаем с малых размерностей тестировать:
+    // // 0:
+    // // Тут надо глазами смотреть, так как GW не умеет работать с роем из одной точки.
+    // // FaceLattice VertexSolo = MinkSumSDas(v1, v1); // Ok
+    // // FaceLattice Vertex = MinkSumSDas(v4, v1); // Ok
+
+    // FaceLattice v0s1 = MinkSumSDas(v0, s1_GW); // 
+    // Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1_GW)));
+
+    FaceLattice v0q1 = MinkSumSDas(v0, q1_GW);  // 
+    Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1_GW)));
 
     // // 1:
-    // FaceLattice s1s1 = MinkSumSDas(s1, s1);  // Ок
-    // Assert.That(s1s1, Is.EqualTo(MinkSumCH(s1, s1)));
-    // FaceLattice s2s3 = MinkSumSDas(s2, s3);  // Ок
-    // Assert.That(s2s3, Is.EqualTo(MinkSumCH(s2, s3)));
-    // FaceLattice s2q1 = MinkSumSDas(s2, q1);  // ! error (ProjectTo неверный)
-    // Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2, q1)));
+    // FaceLattice s1s1 = MinkSumSDas(s1_GW, s1_GW);  // 
+    // Assert.That(s1s1, Is.EqualTo(MinkSumCH(s1_GW, s1_GW)));
+    // FaceLattice s2s3 = MinkSumSDas(s2_GW, s3_GW);  // 
+    // Assert.That(s2s3, Is.EqualTo(MinkSumCH(s2_GW, s3_GW)));
+    // FaceLattice s2q1 = MinkSumSDas(s2_GW, q1_GW);  // 
+    // Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2_GW, q1_GW)));
 
-    // 2: //! error (ProjectTo неверный)
-    // FaceLattice q1q1 = MinkSumSDas(q1, q1); 
-    // Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1, q1)));
-    // FaceLattice q1trig1 = MinkSumSDas(q1, trig1); //
-    // Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1, trig1)));
+    // // 2: 
+    // FaceLattice q1q1 = MinkSumSDas(q1_GW, q1_GW);
+    // Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1_GW, q1_GW)));
+    // FaceLattice q1trig1 = MinkSumSDas(q1_GW, trig1_GW); // 
+    // Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1_GW, trig1_GW)));
 
-    // 3:
-    FaceLattice q1s5 = MinkSumSDas(q1, s5);
-    Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1, s5)));   // Ок
-
-
+    // // 3:
+    // FaceLattice q1s5 = MinkSumSDas(q1_GW, s5_GW);
+    // Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1_GW, s5_GW))); // 
 
 
-    // High-dim
-    FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
-    Assert.That(Cube5D, Is.EqualTo(cube5dCH));
-
-    FaceLattice Cube5D_2 = MinkSumSDas(cube5dCH, cube5dCH);
-    Assert.That(Cube5D_2, Is.EqualTo(MinkSumCH(cube5dCH, cube5dCH)));
 
 
+    // // High-dim
+    // FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
+    // Assert.That(Cube5D, Is.EqualTo(cube5dCH));
+
+    // FaceLattice Cube5D_2 = MinkSumSDas(cube5dCH, cube5dCH);
+    // Assert.That(Cube5D_2, Is.EqualTo(MinkSumCH(cube5dCH, cube5dCH)));
   }
 
 
@@ -195,6 +193,15 @@ public class Sandbox {
     FaceLattice su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
     FaceLattice su2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
     FaceLattice su3 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u3 });
+
+    // Удвоенный отрезок
+    FaceLattice su1_su1 = MinkSumSDas(su1, su1);
+    Assert.That(su1_su1, Is.EqualTo(MinkSumCH(su1, su1)));
+
+    FaceLattice su3_su3 = MinkSumSDas(su3, su3);
+    Assert.That(su3_su3, Is.EqualTo(MinkSumCH(su3, su3)));
+
+
 
     // Единичный квадрат
     FaceLattice qu1_GW = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1, u2, u3 });
@@ -215,6 +222,39 @@ public class Sandbox {
 
     // ВАУ, что-то работает!
   }
+
+
+  // ! Что делать в случае, когда при уходе в подпространство начало координат систем не совпадают?!
+  // ! Получается, не та сумма!
+  // ? Но ведь если F(+)G лежит где-то в стороне, то как там базис может совпасть исходным?! Непонятно ...
+  [Test]
+  public void FaceLatticeProjectTo() {
+    var p0 = new Point(new double[] { 0, 0, 0 });
+    var p1 = new Point(new double[] { 1, 0, 0 });
+    var p2 = new Point(new double[] { 0, 2, 0 });
+    var p3 = new Point(new double[] { 1, 1, 0 });
+
+    var u0 = new Point(new double[] { 0, 0 });
+    var u1 = new Point(new double[] { 1, 0 });
+    var u2 = new Point(new double[] { 0, 1 });
+    var u3 = new Point(new double[] { 1, 1 });
+
+
+    var v0_3D = new FaceLattice(p0);
+    var q1_3D_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1, p2, p3 });
+
+    var v0_2D = new FaceLattice(u0);
+    var q1_2D_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { u0, u1, u2, u3 });
+
+    FaceLattice q1_3D = MinkSumSDas(new FaceLattice(p2), q1_3D_GW);
+    // FaceLattice q1_2D = MinkSumSDas(v3_2D, q1_2D_GW);
+    // Assert.That(q1_2D, Is.EqualTo(q1_2D_GW));
+    // Assert.That(q1_2D, Is.EqualTo(q1_3D));
+
+
+
+  }
+
 }
 
 

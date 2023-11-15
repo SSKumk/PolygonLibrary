@@ -81,26 +81,28 @@ public partial class Geometry<TNum, TConv>
 
   // }
 
-  public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) =>
-        MinkSumSDas(P.Top, Q.Top);
-
-  public static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
-    AffineBasis affinePQ = new AffineBasis(AddPoints(P.Affine.Origin, Q.Affine.Origin)
-                                          , P.Affine.Basis.Concat(Q.Affine.Basis));
+  public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) {
+    AffineBasis affinePQ = new AffineBasis(AddPoints(P.Top.Affine.Origin, Q.Top.Affine.Origin)
+                                      , P.Top.Affine.Basis.Concat(Q.Top.Affine.Basis));
 
     int dim = affinePQ.SpaceDim;
     if (dim == 0) {
-      Point s = new Point(new Vector(P.InnerPoint) + new Vector(Q.InnerPoint));
+      Point s = new Point(new Vector(P.Top.InnerPoint) + new Vector(Q.Top.InnerPoint));
       return new FaceLattice(s);
     }
 
-    if (dim < P.InnerPoint.Dim) { // Пока полагаем, что dim(P (+) Q) == d == Размерности пространства
-      throw new NotImplementedException();
-      // var x = Q.ProjectTo(affinePQ);
-      // FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ), Q.ProjectTo(affinePQ));
-      // return lowDim.TranslateToOriginal(affinePQ);
+    if (dim < P.Top.InnerPoint.Dim) {
+      FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
+      return lowDim.TranslateToOriginal(affinePQ);
     }
 
+    return MinkSumSDas(P.Top, Q.Top);
+  }
+
+  private static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
+    AffineBasis affinePQ = new AffineBasis(AddPoints(P.Affine.Origin, Q.Affine.Origin)
+                                  , P.Affine.Basis.Concat(Q.Affine.Basis));
+    int dim = affinePQ.SpaceDim;
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
     Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
     List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
