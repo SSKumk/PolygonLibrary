@@ -9,17 +9,14 @@
   </Information>
   <IssueTypes>
     <IssueType Id="AutoPropertyCanBeMadeGetOnly.Global" Category="Common Practices and Code Improvements" CategoryId="BestPractice" SubCategory="Auto-property can be made get-only" Description="Auto-property can be made get-only: Non-private accessibility" Severity="SUGGESTION" Global="True" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=AutoPropertyCanBeMadeGetOnly.Global" />
-    <IssueType Id="CSharpWarnings::CS0162" Category="Compiler Warnings" CategoryId="CompilerWarnings" Description="Code is unreachable" Severity="WARNING" WikiUrl="https://msdn.microsoft.com/en-us/library/c0h4st1x.aspx" />
     <IssueType Id="CSharpWarnings::CS0659" Category="Compiler Warnings" CategoryId="CompilerWarnings" Description="Class overrides Object.Equals(object o) but not Object.GetHashCode()" Severity="WARNING" WikiUrl="https://msdn.microsoft.com/en-us/library/xxhbfytk.aspx" />
     <IssueType Id="CSharpWarnings::CS8602" Category="Compiler Warnings" CategoryId="CompilerWarnings" Description="Dereference of a possibly null reference." Severity="WARNING" />
-    <IssueType Id="CSharpWarnings::CS8604" Category="Compiler Warnings" CategoryId="CompilerWarnings" Description="Possible null reference argument for a parameter." Severity="WARNING" />
-    <IssueType Id="CSharpWarnings::CS8618" Category="Compiler Warnings" CategoryId="CompilerWarnings" Description="Non-nullable member is uninitialized." Severity="WARNING" />
     <IssueType Id="CheckNamespace" Category="Constraints Violations" CategoryId="ConstraintViolation" Description="Namespace does not correspond to file location" Severity="WARNING" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=CheckNamespace" />
     <IssueType Id="ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract" Category="Redundancies in Code" CategoryId="CodeRedundancy" Description="Expression is always 'true' or 'false' according to nullable reference types' annotations" Severity="WARNING" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract" />
     <IssueType Id="ConvertIfStatementToConditionalTernaryExpression" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="'if' statement can be rewritten as '?:' expression" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=ConvertIfStatementToConditionalTernaryExpression" />
     <IssueType Id="ConvertIfStatementToNullCoalescingAssignment" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="'if' statement can be rewritten as '??=' assignment" Severity="SUGGESTION" />
     <IssueType Id="ConvertToAutoProperty" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="Convert property into auto-property" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=ConvertToAutoProperty" />
-    <IssueType Id="FieldCanBeMadeReadOnly.Global" Category="Common Practices and Code Improvements" CategoryId="BestPractice" SubCategory="Field can be made readonly" Description="Field can be made readonly: Non-private accessibility" Severity="SUGGESTION" Global="True" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=FieldCanBeMadeReadOnly.Global" />
+    <IssueType Id="ConvertToUsingDeclaration" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="Convert into 'using' declaration" Severity="SUGGESTION" />
     <IssueType Id="FieldCanBeMadeReadOnly.Local" Category="Common Practices and Code Improvements" CategoryId="BestPractice" SubCategory="Field can be made readonly" Description="Field can be made readonly: Private accessibility" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=FieldCanBeMadeReadOnly.Local" />
     <IssueType Id="ForCanBeConvertedToForeach" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="For-loop can be converted into foreach-loop" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=ForCanBeConvertedToForeach" />
     <IssueType Id="InlineOutVariableDeclaration" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="Inline 'out' variable declaration" Severity="SUGGESTION" />
@@ -27,7 +24,6 @@
     <IssueType Id="JoinDeclarationAndInitializer" Category="Common Practices and Code Improvements" CategoryId="BestPractice" Description="Join local variable declaration and assignment" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=JoinDeclarationAndInitializer" />
     <IssueType Id="MemberCanBePrivate.Global" Category="Common Practices and Code Improvements" CategoryId="BestPractice" SubCategory="Member can be made private" Description="Member can be made private: Non-private accessibility" Severity="SUGGESTION" Global="True" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=MemberCanBePrivate.Global" />
     <IssueType Id="MemberCanBeProtected.Global" Category="Common Practices and Code Improvements" CategoryId="BestPractice" SubCategory="Member can be made protected" Description="Member can be made protected: Non-private accessibility" Severity="SUGGESTION" Global="True" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=MemberCanBeProtected.Global" />
-    <IssueType Id="MemberHidesStaticFromOuterClass" Category="Potential Code Quality Issues" CategoryId="CodeSmell" Description="Member hides static member from outer class" Severity="WARNING" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=MemberHidesStaticFromOuterClass" />
     <IssueType Id="MergeCastWithTypeCheck" Category="Potential Code Quality Issues" CategoryId="CodeSmell" Description="Type check and casts can be merged" Severity="SUGGESTION" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=MergeCastWithTypeCheck" />
     <IssueType Id="MergeIntoPattern" Category="Language Usage Opportunities" CategoryId="LanguageUsage" Description="Merge null/pattern checks into complex pattern" Severity="SUGGESTION" />
     <IssueType Id="NonReadonlyMemberInGetHashCode" Category="Potential Code Quality Issues" CategoryId="CodeSmell" Description="Non-readonly type member referenced in 'GetHashCode()'" Severity="WARNING" WikiUrl="https://www.jetbrains.com/resharperplatform/help?Keyword=NonReadonlyMemberInGetHashCode" />
@@ -149,7 +145,6 @@
       <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Point.cs" Offset="6365-6374" Line="210" Message="Method 'GetAsList' is never used" />
       <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Point.cs" Offset="6699-6705" Line="221" Message="Property 'IsZero' is never used" />
       <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Point.cs" Offset="7240-7250" Line="241" Message="Method 'List2DTohD' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Point.cs" Offset="7680-7692" Line="255" Message="Method 'ToFileFormat' is never used" />
       <Issue TypeId="RedundantSuppressNullableWarningExpression" File="PolygonLibrary\Basics\Point.cs" Offset="8186-8187" Line="274" Message="The nullable warning suppression expression is redundant" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Basics\Point.cs" Offset="8572-8577" Line="291" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Basics\Point.cs" Offset="8857-8862" Line="298" Message="Non-readonly field referenced in 'GetHashCode()'" />
@@ -176,7 +171,6 @@
       <Issue TypeId="TooWideLocalVariableScope" File="PolygonLibrary\Basics\Vector.cs" Offset="2528-2531" Line="94" Message="Local variable 'res' can be declared in inner scope" />
       <Issue TypeId="TooWideLocalVariableScope" File="PolygonLibrary\Basics\Vector.cs" Offset="3242-3245" Line="120" Message="Local variable 'res' can be declared in inner scope" />
       <Issue TypeId="TooWideLocalVariableScope" File="PolygonLibrary\Basics\Vector.cs" Offset="3910-3913" Line="144" Message="Local variable 'res' can be declared in inner scope" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Vector.cs" Offset="8201-8213" Line="273" Message="Method 'ToFileFormat' is never used" />
       <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Basics\Vector.cs" Offset="10295-10321" Line="319" Message="Method 'OrthonormalizeAgainstBasis' is never used" />
       <Issue TypeId="MergeCastWithTypeCheck" File="PolygonLibrary\Basics\Vector.cs" Offset="12908-12910" Line="386" Message="Merge cast with type check" />
       <Issue TypeId="UnusedVariable" File="PolygonLibrary\Basics\Vector.cs" Offset="12922-12928" Line="386" Message="Local variable 'vector' is never used" />
@@ -211,7 +205,6 @@
       <Issue TypeId="UnusedMemberInSuper.Global" File="PolygonLibrary\Polygons\BasicPolygon.cs" Offset="6568-6582" Line="196" Message="Only overrides of method 'ContainsInside' are used" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="121-145" Line="6" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="159-168" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polygons.ConvexPolygons'" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="2400-2413" Line="89" Message="Constructor 'ConvexPolygon' is never used" />
       <Issue TypeId="UseObjectOrCollectionInitializer" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="4409-4412" Line="138" Message="Use collection initializer" />
       <Issue TypeId="InlineOutVariableDeclaration" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="7967-7968" Line="225" Message="Inline 'out' variable declaration" />
       <Issue TypeId="InlineOutVariableDeclaration" File="PolygonLibrary\Polygons\ConvexPolygons\ConvexPolygon.cs" Offset="7970-7971" Line="225" Message="Inline 'out' variable declaration" />
@@ -286,19 +279,20 @@
       <Issue TypeId="TooWideLocalVariableScope" File="PolygonLibrary\Polygons\Polyline.cs" Offset="7066-7070" Line="204" Message="Local variable 'vim1' can be declared in inner scope" />
       <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polygons\Polyline.cs" Offset="7543-7552" Line="222" Message="Method 'EdgeAngle' is never used" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="106-115" Line="6" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="2025-2029" Line="59" Message="Property 'Type' is never used" />
       <Issue TypeId="UnusedMemberInSuper.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="2968-2981" Line="86" Message="Only overrides of property 'FaceIncidence' are used" />
       <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="4283-4289" Line="123" Message="Initializing field by default value is redundant" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="4575-4580" Line="130" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="4768-4773" Line="137" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" Offset="4837-4842" Line="140" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="135-144" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
-      <Issue TypeId="NotAccessedField.Local" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="937-942" Line="30" Message="Field 'SOrig' is assigned but its value is never used" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="1272-1283" Line="42" Message="Method 'WrapPolytop' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="1495-1501" Line="48" Message="Property 'FaceLattice' can be made private" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="4351-4363" Line="129" Message="Property 'VerticesList' is never used" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="4450-4454" Line="130" Message="Auto-property accessor 'VPolytop.get' is never used" />
-      <Issue TypeId="NotAccessedVariable" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="11886-11887" Line="308" Message="Local variable 'r' is only assigned but its value is never used" />
-      <Issue TypeId="RedundantAssignment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="12218-12221" Line="318" Message="Value assigned is not used in any execution path" />
+      <Issue TypeId="NotAccessedField.Local" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="934-939" Line="30" Message="Field 'SOrig' is assigned but its value is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="1854-1865" Line="60" Message="Method 'WrapPolytop' is never used" />
+      <Issue TypeId="UnusedVariable" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="2454-2457" Line="75" Message="Local variable 'top' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="4865-4877" Line="147" Message="Property 'VerticesList' is never used" />
+      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="4964-4968" Line="148" Message="Auto-property accessor 'VPolytop.get' is never used" />
+      <Issue TypeId="NotAccessedVariable" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="12400-12401" Line="326" Message="Local variable 'r' is only assigned but its value is never used" />
+      <Issue TypeId="RedundantAssignment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" Offset="12732-12735" Line="336" Message="Value assigned is not used in any execution path" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubNonSimplex.cs" Offset="108-117" Line="7" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" Offset="15-40" Line="2" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" Offset="80-89" Line="6" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
@@ -311,6 +305,7 @@
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubSimplex.cs" Offset="135-144" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
       <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubSimplex.cs" Offset="1153-1159" Line="38" Message="Initializing field by default value is redundant" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" Offset="135-144" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" Offset="1090-1096" Line="37" Message="Property 'VerticesList' can be made private" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensionalEdge.cs" Offset="88-97" Line="6" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.GiftWrapping'" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="133-142" Line="7" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra'" />
       <Issue TypeId="UnusedType.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="400-412" Line="14" Message="Class 'MinkowskiSum' is never used" />
@@ -320,41 +315,33 @@
       <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1139-1145" Line="35" Message="Method 'MinkSumCH' can be made private" />
       <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1182-1183" Line="35" Message="Parameter 'P' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumCH (but other parameters do)" />
       <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1192-1193" Line="35" Message="Parameter 'Q' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumCH (but other parameters do)" />
-      <Issue TypeId="UnusedMember.Local" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1479-1482" Line="44" Message="Method 'Dim' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1807-1813" Line="52" Message="Method 'MinkSum' can be made private" />
-      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2491-2496" Line="72" Message="Cannot resolve parameter 'Nodes'" />
-      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2527-2536" Line="73" Message="Cannot resolve parameter 'candidate'" />
-      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2567-2568" Line="74" Message="Cannot resolve parameter 'x'" />
-      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2862-2863" Line="84" Message="Parameter 'P' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumSDas (but other parameters do)" />
-      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2877-2878" Line="84" Message="Parameter 'Q' has no matching param tag in the XML comment for CGLibrary.Geometry&lt;TNum,TConv&gt;.MinkSumSDas (but other parameters do)" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="2924-2930" Line="87" Message="Method 'MinkSumSDas' can be made private" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
+      <Issue TypeId="UnusedMember.Local" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1625-1628" Line="47" Message="Method 'Dim' is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\Minkowski.cs" Offset="1953-1959" Line="55" Message="Method 'MinkSum' can be made private" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="153-162" Line="9" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
       <Issue TypeId="UnusedType.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="635-648" Line="20" Message="Class 'IncidenceInfo' is never used (except inside its declaration)" />
       <Issue TypeId="UnusedType.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="1677-1685" Line="52" Message="Class 'FansInfo' is never used (except inside its declaration)" />
-      <Issue TypeId="RedundantBaseQualifier" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="2165-2170" Line="64" Message="Qualifier 'base.' is redundant" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="2482-2488" Line="80" Message="Property 'Vertices' can be made private" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="2636-2640" Line="85" Message="Auto-property accessor 'Normal.get' is never used" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="3768-3774" Line="116" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4022-4027" Line="123" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4210-4215" Line="129" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4249-4254" Line="132" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4464-4470" Line="145" Message="Property 'Vertices' can be made private" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5428-5434" Line="172" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5682-5687" Line="179" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5870-5875" Line="185" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5909-5914" Line="188" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="MemberCanBeProtected.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6650-6656" Line="218" Message="Property 'Type' can be made protected" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7201-7209" Line="234" Message="Property 'SpaceDim' is never used" />
-      <Issue TypeId="CSharpWarnings::CS8618" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7354-7362" Line="239" Message="Non-nullable property 'Vertices' is uninitialized. Consider declaring the property as nullable." />
-      <Issue TypeId="MemberCanBeProtected.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7544-7550" Line="246" Message="Property 'Super' can be made protected" />
-      <Issue TypeId="MemberCanBeProtected.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7961-7967" Line="261" Message="Property 'Edges' can be made protected" />
-      <Issue TypeId="CSharpWarnings::CS0162" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="8234-8679" Line="266" Message="Code is unreachable" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="10289-10295" Line="318" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="10581-10586" Line="325" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="CSharpWarnings::CS8604" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="10881-10886" Line="332" Message="Possible null reference argument for parameter 'source' in 'System.Linq.Enumerable.OrderBy&lt;TSource,TKey&gt;'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="11086-11091" Line="338" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="11155-11160" Line="341" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="RedundantBaseQualifier" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="2157-2162" Line="64" Message="Qualifier 'base.' is redundant" />
+      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="3688-3694" Line="116" Message="Initializing field by default value is redundant" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="3942-3947" Line="123" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4122-4127" Line="129" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4161-4166" Line="132" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="4376-4382" Line="145" Message="Property 'Vertices' can be made private" />
+      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5340-5346" Line="172" Message="Initializing field by default value is redundant" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5594-5599" Line="179" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5774-5779" Line="185" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="5813-5818" Line="188" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6107-6113" Line="201" Message="Property 'SpaceDim' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6242-6248" Line="206" Message="Property 'PolytopDim' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6428-6434" Line="213" Message="Property 'Polytop' can be made private" />
+      <Issue TypeId="AutoPropertyCanBeMadeGetOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6459-6464" Line="213" Message="Auto-property can be made get-only" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6553-6559" Line="218" Message="Property 'Faces' can be made private" />
+      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="6711-6715" Line="223" Message="Auto-property accessor 'Edges.get' is never used" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7522-7526" Line="242" Message="Cannot resolve parameter 'type'" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7583-7596" Line="243" Message="Cannot resolve parameter 'faceIncidence'" />
+      <Issue TypeId="InvalidXmlDocComment" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="7668-7672" Line="244" Message="Cannot resolve parameter 'fans'" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="8328-8343" Line="260" Message="Method 'ToConvexPolygon' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="8779-8787" Line="272" Message="Method 'WriteTXT' is never used" />
+      <Issue TypeId="ConvertToUsingDeclaration" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" Offset="8860-8865" Line="274" Message="Convert into 'using' declaration" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="153-162" Line="9" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
@@ -363,49 +350,30 @@
       <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="611-617" Line="24" Message="Property 'Lattice' can be made private" />
       <Issue TypeId="AutoPropertyCanBeMadeGetOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="655-660" Line="24" Message="Auto-property can be made get-only" />
       <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1350-1356" Line="48" Message="Constructor 'FaceLattice' can be made private" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1688-1707" Line="64" Message="Method 'TranslateToOriginal' is never used" />
-      <Issue TypeId="CSharpWarnings::CS0659" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1831-1837" Line="69" Message="'CGLibrary.Geometry&lt;TNum,TConv&gt;.FaceLattice' overrides Object.Equals(object o) but does not override Object.GetHashCode()" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2850-2856" Line="105" Message="Property 'Polytop' can be made private" />
-      <Issue TypeId="MemberHidesStaticFromOuterClass" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2866-2873" Line="105" Message="Property 'Geometry&lt;TNum,TConv&gt;.VPolytop Polytop' hides class from outer class" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3855-3864" Line="130" Message="Accessor 'Above.set' can be made private" />
-      <Issue TypeId="NotAccessedField.Compiler" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3904-3913" Line="132" Message="Field '_allAbove' is assigned but its value is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4201-4207" Line="144" Message="Method 'GetAllNonStrictAbove' can be made private" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4299-4310" Line="146" Message="Method 'GetAllAbove' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4597-4606" Line="157" Message="Accessor 'Sub.set' can be made private" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5066-5072" Line="173" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="ConvertIfStatementToConditionalTernaryExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5195-5197" Line="179" Message="Convert into '?:' expression" />
-      <Issue TypeId="RedundantSuppressNullableWarningExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5389-5390" Line="182" Message="The nullable warning suppression expression is redundant" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5578-5587" Line="191" Message="Method 'GetAllSub' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8266-8275" Line="282" Message="Method 'PolytopEq' is never used" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8373-8380" Line="284" Message="Non-readonly property referenced in 'GetHashCode()'" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="151-160" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="593-599" Line="20" Message="Field 'VList' can be made private" />
-      <Issue TypeId="FieldCanBeMadeReadOnly.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="612-617" Line="20" Message="Field can be made readonly" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" Offset="626-632" Line="22" Message="Constructor 'Polygon2D' can be made private" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" Offset="151-160" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
-      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" Offset="560-566" Line="19" Message="Initializing field by default value is redundant" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Polytop.cs" Offset="662-668" Line="22" Message="Constructor 'Polytop' can be made private" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="151-160" Line="8" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="617-620" Line="20" Message="Property 'fst' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="667-670" Line="21" Message="Property 'snd' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\PolytopSegment.cs" Offset="704-710" Line="23" Message="Constructor 'PolytopSegment' can be made private" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Vertex.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Vertex.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
-      <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Vertex.cs" Offset="149-158" Line="7" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
-      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\Vertex.cs" Offset="578-583" Line="19" Message="Property 'Point' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="1605-1614" Line="58" Message="Method 'ProjectTo' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2588-2607" Line="88" Message="Method 'TranslateToOriginal' is never used" />
+      <Issue TypeId="CSharpWarnings::CS0659" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="2731-2737" Line="93" Message="'CGLibrary.Geometry&lt;TNum,TConv&gt;.FaceLattice' overrides Object.Equals(object o) but does not override Object.GetHashCode()" />
+      <Issue TypeId="RedundantNameQualifier" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3141-3148" Line="107" Message="Qualifier is redundant" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="3630-3636" Line="128" Message="Property 'Polytop' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4635-4644" Line="153" Message="Accessor 'Above.set' can be made private" />
+      <Issue TypeId="NotAccessedField.Compiler" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4684-4693" Line="155" Message="Field '_allAbove' is assigned but its value is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="4981-4987" Line="167" Message="Method 'GetAllNonStrictAbove' can be made private" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5079-5090" Line="169" Message="Method 'GetAllAbove' is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5377-5386" Line="180" Message="Accessor 'Sub.set' can be made private" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5585-5609" Line="186" Message="Method 'GetImmediateNonStrictSub' is never used" />
+      <Issue TypeId="RedundantDefaultMemberInitializer" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5846-5852" Line="196" Message="Initializing field by default value is redundant" />
+      <Issue TypeId="ConvertIfStatementToConditionalTernaryExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="5975-5977" Line="202" Message="Convert into '?:' expression" />
+      <Issue TypeId="RedundantSuppressNullableWarningExpression" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="6169-6170" Line="205" Message="The nullable warning suppression expression is redundant" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="6358-6367" Line="214" Message="Method 'GetAllSub' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="8944-8953" Line="302" Message="Method 'PolytopEq' is never used" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" Offset="9051-9058" Line="304" Message="Non-readonly property referenced in 'GetHashCode()'" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="70-95" Line="4" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="RedundantUsingDirective" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="97-113" Line="5" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="149-158" Line="7" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Polyhedra.ConvexPolyhedra.PComplex'" />
       <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="650-655" Line="24" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="UseCollectionCountProperty" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="842-844" Line="27" Message="Replace 'Enumerable.Count()' invocation with collection count property access" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="979-984" Line="31" Message="Non-readonly field referenced in 'GetHashCode()'" />
-      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="1016-1021" Line="33" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="928-933" Line="30" Message="Non-readonly field referenced in 'GetHashCode()'" />
+      <Issue TypeId="NonReadonlyMemberInGetHashCode" File="PolygonLibrary\Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" Offset="965-970" Line="32" Message="Non-readonly field referenced in 'GetHashCode()'" />
       <Issue TypeId="CheckNamespace" File="PolygonLibrary\Segments\Segment.cs" Offset="78-87" Line="5" Message="Namespace does not correspond to file location, must be: 'PolygonLibrary.Segments'" />
       <Issue TypeId="NotAccessedField.Global" File="PolygonLibrary\Segments\Segment.cs" Offset="2051-2053" Line="94" Message="Field 's1' is assigned but its value is never used" />
       <Issue TypeId="NotAccessedField.Global" File="PolygonLibrary\Segments\Segment.cs" Offset="2166-2168" Line="99" Message="Field 's2' is assigned but its value is never used" />
@@ -599,6 +567,7 @@
       <Issue TypeId="JoinDeclarationAndInitializer" File="Tests\Double-Tests\GW_hDTests\HashSetTests.cs" Offset="1066-1071" Line="32" Message="Join declaration and assignment" />
       <Issue TypeId="JoinDeclarationAndInitializer" File="Tests\Double-Tests\GW_hDTests\HashSetTests.cs" Offset="1082-1087" Line="33" Message="Join declaration and assignment" />
       <Issue TypeId="UnusedMember.Local" File="Tests\Double-Tests\LinearAndAffineSpaceTests.cs" Offset="3697-3715" Line="94" Message="Method 'CheckVectorsLength' is never used" />
+      <Issue TypeId="RedundantUsingDirective" File="Tests\Double-Tests\Minkowski-Tests\MinkowskiSum.cs" Offset="0-16" Message="Using directive is not required by the code and can be safely removed" />
       <Issue TypeId="TooWideLocalVariableScope" File="Tests\Double-Tests\PolygonToolsTests.cs" Offset="6260-6261" Line="178" Message="Local variable 'j' can be declared in inner scope" />
       <Issue TypeId="TooWideLocalVariableScope" File="Tests\Double-Tests\PolygonToolsTests.cs" Offset="6266-6267" Line="178" Message="Local variable 'l' can be declared in inner scope" />
       <Issue TypeId="TooWideLocalVariableScope" File="Tests\Double-Tests\PolygonToolsTests.cs" Offset="8031-8032" Line="225" Message="Local variable 'j' can be declared in inner scope" />
@@ -822,27 +791,27 @@
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4340-4342" Line="128" Message="Local variable 'v0' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4383-4385" Line="129" Message="Local variable 'v1' is never used" />
       <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4426-4428" Line="130" Message="Local variable 'v4' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4471-4473" Line="132" Message="Local variable 's1' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4553-4555" Line="133" Message="Local variable 's2' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4635-4637" Line="134" Message="Local variable 's3' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4719-4721" Line="136" Message="Local variable 's5' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4805-4807" Line="139" Message="Local variable 'q1' is never used" />
-      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4863-4868" Line="140" Message="Local variable 'trig1' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4471-4476" Line="132" Message="Local variable 's1_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4556-4561" Line="133" Message="Local variable 's2_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4641-4646" Line="134" Message="Local variable 's3_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4728-4733" Line="136" Message="Local variable 's5_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4817-4822" Line="139" Message="Local variable 'q1_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="4878-4886" Line="140" Message="Local variable 'trig1_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="8986-8991" Line="246" Message="Local variable 'v0_3D' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="9114-9119" Line="249" Message="Local variable 'v0_2D' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="9152-9160" Line="250" Message="Local variable 'q1_2D_GW' is never used" />
+      <Issue TypeId="UnusedVariable" File="Tests\OtherTests\Sandbox.cs" Offset="9250-9255" Line="252" Message="Local variable 'q1_3D' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsBase.cs" Offset="2601-2609" Line="74" Message="Method 'GenShift' is never used" />
-      <Issue TypeId="MemberCanBeProtected.Global" File="Tests\ToolsTests\TestsBase.cs" Offset="5326-5332" Line="138" Message="Method 'MakeRotationMatrix' can be made protected" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="386-403" Line="12" Message="Field 'Octahedron3D_list' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="489-503" Line="13" Message="Field 'Pyramid3D_list' is never used" />
       <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="583-597" Line="14" Message="Field 'Simplex3D_list' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="733-744" Line="16" Message="Field 'Cube3D_list' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="799-810" Line="17" Message="Field 'Cube4D_list' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1312-1325" Line="28" Message="Field 'rotate3D_45XY' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1418-1431" Line="29" Message="Field 'rotate4D_45XY' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1544-1550" Line="32" Message="Method 'Cube_list' can be made private" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1613-1619" Line="33" Message="Method 'Simplex_list' can be made private" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1688-1694" Line="34" Message="Method 'SimplexRND_list' can be made private" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1799-1803" Line="36" Message="Method 'Cube' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1890-1897" Line="37" Message="Method 'Simplex' is never used" />
-      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="10680-10686" Line="242" Message="Method 'GeneratePointsOnSphere_3D' can be made private" />
+      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="865-876" Line="18" Message="Field 'Cube5D_list' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1144-1153" Line="24" Message="Field 'Simplex4D' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1217-1229" Line="25" Message="Field 'Octahedron3D' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1539-1551" Line="31" Message="Field 'Simplex4D_FL' is never used" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1849-1855" Line="39" Message="Method 'Cube_list' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1918-1924" Line="40" Message="Method 'Simplex_list' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="1993-1999" Line="41" Message="Method 'SimplexRND_list' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="2076-2082" Line="43" Message="Method 'Cube' can be made private" />
+      <Issue TypeId="MemberCanBePrivate.Global" File="Tests\ToolsTests\TestsPolytopes.cs" Offset="2157-2163" Line="44" Message="Method 'Simplex' can be made private" />
     </Project>
   </Issues>
 </Report>
