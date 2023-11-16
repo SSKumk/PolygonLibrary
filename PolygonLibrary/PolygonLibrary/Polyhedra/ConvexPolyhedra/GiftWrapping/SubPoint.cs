@@ -111,19 +111,5 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The projected point.</returns>
     public SubPoint ProjectTo(AffineBasis aBasis) =>
             new SubPoint(aBasis.ProjectPoint(this), this, Original);
-
-
-    // /// <summary>
-    // /// Projects the current point to the specified affine basis.
-    // /// </summary>
-    // /// <param name="aBasis">The affine basis of non greater dimension to project the point to.</param>
-    // /// <param name="p">Point to project</param>
-    // /// <returns>The projected point.</returns>
-    // public static SubPoint ProjectTo(AffineBasis aBasis, Point p) {
-    //   Point projectPoint = aBasis.ProjectPoint(p);
-    //
-    //   return new SubPoint(projectPoint, new SubPoint(p, null, p), p);
-    // }
-
   }
 }
