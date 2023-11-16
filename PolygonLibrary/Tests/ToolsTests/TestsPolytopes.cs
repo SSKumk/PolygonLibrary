@@ -18,11 +18,18 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly List<Point> Cube5D_list = Cube_list(5);
 
 
-  // public static readonly ConvexPolytop Cube3D       = Cube(3);
-  // public static readonly ConvexPolytop Cube4D       = Cube(4);
-  // public static readonly ConvexPolytop Simplex3D    = Simplex(3);
-  // public static readonly ConvexPolytop Simplex4D    = Simplex(4);
-  // public static readonly ConvexPolytop Octahedron3D = new GiftWrapping(Octahedron3D_list).CPolytop;
+  public static readonly ConvexPolytop Cube3D = Cube(3).CPolytop;
+  public static readonly ConvexPolytop Cube4D = Cube(4).CPolytop;
+  public static readonly ConvexPolytop Simplex3D = Simplex(3).CPolytop;
+  public static readonly ConvexPolytop Simplex4D = Simplex(4).CPolytop;
+  public static readonly ConvexPolytop Octahedron3D = new GiftWrapping(Octahedron3D_list).CPolytop;
+
+
+  public static readonly FaceLattice Cube3D_FL = Cube(3).FaceLattice;
+  public static readonly FaceLattice Cube4D_FL = Cube(4).FaceLattice;
+  public static readonly FaceLattice Simplex3D_FL = Simplex(3).FaceLattice;
+  public static readonly FaceLattice Simplex4D_FL = Simplex(4).FaceLattice;
+
 
 
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
@@ -33,8 +40,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static List<Point> Simplex_list(int dim) => Simplex(dim, out _);
   public static List<Point> SimplexRND_list(int dim) => SimplexRND(dim, out _);
 
-  public static ConvexPolytop Cube(int dim) => new GiftWrapping(Cube_list(dim)).CPolytop;
-  public static ConvexPolytop Simplex(int dim) => new GiftWrapping(Simplex(dim, out _)).CPolytop;
+  public static GiftWrapping Cube(int dim) => new GiftWrapping(Cube_list(dim));
+  public static GiftWrapping Simplex(int dim) => new GiftWrapping(Simplex(dim, out _));
   #endregion
 
   /// <summary>
