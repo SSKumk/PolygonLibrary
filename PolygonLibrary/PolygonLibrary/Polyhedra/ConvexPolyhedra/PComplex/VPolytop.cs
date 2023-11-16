@@ -27,7 +27,6 @@ public partial class Geometry<TNum, TConv>
         for (int i = 1; i < sortedVs.Count(); i++) {
           hash = HashCode.Combine(hash, sortedVs[i]);
         }
-        // Console.Error.WriteLine($"Calc hash");
         _hash = hash;
       }
       return _hash.Value;
