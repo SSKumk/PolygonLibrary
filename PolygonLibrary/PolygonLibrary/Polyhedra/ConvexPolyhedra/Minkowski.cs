@@ -35,6 +35,9 @@ public partial class Geometry<TNum, TConv>
   public static FaceLattice MinkSumCH(FLNode P, FLNode Q) =>
     GiftWrapping.WrapFaceLattice(MinkSum(P.Vertices, Q.Vertices));
 
+  public static FaceLattice MinkSumCH(ConvexPolytop P, ConvexPolytop Q) =>
+    GiftWrapping.WrapFaceLattice(MinkSum(P.Vertices, Q.Vertices));
+
   public static FaceLattice MinkSumCH(FaceLattice P, FaceLattice Q) => MinkSumCH(P.Top, Q.Top);
 
 
@@ -60,26 +63,6 @@ public partial class Geometry<TNum, TConv>
   private static Point AddPoints(Point p1, Point p2) => new Point(new Vector(p1) + new Vector(p2));
 
   private static Point CalcInnerPoint(FLNode x, FLNode y) => AddPoints(x.InnerPoint, y.InnerPoint);
-  // AddIncidence(FL[d + 1], candidate, zTo_xy);
-  // candidate --> xi,yi
-  // for all z \in FL[d+1] --> (x,y)
-  // xi \in sub(x) && yi \in sub(y)
-  // ==> AddSup / AddAbove
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="Nodes"></param>
-  /// <param name="candidate"></param>
-  /// <param name="x"></param>
-  // /// <param name="zTo_xy"></param>
-  // private static void AddIncidence(
-  //         IEnumerable<FLNode> Nodes
-  //       , FLNode candidate
-  //       , Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy) {
-
-
-  // }
 
   public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) {
     AffineBasis affinePQ = new AffineBasis(AddPoints(P.Top.Affine.Origin, Q.Top.Affine.Origin)
@@ -92,8 +75,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     if (dim < P.Top.InnerPoint.Dim) {
-      FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
-      return lowDim.TranslateToOriginal(affinePQ);
+      // FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
+      // return lowDim.TranslateToOriginal(affinePQ);
+      throw new NotImplementedException();
     }
 
     return MinkSumSDas(P.Top, Q.Top);
