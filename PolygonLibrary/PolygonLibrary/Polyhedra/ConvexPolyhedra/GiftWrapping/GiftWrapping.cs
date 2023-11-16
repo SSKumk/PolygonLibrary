@@ -15,14 +15,14 @@ public partial class Geometry<TNum, TConv>
   //todo Сделать статические методы (вершины, многогранник, комплекс, совокупность всех гиперграней заданной размерности)
 
   /// <summary>
-  /// The GiftWrapping class represents a gift wrapping algorithm for convex polytopes.
+  /// The GiftWrapping class represents a gift wrapping algorithm for convex polytop.
   /// </summary>
   public class GiftWrapping {
 
     /// <summary>
-    /// The convex polytope obtained as a result of gift wrapping algorithm.
+    /// The convex polytop obtained as a result of gift wrapping algorithm.
     /// </summary>
-    private readonly BaseSubCP BuiltPolytop;
+    internal readonly BaseSubCP BuiltPolytop;
 
     /// <summary>
     /// The original set of points.
@@ -30,14 +30,32 @@ public partial class Geometry<TNum, TConv>
     private HashSet<Point> SOrig;
 
     /// <summary>
-    /// The convex polytope.
+    /// The convex polytop.
     /// </summary>
     private ConvexPolytop? _polytop;
 
     /// <summary>
     /// Gets the full dimensional polytop.
     /// </summary>
-    public ConvexPolytop CPolytop => _polytop ??= ConvexPolytop.ConstructFromSubCP(BuiltPolytop);
+    public ConvexPolytop CPolytop => _polytop ??= GetPolytop();
+
+    private ConvexPolytop GetPolytop() {
+      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
+      HashSet<Face> Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
+      HashSet<Edge> Es = new HashSet<Edge>();
+
+      foreach (BaseSubCP face in BuiltPolytop.Faces!) {
+        Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
+      }
+
+      return new ConvexPolytop
+        (
+         BuiltPolytop.OriginalVertices
+       , BuiltPolytop.PolytopDim
+       , Fs
+       , Es
+        );
+    }
 
     public static ConvexPolytop WrapPolytop(IEnumerable<Point> S) => new GiftWrapping(S).CPolytop;
 

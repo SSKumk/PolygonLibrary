@@ -79,9 +79,6 @@ public partial class Geometry<TNum, TConv>
           newFL[i].Add(newNode);
         }
       }
-
-      // ! не доделал. аккуратно посмотреть !
-
       return new FaceLattice(newFL);
     }
 
@@ -89,6 +86,14 @@ public partial class Geometry<TNum, TConv>
       return new FaceLattice(Top.TranslateToOriginal(aBasis));
     }
 
+    public ConvexPolytop ToConvexPolytop() {
+      var Fs = Lattice[^2].Select(n => new Face(n.Vertices
+      , new HyperPlane(new AffineBasis(n.Affine), (Top.InnerPoint, false)).Normal));
+      var Es = Lattice[^3].Select(n => new Edge(n.Vertices));
+      return new ConvexPolytop(Top.Vertices, Top.Affine.SpaceDim, Fs, Es);
+    }
+
+    public void WriteTXT(string filePath) => this.ToConvexPolytop().WriteTXT(filePath);
 
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
@@ -103,9 +108,25 @@ public partial class Geometry<TNum, TConv>
 
       bool isEqual = true;
       for (int i = this.Top.Dim; i > -1; i--) {
-        isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
+        var otherDict = new Dictionary<int, FLNode>();
+        foreach (var otherNode in other.Lattice[i]) {
+          otherDict.Add(otherNode.GetHashCode(), otherNode);
+        }
+
+        foreach (var thisNode in this.Lattice[i]) {
+          otherDict.TryGetValue(thisNode.GetHashCode(), out FLNode? otherNode);
+          if (otherNode is null) {
+            isEqual = false;
+          }
+          isEqual = isEqual && (thisNode.Equals(otherNode));
+        }
+        if (isEqual == false) {
+          break;
+        }
+
+
+        // isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
         System.Console.WriteLine($"Lattice are not equal: level i = {i}.");
-        if (isEqual == false) { break; }
       }
 
       return isEqual;
@@ -127,7 +148,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public VPolytop Polytop { get; protected set; }
 
-    public void ResetPolytop() { // todo Это противоречит нашей идеи о неизменности объектов! И нужна как вспомогательная вещь!
+    // ? Это противоречит нашей идеи о неизменности объектов! И нужна как вспомогательная вещь!
+    // ? Но с другой стороны она не вредит, так как получившийся рой точек является именно тем, чем должен
+    public void ResetPolytop() {
       Polytop = new VPolytop(GetAllNonStrictSub().Where(n => n.Dim == 0)
                                           .Select(n => n.InnerPoint));
     }

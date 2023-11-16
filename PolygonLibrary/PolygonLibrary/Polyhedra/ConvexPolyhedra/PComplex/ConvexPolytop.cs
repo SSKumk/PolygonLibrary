@@ -28,8 +28,8 @@ public partial class Geometry<TNum, TConv>
           info.Select
             (
              x => {
-               Debug.Assert(x.Value.F1.Normal is not null, "The normal to F1 is null!");
-               Debug.Assert(x.Value.F2.Normal is not null, "The normal to F2 is null!");
+               Debug.Assert(x.Value.F1.Normal is not null, "x.Value.F1.Normal != null");
+               Debug.Assert(x.Value.F2.Normal is not null, "x.Value.F2.Normal != null");
 
 
                return new KeyValuePair<Edge, (Face F1, Face F2)>
@@ -56,7 +56,7 @@ public partial class Geometry<TNum, TConv>
     public FansInfo(HashSet<BaseSubCP> Fs) {
       foreach (BaseSubCP F in Fs) {
         foreach (Point vertex in F.OriginalVertices) {
-          Debug.Assert(F.Normal is not null, "The normal to F is null!");
+          Debug.Assert(F.Normal is not null, "F.Normal != null");
 
           if (TryGetValue(vertex, out HashSet<Face>? value)) {
             value.Add(new Face(F.OriginalVertices, F.Normal));
@@ -89,10 +89,19 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="normal">The outward normal vector of the face.</param>
-    public Face(IEnumerable<Point> Vs, Vector normal) { //todo может IEnumerable --> HashSet и тогда ещё меньше ссылок будет ??
+    public Face(IEnumerable<Point> Vs, Vector normal) {
       Vertices = new HashSet<Point>(Vs);
       Normal = normal;
     }
+
+    public List<Point> GetCcwOrder() {
+      Debug.Assert(Normal.Dim == 3, "Face.CcwOrder: Only for 2D face in 3D space!");
+
+      GiftWrapping gw = new GiftWrapping(Vertices);
+      var polygon2d = gw.BuiltPolytop as SubTwoDimensional;
+      return polygon2d!.VerticesList.Select(v => v.Original).ToList();
+    }
+
 
     /// <summary>
     /// Determines whether the specified object is equal to face.
@@ -107,7 +116,7 @@ public partial class Geometry<TNum, TConv>
 
       Face other = (Face)obj;
 
-      return this.Vertices.SetEquals(other.Vertices);
+      return this.Normal.Equals(other.Normal) && this.Vertices.SetEquals(other.Vertices);
     }
 
     /// <summary>
@@ -123,7 +132,7 @@ public partial class Geometry<TNum, TConv>
       if (_hash is null) {
         int hash = 0;
 
-        foreach (Point vertex in Vertices.OrderBy(v => v)) {
+        foreach (Point vertex in Vertices.Order()) {
           hash = HashCode.Combine(hash, vertex.GetHashCode());
         }
         _hash = hash;
@@ -179,7 +188,7 @@ public partial class Geometry<TNum, TConv>
       if (_hash is null) {
         int hash = 0;
 
-        foreach (Point vertex in Vertices.OrderBy(v => v)) {
+        foreach (Point vertex in Vertices.Order()) {
           hash = HashCode.Combine(hash, vertex.GetHashCode());
         }
         _hash = hash;
@@ -191,42 +200,9 @@ public partial class Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// <para><b>Simplex</b> - the polytop is a simplex.</para>
-  /// <b>Polytop</b> - the polytop is a complex structure.
-  /// <para><b>Polygon2D</b> - the polytop is a 2D-plane polygon.</para>
-  /// <b>Segment</b> - the polytop is a 1D-segment.
-  /// <para><b>Vertex</b> - the polytop is a 0D-vertex.</para>
+  /// Represents a full-dimensional convex polytop in a d-dimensional space.
   /// </summary>
-  public enum ConvexPolytopType {
-
-    Polytop
-  , Polygon2D
-  , PolytopSegment
-  , Vertex
-
-  }
-
-
-  /// <summary>
-  /// Represents a full-dimensional convex polytop complex in a d-dimensional space.
-  /// </summary>
-  public abstract class ConvexPolytop {
-
-    /// <summary>
-    /// Gets the type of the convex polytope.
-    /// </summary>
-    public abstract ConvexPolytopType Type { get; }
-
-    /// <summary>
-    /// Gets the dimension of the polytope.
-    /// </summary>
-    public abstract int PolytopDim { get; }
-
-    // /// <summary>
-    // /// The node of the face lattice to which this polytop belongs.
-    // /// If the node is null, polytop is considered selfish.
-    // /// </summary>
-    // public FaceLatticeNode? LatticeNode { get; set; }
+  public class ConvexPolytop {
 
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
@@ -234,161 +210,90 @@ public partial class Geometry<TNum, TConv>
     public int SpaceDim => Vertices.First().Dim;
 
     /// <summary>
-    /// Gets the set of vertices of the polytope.
+    /// Gets the dimension of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices { get; protected init; }
+    public int PolytopDim { get; }
 
     /// <summary>
-    /// Gets the faces of the polytope.
+    /// Gets the set of vertices of the polytop.
     /// </summary>
-    public HashSet<ConvexPolytop>? Faces { get; protected init; }
+    public HashSet<Point> Vertices => Polytop.Vertices;
 
-    public HashSet<ConvexPolytop>? Super { get; set; }
-
-    protected static void AddSuperToFaces(ConvexPolytop P) {
-      foreach (ConvexPolytop F in P.Faces!) {
-        if (F.Super is null) {
-          F.Super = new HashSet<ConvexPolytop>() { P };
-        } else {
-          F.Super.Add(P);
-        }
-      }
-    }
+    public VPolytop Polytop { get; init; }
 
     /// <summary>
-    /// Gets the set of edges of the polytope.
+    /// Gets the faces of the polytop.
     /// </summary>
-    public HashSet<ConvexPolytop>? Edges { get; protected init; }
+    public HashSet<Face> Faces { get; }
 
-    public static ConvexPolytop ConstructFromSubCP(BaseSubCP BCP) {
-      //! todo Вернуть ConvexPolytop как только самый верхний уровень описания объекта!
-      throw new NotImplementedException();
-      switch (BCP.Type) {
-        case SubCPType.Simplex: return new Polytop((BCP as SubSimplex)!);
-        case SubCPType.NonSimplex: return new Polytop((BCP as SubNonSimplex)!);
-        case SubCPType.TwoDimensional: return new Polygon2D((BCP as SubTwoDimensional)!);
-        case SubCPType.OneDimensional: return new PolytopSegment((BCP as SubTwoDimensionalEdge)!);
-        default: throw new ArgumentOutOfRangeException(nameof(BCP));
-      }
-    }
+    /// <summary>
+    /// Gets the set of edges of the polytop.
+    /// </summary>
+    public HashSet<Edge> Edges { get; }
+
     // /// <summary>
     // /// Gets the incidence information of the faces. Each edge is associated with a pair of incidence faces with it.
     // /// </summary>
     // public IncidenceInfo FaceIncidence { get; }
 
     // /// <summary>
-    // /// Gets the fan information of the polytope. Each point is associated with a set of incidence faces with it.
+    // /// Gets the fan information of the polytop. Each point is associated with a set of incidence faces with it.
     // /// </summary>
     // public FansInfo Fans { get; }
 
-    // /// <summary>
-    // /// Initializes a new instance of the Polytop class.
-    // /// </summary>
-    // /// <param name="Vs">The vertices of the polytope.</param>
-    // public ConvexPolytop(IEnumerable<Point> Vs) {
-    //   Vertices = new HashSet<Point>(Vs);
-    // }
-    //
-    // public ConvexPolytop(){}
-
     /// <summary>
-    /// Determines whether the specified object is equal to convex polytop.
-    /// Two polyhedra are equal if they have same dimensions and sets of their vertices are equal.
+    /// Initializes a new instance of the Polytop class.
     /// </summary>
-    /// <param name="obj">The object to compare with convex polytop.</param>
-    /// <returns>True if the specified object is equal to convex polytop, False otherwise</returns>
-    public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
-        return false;
-      }
-
-      ConvexPolytop other = (ConvexPolytop)obj;
-
-      if (this.PolytopDim != other.PolytopDim) {
-        return false;
-      }
-
-      return this.Vertices.SetEquals(other.Vertices);
+    /// <param name="Vs">The vertices of the polytop.</param>
+    /// <param name="polytopDim">The dimension of the polytop.</param>
+    /// <param name="faces">The faces of the polytop.</param>
+    /// <param name="edges">The edges of the polytop.</param>
+    /// <param name="type">The type of the polytop.</param>
+    /// <param name="faceIncidence">The incidence information of the faces.</param>
+    /// <param name="fans">The fan information of the polytop.</param>
+    public ConvexPolytop(IEnumerable<Point> Vs
+                 , int polytopDim
+                 , IEnumerable<Face> faces
+                 , IEnumerable<Edge> edges) {
+      Polytop = new VPolytop(Vs);
+      PolytopDim = polytopDim;
+      Faces = new HashSet<Face>(faces);
+      Edges = new HashSet<Edge>(edges);
     }
 
+    /// <summary>
+    /// Converts the polytop to a convex polygon.
+    /// </summary>
+    /// <param name="basis">The affine basis used for the conversion.</param>
+    /// <returns>A convex polygon representing the polytop in 2D space.</returns>
+    public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
+      if (PolytopDim != 2) {
+        throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
+      }
+
+      return new ConvexPolygon(basis.ProjectPoints(Vertices));
+    }
 
     /// <summary>
-    /// Internal field for the hash of the polytop
+    /// Writes Polytop to the file in 'PolytopTXT_format'.
     /// </summary>
-    private int? _hash = null;
-
-    /// <summary>
-    /// Returns a hash code for the convex polytop based on specified set of vertices and dimension.
-    /// </summary>
-    /// <returns>A hash code for the specified set of vertices and dimension.</returns>
-    public override int GetHashCode() {
-      if (_hash is null) {
-        int hash = 0;
-
-        if (Type == ConvexPolytopType.Vertex) {
-          hash = HashCode.Combine(hash, Vertices.First().GetHashCode());
-          // Console.WriteLine($"Calc hash for vertex: {Vertices.First()}");
-        } else {
-          foreach (ConvexPolytop P in Faces.OrderBy(F => F.GetHashCode())) {
-            hash = HashCode.Combine(hash, P.GetHashCode());
-          }
-          // Console.WriteLine($"Calc hash for Face: {PolytopDim}");
-
+    /// <param name="filePath">The path to the file to write in.</param>
+    public void WriteTXT(string filePath) {
+      List<Point> VList = Vertices.Order().ToList();
+      using (StreamWriter writer = new StreamWriter(filePath)) {
+        writer.WriteLine($"PDim: {PolytopDim}");
+        writer.WriteLine($"SDim: {SpaceDim}");
+        writer.WriteLine();
+        writer.WriteLine($"Vertices: {Vertices.Count}");
+        writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
+        writer.WriteLine();
+        writer.WriteLine($"Faces: {Faces.Count}");
+        foreach (Face face in Faces.OrderBy(F => new Point(F.Normal))) {
+          writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
+          writer.WriteLine(string.Join(' ', face.GetCcwOrder().Select(v => VList.IndexOf(v))));
         }
-        _hash = HashCode.Combine(hash, PolytopDim);
       }
-
-      return _hash.Value;
     }
-
-    // /// <summary>
-    // /// Converts the polytope to a convex polygon.
-    // /// </summary>
-    // /// <param name="basis">The affine basis used for the conversion.</param>
-    // /// <returns>A convex polygon representing the polytope in 2D space.</returns>
-    // public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
-    //   if (PolytopDim != 2) {
-    //     throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
-    //   }
-    //
-    //   return new ConvexPolygon(basis.ProjectPoints(Vertices));
-    // }
-
-    // /// <summary>
-    // /// Writes Polytop to the file in 'PolytopTXT_format'.
-    // /// </summary>
-    // /// <param name="filePath">The path to the file to write in.</param>
-    // public void WriteTXT(string filePath) {
-    //   List<Point> VList = Vertices.ToList();
-    //   using (StreamWriter writer = new StreamWriter(filePath)) {
-    //     writer.Write("Type: ");
-    //     switch (Type) {
-    //       case ConvexPolytopType.Simplex:
-    //         writer.WriteLine("Simplex");
-    //
-    //         break;
-    //       case ConvexPolytopType.Polytop:
-    //         writer.WriteLine("NoNSimplex");
-    //
-    //         break;
-    //       case ConvexPolytopType.Polygon2D:
-    //         writer.WriteLine("TwoDimensional");
-    //
-    //         break;
-    //     }
-    //     writer.WriteLine($"PDim: {PolytopDim}");
-    //     writer.WriteLine($"SDim: {SpaceDim}");
-    //     writer.WriteLine();
-    //     writer.WriteLine($"Vertices: {Vertices.Count}");
-    //     writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
-    //     writer.WriteLine();
-    //     writer.WriteLine($"Faces: {Faces.Count}");
-    //     foreach (Face face in Faces) {
-    //       writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
-    //       writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
-    //     }
-    //   }
-    // }
 
   }
 
