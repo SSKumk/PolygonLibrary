@@ -22,7 +22,7 @@ public partial class Geometry<TNum, TConv>
     private int? _hash;
     public override int GetHashCode() {
       if (_hash is null) {
-        List<int> sortedVs = Vertices.OrderBy(v => v).Select(v => v.GetHashCode()).ToList();
+        List<int> sortedVs = Vertices.Order().Select(v => v.GetHashCode()).ToList();
         int hash = sortedVs.First();
         for (int i = 1; i < sortedVs.Count(); i++) {
           hash = HashCode.Combine(hash, sortedVs[i]);
