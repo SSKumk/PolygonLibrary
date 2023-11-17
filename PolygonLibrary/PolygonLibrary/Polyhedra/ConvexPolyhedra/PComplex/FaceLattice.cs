@@ -120,7 +120,7 @@ public partial class Geometry<TNum, TConv>
           }
           isEqual = isEqual && (thisNode.Equals(otherNode));
         }
-        if (isEqual == false) {
+        if (!isEqual) {
           break;
         }
 
@@ -148,11 +148,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public VPolytop Polytop { get; protected set; }
 
-    // ? Это противоречит нашей идеи о неизменности объектов! И нужна как вспомогательная вещь!
-    // ? Но с другой стороны она не вредит, так как получившийся рой точек является именно тем, чем должен
-    public void ResetPolytop() {
-      Polytop = new VPolytop(GetAllNonStrictSub().Where(n => n.Dim == 0)
-                                          .Select(n => n.InnerPoint));
+    /// <summary>
+    /// In assumption that all nodes of a lower dimension are correct, it cerates a new Polytop based on vertices of the subs.
+    /// </summary>
+    public void ReconstructPolytop() {
+      if (Dim != 0) {
+        Polytop = new VPolytop(Sub!.SelectMany(s => s.Vertices));
+      }
     }
 
     /// <summary>
@@ -344,7 +346,7 @@ public partial class Geometry<TNum, TConv>
       var thisAbovePHash = this.Above?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
       var otherAbovePHash = other.Above?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
 
-
+      // ? Подумать о том, чтобы ещё сравнивать на Equals
       if (thisAbovePHash is not null && otherAbovePHash is not null) {
         isEqual = isEqual && thisAbovePHash.SetEquals(otherAbovePHash);
       }
