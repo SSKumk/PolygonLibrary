@@ -175,7 +175,6 @@ public class MinkowskiSum {
     FaceLattice sum = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
-    // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube4D_Cube4D45XY.txt");
   }
   #endregion
 
