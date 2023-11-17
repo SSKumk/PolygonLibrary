@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// </summary>
   public class Point : IComparable<Point> {
 
-#region Internal storage, access properties, and convertors
+    #region Internal storage, access properties, and convertors
     /// <summary>
     /// The internal storage of the point as a one-dimensional array
     /// </summary>
@@ -40,23 +40,23 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The value of the corresponding component</returns>
     public TNum this[int i] {
       get
-        {
+      {
 #if DEBUG
-          if (i < 0 || i >= Dim) {
-            throw new IndexOutOfRangeException();
-          }
-#endif
-          return _p[i];
+        if (i < 0 || i >= Dim) {
+          throw new IndexOutOfRangeException();
         }
+#endif
+        return _p[i];
+      }
       protected set
-        {
+      {
 #if DEBUG
-          if (i < 0 || i >= Dim) {
-            throw new IndexOutOfRangeException();
-          }
-#endif
-          _p[i] = value;
+        if (i < 0 || i >= Dim) {
+          throw new IndexOutOfRangeException();
         }
+#endif
+        _p[i] = value;
+      }
     }
 
     /// <summary>
@@ -65,9 +65,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be converted</param>
     /// <returns>The resultant array</returns>
     public static explicit operator TNum[](Point p) => p._p;
-#endregion
+    #endregion
 
-#region Comparing
+    #region Comparing
     /// <summary>
     /// Point comparer realizing the lexicographic order
     /// </summary>
@@ -172,24 +172,24 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &lt;= p2; false, otherwise</returns>
     public static bool operator <=(Point p1, Point p2) => p1.CompareTo(p2) <= 0;
-#endregion
+    #endregion
 
-#region Miscellaneous procedures
+    #region Miscellaneous procedures
     /// <summary>
     /// Distance to the origin
     /// </summary>
     public TNum Dist {
       get
-        {
-          TNum res;
-          int  i, d = Dim;
+      {
+        TNum res;
+        int i, d = Dim;
 
-          for (i = 0, res = Tools.Zero; i < d; i++) {
-            res += _p[i] * _p[i];
-          }
-
-          return TNum.Sqrt(res);
+        for (i = 0, res = Tools.Zero; i < d; i++) {
+          res += _p[i] * _p[i];
         }
+
+        return TNum.Sqrt(res);
+      }
     }
 
     /// <summary>
@@ -220,17 +220,17 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public bool IsZero {
       get
-        {
-          if (!isZero.HasValue) {
-            isZero = true;
+      {
+        if (!isZero.HasValue) {
+          isZero = true;
 
-            for (int i = 0; i < Dim && isZero.Value; i++) {
-              isZero = Tools.EQ(this[i]);
-            }
+          for (int i = 0; i < Dim && isZero.Value; i++) {
+            isZero = Tools.EQ(this[i]);
           }
-
-          return isZero.Value;
         }
+
+        return isZero.Value;
+      }
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The string in the specified format.</returns>
     public string ToFileFormat() {
       string res = $"{_p[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
+      int d = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $" {_p[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -262,9 +262,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return res;
     }
-#endregion
+    #endregion
 
-#region Overrides
+    #region Overrides
     public override bool Equals(object? obj) {
 #if DEBUG
       if (obj is not Point) {
@@ -276,7 +276,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
     public override string ToString() {
       string res = $"({_p[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
+      int d = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $",{_p[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -300,9 +300,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return _hash.Value;
     }
-#endregion
+    #endregion
 
-#region Constructors
+    #region Constructors
     /// <summary>
     /// The default construct producing the origin point of a n-dimensional space
     /// </summary>
@@ -363,9 +363,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="v">The vector to be copied</param>
     public Point(Vector2D v) => _p = new TNum[2] { v.x, v.y };
-#endregion
+    #endregion
 
-#region Operators
+    #region Operators
     /// <summary>
     /// Linear combination of two points
     /// </summary>
@@ -396,8 +396,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
     /// <returns>The resultant point</returns>
     public static Point LinearCombination(IEnumerable<Point> ps, IEnumerable<TNum> ws) {
-      IEnumerator<Point> enPoint  = ps.GetEnumerator();
-      IEnumerator<TNum>  enWeight = ws.GetEnumerator();
+      IEnumerator<Point> enPoint = ps.GetEnumerator();
+      IEnumerator<TNum> enWeight = ws.GetEnumerator();
 
 #if DEBUG
       if (!enPoint.MoveNext()) {
@@ -413,7 +413,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 #endif
 
 
-      int    dim    = enPoint.Current.Dim;
+      int dim = enPoint.Current.Dim;
       TNum[] coords = new TNum[dim];
 
       do {
@@ -439,7 +439,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be reversed</param>
     /// <returns>The opposite point</returns>
     public static Point operator -(Point p) {
-      int    d  = p.Dim, i;
+      int d = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -450,10 +450,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     /// <summary>
-    /// Sum of a point and a vector
+    /// Sum of a point and a point.
     /// </summary>
-    /// <param name="p">The first point summand</param>
-    /// <param name="v">The second vector summand</param>
+    /// <param name="p">The first point summand.</param>
+    /// <param name="q">The second point summand.</param>
+    /// <returns>The point, which is sum of two given points.</returns>
+    public static Point operator +(Point p, Point q) => p + new Vector(q);
+
+    /// <summary>
+    /// Sum of a point and a vector.
+    /// </summary>
+    /// <param name="p">The first point summand.</param>
+    /// <param name="v">The second vector summand.</param>
     /// <returns>The point, which is shift of the original point to the direction of the vector</returns>
     public static Point operator +(Point p, Vector v) {
       int d = p.Dim, i;
@@ -522,7 +530,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point factor</param>
     /// <returns>The product</returns>
     public static Point operator *(TNum a, Point p) {
-      int    d  = p.Dim, i;
+      int d = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -552,7 +560,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new DivideByZeroException();
       }
 #endif
-      int    d  = p.Dim, i;
+      int d = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -561,7 +569,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return new Point(np);
     }
-#endregion
+    #endregion
 
   }
 
