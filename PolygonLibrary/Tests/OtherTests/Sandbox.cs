@@ -149,8 +149,8 @@ public class Sandbox {
     // FaceLattice v0s1 = MinkSumSDas(v0, s1_GW); // 
     // Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1_GW)));
 
-    // FaceLattice v0q1 = MinkSumSDas(v0, q1_GW);  // 
-    // Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1_GW)));
+    FaceLattice v0q1 = MinkSumSDas(v0, q1_GW);  // 
+    Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1_GW)));
 
     // // 1:
     // FaceLattice s1s1 = MinkSumSDas(s1_GW, s1_GW);  // 
@@ -160,7 +160,7 @@ public class Sandbox {
     // FaceLattice s2q1 = MinkSumSDas(s2_GW, q1_GW);  // 
     // Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2_GW, q1_GW)));
 
-    // // 2: 
+    // 2: 
     // FaceLattice q1q1 = MinkSumSDas(q1_GW, q1_GW);
     // Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1_GW, q1_GW)));
     // FaceLattice q1trig1 = MinkSumSDas(q1_GW, trig1_GW); // 
@@ -170,9 +170,9 @@ public class Sandbox {
     // FaceLattice q1s5 = MinkSumSDas(q1_GW, s5_GW);
     // Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1_GW, s5_GW))); // 
 
-    FaceLattice cube3dCH = GiftWrapping.WrapFaceLattice(Cube3D_list);
-    FaceLattice Cube3D_2 = MinkSumSDas(cube3dCH, cube3dCH);
-    Assert.That(Cube3D_2, Is.EqualTo(MinkSumCH(cube3dCH, cube3dCH)));
+    // FaceLattice cube3dCH = GiftWrapping.WrapFaceLattice(Cube3D_list);
+    // FaceLattice Cube3D_2 = MinkSumSDas(cube3dCH, cube3dCH);
+    // Assert.That(Cube3D_2, Is.EqualTo(MinkSumCH(cube3dCH, cube3dCH)));
 
 
 
