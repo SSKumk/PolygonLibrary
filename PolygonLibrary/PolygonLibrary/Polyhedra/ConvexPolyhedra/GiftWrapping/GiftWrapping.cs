@@ -91,13 +91,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The face lattice.</returns>
     private FaceLattice ConstructFL() {
-      Dictionary<int, FLNode> FL = new Dictionary<int, FLNode>();
+      Dictionary<int, FLNode> allNodes = new Dictionary<int, FLNode>();
       List<HashSet<FLNode>> lattice = new List<HashSet<FLNode>>();
       for (int i = 0; i < BuiltPolytop.PolytopDim + 1; i++) {
         lattice.Add(new HashSet<FLNode>());
       }
 
-      FLNode top = ConstructFLN(BuiltPolytop, ref FL, ref lattice);
+      ConstructFLN(BuiltPolytop, ref allNodes, ref lattice);
       return new FaceLattice(lattice);
     }
 
