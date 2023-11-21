@@ -66,7 +66,6 @@ public class MinkowskiSum {
 
 
     // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube3D_Octahedron45XY.txt");
-    sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube3D_Octahedron45XY--.txt");
 
     // Assert.That(sum.Faces.Count(F => Tools.EQ(F.Normal * Vector.CreateOrth(3, 3))), Is.EqualTo(8));
     // Assert.That(sum.Faces.Count(F => Tools.GT(F.Normal * Vector.CreateOrth(3, 3))), Is.EqualTo(9));
@@ -120,7 +119,7 @@ public class MinkowskiSum {
     FaceLattice sum = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
-    sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
+    // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
   }
 
   [Test]
