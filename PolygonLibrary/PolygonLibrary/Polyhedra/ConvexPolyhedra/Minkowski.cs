@@ -82,8 +82,8 @@ public partial class Geometry<TNum, TConv>
   public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) {
     // Вычисляю аффинное пространство суммы P и Q
     // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
-    AffineBasis affinePQ = new AffineBasis(P.Top.Affine.Origin + Q.Top.Affine.Origin
-                                      , P.Top.Affine.Basis.Concat(Q.Top.Affine.Basis));
+    AffineBasis affinePQ = new AffineBasis(P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin
+                                      , P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
 
     int dim = affinePQ.SpaceDim;
     if (dim == 0) { // Случай точки обработаем отдельно
@@ -102,8 +102,8 @@ public partial class Geometry<TNum, TConv>
 
   // Основной алгоритм суммы Минковского через вычисления решётки. См Sandip Das A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
   private static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
-    AffineBasis affinePQ = new AffineBasis(P.Affine.Origin + Q.Affine.Origin
-                                  , P.Affine.Basis.Concat(Q.Affine.Basis));
+    AffineBasis affinePQ = new AffineBasis(P.AffBasis.Origin + Q.AffBasis.Origin
+                                  , P.AffBasis.Basis.Concat(Q.AffBasis.Basis));
     int dim = affinePQ.SpaceDim;
     // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
@@ -127,7 +127,7 @@ public partial class Geometry<TNum, TConv>
         // Будем описывать под-грани по-очереди для каждой грани с предыдущего уровня.
         (FLNode x, FLNode y) = zTo_xy[z];
         // Аффинное пространство грани z (F(+)G в терминах Лемм)
-        AffineBasis zSpace = new AffineBasis(z.Affine);
+        AffineBasis zSpace = new AffineBasis(z.AffBasis);
         Point innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
         //? Теперь я не уверен нужно ли сортировать
@@ -138,24 +138,27 @@ public partial class Geometry<TNum, TConv>
         List<FLNode> Y = y.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
 
         foreach (FLNode xi in X) {
-          foreach (FLNode yi in Y) {
+          foreach (FLNode yj in Y) {
 
             // -2) Если мы обрабатывали эти пары (или их награни), то идём дальше
-            if (xyToz.ContainsKey((xi, yi))) { continue; }
+            if (xyToz.ContainsKey((xi, yj))) {
+              System.Console.WriteLine("Skip!");
+              continue;
+            }
 
             // -1) Смотрим потенциально набираем ли мы нужную размерность
-            if (xi.Affine.SpaceDim + yi.Affine.SpaceDim < z.Dim - 1) { continue; }
+            if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.Dim - 1) { break; }
 
             // Берём очередного кандидата.
-            HashSet<Point> candidate = MinkSum(xi.Vertices, yi.Vertices);
-            AffineBasis candBasis = new AffineBasis(xi.Affine.Origin + yi.Affine.Origin
-                                          , xi.Affine.Basis.Concat(yi.Affine.Basis));
+            HashSet<Point> candidate = MinkSum(xi.Vertices, yj.Vertices);
+            AffineBasis candBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin
+                                          , xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
 
-            // 0) dim(xi (+) yi) == dim(z) - 1
+            // 0) dim(xi (+) yj) == dim(z) - 1
             if (candBasis.SpaceDim != z.Dim - 1) { continue; }
 
             // 1) Lemma 3.
-            // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yi имеет на 1 размерность меньше.
+            // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
             var candidateInAffine_z = zSpace.ProjectPoints(candidate);
             // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
             HyperPlane A = new HyperPlane(new AffineBasis(candidateInAffine_z));
@@ -164,42 +167,49 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false); // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
             } else { continue; }
 
-            // Собираем все надграни xi и yi, которые лежат в подрешётках x и y соответственно.
-            // НО, достаточно только непосредственных надграней!
-            HashSet<FLNode> xiAbove = FLNode.GetFromBottomToTop(xi, x, true);
-            HashSet<FLNode> yiAbove = FLNode.GetFromBottomToTop(yi, y, true);
+            // Собираем все надграни xi и yj, которые лежат в подрешётках x и y соответственно.
+            // todo НО, достаточно только непосредственных надграней! 
+            // И более того, может сможем взять подграни x размерности dim+1
+            HashSet<FLNode> xiSuper = x.GetLevel(d + 1);
+            if (xi.Super is not null) {
+              xiSuper.IntersectWith(xi.Super);
+            }
+            HashSet<FLNode> yjSuper = y.GetLevel(d + 1);
+            if (yj.Super is not null) {
+              yjSuper.IntersectWith(yj.Super);
+            }
 
             // F = x >= f' > f = xi
             // InnerPoint(f') + InnerPoint(g) \in A^-
             bool xCheck = true;
-            foreach (var x_InnerPoint in xiAbove.Select(n => n.InnerPoint)) {
-              xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yi.InnerPoint));
+            foreach (var x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+              xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
             }
 
-            // G = y >= g' > g = yi
+            // G = y >= g' > g = yj
             // InnerPoint(g') + InnerPoint(f) \in A^-
             bool yCheck = true;
-            foreach (var y_InnerPoint in yiAbove.Select(n => n.InnerPoint)) {
+            foreach (var y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
               yCheck = yCheck && A.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
             }
 
             if (!(xCheck && yCheck)) { continue; }
 
             // Узел является валидным. Создаём и добавляем везде куда надо.
-            FLNode node = new FLNode(candidate, xi.InnerPoint + yi.InnerPoint, candBasis);
+            FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
             FL[node.Dim].Add(node);
-            zTo_xy.Add(node, (xi, yi));
-            xyToz.Add((xi, yi), node);
+            zTo_xy.Add(node, (xi, yj));
+            xyToz.Add((xi, yj), node);
 
-            // ? Возможно нужно всем парам (Sub(xi), yi) и (xi, Sub(yi)) в качестве узла указать 'node' (По лемме 4)
+            // ? Возможно нужно всем парам (Sub(xi), yj) и (xi, Sub(yj)) в качестве узла указать 'node' (По лемме 4)
             // ! но в таком виде НЕ работает!
             // var xiSub = xi.GetAllSub();
-            // var yiSub = yi.GetAllSub();
+            // var yjSub = yj.GetAllSub();
             // foreach (var xisub in xiSub) {
-            //   xyToz.Add((xisub, yi), node);
+            //   xyToz.Add((xisub, yj), node);
             // }
-            // foreach (var yisub in yiSub) {
-            //   xyToz.Add((xi, yisub), node);
+            // foreach (var yjsub in yjSub) {
+            //   xyToz.Add((xi, yjsub), node);
             // }
 
             // Устанавливаем связи с другими гранями из предыдущего слоя по Лемме 6.
@@ -209,8 +219,8 @@ public partial class Geometry<TNum, TConv>
               HashSet<FLNode> Xp = xp.GetAllNonStrictSub();
               HashSet<FLNode> Yq = yq.GetAllNonStrictSub();
 
-              if (Xp.Contains(xi) && Yq.Contains(yi)) {
-                node.AddAbove(prevNode);
+              if (Xp.Contains(xi) && Yq.Contains(yj)) {
+                node.AddSuper(prevNode);
                 prevNode.AddSub(node);
               }
             }
