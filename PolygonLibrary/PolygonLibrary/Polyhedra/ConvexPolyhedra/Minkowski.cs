@@ -168,16 +168,10 @@ public partial class Geometry<TNum, TConv>
             } else { continue; }
 
             // Собираем все надграни xi и yj, которые лежат в подрешётках x и y соответственно.
-            // todo НО, достаточно только непосредственных надграней! 
-            // И более того, может сможем взять подграни x размерности dim+1
-            HashSet<FLNode> xiSuper = x.GetLevel(d + 1);
-            if (xi.Super is not null) {
-              xiSuper.IntersectWith(xi.Super);
-            }
-            HashSet<FLNode> yjSuper = y.GetLevel(d + 1);
-            if (yj.Super is not null) {
-              yjSuper.IntersectWith(yj.Super);
-            }
+            // достаточно только непосредственных надграней! 
+            // И более того, может сможем взять подграни x размерности dim+1 (но непонятно как)
+            IEnumerable<FLNode> xiSuper = xi.GetSuper().Intersect(x.GetAllNonStrictSub());
+            IEnumerable<FLNode> yjSuper = yj.GetSuper().Intersect(y.GetAllNonStrictSub());
 
             // F = x >= f' > f = xi
             // InnerPoint(f') + InnerPoint(g) \in A^-
