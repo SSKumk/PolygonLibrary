@@ -145,11 +145,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         (SpaceDim == point.Dim, "The dimension of the basis space should be equal to the dimension of the current point.");
 
       Vector np = new Vector(Origin);
-      int i = 0;
-      foreach (Vector bvec in Basis) {
-        np += point[i] * bvec;
-        i++;
+      for (int i = 0; i < Basis.Count; i++) {
+        np += point[i] * Basis[i];
       }
+
       return new Point(np);
     }
 
