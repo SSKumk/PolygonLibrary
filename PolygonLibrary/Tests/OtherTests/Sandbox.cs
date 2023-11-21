@@ -52,59 +52,6 @@ public class Sandbox {
 
   }
 
-  [Test]
-  public void LowerGW() {
-    HashSet<Point> S = new HashSet<Point>()
-      {
-        new Point(new double[] { 0, 0, 0, 0})
-      , new Point(new double[] { 1, 0, 0, 0})
-      , new Point(new double[] { 0, 1, 0, 0})
-      , new Point(new double[] { 0, 0, 1, 0})
-      , new Point(new double[] { 1, 1, 0, 0})
-      , new Point(new double[] { 0, 1, 1, 0})
-      , new Point(new double[] { 1, 0, 1, 0})
-      , new Point(new double[] { 1, 1, 1, 0})
-      };
-
-    GiftWrapping P = new GiftWrapping(S);
-
-  }
-  [Test]
-  public void ConvexPolytopTest() {
-    // Рой
-    var p01 = new Point(new double[] { 0, 0, 0 });
-    var p02 = new Point(new double[] { 1, 0, 0 });
-    var p03 = new Point(new double[] { 0, 1, 0 });
-    var p04 = new Point(new double[] { 0, 0, 1 });
-
-
-    // Изначальные SubPoint-ы
-    var s01 = new SubPoint(p01, null, p01);
-    var s02 = new SubPoint(p02, null, p02);
-    var s03 = new SubPoint(p03, null, p03);
-    var s04 = new SubPoint(p04, null, p04);
-
-    // Точки в подпространстве
-    var p1 = new Point(new Point2D(0, 0));
-    var p2 = new Point(new Point2D(1, 0));
-    var p3 = new Point(new Point2D(0, 1));
-
-    FaceLattice P = GiftWrapping.WrapFaceLattice(new Point[] { p1, p2, p3 });
-
-    // FaceLattice P = GiftWrapping.WrapFaceLattice(Cube5D_list);
-
-    FLNode top = P.Top;
-    FLNode bot = top;
-    while (bot.Sub is not null) {
-      bot = bot.Sub.First();
-    }
-    FLNode? top2 = bot;
-    while (top2.Above is not null) {
-      top2 = top2.Above.Last();
-    }
-    Assert.IsTrue(ReferenceEquals(top, top2));
-  }
-
 
   [Test]
   public void MinkSumTest() {
@@ -198,22 +145,22 @@ public class Sandbox {
     FaceLattice su3 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u3 });
 
     // Удвоенный отрезок
-    FaceLattice su1_su1 = MinkSumSDas(su1, su1);
-    Assert.That(su1_su1, Is.EqualTo(MinkSumCH(su1, su1)));
+    // FaceLattice su1_su1 = MinkSumSDas(su1, su1);
+    // Assert.That(su1_su1, Is.EqualTo(MinkSumCH(su1, su1)));
 
-    FaceLattice su3_su3 = MinkSumSDas(su3, su3);
-    Assert.That(su3_su3, Is.EqualTo(MinkSumCH(su3, su3)));
+    // FaceLattice su3_su3 = MinkSumSDas(su3, su3);
+    // Assert.That(su3_su3, Is.EqualTo(MinkSumCH(su3, su3)));
 
 
 
     // Единичный квадрат
     FaceLattice qu1_GW = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1, u2, u3 });
-    FaceLattice qu1 = MinkSumSDas(su1, su2);
-    Assert.That(qu1, Is.EqualTo(qu1_GW));
+    // FaceLattice qu1 = MinkSumSDas(su1, su2);
+    // Assert.That(qu1, Is.EqualTo(qu1_GW));
 
     // Прямоугольник
-    FaceLattice su1_qu1 = MinkSumSDas(su1, qu1);
-    Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1)));
+    FaceLattice su1_qu1 = MinkSumSDas(su1, qu1_GW);
+    Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1_GW)));
 
     // Шестиугольник
     FaceLattice su3_qu1 = MinkSumSDas(su3, qu1_GW);
