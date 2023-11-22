@@ -313,6 +313,7 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
+    // ToDo: Избавиться от функций Get...Sub/Sup и переделать на свойства
     public HashSet<FLNode> GetAllNonStrictSub() => AllNonStrictSub;
 
     public HashSet<FLNode> GetAllSub() {
