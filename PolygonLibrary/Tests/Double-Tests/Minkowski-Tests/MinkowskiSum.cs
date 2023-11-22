@@ -230,7 +230,7 @@ public class MinkowskiSum {
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
-    sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
+    sum.WriteTXTasCPolytop("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
     // new GiftWrapping(MinkSum(p, q)).CPolytop.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY++.txt");
   }
   #endregion

@@ -15,43 +15,74 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  /// <summary>
+  /// Representation of a Convex Polytop as a Face Lattice:
+  /// A face lattice is a lattice where the maximum is the polytop itself.
+  /// The nodes of the lattice correspond to the faces of the polytop in their respective dimensions.
+  /// </summary>
   public class FaceLattice {
 
+    /// <summary>
+    /// Set of vertices that form convex polytop.
+    /// </summary>
     public HashSet<Point> Points => Top.Vertices;
 
+    /// <summary>
+    /// The maximum element in the lattice.
+    /// </summary>
     public FLNode Top { get; init; }
 
+    /// <summary>
+    /// The lattice is represented level by level.
+    /// At each level, there is a set that contains all nodes (faces of polytop) of that level's dimension.
+    /// </summary>
     public List<HashSet<FLNode>> Lattice { get; init; }
 
-    // public HashSet<FLNode> Взять i-ю размерность
+    /// <summary>
+    /// Gets the requested level in the face lattice. If there is no key = dim, then an empty set is produced.
+    /// <param name="dim">The dimension of the level being queried.</param>
+    /// <returns>The level being queried.</returns>
+    public HashSet<FLNode> GetLevel(int dim) => Top.GetLevel(dim);
 
-    private List<HashSet<FLNode>> ConstructLattice() {
-      List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
-      for (int i = 0; i <= Top.Dim; i++) {
-        FL.Add(new HashSet<FLNode>());
-      }
-      FL[Top.Dim].Add(Top);
+    // private List<HashSet<FLNode>> ConstructLattice() {
+    //   List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
+    //   for (int i = 0; i <= Top.Dim; i++) {
+    //     FL.Add(new HashSet<FLNode>());
+    //   }
+    //   FL[Top.Dim].Add(Top);
 
-      HashSet<FLNode> prevNodes = new HashSet<FLNode>() { Top };
-      for (int i = Top.Dim - 1; i > -1; i--) {
-        foreach (FLNode node in prevNodes) {
-          FL[i].UnionWith(node.Sub!);
-        }
-        prevNodes = FL[i];
-      }
-      return FL;
-    }
+    //   HashSet<FLNode> prevNodes = new HashSet<FLNode>() { Top };
+    //   for (int i = Top.Dim - 1; i > -1; i--) {
+    //     foreach (FLNode node in prevNodes) {
+    //       FL[i].UnionWith(node.Sub!);
+    //     }
+    //     prevNodes = FL[i];
+    //   }
+    //   return FL;
+    // }
 
+    /// <summary>
+    /// The vertex forms a one-element lattice.
+    /// </summary>
+    /// <param name="point">The point at which a face lattice is formed.</param>
     public FaceLattice(Point point) {
       Top = new FLNode(point);
       Lattice = new List<HashSet<FLNode>>() { new HashSet<FLNode>() { Top } };
     }
 
+    /// <summary>
+    /// Construct a face lattice based on maximum element.
+    /// </summary>
+    /// <param name="Maximum">The maximum node.</param>
     public FaceLattice(FLNode Maximum) {
       Top = Maximum;
-      Lattice = ConstructLattice();
+      Lattice = Maximum.GetAllLevels();
     }
 
+    /// <summary>
+    /// Construct a face lattice based on given lattice.
+    /// </summary>
+    /// <param name="lattice">The lattice.</param>
     public FaceLattice(List<HashSet<FLNode>> lattice) {
       Top = lattice[^1].First();
       Lattice = lattice;
@@ -88,6 +119,10 @@ public partial class Geometry<TNum, TConv>
       return new FaceLattice(Top.TranslateToOriginal(aBasis));
     }
 
+    /// <summary>
+    /// Converts a face lattice into a convex polytop. It has vertices, d-1-faces and d-2-faces.
+    /// </summary>
+    /// <returns>The convex polytop.</returns>
     public ConvexPolytop ToConvexPolytop() {
       var Fs = Lattice[^2].Select(n => new Face(n.Vertices
       , new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
@@ -95,7 +130,11 @@ public partial class Geometry<TNum, TConv>
       return new ConvexPolytop(Top.Vertices, Top.AffBasis.SpaceDim, Fs, Es);
     }
 
-    public void WriteTXT(string filePath) => this.ToConvexPolytop().WriteTXT(filePath);
+    /// <summary>
+    /// Writes lattice as convex polytop to the file.
+    /// </summary>
+    /// <param name="filePath">The path to the file to write in.</param>
+    public void WriteTXTasCPolytop(string filePath) => this.ToConvexPolytop().WriteTXT(filePath);
 
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
@@ -272,98 +311,6 @@ public partial class Geometry<TNum, TConv>
       .Where(ln => ln.Key <= Dim)
       .SelectMany(ln => ln.Value);
 
-    // private HashSet<FLNode>? _allSuper = null;
-
-    // // ! Не сваливать всё в кучу, а в Dictionary<dim, HashSet<FLNode>, тогда можно будет проще пересекать части решёток
-    // // Пока не понимаю как это сделать ...
-    // private HashSet<FLNode> AllNonStrictSuper {
-    //   get
-    //   {
-    //     if (Super is null) {
-    //       return new HashSet<FLNode>() { this };
-    //     }
-
-    //     return new HashSet<FLNode>(Super.SelectMany(sup => sup.AllNonStrictSuper)) { this };
-    //   }
-    // }
-    // public HashSet<FLNode> GetAllNonStrictSuper() => AllNonStrictSuper;
-
-    // public HashSet<FLNode> GetAllSuper() {
-    //   HashSet<FLNode> allAbove = new HashSet<FLNode>(AllNonStrictSuper);
-    //   allAbove.Remove(this);
-    //   return allAbove;
-    // }
-
-
-
-    // /// <summary>
-    // /// Get the non strict super facets of the current node.
-    // /// </summary>
-    // /// <returns>The set of supers with current one.</returns>
-    // public HashSet<FLNode> GetNonStrictSuper() => new HashSet<FLNode>(GetSuper()) { this };
-
-    // /// <summary>
-    // /// Get the strict super facets of the current node.
-    // /// </summary>
-    // /// <returns>The set of supers with current one.</returns>
-    // public HashSet<FLNode> GetSuper() {
-    //   if (Super is null) {
-    //     return new HashSet<FLNode>();
-    //   } else {
-    //     return new HashSet<FLNode>(Super);
-    //   }
-    // }
-
-    // private HashSet<FLNode>? _allNonStrictSub = null;
-
-    // public HashSet<FLNode> AllNonStrictSub {
-    //   get
-    //   {
-    //     if (_allNonStrictSub is null) {
-    //       if (Dim == 0) {
-    //         _allNonStrictSub = new HashSet<FLNode>() { this };
-    //       } else {
-    //         _allNonStrictSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllNonStrictSub!)) { this };
-    //       }
-    //     }
-    //     return _allNonStrictSub;
-    //   }
-    // }
-
-    // public HashSet<FLNode> 
-
-    // // ToDo: Избавиться от функций Get...Sub/Sup и переделать на свойства
-    // public HashSet<FLNode> GetAllNonStrictSub() => AllNonStrictSub;
-
-    // public HashSet<FLNode> GetAllSub() {
-    //   HashSet<FLNode> allSub = GetAllNonStrictSub();
-    //   allSub.Remove(this);
-    //   return allSub;
-    // }
-
-    // /// <summary>
-    // /// "Ромбик"
-    // /// </summary>
-    // /// <param name="bottom"></param>
-    // /// <param name="top"></param>
-    // /// <param name="excludeBottom"></param>
-    // /// <param name="excludeTop"></param>
-    // /// <returns></returns>
-    // public static HashSet<FLNode> GetFromBottomToTop(FLNode bottom, FLNode top, bool excludeBottom = false, bool excludeTop = false) {
-    //   HashSet<FLNode> res = bottom.GetAllNonStrictSuper();
-    //   res.IntersectWith(top.GetAllNonStrictSub());
-
-    //   if (excludeBottom) {
-    //     res.Remove(bottom);
-    //   }
-
-    //   if (excludeTop) {
-    //     res.Remove(top);
-    //   }
-
-    //   return res;
-
-    // }
 
     /// <summary>
     /// Adds a given node to the set of super nodes for this node.
