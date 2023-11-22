@@ -134,8 +134,8 @@ public partial class Geometry<TNum, TConv>
         // Собираем все подграни в соответствующих решётках, 
         // сортируя по убыванию размерности для удобства перебора. 
         // Среди них будем искать подграни, которые при суммировании дают d-грани z
-        List<FLNode> X = x.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
-        List<FLNode> Y = y.GetAllNonStrictSub().OrderByDescending(node => node.Dim).ToList();
+        IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.Dim);
+        IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.Dim);
 
         foreach (FLNode xi in X) {
           foreach (FLNode yj in Y) {
@@ -163,17 +163,15 @@ public partial class Geometry<TNum, TConv>
 
             // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость. 
             if (A.Contains(innerInAffine_z)) { continue; }
-               // Если внутренняя точка суммы попала на кандидата
-               // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
-            
+            // Если внутренняя точка суммы попала на кандидата
+            // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
+
             // Ориентируем нормаль гиперплоскости суммы xi и yj
             A.OrientNormal(innerInAffine_z, false);
 
-            // Собираем все надграни xi и yj, которые лежат в подрешётках x и y соответственно.
-            // достаточно только непосредственных надграней! 
-            // И более того, может сможем взять подграни x размерности dim+1 (но непонятно как)
-            IEnumerable<FLNode> xiSuper = xi.GetSuper().Intersect(x.GetAllNonStrictSub());
-            IEnumerable<FLNode> yjSuper = yj.GetSuper().Intersect(y.GetAllNonStrictSub());
+            // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
+            IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SpaceDim + 1));
+            IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SpaceDim + 1));
 
             // F = x >= f' > f = xi
             // InnerPoint(f') + InnerPoint(g) \in A^-
@@ -205,8 +203,8 @@ public partial class Geometry<TNum, TConv>
             foreach (FLNode prevNode in FL[d + 1]) {
               (FLNode xp, FLNode yq) = zTo_xy[prevNode];
 
-              HashSet<FLNode> Xp = xp.GetAllNonStrictSub();
-              HashSet<FLNode> Yq = yq.GetAllNonStrictSub();
+              HashSet<FLNode> Xp = xp.AllNonStrictSub.ToHashSet();
+              HashSet<FLNode> Yq = yq.AllNonStrictSub.ToHashSet();
 
               if (Xp.Contains(xi) && Yq.Contains(yj)) {
                 node.AddSuper(prevNode);

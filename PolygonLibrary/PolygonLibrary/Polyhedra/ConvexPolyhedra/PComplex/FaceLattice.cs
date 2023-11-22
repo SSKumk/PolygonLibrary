@@ -178,149 +178,168 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The list of the super-nodes, whose Dim = this.Dim + 1.
     /// </summary>
-    public HashSet<FLNode>? Super { get; protected set; }
-
-    // /// <summary>
-    // /// Maps the dimension to the set of nodes within this dimension.
-    // /// </summary>
-    // private Dictionary<int, HashSet<FLNode>>? _levelNodes = null;
-
-    // public Dictionary<int, HashSet<FLNode>> LevelNodes {
-    //   get
-    //   {
-    //     if (_levelNodes is null) {
-    //       ConstructLevelNodes();
-    //     }
-    //     return _levelNodes!;
-    //   }
-    // }
-
-    // /// <summary>
-    // /// Gets the requested level in the node structure. If there is no key = dim, then an empty set is produced.
-    // /// <param name="dim">The dimension of the level being queried.</param>
-    // /// <returns>The level being queried.</returns>
-    // internal HashSet<FLNode> GetLevel(int dim) {
-    //   if (LevelNodes.TryGetValue(dim, out HashSet<FLNode>? level)) {
-    //     return LevelNodes[dim];
-    //   }
-    //   return new HashSet<FLNode>();
-    // }
-
-    // /// <summary>
-    // /// Gets the entire levelNodes structure.
-    // /// </summary>
-    // /// <returns>Returns the entire levelNodes structure.</returns>
-    // public List<HashSet<FLNode>> GetAllLevels() {
-    //   List<HashSet<FLNode>> allLevels = new List<HashSet<FLNode>>();
-    //   for (int i = 0; i < LevelNodes.Count; i++) {
-    //     allLevels.Add(LevelNodes[i]);
-    //   }
-    //   return allLevels;
-    // }
-
-    // /// <summary>
-    // /// Construct the mapping that takes the dimension and maps it onto the set of nodes in that dimension,
-    // /// which are either sub-nodes or super-nodes of it.
-    // /// </summary>
-    // private void ConstructLevelNodes() {
-    //   _levelNodes = new Dictionary<int, HashSet<FLNode>>();
-    //   // добавили себя
-    //   _levelNodes.Add(Dim, new HashSet<FLNode>() { this });
-    //   // собираем верх
-    //   if (Super is not null) {
-    //     HashSet<FLNode> prevNodes = new HashSet<FLNode>() { this };
-    //     int d = Dim;
-    //     do {
-    //       d++;
-    //       _levelNodes.Add(d, prevNodes.SelectMany(prevNode => prevNode.Super!).ToHashSet());
-    //       prevNodes = _levelNodes[d];
-    //     } while (prevNodes.First().Super is not null);
-    //   }
-
-    //   // собираем низ
-    //   if (Sub is not null) {
-    //     HashSet<FLNode> prevNodes = new HashSet<FLNode>() { this };
-    //     int d = Dim;
-    //     do {
-    //       d--;
-    //       _levelNodes.Add(d, prevNodes.SelectMany(prevNode => prevNode.Sub!).ToHashSet());
-    //       prevNodes = _levelNodes[d];
-    //     } while (prevNodes.First().Sub is not null);
-    //   }
-    // }
-
-
-    private HashSet<FLNode>? _allSuper = null;
-
-    // ! Не сваливать всё в кучу, а в Dictionary<dim, HashSet<FLNode>, тогда можно будет проще пересекать части решёток
-    // Пока не понимаю как это сделать ...
-    private HashSet<FLNode> AllNonStrictSuper {
-      get
-      {
-        if (Super is null) {
-          return new HashSet<FLNode>() { this };
-        }
-
-        return new HashSet<FLNode>(Super.SelectMany(sup => sup.AllNonStrictSuper)) { this };
-      }
-    }
-    public HashSet<FLNode> GetAllNonStrictSuper() => AllNonStrictSuper;
-
-    public HashSet<FLNode> GetAllSuper() {
-      HashSet<FLNode> allAbove = new HashSet<FLNode>(AllNonStrictSuper);
-      allAbove.Remove(this);
-      return allAbove;
-    }
-
-
+    public HashSet<FLNode> Super { get; protected set; } = new HashSet<FLNode>();
 
     /// <summary>
     /// The list of the sub-nodes, which Dim = this.Dim - 1.
     /// </summary>
-    public HashSet<FLNode>? Sub { get; protected set; }
+    public HashSet<FLNode> Sub { get; protected set; } = new HashSet<FLNode>();
+
 
     /// <summary>
-    /// Get the non strict super facets of the current node.
+    /// Maps the dimension to the set of nodes within this dimension.
     /// </summary>
-    /// <returns>The set of supers with current one.</returns>
-    public HashSet<FLNode> GetNonStrictSuper() => new HashSet<FLNode>(GetSuper()) { this };
+    private Dictionary<int, HashSet<FLNode>> _levelNodes = new Dictionary<int, HashSet<FLNode>>();
 
-    /// <summary>
-    /// Get the strict super facets of the current node.
-    /// </summary>
-    /// <returns>The set of supers with current one.</returns>
-    public HashSet<FLNode> GetSuper() {
-      if (Super is null) {
-        return new HashSet<FLNode>();
-      } else {
-        return new HashSet<FLNode>(Super);
-      }
-    }
-
-    private HashSet<FLNode>? _allNonStrictSub = null;
-
-    private HashSet<FLNode> AllNonStrictSub {
+    public Dictionary<int, HashSet<FLNode>> LevelNodes {
       get
       {
-        if (_allNonStrictSub is null) {
-          if (Dim == 0) {
-            _allNonStrictSub = new HashSet<FLNode>() { this };
-          } else {
-            _allNonStrictSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllNonStrictSub!)) { this };
-          }
+        if (_levelNodes.Count == 0) {
+          ConstructLevelNodes();
         }
-        return _allNonStrictSub;
+        return _levelNodes;
       }
     }
 
-    // ToDo: Избавиться от функций Get...Sub/Sup и переделать на свойства
-    public HashSet<FLNode> GetAllNonStrictSub() => AllNonStrictSub;
-
-    public HashSet<FLNode> GetAllSub() {
-      HashSet<FLNode> allSub = GetAllNonStrictSub();
-      allSub.Remove(this);
-      return allSub;
+    /// <summary>
+    /// Gets the requested level in the node structure. If there is no key = dim, then an empty set is produced.
+    /// <param name="dim">The dimension of the level being queried.</param>
+    /// <returns>The level being queried.</returns>
+    internal HashSet<FLNode> GetLevel(int dim) {
+      if (LevelNodes.TryGetValue(dim, out HashSet<FLNode>? level)) {
+        return LevelNodes[dim];
+      }
+      return new HashSet<FLNode>();
     }
+
+    /// <summary>
+    /// Gets the requested level in the node structure, that lies below this node.
+    /// Otherwise returns empty set.
+    /// </summary>
+    /// <param name="dim">The dimension of the level being queried.</param>
+    /// <returns>The level being queried. If it lies above this node, it returns empty set.</returns>
+    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) {
+      if (dim > Dim) {
+        return new HashSet<FLNode>();
+      }
+      return GetLevel(dim);
+    }
+
+    /// <summary>
+    /// Gets the entire levelNodes structure.
+    /// </summary>
+    /// <returns>Returns the entire levelNodes structure.</returns>
+    public List<HashSet<FLNode>> GetAllLevels() {
+      List<HashSet<FLNode>> allLevels = new List<HashSet<FLNode>>();
+      for (int i = 0; i < LevelNodes.Count; i++) {
+        allLevels.Add(LevelNodes[i]);
+      }
+      return allLevels;
+    }
+
+    /// <summary>
+    /// Construct the mapping that takes the dimension and maps it onto the set of nodes in that dimension,
+    /// which are either sub-nodes or super-nodes of it.
+    /// </summary>
+    private void ConstructLevelNodes() {
+      // добавили себя
+      _levelNodes.Add(Dim, new HashSet<FLNode>() { this });
+
+      // собираем верх
+      HashSet<FLNode> superNodes = Super;
+      int d = Dim;
+      while (superNodes.Count != 0) {
+        d++;
+        _levelNodes.Add(d, superNodes);
+        superNodes = superNodes.SelectMany(node => node.Super).ToHashSet();
+      }
+
+      // собираем низ
+      HashSet<FLNode> prevNodes = Sub;
+      d = Dim;
+      while (prevNodes.Count != 0) {
+        d--;
+        _levelNodes.Add(d, prevNodes);
+        prevNodes = prevNodes.SelectMany(node => node.Sub).ToHashSet();
+      }
+    }
+
+    /// <summary>
+    /// Retrieves all sub-faces of the node, including the node itself.
+    /// </summary>
+    /// <returns>The collection that contains all non strict sub-faces of the node.</returns>
+    public IEnumerable<FLNode> AllNonStrictSub => LevelNodes
+      .Where(ln => ln.Key <= Dim)
+      .SelectMany(ln => ln.Value);
+
+    // private HashSet<FLNode>? _allSuper = null;
+
+    // // ! Не сваливать всё в кучу, а в Dictionary<dim, HashSet<FLNode>, тогда можно будет проще пересекать части решёток
+    // // Пока не понимаю как это сделать ...
+    // private HashSet<FLNode> AllNonStrictSuper {
+    //   get
+    //   {
+    //     if (Super is null) {
+    //       return new HashSet<FLNode>() { this };
+    //     }
+
+    //     return new HashSet<FLNode>(Super.SelectMany(sup => sup.AllNonStrictSuper)) { this };
+    //   }
+    // }
+    // public HashSet<FLNode> GetAllNonStrictSuper() => AllNonStrictSuper;
+
+    // public HashSet<FLNode> GetAllSuper() {
+    //   HashSet<FLNode> allAbove = new HashSet<FLNode>(AllNonStrictSuper);
+    //   allAbove.Remove(this);
+    //   return allAbove;
+    // }
+
+
+
+    // /// <summary>
+    // /// Get the non strict super facets of the current node.
+    // /// </summary>
+    // /// <returns>The set of supers with current one.</returns>
+    // public HashSet<FLNode> GetNonStrictSuper() => new HashSet<FLNode>(GetSuper()) { this };
+
+    // /// <summary>
+    // /// Get the strict super facets of the current node.
+    // /// </summary>
+    // /// <returns>The set of supers with current one.</returns>
+    // public HashSet<FLNode> GetSuper() {
+    //   if (Super is null) {
+    //     return new HashSet<FLNode>();
+    //   } else {
+    //     return new HashSet<FLNode>(Super);
+    //   }
+    // }
+
+    // private HashSet<FLNode>? _allNonStrictSub = null;
+
+    // public HashSet<FLNode> AllNonStrictSub {
+    //   get
+    //   {
+    //     if (_allNonStrictSub is null) {
+    //       if (Dim == 0) {
+    //         _allNonStrictSub = new HashSet<FLNode>() { this };
+    //       } else {
+    //         _allNonStrictSub = new HashSet<FLNode>(Sub!.SelectMany(sub => sub.AllNonStrictSub!)) { this };
+    //       }
+    //     }
+    //     return _allNonStrictSub;
+    //   }
+    // }
+
+    // public HashSet<FLNode> 
+
+    // // ToDo: Избавиться от функций Get...Sub/Sup и переделать на свойства
+    // public HashSet<FLNode> GetAllNonStrictSub() => AllNonStrictSub;
+
+    // public HashSet<FLNode> GetAllSub() {
+    //   HashSet<FLNode> allSub = GetAllNonStrictSub();
+    //   allSub.Remove(this);
+    //   return allSub;
+    // }
 
     // /// <summary>
     // /// "Ромбик"
@@ -350,19 +369,14 @@ public partial class Geometry<TNum, TConv>
     /// Adds a given node to the set of super nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
-    internal void AddSub(FLNode node) {
-      Sub ??= new HashSet<FLNode>();
-      Sub.Add(node);
-    }
+    internal void AddSub(FLNode node) => Sub.Add(node);
 
     /// <summary>
     /// Adds a given node to the set of sub nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
-    internal void AddSuper(FLNode node) {
-      Super ??= new HashSet<FLNode>();
-      Super.Add(node);
-    }
+    internal void AddSuper(FLNode node) => Super.Add(node);
+
 
     /// <summary>
     /// Constructs an instance of FLNode as a vertex.
