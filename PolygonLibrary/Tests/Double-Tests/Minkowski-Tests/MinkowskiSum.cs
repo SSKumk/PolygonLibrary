@@ -7,7 +7,82 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 namespace Tests.Double_Tests.Minkowski_Tests;
 
 [TestFixture]
+public class MinkowskiSum2D {
+  private Point u0;
+  private Point u1;
+  private Point u2;
+  private Point u3;
+  private Point p0;
+  private Point p1;
+  private Point p2;
+  private Point p3;
+  private FaceLattice su1;
+  private FaceLattice su2;
+  private FaceLattice su3;
+  private FaceLattice qu1_GW;
+  private FaceLattice qp1_GW;
+
+  [OneTimeSetUp]
+  public void SetUp() {
+    u0 = new Point(new double[] { 0, 0 });
+    u1 = new Point(new double[] { 1, 0 });
+    u2 = new Point(new double[] { 0, 1 });
+    u3 = new Point(new double[] { 1, 1 });
+
+    p0 = new Point(new double[] { 0.5, 0 });
+    p1 = new Point(new double[] { 1, 0.5 });
+    p2 = new Point(new double[] { 0.5, 1 });
+    p3 = new Point(new double[] { 0, 0.5 });
+
+    su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
+    su2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
+    su3 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u3 });
+    qu1_GW = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1, u2, u3 });
+    qp1_GW = GiftWrapping.WrapFaceLattice(new List<Point> { p0, p1, p2, p3 });
+  }
+
+  // Единичный квадрат
+  [Test]
+  public void Seg_Seg() {
+    FaceLattice qu1 = MinkSumSDas(su1, su2);
+    Assert.That(qu1, Is.EqualTo(qu1_GW));
+  }
+
+  // Прямоугольник
+  [Test]
+  public void Seg_Square() {
+    FaceLattice su1_qu1 = MinkSumSDas(su1, qu1_GW);
+    Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1_GW)));
+  }
+
+  // Шестиугольник
+  [Test]
+  public void Seg45_Square() {
+    FaceLattice su3_qu1 = MinkSumSDas(su3, qu1_GW);
+    Assert.That(su3_qu1, Is.EqualTo(MinkSumCH(su3, qu1_GW)));
+  }
+
+  // Квадрат в два раза больший
+  [Test]
+  public void Square_Square() {
+    FaceLattice double_qu1 = MinkSumSDas(qu1_GW, qu1_GW);
+    Assert.That(double_qu1, Is.EqualTo(MinkSumCH(qu1_GW, qu1_GW)));
+  }
+
+  [Test]
+  public void Square45_Square() {
+    FaceLattice qp1_qu1 = MinkSumSDas(qp1_GW, qu1_GW);
+    Assert.That(qp1_qu1, Is.EqualTo(MinkSumCH(qp1_GW, qu1_GW)));
+  }
+}
+
+[TestFixture]
 public class MinkowskiSum {
+
+
+  #region 2D tests
+
+  #endregion
 
   #region Base Polytopes Tests
   [Test]
