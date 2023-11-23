@@ -21,10 +21,19 @@ public class Sandbox {
     var p3 = new Point(new double[] { 0, 1, 0 });
     var p4 = new Point(new double[] { 0, 0, 1 });
     var p5 = new Point(new double[] { 1, 0, 1 });
+    var p6 = new Point(new double[] { -1, 1, 0 });
 
     var t1 = new Point(new double[] { 0.5, 0, 0 });
     var t2 = new Point(new double[] { 0.6, 0.3, 0 });
     var t3 = new Point(new double[] { 0, 0.8, 0 });
+
+
+
+
+    var h0 = new Point(new double[] { 2, 1, 0 });
+    var h1 = new Point(new double[] { 3, 1, 0 });
+    var h2 = new Point(new double[] { 3, 2, 0 });
+    var h3 = new Point(new double[] { 2, 2, 0 });
 
     List<Point> sqXY = new List<Point>() { p0, p2, p1, p3 };
     List<Point> sqXZ = new List<Point>() { p0, p2, p4, p5 };
@@ -32,7 +41,9 @@ public class Sandbox {
 
     FaceLattice v0 = new FaceLattice(p0);
     FaceLattice v1 = new FaceLattice(p1);
+    FaceLattice v2 = new FaceLattice(p2);
     FaceLattice v4 = new FaceLattice(p4);
+    FaceLattice v6 = new FaceLattice(p6);
 
     FaceLattice s1_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1 });
     FaceLattice s2_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p2 });
@@ -42,6 +53,7 @@ public class Sandbox {
 
 
     FaceLattice q1_GW = GiftWrapping.WrapFaceLattice(sqXY);
+    FaceLattice q2_GW = GiftWrapping.WrapFaceLattice(new List<Point>() { h0, h1, h2, h3 });
     FaceLattice trig1_GW = GiftWrapping.WrapFaceLattice(trigXY);
 
 
@@ -51,38 +63,38 @@ public class Sandbox {
     // // FaceLattice VertexSolo = MinkSumSDas(v1, v1); // Ok
     // // FaceLattice Vertex = MinkSumSDas(v4, v1); // Ok
 
-    // FaceLattice v0s1 = MinkSumSDas(v0, s1_GW); // 
-    // Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1_GW)));
+    FaceLattice v0s1 = MinkSumSDas(v0, s1_GW); // 
+    Assert.That(v0s1, Is.EqualTo(MinkSumCH(v0, s1_GW)));
 
-    // FaceLattice v0q1 = MinkSumSDas(v0, q1_GW);  // 
-    // Assert.That(v0q1, Is.EqualTo(MinkSumCH(v0, q1_GW)));
+    FaceLattice v6q2 = MinkSumSDas(v6, q2_GW);  // 
+    Assert.That(v6q2, Is.EqualTo(MinkSumCH(v6, q2_GW)));
 
-    // // 1:
-    // FaceLattice s1s1 = MinkSumSDas(s1_GW, s1_GW);  // 
-    // Assert.That(s1s1, Is.EqualTo(MinkSumCH(s1_GW, s1_GW)));
-    // FaceLattice s2s3 = MinkSumSDas(s2_GW, s3_GW);  // 
-    // Assert.That(s2s3, Is.EqualTo(MinkSumCH(s2_GW, s3_GW)));
-    // FaceLattice s2q1 = MinkSumSDas(s2_GW, q1_GW);  // 
-    // Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2_GW, q1_GW)));
+    // 1:
+    FaceLattice s1s1 = MinkSumSDas(s1_GW, s1_GW);  // 
+    Assert.That(s1s1, Is.EqualTo(MinkSumCH(s1_GW, s1_GW)));
+    FaceLattice s2s3 = MinkSumSDas(s2_GW, s3_GW);  // 
+    Assert.That(s2s3, Is.EqualTo(MinkSumCH(s2_GW, s3_GW)));
+    FaceLattice s2q1 = MinkSumSDas(s2_GW, q1_GW);  // 
+    Assert.That(s2q1, Is.EqualTo(MinkSumCH(s2_GW, q1_GW)));
 
     // 2: 
-    // FaceLattice q1q1 = MinkSumSDas(q1_GW, q1_GW);
-    // Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1_GW, q1_GW)));
-    // FaceLattice q1trig1 = MinkSumSDas(q1_GW, trig1_GW); // 
-    // Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1_GW, trig1_GW)));
+    FaceLattice q1q1 = MinkSumSDas(q1_GW, q1_GW);
+    Assert.That(q1q1, Is.EqualTo(MinkSumCH(q1_GW, q1_GW)));
+    FaceLattice q1trig1 = MinkSumSDas(q1_GW, trig1_GW); // 
+    Assert.That(q1trig1, Is.EqualTo(MinkSumCH(q1_GW, trig1_GW)));
 
-    // // 3:
-    // FaceLattice q1s5 = MinkSumSDas(q1_GW, s5_GW);
-    // Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1_GW, s5_GW))); // 
+    // 3:
+    FaceLattice q1s5 = MinkSumSDas(q1_GW, s5_GW);
+    Assert.That(q1s5, Is.EqualTo(MinkSumCH(q1_GW, s5_GW))); // 
 
-    // FaceLattice cube3dCH = GiftWrapping.WrapFaceLattice(Cube3D_list);
-    // FaceLattice Cube3D_2 = MinkSumSDas(cube3dCH, cube3dCH);
-    // Assert.That(Cube3D_2, Is.EqualTo(MinkSumCH(cube3dCH, cube3dCH)));
+    FaceLattice cube3dCH = GiftWrapping.WrapFaceLattice(Cube3D_list);
+    FaceLattice Cube3D_2 = MinkSumSDas(cube3dCH, cube3dCH);
+    Assert.That(Cube3D_2, Is.EqualTo(MinkSumCH(cube3dCH, cube3dCH)));
 
 
 
     // // High-dim
-    FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // FaceLattice cube5dCH = GiftWrapping.WrapFaceLattice(Cube5D_list);
     // FaceLattice Cube5D = MinkSumSDas(cube5dCH, new FaceLattice(new Point(new double[] { 0, 0, 0, 0, 0 })));
     // Assert.That(Cube5D, Is.EqualTo(cube5dCH));
 
