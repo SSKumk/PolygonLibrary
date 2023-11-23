@@ -88,9 +88,16 @@ public partial class Geometry<TNum, TConv>
       Lattice = lattice;
     }
 
-    public FaceLattice ProjectTo(AffineBasis aBasis) {
+    /// <summary>
+    /// Aux function. 
+    /// Transforms the lattice by applying a given function to each vertex of the lattice.
+    /// </summary>
+    /// <param name="transformFunc">The function to be applied to each vertex. This function takes a node of the lattice and returns a new point.</param>
+    /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
+
+    private FaceLattice TransformLattice(Func<FLNode, Point> transformFunc) {
       List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
-      for (int i = 0; i < Top.Dim + 1; i++) {
+      for (int i = 0; i <= Top.Dim; i++) {
         newFL.Add(new HashSet<FLNode>());
       }
 
@@ -98,7 +105,7 @@ public partial class Geometry<TNum, TConv>
 
       //Отдельно обрабатываем случай d == 0
       foreach (FLNode vertex in Lattice[0]) {
-        FLNode newVertex = new FLNode(aBasis.ProjectPoint(vertex.Vertices.First()));
+        FLNode newVertex = new FLNode(transformFunc(vertex));
         oldToNew.Add(vertex, newVertex);
         newFL[0].Add(newVertex);
       }
@@ -115,8 +122,22 @@ public partial class Geometry<TNum, TConv>
       return new FaceLattice(newFL);
     }
 
-    public FaceLattice TranslateToOriginal(AffineBasis aBasis) {
-      return new FaceLattice(Top.TranslateToOriginal(aBasis));
+    /// <summary>
+    /// Projects the face lattice to given subspace.
+    /// </summary>
+    /// <param name="aBasis">The affine basis to project on.</param>
+    /// <returns>The face lattice in subspace space.</returns>
+    public FaceLattice ProjectTo(AffineBasis aBasis) {
+      return TransformLattice(vertex => aBasis.ProjectPoint(vertex.Vertices.First()));
+    }
+
+    /// <summary>
+    /// Translates the face lattice from subspace to original one with saving all its structure.
+    /// </summary>
+    /// <param name="aBasis">The affine basis from which it was projected.</param>
+    /// <returns>The face lattice in original space.</returns>
+    public FaceLattice TranslateToOriginalAndAddOrigin(AffineBasis aBasis) {
+      return TransformLattice(vertex => aBasis.TranslateToOriginal(vertex.Vertices.First()) + aBasis.Origin);
     }
 
     /// <summary>
@@ -244,12 +265,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets the requested level in the node structure. If there is no key = dim, then an empty set is produced.
     /// <param name="dim">The dimension of the level being queried.</param>
     /// <returns>The level being queried.</returns>
-    internal HashSet<FLNode> GetLevel(int dim) {
-      if (LevelNodes.TryGetValue(dim, out HashSet<FLNode>? level)) {
-        return LevelNodes[dim];
-      }
-      return new HashSet<FLNode>();
-    }
+    internal HashSet<FLNode> GetLevel(int dim) => LevelNodes.ContainsKey(dim) ? LevelNodes[dim] : new HashSet<FLNode>();
 
     /// <summary>
     /// Gets the requested level in the node structure, that lies below this node.
@@ -257,12 +273,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="dim">The dimension of the level being queried.</param>
     /// <returns>The level being queried. If it lies above this node, it returns empty set.</returns>
-    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) {
-      if (dim > Dim) {
-        return new HashSet<FLNode>();
-      }
-      return GetLevel(dim);
-    }
+    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) => dim > Dim ? new HashSet<FLNode>() : GetLevel(dim);
 
     /// <summary>
     /// Gets the entire levelNodes structure.
@@ -370,22 +381,8 @@ public partial class Geometry<TNum, TConv>
       AffBasis = affine;
     }
 
-    /// <summary>
-    /// Creates the node with saving all its structure in terms of the space from which it was projected to the current space.
-    /// </summary>
-    /// <param name="aBasis">The affine basis from which it was projected.</param>
-    /// <returns>The node in original space.</returns>
-    public FLNode TranslateToOriginal(AffineBasis aBasis) {
-      if (Dim == 0) {
-        Point v_trans = aBasis.TranslateToOriginal(Vertices.First());
-        return new FLNode(v_trans);
-      }
-      List<FLNode> sub = new List<FLNode>();
-      foreach (FLNode subNode in Sub!) {
-        sub.Add(subNode.TranslateToOriginal(aBasis));
-      }
-      return new FLNode(sub);
-    }
+
+
 
     /// <summary>
     /// Checks if the polytop of this node is equal to the polytop of other node.
