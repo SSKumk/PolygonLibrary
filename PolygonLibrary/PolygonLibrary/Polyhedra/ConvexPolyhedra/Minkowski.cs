@@ -92,9 +92,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     if (dim < P.Top.InnerPoint.Dim) { // Уходим в подпространство
-      // FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
-      // return lowDim.TranslateToOriginal(affinePQ);
-      throw new NotImplementedException();
+      FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
+      return lowDim.TranslateToOriginalAndAddOrigin(affinePQ);
+      // throw new NotImplementedException();
     }
 
     return MinkSumSDas(P.Top, Q.Top);
