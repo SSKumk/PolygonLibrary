@@ -11,8 +11,15 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
   public static readonly List<Point> Octahedron3D_list = GeneratePointsOnSphere_3D(2, 4, true, true);
   public static readonly List<Point> Pyramid3D_list = GeneratePointsOnSphere_3D(2, 4, true);
+  public static readonly List<Point> Simplex2D_list = Simplex_list(2);
   public static readonly List<Point> Simplex3D_list = Simplex_list(3);
+  public static readonly List<Point> Simplex4D_list = Simplex_list(4);
+  public static readonly List<Point> Simplex5D_list = Simplex_list(5);
+  public static readonly List<Point> SimplexRND2D_list = SimplexRND_list(2);
+  public static readonly List<Point> SimplexRND3D_list = SimplexRND_list(3);
   public static readonly List<Point> SimplexRND4D_list = SimplexRND_list(4);
+  public static readonly List<Point> SimplexRND5D_list = SimplexRND_list(5);
+  public static readonly List<Point> Cube2D_list = Cube_list(2);
   public static readonly List<Point> Cube3D_list = Cube_list(3);
   public static readonly List<Point> Cube4D_list = Cube_list(4);
   public static readonly List<Point> Cube5D_list = Cube_list(5);
