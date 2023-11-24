@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 
 namespace CGLibrary;
@@ -208,6 +209,24 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns>Array of elements of the Point.</returns>
     public List<TNum> GetAsList() => new List<TNum>(_p);
+
+    /// <summary>
+    /// Expands the point to a higher dimension.
+    /// </summary>
+    /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the point.</param>
+    /// <returns>A new point in the target dimension, with the additional coordinates set to zero.</returns>
+
+    public Point ExpandTo(int d) {
+      Debug.Assert(d > Dim, "Point.ExpandTo: Can't expand to lower dimension!");
+
+      int s = d - Dim;
+      List<TNum> np = new List<TNum>(_p);
+      for (int i = 0; i < s; i++) {
+        np.Add(Tools.Zero);
+      }
+
+      return new Point(np.ToArray());
+    }
 
     /// <summary>
     /// Storage of the flag showing whether the point is zero
