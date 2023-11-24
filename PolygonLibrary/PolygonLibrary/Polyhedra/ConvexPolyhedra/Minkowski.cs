@@ -33,7 +33,7 @@ public partial class Geometry<TNum, TConv>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
-  public static FaceLattice MinkSumCH(FLNode P, FLNode Q) =>
+  internal static FaceLattice MinkSumCH(FLNode P, FLNode Q) =>
     GiftWrapping.WrapFaceLattice(MinkSumPoints(P.Vertices, Q.Vertices));
 
   /// <summary>
@@ -73,6 +73,8 @@ public partial class Geometry<TNum, TConv>
 
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
+  /// Основной алгоритм суммы Минковского через вычисления решётки. 
+  /// См Sandip Das A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
   /// </summary>
   /// <param name="p1">The first polytope represented as a face lattice.</param>
   /// <param name="p2">The second polytope represented as a face lattice.</param>
@@ -85,27 +87,12 @@ public partial class Geometry<TNum, TConv>
     AffineBasis affinePQ = new AffineBasis(
       P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin,
       P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
-
     int dim = affinePQ.SpaceDim;
+
     if (dim == 0) { // Случай точки обработаем отдельно
       return new FaceLattice(P.Top.InnerPoint + Q.Top.InnerPoint);
     }
 
-    if (dim < P.Top.InnerPoint.Dim) { // Уходим в подпространство
-      FaceLattice lowDim = MinkSumSDas(P.ProjectTo(affinePQ).Top, Q.ProjectTo(affinePQ).Top);
-      return lowDim.TranslateToOriginalAndAddOrigin(affinePQ);
-      // throw new NotImplementedException();
-    }
-
-    return MinkSumSDas(P.Top, Q.Top);
-  }
-
-  // Основной алгоритм суммы Минковского через вычисления решётки. См Sandip Das A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
-  private static FaceLattice MinkSumSDas(FLNode P, FLNode Q) {
-    AffineBasis affinePQ = new AffineBasis(
-      P.AffBasis.Origin + Q.AffBasis.Origin,
-      P.AffBasis.Basis.Concat(Q.AffBasis.Basis));
-    int dim = affinePQ.SpaceDim;
     // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
     Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
     // Словарь (x \in P, y \in Q) --> z \in P (+) Q. (Нужен для уменьшения перебора в процессе движения по решёткам)
@@ -118,9 +105,10 @@ public partial class Geometry<TNum, TConv>
 
     // Заполняем максимальный элемент
     // Нас пока не волнует, что вершин может получится больше чем нужно (потом это исправим)
-    FLNode PQ = new FLNode(MinkSumPoints(P.Vertices, Q.Vertices), P.InnerPoint + Q.InnerPoint, affinePQ);
-    zTo_xy.Add(PQ, (P, Q));
-    xyToz.Add((P, Q), PQ);
+    FLNode PQ = new FLNode(MinkSumPoints(P.Top.Vertices, Q.Top.Vertices)
+                                , P.Top.InnerPoint + Q.Top.InnerPoint, affinePQ);
+    zTo_xy.Add(PQ, (P.Top, Q.Top));
+    xyToz.Add((P.Top, Q.Top), PQ);
     FL[^1].Add(PQ);
 
     for (int d = dim - 1; d >= 0; d--) {
@@ -128,7 +116,8 @@ public partial class Geometry<TNum, TConv>
         // Будем описывать подграни по очереди для каждой грани с предыдущего уровня.
         (FLNode x, FLNode y) = zTo_xy[z];
         // Аффинное пространство грани z (F(+)G в терминах Лемм)
-        AffineBasis zSpace = new AffineBasis(z.AffBasis);
+        // AffineBasis zSpace = new AffineBasis(z.AffBasis);
+        AffineBasis zSpace = z.AffBasis;
         Point innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
         // Собираем все подграни в соответствующих решётках, 
