@@ -14,12 +14,12 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// </summary>
   public static readonly GRandomLC _random = new GRandomLC(0);
 
-#region Auxiliary functions
+  #region Auxiliary functions
   /// <summary>
   /// Generates a random TNum value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
   /// </summary>
   /// <returns>The generated random TNum value.</returns>
-  protected static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
+  public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
 
   /// <summary>
   /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5] \ {0}.
@@ -27,7 +27,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="dim">The dimension of the vector.</param>
   /// <param name="random">If null then _random be used.</param>
   /// <returns>A random vector.</returns>
-  protected static Vector GenVector(int dim, GRandomLC? random = null) {
+  public static Vector GenVector(int dim, GRandomLC? random = null) {
     GRandomLC rnd = random ?? _random;
 
     Vector res;
@@ -48,9 +48,9 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="points">The list of point to lin-combine.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A linear combination of the given points.</returns>
-  protected static Point GenConvexCombination(IReadOnlyCollection<Point> points, GRandomLC? random = null) {
-    GRandomLC  rnd = random ?? _random;
-    List<TNum> ws  = new List<TNum>();
+  public static Point GenConvexCombination(IReadOnlyCollection<Point> points, GRandomLC? random = null) {
+    GRandomLC rnd = random ?? _random;
+    List<TNum> ws = new List<TNum>();
 
     TNum difA = Tools.One;
     for (int i = 0; i < points.Count - 1; i++) {
@@ -71,7 +71,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="dim">The dimension of the vector.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A random non-zero vector.</returns>
-  protected static Vector GenShift(int dim, GRandomLC? random = null) {
+  public static Vector GenShift(int dim, GRandomLC? random = null) {
     GRandomLC rnd = random ?? _random;
 
     return GenVector(dim) * rnd.NextFromInt(1, 10);
@@ -86,7 +86,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   private static Matrix GenRotation(int spaceDim, GRandomLC? random = null) {
     LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
     while (!basis.IsFullDim) {
-      basis.AddVector(GenVector(spaceDim,random));
+      basis.AddVector(GenVector(spaceDim, random));
     }
 
     return basis.GetMatrix();
@@ -103,7 +103,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     Matrix rotation = GenRotation(PDim, random);
-    Vector shift    = GenVector(PDim, random) * _random.NextFromInt(1, 10);
+    Vector shift = GenVector(PDim, random) * _random.NextFromInt(1, 10);
 
     P = Rotate(P, rotation);
     P = Shift(P, shift);
@@ -163,6 +163,6 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
 
-#endregion
+  #endregion
 
 }
