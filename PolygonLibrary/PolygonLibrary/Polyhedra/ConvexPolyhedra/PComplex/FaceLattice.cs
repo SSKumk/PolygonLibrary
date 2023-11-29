@@ -44,23 +44,6 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The level being queried.</returns>
     public HashSet<FLNode> GetLevel(int dim) => Top.GetLevel(dim);
 
-    // private List<HashSet<FLNode>> ConstructLattice() {
-    //   List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
-    //   for (int i = 0; i <= Top.Dim; i++) {
-    //     FL.Add(new HashSet<FLNode>());
-    //   }
-    //   FL[Top.Dim].Add(Top);
-
-    //   HashSet<FLNode> prevNodes = new HashSet<FLNode>() { Top };
-    //   for (int i = Top.Dim - 1; i > -1; i--) {
-    //     foreach (FLNode node in prevNodes) {
-    //       FL[i].UnionWith(node.Sub!);
-    //     }
-    //     prevNodes = FL[i];
-    //   }
-    //   return FL;
-    // }
-
     /// <summary>
     /// The vertex forms a one-element lattice.
     /// </summary>
