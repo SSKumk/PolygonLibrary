@@ -9,8 +9,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
-  public static readonly List<Point> Octahedron3D_list = GeneratePointsOnSphere_3D(2, 4, true, true);
-  public static readonly List<Point> Pyramid3D_list = GeneratePointsOnSphere_3D(2, 4, true);
+  public static readonly List<Point> Octahedron3D_list = MakePointsOnSphere_3D(2, 4, true, true);
+  public static readonly List<Point> Pyramid3D_list = MakePointsOnSphere_3D(2, 4, true);
   public static readonly List<Point> Simplex2D_list = Simplex_list(2);
   public static readonly List<Point> Simplex3D_list = Simplex_list(3);
   public static readonly List<Point> Simplex4D_list = Simplex_list(4);
@@ -244,6 +244,80 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     return Simplex;
   }
 
+
+  /// <summary>
+  /// Generates a list of Cartesian coordinates for points on a nD-sphere.
+  /// </summary>
+  /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
+  /// <param name="thetaPoints">The number of points at each zenith angle. Theta in [0, Pi].
+  ///  thetaPoints should be greater than 2 for proper calculation.</param>
+  /// <param name="phiPoints">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
+  /// <param name="radius">The radius of a sphere.</param>
+  /// <returns>A list of points on the sphere.</returns>
+  public static List<Point> MakePointsOnSphere(int dim, int thetaPoints, int phiPoints, TNum radius) {
+    Debug.Assert(dim > 1, "The dimension of a sphere must be 2 or greater.");
+    // Phi in [0, 2*Pi)
+    // Theta in [0, Pi]
+    HashSet<Point> Ps = new HashSet<Point>();
+    int N = dim - 2;
+    TNum thetaStep = Tools.PI / TConv.FromInt(thetaPoints);
+    TNum phiStep = Tools.PI2 / TConv.FromInt(phiPoints);
+
+    List<TNum> thetaAll = new List<TNum>();
+    for (int i = 0; i <= thetaPoints; i++) {
+      thetaAll.Add(thetaStep * TConv.FromInt(i));
+    }
+
+    // цикл по переменной [0, 2*Pi)
+    for (int i = 0; i < phiPoints; i++) {
+      TNum phi = phiStep * TConv.FromInt(i);
+
+      // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
+      List<List<TNum>> thetaAngles_prev = new List<List<TNum>>() { new List<TNum>() { phi } };
+      List<List<TNum>> thetaAngles = new List<List<TNum>>() { new List<TNum>() { phi } };
+      // сколько раз нужно углы добавлять
+      for (int k = 0; k < N; k++) {
+        thetaAngles.Clear();
+        // формируем наборы добавляя к каждому текущему набору всевозможные углы из theta all
+        foreach (List<TNum> angle in thetaAngles_prev) {
+          foreach (TNum theta in thetaAll) {
+            thetaAngles.Add(new List<TNum>(angle) { theta });
+          }
+        }
+        thetaAngles_prev = new List<List<TNum>>(thetaAngles);
+      }
+
+      foreach (List<TNum> s in thetaAngles) {
+        List<TNum> point = new List<TNum>();
+        // собрали 1 и 2 координаты
+        TNum sinsN = Tools.One;
+        for (int k = 1; k <= N; k++) { sinsN *= TNum.Sin(s[k]); }
+        point.Add(radius * TNum.Cos(phi) * sinsN);
+        point.Add(radius * TNum.Sin(phi) * sinsN);
+
+        //добавляем серединные координаты
+        for (int j = 2; j <= N; j++) {
+          TNum sinsJ = Tools.One;
+          for (int k = 1; k < j; k++) {
+            sinsJ *= TNum.Sin(s[k]);
+          }
+          point.Add(radius * TNum.Cos(s[j]) * sinsJ);
+        }
+
+        // последнюю координату
+        if (dim > 2) {
+          point.Add(radius * TNum.Cos(s[1]));
+        }
+
+        // точка готова, добавляем в наш массив
+        Ps.Add(new Point(point.ToArray()));
+
+      }
+    }
+
+    return Ps.ToList();
+  }
+
   /// <summary>
   /// Generates a list of Cartesian coordinates for points on a 3D-sphere.
   /// </summary>
@@ -253,7 +327,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="addUpperPole">A boolean flag indicating whether to add the upper pole to the list of points.</param>
   /// <param name="addBottomPole">A boolean flag indicating whether to add the bottom pole to the list of points.</param>
   /// <returns>A list of points on the sphere.</returns>
-  public static List<Point> GeneratePointsOnSphere_3D(int thetaDivisions
+  public static List<Point> MakePointsOnSphere_3D(int thetaDivisions
                                                     , int phiDivisions
                                                     , bool addUpperPole = false
                                                     , bool addBottomPole = false) {
