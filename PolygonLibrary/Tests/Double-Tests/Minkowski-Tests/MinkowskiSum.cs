@@ -154,7 +154,7 @@ public class MinkowskiSum {
   /// </summary>
   [Test]
   public void Cube3D_Octahedron45XY() {
-    List<Point> p = GeneratePointsOnSphere_3D(3, 4);
+    List<Point> p = MakePointsOnSphere_3D(3, 4);
     List<Point> q = Octahedron3D_list;
     q = Rotate(q, rotate3D_45XY);
 
@@ -185,9 +185,9 @@ public class MinkowskiSum {
   [Test]
   public void WorstCase3D() {
     const int theta = 2;
-    List<Point> p = GeneratePointsOnSphere_3D(theta, 8, true, true);
+    List<Point> p = MakePointsOnSphere_3D(theta, 8, true, true);
     p = Rotate(p, MakeRotationMatrix(3, 2, 3, -double.Pi / 18));
-    List<Point> q = GeneratePointsOnSphere_3D(theta, 8, true, true);
+    List<Point> q = MakePointsOnSphere_3D(theta, 8, true, true);
     q = Rotate(q, MakeRotationMatrix(3, 1, 3, double.Pi / 2));
 
     GiftWrapping P = new GiftWrapping(p);
@@ -257,7 +257,7 @@ public class MinkowskiSum {
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
-    sum.WriteTXTasCPolytop("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
+    // sum.WriteTXTasCPolytop("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
     // new GiftWrapping(MinkSum(p, q)).CPolytop.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY++.txt");
   }
   #endregion
@@ -305,7 +305,7 @@ public class MinkowskiSum {
 
 [TestFixture]
 public class MinkowskiSum5D {
-  private static Matrix rotate5D_45_12, rotate5D_45_35;
+  // private static Matrix rotate5D_45_12, rotate5D_45_35;
   private static List<Point> cube5D, cube4D, cube3D, cube2D;
   private static List<Point> simplex5D, simplex4D, simplex3D, simplex2D;
   private static List<Point> simplexRND5D, simplexRND4D, simplexRND3D, simplexRND2D;
@@ -317,9 +317,6 @@ public class MinkowskiSum5D {
   // private Vector shift;
 
   static MinkowskiSum5D() {
-    rotate5D_45_12 = MakeRotationMatrix(5, 1, 2, 45);
-    rotate5D_45_35 = MakeRotationMatrix(5, 3, 5, 45);
-
     cube5D = Cube5D_list;
     cube4D = Cube4D_list.Select(p => p.ExpandTo(5)).ToList();
     cube3D = Cube3D_list.Select(p => p.ExpandTo(5)).ToList();
@@ -346,9 +343,26 @@ public class MinkowskiSum5D {
 
   }
 
-  public static IEnumerable<TestCaseData> AllCubes_All() {
+  public static IEnumerable<TestCaseData> AllCubes_AllTransformed(bool needToRot, int fst, int snd, double angle, bool needToShift) {
+    Matrix rotate5D = MakeRotationMatrix(5, fst, snd, angle);
+    Vector shift = GenShift(5, new GRandomLC(111));
+
     IEnumerable<FaceLattice> allCubes_FL = allCubes_lst.Select(GiftWrapping.WrapFaceLattice);
+
     IEnumerable<FaceLattice> all_FL = all_lst.Select(GiftWrapping.WrapFaceLattice);
+    IEnumerable<FaceLattice> all_FL_Rot = all_lst.Select(l =>
+                                                    GiftWrapping.WrapFaceLattice(Rotate(l, rotate5D)));
+    IEnumerable<FaceLattice> all_FL_Shift = all_lst.Select(l =>
+                                                    GiftWrapping.WrapFaceLattice(Shift(l, shift)));
+
+
+    IEnumerable<FaceLattice> toTreat = all_FL;
+    if (needToRot) {
+      toTreat = all_FL_Rot;
+    } else
+     if (needToShift) {
+      toTreat = all_FL_Shift;
+    }
 
     // перебираем кубы
     foreach (FaceLattice cube in allCubes_FL) {
@@ -360,12 +374,47 @@ public class MinkowskiSum5D {
 
   }
 
-  [Test, TestCaseSource(nameof(AllCubes_All))]
+  /// <summary>
+  /// All cubes sum to all (cubes, simplices and rnd simplices)
+  /// </summary>
+  [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, false })]
   public void AllCubes_AllTest(FaceLattice cube, FaceLattice other) {
     FaceLattice sum_CH = MinkSumCH(cube, other);
     FaceLattice sum = MinkSumSDas(cube, other);
+    FaceLattice sumSim = MinkSumSDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
+    Assert.That(sum_CH, Is.EqualTo(sumSim));
+  }
+
+  [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, true })]
+  public void AllCubes_AllShiftedTest(FaceLattice cube, FaceLattice other) {
+    FaceLattice sum_CH = MinkSumCH(cube, other);
+    FaceLattice sum = MinkSumSDas(cube, other);
+    FaceLattice sumSim = MinkSumSDas(other, cube);
+
+    Assert.That(sum_CH, Is.EqualTo(sum));
+    Assert.That(sum_CH, Is.EqualTo(sumSim));
+  }
+
+  [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 1, 2, 45, false })]
+  public void AllCubes_AllRotated12_45degTest(FaceLattice cube, FaceLattice other) {
+    FaceLattice sum_CH = MinkSumCH(cube, other);
+    FaceLattice sum = MinkSumSDas(cube, other);
+    FaceLattice sumSim = MinkSumSDas(other, cube);
+
+    Assert.That(sum_CH, Is.EqualTo(sum));
+    Assert.That(sum_CH, Is.EqualTo(sumSim));
+  }
+
+  [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 3, 5, 45, false })]
+  public void AllCubes_AllRotated35_45degTest(FaceLattice cube, FaceLattice other) {
+    FaceLattice sum_CH = MinkSumCH(cube, other);
+    FaceLattice sum = MinkSumSDas(cube, other);
+    FaceLattice sumSim = MinkSumSDas(other, cube);
+
+    Assert.That(sum_CH, Is.EqualTo(sum));
+    Assert.That(sum_CH, Is.EqualTo(sumSim));
   }
 
 }
