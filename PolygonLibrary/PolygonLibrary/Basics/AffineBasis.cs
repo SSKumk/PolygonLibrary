@@ -276,6 +276,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       foreach (Point p in Ps) {
         AddVectorToBasis(p - Origin);
+        if (IsFullDim) { break; }
       }
     }
 
