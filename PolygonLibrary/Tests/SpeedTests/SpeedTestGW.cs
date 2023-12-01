@@ -12,6 +12,8 @@ using Tests.ToolsTests;
 
 namespace Tests.SpeedTests;
 
+// dotnet test Tests\bin\Release\net8.0\Tests.dll --filter SpeedTestGW
+
 [TestFixture]
 public class SpeedTestGW {
   [Test]
@@ -25,11 +27,11 @@ public class SpeedTestGW {
 
   [Test]
   public void Sphere3D_Double() {
-    SphereBench<double, DConvertor>(3, 3, (int)1e3, "Sphere3D-double");
+    SphereBench<double, DConvertor>(3, 2, (int)1e3, "Sphere3D-double");
   }
   [Test]
   public void Sphere3D_DoubleDouble() {
-    SphereBench<ddouble, DDConvertor>(3, 3, (int)1e3, "Sphere3D-double-double");
+    SphereBench<ddouble, DDConvertor>(3, 2, (int)1e3, "Sphere3D-double-double");
   }
 
   [Test]
@@ -43,11 +45,11 @@ public class SpeedTestGW {
 
   [Test]
   public void Sphere5D_Double() {
-    SphereBench<double, DConvertor>(5, 3, (int)1e3, "Sphere5D-double");
+    SphereBench<double, DConvertor>(5, 2, (int)1e3, "Sphere5D-double");
   }
   [Test]
   public void Sphere5D_DoubleDouble() {
-    SphereBench<ddouble, DDConvertor>(5, 3, (int)1e2, "Sphere5D-double-double");
+    SphereBench<ddouble, DDConvertor>(5, 2, (int)1e2, "Sphere5D-double-double");
   }
 
   [Test]
