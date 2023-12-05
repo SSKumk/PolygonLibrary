@@ -6,15 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj" />
         <ProjectReference Include="..\Tests\Tests.csproj" />
     </ItemGroup>
-        <ItemGroup>
+
+    <ItemGroup>
         <Compile Remove="_Store\**" />
         <Compile Remove="BentlyOttmannTests.cs" />
     </ItemGroup>
-        <ItemGroup>
+
+    <ItemGroup>
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>

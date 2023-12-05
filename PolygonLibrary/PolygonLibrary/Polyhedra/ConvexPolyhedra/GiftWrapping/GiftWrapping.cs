@@ -55,13 +55,7 @@ public partial class Geometry<TNum, TConv>
         Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
       }
 
-      return new ConvexPolytop
-        (
-         BuiltPolytop.OriginalVertices
-       , BuiltPolytop.PolytopDim
-       , Fs
-       , Es
-        );
+      return new ConvexPolytop(BuiltPolytop.OriginalVertices, BuiltPolytop.PolytopDim, Fs, Es);
     }
 
     /// <summary>
@@ -101,6 +95,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       ConstructFLN(BuiltPolytop, ref allNodes, ref lattice);
+
       return new FaceLattice(lattice);
     }
 
@@ -199,10 +194,11 @@ public partial class Geometry<TNum, TConv>
       HashSet<SubPoint> S = Swarm.Select(s => new SubPoint(s, null, s)).ToHashSet();
       AffineBasis AffineS = new AffineBasis(S);
       if (AffineS.SpaceDim < AffineS.VecDim) {
-        // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то 
+        // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
         // уходим в подпространство и там овыпукляем.
         S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
       }
+
 
       GiftWrappingMain x = new GiftWrappingMain(S);
       BuiltPolytop = x.BuiltPolytop;
@@ -215,13 +211,15 @@ public partial class Geometry<TNum, TConv>
     private sealed class GiftWrappingMain {
 
       #region Internal fields for GW algorithm
-      private readonly HashSet<SubPoint> S; // Рой точек
+      private readonly HashSet<SubPoint> S;        // Рой точек
       private readonly int spaceDim; // Размерность пространства, в котором происходит овыпукление
       private BaseSubCP? initFace; // Грань, с которой будем перекатываться в поисках других граней.
 
       private readonly HashSet<BaseSubCP> buildFaces = new HashSet<BaseSubCP>(); // Копим грани текущей размерности.
-      private readonly HashSet<SubPoint> buildPoints = new HashSet<SubPoint>(); // Копим точки для создаваемого многогранника
-      private readonly TempIncidenceInfo buildIncidence = new TempIncidenceInfo(); // ребро --> (F1, F2) которые соседствуют через это ребро
+      private readonly HashSet<SubPoint> buildPoints = new HashSet<SubPoint>();  // Копим точки для создаваемого многогранника
+
+      private readonly TempIncidenceInfo
+        buildIncidence = new TempIncidenceInfo(); // ребро --> (F1, F2) которые соседствуют через это ребро
 
       /// <summary>
       /// The resulted d-polytop in d-space. It holds information about face incidence, vertex -> face incidence,
@@ -253,6 +251,7 @@ public partial class Geometry<TNum, TConv>
           // Если d == 2, то пользуемся плоскостным алгоритмом овыпукления.
           // Для этого проецируем точки, а так как наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
           List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
+
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
         }
         if (S.Count == spaceDim + 1) {
@@ -293,7 +292,7 @@ public partial class Geometry<TNum, TConv>
 
         // Будем складывать сюда грани, с которых потенциально можно перекатиться
         Queue<BaseSubCP> toTreat = new Queue<BaseSubCP>();
-        toTreat.Enqueue(initFace); // Начинаем с начальной грани
+        toTreat.Enqueue(initFace);                    // Начинаем с начальной грани
         foreach (BaseSubCP edge in initFace.Faces!) { // Отмечаем, что с каждого ребра начальной грани мы можем перекатиться
           buildIncidence.Add(edge, (initFace, null));
         }
@@ -310,7 +309,7 @@ public partial class Geometry<TNum, TConv>
             buildPoints.UnionWith(nextFace.Vertices);
 
             // У всех рёбер новой грани отмечаем соседей. Если это ребро уже было, то тогда добавляем вторую грань
-            // иначе создаём новую запись с этим ребром и это гранью. 
+            // иначе создаём новую запись с этим ребром и это гранью.
             bool hasFreeEdges = false;
             foreach (BaseSubCP newEdge in nextFace.Faces!) {
               if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
@@ -320,7 +319,8 @@ public partial class Geometry<TNum, TConv>
                 hasFreeEdges = true;
               }
             }
-            if (hasFreeEdges) { // Если у построенной грани есть рёбра, у которых нет второго соседа, то эту грань добавляем в очередь 
+            if (hasFreeEdges) {
+              // Если у построенной грани есть рёбра, у которых нет второго соседа, то эту грань добавляем в очередь
               toTreat.Enqueue(nextFace);
             }
           }
@@ -455,9 +455,7 @@ public partial class Geometry<TNum, TConv>
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
-        HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s))
-                                     .Select(s => s.ProjectTo(FaceBasis))
-                                     .ToHashSet();
+        HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s)).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
