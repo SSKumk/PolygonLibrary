@@ -24,12 +24,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The dimension of the hyperplane.
     /// </summary>
-    private readonly int _dim;
-
-    /// <summary>
-    /// The dimension of the hyperplane.
-    /// </summary>
-    public int Dim => _dim;
+    public int Dim { get; }
 
     /// <summary>
     /// The affine basis associated with the hyperplane.
@@ -89,7 +84,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
             );
         }
 
-        return _normal!;
+        return _normal;
       }
     }
 
@@ -121,7 +116,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public HyperPlane(Point origin, Vector normal) {
       Origin = origin;
       _normal = normal;
-      _dim = Origin.Dim - 1;
+      Dim = Origin.Dim - 1;
     }
 
     /// <summary>
@@ -141,7 +136,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       Origin = affineBasis.Origin;
       _affineBasis = affineBasis;
-      _dim = Origin.Dim - 1;
+      Dim = Origin.Dim - 1;
 
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
