@@ -171,7 +171,7 @@ public partial class Geometry<TNum, TConv>
 
 
         // isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
-        System.Console.WriteLine($"Lattice are not equal: level i = {i}.");
+        // Console.WriteLine($"Lattice are not equal: level i = {i}.");
       }
 
       return isEqual;
