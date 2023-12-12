@@ -17,7 +17,7 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class Vector {
 
-#region Internal storage, access properties, and convertors
+    #region Internal storage, access properties, and convertors
     /// <summary>
     /// The internal storage of the vector as a one-dimensional array
     /// </summary>
@@ -35,14 +35,14 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The value of the corresponding component</returns>
     public TNum this[int i] {
       get
-        {
+      {
 #if DEBUG
-          if (i < 0 || i >= Dim) {
-            throw new IndexOutOfRangeException();
-          }
-#endif
-          return _v[i];
+        if (i < 0 || i >= Dim) {
+          throw new IndexOutOfRangeException();
         }
+#endif
+        return _v[i];
+      }
     }
 
     /// <summary>
@@ -56,25 +56,43 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The length of the vector</returns>
     public TNum Length {
       get
-        {
-          if (length is null) {
-            TNum res = Tools.Zero;
+      {
+        length ??= TNum.Sqrt(Length2);
 
-            for (int i = 0; i < Dim; i++) {
-              res += _v[i] * _v[i];
-            }
+        return length.Value;
+      }
+    }
 
-            length = TNum.Sqrt(res);
+    /// <summary>
+    /// The square of length field
+    /// </summary>
+    private TNum? length2 = null;
+
+    /// <summary>
+    /// Getter
+    /// </summary>
+    /// <returns>The square of length of the vector</returns>
+    public TNum Length2 {
+      get
+      {
+        if (length2 is null) {
+          TNum res = Tools.Zero;
+
+          for (int i = 0; i < Dim; i++) {
+            res += _v[i] * _v[i];
           }
 
-          return length.Value;
+          length2 = res;
         }
+
+        return length2.Value;
+      }
     }
 
     /// <summary>
     /// Property showing if the vector is zero vector
     /// </summary>
-    public bool IsZero => Tools.EQ(Length);
+    public bool IsZero => Tools.EQ(Length2);
 
     /// <summary>
     /// Convert a vector to a one-dimensional array
@@ -82,9 +100,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant array</returns>
     public static explicit operator TNum[](Vector v) => v._v;
-#endregion
+    #endregion
 
-#region Comparing
+    #region Comparing
     /// <summary>
     /// Vector comparer realizing the lexicographic order
     /// </summary>
@@ -189,9 +207,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if p1 is less than or equal to p2; false, otherwise</returns>
     public static bool operator <=(Vector v1, Vector v2) => v1.CompareTo(v2) <= 0;
-#endregion
+    #endregion
 
-#region Miscellaneous procedures
+    #region Miscellaneous procedures
     /// <summary>
     /// Normalization of the vector
     /// </summary>
@@ -247,13 +265,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
     public static TNum Angle(Vector v1, Vector v2) {
-      if (Tools.EQ(v1.Length) || Tools.EQ(v2.Length)) {
+      if (v1.IsZero || v2.IsZero) {
         return Tools.Zero;
       } else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
+#if DEBUG
         if (!(Tools.GE(dot, -Tools.One) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
         }
+#endif
         if (Tools.EQ(dot, -Tools.One) && dot <= -Tools.One) {
           return TNum.Pi;
         }
@@ -266,13 +286,42 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Perform the projection to the plane with basis (u1,u2) by the formula:
+    /// res = (this * u1) * u1 + (this * u2) * u2
+    /// </summary>
+    /// <param name="u1">The first basis vector of the plane.</param>
+    /// <param name="u2">The second basis vector of the plane.</param>
+    /// <returns>The projected vector.</returns>
+    public Vector ProjectToPlane(Vector u1, Vector u2) {
+#if DEBUG
+      if (Dim != u1.Dim && Dim != u2.Dim) {
+        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
+      }
+#endif
+
+      TNum fst = Tools.Zero;
+      TNum snd = Tools.Zero;
+      for (int i = 0; i < Dim; i++) {
+        fst    += _v[i] * u1[i];
+        snd    += _v[i] * u2[i];
+      }
+
+      TNum[] res = new TNum[Dim];
+      for (int i = 0; i < Dim; i++) {
+        res[i] = fst * u1[i] + snd * u2[i];
+      }
+
+      return new Vector(res);
+    }
+
+    /// <summary>
     /// Returns the string contains coordinates of a point in the specified format.
     /// x0 x1 ... xDim-1
     /// </summary>
     /// <returns>The string in the specified format.</returns>
     public string ToFileFormat() {
       string res = $"{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
+      int d = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $" {_v[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -280,9 +329,9 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
-#endregion
+    #endregion
 
-#region Functions related to Vectors
+    #region Functions related to Vectors
     /// <summary>
     /// Orthonormalizes the given vector against the given basis.
     /// </summary>
@@ -361,7 +410,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
     /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
     private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
-      int          dim   = V.First().Dim;
+      int dim = V.First().Dim;
       List<Vector> Basis = BasisInit.ToList();
 
       foreach (Vector v in V) {
@@ -378,9 +427,9 @@ public partial class Geometry<TNum, TConv>
 
       return Basis;
     }
-#endregion
+    #endregion
 
-#region Overrides
+    #region Overrides
     public override bool Equals(object? obj) {
 #if DEBUG
       if (obj is not Vector vector) {
@@ -392,7 +441,7 @@ public partial class Geometry<TNum, TConv>
 
     public override string ToString() {
       string res = $"({_v[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
+      int d = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $",{_v[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -412,9 +461,9 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
-#endregion
+    #endregion
 
-#region Constructors
+    #region Constructors
     /// <summary>
     /// The default construct producing the zero vector
     /// </summary>
@@ -492,9 +541,9 @@ public partial class Geometry<TNum, TConv>
     /// Computing fields
     /// </summary>
     private void ComputeParameters() { }
-#endregion
+    #endregion
 
-#region Fabrics
+    #region Fabrics
     /// <summary>
     /// Creates the i-orth of given dimension
     /// </summary>
@@ -508,16 +557,16 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(orth);
     }
-#endregion
+    #endregion
 
-#region Operators
+    #region Operators
     /// <summary>
     /// Unary minus - the opposite vector
     /// </summary>
     /// <param name="v">The vector to be reversed</param>
     /// <returns>The opposite vector</returns>
     public static Vector operator -(Vector v) {
-      int    d  = v.Dim, i;
+      int d = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -578,7 +627,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector factor</param>
     /// <returns>The product</returns>
     public static Vector operator *(TNum a, Vector v) {
-      int    d  = v.Dim, i;
+      int d = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -608,7 +657,7 @@ public partial class Geometry<TNum, TConv>
         throw new DivideByZeroException();
       }
 #endif
-      int    d  = v.Dim, i;
+      int d = v.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -687,7 +736,7 @@ public partial class Geometry<TNum, TConv>
 
       return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(TNum.Abs(v1 * v2 / (l1 * l2)));
     }
-#endregion
+    #endregion
 
   }
 
