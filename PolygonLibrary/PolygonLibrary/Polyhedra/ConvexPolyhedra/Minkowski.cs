@@ -28,8 +28,8 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
   /// </summary>
-  /// <param name="p1">The first polytope represented as a list.</param>
-  /// <param name="p2">The second polytope represented as a list.</param>
+  /// <param name="P">The first polytope represented as a list.</param>
+  /// <param name="Q">The second polytope represented as a list.</param>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
@@ -39,8 +39,8 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
   /// </summary>
-  /// <param name="p1">The first polytope represented as a ConvexPolytop.</param>
-  /// <param name="p2">The second polytope represented as a ConvexPolytop.</param>
+  /// <param name="P">The first polytope represented as a ConvexPolytop.</param>
+  /// <param name="Q">The second polytope represented as a ConvexPolytop.</param>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
@@ -50,15 +50,15 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
   /// </summary>
-  /// <param name="p1">The first polytope represented as a face lattice.</param>
-  /// <param name="p2">The second polytope represented as a face lattice.</param>
+  /// <param name="P">The first polytope represented as a face lattice.</param>
+  /// <param name="Q">The second polytope represented as a face lattice.</param>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
   public static FaceLattice MinkSumCH(FaceLattice P, FaceLattice Q) => MinkSumCH(P.Top, Q.Top);
 
   /// <summary>
-  /// The Minkowski sum of two sets of points. S1 (+) S2 = {p | p = p1 + p2, ∀p1 ∈ S1 and ∀p2 ∈ S2}
+  /// The Minkowski sum of two sets of points. S1 (+) S2 = {p | p = P + Q, ∀P ∈ S1 and ∀Q ∈ S2}
   /// </summary>
   /// <param name="A">The first set of points.</param>
   /// <param name="B">The second set of points.</param>
@@ -76,8 +76,8 @@ public partial class Geometry<TNum, TConv>
   /// Основной алгоритм суммы Минковского через вычисления решётки. 
   /// См Sandip Das A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
   /// </summary>
-  /// <param name="p1">The first polytope represented as a face lattice.</param>
-  /// <param name="p2">The second polytope represented as a face lattice.</param>
+  /// <param name="P">The first polytope represented as a face lattice.</param>
+  /// <param name="Q">The second polytope represented as a face lattice.</param>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
