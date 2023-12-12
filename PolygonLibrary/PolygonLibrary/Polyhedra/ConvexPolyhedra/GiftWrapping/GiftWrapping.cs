@@ -254,10 +254,10 @@ public partial class Geometry<TNum, TConv>
 
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
         }
-        if (S.Count == spaceDim + 1) {
-          // Отдельно обработали случай симплекса.
-          return new SubSimplex(S);
-        }
+        // if (S.Count == spaceDim + 1) {
+        //   // Отдельно обработали случай симплекса.
+        //   return new SubSimplex(S);
+        // }
 
         // Создаём начальную грань. (Либо берём, если она передана).
         initFace ??= BuildFace(BuildInitialPlane(out Vector normal), normal);
@@ -348,7 +348,7 @@ public partial class Geometry<TNum, TConv>
       /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
       /// </returns>
       private AffineBasis BuildInitialPlane(out Vector normal) {
-        Debug.Assert(S.Any(), $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
+        Debug.Assert(S.Count != 0, $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
         // Для построения начальной плоскости найдём точку самую малую в лексикографическом порядке. (левее неё уже точек нет)
         SubPoint origin = S.Min()!;
@@ -363,18 +363,17 @@ public partial class Geometry<TNum, TConv>
 
           Vector e;
           int i = 0;
-          Vector[] nBasis = new[] { n };
+          Vector[] nBasis = { n };
           do {
             i++;
             e = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis, nBasis);
           } while (e.IsZero && i <= spaceDim);
-          Debug.Assert
-            (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
+          Debug.Assert(i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
-          Vector? r = null;
+                         // Vector? r = null; нужен для процедуры Сварта (ниже)
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
-            Vector u = ((s - origin) * e) * e + ((s - origin) * n) * n;
+            Vector u = (s - origin).ProjectToPlane(e, n);
 
             if (!u.IsZero) {
               TNum angle = Vector.Angle(e, u);
@@ -383,16 +382,10 @@ public partial class Geometry<TNum, TConv>
               if (Tools.GT(angle, maxAngle)) {
                 maxAngle = angle;
                 sExtr = s;
-                r = u.Normalize();
+                // r = u.Normalize();
               }
             }
           }
-
-          // if (sExtr is null) { //Если dim(S) < d - 1 !!!
-          //   GiftWrappingMain lowerP = new GiftWrappingMain(S.Select(s => s.ProjectTo(FinalV)).ToHashSet());
-          //
-          // }
-
           bool isAdded = FinalV.AddVectorToBasis(sExtr! - origin);
 
           Debug.Assert
@@ -455,6 +448,7 @@ public partial class Geometry<TNum, TConv>
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
+        // HyperPlane hp = new HyperPlane(FaceBasis, (FaceBasis.Origin + n, true)); хз что лучше (думаю, что нормаль)
         HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s)).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
@@ -510,9 +504,8 @@ public partial class Geometry<TNum, TConv>
 
         // ищем вектор u такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
-          Vector so = s - edgeBasis.Origin;
-          Vector u = (so * v) * v + (so * face.Normal) * face.Normal;
-
+          // Vector u = (so * v) * v + (so * face.Normal) * face.Normal;
+          Vector u = (s - edgeBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
             TNum angle = Vector.Angle(v, u);
 
