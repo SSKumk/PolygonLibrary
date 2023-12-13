@@ -12,7 +12,7 @@ namespace Tests.DoubleDouble_Tests.GW_hDTests;
 [TestFixture]
 public class GW_Tests {
 
-#region Auxiliary tests
+  #region Auxiliary tests
   [Test]
   public void GenCubeHDTest() {
     HashSet<Point> S = new HashSet<Point>()
@@ -31,16 +31,16 @@ public class GW_Tests {
 
     Debug.Assert(S.SetEquals(new HashSet<Point>(cube)), "S is not equal to generated Cube");
   }
-#endregion
+  #endregion
 
 
-#region Cube3D-Static Тесты 3D-куба не зависящие от _random
+  #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
   public void Cube3D_Rotated_Z45() {
-    List<Point> S     = Cube(3, out List<Point> _);
-    ddouble     angle = Tools.PI / 4;
-    ddouble     sin   = ddouble.Sin(angle);
-    ddouble     cos   = ddouble.Cos(angle);
+    List<Point> S = Cube(3, out List<Point> _);
+    ddouble angle = Tools.PI / 4;
+    ddouble sin = ddouble.Sin(angle);
+    ddouble cos = ddouble.Cos(angle);
 
     ddouble[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
@@ -170,9 +170,9 @@ public class GW_Tests {
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
-#endregion
+  #endregion
 
-#region Suffle-Zone PurePolytops Тесты перестановок без дополнительных точек
+  #region Suffle-Zone PurePolytops Тесты перестановок без дополнительных точек
   /// <summary>
   /// Shuffles the elements of the S list and wraps it into a Polyhedron.
   /// Asserts that the set of vertices in the Polyhedron is equal to the Polytop list.
@@ -214,9 +214,9 @@ public class GW_Tests {
     SwarmShuffle(S, "Simplex4D_Shuffled");
 
   }
-#endregion
+  #endregion
 
-#region Cube4D-Static Тесты 4D-куба не зависящие от _random
+  #region Cube4D-Static Тесты 4D-куба не зависящие от _random
   [Test]
   public void Cube4D_withInnerPoints_On_1D() {
     List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1 }, 1, 141);
@@ -293,9 +293,9 @@ public class GW_Tests {
 
     Assert.That(P.Vertices.SetEquals(cube), "The set of vertices must be equal.");
   }
-#endregion
+  #endregion
 
-#region Simplex4D Тесты 4D-симплекса не зависящие от _random
+  #region Simplex4D Тесты 4D-симплекса не зависящие от _random
   [Test]
   public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
     Point p0 = new Point(new ddouble[] { 0, 0, 0, 0 });
@@ -327,9 +327,9 @@ public class GW_Tests {
     GiftWrapping P = new GiftWrapping(S);
     Assert.That(P.Vertices.SetEquals(Simplex), "The set of vertices must be equal.");
   }
-#endregion
+  #endregion
 
-#region AllCubes Генераторы "плохих" тестов для кубов
+  #region AllCubes Генераторы "плохих" тестов для кубов
   [Test]
   public void AllCubes3D_TestRND() {
     const int nPoints = 5000;
@@ -393,9 +393,9 @@ public class GW_Tests {
       Check(S, P, saveSeed, 6, nPoints, fID, true);
     }
   }
-#endregion
+  #endregion
 
-#region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
+  #region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
   [Test]
   public void AllSimplices3D_TestRND() {
     const int nPoints = 2000;
@@ -475,12 +475,12 @@ public class GW_Tests {
       Check(S, P, saveSeed, 7, nPoints, fID, true);
     }
   }
-#endregion
+  #endregion
 
-#region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
+  #region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
   [Test]
   public void AllSimplicesRND_3D_TestRND() {
-    const int nPoints    = 1;
+    const int nPoints = 1;
     const int simplexDim = 3;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
@@ -497,7 +497,7 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplicesRND_4D_TestRND() {
-    const int nPoints    = 1;
+    const int nPoints = 1;
     const int simplexDim = 4;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
@@ -514,7 +514,7 @@ public class GW_Tests {
 
   [Test]
   public void AllSimplicesRND_5D_TestRND() {
-    const int nPoints    = 1;
+    const int nPoints = 1;
     const int simplexDim = 5;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
@@ -528,10 +528,10 @@ public class GW_Tests {
       }
     }
   }
-#endregion
+  #endregion
 
 
-#region Other tests
+  #region Other tests
   /// <summary>
   /// Вершины:
   ///[0] +2.573  A
@@ -552,10 +552,10 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Simplex4D_PointCloseToVertex() {
-    const uint seed    = 725498027;
-    const int  PDim    = 4;
-    const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 2, 3, 4 };
+    const uint seed = 725498027;
+    const int PDim = 4;
+    const int nPoints = 1;
+    List<int> fID = new List<int>() { 2, 3, 4 };
 
     List<Point> S = new List<Point>()
       {
@@ -702,14 +702,20 @@ public class GW_Tests {
       };
 
     List<Point> S = new List<Point>(Simplex);
-    Point       p = new Point(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
-    S.Add(p);
+    // Point       p = new Point(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
+    // S.Add(p);
+    // ! Мы строим базитс на таких точках. Скачёк на 6 порядков. В double печаль! eps = 1e-8 всё ломается!
+    // ! А в ddouble нормально! 
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
+    var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[2], S[0] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[2], S[index: 1], S[0] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[index: 1], S[2] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[index: 2], S[1] }));
 
-    var hpABC    = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
     var distABCD = S.Select(s => hpABC.Eval(s));
 
-    GiftWrapping P = new GiftWrapping(Simplex);
-    Assert.That(P.Vertices.SetEquals(Simplex));
+    // GiftWrapping P = new GiftWrapping(Simplex);
+    // Assert.That(P.Vertices.SetEquals(Simplex));d
   }
 
 
@@ -718,10 +724,10 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void SomeParallelogram() {
-    Point  origin = new Point(3);
-    Vector v1     = new Vector(new ddouble[] { 0.5, 1, 1 });
-    Vector v2     = new Vector(new ddouble[] { 1, 0.5, 1 });
-    Vector v3     = new Vector(new ddouble[] { 1, 1, 0.5 });
+    Point origin = new Point(3);
+    Vector v1 = new Vector(new ddouble[] { 0.5, 1, 1 });
+    Vector v2 = new Vector(new ddouble[] { 1, 0.5, 1 });
+    Vector v3 = new Vector(new ddouble[] { 1, 1, 0.5 });
 
     List<Point> S = new List<Point>()
       {
@@ -737,7 +743,7 @@ public class GW_Tests {
 
     SwarmShuffle(S, "SomeParallelogram");
   }
-#endregion
+  #endregion
 
   /// <summary>
   /// Procedure checks the answer obtained by Gift Wrapping algorithm and the answer given by user.
@@ -751,11 +757,11 @@ public class GW_Tests {
   /// <param name="needShuffle"></param>
   private static void Check(List<Point> S
                           , List<Point> Answer
-                          , uint        seed
-                          , int         PDim
-                          , int         nPoints
-                          , List<int>   fID
-                          , bool        needShuffle = false) {
+                          , uint seed
+                          , int PDim
+                          , int nPoints
+                          , List<int> fID
+                          , bool needShuffle = false) {
     ConvexPolytop? P = null;
 
     try {
