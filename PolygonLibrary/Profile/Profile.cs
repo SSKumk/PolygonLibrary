@@ -37,13 +37,11 @@ class Program {
   // }
   public static void Main(string[] args) {
     Stopwatch timer = new Stopwatch();
-    var       cube  = Cube(5,out _, new []{5}, 100000);
+    var       swarm = Cube(5,out _, new []{1,2,3,4,5}, 500, null, true);
+    // var swarm = MakePointsOnSphere(5, 5, 10, 1);
     timer.Restart();
-    var       x     = GiftWrapping.WrapPolytop(cube);
+    var x = GiftWrapping.WrapPolytop(swarm);
     Console.WriteLine($"GW: {timer.ElapsedMilliseconds}");
-
-
-
   }
 
 }
