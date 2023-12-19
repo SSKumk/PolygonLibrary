@@ -57,7 +57,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="cubeDim">The dimension of the hypercube.</param>
   /// <param name="pureCube">The list of cube vertices of given dimension.</param>
   /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
-  /// <param name="amount">The amount of points to be placed into random set of faces of faceDim dimension.</param>
+  /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <param name="needShuffle"></param>
   /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
