@@ -48,7 +48,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns></returns>
     public override BaseSubCP ToPreviousSpace() {
-      //todo Поднимать не весь комплекс, а только d-1 и d-2
       HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
       // SubIncidenceInfo      info  = new SubIncidenceInfo();
 

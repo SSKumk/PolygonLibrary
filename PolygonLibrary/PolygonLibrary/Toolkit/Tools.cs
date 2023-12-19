@@ -309,8 +309,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="b">The second object</param>
     public static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
-    /// <summary> //todo Проверить в каких диапазонах он живёт!
+    /// <summary>
     /// Calculates the angle, in radians, between the positive x-axis and the point (x, y).
+    /// Diapason (-PI, +PI].
     /// </summary>
     /// <param name="y">The y-coordinate of the point.</param>
     /// <param name="x">The x-coordinate of the point.</param>

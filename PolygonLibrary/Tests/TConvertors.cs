@@ -2,7 +2,7 @@ using CGLibrary;
 using DoubleDouble;
 
 namespace Tests;
-//todo ТЕСТЫ очередного типа TNum: vvvv
+//ТЕСТЫ очередного типа TNum: vvvv
 /*
  * 1) Acos(-1) == +PI, а не -PI
  * 2) Atan2(y,x) \in (-PI, +PI], то есть включена положительная граница

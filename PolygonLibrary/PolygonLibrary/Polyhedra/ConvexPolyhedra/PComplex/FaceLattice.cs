@@ -378,7 +378,7 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => Polytop.GetHashCode();
 
     /// <summary>
-    /// todo НАДО ДОБАВИТЬ СРАВНЕНИЕ НА EQUALS, а не только по хешам.
+    ///
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>

@@ -4,7 +4,6 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 namespace Tests.DoubleDouble_Tests.GW_hDTests; 
 
-//todo ВАЖНО. Сделать качественное тестирование HashCode для всех типов данных
 [TestFixture]
 public class HashSetTests {
 
