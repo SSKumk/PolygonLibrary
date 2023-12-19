@@ -12,9 +12,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   //todo Когда Сумма Минковского будет готова, перенести всё в этот класс
-  public class MinkowskiSum {
-
-  }
+  public class MinkowskiSum { }
 
   /// <summary>
   /// Shift given swarm by given vector.
@@ -33,8 +31,8 @@ public partial class Geometry<TNum, TConv>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
-  internal static FaceLattice MinkSumCH(FLNode P, FLNode Q) =>
-    GiftWrapping.WrapFaceLattice(MinkSumPoints(P.Vertices, Q.Vertices));
+  internal static FaceLattice MinkSumCH(FLNode P, FLNode Q) => GiftWrapping.WrapFaceLattice
+    (MinkSumPoints(P.Vertices, Q.Vertices));
 
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
@@ -44,8 +42,8 @@ public partial class Geometry<TNum, TConv>
   /// <returns>
   /// Returns a face lattice of the sum.
   /// </returns>
-  public static FaceLattice MinkSumCH(ConvexPolytop P, ConvexPolytop Q) =>
-    GiftWrapping.WrapFaceLattice(MinkSumPoints(P.Vertices, Q.Vertices));
+  public static FaceLattice MinkSumCH(ConvexPolytop P, ConvexPolytop Q) => GiftWrapping.WrapFaceLattice
+    (MinkSumPoints(P.Vertices, Q.Vertices));
 
   /// <summary>
   /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
@@ -68,6 +66,7 @@ public partial class Geometry<TNum, TConv>
     foreach (Point a in A) {
       AB.UnionWith(Shift(B, new Vector(a)));
     }
+
     return AB;
   }
 
@@ -84,9 +83,8 @@ public partial class Geometry<TNum, TConv>
   public static FaceLattice MinkSumSDas(FaceLattice P, FaceLattice Q) {
     // Вычисляю аффинное пространство суммы P и Q
     // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
-    AffineBasis affinePQ = new AffineBasis(
-      P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin,
-      P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
+    AffineBasis affinePQ = new AffineBasis
+      (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
     int dim = affinePQ.SpaceDim;
 
     if (dim == 0) { // Случай точки обработаем отдельно
@@ -105,8 +103,7 @@ public partial class Geometry<TNum, TConv>
 
     // Заполняем максимальный элемент
     // Нас пока не волнует, что вершин может получится больше чем нужно (потом это исправим)
-    FLNode PQ = new FLNode(MinkSumPoints(P.Top.Vertices, Q.Top.Vertices)
-                                , P.Top.InnerPoint + Q.Top.InnerPoint, affinePQ);
+    FLNode PQ = new FLNode(MinkSumPoints(P.Top.Vertices, Q.Top.Vertices), P.Top.InnerPoint + Q.Top.InnerPoint, affinePQ);
     zTo_xy.Add(PQ, (P.Top, Q.Top));
     xyToz.Add((P.Top, Q.Top), PQ);
     FL[^1].Add(PQ);
@@ -117,8 +114,8 @@ public partial class Geometry<TNum, TConv>
         (FLNode x, FLNode y) = zTo_xy[z];
         // Аффинное пространство грани z (F(+)G в терминах Лемм)
         // AffineBasis zSpace = new AffineBasis(z.AffBasis);
-        AffineBasis zSpace = z.AffBasis;
-        Point innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
+        AffineBasis zSpace          = z.AffBasis;
+        Point       innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
         // Собираем все подграни в соответствующих решётках, 
         // сортируя по убыванию размерности для удобства перебора. 
@@ -128,18 +125,16 @@ public partial class Geometry<TNum, TConv>
 
         foreach (FLNode xi in X) {
           foreach (FLNode yj in Y) {
-
             // -2) Если мы обрабатывали эти пары (или их награни), то идём дальше
-            if (xyToz.ContainsKey((xi, yj))) { continue; }
+            //  { continue; }
 
             // -1) Смотрим потенциально набираем ли мы нужную размерность
             if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.Dim - 1) { break; }
 
             // Берём очередного кандидата.
             HashSet<Point> candidate = MinkSumPoints(xi.Vertices, yj.Vertices);
-            AffineBasis candBasis = new AffineBasis(
-              xi.AffBasis.Origin + yj.AffBasis.Origin,
-              xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
+            AffineBasis candBasis = new AffineBasis
+              (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
 
             // 0) dim(xi (+) yj) == dim(z) - 1
             if (candBasis.SpaceDim != z.Dim - 1) { continue; }
@@ -180,29 +175,39 @@ public partial class Geometry<TNum, TConv>
             if (!(xCheck && yCheck)) { continue; }
 
             // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z. 
-            // Создаём её узел
-            FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
-            // Добавляем узел в решётку
-            FL[node.Dim].Add(node);
-            // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
-            zTo_xy.Add(node, (xi, yj));
-            xyToz.Add((xi, yj), node);
+            // Если такого узла ещё не было создано, то создаём его.
 
-            // Устанавливаем связи построенной d-грани с другими (d+1)-гранями по Лемме 6.
-            foreach (FLNode prevNode in FL[d + 1]) {
-              (FLNode xp, FLNode yq) = zTo_xy[prevNode];
-
-              HashSet<FLNode> Xp = xp.AllNonStrictSub.ToHashSet();
-              HashSet<FLNode> Yq = yq.AllNonStrictSub.ToHashSet();
-
-              if (Xp.Contains(xi) && Yq.Contains(yj)) {
-                node.AddSuper(prevNode);
-                prevNode.AddSub(node);
-              }
+            if (!xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
+              FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
+              FL[node.Dim].Add(node); // Добавляем узел в решётку
+              // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
+              zTo_xy.Add(node, (xi, yj));
+              xyToz.Add((xi, yj), node);
+              // Устанавливаем связи
+              z.AddSub(node);
+              node.AddSuper(z);
+            } else {
+              // Устанавливаем связи
+              z.AddSub(node_xiyj);
+              node_xiyj.AddSuper(z);
             }
 
-            // ToDo: Нужно ли реализовать конец абзаца перед Теоремой 2 на стр. 190 (стр. 12 в файле статьи) ?
 
+            // Устанавливаем связи построенной d-грани с другими (d+1)-гранями по Лемме 6.
+            // Это очень медленно!
+            // foreach (FLNode prevNode in FL[d + 1]) {
+            //    (FLNode xp, FLNode yq) = zTo_xy[prevNode];
+            //
+            //   HashSet<FLNode> Xp = xp.AllNonStrictSub.ToHashSet();
+            //   HashSet<FLNode> Yq = yq.AllNonStrictSub.ToHashSet();
+            //
+            //   if (Xp.Contains(xi) && Yq.Contains(yj)) {
+            //     node.AddSuper(prevNode);
+            //     prevNode.AddSub(node);
+            //   }
+            // }
+
+            // ToDo: Нужно ли реализовать конец абзаца перед Теоремой 2 на стр. 190 (стр. 12 в файле статьи) ?
           }
         }
       }
@@ -216,6 +221,7 @@ public partial class Geometry<TNum, TConv>
         node.ReconstructPolytop();
       }
     }
+
     return new FaceLattice(FL);
   }
 
