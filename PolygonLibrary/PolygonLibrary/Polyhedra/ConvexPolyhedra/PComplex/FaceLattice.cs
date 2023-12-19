@@ -49,7 +49,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point at which a face lattice is formed.</param>
     public FaceLattice(Point point) {
-      Top = new FLNode(point);
+      Top     = new FLNode(point);
       Lattice = new List<HashSet<FLNode>>() { new HashSet<FLNode>() { Top } };
     }
 
@@ -58,7 +58,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Maximum">The maximum node.</param>
     public FaceLattice(FLNode Maximum) {
-      Top = Maximum;
+      Top     = Maximum;
       Lattice = Maximum.GetAllLevels();
     }
 
@@ -67,7 +67,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="lattice">The lattice.</param>
     public FaceLattice(List<HashSet<FLNode>> lattice) {
-      Top = lattice[^1].First();
+      Top     = lattice[^1].First();
       Lattice = lattice;
     }
 
@@ -77,7 +77,6 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="transformFunc">The function to be applied to each vertex. This function takes a node of the lattice and returns a new point.</param>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
-
     private FaceLattice TransformLattice(Func<FLNode, Point> transformFunc) {
       List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
       for (int i = 0; i <= Top.Dim; i++) {
@@ -102,6 +101,7 @@ public partial class Geometry<TNum, TConv>
           newFL[i].Add(newNode);
         }
       }
+
       return new FaceLattice(newFL);
     }
 
@@ -128,9 +128,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The convex polytop.</returns>
     public ConvexPolytop ToConvexPolytop() {
-      var Fs = Lattice[^2].Select(n => new Face(n.Vertices
-      , new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
+      var Fs = Lattice[^2]
+       .Select(n => new Face(n.Vertices, new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
       var Es = Lattice[^3].Select(n => new Edge(n.Vertices));
+
       return new ConvexPolytop(Top.Vertices, Top.AffBasis.SpaceDim, Fs, Es);
     }
 
@@ -176,6 +177,7 @@ public partial class Geometry<TNum, TConv>
 
       return isEqual;
     }
+
   }
 
   /// <summary>
@@ -236,12 +238,13 @@ public partial class Geometry<TNum, TConv>
 
     public Dictionary<int, HashSet<FLNode>> LevelNodes {
       get
-      {
-        if (_levelNodes.Count == 0) {
-          ConstructLevelNodes();
+        {
+          if (_levelNodes.Count == 0) {
+            ConstructLevelNodes();
+          }
+
+          return _levelNodes;
         }
-        return _levelNodes;
-      }
     }
 
     /// <summary>
@@ -267,6 +270,7 @@ public partial class Geometry<TNum, TConv>
       for (int i = 0; i < LevelNodes.Count; i++) {
         allLevels.Add(LevelNodes[i]);
       }
+
       return allLevels;
     }
 
@@ -280,7 +284,7 @@ public partial class Geometry<TNum, TConv>
 
       // собираем верх
       HashSet<FLNode> superNodes = Super;
-      int d = Dim;
+      int             d          = Dim;
       while (superNodes.Count != 0) {
         d++;
         _levelNodes.Add(d, superNodes);
@@ -301,9 +305,7 @@ public partial class Geometry<TNum, TConv>
     /// Retrieves all sub-faces of the node, including the node itself.
     /// </summary>
     /// <returns>The collection that contains all non strict sub-faces of the node.</returns>
-    public IEnumerable<FLNode> AllNonStrictSub => LevelNodes
-      .Where(ln => ln.Key <= Dim)
-      .SelectMany(ln => ln.Value);
+    public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= Dim).SelectMany(ln => ln.Value);
 
 
     /// <summary>
@@ -324,9 +326,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
     public FLNode(Point vertex) {
-      Polytop = new VPolytop(new List<Point>() { vertex });
+      Polytop    = new VPolytop(new List<Point>() { vertex });
       InnerPoint = vertex;
-      AffBasis = new AffineBasis(vertex);
+      AffBasis   = new AffineBasis(vertex);
     }
 
     /// <summary>
@@ -336,8 +338,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
     internal FLNode(IEnumerable<Point> Vs, Point innerPoint, AffineBasis aBasis) {
-      Polytop = new VPolytop(Vs);
-      InnerPoint = innerPoint;
+      Polytop       = new VPolytop(Vs);
+      InnerPoint    = innerPoint;
       this.AffBasis = aBasis;
     }
 
@@ -347,24 +349,19 @@ public partial class Geometry<TNum, TConv>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(IEnumerable<FLNode> sub) {
       Polytop = new VPolytop(sub.SelectMany(s => s.Vertices));
-      Sub = new HashSet<FLNode>(sub);
+      Sub     = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
         subNode.AddSuper(this);
       }
 
-      InnerPoint = new Point
-          (
-           (new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two
-          );
+      InnerPoint = new Point((new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two);
 
-      FLNode subF = Sub!.First();
+      FLNode      subF   = Sub!.First();
       AffineBasis affine = new AffineBasis(subF.AffBasis);
       affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
       AffBasis = affine;
     }
-
-
 
 
     /// <summary>
@@ -381,7 +378,7 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => Polytop.GetHashCode();
 
     /// <summary>
-    /// ! НАДО ДОБАВИТЬ СРАВНЕНИЕ НА EQUALS, а не только по хешам.
+    /// todo НАДО ДОБАВИТЬ СРАВНЕНИЕ НА EQUALS, а не только по хешам.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -393,45 +390,38 @@ public partial class Geometry<TNum, TConv>
       FLNode other = (FLNode)obj;
 
       // 1) this.Above == other.Above
-      if (this.Super is null && other.Super is not null) { return false; }
-      if (this.Super is not null && other.Super is null) { return false; }
+      bool isEqual     = true;
+      var  thisAboveP  = this.Super.Select(a => a.Polytop).ToHashSet();
+      var  otherAboveP = other.Super.Select(a => a.Polytop).ToHashSet();
 
-      bool isEqual = true;
-      var thisAbovePHash = this.Super?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
-      var otherAbovePHash = other.Super?.Select(a => a.Polytop.GetHashCode()).ToHashSet();
+      // ? Верно ли что тут политопы сравниваются их Equals?
+      isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
 
-      // ? Подумать о том, чтобы ещё сравнивать на Equals
-      if (thisAbovePHash is not null && otherAbovePHash is not null) {
-        isEqual = isEqual && thisAbovePHash.SetEquals(otherAbovePHash);
-      }
       if (!isEqual) {
         Console.WriteLine("Above!");
-        Console.WriteLine($"This:  {string.Join('\n', this.Super!.Select(n => n.Polytop))}");
-        Console.WriteLine($"Other: {string.Join('\n', other.Super!.Select(n => n.Polytop))}");
+        Console.WriteLine($"This:  {string.Join('\n', this.Super.Select(n => n.Polytop))}");
+        Console.WriteLine($"Other: {string.Join('\n', other.Super.Select(n => n.Polytop))}");
+
         return false;
       }
 
       // 2) this.Sub == other.Sub
-      if (this.Sub is null && other.Sub is not null) { return false; }
-      if (this.Sub is not null && other.Sub is null) { return false; }
+      var thisSubP  = this.Sub.Select(s => s.Polytop).ToHashSet();
+      var otherSubP = other.Sub.Select(s => s.Polytop).ToHashSet();
 
-      var thisSubPHash = this.Sub?.Select(s => s.Polytop.GetHashCode()).ToHashSet();
-      var otherSubPHash = other.Sub?.Select(s => s.Polytop.GetHashCode()).ToHashSet();
+      isEqual = isEqual && thisSubP.SetEquals(otherSubP);
 
-      if (thisSubPHash is not null && otherSubPHash is not null) {
-        isEqual = isEqual && thisSubPHash.SetEquals(otherSubPHash);
-      }
       if (!isEqual) {
         Console.WriteLine(value: "Below!");
         Console.WriteLine($"This:  {string.Join('\n', this.Sub!.Select(n => n.Polytop))}");
         Console.WriteLine($"Other: {string.Join('\n', other.Sub!.Select(n => n.Polytop))}");
+
         return false;
       }
 
       // 3) this == other
       return this.Polytop.Equals(other.Polytop);
     }
-
 
   }
 
