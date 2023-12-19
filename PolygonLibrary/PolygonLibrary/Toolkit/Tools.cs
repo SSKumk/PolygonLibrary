@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// Class with general purpose procedures
   /// </summary>
-  public partial class Tools {
+  public class Tools {
 
 #region Fields
     /// <summary>
@@ -74,10 +74,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-8);
+    private static TNum _eps = TConv.FromDouble(1e-10);
 #endregion
 
 #region Constants
+    /// <summary>
+    /// The absolute accuracy expressed in double.
+    /// </summary>
+    public static readonly double EpsDouble = TConv.ToDouble(_eps);
+
     /// <summary>
     /// Represents the Zero-value of TNum ('0').
     /// </summary>
