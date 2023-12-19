@@ -174,6 +174,7 @@ public class GrahamScanTests {
   }
 
 
+  // Точки S[2] и S[3] находятся на расстоянии 1.185e-08
   [Test]
   public void ClosePointsTest() {
     List<Point2D> S = new List<Point2D>()
@@ -187,11 +188,14 @@ public class GrahamScanTests {
       , new Point2D(0.7071067811865474, 1.2247448713915892)
       };
 
+    Console.WriteLine((S[3] - S[2]).Length);
+
     List<Point2D> res = Convexification.GrahamHull(S);
 
     Assert.That(new HashSet<Point2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
   }
 
+  // S[0] и S[1] в double почти одинаковы!
   [Test]
   public void ClosePoints2Test() {
     List<Point2D> S = new List<Point2D>()
@@ -202,6 +206,7 @@ public class GrahamScanTests {
       , new Point2D(5.955924281381142E-05, 1)
       , new Point2D(1.6653345369377348E-16, 1)
       };
+    // Console.WriteLine((S[3] - S[4]).Length);
 
     List<Point2D> res = Convexification.GrahamHull(S);
 
