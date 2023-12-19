@@ -25,15 +25,21 @@ class Program {
     Console.WriteLine($"GW = {timer.ElapsedMilliseconds}");
 
     timer.Restart();
-    var x = MinkSumSDas(P, Q);
+    for (int i = 0; i < 100; i++) {
+      var x = MinkSumSDas(P, Q);
+    }
     Console.WriteLine($"MinkSumSDas = {timer.ElapsedMilliseconds}");
 
     timer.Restart();
-    var y = MinkSumCH(P, Q);
+    for (int i = 0; i < 100; i++) {
+      var y = MinkSumCH(P, Q);
+    }
+
     Console.WriteLine($"MinkSumCH = {timer.ElapsedMilliseconds}");
 
-    if (!x.Equals(y)) { throw new ArgumentException("AAAAAA"); }
+    // if (!x.Equals(y)) { throw new ArgumentException("AAAAAA"); }
   }
+
   // public static void Main(string[] args) {
   //   Stopwatch timer = new Stopwatch();
   //   var       swarm = Cube(5,out _, new []{1,2,3,4,5}, 500, null, true);
