@@ -42,6 +42,7 @@ class Program {
     timer.Restart();
     var x = GiftWrapping.WrapPolytop(swarm);
     Console.WriteLine($"GW: {timer.ElapsedMilliseconds}");
+    Console.WriteLine(x.Vertices.Count);
   }
 
 }
