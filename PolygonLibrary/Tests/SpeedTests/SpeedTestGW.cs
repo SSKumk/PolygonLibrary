@@ -14,6 +14,8 @@ namespace Tests.SpeedTests;
 
 // dotnet test Tests\bin\Release\net8.0\Tests.dll --filter SpeedTestGW
 
+
+//todo Добавить ПЕРЕМЕШИВАНИЕ точек в рое!
 [TestFixture]
 public class SpeedTestGW {
   [Test]
