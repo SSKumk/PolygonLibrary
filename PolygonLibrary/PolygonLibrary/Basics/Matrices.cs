@@ -189,7 +189,7 @@ public class Matrix : IEquatable<Matrix> {
       throw new ArgumentException($"{obj} is not a Matrix.");
     }
 #endif
-    return Equals((Matrix)obj);
+    return Equals((Matrix)obj!);
   }
 
   public bool Equals(Matrix? m) {

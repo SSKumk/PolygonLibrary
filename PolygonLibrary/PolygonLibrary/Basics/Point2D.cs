@@ -200,7 +200,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new ArgumentException($"{obj} is not a Point2D!");
       }
   #endif
-      return CompareTo((Point2D)obj) == 0;
+      return CompareTo((Point2D)obj!) == 0;
     }
 
     public override string ToString() => $"({x.ToString(null, CultureInfo.InvariantCulture)},{y.ToString(null, CultureInfo.InvariantCulture)})";

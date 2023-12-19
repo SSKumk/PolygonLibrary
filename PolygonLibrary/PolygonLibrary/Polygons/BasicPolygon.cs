@@ -133,7 +133,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         }
 #endif
         Vertices = new List<Point2D>();
-        foreach (Polyline p in _contours) {
+        foreach (Polyline p in _contours!) {
           Vertices.AddRange(p.Vertices);
         }
 
@@ -153,7 +153,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         }
 #endif
         Edges = new List<Segment>();
-        foreach (Polyline p in _contours) {
+        foreach (Polyline p in _contours!) {
           Edges.AddRange(p.Edges);
         }
 
@@ -174,7 +174,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 #endif
         _contours = new List<Polyline>
           {
-            new Polyline(Convexification.ArcHull2D(_vertices), PolylineOrientation.Counterclockwise, false, false)
+            new Polyline(Convexification.ArcHull2D(_vertices!), PolylineOrientation.Counterclockwise, false, false)
           };
       }
     }

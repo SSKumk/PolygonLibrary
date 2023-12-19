@@ -317,7 +317,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new ArgumentException($"{obj} is ot a Segment!");
       }
 #endif
-      return p1 == ((Segment)obj).p1 && p2 == ((Segment)obj).p2;
+      return p1 == ((Segment)obj!).p1 && p2 == ((Segment)obj).p2;
     }
 
     public override int GetHashCode() {

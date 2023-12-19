@@ -84,7 +84,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
 #endif
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(_p[i], p._p[i]);
+        res = Tools.CMP(_p[i], p!._p[i]);
 
         if (res != 0) {
           return res;

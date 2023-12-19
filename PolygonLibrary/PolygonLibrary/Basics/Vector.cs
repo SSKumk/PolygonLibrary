@@ -118,7 +118,7 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(this[i], v[i]);
+        res = Tools.CMP(this[i], v![i]);
 
         if (res != 0) {
           return res;
@@ -467,7 +467,7 @@ public partial class Geometry<TNum, TConv>
         throw new ArgumentException($"{obj} is not a Vector!");
       }
 #endif
-      return CompareTo((Vector)obj) == 0;
+      return CompareTo((Vector)obj!) == 0;
     }
 
     public override string ToString() {
