@@ -258,12 +258,43 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
+
     /// <summary>
-    /// Angle from the one vector to another from the interval [-pi, pi)
+    /// The angle from the one vector to the another. It is from the interval [-pi, pi).
+    /// It uses the Math.Acos to calculate the angle.
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
+    /// <returns>The angle</returns>
+    public static double AngleDouble(Vector v1, Vector v2) {
+      if (v1.IsZero || v2.IsZero) {
+        return 0;
+      } else {
+        TNum dot = (v1 * v2) / v1.Length / v2.Length;
+#if DEBUG
+        if (!(Tools.GE(dot, -Tools.One) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+          throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
+        }
+#endif
+        if (Tools.EQ(dot, -Tools.One) && dot <= -Tools.One) {
+          return Math.PI;
+        }
+        if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+          return 0.0;
+        }
+
+        return Math.Acos(TConv.ToDouble(dot));
+      }
+    }
+
+
+    /// <summary>
+    /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
+    /// It uses the ddouble.Acos to calculate the angle.
+    /// </summary>
+    /// <param name="v1">The first vector</param>
+    /// <param name="v2">The second vector</param>
+    /// <returns>The angle.</returns>
     public static TNum Angle(Vector v1, Vector v2) {
       if (v1.IsZero || v2.IsZero) {
         return Tools.Zero;
