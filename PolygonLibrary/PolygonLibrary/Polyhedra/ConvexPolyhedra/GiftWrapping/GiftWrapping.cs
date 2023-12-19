@@ -358,10 +358,6 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.CreateOrth(spaceDim, 1);
 
         while (FinalV.SpaceDim < spaceDim - 1) {
-          // TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
-          double    maxAngle = -10.0;
-          SubPoint? sExtr    = null;
-
           Vector   e;
           int      i      = 0;
           Vector[] nBasis = { n };
@@ -373,18 +369,18 @@ public partial class Geometry<TNum, TConv>
             (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
           // Vector? r = null; нужен для процедуры Сварта (ниже)
+          TNum      minCos = Tools.Two;
+          SubPoint? sExtr  = null;
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
             Vector u = (s - origin).ProjectToPlane(e, n);
 
             if (!u.IsZero) {
-              // TNum   angle = Vector.Angle(e, u);
-              double angle = Vector.AngleDouble(e, u); // в ddouble Acos очень медленная операция. Поэтому считаем в double-ах.
+              TNum cos = e * u / u.Length;
               // Кандидата с самым большим углом запоминаем
-              // if (Tools.GT(angle, maxAngle)) {
-                if (angle - maxAngle > Tools.EpsDouble) {
-                maxAngle = angle;
-                sExtr    = s;
+              if (cos < minCos) {
+                minCos = cos;
+                sExtr  = s;
                 // r = u.Normalize();
               }
             }
@@ -501,23 +497,21 @@ public partial class Geometry<TNum, TConv>
         SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
         Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
 
-        Vector?   r        = null;
-        SubPoint? sStar    = null;
-        // TNum      maxAngle = -Tools.Six; // Something small
-        double    maxAngle = -10.0;
+        Vector?   r      = null;
+        SubPoint? sStar  = null;
+        TNum      minCos = Tools.Two;
+
 
         // ищем вектор u такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
           Vector u = (s - edgeBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
-            // TNum   angle = Vector.Angle(v, u);
-            double angle = Vector.AngleDouble(v, u);
+            TNum cos = v * u / u.Length;
 
-            // if (Tools.GT(angle, maxAngle)) {
-              if (angle - maxAngle > Tools.EpsDouble) {
-              maxAngle = angle;
-              r        = u.Normalize();
-              sStar    = s;
+            if (cos < minCos) {
+              minCos = cos;
+              r      = u.Normalize();
+              sStar  = s;
             }
           }
         }
