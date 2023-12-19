@@ -84,6 +84,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public static readonly double EpsDouble = TConv.ToDouble(_eps);
 
     /// <summary>
+    /// Represents the positive infinity number.
+    /// </summary>
+    public static readonly TNum PositiveInfinity = TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
+
+    /// <summary>
     /// Represents the Zero-value of TNum ('0').
     /// </summary>
     public static readonly TNum Zero = TNum.AdditiveIdentity;
