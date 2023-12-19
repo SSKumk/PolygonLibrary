@@ -381,7 +381,7 @@ public partial class Geometry<TNum, TConv>
               if (cos < minCos) {
                 minCos = cos;
                 sExtr  = s;
-                // r = u.Normalize();
+                // r = u;
               }
             }
           }
@@ -401,6 +401,7 @@ public partial class Geometry<TNum, TConv>
           } while (n.IsZero && i <= spaceDim);
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
+          // r = r.Normalize();
           // n = (r! * n) * e - (r! * e) * n;
 
           OrientNormal(ref n, origin);
@@ -510,14 +511,14 @@ public partial class Geometry<TNum, TConv>
 
             if (cos < minCos) {
               minCos = cos;
-              r      = u.Normalize();
+              r      = u;
               sStar  = s;
             }
           }
         }
 
         AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
-        newF_aBasis.AddVectorToBasis(r!, false);
+        newF_aBasis.AddVectorToBasis(r!.Normalize(), false);
 
         Debug.Assert
           (
