@@ -22,15 +22,15 @@ class Program {
 
     var P = GiftWrapping.WrapFaceLattice(Cube5D_list);
     var Q = GiftWrapping.WrapFaceLattice(SimplexRND5D_list);
-    Console.WriteLine($"GW = {timer.Elapsed.Milliseconds}");
+    Console.WriteLine($"GW = {timer.ElapsedMilliseconds}");
 
     timer.Restart();
     var x = MinkSumSDas(P, Q);
-    Console.WriteLine($"MinkSumSDas = {timer.Elapsed.Milliseconds}");
+    Console.WriteLine($"MinkSumSDas = {timer.ElapsedMilliseconds}");
 
     timer.Restart();
     var y = MinkSumCH(P, Q);
-    Console.WriteLine($"MinkSumCH = {timer.Elapsed.Milliseconds}");
+    Console.WriteLine($"MinkSumCH = {timer.ElapsedMilliseconds}");
 
     if (!x.Equals(y)) { throw new ArgumentException("AAAAAA"); }
   }
