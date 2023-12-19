@@ -49,7 +49,7 @@ public class SpeedTestGW {
   }
   [Test]
   public void Sphere5D_DoubleDouble() {
-    SphereBench<ddouble, DDConvertor>(5, 2, (int)1e2, "Sphere5D-double-double");
+    SphereBench<ddouble, DDConvertor>(5, 2, (int)1e3, "Sphere5D-double-double");
   }
 
   [Test]
