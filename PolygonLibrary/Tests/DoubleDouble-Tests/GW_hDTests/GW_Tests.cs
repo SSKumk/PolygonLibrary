@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using CGLibrary;
 using DoubleDouble;
 using NUnit.Framework;
@@ -691,14 +692,16 @@ public class GW_Tests {
   }
 
 
+  // Проблема в том, что при построении плоскости ABC в даблах не хватает точности для достаточно точного построения базиса.
   [Test]
   public void VeryFlatSimplex() {
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     List<Point> Simplex = new List<Point>()
       {
-        new Point(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
-      , new Point(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 })
+       new Point(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 }) // Это начало базиса в GW
       , new Point(new ddouble[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
-      , new Point(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 })
+      , new Point(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
+      // , new Point(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
       };
 
     List<Point> S = new List<Point>(Simplex);
@@ -706,13 +709,13 @@ public class GW_Tests {
     // S.Add(p);
     // ! Мы строим базитс на таких точках. Скачёк на 6 порядков. В double печаль! eps = 1e-8 всё ломается!
     // ! А в ddouble нормально! 
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[3], S[1], S[2] }));
-    var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[2], S[0] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[2], S[index: 1], S[0] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[index: 1], S[2] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[index: 2], S[1] }));
-
-    var distABCD = S.Select(s => hpABC.Eval(s));
+    var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[1], S[2] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[2], S[0] }));
+    // Console.WriteLine((double)(S[0] - S[1]).Length);
+    // Console.WriteLine((double)(S[0] - S[2]).Length);
+    // Console.WriteLine((double)(S[1] - S[2]).Length);
+    var distABC = S.Select(s => hpABC.Eval(s));
+    Console.WriteLine(string.Join('\n', distABC));
 
     // GiftWrapping P = new GiftWrapping(Simplex);
     // Assert.That(P.Vertices.SetEquals(Simplex));d
@@ -803,41 +806,30 @@ public class GW_Tests {
     Console.WriteLine($"const int nPoints = {nPoints};");
     Console.WriteLine($"List<int> fID     = new List<int>() {{ {string.Join(", ", fID)} }};");
     Console.WriteLine();
-    Console.WriteLine("List<Point> S = (PDim, out List<Point> polytop, fID, nPoints, seed);");
+    Console.WriteLine("List<Point> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Point> polytop, fID, nPoints, seed);");
     if (needShuffle) {
       Console.WriteLine("List<Point> origS = new List<Point>(S);");
       Console.WriteLine("S.Shuffle(new GRandomLC(seed));");
     }
     Console.WriteLine();
-    Console.WriteLine("Polyhedron P = GiftWrapping.WrapPolyhedron(S);");
+    Console.WriteLine("ConvexPolytop P = GiftWrapping.WrapPolytop(S);");
     Console.WriteLine("Assert.That(P.Vertices.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();
   }
 
+  [Test]
+  public void Aux() { // При Eps = 1e-8 ломается, при 1e-10 норм.
+    const uint seed    = 3518383828;
+    const int  PDim    = 5;
+    const int  nPoints = 1;
+    List<int>  fID     = new List<int>() { 1, 2, 3, 4 };
 
-  // [Test]
-  // public void Aux() {
-  //   const uint seed    = 752772192;
-  //   const int  PDim    = 3;
-  //   const int  nPoints = 1;
-  //   List<int>  fID     = new List<int>() { 1, 2, 3 };
-  //
-  //   List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
-  //   List<Point> origS = new List<Point>(S);
-  //   S.Shuffle(new GRandomLC(seed));
-  //
-  //   var hp1   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[2] }));
-  //   var dist1 = origS.Select(s => hp1.Eval(s));
-  //   var hp2   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[1], origS[3] }));
-  //   var dist2 = origS.Select(s => hp2.Eval(s));
-  //   var hp3   = new HyperPlane(new AffineBasis(new List<Point>() { origS[0], origS[2], origS[3] }));
-  //   var dist3 = origS.Select(s => hp3.Eval(s));
-  //   var hp4   = new HyperPlane(new AffineBasis(new List<Point>() { origS[1], origS[2], origS[3] }));
-  //   var dist4 = origS.Select(s => hp4.Eval(s));
-  //
-  //   Polyhedron P = GiftWrapping.WrapPolyhedron(S);
-  //   Assert.That(P.Vertices.SetEquals(polytop));
-  // }
+    List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
+    List<Point> origS = new List<Point>(S);
+    S.Shuffle(new GRandomLC(seed));
 
+    ConvexPolytop P = GiftWrapping.WrapPolytop(S);
+    Assert.That(P.Vertices.SetEquals(polytop));
+  }
 }
