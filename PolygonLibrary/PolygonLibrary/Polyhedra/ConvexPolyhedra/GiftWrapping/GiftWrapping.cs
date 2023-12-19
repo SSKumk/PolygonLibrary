@@ -358,8 +358,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.CreateOrth(spaceDim, 1);
 
         while (FinalV.SpaceDim < spaceDim - 1) {
-          // TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
-          double    maxAngle = -10.0;
+          TNum      maxAngle = -Tools.Six; // "Большое отрицательное число."
           SubPoint? sExtr    = null;
 
           Vector   e;
@@ -378,11 +377,9 @@ public partial class Geometry<TNum, TConv>
             Vector u = (s - origin).ProjectToPlane(e, n);
 
             if (!u.IsZero) {
-              // TNum   angle = Vector.Angle(e, u);
-              double angle = Vector.AngleDouble(e, u); // в ddouble Acos очень медленная операция. Поэтому считаем в double-ах.
+              TNum   angle = Vector.Angle(e, u);
               // Кандидата с самым большим углом запоминаем
-              // if (Tools.GT(angle, maxAngle)) {
-                if (angle - maxAngle > Tools.EpsDouble) {
+              if (Tools.GT(angle, maxAngle)) {
                 maxAngle = angle;
                 sExtr    = s;
                 // r = u.Normalize();
@@ -503,18 +500,15 @@ public partial class Geometry<TNum, TConv>
 
         Vector?   r        = null;
         SubPoint? sStar    = null;
-        // TNum      maxAngle = -Tools.Six; // Something small
-        double    maxAngle = -10.0;
+        TNum      maxAngle = -Tools.Six; // Something small
 
         // ищем вектор u такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
           Vector u = (s - edgeBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
-            // TNum   angle = Vector.Angle(v, u);
-            double angle = Vector.AngleDouble(v, u);
+            TNum   angle = Vector.Angle(v, u);
 
-            // if (Tools.GT(angle, maxAngle)) {
-              if (angle - maxAngle > Tools.EpsDouble) {
+            if (Tools.GT(angle, maxAngle)) {
               maxAngle = angle;
               r        = u.Normalize();
               sStar    = s;
