@@ -1,8 +1,9 @@
 using CGLibrary;
+using DoubleDouble;
 using NUnit.Framework;
-using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
-using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
-using static CGLibrary.Geometry<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 namespace Tests.Double_Tests.Minkowski_Tests;
 
@@ -16,17 +17,17 @@ public class MinkowskiSum2D {
 
   [OneTimeSetUp]
   public void SetUp() {
-    u0 = new Point(new double[] { 0, 0 });
-    u1 = new Point(new double[] { 1, 0 });
-    u2 = new Point(new double[] { 0, 1 });
-    u3 = new Point(new double[] { 1, 1 });
-    u4 = new Point(new double[] { 1, 2 });
+    u0 = new Point(new ddouble[] { 0, 0 });
+    u1 = new Point(new ddouble[] { 1, 0 });
+    u2 = new Point(new ddouble[] { 0, 1 });
+    u3 = new Point(new ddouble[] { 1, 1 });
+    u4 = new Point(new ddouble[] { 1, 2 });
 
 
-    p0 = new Point(new double[] { 0.5, 0 });
-    p1 = new Point(new double[] { 1, 0.5 });
-    p2 = new Point(new double[] { 0.5, 1 });
-    p3 = new Point(new double[] { 0, 0.5 });
+    p0 = new Point(new ddouble[] { 0.5, 0 });
+    p1 = new Point(new ddouble[] { 1, 0.5 });
+    p2 = new Point(new ddouble[] { 0.5, 1 });
+    p3 = new Point(new ddouble[] { 0, 0.5 });
 
     pu3 = new FaceLattice(u3);
     su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
@@ -42,7 +43,7 @@ public class MinkowskiSum2D {
   [Test]
   public void Point_Point() {
     FaceLattice pu3_pu3 = MinkSumSDas(pu3, pu3);
-    Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Point(new double[] { 2, 2 }))));
+    Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Point(new ddouble[] { 2, 2 }))));
   }
 
   // Сдвинутый отрезок (это плохо, что точка и отрезок лежат на различных прямых?)
@@ -280,15 +281,15 @@ public class MinkowskiSum {
 
   [Test]
   public void Cube2D_Cube2DinAnotherPlane() {
-    var p0 = new Point(new double[] { 0, 0, 0, 0 });
-    var p1 = new Point(new double[] { 1, 0, 0, 0 });
-    var p2 = new Point(new double[] { 0, 1, 0, 0 });
-    var p3 = new Point(new double[] { 1, 1, 0, 0 });
+    var p0 = new Point(new ddouble[] { 0, 0, 0, 0 });
+    var p1 = new Point(new ddouble[] { 1, 0, 0, 0 });
+    var p2 = new Point(new ddouble[] { 0, 1, 0, 0 });
+    var p3 = new Point(new ddouble[] { 1, 1, 0, 0 });
 
-    var u0 = new Point(new double[] { 0, 0, 1, 1 });
-    var u1 = new Point(new double[] { 1, 0, 1, 1 });
-    var u2 = new Point(new double[] { 0, 1, 1, 1 });
-    var u3 = new Point(new double[] { 1, 1, 1, 1 });
+    var u0 = new Point(new ddouble[] { 0, 0, 1, 1 });
+    var u1 = new Point(new ddouble[] { 1, 0, 1, 1 });
+    var u2 = new Point(new ddouble[] { 0, 1, 1, 1 });
+    var u3 = new Point(new ddouble[] { 1, 1, 1, 1 });
 
     FaceLattice P = GiftWrapping.WrapFaceLattice(new List<Point>() { p0, p1, p2, p3 });
     FaceLattice Q = GiftWrapping.WrapFaceLattice(new List<Point>() { u0, u1, u2, u3 });
