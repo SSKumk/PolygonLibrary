@@ -125,9 +125,6 @@ public partial class Geometry<TNum, TConv>
 
         foreach (FLNode xi in X) {
           foreach (FLNode yj in Y) {
-            // -2) Если мы обрабатывали эти пары (или их награни), то идём дальше
-            //  { continue; }
-
             // -1) Смотрим потенциально набираем ли мы нужную размерность
             if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.Dim - 1) { break; }
 
@@ -138,6 +135,17 @@ public partial class Geometry<TNum, TConv>
 
             // 0) dim(xi (+) yj) == dim(z) - 1
             if (candBasis.SpaceDim != z.Dim - 1) { continue; }
+
+            {
+              if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
+                // Устанавливаем связи
+                z.AddSub(node_xiyj);
+                node_xiyj.AddSuper(z);
+
+                continue; // Подумать, надо ли писать else вместо continue ...
+              }
+            }
+
 
             // 1) Lemma 3.
             // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
@@ -177,35 +185,14 @@ public partial class Geometry<TNum, TConv>
             // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z. 
             // Если такого узла ещё не было создано, то создаём его.
 
-            if (!xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
-              FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
-              FL[node.Dim].Add(node); // Добавляем узел в решётку
-              // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
-              zTo_xy.Add(node, (xi, yj));
-              xyToz.Add((xi, yj), node);
-              // Устанавливаем связи
-              z.AddSub(node);
-              node.AddSuper(z);
-            } else {
-              // Устанавливаем связи
-              z.AddSub(node_xiyj);
-              node_xiyj.AddSuper(z);
-            }
-
-
-            // Устанавливаем связи построенной d-грани с другими (d+1)-гранями по Лемме 6.
-            // Это очень медленно!
-            // foreach (FLNode prevNode in FL[d + 1]) {
-            //    (FLNode xp, FLNode yq) = zTo_xy[prevNode];
-            //
-            //   HashSet<FLNode> Xp = xp.AllNonStrictSub.ToHashSet();
-            //   HashSet<FLNode> Yq = yq.AllNonStrictSub.ToHashSet();
-            //
-            //   if (Xp.Contains(xi) && Yq.Contains(yj)) {
-            //     node.AddSuper(prevNode);
-            //     prevNode.AddSub(node);
-            //   }
-            // }
+            FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
+            FL[node.Dim].Add(node); // Добавляем узел в решётку
+            // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
+            zTo_xy.Add(node, (xi, yj));
+            xyToz.Add((xi, yj), node);
+            // Устанавливаем связи
+            z.AddSub(node);
+            node.AddSuper(z);
 
             // ToDo: Нужно ли реализовать конец абзаца перед Теоремой 2 на стр. 190 (стр. 12 в файле статьи) ?
           }
