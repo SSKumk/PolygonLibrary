@@ -20,13 +20,13 @@ class Program {
     // var P = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 4, 100, 1));
     // var Q = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 10, 20, 1));
     // var Q = Simplex4D_FL;
-    // var P = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 10, 10, 1));
-    // var Q = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 20, 4, 1));
-    var P = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    var Q = GiftWrapping.WrapFaceLattice(SimplexRND5D_list);
+    var P = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 10, 10, 1));
+    var Q = GiftWrapping.WrapFaceLattice(MakePointsOnSphere(3, 20, 4, 1));
+    // var P = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // var Q = GiftWrapping.WrapFaceLattice(SimplexRND5D_list);
     Console.WriteLine($"GW = {timer.ElapsedMilliseconds}");
 
-    const int N = 1;
+    const int N = 10;
 
     FaceLattice? x = null;
     timer.Restart();
@@ -42,7 +42,7 @@ class Program {
     }
     Console.WriteLine($"MinkSumCH = {timer.ElapsedMilliseconds}");
 
-    if (!x.Equals(y)) { throw new ArgumentException("AAAAAA"); }
+    if (!x!.Equals(y)) { throw new ArgumentException("AAAAAA"); }
   }
 
 
