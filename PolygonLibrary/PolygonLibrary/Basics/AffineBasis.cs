@@ -6,7 +6,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -15,12 +16,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// </summary>
   public class AffineBasis {
 
-    #region Data and Properties
-    /// <summary>
-    /// The linear basis associated with the affine basis.
-    /// </summary>
-    private readonly LinearBasis _basis;
-
+#region Data and Properties
     /// <summary>
     /// Gets the origin point of the affine basis.
     /// </summary>
@@ -34,12 +30,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// <c>True</c> if this affine basis is full dimension.
     /// </summary>
-    public bool IsFullDim => _basis.IsFullDim;
+    public bool IsFullDim => LinearBasis.IsFullDim;
 
     /// <summary>
     /// Gets the number of vectors in the linear basis associated with the affine basis.
     /// </summary>
-    public int SpaceDim => _basis.BasisDim;
+    public int SpaceDim => LinearBasis.SpaceDim;
 
     /// <summary>
     /// Gets a value indicating whether this affine basis is empty.
@@ -50,15 +46,20 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Gets the vector corresponding to the specified index in the linear basis associated with the affine basis.
     /// </summary>
     /// <param name="ind">The index of the vector to get.</param>
-    public Vector this[int ind] => _basis[ind];
+    public Vector this[int ind] => LinearBasis[ind];
 
     /// <summary>
-    /// Gets the current basis of the affine space
+    /// Gets the current basis of the affine space as list of vectors.
     /// </summary>
-    public List<Vector> Basis => _basis.Basis;
-    #endregion
+    public List<Vector> Basis => LinearBasis.Basis;
 
-    #region Functions
+    /// <summary>
+    /// The linear basis associated with the affine basis.
+    /// </summary>
+    public LinearBasis LinearBasis { get; }
+#endregion
+
+#region Functions
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
     /// </summary>
@@ -68,7 +69,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
       Debug.Assert(Origin.Dim == v.Dim, "Adding a vector with a wrong dimension into an affine basis.");
 
-      return _basis.AddVector(v, orthogonalize);
+      return LinearBasis.AddVector(v, orthogonalize);
     }
 
     /// <summary>
@@ -91,7 +92,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public Vector Expansion(Vector v) {
       Debug.Assert(Origin.Dim == v.Dim, "Expansion a vector with a wrong dimension.");
 
-      return _basis.Expansion(v);
+      return LinearBasis.Expansion(v);
     }
 
     /// <summary>
@@ -102,7 +103,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public Vector Expansion(Point p) {
       Debug.Assert(Origin.Dim == p.Dim, "Expansion a point with a wrong dimension.");
 
-      return _basis.Expansion(p - Origin);
+      return LinearBasis.Expansion(p - Origin);
     }
 
     /// <summary>
@@ -115,10 +116,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         (VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
 
       Vector t = point - Origin;
-      TNum[] np = new TNum[SpaceDim];
 
+      TNum[] np = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
-        np[i] = _basis[i] * t;
+        np[i] = LinearBasis[i] * t;
       }
 
       return new Point(np);
@@ -194,16 +195,16 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return points;
     }
-    #endregion
+#endregion
 
-    #region Constructors
+#region Constructors
     /// <summary>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     public AffineBasis(Point o) {
-      Origin = o;
-      _basis = new LinearBasis();
+      Origin      = o;
+      LinearBasis = new LinearBasis();
     }
 
     /// <summary>
@@ -211,11 +212,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="d">The dimension of the basis</param>
     public AffineBasis(int d) {
-      Origin = new Point(d);
-      _basis = new LinearBasis();
+      Origin      = new Point(d);
+      LinearBasis = new LinearBasis();
 
       for (int i = 0; i < Origin.Dim; i++) {
-        _basis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
+        LinearBasis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
       }
     }
 
@@ -229,11 +230,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public AffineBasis(int basisDim, int vecDim) {
       Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
 
-      Origin = new Point(vecDim);
-      _basis = new LinearBasis();
+      Origin      = new Point(vecDim);
+      LinearBasis = new LinearBasis();
 
       for (int i = 0; i < basisDim; i++) {
-        _basis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
+        LinearBasis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
       }
     }
 
@@ -245,8 +246,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
     public AffineBasis(Point o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      Origin = o;
-      _basis = new LinearBasis(Vs, orthogonalize);
+      Origin      = o;
+      LinearBasis = new LinearBasis(Vs, orthogonalize);
     }
 
     /// <summary>
@@ -255,8 +256,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="Ps">The points to use in the linear basis associated with the affine basis.</param>
     public AffineBasis(Point o, IEnumerable<Point> Ps) {
-      Origin = o;
-      _basis = new LinearBasis();
+      Origin      = o;
+      LinearBasis = new LinearBasis();
 
       foreach (Point p in Ps) {
         AddVectorToBasis(p - Origin);
@@ -271,8 +272,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public AffineBasis(IEnumerable<Point> Ps) {
       Debug.Assert(Ps.Any(), "At least one point should be in points");
 
-      Origin = Ps.First();
-      _basis = new LinearBasis();
+      Origin      = Ps.First();
+      LinearBasis = new LinearBasis();
 
       foreach (Point p in Ps) {
         AddVectorToBasis(p - Origin);
@@ -286,8 +287,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     public AffineBasis(Point o, LinearBasis lBasis) {
-      Origin = o;
-      _basis = new LinearBasis(lBasis);
+      Origin      = o;
+      LinearBasis = new LinearBasis(lBasis);
     }
 
     /// <summary>
@@ -295,8 +296,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
     public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis, false) { }
-
-    #endregion
+#endregion
 
 
     /// <summary>
@@ -305,7 +305,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="affineBasis">Basis to be checked</param>
     public static void CheckCorrectness(AffineBasis affineBasis) {
 #if DEBUG
-      LinearBasis.CheckCorrectness(affineBasis._basis);
+      LinearBasis.CheckCorrectness(affineBasis.LinearBasis);
 #endif
     }
 
