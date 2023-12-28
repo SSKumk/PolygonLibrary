@@ -1,11 +1,10 @@
-using CGLibrary;
 using DoubleDouble;
 using NUnit.Framework;
 using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace Tests.Double_Tests.Minkowski_Tests;
+namespace Tests.DoubleDouble_Tests.Minkowski_Tests;
 
 [TestFixture]
 public class MinkowskiSum2D {
