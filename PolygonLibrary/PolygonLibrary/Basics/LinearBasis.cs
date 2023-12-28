@@ -16,20 +16,16 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class LinearBasis {
 
-    /// <summary>
-    /// Internal storage
-    /// </summary>
-    private readonly List<Vector> _basis;
-
+#region Data and Properties
     /// <summary>
     /// The dimension of the basis vectors
     /// </summary>
     public int VecDim {
       get
         {
-          Debug.Assert(_basis.Any(), "Basis must have at least one vector to determine it dimension");
+          Debug.Assert(Basis.Count != 0, "Basis must have at least one vector to determine it dimension");
 
-          return _basis[0].Dim;
+          return Basis[0].Dim;
         }
     }
 
@@ -39,8 +35,8 @@ public partial class Geometry<TNum, TConv>
     public bool IsFullDim {
       get
         {
-          if (_basis.Any())
-            return VecDim == _basis.Count;
+          if (Basis.Any())
+            return VecDim == Basis.Count;
           else {
             return false;
           }
@@ -50,12 +46,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Amount of vectors in the basis
     /// </summary>
-    public int BasisDim => _basis.Count;
+    public int SpaceDim => Basis.Count;
 
     /// <summary>
     /// True if there are no vectors in the basis
     /// </summary>
-    public bool IsEmpty => BasisDim == 0;
+    public bool IsEmpty => SpaceDim == 0;
 
     /// <summary>
     /// Index access
@@ -64,17 +60,19 @@ public partial class Geometry<TNum, TConv>
     public Vector this[int ind] {
       get
         {
-          Debug.Assert(ind >= 0 && ind < _basis.Count);
+          Debug.Assert(ind >= 0 && ind < Basis.Count);
 
-          return _basis[ind];
+          return Basis[ind];
         }
     }
 
     /// <summary>
-    /// Gets the current basis of the linear space
+    /// Gets the current basis of the linear space as list of vectors.
     /// </summary>
-    public List<Vector> Basis => _basis;
+    public List<Vector> Basis { get; }
+#endregion
 
+#region Functions
     /// <summary>
     /// Add the given vector to the basis. If it is zero vector or linear dependent with the basis then it don't includes in.
     /// </summary>
@@ -85,17 +83,17 @@ public partial class Geometry<TNum, TConv>
       Vector toAdd = v;
 
       if (!orthogonalize) {
-        _basis.Add(v);
+        Basis.Add(v);
 
         return true;
       }
 
-      toAdd = IsEmpty ? toAdd.NormalizeZero() : Vector.OrthonormalizeAgainstBasis(v, _basis);
+      toAdd = IsEmpty ? toAdd.NormalizeZero() : Vector.OrthonormalizeAgainstBasis(v, Basis);
 
       if (toAdd.IsZero) {
         return false;
       } else {
-        _basis.Add(toAdd);
+        Basis.Add(toAdd);
 
         return true;
       }
@@ -114,35 +112,10 @@ public partial class Geometry<TNum, TConv>
       TNum[] expan = new TNum[VecDim];
 
       for (int i = 0; i < VecDim; i++) {
-        expan[i] = v * _basis[i];
+        expan[i] = v * Basis[i];
       }
 
       return new Vector(expan);
-    }
-
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    public LinearBasis() => _basis = new List<Vector>();
-
-    /// <summary>
-    /// Copy constructor.
-    /// </summary>
-    /// <param name="linearBasis">The linear basis to be copied.</param>
-    public LinearBasis(LinearBasis linearBasis) { _basis = new List<Vector>(linearBasis.Basis); }
-
-    /// <summary>
-    /// Based on collection constructor
-    /// </summary>
-    /// <param name="Vs">Vectors on which basis should be constructed</param>
-    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      _basis = new List<Vector>();
-
-      foreach (Vector v in Vs) {
-        AddVector(v, orthogonalize);
-        if (IsFullDim) { break; }
-      }
     }
 
     /// <summary>
@@ -150,16 +123,71 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>Basis by column vectors.</returns>
     public Matrix GetMatrix() {
-      TNum[,] m = new TNum[VecDim, BasisDim];
+      TNum[,] m = new TNum[VecDim, SpaceDim];
 
       for (int i = 0; i < VecDim; i++) {
-        for (int j = 0; j < BasisDim; j++) {
+        for (int j = 0; j < SpaceDim; j++) {
           m[i, j] = Basis[j][i];
         }
       }
 
       return new Matrix(m);
     }
+
+    /// <summary>
+    /// Projects a given point onto the linear basis.
+    /// </summary>
+    /// <param name="v">The vector to project.</param>
+    /// <returns>The projected point.</returns>
+    public Vector ProjectVector(Vector v) {
+      Debug.Assert(VecDim == v.Dim, "The dimension of the basis vectors should be equal to the dimension of the given vector.");
+
+      TNum[] np = new TNum[SpaceDim];
+      for (int i = 0; i < SpaceDim; i++) {
+        np[i] = Basis[i] * v;
+      }
+
+      return new Vector(np);
+    }
+
+    /// <summary>
+    /// Projects a given set of vectors onto the linear basis.
+    /// </summary>
+    /// <param name="Swarm">The set of vectors to project.</param>
+    /// <returns>The projected vectors.</returns>
+    public IEnumerable<Vector> ProjectVectors(IEnumerable<Vector> Swarm) {
+      foreach (Vector v in Swarm) {
+        yield return ProjectVector(v);
+      }
+    }
+#endregion
+
+#region Constructors
+    /// <summary>
+    /// Default constructor
+    /// </summary>
+    public LinearBasis() => Basis = new List<Vector>();
+
+    /// <summary>
+    /// Copy constructor.
+    /// </summary>
+    /// <param name="linearBasis">The linear basis to be copied.</param>
+    public LinearBasis(LinearBasis linearBasis) { Basis = new List<Vector>(linearBasis.Basis); }
+
+    /// <summary>
+    /// Based on collection constructor
+    /// </summary>
+    /// <param name="Vs">Vectors on which basis should be constructed</param>
+    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
+    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
+      Basis = new List<Vector>();
+
+      foreach (Vector v in Vs) {
+        AddVector(v, orthogonalize);
+        if (IsFullDim) { break; }
+      }
+    }
+#endregion
 
 
     /// <summary>
@@ -172,8 +200,8 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(Tools.EQ(bvec.Length, Tools.One), "Linear Basis: All vectors in the basis must have a unit length.");
       }
 
-      for (int i = 0; i < linearBasis.BasisDim - 1; i++) {
-        for (int k = i + 1; k < linearBasis.BasisDim; k++) {
+      for (int i = 0; i < linearBasis.SpaceDim - 1; i++) {
+        for (int k = i + 1; k < linearBasis.SpaceDim; k++) {
           Debug.Assert
             (
              Tools.EQ(linearBasis.Basis[i] * linearBasis.Basis[k])
