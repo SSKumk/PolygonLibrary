@@ -201,7 +201,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public void ReconstructPolytop() {
       if (Dim != 0) {
-        Polytop = new VPolytop(Sub!.SelectMany(s => s.Vertices));
+        Polytop = new VPolytop(Sub.SelectMany(s => s.Vertices));
       }
     }
 
@@ -378,10 +378,14 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => Polytop.GetHashCode();
 
     /// <summary>
-    ///
+    /// This is the equality function for FLNode.
     /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <param name="obj">Compare this FLNode with another object.</param>
+    /// <returns>Two FLNodes are considered equal if obj is an FLNode and:
+    /// 1) polytopes corresponding to the nodes are equal.
+    /// 2) All polytopes belonging to super nodes are equal.
+    /// 3) All polytopes belonging to sub nodes are equal.
+    /// </returns>
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
@@ -424,5 +428,7 @@ public partial class Geometry<TNum, TConv>
     }
 
   }
+
+
 
 }
