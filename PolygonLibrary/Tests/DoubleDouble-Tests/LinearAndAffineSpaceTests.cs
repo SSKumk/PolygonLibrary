@@ -27,7 +27,7 @@ public class LinearSpaceTests {
     Assert.That(added3, Is.False, "The addition of the linear dependent vector should not be successful.");
     Assert.That(added4, Is.False, "The addition of the zero vector should not be successful.");
 
-    Assert.That(basis.BasisDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
+    Assert.That(basis.SpaceDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
     Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty after adding vectors.");
 
     Assert.That(basis.IsFullDim, Is.True, "The basis should have full dimension after adding two linearly independent vectors.");
@@ -52,7 +52,7 @@ public class LinearSpaceTests {
 
     Assert.That
       (
-       basis.BasisDim
+       basis.SpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );

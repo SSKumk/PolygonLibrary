@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
             lBasis.AddVector(orth);
           }
 
-          _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.BasisDim - 1));
+          _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1));
         }
 
         return _affineBasis;
