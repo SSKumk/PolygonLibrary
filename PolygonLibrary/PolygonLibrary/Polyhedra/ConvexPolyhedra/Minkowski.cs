@@ -129,7 +129,7 @@ public partial class Geometry<TNum, TConv>
             if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.Dim - 1) { break; }
 
             // Берём очередного кандидата.
-            HashSet<Point> candidate = MinkSumPoints(xi.Vertices, yj.Vertices);
+            // HashSet<Point> candidate = MinkSumPoints(xi.Vertices, yj.Vertices); // todo Может его не надо считать?!
             AffineBasis candBasis = new AffineBasis
               (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
 
@@ -149,9 +149,10 @@ public partial class Geometry<TNum, TConv>
 
             // 1) Lemma 3.
             // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
-            IEnumerable<Point> candidateInAffine_z = zSpace.ProjectPoints(candidate);
+            // IEnumerable<Point> candidateInAffine_z = zSpace.ProjectPoints(candidate);
+
             // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
-            HyperPlane A = new HyperPlane(new AffineBasis(candidateInAffine_z));
+            HyperPlane A = new HyperPlane(ReCalcAffineBasis(candBasis, zSpace));
 
             // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость. 
             if (A.Contains(innerInAffine_z)) { continue; }
@@ -185,7 +186,11 @@ public partial class Geometry<TNum, TConv>
             // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z. 
             // Если такого узла ещё не было создано, то создаём его.
 
-            FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
+            Point newInner = xi.InnerPoint + yj.InnerPoint;
+            // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
+            FLNode node = new FLNode(new[] { newInner }, newInner, candBasis);
+
+            // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
             FL[node.Dim].Add(node); // Добавляем узел в решётку
             // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
             zTo_xy.Add(node, (xi, yj));
@@ -210,6 +215,22 @@ public partial class Geometry<TNum, TConv>
     }
 
     return new FaceLattice(FL);
+  }
+
+  /// <summary>
+  /// This function recalculates the basis 'from' to the basis 'to'. 'From' must lie in space of 'to' basis.
+  /// </summary>
+  /// <param name="from">Basis to recalculate.</param>
+  /// <param name="to">Basis to which 'from' should be recalculated.</param>
+  /// <returns>'From' basis in terms of 'to' basis.</returns>
+  public static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
+    Point       newO  = to.ProjectPoint(from.Origin);
+    LinearBasis newLB = new LinearBasis(to.LinearBasis.ProjectVectors(from.Basis), false);
+
+#if DEBUG
+    LinearBasis.CheckCorrectness(newLB);
+#endif
+    return new AffineBasis(newO, newLB);
   }
 
 }
