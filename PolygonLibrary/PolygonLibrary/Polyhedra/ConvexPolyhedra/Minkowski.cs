@@ -20,7 +20,15 @@ public partial class Geometry<TNum, TConv>
   /// <param name="S">S to be shifted.</param>
   /// <param name="shift">Vector to shift.</param>
   /// <returns>Shifted swarm.</returns>
-  public static List<Point> Shift(IEnumerable<Point> S, Vector shift) { return S.Select(s => new Point(s + shift)).ToList(); }
+  public static List<Point> Shift(IEnumerable<Point> S, Vector shift) { return S.Select(s => s + shift).ToList(); }
+
+  /// <summary>
+  /// Shift given swarm by the radius vector of a given point.
+  /// </summary>
+  /// <param name="S">S to be shifted.</param>
+  /// <param name="shift">Point to shift.</param>
+  /// <returns>Shifted swarm.</returns>
+  public static List<Point> Shift(IEnumerable<Point> S, Point shift) { return S.Select(s => s + shift).ToList(); }
 
 
   /// <summary>
@@ -64,7 +72,7 @@ public partial class Geometry<TNum, TConv>
   public static HashSet<Point> MinkSumPoints(IEnumerable<Point> A, IEnumerable<Point> B) {
     HashSet<Point> AB = new HashSet<Point>();
     foreach (Point a in A) {
-      AB.UnionWith(Shift(B, new Vector(a)));
+      AB.UnionWith(Shift(B, a));
     }
 
     return AB;
