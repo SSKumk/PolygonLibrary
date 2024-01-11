@@ -9,48 +9,62 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
+#region Pre-defined objects
   public static readonly List<Point> Octahedron3D_list = MakePointsOnSphere_3D(2, 4, true, true);
-  public static readonly List<Point> Pyramid3D_list = MakePointsOnSphere_3D(2, 4, true);
-  public static readonly List<Point> Simplex2D_list = Simplex_list(2);
-  public static readonly List<Point> Simplex3D_list = Simplex_list(3);
-  public static readonly List<Point> Simplex4D_list = Simplex_list(4);
-  public static readonly List<Point> Simplex5D_list = Simplex_list(5);
+  public static readonly List<Point> Pyramid3D_list    = MakePointsOnSphere_3D(2, 4, true);
+  public static readonly List<Point> Simplex2D_list    = Simplex_list(2);
+  public static readonly List<Point> Simplex3D_list    = Simplex_list(3);
+  public static readonly List<Point> Simplex4D_list    = Simplex_list(4);
+  public static readonly List<Point> Simplex5D_list    = Simplex_list(5);
   public static readonly List<Point> SimplexRND2D_list = SimplexRND_list(2);
   public static readonly List<Point> SimplexRND3D_list = SimplexRND_list(3);
   public static readonly List<Point> SimplexRND4D_list = SimplexRND_list(4);
   public static readonly List<Point> SimplexRND5D_list = SimplexRND_list(5);
-  public static readonly List<Point> Cube2D_list = Cube_list(2);
-  public static readonly List<Point> Cube3D_list = Cube_list(3);
-  public static readonly List<Point> Cube4D_list = Cube_list(4);
-  public static readonly List<Point> Cube5D_list = Cube_list(5);
+  public static readonly List<Point> Cube2D_list       = Cube_list(2);
+  public static readonly List<Point> Cube3D_list       = Cube_list(3);
+  public static readonly List<Point> Cube4D_list       = Cube_list(4);
+  public static readonly List<Point> Cube5D_list       = Cube_list(5);
 
 
-  public static readonly ConvexPolytop Cube3D = Cube(3).CPolytop;
-  public static readonly ConvexPolytop Cube4D = Cube(4).CPolytop;
-  public static readonly ConvexPolytop Simplex3D = Simplex(3).CPolytop;
-  public static readonly ConvexPolytop Simplex4D = Simplex(4).CPolytop;
+  public static readonly ConvexPolytop Cube3D       = Cube(3).CPolytop;
+  public static readonly ConvexPolytop Cube4D       = Cube(4).CPolytop;
+  public static readonly ConvexPolytop Simplex3D    = Simplex(3).CPolytop;
+  public static readonly ConvexPolytop Simplex4D    = Simplex(4).CPolytop;
   public static readonly ConvexPolytop Octahedron3D = new GiftWrapping(Octahedron3D_list).CPolytop;
 
 
-  public static readonly FaceLattice Cube3D_FL = Cube(3).FaceLattice;
-  public static readonly FaceLattice Cube4D_FL = Cube(4).FaceLattice;
+  public static readonly FaceLattice Cube3D_FL    = CubeFL(3);
+  public static readonly FaceLattice Cube4D_FL    = CubeFL(4);
   public static readonly FaceLattice Simplex3D_FL = Simplex(3).FaceLattice;
   public static readonly FaceLattice Simplex4D_FL = Simplex(4).FaceLattice;
 
 
-
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
   public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
+#endregion
 
-  #region Polytopes and Polytopes-list Fabrics
-  public static List<Point> Cube_list(int dim) => Cube(dim, out _);
-  public static List<Point> Simplex_list(int dim) => Simplex(dim, out _);
-  public static List<Point> SimplexRND_list(int dim) => SimplexRND(dim, out _);
+#region Polytopes and Polytopes-list Fabrics
+  public static List<Point> Cube_list(int           dim) => Cube(dim, out _);
+  public static List<Point> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), GenLinearBasis(dim).GetMatrix());
+  public static List<Point> Simplex_list(int        dim) => Simplex(dim, out _);
+  public static List<Point> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
 
-  public static GiftWrapping Cube(int dim) => new GiftWrapping(Cube_list(dim));
-  public static GiftWrapping Simplex(int dim) => new GiftWrapping(Simplex(dim, out _));
-  #endregion
+  public static GiftWrapping Cube(int           dim) => new GiftWrapping(Cube_list(dim));
+  public static GiftWrapping CubeRotatedRND(int dim) => new GiftWrapping(CubeRotatedRND_list(dim));
+  public static GiftWrapping Simplex(int        dim) => new GiftWrapping(Simplex(dim, out _));
+  public static GiftWrapping SimplexRND(int     dim) => new GiftWrapping(SimplexRND(dim, out _));
 
+  public static GiftWrapping Sphere(int dim, int theta, int phi, TNum radius) =>
+    new GiftWrapping(Sphere_list(dim, theta, phi, radius));
+
+
+  public static FaceLattice CubeFL(int dim) => Cube(dim).FaceLattice;
+  public static FaceLattice CubeRotatedRND_FL(int dim) => CubeRotatedRND(dim).FaceLattice;
+  public static FaceLattice SimplexFL(int dim) => SimplexRND(dim).FaceLattice;
+  public static FaceLattice SphereFL(int dim, int theta, int phi, TNum radius) => Sphere(dim, theta, phi, radius).FaceLattice;
+#endregion
+
+#region Polytopes generators
   /// <summary>
   /// Generates a full-dimension hypercube in the specified dimension.
   /// </summary>
@@ -61,12 +75,12 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <param name="needShuffle"></param>
   /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
-  public static List<Point> Cube(int cubeDim
-                               , out List<Point> pureCube
-                               , IEnumerable<int>? facesDim = null
-                               , int amount = 1
-                               , uint? seed = null
-                               , bool needShuffle = false) {
+  public static List<Point> Cube(int               cubeDim
+                               , out List<Point>   pureCube
+                               , IEnumerable<int>? facesDim    = null
+                               , int               amount      = 1
+                               , uint?             seed        = null
+                               , bool              needShuffle = false) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     if (cubeDim == 1) {
@@ -77,7 +91,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     }
 
     List<List<TNum>> cube_prev = new List<List<TNum>>();
-    List<List<TNum>> cube = new List<List<TNum>>();
+    List<List<TNum>> cube      = new List<List<TNum>>();
     cube_prev.Add(new List<TNum>() { TNum.Zero });
     cube_prev.Add(new List<TNum>() { TNum.One });
 
@@ -124,7 +138,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
           foreach (Point pointCube in smallCube) {
             for (int k = 0; k < amount; k++) {
               TNum[] point = new TNum[cubeDim];
-              int s = 0;
+              int    s     = 0;
               for (int j = 0; j < cubeDim; j++) {
                 point[j] = -TNum.One;
               }
@@ -163,12 +177,12 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <returns>A list of points representing the axis-based simplex.</returns>
-  public static List<Point> Simplex(int simplexDim
-                                  , out List<Point> pureSimplex
+  public static List<Point> Simplex(int               simplexDim
+                                  , out List<Point>   pureSimplex
                                   , IEnumerable<int>? facesDim = null
-                                  , int amount = 1
-                                  , uint? seed = null) {
-    GRandomLC random = seed is null ? _random : new GRandomLC(seed);
+                                  , int               amount   = 1
+                                  , uint?             seed     = null) {
+    GRandomLC   random  = seed is null ? _random : new GRandomLC(seed);
     List<Point> simplex = new List<Point> { new Point(new TNum[simplexDim]) };
 
     for (int i = 1; i < simplexDim + 1; i++) {
@@ -188,11 +202,11 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <returns>A list of points representing the random simplex.</returns>
-  public static List<Point> SimplexRND(int simplexDim
-                                     , out List<Point> pureSimplex
+  public static List<Point> SimplexRND(int               simplexDim
+                                     , out List<Point>   pureSimplex
                                      , IEnumerable<int>? facesDim = null
-                                     , int amount = 1
-                                     , uint? seed = null) {
+                                     , int               amount   = 1
+                                     , uint?             seed     = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     List<Point> simplex = new List<Point>();
@@ -209,6 +223,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
     return AddPointsToSimplex(facesDim, amount, simplex, random);
   }
+#endregion
 
 
   /// <summary>
@@ -219,10 +234,10 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="simplex">The initial simplex to which points will be added.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A new simplex with the added points.</returns>
-  private static List<Point> AddPointsToSimplex(IEnumerable<int>? facesDim
-                                              , int amount
+  private static List<Point> AddPointsToSimplex(IEnumerable<int>?    facesDim
+                                              , int                  amount
                                               , IReadOnlyList<Point> simplex
-                                              , GRandomLC? random = null) {
+                                              , GRandomLC?           random = null) {
     GRandomLC rnd = random ?? _random;
 
     List<Point> Simplex = new List<Point>(simplex);
@@ -234,7 +249,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
         List<List<Point>> faces = simplex.Subsets(dim + 1);
 
         for (int k = 0; k < amount; k++) {
-          int ind = rnd.NextInt(0, faces.Count - 1);
+          int   ind    = rnd.NextInt(0, faces.Count - 1);
           Point inFace = GenConvexCombination(faces[ind], random);
           Simplex.Add(inFace);
         }
@@ -254,14 +269,14 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="phiPoints">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
   /// <param name="radius">The radius of a sphere.</param>
   /// <returns>A list of points on the sphere.</returns>
-  public static List<Point> MakePointsOnSphere(int dim, int thetaPoints, int phiPoints, TNum radius) {
+  public static List<Point> Sphere_list(int dim, int thetaPoints, int phiPoints, TNum radius) {
     Debug.Assert(dim > 1, "The dimension of a sphere must be 2 or greater.");
     // Phi in [0, 2*Pi)
     // Theta in [0, Pi]
-    HashSet<Point> Ps = new HashSet<Point>();
-    int N = dim - 2;
-    TNum thetaStep = Tools.PI / TConv.FromInt(thetaPoints);
-    TNum phiStep = Tools.PI2 / TConv.FromInt(phiPoints);
+    HashSet<Point> Ps        = new HashSet<Point>();
+    int            N         = dim - 2;
+    TNum           thetaStep = Tools.PI / TConv.FromInt(thetaPoints);
+    TNum           phiStep   = Tools.PI2 / TConv.FromInt(phiPoints);
 
     List<TNum> thetaAll = new List<TNum>();
     for (int i = 0; i <= thetaPoints; i++) {
@@ -274,7 +289,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
       // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
       List<List<TNum>> thetaAngles_prev = new List<List<TNum>>() { new List<TNum>() { phi } };
-      List<List<TNum>> thetaAngles = new List<List<TNum>>() { new List<TNum>() { phi } };
+      List<List<TNum>> thetaAngles      = new List<List<TNum>>() { new List<TNum>() { phi } };
       // сколько раз нужно углы добавлять
       for (int k = 0; k < N; k++) {
         thetaAngles.Clear();
@@ -311,7 +326,6 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
         // точка готова, добавляем в наш массив
         Ps.Add(new Point(point.ToArray()));
-
       }
     }
 
@@ -327,10 +341,10 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="addUpperPole">A boolean flag indicating whether to add the upper pole to the list of points.</param>
   /// <param name="addBottomPole">A boolean flag indicating whether to add the bottom pole to the list of points.</param>
   /// <returns>A list of points on the sphere.</returns>
-  public static List<Point> MakePointsOnSphere_3D(int thetaDivisions
-                                                    , int phiDivisions
-                                                    , bool addUpperPole = false
-                                                    , bool addBottomPole = false) {
+  public static List<Point> MakePointsOnSphere_3D(int  thetaDivisions
+                                                , int  phiDivisions
+                                                , bool addUpperPole  = false
+                                                , bool addBottomPole = false) {
     List<Point> points = new List<Point>();
     if (addUpperPole) {
       points.Add(new Point(new TNum[] { TNum.Zero, TNum.Zero, TNum.One }));
@@ -340,7 +354,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     }
 
     TNum thetaStep = Tools.PI / TConv.FromInt(thetaDivisions);
-    TNum phiStep = Tools.PI2 / TConv.FromInt(phiDivisions);
+    TNum phiStep   = Tools.PI2 / TConv.FromInt(phiDivisions);
 
     for (int i = 1; i < thetaDivisions; i++) {
       TNum theta = thetaStep * TConv.FromInt(i);
