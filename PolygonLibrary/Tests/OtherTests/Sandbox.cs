@@ -13,7 +13,7 @@ public class Sandbox {
 
   [Test]
   public void MakePointsOnSphereTest() {
-    var x = MakePointsOnSphere(3, 2, 100, 1);
+    var x = Sphere_list(3, 2, 100, 1);
     var y = new GiftWrapping(x);
     y.CPolytop.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/SOME.txt");
     // var y = MakePointsOnSphere_3D(3, 4);
