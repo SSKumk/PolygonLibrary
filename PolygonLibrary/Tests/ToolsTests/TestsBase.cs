@@ -43,6 +43,20 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
   /// <summary>
+  /// Generates a linear basis of given dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the basis.</param>
+  /// <returns>A full dimensional basis.</returns>
+  public static LinearBasis GenLinearBasis(int dim) {
+    LinearBasis lb = new LinearBasis();
+    do {
+      lb.AddVector(GenVector(dim));
+    } while (!lb.IsFullDim);
+
+    return lb;
+  }
+
+  /// <summary>
   /// Generates a linear combination of the given points.
   /// </summary>
   /// <param name="points">The list of point to lin-combine.</param>
