@@ -110,8 +110,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     // Заполняем максимальный элемент
-    // Нас пока не волнует, что вершин может получится больше чем нужно (потом это исправим)
-    FLNode PQ = new FLNode(MinkSumPoints(P.Top.Vertices, Q.Top.Vertices), P.Top.InnerPoint + Q.Top.InnerPoint, affinePQ);
+    // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
+    Point  innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
+    FLNode PQ      = new FLNode(new[] { innerPQ }, innerPQ, affinePQ);
     zTo_xy.Add(PQ, (P.Top, Q.Top));
     xyToz.Add((P.Top, Q.Top), PQ);
     FL[^1].Add(PQ);
@@ -125,8 +126,8 @@ public partial class Geometry<TNum, TConv>
         AffineBasis zSpace          = z.AffBasis;
         Point       innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
-        // Собираем все подграни в соответствующих решётках, 
-        // сортируя по убыванию размерности для удобства перебора. 
+        // Собираем все подграни в соответствующих решётках,
+        // сортируя по убыванию размерности для удобства перебора.
         // Среди них будем искать подграни, которые при суммировании дают d-грани z
         IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.Dim);
         IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.Dim);
@@ -142,9 +143,9 @@ public partial class Geometry<TNum, TConv>
               (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
 
             // 0) dim(xi (+) yj) == dim(z) - 1
-            if (candBasis.SpaceDim != z.Dim - 1) { continue; }
+            if (candBasis.SpaceDim != d) { continue; }
 
-            {
+            { // 0+) Если такая пара граней уже встречалась, то строить её не надо, а надо установить связи
               if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
                 // Устанавливаем связи
                 z.AddSub(node_xiyj);
@@ -162,7 +163,7 @@ public partial class Geometry<TNum, TConv>
             // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
             HyperPlane A = new HyperPlane(ReCalcAffineBasis(candBasis, zSpace));
 
-            // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость. 
+            // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость.
             if (A.Contains(innerInAffine_z)) { continue; }
             // Если внутренняя точка суммы попала на кандидата
             // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из z
@@ -191,7 +192,7 @@ public partial class Geometry<TNum, TConv>
             // Если условие Леммы 3 не выполняется, то xi+yj не может дать d-грань z
             if (!(xCheck && yCheck)) { continue; }
 
-            // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z. 
+            // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z.
             // Если такого узла ещё не было создано, то создаём его.
 
             Point newInner = xi.InnerPoint + yj.InnerPoint;
@@ -199,7 +200,7 @@ public partial class Geometry<TNum, TConv>
             FLNode node = new FLNode(new[] { newInner }, newInner, candBasis);
 
             // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
-            FL[node.Dim].Add(node); // Добавляем узел в решётку
+            FL[d].Add(node); // Добавляем узел в решётку
             // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
             zTo_xy.Add(node, (xi, yj));
             xyToz.Add((xi, yj), node);
