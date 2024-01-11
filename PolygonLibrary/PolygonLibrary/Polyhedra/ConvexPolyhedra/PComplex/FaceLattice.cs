@@ -33,6 +33,12 @@ public partial class Geometry<TNum, TConv>
     public FLNode Top { get; init; }
 
     /// <summary>
+    /// Gets the total amount of all k-faces in the lattice.
+    /// </summary>
+    /// <value>A total amount of all k-faces in the lattice.</value>
+    public int FacesAmount => Lattice.Sum(lvl => lvl.Count);
+
+    /// <summary>
     /// The lattice is represented level by level.
     /// At each level, there is a set that contains all nodes (faces of polytop) of that level's dimension.
     /// </summary>
