@@ -22,7 +22,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
 
   /// <summary>
-  /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5] \ {0}.
+  /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5].
   /// </summary>
   /// <param name="dim">The dimension of the vector.</param>
   /// <param name="random">If null then _random be used.</param>
@@ -55,6 +55,13 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
 
     return lb;
   }
+
+  /// <summary>
+  /// Rotates the given swarm by an arbitrary non-degenerate matrix.
+  /// </summary>
+  /// <param name="S">The swarm to be rotated.</param>
+  /// <returns>A rotated swarm.</returns>
+  public static List<Point> RotateRND(List<Point> S) => Rotate(S, GenLinearBasis(S.First().Dim).GetMatrix());
 
   /// <summary>
   /// Generates a linear combination of the given points.
