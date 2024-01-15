@@ -12,7 +12,7 @@ namespace Profile;
   // GiftWrapping? Polytop = null;
   // for (int i = 4; i <= 4; i++) {
   //   // var       S  = Cube_list(i);
-  //   var       S  = Sphere_list(i, 2, 100, 1);
+  // var       S  = Sphere_list(i, 2, 100, 1);
   //   Stopwatch timer = new Stopwatch();
   //   timer.Restart();
   //   for (int k = 0; k < N; k++) { Polytop = new GiftWrapping(S); }
@@ -25,8 +25,8 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-  // ProfileMinkSum();
-  var x = GenLinearBasis(5);
+    var x = Sphere_list(5, 2, 10, 1);
+    // ProfileMinkSum();
   }
 
   private static void ProfileMinkSum() {
