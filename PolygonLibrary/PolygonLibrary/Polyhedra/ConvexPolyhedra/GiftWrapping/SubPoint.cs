@@ -76,8 +76,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       return false;
     }
 
+    // todo Как заменить Original в GHCode? Тогда от этого поля можно отказаться.
+    // HashCode.Combine(base.GetHashCode(), base.GetHashCode()); ???
     /// <summary>
-    /// The hash code todo Как заменить Original в GHCode? Тогда от этого поля можно отказаться.
+    /// The hash code
     /// </summary>
     /// <returns>The hash code</returns>
     public override int GetHashCode() { return HashCode.Combine(base.GetHashCode(), Original.GetHashCode()); }
