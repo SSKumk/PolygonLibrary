@@ -288,6 +288,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
       TNum phi = phiStep * TConv.FromInt(i);
 
       // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
+      // где t_i принимают все возможные свои значения из theta_all
       List<List<TNum>> thetaAngles_prev = new List<List<TNum>>() { new List<TNum>() { phi } };
       List<List<TNum>> thetaAngles      = new List<List<TNum>>() { new List<TNum>() { phi } };
       // сколько раз нужно углы добавлять
@@ -310,17 +311,28 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
         point.Add(radius * TNum.Cos(phi) * sinsN);
         point.Add(radius * TNum.Sin(phi) * sinsN);
 
+
         //добавляем серединные координаты
-        for (int j = 2; j <= N; j++) {
+        if (dim >= 4) { // Их нет для 2Д и 3Д сфер
           TNum sinsJ = Tools.One;
-          for (int k = 1; k < j; k++) {
-            sinsJ *= TNum.Sin(s[k]);
+          for (int j = 2; j <= N; j++) {
+            sinsJ *= TNum.Sin(s[j - 1]);
+            point.Add(radius * TNum.Cos(s[j]) * sinsJ);
           }
-          point.Add(radius * TNum.Cos(s[j]) * sinsJ);
         }
 
+        // Было так:
+        // добавляем серединные координаты
+        //       for (int j = 2; j <= N; j++) {
+        //         TNum sinsJ = Tools.One;
+        //         for (int k = 1; k < j; k++) { // Возможно стоит
+        //           sinsJ *= TNum.Sin(s[k]);
+        //         }
+        //         point.Add(radius * TNum.Cos(s[j]) * sinsJ);
+        //       }
+
         // последнюю координату
-        if (dim > 2) {
+        if (dim >= 3) { // У 2Д сферы её нет
           point.Add(radius * TNum.Cos(s[1]));
         }
 
