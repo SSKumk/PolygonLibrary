@@ -94,15 +94,6 @@ public partial class Geometry<TNum, TConv>
       Normal = normal;
     }
 
-    public List<Point> GetCcwOrder() {
-      Debug.Assert(Normal.Dim == 3, "Face.CcwOrder: Only for 2D face in 3D space!");
-
-      GiftWrapping gw = new GiftWrapping(Vertices);
-      var polygon2d = gw.BuiltPolytop as SubTwoDimensional;
-      return polygon2d!.VerticesList.Select(v => v.Original).ToList();
-    }
-
-
     /// <summary>
     /// Determines whether the specified object is equal to face.
     /// Two faces are equal if they have same sets of their vertices.
@@ -290,7 +281,7 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine($"Faces: {Faces.Count}");
         foreach (Face face in Faces.OrderBy(F => new Point(F.Normal))) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
-          writer.WriteLine(string.Join(' ', face.GetCcwOrder().Select(v => VList.IndexOf(v))));
+          writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
         }
       }
     }
