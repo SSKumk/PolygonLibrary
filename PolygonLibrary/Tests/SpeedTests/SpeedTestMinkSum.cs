@@ -104,7 +104,7 @@ public class SpeedTestMinkSum {
     for (int dim = 2; dim <= 5; dim++) {
       var Sphere = Sphere_list(dim, theta, phi, 1);
       FirstSphere.Add(GiftWrapping.WrapFaceLattice(Sphere));
-      SecondSphere.Add(GiftWrapping.WrapFaceLattice(Rotate(Sphere, GenLinearBasis(dim).GetMatrix())));
+      SecondSphere.Add(GiftWrapping.WrapFaceLattice(RotateRND(Sphere)));
     }
     Stopwatch    timer = new Stopwatch();
     FaceLattice? Sum   = null;
@@ -112,7 +112,7 @@ public class SpeedTestMinkSum {
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumSDas(FirstSphere[i], SecondSphere[i]); }
       timer.Stop();
-      writer.Write($"{FirstSphere[i].FacesAmount} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
+      writer.Write($"{FirstSphere[i].NonZeroKFacesAmount} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       writer.Flush();
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumCH(FirstSphere[i], SecondSphere[i]); }
