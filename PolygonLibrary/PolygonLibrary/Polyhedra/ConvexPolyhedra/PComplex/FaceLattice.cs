@@ -33,10 +33,10 @@ public partial class Geometry<TNum, TConv>
     public FLNode Top { get; init; }
 
     /// <summary>
-    /// Gets the total amount of all k-faces in the lattice.
+    /// Gets the total amount of all k-faces in the lattice, except 0-faces.
     /// </summary>
-    /// <value>A total amount of all k-faces in the lattice.</value>
-    public int FacesAmount => Lattice.Sum(lvl => lvl.Count);
+    /// <value>A number of non zero k-faces in the lattice.</value>
+    public int NonZeroKFacesAmount => Lattice.Sum(lvl => lvl.Count) - Lattice[0].Count;
 
     /// <summary>
     /// The lattice is represented level by level.
