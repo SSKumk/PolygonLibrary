@@ -80,23 +80,18 @@ public partial class Geometry<TNum, TConv>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns>True if vector added to the basis, false otherwise</returns>
     public bool AddVector(Vector v, bool orthogonalize = true) {
-      Vector toAdd = v;
-
-      if (!orthogonalize) {
+      if (!orthogonalize) { // Если вектор не нужно ортогонализировать, то просто добавляем в базис
         Basis.Add(v);
 
         return true;
       }
 
-      toAdd = IsEmpty ? toAdd.NormalizeZero() : Vector.OrthonormalizeAgainstBasis(v, Basis);
+      Vector toAdd = Vector.OrthonormalizeAgainstBasis(v, Basis);
+      if (toAdd.IsZero) { return false; } // Если вектор является линейно зависимым, то его не добавляем
 
-      if (toAdd.IsZero) {
-        return false;
-      } else {
-        Basis.Add(toAdd);
+      Basis.Add(toAdd); // Иначе добавляем
 
-        return true;
-      }
+      return true;
     }
 
 
