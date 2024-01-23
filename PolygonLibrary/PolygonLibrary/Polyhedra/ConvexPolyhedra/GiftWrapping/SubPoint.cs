@@ -5,19 +5,21 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
+
   /// <summary>
   /// Represents a point in a subspace greater than 2.
   /// </summary>
   public class SubPoint : Point {
 
-    /// <summary>
-    /// Gets the original point in the original coordinate system.
-    /// Original point is the point before any projection to subspaces
-    /// </summary>
-    public Point Original { get; }
+    // /// <summary>
+    // /// Gets the original point in the original coordinate system.
+    // /// Original point is the point before any projection to subspaces
+    // /// </summary>
+    // public Point Original { get; }
 
     /// <summary>
     /// Gets the parent point in the parent coordinate system.
@@ -35,12 +37,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="other">another subspace point to compare</param>
     /// <returns>true if equal, false otherwise</returns>
-    public bool Equals(SubPoint? other) {
+    public override bool Equals(object? other) {
       if (other is null) {
-        return false;
-      }
-
-      if (Dim != other.Dim) {
         return false;
       }
 
@@ -48,70 +46,45 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     /// <summary>
-    /// Determines whether subspace point and object are equal.
+    /// The hash code of SubPoint. It equal to Point.GHC().
     /// </summary>
-    /// <param name="o">The object to compare.</param>
-    /// <returns>true if the points are equal; otherwise, false.</returns>
-    public override bool Equals(Object? o) {
-      if (o is null) {
-        return false;
-      }
-
-      if (o is SubPoint otherSPoint) {
-        if (Dim != otherSPoint.Dim) {
-          return false;
-        }
-
-        return (Point)this == otherSPoint;
-      }
-
-      if (o is Point otherPoint) {
-        if (Dim != otherPoint.Dim) {
-          return false;
-        }
-
-        return (Point)this == otherPoint;
-      }
-
-      return false;
-    }
-
-    // todo Как заменить Original в GHCode? Тогда от этого поля можно отказаться.
-    // HashCode.Combine(base.GetHashCode(), base.GetHashCode()); ???
-    /// <summary>
-    /// The hash code
-    /// </summary>
-    /// <returns>The hash code</returns>
-    public override int GetHashCode() { return HashCode.Combine(base.GetHashCode(), Original.GetHashCode()); }
+    /// <returns>The hash code.</returns>
+    public override int GetHashCode() => base.GetHashCode();
 
     /// <summary>
     /// Construct a new instance of the <see cref="SubPoint"/> class.
     /// </summary>
-    /// <param name="np">The projected point</param>
-    /// <param name="parent">The point from which the current point was projected</param>
-    /// <param name="original">The point from which all parents point were projected</param>
-    public SubPoint(TNum[] np, SubPoint? parent, Point original) : base(np) {
-      Original = original;
-      Parent = parent;
-    }
+    /// <param name="np">The point.</param>
+    /// <param name="parent">The point from which the current point was projected.</param>
+    public SubPoint(TNum[] np, SubPoint? parent) : base(np) { Parent = parent; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubPoint"/> class.
     /// </summary>
-    /// <param name="p">The projected point</param>
-    /// <param name="parent">The point from which the current point was projected</param>
-    /// <param name="original">The point from which all parents point were projected</param>
-    public SubPoint(Point p, SubPoint? parent, Point original) : base(p) {
-      Original = original;
-      Parent = parent;
-    }
+    /// <param name="p">The point.</param>
+    /// <param name="parent">The point from which the current point was projected.</param>
+    public SubPoint(Point p, SubPoint? parent) : base(p) { Parent = parent; }
 
     /// <summary>
     /// Projects the current point to the specified affine basis.
     /// </summary>
     /// <param name="aBasis">The affine basis of non greater dimension to project the point to.</param>
     /// <returns>The projected point.</returns>
-    public SubPoint ProjectTo(AffineBasis aBasis) =>
-            new SubPoint(aBasis.ProjectPoint(this), this, Original);
+    public SubPoint ProjectTo(AffineBasis aBasis) => new SubPoint(aBasis.ProjectPoint(this), this);
+
+    /// <summary>
+    /// Returns the point from which the current point was firstly projected.
+    /// </summary>
+    /// <returns>The root vertex of the current point.</returns>
+    public Point GetRootVertex() {
+      SubPoint root = this;
+      while (Parent is not null) {
+        root = Parent;
+      }
+
+      return root;
+    }
+
   }
+
 }

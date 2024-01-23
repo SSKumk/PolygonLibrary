@@ -191,7 +191,7 @@ public partial class Geometry<TNum, TConv>
 
       SOrig = new HashSet<Point>(Swarm);
       // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
-      HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null, s)).ToHashSet();
+      HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
       AffineBasis       AffineS = new AffineBasis(S);
       if (AffineS.SpaceDim < AffineS.VecDim) {
         // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
