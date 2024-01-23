@@ -104,7 +104,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       int d = p1.Dim, res;
 #if DEBUG
       if (d != p2.Dim) {
-        throw new ArgumentException("Cannot compare vectors of different dimensions");
+        throw new ArgumentException("Cannot compare points of different dimensions");
       }
 #endif
       for (int i = 0; i < d; i++) {
