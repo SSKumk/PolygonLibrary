@@ -28,8 +28,8 @@ public partial class Geometry<TNum, TConv>
           info.Select
             (
              x => {
-               Debug.Assert(x.Value.F1.Normal is not null, "x.Value.F1.Normal != null");
-               Debug.Assert(x.Value.F2.Normal is not null, "x.Value.F2.Normal != null");
+               Debug.Assert(x.Value.F1.Normal is not null, "IncidenceInfo: x.Value.F1.Normal != null");
+               Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: x.Value.F2.Normal != null");
 
 
                return new KeyValuePair<Edge, (Face F1, Face F2)>
@@ -85,13 +85,18 @@ public partial class Geometry<TNum, TConv>
     public Vector Normal { get; }
 
     /// <summary>
+    /// Gets the hyper plane corresponding to this face.
+    /// </summary>
+    public HyperPlane HPlane => new HyperPlane(Vertices.First(), Normal);
+
+    /// <summary>
     /// Initializes a new instance of the Face class.
     /// </summary>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="normal">The outward normal vector of the face.</param>
     public Face(IEnumerable<Point> Vs, Vector normal) {
       Vertices = new HashSet<Point>(Vs);
-      Normal = normal;
+      Normal   = normal;
     }
 
     /// <summary>
@@ -242,14 +247,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="type">The type of the polytop.</param>
     /// <param name="faceIncidence">The incidence information of the faces.</param>
     /// <param name="fans">The fan information of the polytop.</param>
-    public ConvexPolytop(IEnumerable<Point> Vs
-                 , int polytopDim
-                 , IEnumerable<Face> faces
-                 , IEnumerable<Edge> edges) {
-      Polytop = new VPolytop(Vs);
+    public ConvexPolytop(IEnumerable<Point> Vs, int polytopDim, IEnumerable<Face> faces, IEnumerable<Edge> edges) {
+      Polytop    = new VPolytop(Vs);
       PolytopDim = polytopDim;
-      Faces = new HashSet<Face>(faces);
-      Edges = new HashSet<Edge>(edges);
+      Faces      = new HashSet<Face>(faces);
+      Edges      = new HashSet<Edge>(edges);
     }
 
     /// <summary>
