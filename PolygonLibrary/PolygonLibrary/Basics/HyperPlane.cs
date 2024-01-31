@@ -12,6 +12,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
   /// <summary>
   /// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.
+  /// N * x &lt; C, N - outward normal vector, c - constant.
   /// </summary>
   public class HyperPlane {
 
@@ -95,13 +96,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public TNum ConstantTerm {
       get
-      {
-        if (_constantTerm is null) {
-          _constantTerm = -(Normal * new Vector(Origin));
-        }
+        {
+          _constantTerm ??= Normal * new Vector(Origin);
 
-        return _constantTerm.Value;
-      }
+          return _constantTerm.Value;
+        }
     }
 
     private TNum? _constantTerm = null;
@@ -166,7 +165,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="point">The point at which the equation is to be evaluated.</param>
     /// <returns>The value of the equation of the hyperplane at the given point.</returns>
-    public TNum Eval(Point point) { return Normal * new Vector(point) + ConstantTerm; }
+    public TNum Eval(Point point) { return Normal * new Vector(point) - ConstantTerm; }
 
     /// <summary>
     /// Checks if the hyperplane contains a given point.
