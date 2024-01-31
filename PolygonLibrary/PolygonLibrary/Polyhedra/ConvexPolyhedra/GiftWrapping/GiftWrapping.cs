@@ -45,7 +45,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The ConvexPolytop.</returns>
     private ConvexPolytop GetCPolytop() {
       if (BuiltPolytop.PolytopDim <= 2) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors!");
       }
       Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
       HashSet<Face> Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
