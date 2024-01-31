@@ -3,30 +3,58 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using DoubleDouble;
 using Tests.ToolsTests;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
+using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
-  // const int    N      = 100;  // 1) Кубы по размерностям без дополнительных точек
-  // GiftWrapping? Polytop = null;
-  // for (int i = 4; i <= 4; i++) {
-  //   // var       S  = Cube_list(i);
-  // var       S  = Sphere_list(i, 2, 100, 1);
-  //   Stopwatch timer = new Stopwatch();
-  //   timer.Restart();
-  //   for (int k = 0; k < N; k++) { Polytop = new GiftWrapping(S); }
-  //   timer.Stop();
-  //   Console.WriteLine($@"{i} & {timer.Elapsed.TotalSeconds / N :F5} \\");
-  // }
-  //   Polytop.Equals(null);
+// const int    N      = 100;  // 1) Кубы по размерностям без дополнительных точек
+// GiftWrapping? Polytop = null;
+// for (int i = 4; i <= 4; i++) {
+//   // var       S  = Cube_list(i);
+// var       S  = Sphere_list(i, 2, 100, 1);
+//   Stopwatch timer = new Stopwatch();
+//   timer.Restart();
+//   for (int k = 0; k < N; k++) { Polytop = new GiftWrapping(S); }
+//   timer.Stop();
+//   Console.WriteLine($@"{i} & {timer.Elapsed.TotalSeconds / N :F5} \\");
+// }
+//   Polytop.Equals(null);
 
 class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    var x = Sphere_list(5, 2, 10, 1);
-    // ProfileMinkSum();
+
+    const int dim = 3;
+    const int theta = 3;
+    const int phi = 4;
+    const int r = 1;
+
+    var x = Sphere_list(dim, theta, phi, r);
+
+    var y = GiftWrapping.WrapPolytop(x);
+
+
+    
+    y.WriteTXT($@"F:\Temp\LP-tests\Alglib\pic\S{dim}-{theta}-{phi}-{r}.txt");
+    foreach (var hp in y.Faces.Select(F => F.HPlane).ToList()) {
+      var p1 = new Point(hp.Normal).GetAsList();
+      p1.Add(hp.ConstantTerm);
+      Console.WriteLine(new Vector(p1.ToArray()).ToStringWithDiffBraces('{', '}'));
+      Console.Write(", ");
+    }
+    Console.WriteLine("\n");
+
+    foreach (var p in y.Vertices) {
+      Console.WriteLine($"new double[] {new Vector(p).ToStringWithDiffBraces('{', '}')}");
+      Console.Write(",");
+    }
+    Console.WriteLine("\n");
+    Console.WriteLine(GenVector(dim));
   }
 
   private static void ProfileMinkSum() {
