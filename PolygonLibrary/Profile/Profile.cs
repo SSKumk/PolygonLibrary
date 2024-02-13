@@ -11,35 +11,29 @@ using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
-// const int    N      = 100;  // 1) Кубы по размерностям без дополнительных точек
-// GiftWrapping? Polytop = null;
-// for (int i = 4; i <= 4; i++) {
-//   // var       S  = Cube_list(i);
-// var       S  = Sphere_list(i, 2, 100, 1);
-//   Stopwatch timer = new Stopwatch();
-//   timer.Restart();
-//   for (int k = 0; k < N; k++) { Polytop = new GiftWrapping(S); }
-//   timer.Stop();
-//   Console.WriteLine($@"{i} & {timer.Elapsed.TotalSeconds / N :F5} \\");
-// }
-//   Polytop.Equals(null);
+
 
 class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    const int dim = 3;
+
+
+  }
+
+  private static void CompareValues_AlgLib_naive() {
+    const int dim   = 3;
     const int theta = 3;
-    const int phi = 4;
-    const int r = 1;
+    const int phi   = 4;
+    const int r     = 1;
 
     var x = Sphere_list(dim, theta, phi, r);
 
     var y = GiftWrapping.WrapPolytop(x);
 
 
-    
+
     y.WriteTXT($@"F:\Temp\LP-tests\Alglib\pic\S{dim}-{theta}-{phi}-{r}.txt");
     foreach (var hp in y.Faces.Select(F => F.HPlane).ToList()) {
       var p1 = new Point(hp.Normal).GetAsList();
