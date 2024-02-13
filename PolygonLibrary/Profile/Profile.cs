@@ -18,6 +18,10 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+    foreach (int[] combination in Tools.GetCombinations(10,3)) {
+      Console.WriteLine(string.Join(' ', combination));
+
+    }
 
 
   }

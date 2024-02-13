@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -56,7 +57,8 @@ public interface INumConvertor<TNum> where TNum : INumber<TNum> {
 
 }
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -360,6 +362,48 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return res;
     }
+
+    /// <summary>
+    /// Generates all possible combinations of a given size from a set of numbers.
+    /// </summary>
+    /// <param name="n">The total number of items.</param>
+    /// <param name="k">The size of each combination.</param>
+    /// <returns>An enumerable sequence of integer arrays representing the combinations.</returns>
+    public static IEnumerable<int[]> GetCombinations(int n, int k) {
+      Debug.Assert(n > 0, $"Tools.GetCombinations: n must be positive! Found {n}.");
+      Debug.Assert(k > 0, $"Tools.GetCombinations: n must be positive! Found {k}.");
+      Debug.Assert(k <= n, $"Tools.GetCombinations: n must be greater or equal than k! Found n - k = {n - k}.");
+
+      int[] combination = new int[k];
+      for (int i = 0; i < k; i++) { combination[i] = i; }
+
+      do {
+        yield return combination;
+      } while (NextCombination(combination, n, k));
+    }
+
+    /// <summary>
+    /// Advances the current combination to the next one in lexicographical order.
+    /// </summary>
+    /// <param name="combination">The current combination array.</param>
+    /// <param name="n">The total number of items.</param>
+    /// <param name="k">The size of each combination.</param>
+    /// <returns>True if the next combination was found, false otherwise.</returns>
+    private static bool NextCombination(int[] combination, int n, int k) {
+      for (int i = k - 1; i >= 0; i--) {
+        if (combination[i] <= n - k + i - 1) {
+          combination[i]++;
+          for (int j = i + 1; j < k; j++) {
+            combination[j] = combination[j - 1] + 1;
+          }
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
 #endregion
 
   }
