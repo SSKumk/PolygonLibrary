@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using DoubleDouble;
 using Tests.ToolsTests;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
@@ -12,14 +13,22 @@ using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
 
-
 class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-
-
+    double[,] A    = new double[,] { { 10, 6, 2, 0 }, { 5, 1, -2, 4 }, { 3, 5, 1, -1 }, { 0, 6, -2, 2 } };
+    double[]  b    = new double[] { 25, 14, 10, 8 };
+    int[]     IndA = Enumerable.Range(0, 10).ToArray();
+    // {
+    //   GaussSLE.Solve(A, b, GaussSLE.GaussChose.No, out double[] x);
+    //   Console.WriteLine(string.Join(' ', x));
+    // }
+    {
+      GaussSLE.Solve(A, b, GaussSLE.GaussChose.RowWise, out double[] x);
+      Console.WriteLine(string.Join(' ', x));
+    }
   }
 
   private static void CompareValues_AlgLib_naive() {
@@ -31,7 +40,6 @@ class Program {
     var x = Sphere_list(dim, theta, phi, r);
 
     var y = GiftWrapping.WrapPolytop(x);
-
 
 
     y.WriteTXT($@"F:\Temp\LP-tests\Alglib\pic\S{dim}-{theta}-{phi}-{r}.txt");
