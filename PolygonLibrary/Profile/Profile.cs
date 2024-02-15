@@ -17,18 +17,44 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-    double[,] A    = new double[,] { { 10, 6, 2, 0 }, { 5, 1, -2, 4 }, { 3, 5, 1, -1 }, { 0, 6, -2, 2 } };
-    double[]  b    = new double[] { 25, 14, 10, 8 };
-    int[]     IndA = Enumerable.Range(0, 10).ToArray();
-    // {
-    //   GaussSLE.Solve(A, b, GaussSLE.GaussChose.No, out double[] x);
-    //   Console.WriteLine(string.Join(' ', x));
-    // }
     {
-      GaussSLE.Solve(A, b, GaussSLE.GaussChose.RowWise, out double[] x);
-      Console.WriteLine(string.Join(' ', x));
+      double[,] A = new double[,] { { 10, 6, 2, 0 }, { 5, 1, -2, 4 }, { 3, 5, 1, -1 }, { 0, 6, -2, 2 } };
+      double[]  b = new double[] { 25, 14, 10, 8 };
+      GaussNaive((double[,])A.Clone(), (double[])b.Clone());
+      GaussRowWise((double[,])A.Clone(), (double[])b.Clone());
+      GaussColWise((double[,])A.Clone(), (double[])b.Clone());
+      GaussAll((double[,])A.Clone(), (double[])b.Clone());
     }
+    // {
+    //   double[,] A = new double[,] { { 2, -9, 5 }, { 1.2, -5.3999, 6}, { 1, -1, -7.5 }};
+    //   double[]  b = new double[] { -4, 0.6001, -8.5 };
+    //   GaussNaive((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussRowWise((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussColWise((double[,])A.Clone(), (double[])b.Clone());
+    // }
+  }
+
+  private static void GaussAll(double[,] A, double[] b) {
+    Console.WriteLine("All-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChose.All, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
+  private static void GaussColWise(double[,] A, double[] b) {
+    Console.WriteLine("Col-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChose.ColWise, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
+
+  private static void GaussRowWise(double[,] A, double[] b) {
+    Console.WriteLine("Row-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChose.RowWise, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
+
+  private static void GaussNaive(double[,] A, double[] b) {
+    GaussSLE.Solve(A, b, GaussSLE.GaussChose.No, out double[] x);
+    Console.WriteLine("Naive:");
+    Console.WriteLine(string.Join(' ', x));
   }
 
   private static void CompareValues_AlgLib_naive() {
