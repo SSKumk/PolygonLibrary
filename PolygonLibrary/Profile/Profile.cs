@@ -83,7 +83,7 @@ class Program {
       Console.Write(",");
     }
     Console.WriteLine("\n");
-    Console.WriteLine(GenVector(dim));
+    Console.WriteLine(Vector.GenVector(dim));
   }
 
   private static void ProfileMinkSum() {
