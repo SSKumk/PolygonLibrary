@@ -99,12 +99,12 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// Generate non-singular matrix.
+  /// Generate orthonormal matrix.
   /// </summary>
   /// <param name="spaceDim">The dimension d of the space.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>The matrix d x d.</returns>
-  public static Matrix GenNonSingularMatrix(int spaceDim, GRandomLC? random = null) {
+  public static Matrix GenONMatrix(int spaceDim, GRandomLC? random = null) {
     LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
     while (!basis.IsFullDim) {
       basis.AddVector(GenVector(spaceDim, random));
@@ -123,7 +123,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S, uint? seed = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
-    Matrix rotation = GenNonSingularMatrix(PDim, random);
+    Matrix rotation = GenONMatrix(PDim, random);
     Vector shift = GenVector(PDim, random) * _random.NextFromInt(1, 10);
 
     P = Rotate(P, rotation);

@@ -10,8 +10,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // Пока решаем всё в предположении, что A размера d x d невырожденная квадратная матрица (самый простой случай)
-  // столбец b размера d x 1
   public class GaussSLE {
 
     public enum GaussChoice {
@@ -23,7 +21,7 @@ public partial class Geometry<TNum, TConv>
 
     }
 
-    public static bool SolveNoChange(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+    public static bool SolveImmutable(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
       return Solve((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice, out result);
     }
 
@@ -117,6 +115,13 @@ public partial class Geometry<TNum, TConv>
 
       return true;
     }
+
+    // todo сделать генератор матриц [a,b] в Matrix
+    // todo                           -  non singular (проверять невырожденность накапливая параллельно вектора в базис последовательно)
+    // todo сравнить скорость работы с вариантом через функции (делегаты)
+
+
+
 
   }
 
