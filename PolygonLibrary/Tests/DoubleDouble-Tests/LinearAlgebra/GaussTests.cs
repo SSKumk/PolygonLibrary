@@ -28,9 +28,9 @@ public class GaussTests {
   }
 
   [Test]
-  public void HundredONSystem() {
-    Matrix    A_             = GenONMatrix(100);
-    Vector    exRes          = GenVector(100); // x*
+  public void HundredSystem() {
+    Matrix    A_             = Matrix.GenNonSingular(100);
+    Vector    exRes          = Vector.GenVector(100); // x*
     ddouble[] expectedResult = (ddouble[])exRes;
 
     ddouble[,] A = A_;
