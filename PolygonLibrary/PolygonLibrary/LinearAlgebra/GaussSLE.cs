@@ -10,23 +10,69 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  /// <summary>
+  /// Provides functionality for solving systems of linear equations using Gaussian elimination.
+  /// </summary>
   public class GaussSLE {
 
+    /// <summary>
+    /// Defines options for selecting pivot elements during Gaussian elimination.
+    /// </summary>
     public enum GaussChoice {
 
-      No
-    , RowWise
-    , ColWise
-    , All
+      No      // No specific choice made.
+    , RowWise // Choose pivots in a row-wise manner.
+    , ColWise // Choose pivots in a column-wise manner.
+    , All     // Choose pivots from the entire matrix.
 
     }
 
+    /// <summary>
+    /// Solves the system of linear equations represented by the given functions.
+    /// </summary>
+    /// <param name="fA">Function provides the coefficients of the matrix A.</param>
+    /// <param name="fb">Function provides the right side vector b.</param>
+    /// <param name="dim">Dimension of the square matrix A and the length of vector b.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
+    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <returns>True if the system has a unique solution, otherwise false.</returns>
+    public static bool Solve(Func<int, int, TNum> fA, Func<int, TNum> fb, int dim, GaussChoice gaussChoice, out TNum[] result) {
+      TNum[,] A = new TNum[dim, dim];
+      TNum[]  b = new TNum[dim];
+
+      for (int r = 0; r < dim; r++) {
+        for (int l = 0; l < dim; l++) {
+          A[r, l] = fA(r, l);
+        }
+        b[r] = fb(r);
+      }
+
+      return Solve(A, b, gaussChoice, out result);
+    }
+
+    /// <summary>
+    /// Solves the system of linear equations and do not change given matrices.
+    /// </summary>
+    /// <param name="A">The coefficient matrix A.</param>
+    /// <param name="b">The right side vector b.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
+    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <returns>True if the system has a unique solution, otherwise false.</returns>
     public static bool SolveImmutable(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
       return Solve((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice, out result);
     }
 
+    /// <summary>
+    /// Solves the system of linear equations using Gaussian elimination. This function modifies given matrices.
+    /// </summary>
+    /// <param name="A">The coefficient matrix A.</param>
+    /// <param name="b">The right side vector b.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
+    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <returns>True if the system has a unique solution, otherwise false.</returns>
     public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
-      Debug.Assert(A.GetLength(0) == b.Length, "The length of vector b must be equal to the length of the first row of A matrix.");
+      Debug.Assert
+        (A.GetLength(0) == b.Length, "The length of vector b must be equal to the length of the first row of A matrix.");
 
       int N = b.Length;
       result = new TNum[N];
@@ -116,13 +162,7 @@ public partial class Geometry<TNum, TConv>
       return true;
     }
 
-    // todo сделать генератор матриц [a,b] в Matrix
-    // todo                           -  non singular (проверять невырожденность накапливая параллельно вектора в базис последовательно)
-    // todo сравнить скорость работы с вариантом через функции (делегаты)
-
-
-
-
   }
+  // todo сравнить скорость работы с вариантом через функции (делегаты)
 
 }
