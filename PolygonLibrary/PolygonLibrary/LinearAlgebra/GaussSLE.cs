@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
@@ -22,8 +23,13 @@ public partial class Geometry<TNum, TConv>
 
     }
 
+    public static bool SolveNoChange(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+      return Solve((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice, out result);
+    }
 
     public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+      Debug.Assert(A.GetLength(0) == b.Length, "The length of vector b must be equal to the length of the first row of A matrix.");
+
       int N = b.Length;
       result = new TNum[N];
 
@@ -38,7 +44,13 @@ public partial class Geometry<TNum, TConv>
         TNum absMaxEl      = Tools.Abs(A[IndARow[k], IndACol[k]]);
 
         switch (gaussChoice) {
-          case GaussChoice.No: { break; } // Всё выставленно куда надо.
+          case GaussChoice.No: {
+            if (Tools.EQ(absMaxEl)) {
+              return false;
+            }
+
+            break;
+          } // Всё выставленно куда надо.
 
           case GaussChoice.RowWise: {
             lcol = rcol = k;
@@ -79,48 +91,6 @@ public partial class Geometry<TNum, TConv>
         Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
         Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
 
-        // switch (gaussChoice) {
-        //   case GaussChoice.RowWise: {
-        //     absMaxEl = FindAbsMaxInArray
-        //       (Enumerable.Range(k, N - k).Select(j => A[IndARow[j], IndACol[k]]).ToArray(), out int maxInd);
-        //     maxRowWiseInd = IndARow[k] + maxInd;
-        //
-        //     Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
-        //     Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
-        //
-        //     break;
-        //   }
-        //
-        //   case GaussChoice.ColWise: {
-        //     absMaxEl = FindAbsMaxInArray
-        //       (Enumerable.Range(k, N - k).Select(j => A[IndARow[k], IndACol[j]]).ToArray(), out int maxInd);
-        //     maxColWiseInd = IndACol[k] + maxInd;
-        //
-        //     Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
-        //
-        //     break;
-        //   }
-        //
-        //   case GaussChoice.All: {
-        //     for (int row = k; row < N; row++) {
-        //       TNum absMax = FindAbsMaxInArray
-        //         (Enumerable.Range(k, N - k).Select(j => A[IndARow[row], IndACol[j]]).ToArray(), out int maxColInd);
-        //       if (absMax > absMaxEl) {
-        //         absMaxEl      = absMax;
-        //         maxRowWiseInd = row;
-        //         maxColWiseInd = IndACol[k] + maxColInd;
-        //       }
-        //     }
-        //     Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
-        //     Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
-        //     Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
-        //
-        //
-        //     break;
-        //   }
-        // }
-        Console.WriteLine($"max = {absMaxEl,-4} row = {maxRowWiseInd,-2} col = {maxColWiseInd}");
-
         if (Tools.EQ(absMaxEl)) { //Если все элементы в строке нулевые
           return false;
         }
@@ -135,6 +105,9 @@ public partial class Geometry<TNum, TConv>
       }
 
       int n = b.Length - 1; // Максимальный валидный индекс
+      if (Tools.EQ(A[IndARow[n], IndACol[n]])) {
+        return false;
+      }
       result[IndACol[n]] = b[IndB[n]] / A[IndARow[n], IndACol[n]];
       for (int k = n - 1; k >= 0; k--) {
         TNum sum = Tools.Zero;
