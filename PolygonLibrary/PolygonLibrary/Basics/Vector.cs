@@ -37,9 +37,9 @@ public partial class Geometry<TNum, TConv>
       get
         {
 #if DEBUG
-        if (i < 0 || i >= Dim) {
-          throw new IndexOutOfRangeException();
-        }
+          if (i < 0 || i >= Dim) {
+            throw new IndexOutOfRangeException();
+          }
 #endif
           return _v[i];
         }
@@ -473,7 +473,6 @@ public partial class Geometry<TNum, TConv>
     public override string ToString() => ToStringWithDiffBraces('(', ')');
 
 
-
     public override int GetHashCode() {
       int res = 0, d = Dim;
 
@@ -605,6 +604,32 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(orth);
     }
+
+    /// <summary>
+    /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5].
+    /// </summary>
+    /// <param name="dim">The dimension of the vector.</param>
+    /// <param name="random">If null then default one be used.</param>
+    /// <returns>A random vector.</returns>
+    public static Vector GenVector(int dim, GRandomLC? random = null) {
+      Vector res;
+      do {
+        res = GenVector(dim, -Tools.HalfOne, Tools.HalfOne, random);
+      } while (res.IsZero);
+
+      return res;
+    }
+
+    /// <summary>
+    /// Generates an arbitrary vector of the specified dimension. Each coordinate: [a, b].
+    /// </summary>
+    /// <param name="dim">The dimension of the vector.</param>
+    /// <param name="a">The minimum value of each coordinate.</param>
+    /// <param name="b">The maximum value of each coordinate.</param>
+    /// <param name="random">If null then default one be used.</param>
+    /// <returns>A random vector.</returns>
+    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) =>
+      new Vector(GenArray(dim, a, b, random));
 #endregion
 
 #region Operators
