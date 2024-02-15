@@ -14,54 +14,20 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// </summary>
   public static readonly GRandomLC _random = new GRandomLC(0);
 
-  #region Auxiliary functions
+#region Auxiliary functions
   /// <summary>
   /// Generates a random TNum value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
   /// </summary>
   /// <returns>The generated random TNum value.</returns>
   public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
 
-  /// <summary>
-  /// Generates a non-zero random vector of the specified dimension. Each coordinate: [-0.5, 0.5].
-  /// </summary>
-  /// <param name="dim">The dimension of the vector.</param>
-  /// <param name="random">If null then _random be used.</param>
-  /// <returns>A random vector.</returns>
-  public static Vector GenVector(int dim, GRandomLC? random = null) {
-    GRandomLC rnd = random ?? _random;
-
-    Vector res;
-    TNum[] v = new TNum[dim];
-    do {
-      for (int i = 0; i < dim; i++) {
-        v[i] = rnd.NextPrecise() - Tools.HalfOne;
-      }
-      res = new Vector(v);
-    } while (res.IsZero);
-
-    return res;
-  }
-
-  /// <summary>
-  /// Generates a linear basis of given dimension.
-  /// </summary>
-  /// <param name="dim">The dimension of the basis.</param>
-  /// <returns>A full dimensional basis.</returns>
-  public static LinearBasis GenLinearBasis(int dim) {
-    LinearBasis lb = new LinearBasis();
-    do {
-      lb.AddVector(GenVector(dim));
-    } while (!lb.IsFullDim);
-
-    return lb;
-  }
 
   /// <summary>
   /// Rotates the given swarm by an arbitrary non-degenerate matrix.
   /// </summary>
   /// <param name="S">The swarm to be rotated.</param>
   /// <returns>A rotated swarm.</returns>
-  public static List<Point> RotateRND(List<Point> S) => Rotate(S, GenLinearBasis(S.First().Dim).GetMatrix());
+  public static List<Point> RotateRND(List<Point> S) => Rotate(S, Matrix.GenONMatrix(S.First().Dim));
 
   /// <summary>
   /// Generates a linear combination of the given points.
@@ -70,8 +36,8 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A linear combination of the given points.</returns>
   public static Point GenConvexCombination(IReadOnlyCollection<Point> points, GRandomLC? random = null) {
-    GRandomLC rnd = random ?? _random;
-    List<TNum> ws = new List<TNum>();
+    GRandomLC  rnd = random ?? _random;
+    List<TNum> ws  = new List<TNum>();
 
     TNum difA = Tools.One;
     for (int i = 0; i < points.Count - 1; i++) {
@@ -92,26 +58,8 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="dim">The dimension of the vector.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A random non-zero vector.</returns>
-  public static Vector GenShift(int dim, GRandomLC? random = null) {
-    GRandomLC rnd = random ?? _random;
-
-    return GenVector(dim) * rnd.NextFromInt(1, 10);
-  }
-
-  /// <summary>
-  /// Generate orthonormal matrix.
-  /// </summary>
-  /// <param name="spaceDim">The dimension d of the space.</param>
-  /// <param name="random">The random to be used. If null, the _random be used.</param>
-  /// <returns>The matrix d x d.</returns>
-  public static Matrix GenONMatrix(int spaceDim, GRandomLC? random = null) {
-    LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
-    while (!basis.IsFullDim) {
-      basis.AddVector(GenVector(spaceDim, random));
-    }
-
-    return basis.GetMatrix();
-  }
+  public static Vector GenShift(int dim, GRandomLC? random = null) => Vector.GenVector
+    (dim, TConv.FromInt(1), TConv.FromInt(10), random);
 
   ///<summary>
   /// Method applies a rotation and a shift to two lists of points.
@@ -123,8 +71,8 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S, uint? seed = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
-    Matrix rotation = GenONMatrix(PDim, random);
-    Vector shift = GenVector(PDim, random) * _random.NextFromInt(1, 10);
+    Matrix rotation = Matrix.GenONMatrix(PDim, random);
+    Vector shift    = Vector.GenVector(PDim, TConv.FromInt(1), TConv.FromInt(10), random);
 
     P = Rotate(P, rotation);
     P = Shift(P, shift);
@@ -182,8 +130,6 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
 
     return new Matrix(rotM);
   }
-
-
-  #endregion
+#endregion
 
 }

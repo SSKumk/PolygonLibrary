@@ -45,7 +45,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
 #region Polytopes and Polytopes-list Fabrics
   public static List<Point> Cube_list(int           dim) => Cube(dim, out _);
-  public static List<Point> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), GenLinearBasis(dim).GetMatrix());
+  public static List<Point> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
   public static List<Point> Simplex_list(int        dim) => Simplex(dim, out _);
   public static List<Point> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
 
@@ -212,7 +212,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     List<Point> simplex = new List<Point>();
     do {
       for (int i = 0; i < simplexDim + 1; i++) {
-        simplex.Add(new Point(TConv.FromInt(10) * GenVector(simplexDim, random)));
+        simplex.Add(new Point(Vector.GenVector(simplexDim, TConv.FromInt(0), TConv.FromInt(10), random)));
       }
     } while (!new AffineBasis(simplex).IsFullDim);
     List<Point> aux = new List<Point>(simplex);
