@@ -184,6 +184,21 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
+#region Fabrics
+    /// <summary>
+    /// Generates a linear basis of given dimension.
+    /// </summary>
+    /// <param name="dim">The dimension of the basis.</param>
+    /// <returns>A full dimensional basis.</returns>
+    public static LinearBasis GenLinearBasis(int dim) {
+      LinearBasis lb = new LinearBasis();
+      do {
+        lb.AddVector(Vector.GenVector(dim));
+      } while (!lb.IsFullDim);
+
+      return lb;
+    }
+#endregion
 
     /// <summary>
     /// Aux method to check then the basis is correct
