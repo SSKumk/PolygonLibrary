@@ -31,6 +31,7 @@ class Program {
     //   GaussNaive((double[,])A.Clone(), (double[])b.Clone());
     //   GaussRowWise((double[,])A.Clone(), (double[])b.Clone());
     //   GaussColWise((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussAll((double[,])A.Clone(), (double[])b.Clone());
     // }
   }
 

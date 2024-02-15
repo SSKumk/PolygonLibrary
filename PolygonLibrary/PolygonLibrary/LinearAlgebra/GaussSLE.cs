@@ -74,9 +74,9 @@ public partial class Geometry<TNum, TConv>
       int[] IndB    = Enumerable.Range(0, N).ToArray();
 
       for (int k = 0; k < N - 1; k++) { // последний элемент будем обрабатывать отдельно
-        TNum absMaxEl      = Tools.Abs(A[IndARow[k], IndACol[k]]);
         int  maxRowWiseInd = k;
         int  maxColWiseInd = k;
+        TNum absMaxEl      = Tools.Abs(A[IndARow[k], IndACol[k]]);
         switch (gaussChose) {
           case GaussChose.RowWise: {
             absMaxEl = FindAbsMaxInArray
@@ -106,7 +106,7 @@ public partial class Geometry<TNum, TConv>
               if (absMax > absMaxEl) {
                 absMaxEl      = absMax;
                 maxRowWiseInd = row;
-                maxColWiseInd = IndACol[row] + maxColInd;
+                maxColWiseInd = IndACol[k] + maxColInd;
               }
             }
             Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
