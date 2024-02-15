@@ -87,7 +87,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// Generates a random non-zero vector, each coordinate [-50, 50] \ {0}.
+  /// Generates a random non-zero vector, each coordinate [-50, 50].
   /// </summary>
   /// <param name="dim">The dimension of the vector.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
@@ -99,12 +99,12 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// Generate rotation matrix.
+  /// Generate non-singular matrix.
   /// </summary>
   /// <param name="spaceDim">The dimension d of the space.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
-  /// <returns>Unitary matrix dxd.</returns>
-  private static Matrix GenRotation(int spaceDim, GRandomLC? random = null) {
+  /// <returns>The matrix d x d.</returns>
+  public static Matrix GenNonSingularMatrix(int spaceDim, GRandomLC? random = null) {
     LinearBasis basis = new LinearBasis(new[] { GenVector(spaceDim) });
     while (!basis.IsFullDim) {
       basis.AddVector(GenVector(spaceDim, random));
@@ -123,7 +123,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S, uint? seed = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
-    Matrix rotation = GenRotation(PDim, random);
+    Matrix rotation = GenNonSingularMatrix(PDim, random);
     Vector shift = GenVector(PDim, random) * _random.NextFromInt(1, 10);
 
     P = Rotate(P, rotation);
