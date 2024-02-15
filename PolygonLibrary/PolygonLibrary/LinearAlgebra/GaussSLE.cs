@@ -13,31 +13,7 @@ public partial class Geometry<TNum, TConv>
   // столбец b размера d x 1
   public class GaussSLE {
 
-    //
-    private static TNum[] Naive(TNum[,] A, TNum[] b) {
-      int N = b.Length;
-      for (int k = 0; k < N - 1; k++) { // последний элемент будем обрабатывать отдельно
-        for (int i = k + 1; i < N; i++) {
-          TNum t = A[i, k] / A[k, k];
-          b[i] -= t * b[k];
-          for (int j = k; j < N; j++) {
-            A[i, j] -= t * A[k, j];
-          }
-        }
-      }
-      TNum[] res = new TNum[N];
-      int    n   = b.Length - 1; // Максимальный валидный индекс
-      res[n] = b[n] / A[n, n];
-      for (int k = n - 1; k >= 0; k--) {
-        TNum sum = Tools.Zero;
-        for (int i = k + 1; i < N; i++) { sum += A[k, i] * res[i]; }
-        res[k] = (b[k] - sum) / A[k, k];
-      }
-
-      return res;
-    }
-
-    public enum GaussChose {
+    public enum GaussChoice {
 
       No
     , RowWise
@@ -46,26 +22,8 @@ public partial class Geometry<TNum, TConv>
 
     }
 
-    private static TNum FindAbsMaxInArray(TNum[] a, out int ind) {
-      ind = 0;
-      TNum max = Tools.Abs(a[0]);
-      for (int i = 1; i < a.Length; i++) {
-        TNum abs = Tools.Abs(a[i]);
-        if (abs > max) {
-          max = abs;
-          ind = i;
-        }
-      }
 
-      return max;
-    }
-
-    public static bool Solve(TNum[,] A, TNum[] b, GaussChose gaussChose, out TNum[] result) {
-      if (gaussChose == GaussChose.No) {
-        result = Naive(A, b);
-
-        return true;
-      }
+    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
       int N = b.Length;
       result = new TNum[N];
 
@@ -76,47 +34,91 @@ public partial class Geometry<TNum, TConv>
       for (int k = 0; k < N - 1; k++) { // последний элемент будем обрабатывать отдельно
         int  maxRowWiseInd = k;
         int  maxColWiseInd = k;
+        int  lcol          = k, rcol = k, rrow = k, lrow = k;
         TNum absMaxEl      = Tools.Abs(A[IndARow[k], IndACol[k]]);
-        switch (gaussChose) {
-          case GaussChose.RowWise: {
-            absMaxEl = FindAbsMaxInArray
-              (Enumerable.Range(k, N - k).Select(j => A[IndARow[j], IndACol[k]]).ToArray(), out int maxInd);
-            maxRowWiseInd = IndARow[k] + maxInd;
 
-            Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
-            Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
+        switch (gaussChoice) {
+          case GaussChoice.No: { break; } // Всё выставленно куда надо.
 
-            break;
-          }
-
-          case GaussChose.ColWise: {
-            absMaxEl = FindAbsMaxInArray
-              (Enumerable.Range(k, N - k).Select(j => A[IndARow[k], IndACol[j]]).ToArray(), out int maxInd);
-            maxColWiseInd = IndACol[k] + maxInd;
-
-            Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
+          case GaussChoice.RowWise: {
+            lcol = rcol = k;
+            lrow = k;
+            rrow = N - 1;
 
             break;
           }
+          case GaussChoice.ColWise: {
+            lrow = rrow = k;
+            lcol = k;
+            rcol = N - 1;
 
-          case GaussChose.All: {
-            for (int row = k; row < N; row++) {
-              TNum absMax = FindAbsMaxInArray
-                (Enumerable.Range(k, N - k).Select(j => A[IndARow[row], IndACol[j]]).ToArray(), out int maxColInd);
-              if (absMax > absMaxEl) {
-                absMaxEl      = absMax;
-                maxRowWiseInd = row;
-                maxColWiseInd = IndACol[k] + maxColInd;
-              }
-            }
-            Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
-            Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
-            Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
-
+            break;
+          }
+          case GaussChoice.All: {
+            lrow = k;
+            lcol = k;
+            rrow = N - 1;
+            rcol = N - 1;
 
             break;
           }
         }
+
+        for (int i = lrow; i <= rrow; i++) {
+          for (int j = lcol; j <= rcol; j++) {
+            TNum curAbs = Tools.Abs(A[IndARow[i], IndACol[j]]);
+            if (curAbs > absMaxEl) {
+              absMaxEl      = curAbs;
+              maxRowWiseInd = i;
+              maxColWiseInd = j;
+            }
+          }
+        }
+
+        Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
+        Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
+        Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
+
+        // switch (gaussChoice) {
+        //   case GaussChoice.RowWise: {
+        //     absMaxEl = FindAbsMaxInArray
+        //       (Enumerable.Range(k, N - k).Select(j => A[IndARow[j], IndACol[k]]).ToArray(), out int maxInd);
+        //     maxRowWiseInd = IndARow[k] + maxInd;
+        //
+        //     Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
+        //     Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
+        //
+        //     break;
+        //   }
+        //
+        //   case GaussChoice.ColWise: {
+        //     absMaxEl = FindAbsMaxInArray
+        //       (Enumerable.Range(k, N - k).Select(j => A[IndARow[k], IndACol[j]]).ToArray(), out int maxInd);
+        //     maxColWiseInd = IndACol[k] + maxInd;
+        //
+        //     Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
+        //
+        //     break;
+        //   }
+        //
+        //   case GaussChoice.All: {
+        //     for (int row = k; row < N; row++) {
+        //       TNum absMax = FindAbsMaxInArray
+        //         (Enumerable.Range(k, N - k).Select(j => A[IndARow[row], IndACol[j]]).ToArray(), out int maxColInd);
+        //       if (absMax > absMaxEl) {
+        //         absMaxEl      = absMax;
+        //         maxRowWiseInd = row;
+        //         maxColWiseInd = IndACol[k] + maxColInd;
+        //       }
+        //     }
+        //     Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
+        //     Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
+        //     Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
+        //
+        //
+        //     break;
+        //   }
+        // }
         Console.WriteLine($"max = {absMaxEl,-4} row = {maxRowWiseInd,-2} col = {maxColWiseInd}");
 
         if (Tools.EQ(absMaxEl)) { //Если все элементы в строке нулевые
