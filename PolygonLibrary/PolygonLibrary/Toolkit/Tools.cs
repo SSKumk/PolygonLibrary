@@ -69,7 +69,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The random generator.
     /// </summary>
-    public static readonly RandomLC rnd = new RandomLC();
+    public static readonly GRandomLC rnd = new GRandomLC();
 
     /// <summary>
     /// Absolute accuracy for comparison
