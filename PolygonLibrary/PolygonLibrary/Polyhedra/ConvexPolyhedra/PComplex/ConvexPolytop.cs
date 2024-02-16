@@ -215,6 +215,30 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public HashSet<Point> Vertices => Polytop.Vertices;
 
+    /// <summary>
+    /// The list of hyperplanes forming the polytop.
+    /// </summary>
+    private List<HyperPlane>? _HRepr = null;
+
+    /// <summary>
+    /// Get the polytop as a hyperplane representation. Its normals are oriented outwards.
+    /// </summary>
+    /// <returns>The list of hyperplanes.</returns>
+    public List<HyperPlane> HRepresentation {
+      get
+        {
+          if (_HRepr is null) {
+            List<HyperPlane> res = new List<HyperPlane>();
+            foreach (Face face in Faces) {
+              res.Add(face.HPlane);
+            }
+            _HRepr = res;
+          }
+
+          return _HRepr;
+        }
+    }
+
     public VPolytop Polytop { get; init; }
 
     /// <summary>
@@ -288,6 +312,39 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
+  }
+
+  public static HashSet<Point> HRepToVRep_Naive(List<HyperPlane> H) {
+    int n = H.Count;
+    int d = H.First().SubSpaceDim + 1;
+
+    HashSet<Point> Vs          = new HashSet<Point>();
+    Combination   combination = new Combination(n, d);
+    do {                 // Перебираем все сочетания из d элементов из набора гиперплоскостей
+      if (GaussSLE.Solve // Ищем точку пересечения
+            (
+             (r, l) => H[combination[r]].Normal[l]
+           , r => H[combination[r]].ConstantTerm
+           , d
+           , GaussSLE.GaussChoice.All
+           , out TNum[] x
+            )) {
+        bool  belongs = true;
+        Point point   = new Point(x);
+        foreach (HyperPlane hp in H) {
+          if (hp.ContainsPositive(point)) {
+            belongs = false;
+
+            break;
+          }
+        }
+        if (belongs) {
+          Vs.Add(point);
+        }
+      }
+    } while (combination.Next());
+
+    return Vs;
   }
 
 }
