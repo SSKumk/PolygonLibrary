@@ -379,11 +379,6 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
-    // todo класс Combination в отдельный файл Combinations.cs
-    // - конструктор (n,k)
-    // - индексер-getter взять элемент текущего сочетания
-    // - вернуть массив интов - копия текущего сочетания
-    // - bool next() пересчёт дошли ли до конца?
 
     /// <summary>
     /// Generates all possible combinations of a given size from a set of numbers.
