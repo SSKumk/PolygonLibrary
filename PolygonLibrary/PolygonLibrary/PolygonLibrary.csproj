@@ -26,6 +26,7 @@
         <Compile Include="Basics\Point2D.cs" />
         <Compile Include="Basics\Vector.cs" />
         <Compile Include="Basics\Vector2D.cs" />
+        <Compile Include="LinearAlgebra\GaussSLE.cs" />
         <Compile Include="Polygons\BasicPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\GammaPair.cs" />

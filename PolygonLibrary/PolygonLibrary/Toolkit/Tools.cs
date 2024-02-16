@@ -71,7 +71,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The random generator.
     /// </summary>
-    public static readonly RandomLC rnd = new RandomLC();
+    public static readonly GRandomLC rnd = new GRandomLC();
 
     /// <summary>
     /// Absolute accuracy for comparison
@@ -332,6 +332,22 @@ public partial class Geometry<TNum, TConv>
 
         return GE(y) ? (HalfPI - TNum.Atan(xy)) : (-HalfPI - TNum.Atan(xy));
       }
+    }
+
+    /// <summary>
+    /// Returns an absolute value of the number.
+    /// </summary>
+    /// <param name="x">Given number.</param>
+    /// <returns>The absolute value. |x|.</returns>
+    public static TNum Abs(TNum x) {
+      if (GT(x)) {
+        return x;
+      }
+      if (LT(x)) {
+        return -x;
+      }
+
+      return Zero;
     }
 
     /// <summary>

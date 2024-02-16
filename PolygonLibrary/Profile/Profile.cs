@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using DoubleDouble;
 using Tests.ToolsTests;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
@@ -12,19 +13,49 @@ using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
 
-
 class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-    List<int[]> a = Tools.GetCombinations(10, 3).ToList();
-    foreach (int[] combination in Tools.GetCombinations(10,3)) {
-      Console.WriteLine(string.Join(' ', combination));
-
+    // {
+    //   double[,] A = new double[,] { { 10, 6, 2, 0 }, { 5, 1, -2, 4 }, { 3, 5, 1, -1 }, { 0, 6, -2, 2 } };
+    //   double[]  b = new double[] { 25, 14, 10, 8 };
+    //   GaussNaive((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussRowWise((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussColWise((double[,])A.Clone(), (double[])b.Clone());
+    //   GaussAll((double[,])A.Clone(), (double[])b.Clone());
+    // }
+    {
+      double[,] A = new double[,] { { 2, -9, 5 }, { 1.2, -5.3999, 6}, { 1, -1, -7.5 }};
+      double[]  b = new double[] { -4, 0.6001, -8.5 };
+      GaussNaive((double[,])A.Clone(), (double[])b.Clone());
+      GaussRowWise((double[,])A.Clone(), (double[])b.Clone());
+      GaussColWise((double[,])A.Clone(), (double[])b.Clone());
+      GaussAll((double[,])A.Clone(), (double[])b.Clone());
     }
+  }
 
+  private static void GaussAll(double[,] A, double[] b) {
+    Console.WriteLine("All-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChoice.All, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
+  private static void GaussColWise(double[,] A, double[] b) {
+    Console.WriteLine("Col-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChoice.ColWise, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
 
+  private static void GaussRowWise(double[,] A, double[] b) {
+    Console.WriteLine("Row-wise");
+    GaussSLE.Solve(A, b, GaussSLE.GaussChoice.RowWise, out double[] x);
+    Console.WriteLine(string.Join(' ', x));
+  }
+
+  private static void GaussNaive(double[,] A, double[] b) {
+    GaussSLE.Solve(A, b, GaussSLE.GaussChoice.No, out double[] x);
+    Console.WriteLine("Naive:");
+    Console.WriteLine(string.Join(' ', x));
   }
 
   private static void CompareValues_AlgLib_naive() {
@@ -36,7 +67,6 @@ class Program {
     var x = Sphere_list(dim, theta, phi, r);
 
     var y = GiftWrapping.WrapPolytop(x);
-
 
 
     y.WriteTXT($@"F:\Temp\LP-tests\Alglib\pic\S{dim}-{theta}-{phi}-{r}.txt");
@@ -53,7 +83,7 @@ class Program {
       Console.Write(",");
     }
     Console.WriteLine("\n");
-    Console.WriteLine(GenVector(dim));
+    Console.WriteLine(Vector.GenVector(dim));
   }
 
   private static void ProfileMinkSum() {

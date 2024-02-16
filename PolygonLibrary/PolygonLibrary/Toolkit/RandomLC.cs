@@ -108,4 +108,24 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
   }
 
+
+  /// <summary>
+  /// Generates an array of the specified dimension. Each component lies in [a, b).
+  /// </summary>
+  /// <param name="dim">The dimension of the array.</param>
+  /// <param name="a">The minimum value of each component.</param>
+  /// <param name="b">The maximum value of each component.</param>
+  /// <param name="random">If null then default one be used.</param>
+  /// <returns>An array with random values.</returns>
+  public static TNum[] GenArray(int dim, TNum a, TNum b, GRandomLC? random = null) {
+    GRandomLC rnd = random ?? Tools.rnd;
+
+    TNum[] v = new TNum[dim];
+    for (int i = 0; i < dim; i++) {
+      v[i] = rnd.NextPrecise(a,b);
+    }
+
+    return v;
+  }
+
 }
