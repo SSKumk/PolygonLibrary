@@ -11,11 +11,22 @@ namespace Tests.SpeedTests;
 
 public class SpeedTestsGaussSLE {
 
-  [Test]
-  public void PivotTests() {
+  private static Stopwatch InitTestTimer() {
     Stopwatch timer = new Stopwatch();
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+    timer.Restart();
+    {
+      int p = 0;
+      for (int i = 0; i < 10000; i++) { p++; }
+    }
+    timer.Stop();
 
+    return timer;
+  }
+
+  [Test]
+  public void PivotTests() {
+    Stopwatch timer = InitTestTimer();
     StreamWriter writer = new StreamWriter
       (Directory.GetCurrentDirectory() + "/SpeedBench/LinearAlgebra/GaussSLE/PivotCompare-withCopyTime.txt");
     for (int k = 10; k <= 100; k *= 2) {
@@ -27,25 +38,25 @@ public class SpeedTestsGaussSLE {
       timer.Restart();
       GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.No, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"No pivot: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"No pivot: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       timer.Restart();
       GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"Row-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"Row-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       timer.Restart();
       GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"Col-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"Col-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       timer.Restart();
       GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"All-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"All-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       writer.WriteLine();
@@ -54,8 +65,7 @@ public class SpeedTestsGaussSLE {
 
   [Test]
   public void PivotTests2() {
-    Stopwatch timer = new Stopwatch();
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+    Stopwatch timer = InitTestTimer();
 
     StreamWriter writer = new StreamWriter
       (Directory.GetCurrentDirectory() + "/SpeedBench/LinearAlgebra/GaussSLE/PivotCompare-NoCopyTime.txt");
@@ -70,7 +80,7 @@ public class SpeedTestsGaussSLE {
       timer.Restart();
       GaussSLE.Solve(A, b, GaussSLE.GaussChoice.No, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"No pivot: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"No pivot: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       A = (ddouble[,])ASave.Clone();
@@ -78,7 +88,7 @@ public class SpeedTestsGaussSLE {
       timer.Restart();
       GaussSLE.Solve(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"Row-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"Row-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       A = (ddouble[,])ASave.Clone();
@@ -86,7 +96,7 @@ public class SpeedTestsGaussSLE {
       timer.Restart();
       GaussSLE.Solve(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"Col-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"Col-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       A = (ddouble[,])ASave.Clone();
@@ -94,7 +104,7 @@ public class SpeedTestsGaussSLE {
       timer.Restart();
       GaussSLE.Solve(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] _);
       timer.Stop();
-      writer.WriteLine($"All-wise: {timer.Elapsed.TotalSeconds:F8}ms");
+      writer.WriteLine($"All-wise: {timer.Elapsed.TotalSeconds:F8}s");
       writer.Flush();
 
       writer.WriteLine();
@@ -103,8 +113,9 @@ public class SpeedTestsGaussSLE {
 
   [Test]
   public void CompareFunc() {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    Stopwatch timer = new Stopwatch();
+    Stopwatch timer = InitTestTimer();
+
+    timer.Stop();
     StreamWriter writer = new StreamWriter
       (Directory.GetCurrentDirectory() + "/SpeedBench/LinearAlgebra/GaussSLE/CompareFunc.txt");
 
