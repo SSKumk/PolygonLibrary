@@ -52,6 +52,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\VPolytop.cs" />
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
+        <Compile Include="Toolkit\Combinations.cs" />
         <Compile Include="Toolkit\Convexification.cs" />
         <Compile Include="Toolkit\Extensions.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
