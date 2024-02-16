@@ -13,21 +13,36 @@ using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
 
+// Для проверки H-избыточности
+// todo 1) Взять симплекс метод из Гуэрцитрона, запустить в отдельном проекте
+// todo 2) Сравнить по скорости и качеству с alglib.
+
+
 class Program {
+
+  public static double[] MakeOneVector(int dim) {
+    double[] v = new double[dim];
+    for (int i = 0; i < dim; i++) {
+      v[i] = 1;
+    }
+
+    return v;
+  }
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    var         x = new Combinations(5, 4);
-    List<int[]> X = new List<int[]>();
-    foreach (int[] combination in x) {
-      // Console.WriteLine(string.Join(' ', combination));
-      X.Add(combination);
-    }
-    foreach (int[] combination in X) {
-      Console.WriteLine(string.Join(' ', combination));
+    Matrix m = Matrix.GenNonSingular(3);
 
-    }
+
+    // foreach (Point p in HRepToVRep_Naive(CubeGW(3).HRepresentation)) {
+    // Console.WriteLine(p);
+    // }
+    const int d = 7;
+    var       x = CubeGW(d).HRepresentation;
+    x.Add(new HyperPlane(new Vector(MakeOneVector(d)), double.Sqrt(d) * 0.9));
+
+    Console.WriteLine(HRepToVRep_Naive(x).Count);
   }
 
 
