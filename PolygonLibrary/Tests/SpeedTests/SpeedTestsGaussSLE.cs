@@ -126,24 +126,29 @@ public class SpeedTestsGaussSLE {
 
     ddouble[,] A = Matrix.GenNonSingular(dim, -100, 100);
     ddouble[]  b = GenArray(dim, -100, 100);
-    // ddouble[,] ASave = (ddouble[,])A.Clone();
-    // ddouble[]  bSave = (ddouble[])b.Clone();
 
+    bool res;
+    int  k   = 0;
     writer.WriteLine("Flat solver:");
     timer.Restart();
     for (int i = 0; i < N; i++) {
-      GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
+      res = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
+      if (res) { k++; }
     }
     timer.Stop();
     writer.WriteLine($"{timer.Elapsed.TotalSeconds / N:F8}");
+    Console.WriteLine($"k = {k}");
 
+    k = 0;
     writer.WriteLine("Function solver:");
     timer.Restart();
     for (int i = 0; i < N; i++) {
-      GaussSLE.Solve((r, l) => A[r, l], r => b[r], dim, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
+      res = GaussSLE.Solve((r, l) => A[r, l], r => b[r], dim, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
+      if (res) { k++; }
     }
     timer.Stop();
     writer.WriteLine($"{timer.Elapsed.TotalSeconds / N:F8}");
+    Console.WriteLine($"k = {k}");
 
     writer.Close();
   }
