@@ -163,6 +163,5 @@ public partial class Geometry<TNum, TConv>
     }
 
   }
-  // todo сравнить скорость работы с вариантом через функции (делегаты)
 
 }
