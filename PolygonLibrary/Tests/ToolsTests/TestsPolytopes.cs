@@ -26,8 +26,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly List<Point> Cube5D_list       = Cube_list(5);
 
 
-  public static readonly ConvexPolytop Cube3D       = Cube(3).CPolytop;
-  public static readonly ConvexPolytop Cube4D       = Cube(4).CPolytop;
+  public static readonly ConvexPolytop Cube3D       = CubeGW(3).CPolytop;
+  public static readonly ConvexPolytop Cube4D       = CubeGW(4).CPolytop;
   public static readonly ConvexPolytop Simplex3D    = Simplex(3).CPolytop;
   public static readonly ConvexPolytop Simplex4D    = Simplex(4).CPolytop;
   public static readonly ConvexPolytop Octahedron3D = new GiftWrapping(Octahedron3D_list).CPolytop;
@@ -49,7 +49,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static List<Point> Simplex_list(int        dim) => Simplex(dim, out _);
   public static List<Point> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
 
-  public static GiftWrapping Cube(int           dim) => new GiftWrapping(Cube_list(dim));
+  public static GiftWrapping CubeGW(int         dim) => new GiftWrapping(Cube_list(dim));
   public static GiftWrapping CubeRotatedRND(int dim) => new GiftWrapping(CubeRotatedRND_list(dim));
   public static GiftWrapping Simplex(int        dim) => new GiftWrapping(Simplex(dim, out _));
   public static GiftWrapping SimplexRND(int     dim) => new GiftWrapping(SimplexRND(dim, out _));
@@ -58,7 +58,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     new GiftWrapping(Sphere_list(dim, theta, phi, radius));
 
 
-  public static FaceLattice CubeFL(int dim) => Cube(dim).FaceLattice;
+  public static FaceLattice CubeFL(int dim) => CubeGW(dim).FaceLattice;
   public static FaceLattice CubeRotatedRND_FL(int dim) => CubeRotatedRND(dim).FaceLattice;
   public static FaceLattice SimplexFL(int dim) => SimplexRND(dim).FaceLattice;
   public static FaceLattice SphereFL(int dim, int theta, int phi, TNum radius) => Sphere(dim, theta, phi, radius).FaceLattice;
