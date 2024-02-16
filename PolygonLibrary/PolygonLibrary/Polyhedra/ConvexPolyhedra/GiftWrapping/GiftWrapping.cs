@@ -152,21 +152,9 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Get the polytop as a hyperplane representation. Its normals are oriented outwards.
+    /// </summary>
     /// <returns>The list of hyperplanes.</returns>
-    public List<HyperPlane> HRepresentation {
-      get
-        {
-          if (_HRepr is null) {
-            List<HyperPlane> res = new List<HyperPlane>();
-            foreach (Face face in CPolytop.Faces) {
-              res.Add(new HyperPlane(face.Vertices.First(), face.Normal));
-            }
-            _HRepr = res;
-          }
-
-          return _HRepr;
-        }
-    }
+    public List<HyperPlane> HRepresentation => CPolytop.HRepresentation;
 
     /// <summary>
     /// Polytop as list of its vertices.
