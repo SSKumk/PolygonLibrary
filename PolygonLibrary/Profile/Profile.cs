@@ -32,17 +32,22 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    Matrix m = Matrix.GenNonSingular(3);
+    var HSphere = Sphere(4, 10, 20, 1).HRepresentation;
 
+    StreamWriter writer = new StreamWriter(Directory.GetCurrentDirectory() + "/H-Sphere-4-10-20.txt");
+    System.Console.WriteLine(Directory.GetCurrentDirectory());
 
-    // foreach (Point p in HRepToVRep_Naive(CubeGW(3).HRepresentation)) {
-    // Console.WriteLine(p);
-    // }
-    const int d = 7;
-    var       x = CubeGW(d).HRepresentation;
-    x.Add(new HyperPlane(new Vector(MakeOneVector(d)), double.Sqrt(d) * 0.9));
-
-    Console.WriteLine(HRepToVRep_Naive(x).Count);
+    writer.WriteLine(HSphere.Count);
+    writer.WriteLine(4);
+    foreach (HyperPlane hp in HSphere) {
+      writer.Write($"{hp.ConstantTerm}");
+      for (int i = 0; i < hp.Normal.Dim; i++) {
+        writer.Write($" {hp.Normal[i]}");
+      }
+      writer.WriteLine();
+    }
+    writer.Close();
+    System.Console.WriteLine("Yes!");
   }
 
 
