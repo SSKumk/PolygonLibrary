@@ -17,7 +17,6 @@ namespace Profile;
 // todo 1) Взять симплекс метод из Гуэрцитрона, запустить в отдельном проекте
 // todo 2) Сравнить по скорости и качеству с alglib.
 
-
 class Program {
 
   public static double[] MakeOneVector(int dim) {
@@ -32,17 +31,27 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    Matrix m = Matrix.GenNonSingular(3);
+    FaceLattice F = SphereFL(3, 5, 10, 4);
+    FaceLattice G = Cube3D_FL;
+    F.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-Sphere-3-5-10-4.txt");
+    G.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-Cube.txt");
 
+    var x = MinkowskiDiff.MinkDiff
+      (
+       F
+     , G
+     , MinkowskiDiff.FindExtrInCPOnVector_Naive
+     , MinkowskiDiff.doSubtract
+     , ConvexPolytop.HRepToVRep_Naive
+     , GiftWrapping.WrapFaceLattice
+      , out FaceLattice diffFL
+      );
+    if (x) {
+      diffFL.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-diffFG.txt");
+    } else {
+      Console.WriteLine("Diff is empty!");
+    }
 
-    // foreach (Point p in HRepToVRep_Naive(CubeGW(3).HRepresentation)) {
-    // Console.WriteLine(p);
-    // }
-    const int d = 7;
-    var       x = CubeGW(d).HRepresentation;
-    x.Add(new HyperPlane(new Vector(MakeOneVector(d)), double.Sqrt(d) * 0.9));
-
-    Console.WriteLine(HRepToVRep_Naive(x).Count);
   }
 
 

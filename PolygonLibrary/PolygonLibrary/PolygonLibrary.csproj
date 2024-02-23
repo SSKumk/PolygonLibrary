@@ -43,6 +43,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\Minkowski.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\Polygon2D.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" />
