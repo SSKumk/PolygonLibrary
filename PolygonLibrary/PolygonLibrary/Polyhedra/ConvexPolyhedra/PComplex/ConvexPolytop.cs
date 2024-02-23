@@ -312,39 +312,44 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-  }
+    /// <summary>
+    /// Converts the H-representation of convex polytop to the V-representation by checking all possible d-tuples of the hyperplanes.
+    /// </summary>
+    /// <param name="H">The hyperplane arrangement.</param>
+    /// <returns>The V-representation of the convex polytop.</returns>
+    public static HashSet<Point> HRepToVRep_Naive(List<HyperPlane> H) {
+      int n = H.Count;
+      int d = H.First().SubSpaceDim + 1;
 
-  public static HashSet<Point> HRepToVRep_Naive(List<HyperPlane> H) {
-    int n = H.Count;
-    int d = H.First().SubSpaceDim + 1;
+      HashSet<Point> Vs          = new HashSet<Point>();
+      Combination    combination = new Combination(n, d);
+      do {                 // Перебираем все сочетания из d элементов из набора гиперплоскостей
+        if (GaussSLE.Solve // Ищем точку пересечения
+              (
+               (r, l) => H[combination[r]].Normal[l]
+             , r => H[combination[r]].ConstantTerm
+             , d
+             , GaussSLE.GaussChoice.All
+             , out TNum[] x
+              )) {
+          bool  belongs = true;
+          Point point   = new Point(x);
+          foreach (HyperPlane hp in H) {
+            if (hp.ContainsPositive(point)) {
+              belongs = false;
 
-    HashSet<Point> Vs          = new HashSet<Point>();
-    Combination   combination = new Combination(n, d);
-    do {                 // Перебираем все сочетания из d элементов из набора гиперплоскостей
-      if (GaussSLE.Solve // Ищем точку пересечения
-            (
-             (r, l) => H[combination[r]].Normal[l]
-           , r => H[combination[r]].ConstantTerm
-           , d
-           , GaussSLE.GaussChoice.All
-           , out TNum[] x
-            )) {
-        bool  belongs = true;
-        Point point   = new Point(x);
-        foreach (HyperPlane hp in H) {
-          if (hp.ContainsPositive(point)) {
-            belongs = false;
-
-            break;
+              break;
+            }
+          }
+          if (belongs) {
+            Vs.Add(point);
           }
         }
-        if (belongs) {
-          Vs.Add(point);
-        }
-      }
-    } while (combination.Next());
+      } while (combination.Next());
 
-    return Vs;
+      return Vs;
+    }
+
   }
 
 }
