@@ -78,8 +78,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The root vertex of the current point.</returns>
     public Point GetRootVertex() {
       SubPoint root = this;
-      while (Parent is not null) {
-        root = Parent;
+      while (root.Parent is not null) {
+        root = root.Parent;
       }
 
       return root;
