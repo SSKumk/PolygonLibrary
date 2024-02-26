@@ -32,19 +32,18 @@ class Program {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
     FaceLattice F = SphereFL(3, 5, 10, 4);
-    FaceLattice G = Cube3D_FL;
+    VPolytop G = new VPolytop(Cube3D_list);
     F.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-Sphere-3-5-10-4.txt");
-    G.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-Cube.txt");
 
-    var x = MinkowskiDiff.MinkDiff
+    bool x = MinkowskiDiff.MinkDiff
       (
        F
      , G
-     , MinkowskiDiff.FindExtrInCPOnVector_Naive
-     , MinkowskiDiff.doSubtract
-     , ConvexPolytop.HRepToVRep_Naive
-     , GiftWrapping.WrapFaceLattice
-      , out FaceLattice diffFL
+     , out FaceLattice diffFL
+      , MinkowskiDiff.FindExtrInCPOnVector_Naive
+      , MinkowskiDiff.doSubtract
+      , ConvexPolytop.HRepToVRep_Naive
+      , GiftWrapping.WrapFaceLattice
       );
     if (x) {
       diffFL.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-diffFG.txt");
