@@ -28,7 +28,7 @@ public partial class Geometry<TNum, TConv>
      * Но в среднем мы будем проигрывать, так как симплекс-метод не идёт по всем вершинам и множитель |V(G)| - грубая оценка сверху.
      */
 
-    public static Vector FindExtrInCPOnVector_Naive(ConvexPolytop P, Vector l) {
+    public static Vector FindExtrInCPOnVector_Naive(VPolytop P, Vector l) {
       Vector extr    = new Vector(P.Vertices.First());
       TNum   extrVal = l * extr;
 
@@ -75,37 +75,41 @@ public partial class Geometry<TNum, TConv>
 
 
     public static bool MinkDiff(FaceLattice                               F
-                              , FaceLattice                               G
-                              , Func<ConvexPolytop, Vector, Vector>       findExtrInG_on_lFromNF
+                              , VPolytop                                  G
+                              , out FaceLattice                           diffFL
+                              , Func<VPolytop, Vector, Vector>            findExtrInG_on_lFromNF
                               , Func<HyperPlane, Vector, HyperPlane>      doSubtract // <-- todo Как назвать?
                               , Func<List<HyperPlane>, HashSet<Point>>    HtoVRep
                               , Func<HashSet<Point>, FaceLattice>         produceFL
-                              , out FaceLattice                          diffFL
                               , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null) {
-      List<HyperPlane> FHrep  = F.ToConvexPolytop().HRepresentation;
-      ConvexPolytop    GCPRep = G.ToConvexPolytop();
-      List<HyperPlane> gamma  = new List<HyperPlane>();
+      List<HyperPlane> FHrep = F.ToConvexPolytop().HRepresentation;
+      List<HyperPlane> gamma = new List<HyperPlane>();
       foreach (HyperPlane hpF in FHrep) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
-        Vector extrOn_l = findExtrInG_on_lFromNF(GCPRep, hpF.Normal);
+        Vector extrOn_l = findExtrInG_on_lFromNF(G, hpF.Normal);
 
 
         // 2) Для каждого l \in N(F) построить пару (l,C'(l)) = (l, C(l) - l*v(l)) - построить функцию \gamma. C - свободный член гиперграни.
         gamma.Add(doSubtract(hpF, extrOn_l));
       }
 
+
       // 3? Провести H-redundancy на наборе gamma = {(l,C'(l))}.
+
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
       HashSet<Point> VRepFminusG = HtoVRep(gamma);
 
+
       // 5) Построить FL роя V(F-G)
       if (VRepFminusG.Count < 3) {
         diffFL = new FaceLattice(new Point(1));
+
         return false;
       }
 
       diffFL = produceFL(VRepFminusG);
+
       return true;
     }
 
