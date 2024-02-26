@@ -348,8 +348,8 @@ public class MinkowskiSum5D {
   private static List<Point> simplex5D,    simplex4D,    simplex3D,    simplex2D;
   private static List<Point> simplexRND5D, simplexRND4D, simplexRND3D, simplexRND2D;
 
-  private static List<List<Point>> allCubes_lst, allSimplices_lst, allSimplicesRND_lst;
-  private static List<List<Point>> all_lst;
+  private static readonly List<List<Point>> allCubes_lst, all_lst;
+  private static          List<List<Point>> allSimplices_lst, allSimplicesRND_lst;
 
   // private List<FaceLattice> allCubes_FL;
   // private Vector shift;
