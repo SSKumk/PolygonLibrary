@@ -22,7 +22,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The convex polytop obtained as a result of gift wrapping algorithm.
     /// </summary>
-    internal readonly BaseSubCP BuiltPolytop;
+    private readonly BaseSubCP BuiltPolytop;
 
     /// <summary>
     /// The original set of points.
@@ -88,6 +88,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The face lattice.</returns>
     private FaceLattice ConstructFL() {
+      if (Vertices.Count == 1) {
+        return new FaceLattice(Vertices.First());
+      }
+
       Dictionary<int, FLNode> allNodes = new Dictionary<int, FLNode>();
       List<HashSet<FLNode>>   lattice  = new List<HashSet<FLNode>>();
       for (int i = 0; i < BuiltPolytop.PolytopDim + 1; i++) {
@@ -173,24 +177,27 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Swarm">The swarm of points to convexify.</param>
     public GiftWrapping(IEnumerable<Point> Swarm) {
       // Пока не будет SubBaseCP размерности 0.
-      if (Swarm.Count() <= 1) {
-        throw new ArgumentException("GW: At least 2 points must be in Swarm for convexification.");
+      if (!Swarm.Any()) {
+        throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
       }
-
       SOrig = new HashSet<Point>(Swarm);
-      // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
-      HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
-      AffineBasis       AffineS = new AffineBasis(S);
-      if (AffineS.SpaceDim < AffineS.VecDim) {
-        // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
-        // уходим в подпространство и там овыпукляем.
-        S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
+      if (Swarm.Count() == 1) {
+        BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
+        VPolytop     = new VPolytop(new List<Point>() { Swarm.First() });
+      } else {
+        // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
+        HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
+        AffineBasis       AffineS = new AffineBasis(S);
+        if (AffineS.SpaceDim < AffineS.VecDim) {
+          // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
+          // уходим в подпространство и там овыпукляем.
+          S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
+        }
+
+        GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
+        BuiltPolytop = gwSwarm.BuiltPolytop;
+        VPolytop     = new VPolytop(gwSwarm.BuiltPolytop.OriginalVertices);
       }
-
-
-      GiftWrappingMain x = new GiftWrappingMain(S);
-      BuiltPolytop = x.BuiltPolytop;
-      VPolytop     = new VPolytop(x.BuiltPolytop.OriginalVertices);
     }
 
     /// <summary>
