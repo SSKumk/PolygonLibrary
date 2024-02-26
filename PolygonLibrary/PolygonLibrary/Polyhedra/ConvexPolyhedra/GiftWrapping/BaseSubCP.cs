@@ -32,6 +32,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   , NonSimplex
   , TwoDimensional
   , OneDimensional
+  , ZeroDimensional
 
   }
 
