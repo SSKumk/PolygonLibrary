@@ -66,7 +66,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
 #region Polytopes generators
   /// <summary>
-  /// Generates a full-dimension hypercube in the specified dimension.
+  /// Generates a full-dimension 0-1-hypercube in the specified dimension.
   /// </summary>
   /// <param name="cubeDim">The dimension of the hypercube.</param>
   /// <param name="pureCube">The list of cube vertices of given dimension.</param>
@@ -80,11 +80,39 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
                                , IEnumerable<int>? facesDim    = null
                                , int               amount      = 1
                                , uint?             seed        = null
+                               , bool              needShuffle = false) => Cube
+    (cubeDim, Tools.One, out pureCube, facesDim, amount, seed, needShuffle);
+
+  /// <summary>
+  /// Generates a full-dimension 0-d-hypercube in the specified dimension.
+  /// </summary>
+  /// <param name="cubeDim">The dimension of the hypercube.</param>
+  /// <param name="d">The value of non-zero coordinates.</param>
+  /// <returns>A list of points representing the hypercube.</returns>
+  public static List<Point> Cube(int cubeDim, TNum d) => Cube(cubeDim, d, out _);
+
+  /// <summary>
+  /// Generates a full-dimension hypercube in the specified dimension.
+  /// </summary>
+  /// <param name="cubeDim">The dimension of the hypercube.</param>
+  /// <param name="d">The value of non-zero coordinates.</param>
+  /// <param name="pureCube">The list of cube vertices of given dimension.</param>
+  /// <param name="facesDim">The dimensions of the faces of the hypercube to put points on.</param>
+  /// <param name="amount">The amount of points to be placed into random set of faces of faceDim dimension.</param>
+  /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
+  /// <param name="needShuffle"></param>
+  /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
+  public static List<Point> Cube(int               cubeDim
+                               , TNum              d
+                               , out List<Point>   pureCube
+                               , IEnumerable<int>? facesDim    = null
+                               , int               amount      = 1
+                               , uint?             seed        = null
                                , bool              needShuffle = false) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     if (cubeDim == 1) {
-      List<Point> oneDimCube = new List<Point>() { new Point(new TNum[] { TNum.Zero }), new Point(new TNum[] { TNum.One }) };
+      List<Point> oneDimCube = new List<Point>() { new Point(new TNum[] { TNum.Zero }), new Point(new TNum[] { d }) };
       pureCube = oneDimCube;
 
       return oneDimCube;
@@ -93,14 +121,14 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     List<List<TNum>> cube_prev = new List<List<TNum>>();
     List<List<TNum>> cube      = new List<List<TNum>>();
     cube_prev.Add(new List<TNum>() { TNum.Zero });
-    cube_prev.Add(new List<TNum>() { TNum.One });
+    cube_prev.Add(new List<TNum>() { d });
 
     for (int i = 1; i < cubeDim; i++) {
       cube.Clear();
 
       foreach (List<TNum> coords in cube_prev) {
         cube.Add(new List<TNum>(coords) { TNum.Zero });
-        cube.Add(new List<TNum>(coords) { TNum.One });
+        cube.Add(new List<TNum>(coords) { d });
       }
 
       cube_prev = new List<List<TNum>>(cube);
@@ -140,7 +168,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
               TNum[] point = new TNum[cubeDim];
               int    s     = 0;
               for (int j = 0; j < cubeDim; j++) {
-                point[j] = -TNum.One;
+                point[j] = -d;
               }
 
               foreach (int ind in fixedInd) { // на выделенных местах размещаем 1-ки и 0-ки
@@ -149,7 +177,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
               }
 
               for (int j = 0; j < cubeDim; j++) {
-                if (Tools.EQ(point[j], -TNum.One)) {
+                if (Tools.EQ(point[j], -d)) {
                   point[j] = GenInner(random);
                 }
               }
@@ -222,6 +250,36 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     pureSimplex = new List<Point>(simplex);
 
     return AddPointsToSimplex(facesDim, amount, simplex, random);
+  }
+
+  /// <summary>
+  /// Makes the cyclic polytop in specified dimension with specified amount of points.
+  /// </summary>
+  /// <param name="pDim">The dimension of the cyclic polytop.</param>
+  /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>
+  /// <param name="step">The step of increasing the moment on the moments curve. init = 1 + step.</param>
+  /// <returns></returns>
+  public static List<Point> CyclicPolytop(int pDim, int amountOfPoints, TNum step) {
+    Debug.Assert
+      (
+       amountOfPoints > pDim
+     , $"TestPolytopes.CyclicPolytop: The amount of points must be greater than the dimenstion of the space. Dim = {pDim}, amount = {amountOfPoints}"
+      );
+    List<Point> cycP = new List<Point>() { new Point(pDim) };
+    TNum baseCoord = Tools.One + step; // todo сделать STEP vvv
+    for (int i = 1; i < amountOfPoints; i++) {
+      TNum[] point      = new TNum[pDim];
+      TNum   coordinate = baseCoord;
+      TNum   multiplyer = coordinate;
+      for (int t = 0; t < pDim; t++) { // (i, i^2, i^3 , ... , i^d)
+        point[t]   =  coordinate;
+        coordinate *= multiplyer;
+      }
+      cycP.Add(new Point(point));
+      baseCoord += step;
+    }
+
+    return cycP;
   }
 #endregion
 
