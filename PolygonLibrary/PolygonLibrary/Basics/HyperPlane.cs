@@ -178,7 +178,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point at which the equation is to be evaluated.</param>
     /// <returns>The value of the equation of the hyperplane at the given point.</returns>
-    public TNum Eval(Point point) { return Normal * new Vector(point) - ConstantTerm; }
+    public TNum Eval(Point point) { return Normal * point - ConstantTerm; }
+
 
     /// <summary>
     /// Checks if the hyperplane contains a given point.
