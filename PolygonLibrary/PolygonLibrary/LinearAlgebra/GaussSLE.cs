@@ -10,6 +10,19 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  // todo Теперь живём в классе (методы не статические как GW)
+  // Конструкторы
+  //  1) Только создание хранилищ ++
+  //  2) Создание хранилищ и заполнение матриц ++
+  //
+  // Методы
+  // - заполнения матриц с разными входными данными (функции, матрицы); в отладочном режиме проверять размеры ++
+  // - произвести решение; заполнить индексные массивы
+  // - взять результат
+  //
+  // Фабрики
+  // - создать и решить СЛАУ, выдать результат.
+
   /// <summary>
   /// Provides functionality for solving systems of linear equations using Gaussian elimination.
   /// </summary>
@@ -27,71 +40,146 @@ public partial class Geometry<TNum, TConv>
 
     }
 
-    /// <summary>
-    /// Solves the system of linear equations represented by the given functions.
-    /// </summary>
-    /// <param name="fA">Function provides the coefficients of the matrix A.</param>
-    /// <param name="fb">Function provides the right side vector b.</param>
-    /// <param name="dim">Dimension of the square matrix A and the length of vector b.</param>
-    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
-    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
-    /// <returns>True if the system has a unique solution, otherwise false.</returns>
-    public static bool Solve(Func<int, int, TNum> fA, Func<int, TNum> fb, int dim, GaussChoice gaussChoice, out TNum[] result) {
-      TNum[,] A = new TNum[dim, dim];
-      TNum[]  b = new TNum[dim];
+#region Fields
+    private int         _row, _col;
+    private TNum[,]     _A;
+    private TNum[]      _b, _result;
+    private GaussChoice _gaussChoice;
 
-      for (int r = 0; r < dim; r++) {
-        for (int l = 0; l < dim; l++) {
-          A[r, l] = fA(r, l);
+    private int[] _indARow, _indACol, _indB;
+    private bool  isSuccess;
+#endregion
+
+#region Constructors
+    /// <summary>
+    /// Constructs a new instance of GaussSLE with the specified dimensions.
+    /// </summary>
+    /// <param name="row">The number of rows in the matrix A.</param>
+    /// <param name="col">The number of columns in the matrix A.</param>
+    public GaussSLE(int row, int col) {
+      _row     = row;
+      _col     = col;
+      _A       = new TNum[row, col];
+      _b       = new TNum[row];
+      _result  = new TNum[col];
+      _indARow = new int[row];
+      _indACol = new int[col];
+      _indB    = new int[row];
+    }
+
+
+    /// <summary>
+    /// Constructs a new instance of GaussSLE with the specified dimensions, functions for generating the matrix A and vector b, and a choice for pivot selection.
+    /// </summary>
+    /// <param name="AFunc">Function provides the coefficients of the matrix A.</param>
+    /// <param name="bFunc">Function provides the right side vector b.</param>
+    /// <param name="row">The number of rows in the matrix A.</param>
+    /// <param name="col">The number of columns in the matrix A.</param>
+    /// <param name="gaussChoice">Optional choice for pivot selection during Gaussian elimination.</param>
+    public GaussSLE(Func<int, int, TNum> AFunc
+                  , Func<int, TNum>      bFunc
+                  , int                  row
+                  , int                  col
+                  , GaussChoice          gaussChoice = GaussChoice.All) : this(row, col) {
+      SetSystem(AFunc, bFunc, row, col, gaussChoice);
+    }
+
+    /// <summary>
+    /// Constructs a new instance of GaussSLE with the specified dimensions, functions for generating the matrix A and vector b, and a choice for pivot selection.
+    /// </summary>
+    /// <param name="A">The coefficient matrix A.</param>
+    /// <param name="b">The right side vector b.</param>
+    /// <param name="gaussChoice">Optional choice for pivot selection during Gaussian elimination.</param>
+    public GaussSLE(TNum[,] A, TNum[] b, GaussChoice gaussChoice = GaussChoice.All) : this(A.GetLength(0), A.GetLength(1)) {
+      SetSystem(A, b, gaussChoice);
+    }
+#endregion
+
+#region Methods
+    /// <summary>
+    /// Sets the choice for pivot selection.
+    /// </summary>
+    /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
+    public void SetGaussChoice(GaussChoice gaussChoice) { _gaussChoice = gaussChoice; }
+
+    /// <summary>
+    /// Sets the system of linear equations to be solved by this instance.
+    /// </summary>
+    /// <param name="AFunc">Function provides the coefficients of the matrix A.</param>
+    /// <param name="bFunc">Function provides the right side vector b.</param>
+    /// <param name="row">The number of rows in the matrix A.</param>
+    /// <param name="col">The number of columns in the matrix A.</param>
+    /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
+    public void SetSystem(Func<int, int, TNum> AFunc
+                        , Func<int, TNum>      bFunc
+                        , int                  row
+                        , int                  col
+                        , GaussChoice          gaussChoice = GaussChoice.All) {
+      Debug.Assert(row == _row, $"The amount of rows in A must be equal to initial parameter row. Found {row} row = {_row}");
+      Debug.Assert(col == _col, $"The amount of columns in A must be equal to initial parameter row. Found {col} row = {_row}");
+      _gaussChoice = gaussChoice;
+      for (int r = 0; r < _row; r++) {
+        for (int l = 0; l < _col; l++) {
+          _A[r, l] = AFunc(r, l);
         }
-        b[r] = fb(r);
+        _b[r] = bFunc(r);
+      }
+    }
+
+    /// <summary>
+    /// Sets the system of linear equations to be solved by this instance using provided matrix A and vector b.
+    /// </summary>
+    /// <param name="A">The matrix A representing the system of linear equations.</param>
+    /// <param name="b">The vector b representing the right-hand side of the system.</param>
+    /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
+    public void SetSystem(TNum[,] A, TNum[] b, GaussChoice gaussChoice = GaussChoice.All) {
+      Debug.Assert
+        (
+         A.GetLength(0) == _row
+       , $"The amount of rows in A must be equal to initial parameter row. Found {A.GetLength(0)} row = {_row}"
+        );
+      Debug.Assert
+        (
+         A.GetLength(1) == _col
+       , $"The amount of columns in A must be equal to initial parameter col. Found {A.GetLength(1)} row = {_col}"
+        );
+      Debug.Assert
+        (b.Length == _row, $"The amount of rows in b must be equal to initial parameter row. Found {b.Length} row = {_row}");
+      _gaussChoice = gaussChoice;
+
+      for (int r = 0; r < _row; r++) {
+        for (int l = 0; l < _col; l++) {
+          _A[r, l] = A[r, l];
+        }
+        _b[r] = b[r];
+      }
+    }
+
+    /// <summary>
+    /// Solves the system of linear equations using Gaussian elimination.
+    /// </summary>
+    public void Solve() {
+      for (int i = 0; i < _row; i++) { // Установили индексные массивы
+        _indARow[i] = i;
+        _indACol[i] = i;
+        _indB[i]    = i;
       }
 
-      return Solve(A, b, gaussChoice, out result);
-    }
-
-    /// <summary>
-    /// Solves the system of linear equations and do not change given matrices.
-    /// </summary>
-    /// <param name="A">The coefficient matrix A.</param>
-    /// <param name="b">The right side vector b.</param>
-    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
-    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
-    /// <returns>True if the system has a unique solution, otherwise false.</returns>
-    public static bool SolveImmutable(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
-      return Solve((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice, out result);
-    }
-
-    /// <summary>
-    /// Solves the system of linear equations using Gaussian elimination. This function modifies given matrices.
-    /// </summary>
-    /// <param name="A">The coefficient matrix A.</param>
-    /// <param name="b">The right side vector b.</param>
-    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
-    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
-    /// <returns>True if the system has a unique solution, otherwise false.</returns>
-    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
-      Debug.Assert
-        (A.GetLength(0) == b.Length, "The length of vector b must be equal to the length of the first row of A matrix.");
-
-      int N = b.Length;
-      result = new TNum[N];
-
-      int[] IndARow = Enumerable.Range(0, N).ToArray();
-      int[] IndACol = Enumerable.Range(0, N).ToArray();
-      int[] IndB    = Enumerable.Range(0, N).ToArray();
-
-      for (int k = 0; k < N - 1; k++) { // последний элемент будем обрабатывать отдельно
+      int maxRowInd = _row - 1;
+      int maxColInd = _col - 1;
+      for (int k = 0; k < maxRowInd; k++) { // последний элемент будем обрабатывать отдельно
         int  maxRowWiseInd = k;
         int  maxColWiseInd = k;
         int  lcol          = k, rcol = k, rrow = k, lrow = k;
-        TNum absMaxEl      = Tools.Abs(A[IndARow[k], IndACol[k]]);
+        TNum absMaxEl      = Tools.Abs(_A[_indARow[k], _indACol[k]]);
 
-        switch (gaussChoice) {
+        switch (_gaussChoice) {
           case GaussChoice.No: {
             if (Tools.EQ(absMaxEl)) {
-              return false;
-            }
+              isSuccess = false;
+
+              return;
+            } // Если очередной элемент на диагонали ноль, то решения нет
 
             break;
           } // Всё выставленно куда надо.
@@ -99,22 +187,22 @@ public partial class Geometry<TNum, TConv>
           case GaussChoice.RowWise: {
             lcol = rcol = k;
             lrow = k;
-            rrow = N - 1;
+            rrow = maxRowInd;
 
             break;
           }
           case GaussChoice.ColWise: {
             lrow = rrow = k;
             lcol = k;
-            rcol = N - 1;
+            rcol = maxColInd;
 
             break;
           }
           case GaussChoice.All: {
             lrow = k;
             lcol = k;
-            rrow = N - 1;
-            rcol = N - 1;
+            rrow = maxRowInd;
+            rcol = maxColInd;
 
             break;
           }
@@ -122,7 +210,7 @@ public partial class Geometry<TNum, TConv>
 
         for (int i = lrow; i <= rrow; i++) {
           for (int j = lcol; j <= rcol; j++) {
-            TNum curAbs = Tools.Abs(A[IndARow[i], IndACol[j]]);
+            TNum curAbs = Tools.Abs(_A[_indARow[i], _indACol[j]]);
             if (curAbs > absMaxEl) {
               absMaxEl      = curAbs;
               maxRowWiseInd = i;
@@ -131,36 +219,99 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-        Tools.Swap(ref IndB[k], ref IndB[maxRowWiseInd]);
-        Tools.Swap(ref IndARow[k], ref IndARow[maxRowWiseInd]);
-        Tools.Swap(ref IndACol[k], ref IndACol[maxColWiseInd]);
+        Tools.Swap(ref _indB[k], ref _indB[maxRowWiseInd]);
+        Tools.Swap(ref _indARow[k], ref _indARow[maxRowWiseInd]);
+        Tools.Swap(ref _indACol[k], ref _indACol[maxColWiseInd]);
 
         if (Tools.EQ(absMaxEl)) { //Если все элементы в строке нулевые
-          return false;
+          isSuccess = false;
+
+          return;
         }
 
-        for (int i = k + 1; i < N; i++) {
-          TNum t = A[IndARow[i], IndACol[k]] / A[IndARow[k], IndACol[k]];
-          b[IndB[i]] -= t * b[IndB[k]];
-          for (int j = k; j < N; j++) {
-            A[IndARow[i], IndACol[j]] -= t * A[IndARow[k], IndACol[j]];
+        for (int i = k + 1; i < _row; i++) {
+          TNum t = _A[_indARow[i], _indACol[k]] / _A[_indARow[k], _indACol[k]];
+          _b[_indB[i]] -= t * _b[_indB[k]];
+          for (int j = k; j < _row; j++) {
+            _A[_indARow[i], _indACol[j]] -= t * _A[_indARow[k], _indACol[j]];
           }
         }
       }
 
-      int n = b.Length - 1; // Максимальный валидный индекс
-      if (Tools.EQ(A[IndARow[n], IndACol[n]])) {
-        return false;
+      if (Tools.EQ(_A[_indARow[maxRowInd], _indACol[maxRowInd]])) {
+        isSuccess = false;
+
+        return;
       }
-      result[IndACol[n]] = b[IndB[n]] / A[IndARow[n], IndACol[n]];
-      for (int k = n - 1; k >= 0; k--) {
+      _result[_indACol[maxRowInd]] = _b[_indB[maxRowInd]] / _A[_indARow[maxRowInd], _indACol[maxRowInd]];
+      for (int k = maxRowInd - 1; k >= 0; k--) {
         TNum sum = Tools.Zero;
-        for (int i = k + 1; i < N; i++) { sum += A[IndARow[k], IndACol[i]] * result[IndACol[i]]; }
-        result[IndACol[k]] = (b[IndB[k]] - sum) / A[IndARow[k], IndACol[k]];
+        for (int i = k + 1; i < _row; i++) { sum += _A[_indARow[k], _indACol[i]] * _result[_indACol[i]]; }
+        _result[_indACol[k]] = (_b[_indB[k]] - sum) / _A[_indARow[k], _indACol[k]];
       }
 
-      return true;
+      isSuccess = true;
     }
+
+    /// <summary>
+    /// Retrieves the solution of the system of linear equations as an array of numbers.
+    /// </summary>
+    /// <param name="result">Output parameter that receives the solution vector.</param>
+    /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
+    public bool GetSolution(out TNum[] result) {
+      result = _result;
+
+      return isSuccess;
+    }
+
+    /// <summary>
+    /// Retrieves the solution of the system of linear equations as a Point.
+    /// </summary>
+    /// <param name="result">Output parameter that receives the solution point.</param>
+    /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
+    public bool GetSolution(out Point result) {
+      result = new Point(_result);
+
+      return isSuccess;
+    }
+#endregion
+
+#region Fabrics
+    /// <summary>
+    /// Solves the system of linear equations represented by the given functions.
+    /// </summary>
+    /// <param name="AFunc">Function provides the coefficients of the matrix A.</param>
+    /// <param name="bFunc">Function provides the right side vector b.</param>
+    /// <param name="dim">Dimension of the square matrix A and the length of vector b.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
+    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
+    public static bool Solve(Func<int, int, TNum> AFunc
+                           , Func<int, TNum>      bFunc
+                           , int                  dim
+                           , GaussChoice          gaussChoice
+                           , out TNum[]           result) {
+      GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, dim, dim, gaussChoice);
+      gaussSLE.Solve();
+
+      return gaussSLE.GetSolution(out result);
+    }
+
+    /// <summary>
+    /// Solves the system of linear equations represented by the given matrices.
+    /// </summary>
+    /// <param name="A">The coefficient matrix A.</param>
+    /// <param name="b">The right side vector b.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
+    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
+    public static bool SolveImmutable(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+      GaussSLE gaussSLE = new GaussSLE((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice);
+      gaussSLE.Solve();
+
+      return gaussSLE.GetSolution(out result);
+    }
+#endregion
 
   }
 
