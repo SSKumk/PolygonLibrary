@@ -7,7 +7,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -17,7 +18,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// </summary>
   public class Point : IComparable<Point> {
 
-    #region Internal storage, access properties, and convertors
+#region Internal storage, access properties, and convertors
     /// <summary>
     /// The internal storage of the point as a one-dimensional array
     /// </summary>
@@ -41,23 +42,23 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The value of the corresponding component</returns>
     public TNum this[int i] {
       get
-      {
+        {
 #if DEBUG
         if (i < 0 || i >= Dim) {
           throw new IndexOutOfRangeException();
         }
 #endif
-        return _p[i];
-      }
+          return _p[i];
+        }
       protected set
-      {
+        {
 #if DEBUG
         if (i < 0 || i >= Dim) {
           throw new IndexOutOfRangeException();
         }
 #endif
-        _p[i] = value;
-      }
+          _p[i] = value;
+        }
     }
 
     /// <summary>
@@ -66,9 +67,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be converted</param>
     /// <returns>The resultant array</returns>
     public static explicit operator TNum[](Point p) => p._p;
-    #endregion
+#endregion
 
-    #region Comparing
+#region Comparing
     /// <summary>
     /// Point comparer realizing the lexicographic order
     /// </summary>
@@ -173,24 +174,24 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p2">The second point</param>
     /// <returns>true, if p1 &lt;= p2; false, otherwise</returns>
     public static bool operator <=(Point p1, Point p2) => p1.CompareTo(p2) <= 0;
-    #endregion
+#endregion
 
-    #region Miscellaneous procedures
+#region Miscellaneous procedures
     /// <summary>
     /// Distance to the origin
     /// </summary>
     public TNum Dist {
       get
-      {
-        TNum res;
-        int i, d = Dim;
+        {
+          TNum res;
+          int  i, d = Dim;
 
-        for (i = 0, res = Tools.Zero; i < d; i++) {
-          res += _p[i] * _p[i];
+          for (i = 0, res = Tools.Zero; i < d; i++) {
+            res += _p[i] * _p[i];
+          }
+
+          return TNum.Sqrt(res);
         }
-
-        return TNum.Sqrt(res);
-      }
     }
 
     /// <summary>
@@ -215,11 +216,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the point.</param>
     /// <returns>A new point in the target dimension, with the additional coordinates set to zero.</returns>
-
     public Point ExpandTo(int d) {
       Debug.Assert(d > Dim, "Point.ExpandTo: Can't expand to lower dimension!");
 
-      int s = d - Dim;
+      int        s  = d - Dim;
       List<TNum> np = new List<TNum>(_p);
       for (int i = 0; i < s; i++) {
         np.Add(Tools.Zero);
@@ -239,17 +239,17 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public bool IsZero {
       get
-      {
-        if (!isZero.HasValue) {
-          isZero = true;
+        {
+          if (!isZero.HasValue) {
+            isZero = true;
 
-          for (int i = 0; i < Dim && isZero.Value; i++) {
-            isZero = Tools.EQ(this[i]);
+            for (int i = 0; i < Dim && isZero.Value; i++) {
+              isZero = Tools.EQ(this[i]);
+            }
           }
-        }
 
-        return isZero.Value;
-      }
+          return isZero.Value;
+        }
     }
 
     /// <summary>
@@ -273,7 +273,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The string in the specified format.</returns>
     public string ToFileFormat() {
       string res = $"{_p[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int d = Dim, i;
+      int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $" {_p[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -281,9 +281,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return res;
     }
-    #endregion
+#endregion
 
-    #region Overrides
+#region Overrides
     public override bool Equals(object? obj) {
 #if DEBUG
       if (obj is not Point) {
@@ -295,7 +295,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
     public override string ToString() {
       string res = $"({_p[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int d = Dim, i;
+      int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
         res += $",{_p[i].ToString(null, CultureInfo.InvariantCulture)}";
@@ -319,9 +319,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return _hash.Value;
     }
-    #endregion
+#endregion
 
-    #region Constructors
+#region Constructors
     /// <summary>
     /// The default construct producing the origin point of a n-dimensional space
     /// </summary>
@@ -382,9 +382,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="v">The vector to be copied</param>
     public Point(Vector2D v) => _p = new TNum[2] { v.x, v.y };
-    #endregion
+#endregion
 
-    #region Operators
+#region Operators
     /// <summary>
     /// Linear combination of two points
     /// </summary>
@@ -415,8 +415,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
     /// <returns>The resultant point</returns>
     public static Point LinearCombination(IEnumerable<Point> ps, IEnumerable<TNum> ws) {
-      IEnumerator<Point> enPoint = ps.GetEnumerator();
-      IEnumerator<TNum> enWeight = ws.GetEnumerator();
+      IEnumerator<Point> enPoint  = ps.GetEnumerator();
+      IEnumerator<TNum>  enWeight = ws.GetEnumerator();
 
 #if DEBUG
       if (!enPoint.MoveNext()) {
@@ -427,12 +427,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new ArgumentException("No weights in the collection to combine");
       }
 #else
-    enPoint.MoveNext();
-    enWeight.MoveNext();
+      enPoint.MoveNext();
+      enWeight.MoveNext();
 #endif
 
 
-      int dim = enPoint.Current.Dim;
+      int    dim    = enPoint.Current.Dim;
       TNum[] coords = new TNum[dim];
 
       do {
@@ -458,7 +458,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be reversed</param>
     /// <returns>The opposite point</returns>
     public static Point operator -(Point p) {
-      int d = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -549,7 +549,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point factor</param>
     /// <returns>The product</returns>
     public static Point operator *(TNum a, Point p) {
-      int d = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -560,12 +560,79 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     }
 
     /// <summary>
-    /// Right multiplication of a point by a number
+    /// Right multiplication of a point by a number.
     /// </summary>
-    /// <param name="p">The point factor</param>
-    /// <param name="a">The numeric factor</param>
-    /// <returns>The product</returns>
+    /// <param name="p">The point factor.</param>
+    /// <param name="a">The numeric factor.</param>
+    /// <returns>The product.</returns>
     public static Point operator *(Point p, TNum a) => a * p;
+
+
+    /// <summary>
+    /// Dot product.
+    /// </summary>
+    /// <param name="p1">The first point factor.</param>
+    /// <param name="p2">The second point factor.</param>
+    /// <returns>The product.</returns>
+    public static TNum operator *(Point p1, Point p2) {
+      int d = p1.Dim, i;
+#if DEBUG
+      if (d != p2.Dim) {
+        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
+      }
+#endif
+      TNum res = Tools.Zero;
+
+      for (i = 0; i < d; i++) {
+        res += p1._p[i] * p2._p[i];
+      }
+
+      return res;
+    }
+
+    /// <summary>
+    /// Dot product.
+    /// </summary>
+    /// <param name="p1">The first point factor.</param>
+    /// <param name="v2">The second point factor.</param>
+    /// <returns>The product.</returns>
+    public static TNum operator *(Point p1, Vector v2) {
+      int d = p1.Dim, i;
+#if DEBUG
+      if (d != v2.Dim) {
+        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
+      }
+#endif
+      TNum res = Tools.Zero;
+
+      for (i = 0; i < d; i++) {
+        res += p1._p[i] * v2[i];
+      }
+
+      return res;
+    }
+
+    /// <summary>
+    /// Dot product.
+    /// </summary>
+    /// <param name="v1">The vector factor.</param>
+    /// <param name="p2">The point factor.</param>
+    /// <returns>The product.</returns>
+    public static TNum operator *(Vector v1, Point p2) {
+      int d = v1.Dim, i;
+#if DEBUG
+      if (d != p2.Dim) {
+        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
+      }
+#endif
+      TNum res = Tools.Zero;
+
+      for (i = 0; i < d; i++) {
+        res += v1[i] * p2._p[i];
+      }
+
+      return res;
+    }
 
     /// <summary>
     /// Division of a point by a number
@@ -579,7 +646,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new DivideByZeroException();
       }
 #endif
-      int d = p.Dim, i;
+      int    d  = p.Dim, i;
       TNum[] np = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -588,7 +655,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       return new Point(np);
     }
-    #endregion
+#endregion
 
   }
 
