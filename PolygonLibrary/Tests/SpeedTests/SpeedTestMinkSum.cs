@@ -36,7 +36,7 @@ public class SpeedTestMinkSum {
 
       writer.Flush();
     }
-    Sum.Equals(null);
+    Sum!.Equals(null);
   }
 
   [Test]
@@ -63,7 +63,7 @@ public class SpeedTestMinkSum {
 
       writer.Flush();
     }
-    Sum.Equals(null);
+    Sum!.Equals(null);
   }
 
   [Test]
@@ -90,7 +90,7 @@ public class SpeedTestMinkSum {
 
       writer.Flush();
     }
-    Sum.Equals(null);
+    Sum!.Equals(null);
   }
 
   [Test]
@@ -121,7 +121,7 @@ public class SpeedTestMinkSum {
 
       writer.Flush();
     }
-    Sum.Equals(null);
+    Sum!.Equals(null);
   }
 
 }
