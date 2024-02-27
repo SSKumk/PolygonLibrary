@@ -31,26 +31,20 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    FaceLattice F = SphereFL(3, 5, 10, 4);
-    VPolytop G = new VPolytop(Cube3D_list);
-    F.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-Sphere-3-5-10-4.txt");
+    var F = Sphere(4, 5, 5, 2).CPolytop;
+    var G = Sphere(4, 4, 4, 1).VPolytop;
 
-    bool x = MinkowskiDiff.MinkDiff
+    bool isDiffNonEmpty = MinkowskiDiff.MinkDiff
       (
        F
      , G
      , out FaceLattice diffFL
-      , MinkowskiDiff.FindExtrInCPOnVector_Naive
-      , MinkowskiDiff.doSubtract
-      , ConvexPolytop.HRepToVRep_Naive
-      , GiftWrapping.WrapFaceLattice
+     , MinkowskiDiff.FindExtrInCPOnVector_Naive
+     , MinkowskiDiff.doSubtract
+     , ConvexPolytop.HRepToVRep_Naive
+     , GiftWrapping.WrapFaceLattice
       );
-    if (x) {
-      diffFL.WriteTXTasCPolytop(Directory.GetCurrentDirectory() + "-diffFG.txt");
-    } else {
-      Console.WriteLine("Diff is empty!");
-    }
-
+    Console.WriteLine($"{isDiffNonEmpty}");
   }
 
 
