@@ -145,7 +145,7 @@ public partial class Geometry<TNum, TConv>
     /// Writes lattice as convex polytop to the file.
     /// </summary>
     /// <param name="filePath">The path to the file to write in.</param>
-    public void WriteTXTasCPolytop(string filePath) => this.ToConvexPolytop().WriteTXT(filePath);
+    public void WriteTXTasCPolytop(string filePath) => this.ToConvexPolytop().WriteTXT(filePath, true); // Чтобы в 3Д красиво было
 
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {

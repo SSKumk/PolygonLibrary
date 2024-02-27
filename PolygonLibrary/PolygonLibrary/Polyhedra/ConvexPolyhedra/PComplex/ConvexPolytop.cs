@@ -77,7 +77,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the vertices of the face.
     /// </summary>
-    public HashSet<Point> Vertices { get; }
+    public List<Point> Vertices { get; }
 
     /// <summary>
     /// Gets the normal vector of the face.
@@ -95,7 +95,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="normal">The outward normal vector of the face.</param>
     public Face(IEnumerable<Point> Vs, Vector normal) {
-      Vertices = new HashSet<Point>(Vs);
+      Vertices = new List<Point>(Vs);
       Normal   = normal;
     }
 
@@ -112,7 +112,7 @@ public partial class Geometry<TNum, TConv>
 
       Face other = (Face)obj;
 
-      return this.Normal.Equals(other.Normal) && this.Vertices.SetEquals(other.Vertices);
+      return this.Normal.Equals(other.Normal) && (new HashSet<Point>(this.Vertices)).SetEquals(other.Vertices);
     }
 
     /// <summary>
@@ -295,8 +295,14 @@ public partial class Geometry<TNum, TConv>
     /// Writes Polytop to the file in 'PolytopTXT_format'.
     /// </summary>
     /// <param name="filePath">The path to the file to write in.</param>
-    public void WriteTXT(string filePath) {
-      List<Point> VList = Vertices.Order().ToList();
+    /// <param name="needGW">If the flag is true, then the GW procedure is applied and the order of the vertices is established.</param>
+    public void WriteTXT(string filePath, bool needGW = false) {
+      List<Point>   VList = Vertices.Order().ToList();
+      HashSet<Face> FSet  = Faces;
+      if (needGW && PolytopDim == 3) {
+        // Это надо только для того, что бы красиво картинки в 3Д рисовать, так как в FL теряется инфа о порядке вершин
+        FSet = GiftWrapping.WrapPolytop(VList).Faces;
+      }
       using (StreamWriter writer = new StreamWriter(filePath)) {
         writer.WriteLine($"PDim: {PolytopDim}");
         writer.WriteLine($"SDim: {SpaceDim}");
@@ -305,7 +311,7 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
         writer.WriteLine();
         writer.WriteLine($"Faces: {Faces.Count}");
-        foreach (Face face in Faces.OrderBy(F => new Point(F.Normal))) {
+        foreach (Face face in FSet.OrderBy(F => new Point(F.Normal))) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
           writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
         }
@@ -321,19 +327,19 @@ public partial class Geometry<TNum, TConv>
       int n = H.Count;
       int d = H.First().SubSpaceDim + 1;
 
-      HashSet<Point> Vs          = new HashSet<Point>();
-      Combination    combination = new Combination(n, d);
-      do {                 // Перебираем все сочетания из d элементов из набора гиперплоскостей
-        if (GaussSLE.Solve // Ищем точку пересечения
-              (
-               (r, l) => H[combination[r]].Normal[l]
-             , r => H[combination[r]].ConstantTerm
-             , d
-             , GaussSLE.GaussChoice.All
-             , out TNum[] x
-              )) {
-          bool  belongs = true;
-          Point point   = new Point(x);
+      HashSet<Point>       Vs          = new HashSet<Point>();
+      Combination          combination = new Combination(n, d);
+      Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
+      Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
+      TNum[,]              AStor       = new TNum[d, d];
+      TNum[]               bStor       = new TNum[d];
+      bool                 belongs;
+      Point                point;
+      do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
+        if (GaussSLE.SolveExtStorage
+              (AFunc, bFunc, d, GaussSLE.GaussChoice.All, AStor, bStor, out TNum[] x)) { // Ищем точку пересечения
+          belongs = true;
+          point   = new Point(x);
           foreach (HyperPlane hp in H) {
             if (hp.ContainsPositive(point)) {
               belongs = false;
