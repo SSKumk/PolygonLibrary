@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using DoubleDouble;
 using Tests.ToolsTests;
-// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-// using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static CGLibrary.Geometry<double, Tests.DConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
