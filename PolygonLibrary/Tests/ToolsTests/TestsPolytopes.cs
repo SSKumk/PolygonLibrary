@@ -266,7 +266,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
      , $"TestPolytopes.CyclicPolytop: The amount of points must be greater than the dimenstion of the space. Dim = {pDim}, amount = {amountOfPoints}"
       );
     List<Point> cycP = new List<Point>() { new Point(pDim) };
-    TNum baseCoord = Tools.One + step; // todo сделать STEP vvv
+    TNum baseCoord = Tools.One + step;
     for (int i = 1; i < amountOfPoints; i++) {
       TNum[] point      = new TNum[pDim];
       TNum   coordinate = baseCoord;
