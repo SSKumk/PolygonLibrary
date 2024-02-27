@@ -340,14 +340,22 @@ public partial class Geometry<TNum, TConv>
     /// <param name="x">Given number.</param>
     /// <returns>The absolute value. |x|.</returns>
     public static TNum Abs(TNum x) {
-      if (GT(x)) {
+      if (EQ(x)) {
+        return Zero;
+      }
+      if (x > Zero) {
         return x;
       }
-      if (LT(x)) {
-        return -x;
-      }
 
-      return Zero;
+      return -x;
+      // if (GT(x)) {
+      //   return x;
+      // }
+      // if (LT(x)) {
+      //   return -x;
+      // }
+      //
+      // return Zero;
     }
 
     /// <summary>
