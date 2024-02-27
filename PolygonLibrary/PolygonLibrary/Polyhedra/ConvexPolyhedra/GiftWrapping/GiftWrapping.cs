@@ -48,7 +48,23 @@ public partial class Geometry<TNum, TConv>
         throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors!");
       }
       Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
-      HashSet<Face> Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
+
+      HashSet<Face> Fs;
+      if (BuiltPolytop.PolytopDim == 3) {
+        Fs = new HashSet<Face>
+          (
+           BuiltPolytop.Faces!.Select
+             (
+              F => {
+                SubTwoDimensional f = (SubTwoDimensional)F;
+
+                return new Face(f.VerticesList, f.Normal!);
+              }
+             )
+          );
+      } else {
+        Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
+      }
       HashSet<Edge> Es = new HashSet<Edge>();
 
       foreach (BaseSubCP face in BuiltPolytop.Faces!) {
