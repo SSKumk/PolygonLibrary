@@ -74,7 +74,7 @@ public partial class Geometry<TNum, TConv>
      */
 
 
-    public static bool MinkDiff(FaceLattice                               F
+    public static bool MinkDiff(ConvexPolytop                             F
                               , VPolytop                                  G
                               , out FaceLattice                           diffFL
                               , Func<VPolytop, Vector, Vector>            findExtrInG_on_lFromNF
@@ -82,7 +82,7 @@ public partial class Geometry<TNum, TConv>
                               , Func<List<HyperPlane>, HashSet<Point>>    HtoVRep
                               , Func<HashSet<Point>, FaceLattice>         produceFL
                               , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null) {
-      List<HyperPlane> FHrep = F.ToConvexPolytop().HRepresentation;
+      List<HyperPlane> FHrep = F.HRepresentation;
       List<HyperPlane> gamma = new List<HyperPlane>();
       foreach (HyperPlane hpF in FHrep) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
