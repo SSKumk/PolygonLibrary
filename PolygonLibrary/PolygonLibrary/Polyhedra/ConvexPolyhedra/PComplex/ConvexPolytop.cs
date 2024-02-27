@@ -331,15 +331,13 @@ public partial class Geometry<TNum, TConv>
       Combination          combination = new Combination(n, d);
       Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
-      TNum[,]              AStor       = new TNum[d, d];
-      TNum[]               bStor       = new TNum[d];
       bool                 belongs;
-      Point                point;
+      GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
-        if (GaussSLE.SolveExtStorage
-              (AFunc, bFunc, d, GaussSLE.GaussChoice.All, AStor, bStor, out TNum[] x)) { // Ищем точку пересечения
+        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.ColWise);
+        gaussSLE.Solve();
+        if (gaussSLE.GetSolution(out Point point)) { // Ищем точку пересечения
           belongs = true;
-          point   = new Point(x);
           foreach (HyperPlane hp in H) {
             if (hp.ContainsPositive(point)) {
               belongs = false;
