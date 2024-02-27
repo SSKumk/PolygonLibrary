@@ -741,10 +741,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Dot product
+    /// Dot product.
     /// </summary>
-    /// <param name="v1">The first vector factor</param>
-    /// <param name="v2">The first vector factor</param>
+    /// <param name="v1">The first vector factor.</param>
+    /// <param name="v2">The second vector factor.</param>
     /// <returns>The product</returns>
     public static TNum operator *(Vector v1, Vector v2) {
       int d = v1.Dim, i;
