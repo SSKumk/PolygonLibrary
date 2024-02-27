@@ -13,10 +13,6 @@ using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
 
 namespace Profile;
 
-// Для проверки H-избыточности
-// todo 1) Взять симплекс метод из Гуэрцитрона, запустить в отдельном проекте
-// todo 2) Сравнить по скорости и качеству с alglib.
-
 class Program {
 
   public static double[] MakeOneVector(int dim) {
