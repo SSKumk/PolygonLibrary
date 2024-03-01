@@ -19,7 +19,7 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class GameData {
 
-#region Input data
+    #region Input data
     /// <summary>
     /// Name of the problem; to be written in all resultant files for checking their consistency
     /// </summary>
@@ -30,7 +30,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public readonly string path;
 
-#region Data defining the dynamics of the game
+    #region Data defining the dynamics of the game
     /// <summary>
     /// Dimension of the phase vector
     /// </summary>
@@ -80,9 +80,9 @@ public partial class Geometry<TNum, TConv>
     /// The time step
     /// </summary>
     public readonly TNum dt;
-#endregion
+    #endregion
 
-#region Control constraints
+    #region Control constraints
     public enum TypeSet {
 
       /// <summary>
@@ -143,9 +143,9 @@ public partial class Geometry<TNum, TConv>
     /// Precomputed vectograms of the second player
     /// </summary>
     public readonly SortedDictionary<TNum, ConvexPolytop> Qs;
-#endregion
+    #endregion
 
-#region Data defining terminal set
+    #region Data defining terminal set
     /// <summary>
     /// The indices of the coordinates to be projected.
     /// </summary>
@@ -163,7 +163,7 @@ public partial class Geometry<TNum, TConv>
     /// The terminal set
     /// </summary>
     public ConvexPolytop M = null!;
-#endregion
+    #endregion
 
     /// <summary>
     /// The fundamental Cauchy matrix of the corresponding system
@@ -184,26 +184,21 @@ public partial class Geometry<TNum, TConv>
     /// Collection of matrices E for the instants from the time grid
     /// </summary>
     public readonly SortedDictionary<TNum, Matrix> E;
-#endregion
+    #endregion
+    /*
+        #region Control tubes data
+        /// <summary>
+        /// The vectogram tube of the first player
+        /// </summary>
+        public StableBridge2D PTube;
 
-#region Control tubes data
-    /// <summary>
-    /// The vectogram tube of the first player
-    /// </summary>
-    public StableBridge2D PTube;
-
-    /// <summary>
-    /// The vectogram tube of the entire constraint of the second player
-    /// </summary>
-    public StableBridge2D QTube;
-
-    /// <summary>
-    ///  Flag to write the partial tubes data
-    /// </summary>
-    public bool WriteQTubes;
-#endregion
-
-#region Constructor
+        /// <summary>
+        /// The vectogram tube of the entire constraint of the second player
+        /// </summary>
+        public StableBridge2D QTube;
+        #endregion
+    */
+    #region Constructor
     /// <summary>
     /// Reading and initializing data
     /// </summary>
@@ -212,12 +207,12 @@ public partial class Geometry<TNum, TConv>
       ParamReader pr = new ParamReader(inFName);
 
       ProblemName = pr.ReadString("ProblemName");
-      path        = pr.ReadString("path");
+      path = pr.ReadString("path");
 
       if (path[^1] == '/') {
         StringBuilder sb = new StringBuilder(path);
         sb[^1] = '/';
-        path   = sb.ToString();
+        path = sb.ToString();
       } else if (path[^1] != '/') {
         path += '/';
       }
@@ -235,7 +230,7 @@ public partial class Geometry<TNum, TConv>
       C = new Matrix(pr.Read2DArray<TNum>("C", n, q));
 
       t0 = TConv.FromDouble(pr.ReadDouble("t0"));
-      T  = TConv.FromDouble(pr.ReadDouble("T"));
+      T = TConv.FromDouble(pr.ReadDouble("T"));
       dt = TConv.FromDouble(pr.ReadDouble("dt"));
 
       // The Cauchy matrix
@@ -271,29 +266,18 @@ public partial class Geometry<TNum, TConv>
         t -= dt;
       }
 
-      PTube = new StableBridge2D(ProblemName, "PTube", 0.0, TubeType.Vectogram1st);
-      QTube = new StableBridge2D(ProblemName, "QTube", 0.0, TubeType.Vectogram2nd);
-
-      ConvexPolytop cpMain = null!;
-      for (t = T; Tools.GE(t, t0); t -= dt) {
-        Debug.Assert(pVertices != null, nameof(pVertices) + " is null");
-        Debug.Assert(qVertices != null, nameof(qVertices) + " is null");
-        PTube.Add
-          (new TimeSection2D(t, new ConvexPolytop(pVertices.Select(pPoint => (Point2D)(-1.0 * D[t] * pPoint)).ToList(), true)));
-        QTube.Add(new TimeSection2D(t, new ConvexPolytop(qVertices.Select(qPoint => (Point2D)(E[t] * qPoint)).ToList(), true)));
-      }
-
-      // Multiplication of the vectogram tubes by time step
       Ps = new SortedDictionary<TNum, ConvexPolytop>();
-      foreach (TimeSection2D ts in PTube)
-        Ps[ts.t] = new ConvexPolytop(ts.section.Vertices.Select(pPoint => dt * pPoint));
       Qs = new SortedDictionary<TNum, ConvexPolytop>();
-      foreach (TimeSection2D ts in QTube)
-        Qs[ts.t] = new ConvexPolytop(ts.section.Vertices.Select(qPoint => dt * qPoint));
-    }
-#endregion
 
-#region Aux procedures
+      // Вычисляем вдоль всего моста выражения:  -dt*X(T,t_i)*B*P  и  dt*X(T,t_i)*C*Q
+      for (t = T; Tools.GE(t, t0); t -= dt) {
+        Ps[t] = GiftWrapping.WrapPolytop(P.Vertices.Select(pPoint => -dt * D[t] * pPoint));
+        Qs[t] = GiftWrapping.WrapPolytop(Q.Vertices.Select(qPoint => dt * E[t] * qPoint));
+      }
+    }
+    #endregion
+
+    #region Aux procedures
     /// <summary>
     /// The function fills in the fields of the original sets
     /// </summary>
@@ -303,67 +287,70 @@ public partial class Geometry<TNum, TConv>
     /// <exception cref="InvalidOperationException">If the read set is empty</exception>
     private void ReadSets(ParamReader pr, char set) {
       string pref;
-      int    typeSetInt, dim;
+      int typeSetInt, dim;
       switch (set) {
         case 'p': {
-          pref       = "P";
-          PTypeSet   = pr.ReadInt("PTypeSet");
-          typeSetInt = PTypeSet;
-          dim        = p;
-        }
+            pref = "P";
+            PTypeSet = pr.ReadInt("PTypeSet");
+            typeSetInt = PTypeSet;
+            dim = p;
+          }
 
           break;
         case 'q': {
-          pref       = "Q";
-          QTypeSet   = pr.ReadInt("QTypeSet");
-          typeSetInt = QTypeSet;
-          dim        = q;
-        }
+            pref = "Q";
+            QTypeSet = pr.ReadInt("QTypeSet");
+            typeSetInt = QTypeSet;
+            dim = q;
+          }
 
           break;
         case 'M': {
-          pref       = "M";
-          projJ      = pr.Read1DArray<int>("projJ", d);
-          MTypeSet   = pr.ReadInt("MTypeSet");
-          typeSetInt = MTypeSet;
-          dim        = d;
-        }
+            pref = "M";
+            projJ = pr.Read1DArray<int>("projJ", d);
+            MTypeSet = pr.ReadInt("MTypeSet");
+            typeSetInt = MTypeSet;
+            dim = d;
+          }
 
           break;
         default: throw new ArgumentException($"{set} must be 'p', 'q' or 'M'!");
       }
 
       TypeSet typeSet = typeSetInt switch
-                          {
-                            0 => TypeSet.VertList
-                          , 1 => TypeSet.RectParallel
-                          , 2 => TypeSet.Sphere
-                          , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be [0, 2]!"),
-                          };
+      {
+        0 => TypeSet.VertList
+                          ,
+        1 => TypeSet.RectParallel
+                          ,
+        2 => TypeSet.Sphere
+                          ,
+        _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be [0, 2]!"),
+      };
 
       // Array for coordinates of the next point
       List<Point>? res = null;
       switch (typeSet) {
         case TypeSet.VertList: {
-          int     Qnt  = pr.ReadInt(pref + "Qnt");
-          TNum[,] Vert = pr.Read2DArray<TNum>(pref + "Vert", Qnt, dim);
-          res = Array2DToList(Vert, Qnt, dim);
+            int Qnt = pr.ReadInt(pref + "Qnt");
+            TNum[,] Vert = pr.Read2DArray<TNum>(pref + "Vert", Qnt, dim);
+            res = Array2DToList(Vert, Qnt, dim);
 
-          break;
-        }
+            break;
+          }
         case TypeSet.RectParallel: {
-          TNum[] leftCorner  = pr.Read1DArray<TNum>(pref + "RectParallelLeft", d);
-          TNum[] rightCorner = pr.Read1DArray<TNum>(pref + "RectParallelRight", d);
-          res = new List<Point>() { new Point(leftCorner), new Point(rightCorner) };
+            TNum[] leftCorner = pr.Read1DArray<TNum>(pref + "RectParallelLeft", d);
+            TNum[] rightCorner = pr.Read1DArray<TNum>(pref + "RectParallelRight", d);
+            res = new List<Point>() { new Point(leftCorner), new Point(rightCorner) };
 
-          break;
-        }
+            break;
+          }
         case TypeSet.Sphere: {
-          TNum[] center = pr.Read1DArray<TNum>(pref + "Center", d);
-          res = ; // todo Перенести фабрики многогранников в основную библиотеку (без генерации доп точек)
+            TNum[] center = pr.Read1DArray<TNum>(pref + "Center", d);
+            res = ; // todo Перенести фабрики многогранников в основную библиотеку (без генерации доп точек)
 
-          break;
-        }
+            break;
+          }
       }
 
       switch (set) {
@@ -402,7 +389,7 @@ public partial class Geometry<TNum, TConv>
 
       return list;
     }
-#endregion
+    #endregion
 
   }
 
