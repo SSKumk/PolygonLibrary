@@ -135,16 +135,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
     public static bool operator ==(Vector v1, Vector v2) {
-      int d = v1.Dim, res;
 #if DEBUG
       if (d != v2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
       }
 #endif
+      int d = v1.Dim;
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(v1[i], v2[i]);
-
-        if (res != 0) {
+        if (!Tools.EQ(v1[i], v2[i])) {
           return false;
         }
       }
@@ -628,8 +626,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="b">The maximum value of each coordinate.</param>
     /// <param name="random">If null then default one be used.</param>
     /// <returns>A random vector.</returns>
-    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) =>
-      new Vector(GenArray(dim, a, b, random));
+    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) => new Vector(GenArray(dim, a, b, random));
 #endregion
 
 #region Operators

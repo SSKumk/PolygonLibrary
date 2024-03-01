@@ -131,7 +131,7 @@ public partial class Geometry<TNum, TConv>
     public static readonly TNum PI2 = PI * Two;
 #endregion
 
-#region Double comparison
+#region Comparison
     /// <summary>
     /// Property to deal with the accuracy
     /// </summary>

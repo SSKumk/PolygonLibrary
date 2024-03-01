@@ -24,15 +24,20 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private readonly BaseSubCP BuiltPolytop;
 
-    /// <summary>
-    /// The original set of points.
-    /// </summary>
-    private HashSet<Point> SOrig;
+    // /// <summary>
+    // /// The original set of points.
+    // /// </summary>
+    // private HashSet<Point> SOrig;
 
     /// <summary>
     /// The convex polytop. It describes by vertices, faces and edges.
     /// </summary>
     private ConvexPolytop? _polytop;
+
+    /// <summary>
+    /// The dimension of the wrapped polytop.
+    /// </summary>
+    public int PolytopDim => BuiltPolytop.PolytopDim;
 
     /// <summary>
     /// Gets the polytop. In ConvexPolytop form.
@@ -170,10 +175,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private List<HyperPlane>? _HRepr;
 
-    /// <summary>
-    /// Get the polytop as a hyperplane representation. Its normals are oriented outwards.
-    /// </summary>
-    /// <returns>The list of hyperplanes.</returns>
+
     public List<HyperPlane> HRepresentation => CPolytop.HRepresentation;
 
     /// <summary>
@@ -196,7 +198,7 @@ public partial class Geometry<TNum, TConv>
       if (!Swarm.Any()) {
         throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
       }
-      SOrig = new HashSet<Point>(Swarm);
+      // SOrig = new HashSet<Point>(Swarm);
       if (Swarm.Count() == 1) {
         BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
         VPolytop     = new VPolytop(new List<Point>() { Swarm.First() });

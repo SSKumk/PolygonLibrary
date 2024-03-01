@@ -200,25 +200,65 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class ConvexPolytop {
 
+#region Fields and Properties
+    private BaseSubCP? _polytop ;
+
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
     /// </summary>
-    public int SpaceDim => Vertices.First().Dim;
+    public int SpaceDim { get; }
 
     /// <summary>
     /// Gets the dimension of the polytop.
     /// </summary>
-    public int PolytopDim { get; }
+    public int PolytopDim => _GW.PolytopDim;
+
+    // GW
+    private GiftWrapping? _GW = null;
+
+
+    // VRep
+    private VPolytop? _VRep = null;
+
+    public VPolytop VRep {
+      get
+        {
+          if (_VRep is null) { }
+
+          return;
+        }
+    }
 
     /// <summary>
     /// Gets the set of vertices of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices => Polytop.Vertices;
+    public HashSet<Point> Vertices => VRep.Vertices;
 
-    /// <summary>
-    /// The list of hyperplanes forming the polytop.
-    /// </summary>
-    private List<HyperPlane>? _HRepr = null;
+
+    // HRep
+    private HPolytop? _HRep = null;
+
+    public HPolytop HRep {
+      get
+        {
+          if (_HRep is null) { }
+
+          return;
+        }
+    }
+
+    // FL
+    private FaceLattice? _FL = null;
+
+    public FaceLattice FL {
+      get
+        {
+          if (_FL is null) { }
+
+          return;
+        }
+    }
+#endregion
 
     /// <summary>
     /// Get the polytop as a hyperplane representation. Its normals are oriented outwards.
@@ -239,17 +279,12 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    public VPolytop Polytop { get; init; }
 
     /// <summary>
     /// Gets the faces of the polytop.
     /// </summary>
     public HashSet<Face> Faces { get; }
 
-    /// <summary>
-    /// Gets the set of edges of the polytop.
-    /// </summary>
-    public HashSet<Edge> Edges { get; }
 
     // /// <summary>
     // /// Gets the incidence information of the faces. Each edge is associated with a pair of incidence faces with it.
@@ -272,12 +307,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="faceIncidence">The incidence information of the faces.</param>
     /// <param name="fans">The fan information of the polytop.</param>
     public ConvexPolytop(IEnumerable<Point> Vs, int polytopDim, IEnumerable<Face> faces, IEnumerable<Edge> edges) {
-      Polytop    = new VPolytop(Vs);
+      _polytop   = new VPolytop(Vs);
       PolytopDim = polytopDim;
       Faces      = new HashSet<Face>(faces);
       Edges      = new HashSet<Edge>(edges);
     }
 
+    public ConvexPolytop(IEnumerable<Point> Vs) {
+      _VRep    = new VPolytop(Vs);
+      SpaceDim = Vs.First().Dim;
+    }
     /// <summary>
     /// Converts the polytop to a convex polygon.
     /// </summary>
