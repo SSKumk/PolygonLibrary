@@ -14,6 +14,9 @@ namespace Tests.SpeedTests;
 [TestFixture]
 public class SpeedTestMinkSum {
 
+  private static FaceLattice MinkSumCH(FaceLattice F, FaceLattice G)
+    => MinkowskiSum.ByConvexHull(new ConvexPolytop(F.Vertices), new ConvexPolytop(G.Vertices)).FL;
+  
   [Test]
   public void CubesSum() {
     StreamWriter      writer  = new StreamWriter(Directory.GetCurrentDirectory() + "/SpeedBench/MinkSum/Cubes.txt");
@@ -26,7 +29,7 @@ public class SpeedTestMinkSum {
     FaceLattice? Sum   = null;
     for (int i = 0; i < CubesFL.Count; i++) {
       timer.Restart();
-      for (int k = 0; k < N; k++) { Sum = MinkSumSDas(CubesFL[i], CubesFL[i]); }
+      for (int k = 0; k < N; k++) { Sum = MinkSumCH(CubesFL[i], CubesFL[i]); }
       timer.Stop();
       writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
@@ -53,7 +56,7 @@ public class SpeedTestMinkSum {
     FaceLattice? Sum   = null;
     for (int i = 0; i < CubesFL.Count; i++) {
       timer.Restart();
-      for (int k = 0; k < N; k++) { Sum = MinkSumSDas(CubesFL[i], CubesRotatedFL[i]); }
+      for (int k = 0; k < N; k++) { Sum = MinkowskiSum.BySandipDas(CubesFL[i], CubesRotatedFL[i]); }
       timer.Stop();
       writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
@@ -80,7 +83,7 @@ public class SpeedTestMinkSum {
     FaceLattice? Sum   = null;
     for (int i = 0; i < CubesFL.Count; i++) {
       timer.Restart();
-      for (int k = 0; k < N; k++) { Sum = MinkSumSDas(CubesFL[i], SimplicesFL[i]); }
+      for (int k = 0; k < N; k++) { Sum = MinkowskiSum.BySandipDas(CubesFL[i], SimplicesFL[i]); }
       timer.Stop();
       writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
@@ -110,7 +113,7 @@ public class SpeedTestMinkSum {
     FaceLattice? Sum   = null;
     for (int i = 0; i < FirstSphere.Count; i++) {
       timer.Restart();
-      for (int k = 0; k < N; k++) { Sum = MinkSumSDas(FirstSphere[i], SecondSphere[i]); }
+      for (int k = 0; k < N; k++) { Sum = MinkowskiSum.BySandipDas(FirstSphere[i], SecondSphere[i]); }
       timer.Stop();
       writer.Write($"{FirstSphere[i].NonZeroKFacesAmount} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       writer.Flush();
