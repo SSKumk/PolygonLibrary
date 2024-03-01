@@ -80,14 +80,14 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Constructor on the basis of list of vertices represented as two-dimensional points
     /// </summary>
-    public ConvexPolygon(IEnumerable<Point2D> vs, bool ToConvexify = false) : base
+    public ConvexPolygon(IEnumerable<Vector2D> vs, bool ToConvexify = false) : base
       (ToConvexify ? Convexification.ArcHull2D(vs.ToList()) : vs.ToList()) => _sf = null;
 
     /// <summary>
     /// Constructor on the basis of list of vertices represented as multidimensional points
     /// </summary>
-    public ConvexPolygon(IEnumerable<Point> vs, bool ToConvexify = false) : base
-      (ToConvexify ? Convexification.ArcHull2D(vs.Select(p => (Point2D)p).ToList()) : vs.Select(p => (Point2D)p).ToList()) =>
+    public ConvexPolygon(IEnumerable<Vector> vs, bool ToConvexify = false) : base
+      (ToConvexify ? Convexification.ArcHull2D(vs.Select(p => (Vector2D)p).ToList()) : vs.Select(p => (Vector2D)p).ToList()) =>
       _sf = null;
 
     /// <summary>
@@ -125,9 +125,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         base.ComputeContours();
       } else if (_sf != null) {
         int           i, j;
-        List<Point2D> ps = new List<Point2D>();
+        List<Vector2D> ps = new List<Vector2D>();
         for (i = 0, j = 1; i < _sf.Count; i++, j = (j + 1) % _sf.Count) {
-          Point2D temp = GammaPair.CrossPairs(_sf[i], _sf[j]);
+          Vector2D temp = GammaPair.CrossPairs(_sf[i], _sf[j]);
           if (ps.Count == 0 || temp != ps[^1]) { ps.Add(temp); }
         }
 
@@ -149,7 +149,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is inside the polygon; false, otherwise</returns>
-    public override bool Contains(Point2D p) {
+    public override bool Contains(Vector2D p) {
       // Special case: the point coincides with the initial vertex of the polygon
       if (p.Equals(Contour[0])) {
         return true;
@@ -184,7 +184,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is strictly inside the polygon; false, otherwise</returns>
-    public override bool ContainsInside(Point2D p) {
+    public override bool ContainsInside(Vector2D p) {
       // Special case: the point coincides with the initial vertex of the polygon
       if (p.Equals(Contour[0])) {
         return false;
@@ -221,7 +221,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="direction">A vector defining the direction</param>
     /// <param name="p1">One extremal point</param>
     /// <param name="p2">Another extremal point</param>
-    public void GetExtremeElements(Vector2D direction, out Point2D p1, out Point2D? p2) {
+    public void GetExtremeElements(Vector2D direction, out Vector2D p1, out Vector2D? p2) {
       int i, j;
       Debug.Assert(SF != null, nameof(SF) + " != null");
       SF.FindCone(direction, out i, out j);
@@ -309,12 +309,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="rnd">The random generator to be used; if null, the internal generator of the polygon is used</param>
     /// <returns>The generated point</returns>
-    public Point2D GenerateRandomPoint(GRandomLC? rnd = null) {
+    public Vector2D GenerateRandomPoint(GRandomLC? rnd = null) {
       int  i;
       TNum a, b, c;
       GenerateDataForRandomPoint(out i, out a, out b, out c, rnd);
 
-      return Point2D.LinearCombination(Vertices[0], a, Vertices[i], b, Vertices[i + 1], c);
+      return Vector2D.LinearCombination(Vertices[0], a, Vertices[i], b, Vertices[i + 1], c);
     }
 
     /// <summary>
@@ -326,8 +326,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="sl">Sign of the dot product of vectors from the vertex to the previous vertex and to the given point</param>
     /// <param name="sr">Sign of the dot product of vectors from the vertex to the next vertex and to the given point</param>
     /// <returns>true, if the point is the nearest, that is, if both <see cref="sl"/> and <see cref="sr"/> are non-positive</returns>
-    protected bool ComputePointSigns(Point2D x, int curPointInd, out int sl, out int sr) {
-      Point2D prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1)
+    protected bool ComputePointSigns(Vector2D x, int curPointInd, out int sl, out int sr) {
+      Vector2D prevVert = Contour.Vertices.GetAtCyclic(curPointInd - 1)
             , curVert  = Contour.Vertices.GetAtCyclic(curPointInd)
             , nextVert = Contour.Vertices.GetAtCyclic(curPointInd + 1);
       Vector2D toPoint = x - curVert;
@@ -343,7 +343,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The given point</param>
     /// <exception cref="NotImplementedException">Now it is not implemented</exception>
     /// <returns>The nearest point of the polygon</returns>
-    public Point2D NearestPoint(Point2D p) => throw new NotImplementedException();
+    public Vector2D NearestPoint(Vector2D p) => throw new NotImplementedException();
 
     private bool IsPointContainsInHalfPlane(Segment s) { throw new NotImplementedException(); }
 
@@ -361,11 +361,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       if (s - k < 2 || s - k == Vertices.Count - 1) { //if k == s or k-s is a edge
         throw new ArgumentException($"{k} and {s} is adjacent!");
       }
-      List<Point2D>? list1 = new List<Point2D>();
+      List<Vector2D>? list1 = new List<Vector2D>();
       for (int i = k; i < s + 1; i++) {
         list1.Add(Vertices[i]);
       }
-      List<Point2D>? list2 = new List<Point2D>();
+      List<Vector2D>? list2 = new List<Vector2D>();
       for (int i = s; i < Vertices.Count + k + 1; i++) {
         list2.Add(Vertices.GetAtCyclic(i));
       }

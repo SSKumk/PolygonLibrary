@@ -37,7 +37,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The list of vertices of the polygon enlisted counterclockwise
     /// </summary>
-    protected readonly List<Point2D> _vertices;
+    protected readonly List<Vector2D> _vertices;
 
     /// <summary>
     /// The list of edges enlisted passage-wise
@@ -52,7 +52,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// List of vertices
     /// </summary>
-    public List<Point2D> Vertices => _vertices;
+    public List<Vector2D> Vertices => _vertices;
 
     /// <summary>
     /// List of edges. Is computed on demand
@@ -80,7 +80,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="i">The index of the vertex. The index is counted cyclically!</param>
     /// <returns>The point of the vertex</returns>
-    public Point2D this[int i] {
+    public Vector2D this[int i] {
       get
         {
           int ind = i % _vertices.Count;
@@ -118,7 +118,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Default constructor. Produces a one-point polyline at the origin
     /// </summary>
     public Polyline() {
-      _vertices   = new List<Point2D> { Point2D.Origin };
+      _vertices   = new List<Vector2D> { Vector2D.Zero };
       Orientation = PolylineOrientation.Counterclockwise;
       _square     = null;
     }
@@ -136,7 +136,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="checkSimplicity">Flag showing whether the simplicity of the corresponding polygon
     /// should be checked</param>
     /// <param name="checkOrientation">Flag showing that the polyline orientation should be checked</param>
-    public Polyline(List<Point2D> ps, PolylineOrientation orient, bool checkSimplicity = true, bool checkOrientation = true) {
+    public Polyline(List<Vector2D> ps, PolylineOrientation orient, bool checkSimplicity = true, bool checkOrientation = true) {
       // TODO:  Write checks !!!
       _vertices   = ps;
       Orientation = orient;
@@ -155,8 +155,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="checkSimplicity">Flag showing whether the simplicity of the corresponding polygon
     /// should be checked</param>
     /// <param name="checkOrientation">Flag showing that the polyline orientation should be checked</param>
-    public Polyline(Point2D[] ps, PolylineOrientation orient, bool checkSimplicity = true, bool checkOrientation = true) : this
-      (new List<Point2D>(ps), orient, checkSimplicity, checkOrientation) { }
+    public Polyline(Vector2D[] ps, PolylineOrientation orient, bool checkSimplicity = true, bool checkOrientation = true) : this
+      (new List<Vector2D>(ps), orient, checkSimplicity, checkOrientation) { }
 #endregion
 
 #region Miscelaneous methods
@@ -184,14 +184,14 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is in the polygon (inside or at the boundary);
     /// false, otherwise</returns>
-    public bool ContainsPoint(Point2D p) => Tools.NE(ComputeAngleVariation(p));
+    public bool ContainsPoint(Vector2D p) => Tools.NE(ComputeAngleVariation(p));
 
     /// <summary>
     /// Method that checks whether a point is located strictly inside the polygon
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is strictly inside the polygon</returns>
-    public bool ContainsPointInside(Point2D p) => Tools.EQ(TNum.Abs(ComputeAngleVariation(p)), Tools.Two * Tools.PI);
+    public bool ContainsPointInside(Vector2D p) => Tools.EQ(TNum.Abs(ComputeAngleVariation(p)), Tools.Two * Tools.PI);
 
     /// <summary>
     /// A supplementary method for the ones that check whether the polygon contains a point.
@@ -199,7 +199,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="p">The base point</param>
     /// <returns>The variation of the angle</returns>
-    private TNum ComputeAngleVariation(Point2D p) {
+    private TNum ComputeAngleVariation(Vector2D p) {
       TNum     res = Tools.Zero;
       Vector2D vi  = this[0] - p, vim1;
       for (int i = 1; i <= Count; i++) {
@@ -220,7 +220,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="i">Cyclic index of the edge</param>
     /// <returns>The angle</returns>
     protected TNum EdgeAngle(int i) {
-      Point2D a = this[i], b = this[i + 1];
+      Vector2D a = this[i], b = this[i + 1];
 
       return Tools.Atan2(b.y - a.y, b.x - a.x);
     }

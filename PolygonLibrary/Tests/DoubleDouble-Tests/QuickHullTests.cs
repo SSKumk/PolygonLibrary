@@ -12,12 +12,12 @@ public class QuickHullTests {
   public void SquareCHTest() {
     GRandomLC? r = new GRandomLC(10);
 
-    List<Point2D> expected = new List<Point2D>(), orig = new List<Point2D>();
+    List<Vector2D> expected = new List<Vector2D>(), orig = new List<Vector2D>();
 
-    expected.Add(new Point2D(0, 1));
-    expected.Add(new Point2D(0, 0));
-    expected.Add(new Point2D(1, 0));
-    expected.Add(new Point2D(1, 1));
+    expected.Add(new Vector2D(0, 1));
+    expected.Add(new Vector2D(0, 0));
+    expected.Add(new Vector2D(1, 0));
+    expected.Add(new Vector2D(1, 1));
 
     // Preparing the initial set of points
 
@@ -26,31 +26,31 @@ public class QuickHullTests {
 
     // Some random internal points
     for (int i = 0; i < 10; i++) {
-      orig.Add(new Point2D(r.NextPrecise(), r.NextPrecise()));
+      orig.Add(new Vector2D(r.NextPrecise(), r.NextPrecise()));
     }
 
     // Some points in the initial cutting line
-    orig.Add(new Point2D(0.3, 0.3));
-    orig.Add(new Point2D(0.73, 0.73));
+    orig.Add(new Vector2D(0.3, 0.3));
+    orig.Add(new Vector2D(0.73, 0.73));
 
     // Some points in the edges of the convex hull
-    orig.Add(new Point2D(0, 0.3));
-    orig.Add(new Point2D(0, 0.8));
-    orig.Add(new Point2D(1, 0.45));
-    orig.Add(new Point2D(0.55, 0));
-    orig.Add(new Point2D(0.65, 1));
+    orig.Add(new Vector2D(0, 0.3));
+    orig.Add(new Vector2D(0, 0.8));
+    orig.Add(new Vector2D(1, 0.45));
+    orig.Add(new Vector2D(0.55, 0));
+    orig.Add(new Vector2D(0.65, 1));
 
     // Copies of the vertices
-    orig.Add(new Point2D(0, 0));
-    orig.Add(new Point2D(0, 0));
-    orig.Add(new Point2D(1, 0));
-    orig.Add(new Point2D(1, 0));
+    orig.Add(new Vector2D(0, 0));
+    orig.Add(new Vector2D(0, 0));
+    orig.Add(new Vector2D(1, 0));
+    orig.Add(new Vector2D(1, 0));
 
 
     // Shuffle the points
     orig.Shuffle(r);
 
-    List<Point2D> hull = Convexification.QuickHull2D(orig);
+    List<Vector2D> hull = Convexification.QuickHull2D(orig);
 
     Assert.That(expected.Count, Is.EqualTo(hull.Count), "Wrong number of convex hull vertices");
     for (int i = 0; i < expected.Count; i++) {
@@ -67,14 +67,14 @@ public class QuickHullTests {
   public void HexagonCHTest() {
     GRandomLC? r = new GRandomLC(10);
 
-    List<Point2D> expected = new List<Point2D>(), orig = new List<Point2D>();
+    List<Vector2D> expected = new List<Vector2D>(), orig = new List<Vector2D>();
 
-    expected.Add(new Point2D(2, 2));
-    expected.Add(new Point2D(1, 2));
-    expected.Add(new Point2D(0, 1));
-    expected.Add(new Point2D(1, 0));
-    expected.Add(new Point2D(2, 0));
-    expected.Add(new Point2D(3, 1));
+    expected.Add(new Vector2D(2, 2));
+    expected.Add(new Vector2D(1, 2));
+    expected.Add(new Vector2D(0, 1));
+    expected.Add(new Vector2D(1, 0));
+    expected.Add(new Vector2D(2, 0));
+    expected.Add(new Vector2D(3, 1));
 
     // Preparing the initial set of points
 
@@ -88,36 +88,36 @@ public class QuickHullTests {
         x = 3 * r.NextPrecise();
         y = 2 * r.NextPrecise();
       } while (y > x + 1 || y < -x + 1 || y > -x + 4 || y < x - 2);
-      orig.Add(new Point2D(x, y));
+      orig.Add(new Vector2D(x, y));
     }
 
     // Some points in the initial cutting line
-    orig.Add(new Point2D(0.3, 1));
-    orig.Add(new Point2D(1.73, 1));
-    orig.Add(new Point2D(2.999, 1));
+    orig.Add(new Vector2D(0.3, 1));
+    orig.Add(new Vector2D(1.73, 1));
+    orig.Add(new Vector2D(2.999, 1));
 
     // Some points in the edges of the convex hull
-    orig.Add(new Point2D(1, 1.3));
-    orig.Add(new Point2D(1, 1.8));
-    orig.Add(new Point2D(1, 0.45));
-    orig.Add(new Point2D(2.55, 0.55));
-    orig.Add(new Point2D(2.65, 1.35));
-    orig.Add(new Point2D(2.05, 1.95));
-    orig.Add(new Point2D(1.65, 2));
-    orig.Add(new Point2D(0.55, 1.55));
-    orig.Add(new Point2D(0.55, 1.55));
-    orig.Add(new Point2D(0.55, 0.45));
+    orig.Add(new Vector2D(1, 1.3));
+    orig.Add(new Vector2D(1, 1.8));
+    orig.Add(new Vector2D(1, 0.45));
+    orig.Add(new Vector2D(2.55, 0.55));
+    orig.Add(new Vector2D(2.65, 1.35));
+    orig.Add(new Vector2D(2.05, 1.95));
+    orig.Add(new Vector2D(1.65, 2));
+    orig.Add(new Vector2D(0.55, 1.55));
+    orig.Add(new Vector2D(0.55, 1.55));
+    orig.Add(new Vector2D(0.55, 0.45));
 
     // Copies of the vertices
-    orig.Add(new Point2D(0, 1));
-    orig.Add(new Point2D(0, 1));
-    orig.Add(new Point2D(2, 2));
-    orig.Add(new Point2D(1, 2));
+    orig.Add(new Vector2D(0, 1));
+    orig.Add(new Vector2D(0, 1));
+    orig.Add(new Vector2D(2, 2));
+    orig.Add(new Vector2D(1, 2));
 
     // Shuffle the points
     orig.Shuffle(r);
 
-    List<Point2D> hull = Convexification.QuickHull2D(orig);
+    List<Vector2D> hull = Convexification.QuickHull2D(orig);
 
     Assert.That(expected.Count, Is.EqualTo(hull.Count), "Wrong number of convex hull vertices");
     for (int i = 0; i < expected.Count; i++) {

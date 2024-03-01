@@ -13,10 +13,10 @@ public partial class Geometry<TNum, TConv>
 
 
   public class VPolytop {
-    public HashSet<Point> Vertices { get; }
+    public HashSet<Vector> Vertices { get; }
 
-    public VPolytop(IEnumerable<Point> Vs) {
-      Vertices = new HashSet<Point>(Vs);
+    public VPolytop(IEnumerable<Vector> Vs) {
+      Vertices = new HashSet<Vector>(Vs);
     }
 
     private int? _hash;

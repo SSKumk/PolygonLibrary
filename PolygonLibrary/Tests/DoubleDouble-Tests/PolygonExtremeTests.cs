@@ -11,7 +11,7 @@ public class PolygonExtremeTests {
     ConvexPolygon cp            = PolygonTools.Circle(0, 0, 1, 10);
     ddouble[]     testAnglesDeg = new ddouble[] { 0, 18, 36, 54, 72, 342, 350 };
     Vector2D[]    testDirs      = new Vector2D[testAnglesDeg.Length];
-    Point2D?[,]   res           = new Point2D[testAnglesDeg.Length, 2];
+    Vector2D?[,]   res           = new Vector2D[testAnglesDeg.Length, 2];
     for (int i = 0; i < testAnglesDeg.Length; i++) {
       ddouble alpha = testAnglesDeg[i] * Tools.PI / 180;
       testDirs[i] = new Vector2D(5 * ddouble.Cos(alpha), 5 * ddouble.Sin(alpha));
@@ -36,7 +36,7 @@ public class PolygonExtremeTests {
     ConvexPolygon cp            = PolygonTools.Circle(0, 0, 1, 10, Tools.PI / 10);
     ddouble[]     testAnglesDeg = new ddouble[] { 0, 18, 36, 54, 72, 342 };
     Vector2D[]    testDirs      = new Vector2D[testAnglesDeg.Length];
-    Point2D?[,]   res           = new Point2D?[testAnglesDeg.Length, 2];
+    Vector2D?[,]   res           = new Vector2D?[testAnglesDeg.Length, 2];
     for (int i = 0; i < testAnglesDeg.Length; i++) {
       ddouble alpha = testAnglesDeg[i] * Tools.PI / 180;
       testDirs[i] = new Vector2D(5 * ddouble.Cos(alpha), 5 * ddouble.Sin(alpha));

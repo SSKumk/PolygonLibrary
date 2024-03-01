@@ -9,35 +9,35 @@ namespace Tests.DoubleDouble_Tests.Minkowski_Tests;
 [TestFixture]
 public class MinkowskiSum2D {
 
-  private Point       u0, u1, u2, u3, u4;
-  private Point       p0, p1, p2, p3;
+  private Vector      u0, u1, u2, u3, u4;
+  private Vector      p0, p1, p2, p3;
   private FaceLattice pu3;
   private FaceLattice su1,    su2, su3, su4;
   private FaceLattice qu1_GW, qp1_GW;
 
   [OneTimeSetUp]
   public void SetUp() {
-    u0 = new Point(new ddouble[] { 0, 0 });
-    u1 = new Point(new ddouble[] { 1, 0 });
-    u2 = new Point(new ddouble[] { 0, 1 });
-    u3 = new Point(new ddouble[] { 1, 1 });
-    u4 = new Point(new ddouble[] { 1, 2 });
+    u0 = new Vector(new ddouble[] { 0, 0 });
+    u1 = new Vector(new ddouble[] { 1, 0 });
+    u2 = new Vector(new ddouble[] { 0, 1 });
+    u3 = new Vector(new ddouble[] { 1, 1 });
+    u4 = new Vector(new ddouble[] { 1, 2 });
 
 
-    p0 = new Point(new ddouble[] { 0.5, 0 });
-    p1 = new Point(new ddouble[] { 1, 0.5 });
-    p2 = new Point(new ddouble[] { 0.5, 1 });
-    p3 = new Point(new ddouble[] { 0, 0.5 });
+    p0 = new Vector(new ddouble[] { 0.5, 0 });
+    p1 = new Vector(new ddouble[] { 1, 0.5 });
+    p2 = new Vector(new ddouble[] { 0.5, 1 });
+    p3 = new Vector(new ddouble[] { 0, 0.5 });
 
     pu3 = new FaceLattice(u3);
-    su1 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u1 });
-    su2 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u2 });
-    su3 = GiftWrapping.WrapFaceLattice(new List<Point> { u0, u3 });
-    su4 = GiftWrapping.WrapFaceLattice(new List<Point> { u3, u4 });
+    su1 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u1 });
+    su2 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u2 });
+    su3 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u3 });
+    su4 = GiftWrapping.WrapFaceLattice(new List<Vector> { u3, u4 });
 
     qu1_GW = GiftWrapping.WrapFaceLattice
       (
-       new List<Point>
+       new List<Vector>
          {
            u0
          , u1
@@ -47,7 +47,7 @@ public class MinkowskiSum2D {
       );
     qp1_GW = GiftWrapping.WrapFaceLattice
       (
-       new List<Point>
+       new List<Vector>
          {
            p0
          , p1
@@ -57,85 +57,91 @@ public class MinkowskiSum2D {
       );
   }
 
+  private static FaceLattice MSumCH(FaceLattice F, FaceLattice G)
+    => MinkowskiSum.ByConvexHull(new ConvexPolytop(F.Vertices), new ConvexPolytop(G.Vertices)).FL;
+
+
   // Сумма точек
   [Test]
   public void Point_Point() {
-    FaceLattice pu3_pu3 = MinkSumSDas(pu3, pu3);
-    Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Point(new ddouble[] { 2, 2 }))));
+    FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3);
+    Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Vector(new ddouble[] { 2, 2 }))));
   }
 
   // Сдвинутый отрезок
   [Test]
   public void Point_Seg() {
-    FaceLattice pu3_su1 = MinkSumSDas(pu3, su1);
-    Assert.That(pu3_su1, Is.EqualTo(MinkSumCH(pu3, su1)));
+    FaceLattice pu3_su1 = MinkowskiSum.BySandipDas(pu3, su1);
+    Assert.That(pu3_su1, Is.EqualTo(MSumCH(pu3, su1)));
   }
 
   // Сдвинутый отрезок
   [Test]
   public void Point_Seg1() {
-    FaceLattice pu3_su3 = MinkSumSDas(pu3, su3);
-    Assert.That(pu3_su3, Is.EqualTo(MinkSumCH(pu3, su3)));
+    FaceLattice pu3_su3 = MinkowskiSum.BySandipDas(pu3, su3);
+    Assert.That(pu3_su3, Is.EqualTo(MSumCH(pu3, su3)));
   }
 
   // Удвоенный отрезок
   [Test]
   public void doubled_Seg() {
-    FaceLattice su3_su3 = MinkSumSDas(su3, su3);
-    Assert.That(su3_su3, Is.EqualTo(MinkSumCH(su3, su3)));
+    FaceLattice su3_su3 = MinkowskiSum.BySandipDas(su3, su3);
+    Assert.That(su3_su3, Is.EqualTo(MSumCH(su3, su3)));
   }
 
   // Единичный квадрат
   [Test]
   public void Seg_Seg() {
-    FaceLattice qu1 = MinkSumSDas(su1, su2);
+    FaceLattice qu1 = MinkowskiSum.BySandipDas(su1, su2);
     Assert.That(qu1, Is.EqualTo(qu1_GW));
   }
 
   // Отрезки
   [Test]
   public void Seg_AnotherSeg() {
-    FaceLattice q = MinkSumSDas(su3, su4);
-    Assert.That(q, Is.EqualTo(MinkSumCH(su3, su4)));
+    FaceLattice q = MinkowskiSum.BySandipDas(su3, su4);
+    Assert.That(q, Is.EqualTo(MSumCH(su3, su4)));
   }
 
   // Прямоугольник
   [Test]
   public void Seg_Square() {
-    FaceLattice su1_qu1 = MinkSumSDas(su1, qu1_GW);
-    Assert.That(su1_qu1, Is.EqualTo(MinkSumCH(su1, qu1_GW)));
+    FaceLattice su1_qu1 = MinkowskiSum.BySandipDas(su1, qu1_GW);
+    Assert.That(su1_qu1, Is.EqualTo(MSumCH(su1, qu1_GW)));
   }
 
   // Шестиугольник
   [Test]
   public void Seg45_Square() {
-    FaceLattice su3_qu1 = MinkSumSDas(su3, qu1_GW);
-    Assert.That(su3_qu1, Is.EqualTo(MinkSumCH(su3, qu1_GW)));
+    FaceLattice su3_qu1 = MinkowskiSum.BySandipDas(su3, qu1_GW);
+    Assert.That(su3_qu1, Is.EqualTo(MSumCH(su3, qu1_GW)));
   }
 
   // Квадрат в два раза больший
   [Test]
   public void Square_Square() {
-    FaceLattice double_qu1 = MinkSumSDas(qu1_GW, qu1_GW);
-    Assert.That(double_qu1, Is.EqualTo(MinkSumCH(qu1_GW, qu1_GW)));
+    FaceLattice double_qu1 = MinkowskiSum.BySandipDas(qu1_GW, qu1_GW);
+    Assert.That(double_qu1, Is.EqualTo(MSumCH(qu1_GW, qu1_GW)));
   }
 
   [Test]
   public void Square45_Square() {
-    FaceLattice qp1_qu1 = MinkSumSDas(qp1_GW, qu1_GW);
-    Assert.That(qp1_qu1, Is.EqualTo(MinkSumCH(qp1_GW, qu1_GW)));
+    FaceLattice qp1_qu1 = MinkowskiSum.BySandipDas(qp1_GW, qu1_GW);
+    Assert.That(qp1_qu1, Is.EqualTo(MSumCH(qp1_GW, qu1_GW)));
   }
 
 }
 
 [TestFixture]
-public class MinkowskiSum {
+public class MinkowskiSum_hD {
+
+  private static FaceLattice MinkSumCH(ConvexPolytop F, ConvexPolytop G) => MinkowskiSum.ByConvexHull(F, G).FL;
 
 #region Base Polytopes Tests
   [Test]
   public void Simplex_3D() {
     FaceLattice sum_CH = MinkSumCH(Simplex3D, Simplex3D);
-    FaceLattice sum    = MinkSumSDas(Simplex3D_FL, Simplex3D_FL);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(Simplex3D_FL, Simplex3D_FL);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
@@ -143,7 +149,7 @@ public class MinkowskiSum {
   [Test]
   public void Cube_3D() {
     FaceLattice sum_CH = MinkSumCH(Cube3D, Cube3D);
-    FaceLattice sum    = MinkSumSDas(Cube3D_FL, Cube3D_FL);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(Cube3D_FL, Cube3D_FL);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
@@ -151,7 +157,7 @@ public class MinkowskiSum {
   [Test]
   public void Cube_4D() {
     FaceLattice sum_CH = MinkSumCH(Cube4D, Cube4D);
-    FaceLattice sum    = MinkSumSDas(Cube4D_FL, Cube4D_FL);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(Cube4D_FL, Cube4D_FL);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
@@ -161,7 +167,7 @@ public class MinkowskiSum {
   [Test]
   public void Cube3D_Simplex3D() {
     FaceLattice sum_CH = MinkSumCH(Simplex3D, Cube3D);
-    FaceLattice sum    = MinkSumSDas(Simplex3D_FL, Cube3D_FL);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(Simplex3D_FL, Cube3D_FL);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
@@ -174,15 +180,15 @@ public class MinkowskiSum {
   /// </summary>
   [Test]
   public void Cube3D_Octahedron45XY() {
-    List<Point> p = MakePointsOnSphere_3D(3, 4);
-    List<Point> q = Octahedron3D_list;
+    List<Vector> p = MakePointsOnSphere_3D(3, 4);
+    List<Vector> q = Octahedron3D_list;
     q = Rotate(q, rotate3D_45XY);
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -204,17 +210,17 @@ public class MinkowskiSum {
   /// </summary>
   [Test]
   public void WorstCase3D() {
-    const int   theta = 2;
-    List<Point> p     = MakePointsOnSphere_3D(theta, 8, true, true);
+    const int    theta = 2;
+    List<Vector> p     = MakePointsOnSphere_3D(theta, 8, true, true);
     p = Rotate(p, MakeRotationMatrix(3, 2, 3, -double.Pi / 18));
-    List<Point> q = MakePointsOnSphere_3D(theta, 8, true, true);
+    List<Vector> q = MakePointsOnSphere_3D(theta, 8, true, true);
     q = Rotate(q, MakeRotationMatrix(3, 1, 3, double.Pi / 2));
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -231,14 +237,14 @@ public class MinkowskiSum {
 
   [Test]
   public void Octahedron_Octahedron45XY() {
-    List<Point> p = Octahedron3D_list;
-    List<Point> q = Rotate(p, rotate3D_45XY);
+    List<Vector> p = Octahedron3D_list;
+    List<Vector> q = Rotate(p, rotate3D_45XY);
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
@@ -246,14 +252,14 @@ public class MinkowskiSum {
 
   [Test]
   public void Pyramid_Pyramid45XY() {
-    List<Point> p = Pyramid3D_list;
-    List<Point> q = Rotate(p, rotate3D_45XY);
+    List<Vector> p = Pyramid3D_list;
+    List<Vector> q = Rotate(p, rotate3D_45XY);
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -266,14 +272,14 @@ public class MinkowskiSum {
 
   [Test]
   public void Cube_Cube45XY() {
-    List<Point> p = Cube3D_list;
-    List<Point> q = Rotate(p, rotate3D_45XY);
+    List<Vector> p = Cube3D_list;
+    List<Vector> q = Rotate(p, rotate3D_45XY);
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -286,33 +292,33 @@ public class MinkowskiSum {
 #region Other tests
   [Test]
   public void Cube4D_Cube4D45XY() {
-    List<Point> p = Cube4D_list;
-    List<Point> q = Rotate(p, rotate4D_45XY);
+    List<Vector> p = Cube4D_list;
+    List<Vector> q = Rotate(p, rotate4D_45XY);
 
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
     FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
-    FaceLattice sum    = MinkSumSDas(P.FaceLattice, Q.FaceLattice);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
 
   [Test]
   public void Cube2D_Cube2DinAnotherPlane() {
-    var p0 = new Point(new ddouble[] { 0, 0, 0, 0 });
-    var p1 = new Point(new ddouble[] { 1, 0, 0, 0 });
-    var p2 = new Point(new ddouble[] { 0, 1, 0, 0 });
-    var p3 = new Point(new ddouble[] { 1, 1, 0, 0 });
+    var p0 = new Vector(new ddouble[] { 0, 0, 0, 0 });
+    var p1 = new Vector(new ddouble[] { 1, 0, 0, 0 });
+    var p2 = new Vector(new ddouble[] { 0, 1, 0, 0 });
+    var p3 = new Vector(new ddouble[] { 1, 1, 0, 0 });
 
-    var u0 = new Point(new ddouble[] { 0, 0, 1, 1 });
-    var u1 = new Point(new ddouble[] { 1, 0, 1, 1 });
-    var u2 = new Point(new ddouble[] { 0, 1, 1, 1 });
-    var u3 = new Point(new ddouble[] { 1, 1, 1, 1 });
+    var u0 = new Vector(new ddouble[] { 0, 0, 1, 1 });
+    var u1 = new Vector(new ddouble[] { 1, 0, 1, 1 });
+    var u2 = new Vector(new ddouble[] { 0, 1, 1, 1 });
+    var u3 = new Vector(new ddouble[] { 1, 1, 1, 1 });
 
-    FaceLattice P = GiftWrapping.WrapFaceLattice
+    ConvexPolytop P = GiftWrapping.WrapPolytop
       (
-       new List<Point>()
+       new List<Vector>()
          {
            p0
          , p1
@@ -320,9 +326,9 @@ public class MinkowskiSum {
          , p3
          }
       );
-    FaceLattice Q = GiftWrapping.WrapFaceLattice
+    ConvexPolytop Q = GiftWrapping.WrapPolytop
       (
-       new List<Point>()
+       new List<Vector>()
          {
            u0
          , u1
@@ -332,7 +338,7 @@ public class MinkowskiSum {
       );
 
     FaceLattice sum_CH = MinkSumCH(P, Q);
-    FaceLattice sum    = MinkSumSDas(P, Q);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(P.FL, Q.FL);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
@@ -344,12 +350,12 @@ public class MinkowskiSum {
 public class MinkowskiSum5D {
 
   // private static Matrix rotate5D_45_12, rotate5D_45_35;
-  private static List<Point> cube5D,       cube4D,       cube3D,       cube2D;
-  private static List<Point> simplex5D,    simplex4D,    simplex3D,    simplex2D;
-  private static List<Point> simplexRND5D, simplexRND4D, simplexRND3D, simplexRND2D;
+  private static List<Vector> cube5D,       cube4D,       cube3D,       cube2D;
+  private static List<Vector> simplex5D,    simplex4D,    simplex3D,    simplex2D;
+  private static List<Vector> simplexRND5D, simplexRND4D, simplexRND3D, simplexRND2D;
 
-  private static readonly List<List<Point>> allCubes_lst, all_lst;
-  private static          List<List<Point>> allSimplices_lst, allSimplicesRND_lst;
+  private static readonly List<List<Vector>> allCubes_lst,     all_lst;
+  private static          List<List<Vector>> allSimplices_lst, allSimplicesRND_lst;
 
   // private List<FaceLattice> allCubes_FL;
   // private Vector shift;
@@ -370,21 +376,21 @@ public class MinkowskiSum5D {
     simplexRND3D = SimplexRND3D_list.Select(p => p.ExpandTo(5)).ToList();
     simplexRND2D = SimplexRND2D_list.Select(p => p.ExpandTo(5)).ToList();
 
-    allCubes_lst = new List<List<Point>>()
+    allCubes_lst = new List<List<Vector>>()
       {
         cube2D
       , cube3D
       , cube4D
       , cube5D
       };
-    allSimplices_lst = new List<List<Point>>()
+    allSimplices_lst = new List<List<Vector>>()
       {
         simplex2D
       , simplex3D
       , simplex4D
       , simplex5D
       };
-    allSimplicesRND_lst = new List<List<Point>>()
+    allSimplicesRND_lst = new List<List<Vector>>()
       {
         simplexRND2D
       , simplexRND3D
@@ -392,17 +398,19 @@ public class MinkowskiSum5D {
       , simplexRND5D
       };
 
-    all_lst = new List<List<Point>>();
+    all_lst = new List<List<Vector>>();
     all_lst.AddRange(allCubes_lst);
     all_lst.AddRange(allSimplices_lst);
     all_lst.AddRange(allSimplicesRND_lst);
   }
 
-  public static IEnumerable<TestCaseData> AllCubes_AllTransformed(bool   needToRot
-                                                                , int    fst
-                                                                , int    snd
-                                                                , double angle
-                                                                , bool   needToShift) {
+  public static IEnumerable<TestCaseData> AllCubes_AllTransformed(
+      bool   needToRot
+    , int    fst
+    , int    snd
+    , double angle
+    , bool   needToShift
+    ) {
     Matrix rotate5D = MakeRotationMatrix(5, fst, snd, angle);
     Vector shift    = GenShift(5, new GRandomLC(111));
 
@@ -434,9 +442,9 @@ public class MinkowskiSum5D {
   /// </summary>
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, false })]
   public void AllCubes_AllTest(FaceLattice cube, FaceLattice other) {
-    FaceLattice sum_CH = MinkSumCH(cube, other);
-    FaceLattice sum    = MinkSumSDas(cube, other);
-    FaceLattice sumSim = MinkSumSDas(other, cube);
+    FaceLattice sum_CH = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     Assert.That(sum_CH, Is.EqualTo(sumSim));
@@ -444,9 +452,9 @@ public class MinkowskiSum5D {
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, true })]
   public void AllCubes_AllShiftedTest(FaceLattice cube, FaceLattice other) {
-    FaceLattice sum_CH = MinkSumCH(cube, other);
-    FaceLattice sum    = MinkSumSDas(cube, other);
-    FaceLattice sumSim = MinkSumSDas(other, cube);
+    FaceLattice sum_CH = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     Assert.That(sum_CH, Is.EqualTo(sumSim));
@@ -454,9 +462,9 @@ public class MinkowskiSum5D {
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 1, 2, 45, false })]
   public void AllCubes_AllRotated12_45degTest(FaceLattice cube, FaceLattice other) {
-    FaceLattice sum_CH = MinkSumCH(cube, other);
-    FaceLattice sum    = MinkSumSDas(cube, other);
-    FaceLattice sumSim = MinkSumSDas(other, cube);
+    FaceLattice sum_CH = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     Assert.That(sum_CH, Is.EqualTo(sumSim));
@@ -464,9 +472,9 @@ public class MinkowskiSum5D {
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 3, 5, 45, false })]
   public void AllCubes_AllRotated35_45degTest(FaceLattice cube, FaceLattice other) {
-    FaceLattice sum_CH = MinkSumCH(cube, other);
-    FaceLattice sum    = MinkSumSDas(cube, other);
-    FaceLattice sumSim = MinkSumSDas(other, cube);
+    FaceLattice sum_CH = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sum    = MinkowskiSum.BySandipDas(cube, other);
+    FaceLattice sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     Assert.That(sum_CH, Is.EqualTo(sumSim));

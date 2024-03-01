@@ -67,7 +67,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Returns set of original points.
     /// </summary>
-    public HashSet<Point> OriginalVertices => Vertices.Select(v => v.GetRootVertex()).ToHashSet();
+    public HashSet<Vector> OriginalVertices => Vertices.Select(v => v.GetRootVertex()).ToHashSet();
 
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.

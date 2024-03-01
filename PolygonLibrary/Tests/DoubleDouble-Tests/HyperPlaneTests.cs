@@ -8,7 +8,7 @@ public class HyperPlaneTests {
 
   [Test]
   public void ConstructorWithPointAndNormalTest() {
-    Point      origin     = new Point(new ddouble[] { 0, 0, 0 });
+    Vector      origin     = new Vector(new ddouble[] { 0, 0, 0 });
     Vector     normal     = new Vector(new ddouble[] { 1, 1, 1 });
     HyperPlane hyperplane = new HyperPlane(origin, normal);
 
@@ -23,7 +23,7 @@ public class HyperPlaneTests {
       , new Vector(new ddouble[] { 0, 1, 0 })
       };
 
-    AffineBasis affineBasis = new AffineBasis(new Point(new ddouble[] { 1, 1, 1 }), vectors);
+    AffineBasis affineBasis = new AffineBasis(new Vector(new ddouble[] { 1, 1, 1 }), vectors);
     HyperPlane  hyperplane  = new HyperPlane(affineBasis);
 
     AffineBasis.CheckCorrectness(hyperplane.ABasis);
@@ -31,15 +31,15 @@ public class HyperPlaneTests {
 
   [Test]
   public void ContainsTest() {
-    Point origin = new Point(new ddouble[] { 0, 0, 0 });
-    Point v1     = new Point(new ddouble[] { 1, 1, 1 });
-    Point v2     = new Point(new ddouble[] { 1, -1, 1 });
-    Point v3     = new Point(new ddouble[] { 0, 0, 1 });
+    Vector origin = new Vector(new ddouble[] { 0, 0, 0 });
+    Vector v1     = new Vector(new ddouble[] { 1, 1, 1 });
+    Vector v2     = new Vector(new ddouble[] { 1, -1, 1 });
+    Vector v3     = new Vector(new ddouble[] { 0, 0, 1 });
 
     AffineBasis aBasis = new AffineBasis
       (
        origin
-     , new List<Point>()
+     , new List<Vector>()
          {
            v1
          , v2
@@ -48,10 +48,10 @@ public class HyperPlaneTests {
 
     HyperPlane hp = new HyperPlane(aBasis);
 
-    Point p1 = Point.LinearCombination(v1, 3, v2, 5);
-    Point p2 = Point.LinearCombination(v1, -3, v2, 5);
-    Point p3 = Point.LinearCombination(v1, -3, v2, -5);
-    Point p4 = Point.LinearCombination(v1, 3, v2, -5);
+    Vector p1 = Vector.LinearCombination(v1, 3, v2, 5);
+    Vector p2 = Vector.LinearCombination(v1, -3, v2, 5);
+    Vector p3 = Vector.LinearCombination(v1, -3, v2, -5);
+    Vector p4 = Vector.LinearCombination(v1, 3, v2, -5);
 
     Assert.That(hp.Contains(p1), Is.True);
     Assert.That(hp.Contains(p2), Is.True);
@@ -64,32 +64,32 @@ public class HyperPlaneTests {
 
   [Test]
   public void TestFilter() {
-    Point origin = new Point(new ddouble[] { 0, 0, 0 });
-    Point e1     = new Point(new ddouble[] { 1, 0, 0 });
-    Point e2     = new Point(new ddouble[] { 0, 1, 0 });
-    Point e3     = new Point(new ddouble[] { 0, 0, 1 });
+    Vector origin = new Vector(new ddouble[] { 0, 0, 0 });
+    Vector e1     = new Vector(new ddouble[] { 1, 0, 0 });
+    Vector e2     = new Vector(new ddouble[] { 0, 1, 0 });
+    Vector e3     = new Vector(new ddouble[] { 0, 0, 1 });
 
-    AffineBasis aBasis = new AffineBasis(origin, new Point[] { e1, e2 });
+    AffineBasis aBasis = new AffineBasis(origin, new Vector[] { e1, e2 });
 
     HyperPlane hp = new HyperPlane(aBasis);
 
-    List<Point> Swarm = new List<Point>()
+    List<Vector> Swarm = new List<Vector>()
       {
-        Point.LinearCombination(e1, 3, e2, 5)
-      , Point.LinearCombination(e1, -3, e2, 5)
-      , Point.LinearCombination(e1, -3, e2, -5)
-      , Point.LinearCombination(e1, 3, e2, -5)
-      , Point.LinearCombination(e1, 3, e3, 5)
-      , Point.LinearCombination(e1, -3, e3, 5)
-      , Point.LinearCombination(e1, -3, e3, -5)
-      , Point.LinearCombination(e1, 3, e3, -5)
-      , Point.LinearCombination(e1, 3, e3, 4)
+        Vector.LinearCombination(e1, 3, e2, 5)
+      , Vector.LinearCombination(e1, -3, e2, 5)
+      , Vector.LinearCombination(e1, -3, e2, -5)
+      , Vector.LinearCombination(e1, 3, e2, -5)
+      , Vector.LinearCombination(e1, 3, e3, 5)
+      , Vector.LinearCombination(e1, -3, e3, 5)
+      , Vector.LinearCombination(e1, -3, e3, -5)
+      , Vector.LinearCombination(e1, 3, e3, -5)
+      , Vector.LinearCombination(e1, 3, e3, 4)
       };
 
     Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.False);
 
-    IEnumerable<Point> inPlane    = hp.FilterIn(Swarm); 
-    IEnumerable<Point> notInPlane = hp.FilterNotIn(Swarm);
+    IEnumerable<Vector> inPlane    = hp.FilterIn(Swarm); 
+    IEnumerable<Vector> notInPlane = hp.FilterNotIn(Swarm);
 
     Assert.That(hp.AllAtOneSide(inPlane), Is.EqualTo((true,0)));
     Assert.That(inPlane.Count(), Is.EqualTo(4));

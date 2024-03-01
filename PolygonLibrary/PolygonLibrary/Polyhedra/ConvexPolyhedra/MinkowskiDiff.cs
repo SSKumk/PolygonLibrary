@@ -13,6 +13,21 @@ public partial class Geometry<TNum, TConv>
 
   public class MinkowskiDiff {
 
+    public static ConvexPolytop? Naive(ConvexPolytop F, ConvexPolytop G) {
+      return MinkDiff
+               (
+                F.HRep
+              , G.VRep
+              , out ConvexPolytop diffFG
+              , FindExtrInCPOnVector_Naive
+              , doSubtract
+              , ConvexPolytop.HRepToVRep_Naive
+              , GiftWrapping.WrapPolytop
+               )
+               ? diffFG
+               : null;
+    }
+
     /* 1.
      * Варианты первого пункта!
      * 1) Для каждого l тупо решить LP-задачу на G. O(|N(F)| * |N(G)|*d^3).
@@ -32,7 +47,7 @@ public partial class Geometry<TNum, TConv>
       Vector extr    = new Vector(P.Vertices.First());
       TNum   extrVal = l * extr;
 
-      foreach (Point vertex in P.Vertices) {
+      foreach (Vector vertex in P.Vertices) {
         Vector vec = new Vector(vertex);
         TNum   val = l * vec;
         if (val > extrVal) {
@@ -74,17 +89,16 @@ public partial class Geometry<TNum, TConv>
      */
 
 
-    public static bool MinkDiff(ConvexPolytop                             F
+    public static bool MinkDiff(HPolytop                                  F
                               , VPolytop                                  G
-                              , out FaceLattice                           diffFL
+                              , out ConvexPolytop                         diffFG
                               , Func<VPolytop, Vector, Vector>            findExtrInG_on_lFromNF
                               , Func<HyperPlane, Vector, HyperPlane>      doSubtract // <-- todo Как назвать?
-                              , Func<List<HyperPlane>, HashSet<Point>>    HtoVRep
-                              , Func<HashSet<Point>, FaceLattice>         produceFL
+                              , Func<List<HyperPlane>, HashSet<Vector>>    HtoVRep
+                              , Func<HashSet<Vector>, ConvexPolytop>       wrapCPolytop
                               , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null) {
-      List<HyperPlane> FHrep = F.HRepresentation;
       List<HyperPlane> gamma = new List<HyperPlane>();
-      foreach (HyperPlane hpF in FHrep) {
+      foreach (HyperPlane hpF in F.Faces) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
         Vector extrOn_l = findExtrInG_on_lFromNF(G, hpF.Normal);
 
@@ -98,17 +112,17 @@ public partial class Geometry<TNum, TConv>
 
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
-      HashSet<Point> VRepFminusG = HtoVRep(gamma);
+      HashSet<Vector> VRepFminusG = HtoVRep(gamma);
 
 
       // 5) Построить FL роя V(F-G)
       if (VRepFminusG.Count < 3) {
-        diffFL = new FaceLattice(new Point(1));
+        diffFG = new ConvexPolytop(new List<Vector>());
 
         return false;
       }
 
-      diffFL = produceFL(VRepFminusG);
+      diffFG = wrapCPolytop(VRepFminusG);
 
       return true;
     }

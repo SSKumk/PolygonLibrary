@@ -103,7 +103,7 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithOriginTest() {
-    Point origin = new Point(new ddouble[] { 1, 2, 3 });
+    Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     AffineBasis basis = new AffineBasis(origin);
 
@@ -118,7 +118,7 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ConstructorWithOriginAndVectorsTest() {
-    Point origin = new Point(new ddouble[] { 1, 2, 3 });
+    Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     List<Vector> vectors = new List<Vector>()
       {
@@ -155,19 +155,19 @@ public class AffineSpaceTests {
 
 
   /// <summary>
-  /// Point constructor test
+  /// Vector constructor test
   /// </summary>
   [Test]
   public void ConstructorWithOriginAndPointsTest() {
-    Point origin = new Point(new ddouble[] { -1, ddouble.PI, -3 });
+    Vector origin = new Vector(new ddouble[] { -1, ddouble.PI, -3 });
 
-    List<Point> points = new List<Point>()
+    List<Vector> points = new List<Vector>()
       {
-        new Point(new ddouble[] { 2, 3, 4 })
-      , new Point(new ddouble[] { 3, 4, 5 })
-      , new Point(new ddouble[] { 4, 5, 6 })
-      , new Point(new ddouble[] { -6, -3, 0 })
-      , new Point(new ddouble[] { ddouble.PI / 2, 5, 5 })
+        new Vector(new ddouble[] { 2, 3, 4 })
+      , new Vector(new ddouble[] { 3, 4, 5 })
+      , new Vector(new ddouble[] { 4, 5, 6 })
+      , new Vector(new ddouble[] { -6, -3, 0 })
+      , new Vector(new ddouble[] { ddouble.PI / 2, 5, 5 })
       };
 
     AffineBasis basis = new AffineBasis(origin, points);
@@ -192,7 +192,7 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void AddVectorToBasisTest() {
-    Point origin = new Point(new ddouble[] { 1, 2, 3 });
+    Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     List<Vector> vectors = new List<Vector>() { new Vector(new ddouble[] { 1, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0 }) };
 
@@ -220,12 +220,12 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void AddPointToBasisTest() {
-    Point origin = new Point(new ddouble[] { 1, 2, 3 });
+    Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
-    List<Point> points = new List<Point>() { new Point(new ddouble[] { 2, 3, 4 }), new Point(new ddouble[] { 3, -4, 5 }) };
+    List<Vector> points = new List<Vector>() { new Vector(new ddouble[] { 2, 3, 4 }), new Vector(new ddouble[] { 3, -4, 5 }) };
 
     AffineBasis basis    = new AffineBasis(origin, points);
-    Point       newPoint = new Point(new ddouble[] { 4, 5, -6 });
+    Vector       newPoint = new Vector(new ddouble[] { 4, 5, -6 });
 
 
     bool result = basis.AddPointToBasis(newPoint);
@@ -248,7 +248,7 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ExpansionWithVectorTest() {
-    Point origin = new Point(new ddouble[] { ddouble.PI, 1, 4 });
+    Vector origin = new Vector(new ddouble[] { ddouble.PI, 1, 4 });
 
     List<Vector> vectors = new List<Vector>()
       {
@@ -269,7 +269,7 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ExpansionWithPointTest() {
-    Point origin = new Point(new ddouble[] { 1, 0, 0 });
+    Vector origin = new Vector(new ddouble[] { 1, 0, 0 });
 
     List<Vector> vectors = new List<Vector>()
       {
@@ -277,7 +277,7 @@ public class AffineSpaceTests {
       };
 
     AffineBasis basis = new AffineBasis(origin, vectors);
-    Point       p     = new Point(new ddouble[] { ddouble.PI, ddouble.PI / 2, ddouble.PI / 4 });
+    Vector       p     = new Vector(new ddouble[] { ddouble.PI, ddouble.PI / 2, ddouble.PI / 4 });
 
     Vector expansion = basis.Expansion(p);
 
@@ -290,19 +290,19 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_1() {
-    Point origin = new Point(new ddouble[] { 0, 0 });
+    Vector origin = new Vector(new ddouble[] { 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { 1, 0 }), new Vector(new ddouble[] { 0, 1 }) };
 
-    HashSet<Point> swarm = new HashSet<Point>
+    HashSet<Vector> swarm = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 1, 1 }), new Point(new ddouble[] { 2, 3 }), new Point(new ddouble[] { -1, 4 })
+        new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 3 }), new Vector(new ddouble[] { -1, 4 })
       };
 
-    HashSet<Point> expected = swarm;
+    HashSet<Vector> expected = swarm;
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
-    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -314,22 +314,22 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_2() {
-    Point origin = new Point(new ddouble[] { 0, 0 });
+    Vector origin = new Vector(new ddouble[] { 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { -1, 0 }), new Vector(new ddouble[] { 0, -1 }) };
 
-    HashSet<Point> swarm = new HashSet<Point>
+    HashSet<Vector> swarm = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 1, 1 }), new Point(new ddouble[] { 2, 3 }), new Point(new ddouble[] { -1, 4 })
+        new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 3 }), new Vector(new ddouble[] { -1, 4 })
       };
 
-    HashSet<Point> expected = new HashSet<Point>
+    HashSet<Vector> expected = new HashSet<Vector>
       {
-        new Point(new ddouble[] { -1, -1 }), new Point(new ddouble[] { -2, -3 }), new Point(new ddouble[] { 1, -4 })
+        new Vector(new ddouble[] { -1, -1 }), new Vector(new ddouble[] { -2, -3 }), new Vector(new ddouble[] { 1, -4 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
-    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -341,22 +341,22 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_3() {
-    Point origin = new Point(new ddouble[] { 2, 2 });
+    Vector origin = new Vector(new ddouble[] { 2, 2 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { -1, 0 }), new Vector(new ddouble[] { 0, -1 }) };
 
-    HashSet<Point> swarm = new HashSet<Point>
+    HashSet<Vector> swarm = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 1, 1 }), new Point(new ddouble[] { 2, 4 }), new Point(new ddouble[] { -4, 4 })
+        new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 4 }), new Vector(new ddouble[] { -4, 4 })
       };
 
-    HashSet<Point> expected = new HashSet<Point>
+    HashSet<Vector> expected = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 1, 1 }), new Point(new ddouble[] { 0, -2 }), new Point(new ddouble[] { 6, -2 })
+        new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 0, -2 }), new Vector(new ddouble[] { 6, -2 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
-    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
@@ -367,28 +367,28 @@ public class AffineSpaceTests {
   /// </summary>
   [Test]
   public void ProjectToAffineSpace_4() {
-    Point origin = new Point(new ddouble[] { 0, 0, 0, 0 });
+    Vector origin = new Vector(new ddouble[] { 0, 0, 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { 1, 0, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0, 0 }) };
 
-    HashSet<Point> swarm = new HashSet<Point>
+    HashSet<Vector> swarm = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 0, 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0, 0 })
-      , new Point(new ddouble[] { 0, 1, 0, 0 })
-      , new Point(new ddouble[] { 1, 1, 1, 1 })
+        new Vector(new ddouble[] { 0, 0, 0, 0 })
+      , new Vector(new ddouble[] { 1, 0, 0, 0 })
+      , new Vector(new ddouble[] { 0, 1, 0, 0 })
+      , new Vector(new ddouble[] { 1, 1, 1, 1 })
       };
 
-    HashSet<Point> expected = new HashSet<Point>
+    HashSet<Vector> expected = new HashSet<Vector>
       {
-        new Point(new ddouble[] { 0, 0 })
-      , new Point(new ddouble[] { 1, 0 })
-      , new Point(new ddouble[] { 0, 1 })
-      , new Point(new ddouble[] { 1, 1 })
+        new Vector(new ddouble[] { 0, 0 })
+      , new Vector(new ddouble[] { 1, 0 })
+      , new Vector(new ddouble[] { 0, 1 })
+      , new Vector(new ddouble[] { 1, 1 })
       };
 
     AffineBasis        aBasis = new AffineBasis(origin, basis);
-    IEnumerable<Point> result = aBasis.ProjectPoints(swarm);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
     Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");

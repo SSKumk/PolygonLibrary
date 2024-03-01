@@ -72,7 +72,7 @@ class Program {
     for (int i = 0; i < N; i++) {
       y = MinkSumCH(P, Q);
     }
-    Console.WriteLine($"MinkSumCH = {timer.ElapsedMilliseconds}");
+    Console.WriteLine($"ByConvexHull = {timer.ElapsedMilliseconds}");
 
     if (!x!.Equals(y)) { throw new ArgumentException("AAAAAA"); }
   }

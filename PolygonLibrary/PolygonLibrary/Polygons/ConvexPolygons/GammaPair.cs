@@ -138,7 +138,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="g1">The first pair</param>
     /// <param name="g2">The second pair</param>
     /// <returns>The corresponding point</returns>
-    public static Point2D CrossPairs(GammaPair g1, GammaPair g2) {
+    public static Vector2D CrossPairs(GammaPair g1, GammaPair g2) {
 #if DEBUG
       if (Vector2D.AreParallel(g1.Normal, g2.Normal)) {
         throw new ArgumentException("Cannot cross lines defined by pairs with parallel normals");
@@ -149,7 +149,7 @@ public partial class Geometry<TNum, TConv>
          , d1 = g1.Value * g2.Normal.y - g2.Value * g1.Normal.y
          , d2 = g1.Normal.x * g2.Value - g2.Normal.x * g1.Value;
 
-      return new Point2D(d1 / d, d2 / d);
+      return new Vector2D(d1 / d, d2 / d);
     }
 
   }

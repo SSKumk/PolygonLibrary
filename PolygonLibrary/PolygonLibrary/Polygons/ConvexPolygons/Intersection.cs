@@ -34,7 +34,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// True if polygon is built already and stop is needed
     /// False otherwise
     /// </returns>
-    private static bool AddPoint(List<Point2D> list, Point2D point) {
+    private static bool AddPoint(List<Vector2D> list, Vector2D point) {
       if (list.Count != 0 && point.Equals(list[0])) {
         return true;
       }
@@ -68,9 +68,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// True if polygon is built already and stop is needed
     /// False otherwise
     /// </returns>
-    private static bool MoveGeneric(List<Point2D> list
-                                  , Point2D       p
-                                  , Point2D       q
+    private static bool MoveGeneric(List<Vector2D> list
+                                  , Vector2D       p
+                                  , Vector2D       q
                                   , ref int       countP
                                   , ref int       countQ
                                   , int           skewPSign
@@ -103,7 +103,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         return null;
       }
 
-      List<Point2D>? R      = new List<Point2D>();
+      List<Vector2D>? R      = new List<Vector2D>();
       InsideType     inside = InsideType.Unknown;
       int            lenP   = P.Vertices.Count;
       int            lenQ   = Q.Vertices.Count;
@@ -113,10 +113,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       int  repeatCount = 0;
       bool noReturnYet = true;
       do {
-        Point2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
-        Point2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
-        Point2D p      = P.Vertices.GetAtCyclic(countP);
-        Point2D q      = Q.Vertices.GetAtCyclic(countQ);
+        Vector2D pred_p = P.Vertices.GetAtCyclic(countP - 1);
+        Vector2D pred_q = Q.Vertices.GetAtCyclic(countQ - 1);
+        Vector2D p      = P.Vertices.GetAtCyclic(countP);
+        Vector2D q      = Q.Vertices.GetAtCyclic(countQ);
 
         Segment  hat_p  = P.Contour.Edges.GetAtCyclic(countP - 1);
         Segment  hat_q  = Q.Contour.Edges.GetAtCyclic(countQ - 1);

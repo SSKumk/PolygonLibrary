@@ -4,7 +4,8 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -81,12 +82,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The first intersection point (if any)
     /// </summary>
-    public readonly Point2D? fp;
+    public readonly Vector2D? fp;
 
     /// <summary>
     /// The another (second) end of the overlapping part of the segments (if any)
     /// </summary>
-    public readonly Point2D? sp;
+    public readonly Vector2D? sp;
 
     /// <summary>
     /// Reference to the first segment
@@ -131,15 +132,17 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="nfTypeS2">Location-type of the first point of the crossing relative to the second segment</param>
     /// <param name="nsTypeS1">Location-type of the second point of the crossing relative to the first segment</param>
     /// <param name="nsTypeS2">Location-type of the second point of the crossing relative to the second segment</param>
-    public CrossInfo(CrossType         type
-                   , Point2D?          nfp
-                   , Point2D?          nsp
-                   , Segment           ns1
-                   , Segment           ns2
-                   , IntersectPointPos nfTypeS1
-                   , IntersectPointPos nfTypeS2
-                   , IntersectPointPos nsTypeS1
-                   , IntersectPointPos nsTypeS2) {
+    public CrossInfo(
+        CrossType         type
+      , Vector2D?         nfp
+      , Vector2D?         nsp
+      , Segment           ns1
+      , Segment           ns2
+      , IntersectPointPos nfTypeS1
+      , IntersectPointPos nfTypeS2
+      , IntersectPointPos nsTypeS1
+      , IntersectPointPos nsTypeS2
+      ) {
       crossType = type;
       fp        = nfp;
       sp        = nsp;
@@ -162,19 +165,19 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The first end of the segment
     /// </summary>
-    private readonly Point2D p1;
+    private readonly Vector2D p1;
 
     /// <summary>
     /// The second end of the segment
     /// </summary>
-    private readonly Point2D p2;
+    private readonly Vector2D p2;
 
     /// <summary>
     /// Indexer access
     /// </summary>
     /// <param name="i">The index: 0 - the first end, 1 - the second end</param>
     /// <returns>The point of the corresponding end</returns>
-    public Point2D this[int i] {
+    public Vector2D this[int i] {
       get
         {
 #if DEBUG
@@ -185,11 +188,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
                    , _ => throw new IndexOutOfRangeException()
                    };
 #else
-        if (i == 0) {
-          return p1;
-        } else {
-          return p2;
-        }
+          if (i == 0) {
+            return p1;
+          } else {
+            return p2;
+          }
 #endif
         }
     }
@@ -334,8 +337,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Auxiliary internal default constructor
     /// </summary>
     protected Segment() {
-      p1 = Point2D.Origin;
-      p2 = Point2D.Origin;
+      p1 = Vector2D.Zero;
+      p2 = Vector2D.Zero;
     }
 
     /// <summary>
@@ -351,8 +354,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         throw new ArgumentException("The ends of a segment cannot coincide");
       }
 #endif
-      p1 = new Point2D(x1, y1);
-      p2 = new Point2D(x2, y2);
+      p1 = new Vector2D(x1, y1);
+      p2 = new Vector2D(x2, y2);
     }
 
     /// <summary>
@@ -360,7 +363,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="np1">The new first end</param>
     /// <param name="np2">The new second end</param>
-    public Segment(Point2D np1, Point2D np2) {
+    public Segment(Vector2D np1, Vector2D np2) {
 #if DEBUG
       if (np1 == np2) {
         throw new ArgumentException("The ends of a segment cannot coincide");
@@ -391,21 +394,21 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is an endpoint; false, otherwise</returns>
-    public bool IsEndPoint(Point2D p) => p == p1 || p == p2;
+    public bool IsEndPoint(Vector2D p) => p == p1 || p == p2;
 
     /// <summary>
     /// Checking that a point is an inner point of this segment
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is an inner point; false, otherwise</returns>
-    public bool IsInnerPoint(Point2D p) => ContainsPoint(p) && !IsEndPoint(p);
+    public bool IsInnerPoint(Vector2D p) => ContainsPoint(p) && !IsEndPoint(p);
 
     /// <summary>
     /// Check whether a point belongs to the segment
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point belongs to the segment; false, otherwise</returns>
-    public bool ContainsPoint(Point2D p) => Vector2D.AreCounterdirected(p1 - p, p2 - p);
+    public bool ContainsPoint(Vector2D p) => Vector2D.AreCounterdirected(p1 - p, p2 - p);
 
     /// <summary>
     /// Compute the ordinate of the line passing through the segment at the given abscissa;
@@ -430,9 +433,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="s2">The second segment</param>
     /// <returns>The information about the intersection</returns>
     public static CrossInfo Intersect(Segment s1, Segment s2) {
-      Vector2D d1       = s1.Directional;
-      Vector2D d2       = s2.Directional;
-      Point2D? resPoint = null, resPoint1 = null;
+      Vector2D  d1       = s1.Directional;
+      Vector2D  d2       = s2.Directional;
+      Vector2D? resPoint = null, resPoint1 = null;
       IntersectPointPos fS1 = IntersectPointPos.Empty
                       , fS2 = IntersectPointPos.Empty
                       , sS1 = IntersectPointPos.Empty

@@ -265,12 +265,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Retrieves the solution of the system of linear equations as a Point.
+    /// Retrieves the solution of the system of linear equations as a Vector.
     /// </summary>
     /// <param name="result">Output parameter that receives the solution point.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public bool GetSolution(out Point result) {
-      result = new Point(_result);
+    public bool GetSolution(out Vector result) {
+      result = new Vector(_result);
 
       return isSuccess;
     }

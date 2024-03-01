@@ -11,7 +11,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// Auxiliary class that represents the two-dimensional points in 2D-space
   /// and holds the information about sub-point from this forms.
   /// </summary>
-  public class SubPoint2D : Point2D {
+  public class SubPoint2D : Vector2D {
 
     /// <summary>
     /// sub-point based on which current

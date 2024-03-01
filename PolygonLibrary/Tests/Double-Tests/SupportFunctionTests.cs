@@ -85,12 +85,12 @@ public class SupportFunctionTests {
     , g2 = new GammaPair(new Vector2D(1, 0), 2)
     , g3 = new GammaPair(new Vector2D(0, 1), 1)
     , g4 = new GammaPair(new Vector2D(1, 1), 3);
-    Point2D
-      p13 = new Point2D(1, 1)
-    , p14 = new Point2D(1, 2)
-    , p23 = new Point2D(2, 1)
-    , p24 = new Point2D(2, 1)
-    , p34 = new Point2D(2, 1)
+    Vector2D
+      p13 = new Vector2D(1, 1)
+    , p14 = new Vector2D(1, 2)
+    , p23 = new Vector2D(2, 1)
+    , p24 = new Vector2D(2, 1)
+    , p34 = new Vector2D(2, 1)
     , p;
 
     bool hasException = false;
@@ -160,9 +160,9 @@ public class SupportFunctionTests {
 
   [Test]
   public void FindTest1() {
-    List<Point2D> ps = new List<Point2D>() {
-        new Point2D(-2, -1), new Point2D(-1, -2), new Point2D(1, -2), new Point2D(2, -1), new Point2D(2, 1)
-      , new Point2D(1, 2), new Point2D(-1, 2), new Point2D(-2, 1)
+    List<Vector2D> ps = new List<Vector2D>() {
+        new Vector2D(-2, -1), new Vector2D(-1, -2), new Vector2D(1, -2), new Vector2D(2, -1), new Vector2D(2, 1)
+      , new Vector2D(1, 2), new Vector2D(-1, 2), new Vector2D(-2, 1)
       };
     SupportFunction sf = new SupportFunction(ps);
     List<double> testAngles = new List<double>()
@@ -192,10 +192,10 @@ public class SupportFunctionTests {
   public void FindTest2() {
     List<double> vertAngles = new List<double>()
         { 0.0, 60.0, 120.0, 180.0, 240.0, 300.0 };
-    List<Point2D> ps = vertAngles.Select(
+    List<Vector2D> ps = vertAngles.Select(
                                          a => {
                                            double a1 = a * Tools.PI / 180;
-                                           return new Point2D(double.Cos(a1), double.Sin(a1));
+                                           return new Vector2D(double.Cos(a1), double.Sin(a1));
                                          }
                                         ).ToList();
     SupportFunction sf = new SupportFunction(ps);

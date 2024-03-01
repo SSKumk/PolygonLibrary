@@ -16,21 +16,21 @@ public class GW_Tests {
   #region Auxiliary tests
   [Test]
   public void GenCubeHDTest() {
-    HashSet<Point> S = new HashSet<Point>()
+    HashSet<Vector> S = new HashSet<Vector>()
       {
-        new Point(new ddouble[] { 0, 0, 0 })
-      , new Point(new ddouble[] { 1, 0, 0 })
-      , new Point(new ddouble[] { 0, 1, 0 })
-      , new Point(new ddouble[] { 0, 0, 1 })
-      , new Point(new ddouble[] { 1, 1, 0 })
-      , new Point(new ddouble[] { 0, 1, 1 })
-      , new Point(new ddouble[] { 1, 0, 1 })
-      , new Point(new ddouble[] { 1, 1, 1 })
+        new Vector(new ddouble[] { 0, 0, 0 })
+      , new Vector(new ddouble[] { 1, 0, 0 })
+      , new Vector(new ddouble[] { 0, 1, 0 })
+      , new Vector(new ddouble[] { 0, 0, 1 })
+      , new Vector(new ddouble[] { 1, 1, 0 })
+      , new Vector(new ddouble[] { 0, 1, 1 })
+      , new Vector(new ddouble[] { 1, 0, 1 })
+      , new Vector(new ddouble[] { 1, 1, 1 })
       };
 
-    List<Point> cube = Cube(3, out List<Point> _);
+    List<Vector> cube = Cube(3, out List<Vector> _);
 
-    Debug.Assert(S.SetEquals(new HashSet<Point>(cube)), "S is not equal to generated Cube");
+    Debug.Assert(S.SetEquals(new HashSet<Vector>(cube)), "S is not equal to generated Cube");
   }
   #endregion
 
@@ -38,14 +38,14 @@ public class GW_Tests {
   #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
   public void Cube3D_Rotated_Z45() {
-    List<Point> S = Cube(3, out List<Point> _);
+    List<Vector> S = Cube(3, out List<Vector> _);
     ddouble angle = Tools.PI / 4;
     ddouble sin = ddouble.Sin(angle);
     ddouble cos = ddouble.Cos(angle);
 
     ddouble[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
-    List<Point> Rotated = Rotate(S, new Matrix(rotationZ45));
+    List<Vector> Rotated = Rotate(S, new Matrix(rotationZ45));
 
     GiftWrapping P = new GiftWrapping(Rotated);
     Assert.That(P.Vertices.SetEquals(Rotated), "The set of vertices must be equal.");
@@ -56,16 +56,16 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Cube3D_Rotated() {
-    HashSet<Point> S = new HashSet<Point>()
+    HashSet<Vector> S = new HashSet<Vector>()
       {
-        new Point(new ddouble[] { 0, 0, 0 })
-      , new Point(new ddouble[] { 0.6800213885880926, 0.3956859369533106, 0.6172548504143999 })
-      , new Point(new ddouble[] { -0.47124672587598565, -0.40907382401238557, 0.7813994688115978 })
-      , new Point(new ddouble[] { 0.20877466271210693, -0.013387887059074954, 1.3986543192259977 })
-      , new Point(new ddouble[] { -0.561691583000748, 0.822247679112118, 0.0917132475755244 })
-      , new Point(new ddouble[] { 0.11832980558734463, 1.2179336160654286, 0.7089680979899242 })
-      , new Point(new ddouble[] { -1.0329383088767337, 0.4131738550997325, 0.8731127163871222 })
-      , new Point(new ddouble[] { -0.3529169202886411, 0.8088597920530431, 1.4903675668015222 })
+        new Vector(new ddouble[] { 0, 0, 0 })
+      , new Vector(new ddouble[] { 0.6800213885880926, 0.3956859369533106, 0.6172548504143999 })
+      , new Vector(new ddouble[] { -0.47124672587598565, -0.40907382401238557, 0.7813994688115978 })
+      , new Vector(new ddouble[] { 0.20877466271210693, -0.013387887059074954, 1.3986543192259977 })
+      , new Vector(new ddouble[] { -0.561691583000748, 0.822247679112118, 0.0917132475755244 })
+      , new Vector(new ddouble[] { 0.11832980558734463, 1.2179336160654286, 0.7089680979899242 })
+      , new Vector(new ddouble[] { -1.0329383088767337, 0.4131738550997325, 0.8731127163871222 })
+      , new Vector(new ddouble[] { -0.3529169202886411, 0.8088597920530431, 1.4903675668015222 })
       };
 
 
@@ -78,16 +78,16 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Cube3D_Shifted() {
-    HashSet<Point> S = new HashSet<Point>()
+    HashSet<Vector> S = new HashSet<Vector>()
       {
-        new Point(new ddouble[] { -10.029417029821644, -8.414457472370579, 12.142282885765258 })
-      , new Point(new ddouble[] { -10.029417029821644, -8.414457472370579, 13.142282885765258 })
-      , new Point(new ddouble[] { -10.029417029821644, -7.414457472370579, 12.142282885765258 })
-      , new Point(new ddouble[] { -10.029417029821644, -7.414457472370579, 13.142282885765258 })
-      , new Point(new ddouble[] { -9.029417029821644, -8.414457472370579, 12.142282885765258 })
-      , new Point(new ddouble[] { -9.029417029821644, -8.414457472370579, 13.142282885765258 })
-      , new Point(new ddouble[] { -9.029417029821644, -7.414457472370579, 12.142282885765258 })
-      , new Point(new ddouble[] { -9.029417029821644, -7.414457472370579, 13.142282885765258 })
+        new Vector(new ddouble[] { -10.029417029821644, -8.414457472370579, 12.142282885765258 })
+      , new Vector(new ddouble[] { -10.029417029821644, -8.414457472370579, 13.142282885765258 })
+      , new Vector(new ddouble[] { -10.029417029821644, -7.414457472370579, 12.142282885765258 })
+      , new Vector(new ddouble[] { -10.029417029821644, -7.414457472370579, 13.142282885765258 })
+      , new Vector(new ddouble[] { -9.029417029821644, -8.414457472370579, 12.142282885765258 })
+      , new Vector(new ddouble[] { -9.029417029821644, -8.414457472370579, 13.142282885765258 })
+      , new Vector(new ddouble[] { -9.029417029821644, -7.414457472370579, 12.142282885765258 })
+      , new Vector(new ddouble[] { -9.029417029821644, -7.414457472370579, 13.142282885765258 })
       };
 
     GiftWrapping P = new GiftWrapping(S);
@@ -96,16 +96,16 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Rotated_Shifted() {
-    HashSet<Point> S = new HashSet<Point>()
+    HashSet<Vector> S = new HashSet<Vector>()
       {
-        new Point(new ddouble[] { 4.989650328990457, 18.100255093909855, 14.491501515962065 })
-      , new Point(new ddouble[] { 5.66967171757855, 18.495941030863165, 15.108756366376465 })
-      , new Point(new ddouble[] { 4.518403603114471, 17.69118126989747, 15.272900984773663 })
-      , new Point(new ddouble[] { 5.198424991702564, 18.08686720685078, 15.890155835188063 })
-      , new Point(new ddouble[] { 4.427958745989709, 18.92250277302197, 14.58321476353759 })
-      , new Point(new ddouble[] { 5.107980134577802, 19.318188709975285, 15.20046961395199 })
-      , new Point(new ddouble[] { 3.9567120201137236, 18.513428949009587, 15.364614232349188 })
-      , new Point(new ddouble[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
+        new Vector(new ddouble[] { 4.989650328990457, 18.100255093909855, 14.491501515962065 })
+      , new Vector(new ddouble[] { 5.66967171757855, 18.495941030863165, 15.108756366376465 })
+      , new Vector(new ddouble[] { 4.518403603114471, 17.69118126989747, 15.272900984773663 })
+      , new Vector(new ddouble[] { 5.198424991702564, 18.08686720685078, 15.890155835188063 })
+      , new Vector(new ddouble[] { 4.427958745989709, 18.92250277302197, 14.58321476353759 })
+      , new Vector(new ddouble[] { 5.107980134577802, 19.318188709975285, 15.20046961395199 })
+      , new Vector(new ddouble[] { 3.9567120201137236, 18.513428949009587, 15.364614232349188 })
+      , new Vector(new ddouble[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
       };
 
     GiftWrapping P = new GiftWrapping(S);
@@ -120,7 +120,7 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Cube3D_withInnerPoints_On_1D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1 }, 1, 131);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1 }, 1, 131);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -129,7 +129,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 2 }, 1, 132);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 2 }, 1, 132);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -138,7 +138,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_3D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 3 }, 1, 133);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 3 }, 1, 133);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -147,7 +147,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1, 2 }, 1, 1312);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1312);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -156,7 +156,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D_3D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 2, 3 }, 1, 1323);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1323);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -165,7 +165,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D_3D() {
-    List<Point> S = Cube(3, out List<Point> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
+    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -180,7 +180,7 @@ public class GW_Tests {
   /// </summary>
   /// <param name="Polytop">The list of points representing the Polytop.</param>
   /// <param name="S">The list of points representing the S.</param>
-  private static void SwarmShuffle(List<Point> S, string nameOfTest) {
+  private static void SwarmShuffle(List<Vector> S, string nameOfTest) {
     for (int i = 0; i < 10 * S.Count; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
@@ -191,27 +191,27 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Shuffled() {
-    List<Point> S = Cube(3, out List<Point> _);
+    List<Vector> S = Cube(3, out List<Vector> _);
     SwarmShuffle(S, "Cube3D_Shuffled");
   }
 
   [Test]
   public void Cube4D_Suffled() {
-    List<Point> S = Cube(4, out List<Point> _);
+    List<Vector> S = Cube(4, out List<Vector> _);
     SwarmShuffle(S, "Cube4D_Shuffled");
 
   }
 
   [Test]
   public void Simplex3D_Suffled() {
-    List<Point> S = Simplex(3, out List<Point> _);
+    List<Vector> S = Simplex(3, out List<Vector> _);
     SwarmShuffle(S, "Simplex3D_Shuffled");
 
   }
 
   [Test]
   public void Simplex4D_Suffled() {
-    List<Point> S = Simplex(4, out List<Point> _);
+    List<Vector> S = Simplex(4, out List<Vector> _);
     SwarmShuffle(S, "Simplex4D_Shuffled");
 
   }
@@ -220,7 +220,7 @@ public class GW_Tests {
   #region Cube4D-Static Тесты 4D-куба не зависящие от _random
   [Test]
   public void Cube4D_withInnerPoints_On_1D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1 }, 1, 141);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1 }, 1, 141);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -230,7 +230,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_2D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 2 }, 1, 142);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 2 }, 1, 142);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -239,7 +239,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_3D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 3 }, 1, 143);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 3 }, 1, 143);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -248,7 +248,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1, 2 }, 1, 1412);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1412);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -257,7 +257,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_2D_3D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 2, 3 }, 1, 1423);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1423);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -266,7 +266,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D() {
-    List<Point> S = Cube(4, out List<Point> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
+    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -275,10 +275,10 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
-    List<Point> S = Cube
+    List<Vector> S = Cube
       (
        4
-     , out List<Point> cube
+     , out List<Vector> cube
      , new List<int>()
          {
            1
@@ -299,13 +299,13 @@ public class GW_Tests {
   #region Simplex4D Тесты 4D-симплекса не зависящие от _random
   [Test]
   public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
-    Point p0 = new Point(new ddouble[] { 0, 0, 0, 0 });
-    Point p1 = new Point(new ddouble[] { 1, 0, 0, 0 });
-    Point p2 = new Point(new ddouble[] { 0, 1, 0, 0 });
-    Point p3 = new Point(new ddouble[] { 0.1, 0, 1, 0 });
-    Point p4 = new Point(new ddouble[] { 0.1, 0, 0, 1 });
+    Vector p0 = new Vector(new ddouble[] { 0, 0, 0, 0 });
+    Vector p1 = new Vector(new ddouble[] { 1, 0, 0, 0 });
+    Vector p2 = new Vector(new ddouble[] { 0, 1, 0, 0 });
+    Vector p3 = new Vector(new ddouble[] { 0.1, 0, 1, 0 });
+    Vector p4 = new Vector(new ddouble[] { 0.1, 0, 0, 1 });
 
-    List<Point> Simplex = new List<Point>()
+    List<Vector> Simplex = new List<Vector>()
       {
         p0
       , p1
@@ -315,14 +315,14 @@ public class GW_Tests {
       };
 
 
-    List<Point> S = new List<Point>(Simplex)
+    List<Vector> S = new List<Vector>(Simplex)
       {
-        Point.LinearCombination(p1, 0.3, p2, 0.2)
-      , Point.LinearCombination(p1, 0.4, p2, 0.1)
-      , Point.LinearCombination(p1, 0.4, p3, 0.1)
-      , Point.LinearCombination(p1, 0.4, p3, 0.1)
-      , Point.LinearCombination(p1, 0.4, p4, 0.1)
-      , Point.LinearCombination(p1, 0.4, p4, 0.1)
+        Vector.LinearCombination(p1, 0.3, p2, 0.2)
+      , Vector.LinearCombination(p1, 0.4, p2, 0.1)
+      , Vector.LinearCombination(p1, 0.4, p3, 0.1)
+      , Vector.LinearCombination(p1, 0.4, p3, 0.1)
+      , Vector.LinearCombination(p1, 0.4, p4, 0.1)
+      , Vector.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
     GiftWrapping P = new GiftWrapping(S);
@@ -340,7 +340,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Cube(3, out List<Point> P, fID, nPoints);
+      List<Vector> S = Cube(3, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref S);
 
       Check(S, P, saveSeed, 3, nPoints, fID, true);
@@ -356,7 +356,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Cube(4, out List<Point> P, fID, nPoints);
+      List<Vector> S = Cube(4, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref S);
 
       Check(S, P, saveSeed, 4, nPoints, fID, true);
@@ -372,7 +372,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Cube(5, out List<Point> P, fID, nPoints);
+      List<Vector> S = Cube(5, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref S);
 
       Check(S, P, saveSeed, 5, nPoints, fID, true);
@@ -388,7 +388,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Cube(6, out List<Point> P, fID, nPoints);
+      List<Vector> S = Cube(6, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref S);
 
       Check(S, P, saveSeed, 6, nPoints, fID, true);
@@ -406,7 +406,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Simplex(3, out List<Point> P, fID, nPoints);
+      List<Vector> S = Simplex(3, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref S);
 
       Check(S, P, saveSeed, 3, nPoints, fID, true);
@@ -422,7 +422,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Simplex(4, out List<Point> P, fID, nPoints);
+      List<Vector> S = Simplex(4, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref S);
 
       Check(S, P, saveSeed, 4, nPoints, fID, true);
@@ -438,7 +438,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Simplex(5, out List<Point> P, fID, nPoints);
+      List<Vector> S = Simplex(5, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref S);
 
       Check(S, P, saveSeed, 5, nPoints, fID, true);
@@ -454,7 +454,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Simplex(6, out List<Point> P, fID, nPoints);
+      List<Vector> S = Simplex(6, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref S);
 
       Check(S, P, saveSeed, 6, nPoints, fID, true);
@@ -470,7 +470,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Point> S = Simplex(7, out List<Point> P, fID, nPoints);
+      List<Vector> S = Simplex(7, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(7, ref P, ref S);
 
       Check(S, P, saveSeed, 7, nPoints, fID, true);
@@ -490,7 +490,7 @@ public class GW_Tests {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
-        List<Point> S = SimplexRND(simplexDim, out List<Point> P, fID, nPoints);
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
       }
     }
@@ -507,7 +507,7 @@ public class GW_Tests {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
-        List<Point> S = SimplexRND(simplexDim, out List<Point> P, fID, nPoints);
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
       }
     }
@@ -524,7 +524,7 @@ public class GW_Tests {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
-        List<Point> S = SimplexRND(simplexDim, out List<Point> P, fID, nPoints);
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
       }
     }
@@ -558,23 +558,23 @@ public class GW_Tests {
     const int nPoints = 1;
     List<int> fID = new List<int>() { 2, 3, 4 };
 
-    List<Point> S = new List<Point>()
+    List<Vector> S = new List<Vector>()
       {
-        new Point(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
-      , new Point(new ddouble[] { -0.4334526451848103, -0.4053162935667942, 3.2553497814236554, 3.4524045601609177 })
-      , new Point(new ddouble[] { -3.942094170242104, -1.9384525033967692, -0.29372328782773627, 2.603184338100996 })
-      , new Point(new ddouble[] { -2.231889343176011, -3.249343109375179, -0.4791314609998676, -3.9361931497548226 })
-      , new Point(new ddouble[] { 0.4576718028303406, -1.483829232511071, 1.5060715392478907, -3.912975119639415 })
-      , new Point(new ddouble[] { -0.715863786767021, 1.1248964198021802, -0.08999099950936182, -0.41480693316225237 })
-      , new Point(new ddouble[] { -1.2504502355127234, -2.0382520989901907, 0.055536783449397165, -3.4765790886104364 })
-      , new Point(new ddouble[] { 2.5244380627935232, 4.399463020994712, -0.2616425805524087, -3.92127411448588 })
+        new Vector(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
+      , new Vector(new ddouble[] { -0.4334526451848103, -0.4053162935667942, 3.2553497814236554, 3.4524045601609177 })
+      , new Vector(new ddouble[] { -3.942094170242104, -1.9384525033967692, -0.29372328782773627, 2.603184338100996 })
+      , new Vector(new ddouble[] { -2.231889343176011, -3.249343109375179, -0.4791314609998676, -3.9361931497548226 })
+      , new Vector(new ddouble[] { 0.4576718028303406, -1.483829232511071, 1.5060715392478907, -3.912975119639415 })
+      , new Vector(new ddouble[] { -0.715863786767021, 1.1248964198021802, -0.08999099950936182, -0.41480693316225237 })
+      , new Vector(new ddouble[] { -1.2504502355127234, -2.0382520989901907, 0.055536783449397165, -3.4765790886104364 })
+      , new Vector(new ddouble[] { 2.5244380627935232, 4.399463020994712, -0.2616425805524087, -3.92127411448588 })
       };
 
     var hpABCD = new HyperPlane
       (
        new AffineBasis
          (
-          new List<Point>()
+          new List<Vector>()
             {
               S[0]
             , S[2]
@@ -585,7 +585,7 @@ public class GW_Tests {
       );
     var distABCD = S.Select(s => hpABCD.Eval(s));
 
-    AffineBasis ABDbasis = new AffineBasis(new List<Point>() { S[2], S[0], S[4] });
+    AffineBasis ABDbasis = new AffineBasis(new List<Vector>() { S[2], S[0], S[4] });
 
     Vector BC = Vector.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.Basis);
     Vector BX = Vector.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.Basis);
@@ -599,7 +599,7 @@ public class GW_Tests {
       (
        new AffineBasis
          (
-          new List<Point>()
+          new List<Vector>()
             {
               S[0]
             , S[2]
@@ -610,7 +610,7 @@ public class GW_Tests {
       );
     var distABDX = S.Select(s => hpABDX.Eval(s));
 
-    SimplexRND(PDim, out List<Point> polytop, null, 0, seed);
+    SimplexRND(PDim, out List<Vector> polytop, null, 0, seed);
     Check(S, polytop, seed, PDim, nPoints, fID, true);
   }
 
@@ -630,34 +630,34 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Simplex4D_InnerPointsIn_1D() {
-    List<Point> Simplex = new List<Point>()
+    List<Vector> Simplex = new List<Vector>()
       {
-        new Point(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
-      , new Point(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
-      , new Point(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
-      , new Point(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
-      , new Point(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
+        new Vector(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
+      , new Vector(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
+      , new Vector(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
+      , new Vector(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
+      , new Vector(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
       };
 
-    List<Point> S = new List<Point>(Simplex)
+    List<Vector> S = new List<Vector>(Simplex)
       {
-        new Point(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
-      , new Point(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
-      , new Point(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
-      , new Point(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
+        new Vector(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
+      , new Vector(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
+      , new Vector(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
+      , new Vector(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
       };
 
-    List<Point> S_shuffled = new List<Point>()
+    List<Vector> S_shuffled = new List<Vector>()
       {
-        new Point(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
-      , new Point(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
-      , new Point(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
-      , new Point(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
-      , new Point(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
-      , new Point(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
-      , new Point(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
-      , new Point(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
-      , new Point(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
+        new Vector(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
+      , new Vector(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
+      , new Vector(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
+      , new Vector(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
+      , new Vector(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
+      , new Vector(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
+      , new Vector(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
+      , new Vector(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
+      , new Vector(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
       };
 
     GiftWrapping P = new GiftWrapping(S);
@@ -671,20 +671,20 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void SomePolytop_3D() {
-    List<Point> S = new List<Point>()
+    List<Vector> S = new List<Vector>()
       {
-        new Point(new ddouble[] { 1, 0, 1 })
-      , new Point(new ddouble[] { 1, 0, -1 })
-      , new Point(new ddouble[] { 1.25, -1, 1 })
-      , new Point(new ddouble[] { 1.25, -1, -1 })
-      , new Point(new ddouble[] { 0.25, -1, 1 })
-      , new Point(new ddouble[] { 0.25, -1, -1 })
-      , new Point(new ddouble[] { -1, 0, 1 })
-      , new Point(new ddouble[] { -1, 0, -1 })
-      , new Point(new ddouble[] { -1.25, 1, 1 })
-      , new Point(new ddouble[] { -1.25, 1, -1 })
-      , new Point(new ddouble[] { -0.25, 1, 1 })
-      , new Point(new ddouble[] { -0.25, 1, -1 })
+        new Vector(new ddouble[] { 1, 0, 1 })
+      , new Vector(new ddouble[] { 1, 0, -1 })
+      , new Vector(new ddouble[] { 1.25, -1, 1 })
+      , new Vector(new ddouble[] { 1.25, -1, -1 })
+      , new Vector(new ddouble[] { 0.25, -1, 1 })
+      , new Vector(new ddouble[] { 0.25, -1, -1 })
+      , new Vector(new ddouble[] { -1, 0, 1 })
+      , new Vector(new ddouble[] { -1, 0, -1 })
+      , new Vector(new ddouble[] { -1.25, 1, 1 })
+      , new Vector(new ddouble[] { -1.25, 1, -1 })
+      , new Vector(new ddouble[] { -0.25, 1, 1 })
+      , new Vector(new ddouble[] { -0.25, 1, -1 })
       };
 
     GiftWrapping P = new GiftWrapping(S);
@@ -696,21 +696,21 @@ public class GW_Tests {
   [Test]
   public void VeryFlatSimplex() {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    List<Point> Simplex = new List<Point>()
+    List<Vector> Simplex = new List<Vector>()
       {
-       new Point(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 }) // Это начало базиса в GW
-      , new Point(new ddouble[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
-      , new Point(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
-      // , new Point(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
+       new Vector(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 }) // Это начало базиса в GW
+      , new Vector(new ddouble[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
+      , new Vector(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
+      // , new Vector(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
       };
 
-    List<Point> S = new List<Point>(Simplex);
-    // Point       p = new Point(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
+    List<Vector> S = new List<Vector>(Simplex);
+    // Vector       p = new Vector(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
     // S.Add(p);
     // ! Мы строим базитс на таких точках. Скачёк на 6 порядков. В double печаль! eps = 1e-8 всё ломается!
     // ! А в ddouble нормально! 
-    var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[0], S[1], S[2] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Point>() { S[1], S[2], S[0] }));
+    var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[1], S[2] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[1], S[2], S[0] }));
     // Console.WriteLine((double)(S[0] - S[1]).Length);
     // Console.WriteLine((double)(S[0] - S[2]).Length);
     // Console.WriteLine((double)(S[1] - S[2]).Length);
@@ -727,12 +727,12 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void SomeParallelogram() {
-    Point origin = new Point(3);
+    Vector origin = new Vector(3);
     Vector v1 = new Vector(new ddouble[] { 0.5, 1, 1 });
     Vector v2 = new Vector(new ddouble[] { 1, 0.5, 1 });
     Vector v3 = new Vector(new ddouble[] { 1, 1, 0.5 });
 
-    List<Point> S = new List<Point>()
+    List<Vector> S = new List<Vector>()
       {
         origin
       , origin + v1
@@ -758,8 +758,8 @@ public class GW_Tests {
   /// <param name="nPoints"></param>
   /// <param name="fID"></param>
   /// <param name="needShuffle"></param>
-  private static void Check(List<Point> S
-                          , List<Point> Answer
+  private static void Check(List<Vector> S
+                          , List<Vector> Answer
                           , uint seed
                           , int PDim
                           , int nPoints
@@ -769,7 +769,7 @@ public class GW_Tests {
 
     try {
       if (needShuffle) {
-        HashSet<Point> origS = new HashSet<Point>(S);
+        HashSet<Vector> origS = new HashSet<Vector>(S);
         S.Shuffle(new GRandomLC(seed));
         Debug.Assert(origS.SetEquals(S));
       }
@@ -806,9 +806,9 @@ public class GW_Tests {
     Console.WriteLine($"const int nPoints = {nPoints};");
     Console.WriteLine($"List<int> fID     = new List<int>() {{ {string.Join(", ", fID)} }};");
     Console.WriteLine();
-    Console.WriteLine("List<Point> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Point> polytop, fID, nPoints, seed);");
+    Console.WriteLine("List<Vector> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Vector> polytop, fID, nPoints, seed);");
     if (needShuffle) {
-      Console.WriteLine("List<Point> origS = new List<Point>(S);");
+      Console.WriteLine("List<Vector> origS = new List<Vector>(S);");
       Console.WriteLine("S.Shuffle(new GRandomLC(seed));");
     }
     Console.WriteLine();
@@ -825,8 +825,8 @@ public class GW_Tests {
     const int  nPoints = 1;
     List<int>  fID     = new List<int>() { 1, 2, 3, 4 };
 
-    List<Point> S     = SimplexRND(PDim, out List<Point> polytop, fID, nPoints, seed);
-    List<Point> origS = new List<Point>(S);
+    List<Vector> S     = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
+    List<Vector> origS = new List<Vector>(S);
     S.Shuffle(new GRandomLC(seed));
 
     ConvexPolytop P = GiftWrapping.WrapPolytop(S);

@@ -27,7 +27,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// </summary>
   /// <param name="S">The swarm to be rotated.</param>
   /// <returns>A rotated swarm.</returns>
-  public static List<Point> RotateRND(List<Point> S) => Rotate(S, Matrix.GenONMatrix(S.First().Dim));
+  public static List<Vector> RotateRND(List<Vector> S) => Rotate(S, Matrix.GenONMatrix(S.First().Dim));
 
   /// <summary>
   /// Generates a linear combination of the given points.
@@ -35,7 +35,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="points">The list of point to lin-combine.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A linear combination of the given points.</returns>
-  public static Point GenConvexCombination(IReadOnlyCollection<Point> points, GRandomLC? random = null) {
+  public static Vector GenConvexCombination(IReadOnlyCollection<Vector> points, GRandomLC? random = null) {
     GRandomLC  rnd = random ?? _random;
     List<TNum> ws  = new List<TNum>();
 
@@ -47,7 +47,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
     }
     ws.Add(difA);
 
-    Point res = Point.LinearCombination(points, ws);
+    Vector res = Vector.LinearCombination(points, ws);
 
     return res;
   }
@@ -68,7 +68,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   ///<param name="P">A reference to the list of points to be transformed.</param>
   ///<param name="S">A reference to the list of points representing the swarm to be transformed.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
-  public static void ShiftAndRotate(int PDim, ref List<Point> P, ref List<Point> S, uint? seed = null) {
+  public static void ShiftAndRotate(int PDim, ref List<Vector> P, ref List<Vector> S, uint? seed = null) {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     Matrix rotation = Matrix.GenONMatrix(PDim, random);
@@ -87,13 +87,13 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="S">The swarm of points to rotate.</param>
   /// <param name="rotation">Matrix to rotate a swarm.</param>
   /// <returns>The rotated swarm of points.</returns>
-  public static List<Point> Rotate(IEnumerable<Point> S, Matrix rotation) {
+  public static List<Vector> Rotate(IEnumerable<Vector> S, Matrix rotation) {
     Debug.Assert
       (S.First().Dim == rotation.Rows, "ToolsTests.Rotate: the dimension of points must be equal to the count of rotation rows.");
 
     IEnumerable<Vector> rotated = S.Select(s => new Vector(s) * rotation);
 
-    return rotated.Select(v => new Point(v)).ToList();
+    return rotated.Select(v => new Vector(v)).ToList();
   }
 
   /// <summary>

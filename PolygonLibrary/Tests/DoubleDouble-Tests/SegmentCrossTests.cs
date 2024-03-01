@@ -10,17 +10,17 @@ public class SegmentCrossTests {
   [Test]
   public void SegmentContainsPointTest() {
     ddouble a = 0.531;
-    Point2D[] p = new Point2D[]
-      { /* 0 */ new Point2D(1, 2)
-      , /* 1 */ new Point2D(5, 4)
-      , /* 2 */ new Point2D(3, 3)
-      , /* 3 */ new Point2D(1 + 2 * a, 2 + a)
-      , /* 4 */ new Point2D(1 + 2 * a, 2 + a + 1e-8)
-      , /* 5 */ new Point2D(1 + 2 * a, 2 + a + 1e-4)
-      , /* 6 */ new Point2D(-1, 1)
-      , /* 7 */ new Point2D(7, 5)
-      , /* 8 */ new Point2D(5, 5)
-      , /* 9 */ new Point2D(-2, 5)
+    Vector2D[] p = new Vector2D[]
+      { /* 0 */ new Vector2D(1, 2)
+      , /* 1 */ new Vector2D(5, 4)
+      , /* 2 */ new Vector2D(3, 3)
+      , /* 3 */ new Vector2D(1 + 2 * a, 2 + a)
+      , /* 4 */ new Vector2D(1 + 2 * a, 2 + a + 1e-8)
+      , /* 5 */ new Vector2D(1 + 2 * a, 2 + a + 1e-4)
+      , /* 6 */ new Vector2D(-1, 1)
+      , /* 7 */ new Vector2D(7, 5)
+      , /* 8 */ new Vector2D(5, 5)
+      , /* 9 */ new Vector2D(-2, 5)
       };
     bool[]  res = new bool[] { true, true, true, true, true, false, false, false, false, false };
     Segment s   = new Segment(p[0], p[1]);
@@ -62,9 +62,9 @@ public class SegmentCrossTests {
   //     , /* 26 */ { 3, 2 }
   //     };
   //
-  //   List<Point2D> p = new List<Point2D>();
+  //   List<Vector2D> p = new List<Vector2D>();
   //   for (int i = 0; i < x.Length / 2; i++) {
-  //     p.Add(new Point2D(x[i, 0], x[i, 1]));
+  //     p.Add(new Vector2D(x[i, 0], x[i, 1]));
   //   }
   //
   //   int[,] ind = new int[,]

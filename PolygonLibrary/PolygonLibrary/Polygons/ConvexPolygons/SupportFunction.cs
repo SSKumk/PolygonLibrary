@@ -57,8 +57,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="ps">The collection of points</param>
     /// <param name="ToConvexify">Flag showing whether the collection should be convexified in the beginning</param>
-    public SupportFunction(List<Point2D> ps, bool ToConvexify = true) {
-      List<Point2D> ps1 = ToConvexify ? Convexification.ArcHull2D(ps) : ps;
+    public SupportFunction(List<Vector2D> ps, bool ToConvexify = true) {
+      List<Vector2D> ps1 = ToConvexify ? Convexification.ArcHull2D(ps) : ps;
 
       switch (ps1.Count) {
         case > 2: {
@@ -331,7 +331,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         return Tools.GE(pm.Value, -pp.Value);
       }
 
-      Point2D p = GammaPair.CrossPairs(pm, pc);
+      Vector2D p = GammaPair.CrossPairs(pm, pc);
 
       return Tools.LT(pp.Normal * (Vector2D)p, pp.Value);
     }

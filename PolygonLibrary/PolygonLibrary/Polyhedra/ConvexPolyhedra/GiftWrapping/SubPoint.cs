@@ -13,13 +13,13 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a point in a subspace greater than 2.
   /// </summary>
-  public class SubPoint : Point {
+  public class SubPoint : Vector {
 
     // /// <summary>
     // /// Gets the original point in the original coordinate system.
     // /// Original point is the point before any projection to subspaces
     // /// </summary>
-    // public Point Original { get; }
+    // public Vector Original { get; }
 
     /// <summary>
     /// Gets the parent point in the parent coordinate system.
@@ -42,11 +42,11 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      return (Point)this == (Point)other;
+      return (Vector)this == (Vector)other;
     }
 
     /// <summary>
-    /// The hash code of SubPoint. It equal to Point.GHC().
+    /// The hash code of SubPoint. It equal to Vector.GHC().
     /// </summary>
     /// <returns>The hash code.</returns>
     public override int GetHashCode() => base.GetHashCode();
@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="p">The point.</param>
     /// <param name="parent">The point from which the current point was projected.</param>
-    public SubPoint(Point p, SubPoint? parent) : base(p) { Parent = parent; }
+    public SubPoint(Vector p, SubPoint? parent) : base(p) { Parent = parent; }
 
     /// <summary>
     /// Projects the current point to the specified affine basis.
@@ -76,7 +76,7 @@ public partial class Geometry<TNum, TConv>
     /// Returns the point from which the current point was firstly projected.
     /// </summary>
     /// <returns>The root vertex of the current point.</returns>
-    public Point GetRootVertex() {
+    public Vector GetRootVertex() {
       SubPoint root = this;
       while (root.Parent is not null) {
         root = root.Parent;

@@ -20,7 +20,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the origin point of the affine basis.
     /// </summary>
-    public Point Origin { get; }
+    public Vector Origin { get; }
 
     /// <summary>
     /// Gets the dimension of the affine basis.
@@ -78,7 +78,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="p">The point to add.</param>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the point was added successfully; otherwise, <c>false</c>.</returns>
-    public bool AddPointToBasis(Point p, bool orthogonalize = true) {
+    public bool AddPointToBasis(Vector p, bool orthogonalize = true) {
       Debug.Assert(Origin.Dim == p.Dim, "Adding a point with a wrong dimension into an affine basis.");
 
       return AddVectorToBasis(p - Origin, orthogonalize);
@@ -96,22 +96,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Computes the expansion of the specified point in the affine basis.
-    /// </summary>
-    /// <param name="p">The point to expand.</param>
-    /// <returns>The expansion of the point in the affine basis.</returns>
-    public Vector Expansion(Point p) {
-      Debug.Assert(Origin.Dim == p.Dim, "Expansion a point with a wrong dimension.");
-
-      return LinearBasis.Expansion(p - Origin);
-    }
-
-    /// <summary>
     /// Projects a given point onto the affine basis.
     /// </summary>
     /// <param name="point">The point to project.</param>
     /// <returns>The projected point.</returns>
-    public Point ProjectPoint(Point point) {
+    public Vector ProjectPoint(Vector point) {
       Debug.Assert
         (VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
 
@@ -122,7 +111,7 @@ public partial class Geometry<TNum, TConv>
         np[i] = LinearBasis[i] * t;
       }
 
-      return new Point(np);
+      return new Vector(np);
     }
 
     /// <summary>
@@ -130,8 +119,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The set of points to project.</param>
     /// <returns>The projected points.</returns>
-    public IEnumerable<Point> ProjectPoints(IEnumerable<Point> Swarm) {
-      foreach (Point point in Swarm) {
+    public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm) {
+      foreach (Vector point in Swarm) {
         yield return ProjectPoint(point);
       }
     }
@@ -141,7 +130,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point should be written in terms of this affine basis.</param>
     /// <returns>The point expressed in terms of the original affine system.</returns>
-    public Point TranslateToOriginal(Point point) {
+    public Vector TranslateToOriginal(Vector point) {
       Debug.Assert
         (SpaceDim == point.Dim, "The dimension of the basis space should be equal to the dimension of the current point.");
 
@@ -150,7 +139,7 @@ public partial class Geometry<TNum, TConv>
         np += point[i] * Basis[i];
       }
 
-      return new Point(np);
+      return new Vector(np);
     }
 
     /// <summary>
@@ -158,8 +147,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Ps">Points should be written in terms of this affine basis.</param>
     /// <returns>Points expressed in terms of the original affine system.</returns>
-    public IEnumerable<Point> TranslateToOriginal(IEnumerable<Point> Ps) {
-      foreach (Point point in Ps) {
+    public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps) {
+      foreach (Vector point in Ps) {
         yield return TranslateToOriginal(point);
       }
     }
@@ -167,9 +156,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Checks if a point belongs to the affine subspace defined by the basis.
     /// </summary>
-    /// <param name="p">Point to be checked.</param>
+    /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
-    public bool Contains(Point p) {
+    public bool Contains(Vector p) {
       Debug.Assert
         (
          p.Dim == VecDim
@@ -186,11 +175,11 @@ public partial class Geometry<TNum, TConv>
     /// Gets the basis vectors as a list of points.
     /// </summary>
     /// <returns>The list of points representing the basis vectors.</returns>
-    public List<Point> GetBasisAsPoints() {
-      List<Point> points = new List<Point>();
+    public List<Vector> GetBasisAsPoints() {
+      List<Vector> points = new List<Vector>();
 
       foreach (Vector bvec in Basis) {
-        points.Add(new Point(bvec));
+        points.Add(new Vector(bvec));
       }
 
       return points;
@@ -202,7 +191,7 @@ public partial class Geometry<TNum, TConv>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
-    public AffineBasis(Point o) {
+    public AffineBasis(Vector o) {
       Origin      = o;
       LinearBasis = new LinearBasis();
     }
@@ -212,7 +201,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="d">The dimension of the basis</param>
     public AffineBasis(int d) {
-      Origin      = new Point(d);
+      Origin      = new Vector(d);
       LinearBasis = new LinearBasis();
 
       for (int i = 0; i < Origin.Dim; i++) {
@@ -230,7 +219,7 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis(int basisDim, int vecDim) {
       Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
 
-      Origin      = new Point(vecDim);
+      Origin      = new Vector(vecDim);
       LinearBasis = new LinearBasis();
 
       for (int i = 0; i < basisDim; i++) {
@@ -245,7 +234,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public AffineBasis(Point o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
+    public AffineBasis(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
       Origin      = o;
       LinearBasis = new LinearBasis(Vs, orthogonalize);
     }
@@ -255,11 +244,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="Ps">The points to use in the linear basis associated with the affine basis.</param>
-    public AffineBasis(Point o, IEnumerable<Point> Ps) {
+    public AffineBasis(Vector o, IEnumerable<Vector> Ps) {
       Origin      = o;
       LinearBasis = new LinearBasis();
 
-      foreach (Point p in Ps) {
+      foreach (Vector p in Ps) {
         AddVectorToBasis(p - Origin);
       }
     }
@@ -269,13 +258,13 @@ public partial class Geometry<TNum, TConv>
     /// The first point is interpret as origin.
     /// </summary>
     /// <param name="Ps">The points to construct the affine basis.</param>
-    public AffineBasis(IEnumerable<Point> Ps) {
+    public AffineBasis(IEnumerable<Vector> Ps) {
       Debug.Assert(Ps.Any(), "At least one point should be in points");
 
       Origin      = Ps.First();
       LinearBasis = new LinearBasis();
 
-      foreach (Point p in Ps) {
+      foreach (Vector p in Ps) {
         AddVectorToBasis(p - Origin);
         if (IsFullDim) { break; }
       }
@@ -286,7 +275,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Point o, LinearBasis lBasis) {
+    public AffineBasis(Vector o, LinearBasis lBasis) {
       Origin      = o;
       LinearBasis = new LinearBasis(lBasis);
     }

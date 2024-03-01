@@ -21,7 +21,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The point through which the hyperplane passes.
     /// </summary>
-    public readonly Point Origin;
+    public readonly Vector Origin;
 
     /// <summary>
     /// The dimension of the hyperplane.
@@ -113,7 +113,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="origin">The point through which the hyperplane passes.</param>
     /// <param name="normal">The normal vector to the hyperplane.</param>
-    public HyperPlane(Point origin, Vector normal) {
+    public HyperPlane(Vector origin, Vector normal) {
       Origin      = origin;
       _normal     = normal.Normalize();
       SubSpaceDim = Origin.Dim - 1;
@@ -128,7 +128,7 @@ public partial class Geometry<TNum, TConv>
       _normal       = normal.Normalize();
       SubSpaceDim   = normal.Dim - 1;
       _constantTerm = constant;
-      Origin        = new Point(Normal * constant);
+      Origin        = new Vector(Normal * constant);
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public partial class Geometry<TNum, TConv>
     /// If null, no orientation is defined.
     /// If not null, the point part of the pair should belong to the positive semi-space
     /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
-    public HyperPlane(AffineBasis affineBasis, (Point point, bool isPositive)? toOrient = null) {
+    public HyperPlane(AffineBasis affineBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
          affineBasis.SpaceDim == affineBasis.Origin.Dim - 1
@@ -160,9 +160,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Method to orient normal of the plane.
     /// </summary>
-    /// <param name="point">Point should belong to the semi-space.</param>
+    /// <param name="point">Vector should belong to the semi-space.</param>
     /// <param name="isPositive">If the bool is <c>true</c> than point is in positive semi-space, in the negative semi-space otherwise.</param>
-    public void OrientNormal(Point point, bool isPositive) {
+    public void OrientNormal(Vector point, bool isPositive) {
       TNum res = Eval(point);
 
       Debug.Assert(Tools.NE(res), "HyperPlane.OrientNormal: A given point belongs to the hyperplane.");
@@ -178,7 +178,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point at which the equation is to be evaluated.</param>
     /// <returns>The value of the equation of the hyperplane at the given point.</returns>
-    public TNum Eval(Point point) { return Normal * point - ConstantTerm; }
+    public TNum Eval(Vector point) { return Normal * point - ConstantTerm; }
 
 
     /// <summary>
@@ -186,36 +186,36 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point to check.</param>
     /// <returns><c>True</c> if the hyperplane contains the given point, otherwise <c>False</c>.</returns>
-    public bool Contains(Point point) { return Tools.EQ(Eval(point)); }
+    public bool Contains(Vector point) { return Tools.EQ(Eval(point)); }
 
     /// <summary>
     /// Checks if a given point lies in the negative-part of the hyperplane.
     /// </summary>
     /// <param name="point">The point to check.</param>
     /// <returns><c>True</c> if a given point lies in the negative-part, otherwise <c>False</c>.</returns>
-    public bool ContainsNegative(Point point) { return Tools.LT(Eval(point)); }
+    public bool ContainsNegative(Vector point) { return Tools.LT(Eval(point)); }
 
     /// <summary>
     /// Checks if a given point lies in the positive-part of the hyperplane.
     /// </summary>
     /// <param name="point">The point to check.</param>
     /// <returns><c>True</c> if a given point lies in the positive-part, otherwise <c>False</c>.</returns>
-    public bool ContainsPositive(Point point) { return Tools.GT(Eval(point)); }
+    public bool ContainsPositive(Vector point) { return Tools.GT(Eval(point)); }
 
     /// <summary>
     /// Checks if a given point lies in the negative-part of the hyperplane or belongs to it.
     /// </summary>
     /// <param name="point">The point to check.</param>
     /// <returns><c>True</c> if a given point lies in the plane or in the negative-part, otherwise <c>False</c>.</returns>
-    public bool ContainsNegativeNonStrict(Point point) { return Tools.LE(Eval(point)); }
+    public bool ContainsNegativeNonStrict(Vector point) { return Tools.LE(Eval(point)); }
 
     /// <summary>
     /// Filters a given collection of points, leaving only those that lie on the hyperplane.
     /// </summary>
     /// <param name="Swarm">The collection of points to filter.</param>
     /// <returns>A collection of points that lie on the hyperplane.</returns>
-    public IEnumerable<Point> FilterIn(IEnumerable<Point> Swarm) {
-      foreach (Point p in Swarm) {
+    public IEnumerable<Vector> FilterIn(IEnumerable<Vector> Swarm) {
+      foreach (Vector p in Swarm) {
         if (Contains(p)) {
           yield return p;
         }
@@ -227,8 +227,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The collection of points to filter.</param>
     /// <returns>A collection of points that lie outside of the hyperplane.</returns>
-    public IEnumerable<Point> FilterNotIn(IEnumerable<Point> Swarm) {
-      foreach (Point p in Swarm) {
+    public IEnumerable<Vector> FilterNotIn(IEnumerable<Vector> Swarm) {
+      foreach (Vector p in Swarm) {
         if (!Contains(p)) {
           yield return p;
         }
@@ -246,7 +246,7 @@ public partial class Geometry<TNum, TConv>
     /// -1 if all points lie in the opposite direction of the normal vector
     /// int.MaxValue if bool equals to False</returns>
     /// <remarks>If there are no points in the swarm then (true, int.MaxValue) returns.</remarks>
-    public (bool atOneSide, int where) AllAtOneSide(IEnumerable<Point> Swarm) {
+    public (bool atOneSide, int where) AllAtOneSide(IEnumerable<Vector> Swarm) {
       if (!Swarm.Any()) {
         return (true, int.MaxValue);
       }

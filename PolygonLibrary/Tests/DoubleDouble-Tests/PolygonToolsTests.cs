@@ -13,21 +13,21 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest1() {
-    Point2D       p = new Point2D(1, 2);
+    Vector2D       p = new Vector2D(1, 2);
     ConvexPolygon r = PolygonTools.RectangleParallel(p, p);
     Assert.Multiple
       (
        () => {
-         Assert.That(r.Contours, Has.Count.EqualTo(1), "Point rectangle: too many contours");
-         Assert.That(r.Contour, Has.Count.EqualTo(1), "Point rectangle: too many points in the contour");
-         Assert.That(r.Contour[0], Is.EqualTo(p), "Point rectangle: wrong point in the contour");
+         Assert.That(r.Contours, Has.Count.EqualTo(1), "Vector rectangle: too many contours");
+         Assert.That(r.Contour, Has.Count.EqualTo(1), "Vector rectangle: too many points in the contour");
+         Assert.That(r.Contour[0], Is.EqualTo(p), "Vector rectangle: wrong point in the contour");
        }
       );
   }
 
   [Test]
   public void RectParallelTest2() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(1, 3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(1, 3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple
       (
@@ -40,7 +40,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest3() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(1, 3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(1, 3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple
       (
@@ -53,7 +53,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest4() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, 2);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, 2);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple
       (
@@ -66,7 +66,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest5() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, 2);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, 2);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple
       (
@@ -79,7 +79,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest6() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, 3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, 3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple
       (
@@ -92,7 +92,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest7() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, 3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, 3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple
       (
@@ -105,7 +105,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest8() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, -3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, -3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p1, p2);
     Assert.Multiple
       (
@@ -118,7 +118,7 @@ public class RectangleParallelTests {
 
   [Test]
   public void RectParallelTest9() {
-    Point2D       p1 = new Point2D(1, 2), p2 = new Point2D(5, -3);
+    Vector2D       p1 = new Vector2D(1, 2), p2 = new Vector2D(5, -3);
     ConvexPolygon r  = PolygonTools.RectangleParallel(p2, p1);
     Assert.Multiple
       (
@@ -136,7 +136,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest1() {
-    Point2D p = new Point2D(1, 2);
+    Vector2D p = new Vector2D(1, 2);
     for (int i = 0; i <= 6; i++) {
       ddouble       a = i * Tools.PI / 6;
       ConvexPolygon r = PolygonTools.RectangleTurned(p, p, a);
@@ -154,7 +154,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest2() {
-    Point2D   p1 = new Point2D(1, 2), p2 = new Point2D(1, 4);
+    Vector2D   p1 = new Vector2D(1, 2), p2 = new Vector2D(1, 4);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -194,7 +194,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest3() {
-    Point2D   p2 = new Point2D(1, 2), p1 = new Point2D(1, 4);
+    Vector2D   p2 = new Vector2D(1, 2), p1 = new Vector2D(1, 4);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -234,7 +234,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest4() {
-    Point2D   p1 = new Point2D(2, 1), p2 = new Point2D(4, 1);
+    Vector2D   p1 = new Vector2D(2, 1), p2 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -274,7 +274,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest5() {
-    Point2D   p2 = new Point2D(2, 1), p1 = new Point2D(4, 1);
+    Vector2D   p2 = new Vector2D(2, 1), p1 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -314,7 +314,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest6() {
-    Point2D   p1 = new Point2D(-2, 0), p2 = new Point2D(4, 1);
+    Vector2D   p1 = new Vector2D(-2, 0), p2 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -356,7 +356,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest7() {
-    Point2D   p2 = new Point2D(-2, 0), p1 = new Point2D(4, 1);
+    Vector2D   p2 = new Vector2D(-2, 0), p1 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -398,7 +398,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest8() {
-    Point2D   p1 = new Point2D(-2, 3), p2 = new Point2D(4, 1);
+    Vector2D   p1 = new Vector2D(-2, 3), p2 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 
@@ -440,7 +440,7 @@ public class RectangleTurnedTests {
 
   [Test]
   public void RectTurnedTest9() {
-    Point2D   p2 = new Point2D(-2, 3), p1 = new Point2D(4, 1);
+    Vector2D   p2 = new Vector2D(-2, 3), p1 = new Vector2D(4, 1);
     const int N  = 9;
     ddouble   a0 = Tools.PI / N;
 

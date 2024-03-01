@@ -24,10 +24,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="swarm">List of the original swarm</param>
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
-    public static List<Point2D> QuickHull2D(List<Point2D> swarm) {
-      List<Point2D> res;
+    public static List<Vector2D> QuickHull2D(List<Vector2D> swarm) {
+      List<Vector2D> res;
       if (swarm.Count <= 1) {
-        res = new List<Point2D>();
+        res = new List<Vector2D>();
         if (swarm.Count == 1) {
           res.Add(swarm[0]);
         }
@@ -36,12 +36,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
 
       // Seek for minimal and maximal points of the swarm - they define the initial cut line
-      Point2D? minPoint = swarm.Min(), maxPoint = swarm.Max();
+      Vector2D? minPoint = swarm.Min(), maxPoint = swarm.Max();
 
       Debug.Assert(minPoint is not null, nameof(minPoint) + " != null");
       Debug.Assert(maxPoint is not null, nameof(maxPoint) + " != null");
       if (minPoint == maxPoint) {
-        res = new List<Point2D> { minPoint };
+        res = new List<Vector2D> { minPoint };
 
         return res;
       }
@@ -49,11 +49,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       // Dividing the original set of points into subset above and below the line
       // passing through minPoint and maxPoint
-      List<Point2D> positive = swarm.Where(p => Tools.GT(line[p])).ToList()
+      List<Vector2D> positive = swarm.Where(p => Tools.GT(line[p])).ToList()
                   , negative = swarm.Where(p => Tools.LT(line[p])).ToList();
 
       // Taking envelops of the obtained subsets
-      List<Point2D> upEnv = QuickHullIter
+      List<Vector2D> upEnv = QuickHullIter
                       (negative, line, minPoint, maxPoint)
                   , lowEnv = QuickHullIter(positive, line.Reorient(), maxPoint, minPoint);
 
@@ -74,18 +74,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="pMin">The "left" base point</param>
     /// <param name="pMax">The "right" base point</param>
     /// <returns></returns>
-    private static List<Point2D> QuickHullIter(List<Point2D> ps, Line2D line, Point2D pMin, Point2D pMax) {
+    private static List<Vector2D> QuickHullIter(List<Vector2D> ps, Line2D line, Vector2D pMin, Vector2D pMax) {
       // If the list is empty, return empty list
       if (ps.Count == 0) {
-        return new List<Point2D>();
+        return new List<Vector2D>();
       }
 
       // Find the point farthest from the given line and when, the distances are equal, from the point pMin
-      Point2D pBase = ps.Aggregate
+      Vector2D pBase = ps.Aggregate
         (
          (acc, p) => {
            TNum accD = line[acc], pD = line[p];
-           if (Tools.LT(accD, pD) || (Tools.EQ(accD, pD) && Tools.GT(Point2D.Dist2(acc, pMin), Point2D.Dist2(p, pMin)))) {
+           if (Tools.LT(accD, pD) || (Tools.EQ(accD, pD) && Tools.GT(Vector2D.Dist2(acc, pMin), Vector2D.Dist2(p, pMin)))) {
              return acc;
            } else {
              return p;
@@ -99,12 +99,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       // Filtering points located in _negative_ halfplanes of the lines
       // and taking their envelops
-      List<Point2D> arc1 = QuickHullIter
+      List<Vector2D> arc1 = QuickHullIter
                       (ps.Where(p => Tools.LT(line1[p])).ToList(), line1, pBase, pMax)
                   , arc2 = QuickHullIter(ps.Where(p => Tools.LT(line2[p])).ToList(), line2, pMin, pBase);
 
       // Preparing the result: arc1, then the point pBase, then arc2
-      List<Point2D> res = arc1;
+      List<Vector2D> res = arc1;
       res.Add(pBase);
       res.AddRange(arc2);
 
@@ -124,9 +124,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>A list of vertices of the convex hull enlisted counterclockwise</returns>
     /// <remarks>It is guaranteed that the resultant list contains references
     /// to some of the original objects; no new points are created during work of the method</remarks>
-    public static List<Point2D> ArcHull2D(IEnumerable<Point2D> swarmOrig, bool sortByPrecision = true) {
+    public static List<Vector2D> ArcHull2D(IEnumerable<Vector2D> swarmOrig, bool sortByPrecision = true) {
       if (swarmOrig.Count() <= 1) {
-        List<Point2D> res = new List<Point2D>();
+        List<Vector2D> res = new List<Vector2D>();
         if (swarmOrig.Count() == 1) {
           res.Add(swarmOrig.First());
         }
@@ -134,20 +134,20 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         return res;
       }
 
-      List<Point2D> swarmSort = new List<Point2D>(swarmOrig)
-                  , swarm     = new List<Point2D>()
-                  , upper     = new List<Point2D>()
-                  , lower     = new List<Point2D>();
+      List<Vector2D> swarmSort = new List<Vector2D>(swarmOrig)
+                  , swarm     = new List<Vector2D>()
+                  , upper     = new List<Vector2D>()
+                  , lower     = new List<Vector2D>();
 
       // Sorting the points
       if (sortByPrecision) {
         swarmSort.Sort();
       } else {
-        swarmSort.Sort(Point2D.CompareToNoEps);
+        swarmSort.Sort(Vector2D.CompareToNoEps);
       }
 
       // Remove the duplicates
-      foreach (Point2D p in swarmSort) {
+      foreach (Vector2D p in swarmSort) {
         if (swarm.Count == 0 || !swarm[^1].Equals(p)) {
           swarm.Add(p);
         }
@@ -211,9 +211,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     ///</summary>
     ///<param name="swarmOrig">An enumerable collection of plane-points.</param>
     ///<returns>A list of points of the convex hull in counter-clockwise order.</returns>
-    public static List<Point2D> GrahamHull(IEnumerable<Point2D> swarmOrig) {
+    public static List<Vector2D> GrahamHull(IEnumerable<Vector2D> swarmOrig) {
       if (swarmOrig.Count() <= 1) {
-        List<Point2D> res = new List<Point2D>();
+        List<Vector2D> res = new List<Vector2D>();
         if (swarmOrig.Count() == 1) {
           res.Add(swarmOrig.First());
         }
@@ -221,14 +221,14 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         return res;
       }
 
-      Point2D? origin = swarmOrig.Min();
+      Vector2D? origin = swarmOrig.Min();
       Vector2D l      = new Vector2D(Tools.Zero, -Tools.One);
       Debug.Assert(origin is not null, "GrahamHull: swarmOrig.Min() is null!");
 
       Tools.DoubleComparer            doubleComparer = new Tools.DoubleComparer(Tools.Eps);
-      SortedDictionary<TNum, Point2D> swarmDict = new SortedDictionary<TNum, Point2D>(doubleComparer) { { -Tools.One, origin } };
+      SortedDictionary<TNum, Vector2D> swarmDict = new SortedDictionary<TNum, Vector2D>(doubleComparer) { { -Tools.One, origin } };
 
-      foreach (Point2D p in swarmOrig) {
+      foreach (Vector2D p in swarmOrig) {
         if (p.Equals(origin)) {
           continue;
         }
@@ -236,7 +236,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         Vector2D vp    = p - origin;
         TNum     angle = Vector2D.Angle(l, vp);
 
-        swarmDict.TryGetValue(angle, out Point2D? ph);
+        swarmDict.TryGetValue(angle, out Vector2D? ph);
         if (ph is null) {
           swarmDict.Add(angle, p);
         } else {
@@ -246,13 +246,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         }
       }
 
-      List<Point2D> swarmSorted = swarmDict.Values.ToList();
+      List<Vector2D> swarmSorted = swarmDict.Values.ToList();
 
       if (swarmSorted.Count < 3) {
         return swarmSorted;
       }
 
-      LinkedList<Point2D> hull = new LinkedList<Point2D>();
+      LinkedList<Vector2D> hull = new LinkedList<Vector2D>();
       hull.AddLast(swarmSorted[0]);
       hull.AddLast(swarmSorted[1]);
       hull.AddLast(swarmSorted[2]);
@@ -275,7 +275,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     ///<param name="p2">The second point, representing the end of the line.</param>
     ///<param name="p3">The third point, which is checked for its position relative to the line.</param>
     ///<returns><c>True</c> if point p3 is to the left of the line formed by points p1 and p2, <c>false</c> otherwise.</returns>
-    public static bool IsLeft(Point2D p1, Point2D p2, Point2D p3) {
+    public static bool IsLeft(Vector2D p1, Vector2D p2, Vector2D p3) {
       return Tools.GT((p2 - p1).Normalize() ^ (p3 - p1).Normalize());
     }
 #endregion

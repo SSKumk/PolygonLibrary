@@ -19,79 +19,21 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class GiftWrapping {
 
+#region Data and properties
     /// <summary>
     /// The convex polytop obtained as a result of gift wrapping algorithm.
     /// </summary>
     private readonly BaseSubCP BuiltPolytop;
 
-    // /// <summary>
-    // /// The original set of points.
-    // /// </summary>
-    // private HashSet<Point> SOrig;
+    /// <summary>
+    /// The convex polytop. It describes by set of hyperplanes.
+    /// </summary>
+    private HPolytop? _Hpolytop;
 
     /// <summary>
-    /// The convex polytop. It describes by vertices, faces and edges.
+    /// The convex polytop. It describes by is vertices.
     /// </summary>
-    private ConvexPolytop? _polytop;
-
-    /// <summary>
-    /// The dimension of the wrapped polytop.
-    /// </summary>
-    public int PolytopDim => BuiltPolytop.PolytopDim;
-
-    /// <summary>
-    /// Gets the polytop. In ConvexPolytop form.
-    /// </summary>
-    public ConvexPolytop CPolytop => _polytop ??= GetCPolytop();
-
-    /// <summary>
-    /// Builds ConvexPolytop from BuiltPolytop.
-    /// </summary>
-    /// <returns>The ConvexPolytop.</returns>
-    private ConvexPolytop GetCPolytop() {
-      if (BuiltPolytop.PolytopDim <= 2) {
-        throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors!");
-      }
-      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
-
-      HashSet<Face> Fs;
-      if (BuiltPolytop.PolytopDim == 3) {
-        Fs = new HashSet<Face>
-          (
-           BuiltPolytop.Faces!.Select
-             (
-              F => {
-                SubTwoDimensional f = (SubTwoDimensional)F;
-
-                return new Face(f.VerticesList, f.Normal!);
-              }
-             )
-          );
-      } else {
-        Fs = new HashSet<Face>(BuiltPolytop.Faces!.Select(F => new Face(F.OriginalVertices, F.Normal!)));
-      }
-      HashSet<Edge> Es = new HashSet<Edge>();
-
-      foreach (BaseSubCP face in BuiltPolytop.Faces!) {
-        Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
-      }
-
-      return new ConvexPolytop(BuiltPolytop.OriginalVertices, BuiltPolytop.PolytopDim, Fs, Es);
-    }
-
-    /// <summary>
-    /// Wraps a given swarm of points to the convex polytop.
-    /// </summary>
-    /// <param name="S">The swarm of points.</param>
-    /// <returns>The convex polytop.</returns>
-    public static ConvexPolytop WrapPolytop(IEnumerable<Point> S) => new GiftWrapping(S).CPolytop;
-
-    /// <summary>
-    /// Wraps a given swarm of points to the face lattice.
-    /// </summary>
-    /// <param name="S">The swarm of points.</param>
-    /// <returns>The face lattice, which represents the convex polytop.</returns>
-    public static FaceLattice WrapFaceLattice(IEnumerable<Point> S) => new GiftWrapping(S).FaceLattice;
+    private VPolytop? _Vpolytop;
 
     /// <summary>
     /// Polytop as face lattice. I.e. complex.
@@ -103,6 +45,62 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The face lattice.</returns>
     public FaceLattice FaceLattice => _faceLattice ??= ConstructFL();
+
+    /// <summary>
+    /// The dimension of the wrapped polytop.
+    /// </summary>
+    public int PolytopDim => BuiltPolytop.PolytopDim;
+
+    /// <summary>
+    /// Gets the polytop in HRep form.
+    /// </summary>
+    public HPolytop CPolytop => _Hpolytop ??= GetHPolytop();
+
+    /// <summary>
+    /// Gets the polytop in VRep form.
+    /// </summary>
+    public VPolytop VPolytop => _Vpolytop ??= new VPolytop(BuiltPolytop.OriginalVertices);
+
+    /// <summary>
+    /// The vertices of the polytop.
+    /// </summary>
+    public HashSet<Vector> Vertices => VPolytop.Vertices;
+#endregion
+
+    /// <summary>
+    /// Builds Hyper plane Polytop from BuiltPolytop.
+    /// </summary>
+    /// <returns>The HPolytop.</returns>
+    private ConvexPolytop GetHPolytop() {
+      if (BuiltPolytop.PolytopDim <= 2) {
+        throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");
+      }
+      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
+
+      HashSet<Facet> Fs;
+      if (BuiltPolytop.PolytopDim == 3) {
+        Fs = new HashSet<Facet>
+          (
+           BuiltPolytop.Faces!.Select
+             (
+              F => {
+                SubTwoDimensional f = (SubTwoDimensional)F;
+
+                return new Facet(f.VerticesList, f.Normal!);
+              }
+             )
+          );
+      } else {
+        Fs = new HashSet<Facet>(BuiltPolytop.Faces!.Select(F => new Facet(F.OriginalVertices, F.Normal!)));
+      }
+      HashSet<Edge> Es = new HashSet<Edge>();
+
+      foreach (BaseSubCP face in BuiltPolytop.Faces!) {
+        Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
+      }
+
+      return new ConvexPolytop(BuiltPolytop.OriginalVertices, BuiltPolytop.PolytopDim, Fs, Es);
+    }
 
     /// <summary>
     /// Construct face lattice from BuiltPolytop.
@@ -131,10 +129,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="allNodes">The additional structure. It holds (hash_of_node, node).</param>
     /// <param name="lattice">The lattice that builds.</param>
     /// <returns>The node, with all sub-nodes.</returns>
-    private FLNode ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> allNodes, ref List<HashSet<FLNode>> lattice) {
+    private void ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> allNodes, ref List<HashSet<FLNode>> lattice) {
       if (BSP is SubTwoDimensionalEdge) {
         List<FLNode> sub = new List<FLNode>();
-        foreach (Point p in BSP.OriginalVertices) {
+        foreach (Vector p in BSP.OriginalVertices) {
           if (!allNodes.ContainsKey(p.GetHashCode())) {
             FLNode vertex = new FLNode(p);
             allNodes.Add(p.GetHashCode(), vertex);
@@ -145,8 +143,6 @@ public partial class Geometry<TNum, TConv>
         FLNode seg = new FLNode(sub);
         allNodes.Add(seg.GetHashCode(), seg);
         lattice[1].Add(seg);
-
-        return seg;
       } else {
         List<FLNode> sub = new List<FLNode>();
 
@@ -161,47 +157,34 @@ public partial class Geometry<TNum, TConv>
         allNodes.Add(node.GetHashCode(), node);
         lattice[node.Dim].Add(node);
 
-        return node;
+        return;
       }
     }
-
-    /// <summary>
-    /// The vertices of the polytop.
-    /// </summary>
-    public HashSet<Point> Vertices => VPolytop.Vertices;
 
     /// <summary>
     /// Polytop as intersection of negative half-space of hyperplanes.
     /// </summary>
     private List<HyperPlane>? _HRepr;
 
-
-    public List<HyperPlane> HRepresentation => CPolytop.HRepresentation;
-
-    /// <summary>
-    /// Polytop as list of its vertices.
-    /// </summary>
-    public VPolytop VPolytop { get; init; }
-
     /// <summary>
     /// Gets the polytop as a list of its vertices.
     /// </summary>
     /// <returns>The polytop as a list of its vertices.</returns>
-    public List<Point> VerticesList => VPolytop.Vertices.ToList();
+    public List<Vector> VerticesList => VPolytop.Vertices.ToList();
 
     /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.
     /// </summary>
     /// <param name="Swarm">The swarm of points to convexify.</param>
-    public GiftWrapping(IEnumerable<Point> Swarm) {
+    public GiftWrapping(IEnumerable<Vector> Swarm) {
       // Пока не будет SubBaseCP размерности 0.
       if (!Swarm.Any()) {
         throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
       }
-      // SOrig = new HashSet<Point>(Swarm);
+      // SOrig = new HashSet<Vector>(Swarm);
       if (Swarm.Count() == 1) {
         BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
-        VPolytop     = new VPolytop(new List<Point>() { Swarm.First() });
+        VPolytop     = new VPolytop(new List<Vector>() { Swarm.First() });
       } else {
         // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
         HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
@@ -214,9 +197,23 @@ public partial class Geometry<TNum, TConv>
 
         GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
         BuiltPolytop = gwSwarm.BuiltPolytop;
-        VPolytop     = new VPolytop(gwSwarm.BuiltPolytop.OriginalVertices);
       }
     }
+
+    // todo Где должна быть эта функция? Тут или в ConvexPolytop?
+    /// <summary>
+    /// Wraps a given swarm of points to the convex polytop.
+    /// </summary>
+    /// <param name="S">The swarm of points.</param>
+    /// <returns>The convex polytop.</returns>
+    public static ConvexPolytop WrapPolytop(IEnumerable<Vector> S) => new GiftWrapping(S).CPolytop;
+
+    /// <summary>
+    /// Wraps a given swarm of points to the face lattice.
+    /// </summary>
+    /// <param name="S">The swarm of points.</param>
+    /// <returns>The face lattice, which represents the convex polytop.</returns>
+    public static FaceLattice WrapFaceLattice(IEnumerable<Vector> S) => new GiftWrapping(S).FaceLattice;
 
     /// <summary>
     /// Perform an gift wrapping algorithm. It holds a necessary fields to construct a d-polytop.
@@ -263,7 +260,7 @@ public partial class Geometry<TNum, TConv>
         if (spaceDim == 2) {
           // Если d == 2, то пользуемся плоскостным алгоритмом овыпукления.
           // Для этого проецируем точки, а так как наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
-          List<Point2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
+          List<Vector2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
         }
@@ -581,7 +578,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="normal">The normal to orient.</param>
       /// <param name="origin">A point from S.</param>
-      private void OrientNormal(ref Vector normal, Point origin) {
+      private void OrientNormal(ref Vector normal, Vector origin) {
         foreach (SubPoint s in S) {
           TNum dot = (s - origin) * normal;
 

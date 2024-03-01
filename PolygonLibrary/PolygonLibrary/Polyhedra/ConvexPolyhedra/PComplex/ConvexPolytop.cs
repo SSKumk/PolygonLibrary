@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,13 +18,13 @@ public partial class Geometry<TNum, TConv>
   /// Type of permanent storage of face incidence information.
   /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
   /// </summary>
-  public class IncidenceInfo : Dictionary<Edge, (Face F1, Face F2)> {
+  public class IncidenceInfo : Dictionary<Edge, (Facet F1, Facet F2)> {
 
     public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
 
     public IncidenceInfo(SubIncidenceInfo info) : base
       (
-       new Dictionary<Edge, (Face F1, Face F2)>
+       new Dictionary<Edge, (Facet F1, Facet F2)>
          (
           info.Select
             (
@@ -32,11 +33,11 @@ public partial class Geometry<TNum, TConv>
                Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: x.Value.F2.Normal != null");
 
 
-               return new KeyValuePair<Edge, (Face F1, Face F2)>
+               return new KeyValuePair<Edge, (Facet F1, Facet F2)>
                  (
                   new Edge(x.Key.OriginalVertices)
-                , (new Face(x.Value.F1.OriginalVertices, x.Value.F1.Normal)
-                 , new Face(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
+                , (new Facet(x.Value.F1.OriginalVertices, x.Value.F1.Normal)
+                 , new Facet(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
                  );
              }
             )
@@ -49,19 +50,19 @@ public partial class Geometry<TNum, TConv>
   /// Type of permanent storage of fans information.
   /// Dictionary: point --> set of faces incident with a point.
   /// </summary>
-  public class FansInfo : Dictionary<Point, HashSet<Face>> {
+  public class FansInfo : Dictionary<Vector, HashSet<Facet>> {
 
     public FansInfo(FansInfo fansInfo) : base(fansInfo) { }
 
     public FansInfo(HashSet<BaseSubCP> Fs) {
       foreach (BaseSubCP F in Fs) {
-        foreach (Point vertex in F.OriginalVertices) {
+        foreach (Vector vertex in F.OriginalVertices) {
           Debug.Assert(F.Normal is not null, "F.Normal != null");
 
-          if (TryGetValue(vertex, out HashSet<Face>? value)) {
-            value.Add(new Face(F.OriginalVertices, F.Normal));
+          if (TryGetValue(vertex, out HashSet<Facet>? value)) {
+            value.Add(new Facet(F.OriginalVertices, F.Normal));
           } else {
-            base.Add(vertex, new HashSet<Face>() { new Face(F.OriginalVertices, F.Normal) });
+            base.Add(vertex, new HashSet<Facet>() { new Facet(F.OriginalVertices, F.Normal) });
           }
         }
       }
@@ -70,14 +71,14 @@ public partial class Geometry<TNum, TConv>
   }
 
   /// <summary>
-  /// Represents an face of the Polytop.
+  /// Represents an facet of the Polytop.
   /// </summary>
-  public class Face {
+  public class Facet {
 
     /// <summary>
     /// Gets the vertices of the face.
     /// </summary>
-    public List<Point> Vertices { get; }
+    public List<Vector> Vertices { get; }
 
     /// <summary>
     /// Gets the normal vector of the face.
@@ -90,12 +91,12 @@ public partial class Geometry<TNum, TConv>
     public HyperPlane HPlane => new HyperPlane(Vertices.First(), Normal);
 
     /// <summary>
-    /// Initializes a new instance of the Face class.
+    /// Initializes a new instance of the Facet class.
     /// </summary>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="normal">The outward normal vector of the face.</param>
-    public Face(IEnumerable<Point> Vs, Vector normal) {
-      Vertices = new List<Point>(Vs);
+    public Facet(IEnumerable<Vector> Vs, Vector normal) {
+      Vertices = new List<Vector>(Vs);
       Normal   = normal;
     }
 
@@ -110,9 +111,9 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      Face other = (Face)obj;
+      Facet other = (Facet)obj;
 
-      return this.Normal.Equals(other.Normal) && (new HashSet<Point>(this.Vertices)).SetEquals(other.Vertices);
+      return this.Normal.Equals(other.Normal) && (new HashSet<Vector>(this.Vertices)).SetEquals(other.Vertices);
     }
 
     /// <summary>
@@ -128,7 +129,7 @@ public partial class Geometry<TNum, TConv>
       if (_hash is null) {
         int hash = 0;
 
-        foreach (Point vertex in Vertices.Order()) {
+        foreach (Vector vertex in Vertices.Order()) {
           hash = HashCode.Combine(hash, vertex.GetHashCode());
         }
         _hash = hash;
@@ -139,61 +140,61 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  /// <summary>
-  /// Represents an edge of the Polytop.
-  /// </summary>
-  public class Edge {
-
-    /// <summary>
-    /// Gets the vertices of the edge.
-    /// </summary>
-    public HashSet<Point> Vertices { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the Edge class.
-    /// </summary>
-    /// <param name="Vs">The vertices of the edge.</param>
-    public Edge(IEnumerable<Point> Vs) => Vertices = new HashSet<Point>(Vs);
-
-    /// <summary>
-    /// Determines whether the specified object is equal to edge.
-    /// Two edges are equal if they have same sets of their vertices.
-    /// </summary>
-    /// <param name="obj">The object to compare with edge.</param>
-    /// <returns>True if the specified object is equal to edge, False otherwise</returns>
-    public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
-        return false;
-      }
-
-      Edge other = (Edge)obj;
-
-      return this.Vertices.SetEquals(other.Vertices);
-    }
-
-    /// <summary>
-    /// Internal field for the hash of the edge
-    /// </summary>
-    private int? _hash = null;
-
-    /// <summary>
-    /// Returns a hash code for the edge based on specified set of vertices.
-    /// </summary>
-    /// <returns>A hash code for the specified set of vertices.</returns>
-    public override int GetHashCode() {
-      if (_hash is null) {
-        int hash = 0;
-
-        foreach (Point vertex in Vertices.Order()) {
-          hash = HashCode.Combine(hash, vertex.GetHashCode());
-        }
-        _hash = hash;
-      }
-
-      return _hash.Value;
-    }
-
-  }
+  // /// <summary>
+  // /// Represents an edge of the Polytop.
+  // /// </summary>
+  // public class Edge {
+  //
+  //   /// <summary>
+  //   /// Gets the vertices of the edge.
+  //   /// </summary>
+  //   public HashSet<Vector> Vertices { get; }
+  //
+  //   /// <summary>
+  //   /// Initializes a new instance of the Edge class.
+  //   /// </summary>
+  //   /// <param name="Vs">The vertices of the edge.</param>
+  //   public Edge(IEnumerable<Vector> Vs) => Vertices = new HashSet<Vector>(Vs);
+  //
+  //   /// <summary>
+  //   /// Determines whether the specified object is equal to edge.
+  //   /// Two edges are equal if they have same sets of their vertices.
+  //   /// </summary>
+  //   /// <param name="obj">The object to compare with edge.</param>
+  //   /// <returns>True if the specified object is equal to edge, False otherwise</returns>
+  //   public override bool Equals(object? obj) {
+  //     if (obj == null || this.GetType() != obj.GetType()) {
+  //       return false;
+  //     }
+  //
+  //     Edge other = (Edge)obj;
+  //
+  //     return this.Vertices.SetEquals(other.Vertices);
+  //   }
+  //
+  //   /// <summary>
+  //   /// Internal field for the hash of the edge
+  //   /// </summary>
+  //   private int? _hash = null;
+  //
+  //   /// <summary>
+  //   /// Returns a hash code for the edge based on specified set of vertices.
+  //   /// </summary>
+  //   /// <returns>A hash code for the specified set of vertices.</returns>
+  //   public override int GetHashCode() {
+  //     if (_hash is null) {
+  //       int hash = 0;
+  //
+  //       foreach (Vector vertex in Vertices.Order()) {
+  //         hash = HashCode.Combine(hash, vertex.GetHashCode());
+  //       }
+  //       _hash = hash;
+  //     }
+  //
+  //     return _hash.Value;
+  //   }
+  //
+  // }
 
   /// <summary>
   /// Represents a full-dimensional convex polytop in a d-dimensional space.
@@ -201,8 +202,6 @@ public partial class Geometry<TNum, TConv>
   public class ConvexPolytop {
 
 #region Fields and Properties
-    private BaseSubCP? _polytop ;
-
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
     /// </summary>
@@ -211,11 +210,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the dimension of the polytop.
     /// </summary>
-    public int PolytopDim => _GW.PolytopDim;
+    public int PolytopDim => ???;
 
-    // GW
-    private GiftWrapping? _GW = null;
-
+    //todo FL знает о связи гиперграней и точек, которые лежат в них!
 
     // VRep
     private VPolytop? _VRep = null;
@@ -232,7 +229,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the set of vertices of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices => VRep.Vertices;
+    public HashSet<Vector> Vertices => VRep.Vertices;
 
 
     // HRep
@@ -241,7 +238,12 @@ public partial class Geometry<TNum, TConv>
     public HPolytop HRep {
       get
         {
-          if (_HRep is null) { }
+          if (_HRep is null) {
+            if (_VRep is not null) {
+              GiftWrapping gw = new GiftWrapping(VRep.Vertices);
+              gw.HRepresentation
+            }
+          }
 
           return;
         }
@@ -269,7 +271,7 @@ public partial class Geometry<TNum, TConv>
         {
           if (_HRepr is null) {
             List<HyperPlane> res = new List<HyperPlane>();
-            foreach (Face face in Faces) {
+            foreach (Facet face in Faces) {
               res.Add(face.HPlane);
             }
             _HRepr = res;
@@ -278,12 +280,6 @@ public partial class Geometry<TNum, TConv>
           return _HRepr;
         }
     }
-
-
-    /// <summary>
-    /// Gets the faces of the polytop.
-    /// </summary>
-    public HashSet<Face> Faces { get; }
 
 
     // /// <summary>
@@ -296,27 +292,29 @@ public partial class Geometry<TNum, TConv>
     // /// </summary>
     // public FansInfo Fans { get; }
 
-    /// <summary>
-    /// Initializes a new instance of the Polytop class.
-    /// </summary>
-    /// <param name="Vs">The vertices of the polytop.</param>
-    /// <param name="polytopDim">The dimension of the polytop.</param>
-    /// <param name="faces">The faces of the polytop.</param>
-    /// <param name="edges">The edges of the polytop.</param>
-    /// <param name="type">The type of the polytop.</param>
-    /// <param name="faceIncidence">The incidence information of the faces.</param>
-    /// <param name="fans">The fan information of the polytop.</param>
-    public ConvexPolytop(IEnumerable<Point> Vs, int polytopDim, IEnumerable<Face> faces, IEnumerable<Edge> edges) {
-      _polytop   = new VPolytop(Vs);
-      PolytopDim = polytopDim;
-      Faces      = new HashSet<Face>(faces);
-      Edges      = new HashSet<Edge>(edges);
+#region Constructors
+    public ConvexPolytop(VPolytop VP) {
+      _VRep    = VP;
+      SpaceDim = VP.Vertices.First().Dim;
     }
 
-    public ConvexPolytop(IEnumerable<Point> Vs) {
+    public ConvexPolytop(IEnumerable<Vector> Vs) {
       _VRep    = new VPolytop(Vs);
       SpaceDim = Vs.First().Dim;
     }
+
+    public ConvexPolytop(HPolytop HP) {
+      _HRep    = HP;
+      SpaceDim = HP.Faces.First().Normal.Dim;
+    }
+
+    public ConvexPolytop(FaceLattice FL) {
+      _FL   = FL;
+      _VRep = new VPolytop(FL.Vertices);
+      // todo HRep можно получить, взяв ABasis из уровня гиперграней. Но, надо понять, как ориентировать нормаль. (Взять какую-то выпуклую комбинацию всех вершин?)
+    }
+#endregion
+
     /// <summary>
     /// Converts the polytop to a convex polygon.
     /// </summary>
@@ -336,8 +334,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="filePath">The path to the file to write in.</param>
     /// <param name="needGW">If the flag is true, then the GW procedure is applied and the order of the vertices is established.</param>
     public void WriteTXT(string filePath, bool needGW = false) {
-      List<Point>   VList = Vertices.Order().ToList();
-      HashSet<Face> FSet  = Faces;
+      List<Vector>  VList = Vertices.Order().ToList();
+      HashSet<Facet> FSet  = Faces;
       if (needGW && PolytopDim == 3) {
         // Это надо только для того, что бы красиво картинки в 3Д рисовать, так как в FL теряется инфа о порядке вершин
         FSet = GiftWrapping.WrapPolytop(VList).Faces;
@@ -350,7 +348,7 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
         writer.WriteLine();
         writer.WriteLine($"Faces: {Faces.Count}");
-        foreach (Face face in FSet.OrderBy(F => new Point(F.Normal))) {
+        foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
           writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
         }
@@ -362,11 +360,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="H">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static HashSet<Point> HRepToVRep_Naive(List<HyperPlane> H) {
+    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> H) {
       int n = H.Count;
       int d = H.First().SubSpaceDim + 1;
 
-      HashSet<Point>       Vs          = new HashSet<Point>();
+      HashSet<Vector>      Vs          = new HashSet<Vector>();
       Combination          combination = new Combination(n, d);
       Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
@@ -375,7 +373,7 @@ public partial class Geometry<TNum, TConv>
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
         gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.ColWise);
         gaussSLE.Solve();
-        if (gaussSLE.GetSolution(out Point point)) { // Ищем точку пересечения
+        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
           belongs = true;
           foreach (HyperPlane hp in H) {
             if (hp.ContainsPositive(point)) {

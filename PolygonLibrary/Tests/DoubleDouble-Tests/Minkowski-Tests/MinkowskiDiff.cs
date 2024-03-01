@@ -26,37 +26,29 @@ public class MinkowskiDiff3D {
        () => {
          ddouble value = 0;
          for (int i = 0; i <= 3; i++) {
-           VPolytop G = new VPolytop([new Point(new ddouble[] { 0, 0, 0 }), new Point(new ddouble[] { 0, 0, value })]);
-           bool isDiffNonEmpty = MinkowskiDiff.MinkDiff
-             (
-              F
-            , G
-            , out FaceLattice diffFL
-            , MinkowskiDiff.FindExtrInCPOnVector_Naive
-            , MinkowskiDiff.doSubtract
-            , ConvexPolytop.HRepToVRep_Naive
-            , GiftWrapping.WrapFaceLattice
-             );
+           ConvexPolytop G = new ConvexPolytop
+             ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
+           ConvexPolytop? diff = MinkowskiDiff.Naive(F, G);
            switch (i) {
              case 0:
-               Assert.That(isDiffNonEmpty);
-               Assert.That(diffFL, Is.EqualTo(Cube3D_FL));
-               diffFL.WriteTXTasCPolytop(path + "Cube_Seg0-0-0.txt");
+               Assert.That(diff is not null);
+               Assert.That(diff.FL, Is.EqualTo(Cube3D_FL));
+               diff.WriteTXTasCPolytop(path + "Cube_Seg0-0-0.txt");
 
                break;
              case 1:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Cube_Seg0-0-0.5.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Cube_Seg0-0-0.5.txt");
 
                // тут параллелепипед
                break;
              case 2:
-               Assert.That(isDiffNonEmpty);
+               Assert.That(diff is not null);
 
                // тут квадрат
                break;
              case 3:
-               Assert.That(isDiffNonEmpty, Is.EqualTo(false));
+               Assert.That(diff is null);
 
                // а тут пусто
                break;
@@ -74,42 +66,34 @@ public class MinkowskiDiff3D {
       (
        () => {
          for (int i = 1; i <= 5; i++) {
-           ddouble  value = 0.5 * i;
-           VPolytop G     = new VPolytop([new Point(new ddouble[] { 0, 0, 0 }), new Point(new ddouble[] { 0, 0, value })]);
-           bool isDiffNonEmpty = MinkowskiDiff.MinkDiff
-             (
-              F
-            , G
-            , out FaceLattice diffFL
-            , MinkowskiDiff.FindExtrInCPOnVector_Naive
-            , MinkowskiDiff.doSubtract
-            , ConvexPolytop.HRepToVRep_Naive
-            , GiftWrapping.WrapFaceLattice
-             );
+           ddouble value = 0.5 * i;
+           ConvexPolytop G = new ConvexPolytop
+             ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
+           ConvexPolytop? diff = MinkowskiDiff.Naive(F, G);
            switch (i) {
              case 1:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-0.5.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-0.5.txt");
 
                break;
              case 2:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-1.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-1.txt");
 
                break;
              case 3:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-1.5.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-1.5.txt");
 
                break;
              case 4:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-2.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-2.txt");
 
                break;
              case 5:
-               Assert.That(isDiffNonEmpty);
-               diffFL.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-2.5.txt");
+               Assert.That(diff is not null);
+               diff.WriteTXTasCPolytop(path + "Sphere3-10-20-2_Seg0-0-2.5.txt");
 
                break;
            }
@@ -120,18 +104,9 @@ public class MinkowskiDiff3D {
 
   [Test]
   public void Cyclic() {
-    ConvexPolytop F = GiftWrapping.WrapPolytop(CyclicPolytop(3, 100, 0.01));
-    bool isDiffNonEmpty = MinkowskiDiff.MinkDiff
-      (
-       F
-     , new VPolytop(new List<Point>() { new Point(3) })
-     , out FaceLattice diffFL
-     , MinkowskiDiff.FindExtrInCPOnVector_Naive
-     , MinkowskiDiff.doSubtract
-     , ConvexPolytop.HRepToVRep_Naive
-     , GiftWrapping.WrapFaceLattice
-      );
-    diffFL.WriteTXTasCPolytop(path + "Cyclic.txt");
+    ConvexPolytop  F    = GiftWrapping.WrapPolytop(CyclicPolytop(3, 100, 0.01));
+    ConvexPolytop? diff = MinkowskiDiff.Naive(F, new ConvexPolytop(new List<Vector>() { new Vector(3) }));
+    diff.WriteTXTasCPolytop(path + "Cyclic.txt");
   }
 
 }

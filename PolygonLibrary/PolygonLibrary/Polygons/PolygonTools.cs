@@ -19,7 +19,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="v1">One vertex from a pair of opposite vertices.</param>
     /// <param name="v2">Another vertex from a pair of opposite vertices.</param>
     /// <returns>The appropriate polygon.</returns>
-    public static ConvexPolygon RectangleParallel(Point2D v1, Point2D v2) => RectangleParallel(v1.x, v1.y, v2.x, v2.y);
+    public static ConvexPolygon RectangleParallel(Vector2D v1, Vector2D v2) => RectangleParallel(v1.x, v1.y, v2.x, v2.y);
 
     /// <summary>
     /// Method for generating a convex polygon representing a rectangle with sides parallel 
@@ -34,20 +34,20 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon RectangleParallel(TNum x1o, TNum y1o, TNum x2o, TNum y2o) {
       TNum          x1 = TNum.Min(x1o, x2o), x2 = TNum.Max(x1o, x2o), y1 = TNum.Min(y1o, y2o), y2 = TNum.Max(y1o, y2o);
-      List<Point2D> vs = new List<Point2D>();
+      List<Vector2D> vs = new List<Vector2D>();
 
       if (Tools.EQ(x1, x2) || Tools.EQ(y1, y2)) {
         // The case of a segment or a point
-        vs.Add(new Point2D(x1o, y1o));
+        vs.Add(new Vector2D(x1o, y1o));
         if (Tools.NE(x1, x2) || Tools.NE(y1, y2)) {
-          vs.Add(new Point2D(x2o, y2o));
+          vs.Add(new Vector2D(x2o, y2o));
         }
       } else {
         // The case of a rectangle
-        vs.Add(new Point2D(x1, y1));
-        vs.Add(new Point2D(x2, y1));
-        vs.Add(new Point2D(x2, y2));
-        vs.Add(new Point2D(x1, y2));
+        vs.Add(new Vector2D(x1, y1));
+        vs.Add(new Vector2D(x2, y1));
+        vs.Add(new Vector2D(x2, y2));
+        vs.Add(new Vector2D(x1, y2));
       }
 
       return new ConvexPolygon(vs, false);
@@ -64,7 +64,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="alpha">Turn angle (in radians): angle between the Ox or Oy axis and 
     /// the rectangle sides.</param>
     /// <returns>The appropriate polygon.</returns>
-    public static ConvexPolygon RectangleTurned(Point2D p1, Point2D p2, TNum alpha) => RectangleTurned
+    public static ConvexPolygon RectangleTurned(Vector2D p1, Vector2D p2, TNum alpha) => RectangleTurned
       (p1.x, p1.y, p2.x, p2.y, alpha);
 
     /// <summary>
@@ -83,7 +83,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public static ConvexPolygon RectangleTurned(TNum x1o, TNum y1o, TNum x2o, TNum y2o, TNum alpha) {
       // If the points coincide, return a single-pointed polygon
       if (Tools.EQ(x1o, x2o) && Tools.EQ(y1o, y2o)) {
-        return new ConvexPolygon(new Point2D[] { new Point2D(x1o, y1o) }, false);
+        return new ConvexPolygon(new Vector2D[] { new Vector2D(x1o, y1o) }, false);
       }
 
       (TNum sn, TNum cs) = TNum.SinCos(alpha);
@@ -116,11 +116,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
            , v3o = new Vector(ar_v3)
            , v3  = mapMatrix * v3o;
 
-      List<Point2D> res = new List<Point2D>();
-      res.Add(new Point2D(v0[0], v0[1]));
-      res.Add(new Point2D(v1[0], v1[1]));
-      res.Add(new Point2D(v2[0], v2[1]));
-      res.Add(new Point2D(v3[0], v3[1]));
+      List<Vector2D> res = new List<Vector2D>();
+      res.Add(new Vector2D(v0[0], v0[1]));
+      res.Add(new Vector2D(v1[0], v1[1]));
+      res.Add(new Vector2D(v2[0], v2[1]));
+      res.Add(new Vector2D(v3[0], v3[1]));
 
       return new ConvexPolygon(res, true);
     }
@@ -133,7 +133,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="R">The radius.</param>
     /// <param name="n">Number of vertices in the resultant polygon.</param>
     /// <returns>The appropriate polygon.</returns>
-    public static ConvexPolygon Circle(Point2D center, TNum R, int n) => Circle(center.x, center.y, R, n, Tools.Zero);
+    public static ConvexPolygon Circle(Vector2D center, TNum R, int n) => Circle(center.x, center.y, R, n, Tools.Zero);
 
     /// <summary>
     /// Method for generating an approximation for the circle as a right n-polygon.
@@ -197,13 +197,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns>The appropriate polygon.</returns>
     public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n, TNum a0) {
       if (Tools.EQ(R)) {
-        return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
+        return new ConvexPolygon(new Vector2D[] { new Vector2D(x, y) }, false);
       }
 
-      List<Point2D> res = new List<Point2D>();
+      List<Vector2D> res = new List<Vector2D>();
       TNum          da  = Tools.Two * Tools.PI / TConv.FromInt(n);
       for (int i = 0; i < n; i++) {
-        res.Add(new Point2D(x + R * TNum.Cos(TConv.FromInt(i) * da + a0), y + R * TNum.Sin(TConv.FromInt(i) * da + a0)));
+        res.Add(new Vector2D(x + R * TNum.Cos(TConv.FromInt(i) * da + a0), y + R * TNum.Sin(TConv.FromInt(i) * da + a0)));
       }
 
       return new ConvexPolygon(res, false);
@@ -232,15 +232,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
                                       , TNum a0 ) {
       if (Tools.EQ(a)) {
         if (Tools.EQ(b)) {
-          return new ConvexPolygon(new Point2D[] { new Point2D(x, y) }, false);
+          return new ConvexPolygon(new Vector2D[] { new Vector2D(x, y) }, false);
         } else {
           (TNum sn, TNum cs) = TNum.SinCos(phi);
           return new ConvexPolygon
             (
-             new Point2D[]
+             new Vector2D[]
                {
-                 new Point2D(x + a * cs, y + a * sn)
-               , new Point2D(x - a * cs, y - a * sn)
+                 new Vector2D(x + a * cs, y + a * sn)
+               , new Vector2D(x - a * cs, y - a * sn)
                }
            , false
             );
@@ -250,22 +250,22 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         (TNum sn, TNum cs) = TNum.SinCos(phi);
         return new ConvexPolygon
           (
-           new Point2D[]
+           new Vector2D[]
              {
-               new Point2D(x + b * sn, y + b * cs)
-             , new Point2D(x - b * sn, y - b * cs)
+               new Vector2D(x + b * sn, y + b * cs)
+             , new Vector2D(x - b * sn, y - b * cs)
              }
          , false
           );
       }
 
-      List<Point2D> res    = new List<Point2D>();
+      List<Vector2D> res    = new List<Vector2D>();
       TNum          da     = Tools.Two * Tools.PI / TConv.FromInt(n);
-      Point2D       center = new Point2D(x, y);
+      Vector2D       center = new Vector2D(x, y);
       for (int i = 0; i < n; i++) {
         Vector2D v  = new Vector2D(a * TNum.Cos(TConv.FromInt(i) * da + a0), b * TNum.Sin(TConv.FromInt(i) * da + a0))
                , v1 = v.Turn(phi);
-        res.Add(new Point2D(center + v1));
+        res.Add(new Vector2D(center + v1));
       }
 
       return new ConvexPolygon(res, false);

@@ -25,7 +25,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Set of vertices that form convex polytop.
     /// </summary>
-    public HashSet<Point> Points => Top.Vertices;
+    public HashSet<Vector> Vertices => Top.Vertices;
 
     /// <summary>
     /// The maximum element in the lattice.
@@ -54,7 +54,7 @@ public partial class Geometry<TNum, TConv>
     /// The vertex forms a one-element lattice.
     /// </summary>
     /// <param name="point">The point at which a face lattice is formed.</param>
-    public FaceLattice(Point point) {
+    public FaceLattice(Vector point) {
       Top     = new FLNode(point);
       Lattice = new List<HashSet<FLNode>>() { new HashSet<FLNode>() { Top } };
     }
@@ -83,7 +83,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="transformFunc">The function to be applied to each vertex. This function takes a node of the lattice and returns a new point.</param>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
-    private FaceLattice TransformLattice(Func<FLNode, Point> transformFunc) {
+    private FaceLattice TransformLattice(Func<FLNode, Vector> transformFunc) {
       List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
       for (int i = 0; i <= Top.Dim; i++) {
         newFL.Add(new HashSet<FLNode>());
@@ -135,7 +135,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The convex polytop.</returns>
     public ConvexPolytop ToConvexPolytop() {
       var Fs = Lattice[^2]
-       .Select(n => new Face(n.Vertices, new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
+       .Select(n => new Facet(n.Vertices, new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
       var Es = Lattice[^3].Select(n => new Edge(n.Vertices));
 
       return new ConvexPolytop(Top.Vertices, Top.AffBasis.SpaceDim, Fs, Es);
@@ -214,12 +214,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Point> Vertices => Polytop.Vertices;
+    public HashSet<Vector> Vertices => Polytop.Vertices;
 
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
-    public Point InnerPoint { get; }
+    public Vector InnerPoint { get; }
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
@@ -331,8 +331,8 @@ public partial class Geometry<TNum, TConv>
     /// Constructs an instance of FLNode as a vertex.
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
-    public FLNode(Point vertex) {
-      Polytop    = new VPolytop(new List<Point>() { vertex });
+    public FLNode(Vector vertex) {
+      Polytop    = new VPolytop(new List<Vector>() { vertex });
       InnerPoint = vertex;
       AffBasis   = new AffineBasis(vertex);
     }
@@ -343,7 +343,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(IEnumerable<Point> Vs, Point innerPoint, AffineBasis aBasis) {
+    internal FLNode(IEnumerable<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
       Polytop       = new VPolytop(Vs);
       InnerPoint    = innerPoint;
       this.AffBasis = aBasis;
@@ -354,16 +354,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(IEnumerable<FLNode> sub) {
-      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices));
+      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices)); // todo А может не надо на каждый узел новые точки сохранять?!
       Sub     = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
         subNode.AddSuper(this);
       }
 
-      InnerPoint = new Point((new Vector(Sub!.First().InnerPoint) + new Vector(Sub!.Last().InnerPoint)) / Tools.Two);
+      InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
-      FLNode      subF   = Sub!.First();
+      FLNode      subF   = Sub.First();
       AffineBasis affine = new AffineBasis(subF.AffBasis);
       affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
       AffBasis = affine;
@@ -423,8 +423,8 @@ public partial class Geometry<TNum, TConv>
 
       if (!isEqual) {
         Console.WriteLine(value: "Below!");
-        Console.WriteLine($"This:  {string.Join('\n', this.Sub!.Select(n => n.Polytop))}");
-        Console.WriteLine($"Other: {string.Join('\n', other.Sub!.Select(n => n.Polytop))}");
+        Console.WriteLine($"This:  {string.Join('\n', this.Sub.Select(n => n.Polytop))}");
+        Console.WriteLine($"Other: {string.Join('\n', other.Sub.Select(n => n.Polytop))}");
 
         return false;
       }

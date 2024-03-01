@@ -364,13 +364,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">The projection matrix</param>
     /// <param name="ps">The set of multidimensional points</param>
     /// <returns>List of two-dimensional projections</returns>
-    public static List<Point2D> Project2D(Matrix m, IEnumerable<Point> ps) {
+    public static List<Vector2D> Project2D(Matrix m, IEnumerable<Vector> ps) {
 #if DEBUG
       if (m.Rows != 2) {
         throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
       }
 #endif
-      List<Point2D> res = ps.Select
+      List<Vector2D> res = ps.Select
                              (
                               p => {
 #if DEBUG
@@ -379,7 +379,7 @@ public partial class Geometry<TNum, TConv>
                                     ("During projection to the plane a point with wrong dimension has been found!");
                                 }
 #endif
-                                return (Point2D)(m * p);
+                                return (Vector2D)(m * p);
                               }
                              )
                             .ToList();

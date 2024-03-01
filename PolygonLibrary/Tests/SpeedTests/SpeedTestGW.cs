@@ -184,12 +184,12 @@ public class SpeedTestGW {
       List<int> fIDs = Enumerable.Range(1, dim).ToList();
 
       for (int n = 1; n <= nPoints; n *= 10) {
-        List<Point>   S = RotateRND(Cube(dim, out _, fIDs, n, 255, true));
-        GiftWrapping? P = null;
+        List<Geometry<ddouble, DDConvertor>.Vector> S = RotateRND(Cube(dim, out _, fIDs, n, 255, true));
+        GiftWrapping?                               P = null;
         timer.Restart();
         for (int i = 0; i < N; i++) { P = new GiftWrapping(S); }
         timer.Stop();
-        writer.WriteLine($"{P!.FaceLattice.NonZeroKFacesAmount}-{S.Count, -5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
+        writer.WriteLine($"{P!.FaceLattice.NonZeroKFacesAmount}-{S.Count,-5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
         writer.Flush();
       }
     }

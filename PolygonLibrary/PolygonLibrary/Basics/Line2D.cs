@@ -62,7 +62,7 @@ public class Line2D {
   /// </summary>
   /// <param name="p1">The first point that lies in the line</param>
   /// <param name="p2">The second point that lies in the line</param>
-  public Line2D(Point2D p1, Point2D p2) => PointAndDirect(p1, p2 - p1);
+  public Line2D(Vector2D p1, Vector2D p2) => PointAndDirect(p1, p2 - p1);
 
 
   /// <summary>
@@ -72,7 +72,7 @@ public class Line2D {
   /// <param name="p1">The first point that lies in the line</param>
   /// <param name="p2">The second point that lies in the line</param>
   /// <param name="p3">A point that does not belong to the line and defines the positive halfplane</param>
-  public Line2D(Point2D p1, Point2D p2, Point2D p3) => PointAndDirect(p1, p2 - p1, p3);
+  public Line2D(Vector2D p1, Vector2D p2, Vector2D p3) => PointAndDirect(p1, p2 - p1, p3);
 
   /// <summary>
   /// Factory that produces a line on the basis of a point that belongs to the line
@@ -82,7 +82,7 @@ public class Line2D {
   /// <param name="p">A point that belongs to the line</param>
   /// <param name="v">The direction vector of the line</param>
   /// <returns>The resultant line</returns>
-  public static Line2D Line2D_PointAndDirect(Point2D p, Vector2D v) {
+  public static Line2D Line2D_PointAndDirect(Vector2D p, Vector2D v) {
     Line2D res = new Line2D();
     res.PointAndDirect(p, v);
     return res;
@@ -97,7 +97,7 @@ public class Line2D {
   /// <param name="v">The direction vector of the line</param>
   /// <param name="p1">A point that does not belong to the line and defines the positive halfplane</param>
   /// <returns>The resultant line</returns>
-  public static Line2D Line2D_PointAndDirect(Point2D p, Vector2D v, Point2D p1) {
+  public static Line2D Line2D_PointAndDirect(Vector2D p, Vector2D v, Vector2D p1) {
     Line2D res = new Line2D();
     res.PointAndDirect(p, v, p1);
     return res;
@@ -110,7 +110,7 @@ public class Line2D {
   /// </summary>
   /// <param name="p">A point that belongs to the line</param>
   /// <param name="v">The direction vector of the line</param>
-  private void PointAndDirect(Point2D p, Vector2D v) {
+  private void PointAndDirect(Vector2D p, Vector2D v) {
     Direct = new Vector2D(v).Normalize();
 
     Normal = new Vector2D(-Direct.y, Direct.x);
@@ -128,7 +128,7 @@ public class Line2D {
   /// <param name="p">A point that belongs to the line</param>
   /// <param name="v">The direction vector of the line</param>
   /// <param name="p1">A point that does not belong to the line and defines the positive halfplane</param>
-  private void PointAndDirect(Point2D p, Vector2D v, Point2D p1) {
+  private void PointAndDirect(Vector2D p, Vector2D v, Vector2D p1) {
     PointAndDirect(p, v);
 
     TNum val = this[p1];
@@ -152,7 +152,7 @@ public class Line2D {
   /// <param name="p">A point that belongs to the line</param>
   /// <param name="v">The direction vector of the line</param>
   /// <returns>The resultant line</returns>
-  public static Line2D Line2D_PointAndNormal(Point2D p, Vector2D v) {
+  public static Line2D Line2D_PointAndNormal(Vector2D p, Vector2D v) {
     Line2D res = new Line2D();
     res.Normal = new Vector2D(v).Normalize();
 
@@ -193,14 +193,14 @@ public class Line2D {
   /// </summary>
   /// <param name="p">The point where to compute the function value</param>
   /// <returns>The computed value</returns>
-  public TNum this[Point2D p] => A * p.x + B * p.y + C;
+  public TNum this[Vector2D p] => A * p.x + B * p.y + C;
 
   /// <summary>
   /// Checks whether the line passes through the given point
   /// </summary>
   /// <param name="p">The given point</param>
   /// <returns>true, if passes; false, otherwise</returns>
-  public bool PassesThrough(Point2D p) => Tools.EQ(this[p]);
+  public bool PassesThrough(Vector2D p) => Tools.EQ(this[p]);
 
   /// <summary>
   /// A function that generates a new line that coincides with the current one, 
@@ -250,10 +250,10 @@ public class Line2D {
   /// <param name="l2">The second line</param>
   /// <param name="res">The intersection point (if exists and unique)</param>
   /// <returns>The type of imposition of the lines (crossing, parallel, overlapping) </returns>
-  public static LineCrossType Intersect(Line2D l1, Line2D l2, out Point2D? res) {
+  public static LineCrossType Intersect(Line2D l1, Line2D l2, out Vector2D? res) {
     TNum d = l1.A * l2.B - l1.B * l2.A, d1 = -(l1.C * l2.B - l2.C * l1.B), d2 = -(l1.A * l2.C - l1.C * l2.A);
     if (Tools.NE(d)) {
-      res = new Point2D(d1 / d, d2 / d);
+      res = new Vector2D(d1 / d, d2 / d);
       return LineCrossType.SinglePoint;
     } else {
       res = null;

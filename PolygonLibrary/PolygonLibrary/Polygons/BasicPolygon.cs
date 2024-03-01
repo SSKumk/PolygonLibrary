@@ -24,7 +24,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// The storage for the polygon vertices
     /// </summary>
-    protected List<Point2D>? _vertices;
+    protected List<Vector2D>? _vertices;
 
     /// <summary>
     /// The storage for the polygon edges
@@ -55,7 +55,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Property giving a list of the polygon vertices
     /// (for all contours)
     /// </summary>
-    public List<Point2D> Vertices {
+    public List<Vector2D> Vertices {
       get
         {
           if (_vertices == null) {
@@ -100,13 +100,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="vs">List of vertices in the contour</param>
     /// <param name="checkOrient">Flag showing whether the counterclockwise orientation should be checked</param>
     /// <param name="checkCross">Flag showing whether the self-crossing of the contour should be checked</param>
-    public BasicPolygon(List<Point2D> vs, bool checkOrient = true, bool checkCross = true) {
+    public BasicPolygon(List<Vector2D> vs, bool checkOrient = true, bool checkCross = true) {
       // The only contour is initialized just here, because now we have information about it -
       // the order of points in the initial list
       Contours = new List<Polyline> { new Polyline(vs, PolylineOrientation.Counterclockwise, checkCross, checkOrient) };
 
       // Copying the list of vertices
-      Vertices = new List<Point2D>(vs);
+      Vertices = new List<Vector2D>(vs);
       // Vertices.Sort(); todo ???
     }
 
@@ -116,7 +116,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="vs">Array of vertices in the contour</param>
     /// <param name="checkOrient">Flag showing whether the counterclockwise orientation should be checked</param>
     /// <param name="checkCross">Flag showing whether the self-crossing of the contour should be checked</param>
-    public BasicPolygon(Point2D[] vs, bool checkOrient = true, bool checkCross = true) : this
+    public BasicPolygon(Vector2D[] vs, bool checkOrient = true, bool checkCross = true) : this
       (vs.ToList(), checkOrient, checkCross) { }
 #endregion
 
@@ -132,7 +132,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
           throw new Exception("Cannot compute vertices - contours have not been initialized");
         }
 #endif
-        Vertices = new List<Point2D>();
+        Vertices = new List<Vector2D>();
         foreach (Polyline p in _contours!) {
           Vertices.AddRange(p.Vertices);
         }
@@ -186,14 +186,14 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is inside the polygon; false, otherwise</returns>
-    public abstract bool Contains(Point2D p);
+    public abstract bool Contains(Vector2D p);
 
     /// <summary>
     /// Method checking whether this polygon contains a given point in the interior of the polygon
     /// </summary>
     /// <param name="p">The point to be checked</param>
     /// <returns>true, if the point is strictly inside the polygon; false, otherwise</returns>
-    public abstract bool ContainsInside(Point2D p);
+    public abstract bool ContainsInside(Vector2D p);
 
     //public static P Rearrange<P> (P orig, SegmentCrosser2 crosses)
 #endregion

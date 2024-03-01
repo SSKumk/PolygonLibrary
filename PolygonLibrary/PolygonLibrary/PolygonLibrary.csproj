@@ -22,12 +22,11 @@
         <Compile Include="Basics\Line2D.cs" />
         <Compile Include="Basics\LinearBasis.cs" />
         <Compile Include="Basics\Matrices.cs" />
-        <Compile Include="Basics\Point.cs" />
-        <Compile Include="Basics\Point2D.cs" />
         <Compile Include="Basics\Vector.cs" />
         <Compile Include="Basics\Vector2D.cs" />
         <Compile Include="LinearAlgebra\GaussSLE.cs" />
         <Compile Include="LinearDifferentialGames\GameData.cs" />
+        <Compile Include="LinearDifferentialGames\SolverLDG.cs" />
         <Compile Include="Polygons\BasicPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\GammaPair.cs" />
@@ -44,7 +43,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubZeroDimensional.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\Minkowski.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiSum.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\ConvexPolytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\PComplex\FaceLattice.cs" />
@@ -58,7 +57,6 @@
         <Compile Include="Toolkit\ParamReader.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
         <Compile Include="Toolkit\Tools.cs" />
-        <Compile Include="Toolkit\ParamReader.cs" />
     </ItemGroup>
 
     <ItemGroup>
