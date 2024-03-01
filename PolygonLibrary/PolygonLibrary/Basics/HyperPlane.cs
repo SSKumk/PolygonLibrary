@@ -114,9 +114,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="origin">The point through which the hyperplane passes.</param>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     public HyperPlane(Point origin, Vector normal) {
-      Origin  = origin;
-      _normal = normal.Normalize();
-      SubSpaceDim     = Origin.Dim - 1;
+      Origin      = origin;
+      _normal     = normal.Normalize();
+      SubSpaceDim = Origin.Dim - 1;
     }
 
     /// <summary>
@@ -129,8 +129,8 @@ public partial class Geometry<TNum, TConv>
       SubSpaceDim   = normal.Dim - 1;
       _constantTerm = constant;
       Origin        = new Point(Normal * constant);
-
     }
+
     /// <summary>
     /// Constructs a hyperplane from a given affine basis.
     /// </summary>
@@ -148,7 +148,7 @@ public partial class Geometry<TNum, TConv>
 
       Origin       = affineBasis.Origin;
       _affineBasis = affineBasis;
-      SubSpaceDim          = Origin.Dim - 1;
+      SubSpaceDim  = Origin.Dim - 1;
 
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
@@ -263,6 +263,22 @@ public partial class Geometry<TNum, TConv>
       return (isAtOneSide, sign);
     }
 #endregion
+
+    public override int GetHashCode() => HashCode.Combine(Normal.GetHashCode(), ConstantTerm);
+
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+      HyperPlane other = (HyperPlane)obj;
+
+      if (this.SubSpaceDim != other.SubSpaceDim) {
+        return false;
+      }
+
+      return Tools.EQ(this.ConstantTerm, other.ConstantTerm) && this.Normal == other.Normal;
+    }
 
   }
 
