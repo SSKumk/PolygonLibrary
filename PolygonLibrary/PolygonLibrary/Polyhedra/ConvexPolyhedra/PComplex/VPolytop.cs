@@ -11,7 +11,8 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-
+ // todo Надо определиться или сидим на / IEnumerable, IReadOnlyCollection, IReadOnlyList .. / или вообще без них.
+ // ToArray(). ToList() -- НЕ круто!
   public class VPolytop {
     public HashSet<Vector> Vertices { get; }
 

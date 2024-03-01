@@ -46,6 +46,7 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Gets the requested level in the face lattice. If there is no key = dim, then an empty set is produced.
+    /// </summary>
     /// <param name="dim">The dimension of the level being queried.</param>
     /// <returns>The level being queried.</returns>
     public HashSet<FLNode> GetLevel(int dim) => Top.GetLevel(dim);

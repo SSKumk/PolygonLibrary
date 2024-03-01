@@ -14,61 +14,61 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  /// <summary>
-  /// Type of permanent storage of face incidence information.
-  /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
-  /// </summary>
-  public class IncidenceInfo : Dictionary<Edge, (Facet F1, Facet F2)> {
-
-    public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
-
-    public IncidenceInfo(SubIncidenceInfo info) : base
-      (
-       new Dictionary<Edge, (Facet F1, Facet F2)>
-         (
-          info.Select
-            (
-             x => {
-               Debug.Assert(x.Value.F1.Normal is not null, "IncidenceInfo: x.Value.F1.Normal != null");
-               Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: x.Value.F2.Normal != null");
-
-
-               return new KeyValuePair<Edge, (Facet F1, Facet F2)>
-                 (
-                  new Edge(x.Key.OriginalVertices)
-                , (new Facet(x.Value.F1.OriginalVertices, x.Value.F1.Normal)
-                 , new Facet(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
-                 );
-             }
-            )
-         )
-      ) { }
-
-  }
-
-  /// <summary>
-  /// Type of permanent storage of fans information.
-  /// Dictionary: point --> set of faces incident with a point.
-  /// </summary>
-  public class FansInfo : Dictionary<Vector, HashSet<Facet>> {
-
-    public FansInfo(FansInfo fansInfo) : base(fansInfo) { }
-
-    public FansInfo(HashSet<BaseSubCP> Fs) {
-      foreach (BaseSubCP F in Fs) {
-        foreach (Vector vertex in F.OriginalVertices) {
-          Debug.Assert(F.Normal is not null, "F.Normal != null");
-
-          if (TryGetValue(vertex, out HashSet<Facet>? value)) {
-            value.Add(new Facet(F.OriginalVertices, F.Normal));
-          } else {
-            base.Add(vertex, new HashSet<Facet>() { new Facet(F.OriginalVertices, F.Normal) });
-          }
-        }
-      }
-    }
-
-  }
+  // /// <summary>
+  // /// Type of permanent storage of face incidence information.
+  // /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
+  // /// </summary>
+  // public class IncidenceInfo : Dictionary<Edge, (Facet F1, Facet F2)> {
+  //
+  //   public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
+  //
+  //   public IncidenceInfo(SubIncidenceInfo info) : base
+  //     (
+  //      new Dictionary<Edge, (Facet F1, Facet F2)>
+  //        (
+  //         info.Select
+  //           (
+  //            x => {
+  //              Debug.Assert(x.Value.F1.Normal is not null, "IncidenceInfo: x.Value.F1.Normal != null");
+  //              Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: x.Value.F2.Normal != null");
+  //
+  //
+  //              return new KeyValuePair<Edge, (Facet F1, Facet F2)>
+  //                (
+  //                 new Edge(x.Key.OriginalVertices)
+  //               , (new Facet(x.Value.F1.OriginalVertices, x.Value.F1.Normal)
+  //                , new Facet(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
+  //                );
+  //            }
+  //           )
+  //        )
+  //     ) { }
+  //
+  // }
+  //
+  // /// <summary>
+  // /// Type of permanent storage of fans information.
+  // /// Dictionary: point --> set of faces incident with a point.
+  // /// </summary>
+  // public class FansInfo : Dictionary<Vector, HashSet<Facet>> {
+  //
+  //   public FansInfo(FansInfo fansInfo) : base(fansInfo) { }
+  //
+  //   public FansInfo(HashSet<BaseSubCP> Fs) {
+  //     foreach (BaseSubCP F in Fs) {
+  //       foreach (Vector vertex in F.OriginalVertices) {
+  //         Debug.Assert(F.Normal is not null, "F.Normal != null");
+  //
+  //         if (TryGetValue(vertex, out HashSet<Facet>? value)) {
+  //           value.Add(new Facet(F.OriginalVertices, F.Normal));
+  //         } else {
+  //           base.Add(vertex, new HashSet<Facet>() { new Facet(F.OriginalVertices, F.Normal) });
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  // }
 
   /// <summary>
   /// Represents an facet of the Polytop.
@@ -220,9 +220,15 @@ public partial class Geometry<TNum, TConv>
     public VPolytop VRep {
       get
         {
-          if (_VRep is null) { }
+          if (_VRep is null) {
+            if (_HRep is not null) { // Если FL != null, то VRep уже есть
+              _VRep = HRepToVRep_Naive(HRep);
+            }
+          }
 
-          return;
+          Debug.Assert(_VRep is not null, $"ConvexPolytop.VRep: _VRep is null after constructing. Something went wrong!");
+
+          return _VRep;
         }
     }
 
@@ -239,13 +245,21 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_HRep is null) {
-            if (_VRep is not null) {
-              GiftWrapping gw = new GiftWrapping(VRep.Vertices);
-              gw.HRepresentation
+            if (_FL is not null) {
+              // Если представлен в виде FL, но не HRep, то достанем эту информацию из решётки. VRep уже есть из конструктора.
+              _HRep = new HPolytop
+                (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))));
+            } else {
+              if (_VRep is not null) { // Если дано вершинное описаение, то прокатываем поарок.
+                GiftWrapping gw = new GiftWrapping(VRep.Vertices);
+                _HRep = gw.HPolytop;
+                _FL   = gw.FaceLattice; // Вроде невозможно, что FL != null, VRep != null, HRep = null;
+              }
             }
           }
+          Debug.Assert(_HRep is not null, $"ConvexPolytop.HRep: _HRep is null after constructing. Something went wrong!");
 
-          return;
+          return _HRep;
         }
     }
 
@@ -255,42 +269,24 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice FL {
       get
         {
-          if (_FL is null) { }
+          if (_FL is null) {
+            if (_VRep is not null) { // Раз уж гоним GW, то и на решётку потратимся
+              GiftWrapping gw = new GiftWrapping(VRep.Vertices);
+              _VRep = gw.VPolytop;
+              _FL   = gw.FaceLattice;
+            } else {
+              if (_HRep is not null) { // FL = null, VRep = null; Печаль ;( HRep --> VRep -(GW)-> FL
+                _VRep = VRep;          // VRep will be constructed
+                _FL   = GiftWrapping.WrapFaceLattice(VRep.Vertices);
+              }
+            }
+          }
+          Debug.Assert(_FL is not null, $"ConvexPolytop.FL: _FL is null after constructing. Something went wrong!");
 
-          return;
+          return _FL;
         }
     }
 #endregion
-
-    /// <summary>
-    /// Get the polytop as a hyperplane representation. Its normals are oriented outwards.
-    /// </summary>
-    /// <returns>The list of hyperplanes.</returns>
-    public List<HyperPlane> HRepresentation {
-      get
-        {
-          if (_HRepr is null) {
-            List<HyperPlane> res = new List<HyperPlane>();
-            foreach (Facet face in Faces) {
-              res.Add(face.HPlane);
-            }
-            _HRepr = res;
-          }
-
-          return _HRepr;
-        }
-    }
-
-
-    // /// <summary>
-    // /// Gets the incidence information of the faces. Each edge is associated with a pair of incidence faces with it.
-    // /// </summary>
-    // public IncidenceInfo FaceIncidence { get; }
-
-    // /// <summary>
-    // /// Gets the fan information of the polytop. Each point is associated with a set of incidence faces with it.
-    // /// </summary>
-    // public FansInfo Fans { get; }
 
 #region Constructors
     public ConvexPolytop(VPolytop VP) {
@@ -311,8 +307,24 @@ public partial class Geometry<TNum, TConv>
     public ConvexPolytop(FaceLattice FL) {
       _FL   = FL;
       _VRep = new VPolytop(FL.Vertices);
-      // todo HRep можно получить, взяв ABasis из уровня гиперграней. Но, надо понять, как ориентировать нормаль. (Взять какую-то выпуклую комбинацию всех вершин?)
+      // todo HRep можно получить, взяв ABasis из уровня гиперграней. Ориентируем так: Top.InnerPoint в отрицательной
+      // см в FaceLattice
     }
+
+    public ConvexPolytop(GiftWrapping gw) {
+      _FL   = gw.FaceLattice;
+      _VRep = gw.VPolytop;
+      _HRep = gw.HPolytop;
+    }
+#endregion
+
+#region Fabrics
+    /// <summary>
+    /// Wraps a given swarm of points to the convex polytop.
+    /// </summary>
+    /// <param name="S">The swarm of points.</param>
+    /// <returns>The convex polytop.</returns>
+    public static ConvexPolytop WrapPolytop(IEnumerable<Vector> S) => new ConvexPolytop(new GiftWrapping(S));
 #endregion
 
     /// <summary>
@@ -334,7 +346,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="filePath">The path to the file to write in.</param>
     /// <param name="needGW">If the flag is true, then the GW procedure is applied and the order of the vertices is established.</param>
     public void WriteTXT(string filePath, bool needGW = false) {
-      List<Vector>  VList = Vertices.Order().ToList();
+      List<Vector>   VList = Vertices.Order().ToList();
       HashSet<Facet> FSet  = Faces;
       if (needGW && PolytopDim == 3) {
         // Это надо только для того, что бы красиво картинки в 3Д рисовать, так как в FL теряется инфа о порядке вершин
@@ -360,14 +372,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="H">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> H) {
-      int n = H.Count;
-      int d = H.First().SubSpaceDim + 1;
+    public static VPolytop HRepToVRep_Naive(HPolytop H) {
+      int n = H.Faces.Count;
+      int d = H.SpaceDim;
 
       HashSet<Vector>      Vs          = new HashSet<Vector>();
       Combination          combination = new Combination(n, d);
-      Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
-      Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
+      Func<int, int, TNum> AFunc       = (r, l) => H.Faces[combination[r]].Normal[l];
+      Func<int, TNum>      bFunc       = r => H.Faces[combination[r]].ConstantTerm;
       bool                 belongs;
       GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
@@ -375,7 +387,7 @@ public partial class Geometry<TNum, TConv>
         gaussSLE.Solve();
         if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
           belongs = true;
-          foreach (HyperPlane hp in H) {
+          foreach (HyperPlane hp in H.Faces) {
             if (hp.ContainsPositive(point)) {
               belongs = false;
 
@@ -388,7 +400,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (combination.Next());
 
-      return Vs;
+      return new VPolytop(Vs);
     }
 
   }

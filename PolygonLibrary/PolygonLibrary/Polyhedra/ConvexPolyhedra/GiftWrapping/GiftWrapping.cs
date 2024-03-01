@@ -54,7 +54,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the polytop in HRep form.
     /// </summary>
-    public HPolytop CPolytop => _Hpolytop ??= GetHPolytop();
+    public HPolytop HPolytop => _Hpolytop ??= GetHPolytop();
 
     /// <summary>
     /// Gets the polytop in VRep form.
@@ -162,11 +162,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Polytop as intersection of negative half-space of hyperplanes.
-    /// </summary>
-    private List<HyperPlane>? _HRepr;
-
-    /// <summary>
     /// Gets the polytop as a list of its vertices.
     /// </summary>
     /// <returns>The polytop as a list of its vertices.</returns>
@@ -201,12 +196,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     // todo Где должна быть эта функция? Тут или в ConvexPolytop?
-    /// <summary>
-    /// Wraps a given swarm of points to the convex polytop.
-    /// </summary>
-    /// <param name="S">The swarm of points.</param>
-    /// <returns>The convex polytop.</returns>
-    public static ConvexPolytop WrapPolytop(IEnumerable<Vector> S) => new GiftWrapping(S).CPolytop;
+
 
     /// <summary>
     /// Wraps a given swarm of points to the face lattice.
