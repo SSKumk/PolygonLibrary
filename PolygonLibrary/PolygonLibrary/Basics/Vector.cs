@@ -344,6 +344,24 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Expands the vector to a higher dimension.
+    /// </summary>
+    /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the vector.</param>
+    /// <param name="Ind">The array of indices expand to.
+    /// If null, then 0..Dim-1 be used.</param>
+    /// <returns>A new vector in the target dimension, with the some coordinates set to zero.</returns>
+    public Vector ExpandTo(int d, List<int>? Ind = null) {
+      Debug.Assert(d > Dim, "Vector.ExpandTo: Can't expand to lower dimension!");
+      List<int> ind = Ind ?? new List<int>(Enumerable.Range(0, Dim));
+      TNum[]    np  = new TNum[d];
+      for (int i = 0; i < Dim; i++) {
+        np[ind[i]] = _v[i];
+      }
+
+      return new Vector(np);
+    }
+
+    /// <summary>
     /// Returns the string contains coordinates of a point in the specified format.
     /// x0 x1 ... xDim-1
     /// </summary>
@@ -563,24 +581,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructor based on point treated as radius-vector from 0.
-    /// </summary>
-    /// <param name="p">The point on which constructor construct the vector</param>
-    public Vector(Point p) : this((TNum[])p) { }
-
-    /// <summary>
     /// Constructor to a multidimensional vector from a two-dimensional vector
     /// </summary>
     /// <param name="v">The vector to be copied</param>
     /// <returns>The resultant vector</returns>
     public Vector(Vector2D v) : this(new TNum[] { v[0], v[1] }) { }
-
-    /// <summary>
-    /// Constructor to a multidimensional vector from a two-dimensional point
-    /// </summary>
-    /// <param name="p">The point to be copied</param>
-    /// <returns>The resultant vector</returns>
-    public Vector(Point2D p) : this(new TNum[] { p.x, p.y }) { }
 
     /// <summary>
     /// Computing fields
@@ -589,6 +594,17 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Fabrics
+    /// <summary>
+    /// Get zero vector of given dimension.
+    /// </summary>
+    /// <param name="n">The dimension of the vector.</param>
+    /// <returns>The zero vector.</returns>
+    public static Vector CreateOrigin(int n) {
+      TNum[] orig = new TNum[n];
+
+      return new Vector(orig);
+    }
+
     /// <summary>
     /// Creates the i-orth of given dimension
     /// </summary>
@@ -758,6 +774,7 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
+#endregion
 
     /// <summary>
     /// Parallelity of vectors
@@ -806,7 +823,70 @@ public partial class Geometry<TNum, TConv>
 
       return Tools.EQ(l1) || Tools.EQ(l2) || Tools.EQ(TNum.Abs(v1 * v2 / (l1 * l2)));
     }
-#endregion
+
+    /// <summary>
+    /// Linear combination of two points
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="w1">The weight of the first point</param>
+    /// <param name="p2">The second point</param>
+    /// <param name="w2">The weight of the second point</param>
+    /// <returns>The resultant point</returns>
+    public static Vector LinearCombination(Vector p1, TNum w1, Vector p2, TNum w2) {
+#if DEBUG
+      if (p1.Dim != p2.Dim) {
+        throw new ArgumentException("Cannot combine two point of different dimensions");
+      }
+#endif
+      TNum[] coords = new TNum[p1.Dim];
+
+      for (int i = 0; i < p1.Dim; i++) {
+        coords[i] = w1 * p1[i] + w2 * p2[i];
+      }
+
+      return new Vector(coords);
+    }
+
+    /// <summary>
+    /// Linear combination of a collection of points
+    /// </summary>
+    /// <param name="ps">Collection of the points</param>
+    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
+    /// <returns>The resultant point</returns>
+    public static Vector LinearCombination(IEnumerable<Vector> ps, IEnumerable<TNum> ws) {
+      using IEnumerator<Vector> enPoint  = ps.GetEnumerator();
+      using IEnumerator<TNum>   enWeight = ws.GetEnumerator();
+
+#if DEBUG
+      if (!enPoint.MoveNext()) {
+        throw new ArgumentException("No points in the collection to combine");
+      }
+
+      if (!enWeight.MoveNext()) {
+        throw new ArgumentException("No weights in the collection to combine");
+      }
+#else
+      enPoint.MoveNext();
+      enWeight.MoveNext();
+#endif
+
+
+      int    dim    = enPoint.Current.Dim;
+      TNum[] coords = new TNum[dim];
+
+      do {
+#if DEBUG
+        if (enPoint.Current.Dim != dim) {
+          throw new ArgumentException("Dimension of a point in the collection differs from the dimension of the point");
+        }
+#endif
+        for (int i = 0; i < dim; i++) {
+          coords[i] += enPoint.Current[i] * enWeight.Current;
+        }
+      } while (enPoint.MoveNext() && enWeight.MoveNext());
+
+      return new Vector(coords);
+    }
 
   }
 

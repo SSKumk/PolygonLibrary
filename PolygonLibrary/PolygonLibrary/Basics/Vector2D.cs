@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
@@ -16,6 +17,20 @@ public partial class Geometry<TNum, TConv>
   public class Vector2D : IComparable<Vector2D> {
 
 #region Comparing
+    /// <summary>
+    /// Vector comparer realizing the lexicographic order; coordinates are compared by precision
+    /// </summary>
+    /// <param name="v">The point to be compared with</param>
+    /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
+    public static int CompareToNoEps(Vector2D v1, Vector2D v2) {
+      int xRes = v1.x.CompareTo(v2.x);
+      if (xRes != 0) {
+        return xRes;
+      } else {
+        return v1.y.CompareTo(v2.y);
+      }
+    }
+
     /// <summary>
     /// Vector comparer realizing the lexicographic order
     /// </summary>
@@ -96,12 +111,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="i">The index: 0 - the abscissa, 1 - the ordinate</param>
     /// <returns>The value of the corresponding component</returns>
-    public TNum this[int i] => i switch
-                                 {
-                                   0 => x
-                                 , 1 => y
-                                 , _ => throw new IndexOutOfRangeException()
-                                 };
+    public TNum this[int i]
+      => i switch
+           {
+             0 => x
+           , 1 => y
+           , _ => throw new IndexOutOfRangeException()
+           };
 
 
     /// <summary>
@@ -150,6 +166,27 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Miscellaneous procedures
+    /// <summary>
+    /// Distance to the origin
+    /// </summary>
+    public TNum Abs => TNum.Sqrt(x * x + y * y);
+
+    /// <summary>
+    /// Compute the distance between two points
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="p2">The second point</param>
+    /// <returns>The distance between the given points</returns>
+    public static TNum Dist(Vector2D p1, Vector2D p2) => TNum.Sqrt(Vector2D.Dist2(p1, p2));
+
+    /// <summary>
+    /// Compute square of the distance between two points
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="p2">The second point</param>
+    /// <returns>The square of the distance between the given points</returns>
+    public static TNum Dist2(Vector2D p1, Vector2D p2) => TNum.Pow(p1.x - p2.x, Tools.Two) + TNum.Pow(p1.y - p2.y, Tools.Two);
+
     /// <summary>
     /// Normalization of the vector
     /// </summary>
@@ -249,13 +286,6 @@ public partial class Geometry<TNum, TConv>
 
 #region Convertors
     /// <summary>
-    /// Explicit convertor to a two-dimensional vector from a two-dimensional point
-    /// </summary>
-    /// <param name="p">The point to be converted</param>
-    /// <returns>The vector, which is the endpoint of the given vector</returns>
-    public static explicit operator Vector2D(Point2D p) => new Vector2D(p.x, p.y);
-
-    /// <summary>
     /// Explicit convertor to a two-dimensional vector from a multidimensional vector of general kind
     /// </summary>
     /// <param name="v">The vector to be converted</param>
@@ -267,20 +297,6 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       return new Vector2D(v[0], v[1]);
-    }
-
-    /// <summary>
-    /// Explicit convertor to a two-dimensional vector from a multidimensional point
-    /// </summary>
-    /// <param name="p">The point to be converted</param>
-    /// <returns>The resultant vector</returns>
-    public static explicit operator Vector2D(Point p) {
-#if DEBUG
-      if (p.Dim != 2) {
-        throw new ArgumentException("A multidimensional point is tried to be converted to a two-dimensional vector!");
-      }
-#endif
-      return new Vector2D(p[0], p[1]);
     }
 #endregion
 
@@ -294,8 +310,8 @@ public partial class Geometry<TNum, TConv>
       return CompareTo((Vector2D)obj!) == 0;
     }
 
-    public override string ToString() =>
-      $"({x.ToString(null, CultureInfo.InvariantCulture)};{y.ToString(null, CultureInfo.InvariantCulture)})";
+    public override string ToString()
+      => $"({x.ToString(null, CultureInfo.InvariantCulture)};{y.ToString(null, CultureInfo.InvariantCulture)})";
 
     public override int GetHashCode() {
       int res = 0;
@@ -413,6 +429,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The first vector factor</param>
     /// <returns>The z-component of the product</returns>
     public static TNum operator ^(Vector2D v1, Vector2D v2) => v1.x * v2.y - v1.y * v2.x;
+#endregion
 
     /// <summary>
     /// Parallelism of vectors
@@ -444,9 +461,58 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors are orthogonal; false, otherwise</returns>
-    public static bool AreOrthogonal(Vector2D v1, Vector2D v2) => v1.IsZero || v2.IsZero || Tools.EQ
-                                                                    (TNum.Abs(v1 * v2 / v1.Length / v1.Length));
-#endregion
+    public static bool AreOrthogonal(Vector2D v1, Vector2D v2)
+      => v1.IsZero || v2.IsZero || Tools.EQ(TNum.Abs(v1 * v2 / v1.Length / v1.Length));
+
+    /// <summary>
+    /// Linear combination of two points
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="w1">The weight of the first point</param>
+    /// <param name="p2">The second point</param>
+    /// <param name="w2">The weight of the second point</param>
+    /// <returns>The resultant point</returns>
+    public static Vector2D LinearCombination(Vector2D p1, TNum w1, Vector2D p2, TNum w2)
+      => new Vector2D(w1 * p1.x + w2 * p2.x, w1 * p1.y + w2 * p2.y);
+
+    /// <summary>
+    /// Linear combination of three points
+    /// </summary>
+    /// <param name="p1">The first point</param>
+    /// <param name="w1">The weight of the first point</param>
+    /// <param name="p2">The second point</param>
+    /// <param name="w2">The weight of the second point</param>
+    /// <param name="p3">The third point</param>
+    /// <param name="w3">The weight of the third point</param>
+    /// <returns>The resultant point</returns>
+    public static Vector2D LinearCombination(
+        Vector2D p1
+      , TNum     w1
+      , Vector2D p2
+      , TNum     w2
+      , Vector2D p3
+      , TNum     w3
+      )
+      => new Vector2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
+
+    /// <summary>
+    /// Linear combination of a collection of points
+    /// </summary>
+    /// <param name="ps">Collection of the points</param>
+    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
+    /// <returns>The resultant point</returns>
+    public static Vector2D LinearCombination(IEnumerable<Vector2D> ps, IEnumerable<TNum> ws) {
+      using IEnumerator<Vector2D> enPoint  = ps.GetEnumerator();
+      using IEnumerator<TNum>     enWeight = ws.GetEnumerator();
+      TNum                        x        = Tools.Zero, y = Tools.Zero;
+      while (enPoint.MoveNext() && enWeight.MoveNext()) {
+        x += enPoint.Current.x * enWeight.Current;
+        y += enPoint.Current.y * enWeight.Current;
+      }
+
+      return new Vector2D(x, y);
+    }
+
 
 #region Vector constants
     /// <summary>
