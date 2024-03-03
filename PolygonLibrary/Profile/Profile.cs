@@ -27,19 +27,10 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    var F = Sphere(4, 5, 5, 2).CPolytop;
-    var G = Sphere(4, 4, 4, 1).VPolytop;
+    var F = Sphere(4, 5, 5, 2);
+    var G = Sphere(4, 4, 4, 1);
 
-    bool isDiffNonEmpty = MinkowskiDiff.MinkDiff
-      (
-       F
-     , G
-     , out FaceLattice diffFL
-     , MinkowskiDiff.FindExtrInCPOnVector_Naive
-     , MinkowskiDiff.doSubtract
-     , ConvexPolytop.HRepToVRep_Naive
-     , GiftWrapping.WrapFaceLattice
-      );
+    bool isDiffNonEmpty = MinkowskiDiff.Naive(F, G);
     Console.WriteLine($"{isDiffNonEmpty}");
   }
 

@@ -38,7 +38,7 @@ public partial class Geometry<TNum, TConv>
     /// Returns a face lattice of the sum.
     /// </returns>
     public static ConvexPolytop ByConvexHull(ConvexPolytop P, ConvexPolytop Q)
-      => GiftWrapping.WrapPolytop(AlgSumPoints(P.Vertices, Q.Vertices));
+      => new ConvexPolytop(GiftWrapping.WrapFaceLattice(AlgSumPoints(P.Vertices, Q.Vertices)));
 
     /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.

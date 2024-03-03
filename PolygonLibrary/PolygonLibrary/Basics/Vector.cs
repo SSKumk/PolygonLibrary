@@ -135,12 +135,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
     public static bool operator ==(Vector v1, Vector v2) {
+      int d = v1.Dim;
 #if DEBUG
       if (d != v2.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
       }
 #endif
-      int d = v1.Dim;
       for (int i = 0; i < d; i++) {
         if (!Tools.EQ(v1[i], v2[i])) {
           return false;

@@ -273,8 +273,9 @@ public partial class Geometry<TNum, TConv>
 
       // Вычисляем вдоль всего моста выражения:  -dt*X(T,t_i)*B*P  и  dt*X(T,t_i)*C*Q
       for (t = T; Tools.GE(t, t0); t -= dt) {
-        Ps[t] = GiftWrapping.WrapPolytop(P.Vertices.Select(pPoint => -dt * D[t] * pPoint));
-        Qs[t] = GiftWrapping.WrapPolytop(Q.Vertices.Select(qPoint => dt * E[t] * qPoint));
+        TNum t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+        Ps[t] = new ConvexPolytop(GiftWrapping.WrapFaceLattice(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint)));
+        Qs[t] = new ConvexPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint));
       }
     }
 #endregion

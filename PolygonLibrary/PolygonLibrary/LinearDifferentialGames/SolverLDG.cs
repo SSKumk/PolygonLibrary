@@ -68,7 +68,7 @@ public partial class Geometry<TNum, TConv>
       this.workDir  = Directory.GetCurrentDirectory();
       this.fileName = fileName;
       gd            = new GameData(this.workDir + "/" + fileName);
-      W             = new StableBridge2D(gd.ProblemName, "Br", 0, TubeType.Bridge);
+      W             = new SortedDictionary<TNum, ConvexPolytop>();
       // gnuplotDat = gd.path + "gnuplot-dat/";
     }
 

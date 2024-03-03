@@ -9,7 +9,7 @@ public class HyperPlaneTests {
   public void ConstructorWithPointAndNormalTest() {
     Vector      origin     = new Vector(new double[] { 0, 0, 0 });
     Vector     normal     = new Vector(new double[] { 1, 1, 1 });
-    HyperPlane hyperplane = new HyperPlane(origin, normal);
+    HyperPlane hyperplane = new HyperPlane(normal, origin);
 
     AffineBasis.CheckCorrectness(hyperplane.ABasis);
   }

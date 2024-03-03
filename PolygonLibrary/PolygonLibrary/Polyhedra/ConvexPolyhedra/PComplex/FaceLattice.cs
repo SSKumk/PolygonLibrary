@@ -131,22 +131,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Converts a face lattice into a convex polytop. It has vertices, d-1-faces and d-2-faces.
-    /// </summary>
-    /// <returns>The convex polytop.</returns>
-    public ConvexPolytop ToConvexPolytop() {
-      var Fs = Lattice[^2]
-       .Select(n => new Facet(n.Vertices, new HyperPlane(new AffineBasis(n.AffBasis), (Top.InnerPoint, false)).Normal));
-      var Es = Lattice[^3].Select(n => new Edge(n.Vertices));
-
-      return new ConvexPolytop(Top.Vertices, Top.AffBasis.SpaceDim, Fs, Es);
-    }
-
-    /// <summary>
     /// Writes lattice as convex polytop to the file.
     /// </summary>
     /// <param name="filePath">The path to the file to write in.</param>
-    public void WriteTXTasCPolytop(string filePath) => this.ToConvexPolytop().WriteTXT(filePath, true); // Чтобы в 3Д красиво было
+    public void WriteTXTasCPolytop(string filePath) => new ConvexPolytop(this).WriteTXT(filePath); // Чтобы в 3Д красиво было
 
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {

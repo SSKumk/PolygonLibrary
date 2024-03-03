@@ -111,9 +111,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Constructs a hyperplane from a given point and normal vector.
     /// </summary>
-    /// <param name="origin">The point through which the hyperplane passes.</param>
     /// <param name="normal">The normal vector to the hyperplane.</param>
-    public HyperPlane(Vector origin, Vector normal) {
+    /// <param name="origin">The point through which the hyperplane passes.</param>
+    public HyperPlane(Vector normal, Vector origin) {
       Origin      = origin;
       _normal     = normal.Normalize();
       SubSpaceDim = Origin.Dim - 1;

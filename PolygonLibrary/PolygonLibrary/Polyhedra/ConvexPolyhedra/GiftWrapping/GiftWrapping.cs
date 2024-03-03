@@ -60,6 +60,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets the polytop in VRep form.
     /// </summary>
     public VPolytop VPolytop => _Vpolytop ??= new VPolytop(BuiltPolytop.OriginalVertices);
+    //todo Как в 3D сохранить порядок вершин, который есть в SubTwoDimensional.VerticesList ?!
 
     /// <summary>
     /// The vertices of the polytop.
@@ -71,35 +72,15 @@ public partial class Geometry<TNum, TConv>
     /// Builds Hyper plane Polytop from BuiltPolytop.
     /// </summary>
     /// <returns>The HPolytop.</returns>
-    private ConvexPolytop GetHPolytop() {
+    private HPolytop GetHPolytop() {
       if (BuiltPolytop.PolytopDim <= 2) {
         throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");
-      }
-      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetPolytop(): built polytop is null!");
+      } //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
+      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
 
-      HashSet<Facet> Fs;
-      if (BuiltPolytop.PolytopDim == 3) {
-        Fs = new HashSet<Facet>
-          (
-           BuiltPolytop.Faces!.Select
-             (
-              F => {
-                SubTwoDimensional f = (SubTwoDimensional)F;
+      HashSet<HyperPlane> Fs = new(BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
 
-                return new Facet(f.VerticesList, f.Normal!);
-              }
-             )
-          );
-      } else {
-        Fs = new HashSet<Facet>(BuiltPolytop.Faces!.Select(F => new Facet(F.OriginalVertices, F.Normal!)));
-      }
-      HashSet<Edge> Es = new HashSet<Edge>();
-
-      foreach (BaseSubCP face in BuiltPolytop.Faces!) {
-        Es.UnionWith(face.Faces!.Select(F => new Edge(F.OriginalVertices)));
-      }
-
-      return new ConvexPolytop(BuiltPolytop.OriginalVertices, BuiltPolytop.PolytopDim, Fs, Es);
+      return new HPolytop(Fs);
     }
 
     /// <summary>
@@ -179,7 +160,6 @@ public partial class Geometry<TNum, TConv>
       // SOrig = new HashSet<Vector>(Swarm);
       if (Swarm.Count() == 1) {
         BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
-        VPolytop     = new VPolytop(new List<Vector>() { Swarm.First() });
       } else {
         // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
         HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
@@ -195,8 +175,6 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    // todo Где должна быть эта функция? Тут или в ConvexPolytop?
-
 
     /// <summary>
     /// Wraps a given swarm of points to the face lattice.
@@ -204,6 +182,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="S">The swarm of points.</param>
     /// <returns>The face lattice, which represents the convex polytop.</returns>
     public static FaceLattice WrapFaceLattice(IEnumerable<Vector> S) => new GiftWrapping(S).FaceLattice;
+
+    /// <summary>
+    /// Wraps a given swarm of points to the VPolytop, excludes the inner point of conv(S).
+    /// </summary>
+    /// <param name="S">Thw swarm to be thin out.</param>
+    /// <returns>The vertices of conv(S).</returns>
+    public static VPolytop WrapVPolytop(IEnumerable<Vector> S) => new GiftWrapping(S).VPolytop;
 
     /// <summary>
     /// Perform an gift wrapping algorithm. It holds a necessary fields to construct a d-polytop.
@@ -405,7 +390,7 @@ public partial class Geometry<TNum, TConv>
           // n = (r! * n) * e - (r! * e) * n;
 
           OrientNormal(ref n, origin);
-          if (S.All(s => new HyperPlane(origin, n).Contains(s))) {
+          if (S.All(s => new HyperPlane(n, origin).Contains(s))) {
             throw new ArgumentException
               (
                $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
@@ -447,7 +432,7 @@ public partial class Geometry<TNum, TConv>
 
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
-        HyperPlane hp = new HyperPlane(FaceBasis.Origin, n);
+        HyperPlane hp = new HyperPlane(n, FaceBasis.Origin);
         // HyperPlane hp = new HyperPlane(FaceBasis, (FaceBasis.Origin + n, true)); хз что лучше (думаю, что нормаль)
         HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s)).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
 

@@ -131,11 +131,11 @@ public class MinkowskiSum2D {
   }
 
 }
-
+//todo Прежде чем тут копаться нужно разделаться с TestPolytopes!
 [TestFixture]
 public class MinkowskiSum_hD {
 
-  private static FaceLattice MinkSumCH(ConvexPolytop F, ConvexPolytop G) => MinkowskiSum.ByConvexHull(F, G).FL;
+  private static FaceLattice MinkSumCH(VPolytop F, VPolytop G) => MinkowskiSum.ByConvexHull(F, G).FL;
 
 #region Base Polytopes Tests
   [Test]
@@ -187,7 +187,7 @@ public class MinkowskiSum_hD {
     GiftWrapping P = new GiftWrapping(p);
     GiftWrapping Q = new GiftWrapping(q);
 
-    FaceLattice sum_CH = MinkSumCH(P.CPolytop, Q.CPolytop);
+    FaceLattice sum_CH = MinkSumCH(P.VPolytop, Q.VPolytop);
     FaceLattice sum    = MinkowskiSum.BySandipDas(P.FaceLattice, Q.FaceLattice);
 
     Assert.That(sum_CH, Is.EqualTo(sum));

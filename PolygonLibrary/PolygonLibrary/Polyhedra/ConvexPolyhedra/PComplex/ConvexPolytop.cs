@@ -73,7 +73,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents an facet of the Polytop.
   /// </summary>
-  public class Facet {
+  public class Facet { //todo Может её отнаследовать от HyperPlane и добавить только точки вершин? И заполнять при первой возможности?
 
     /// <summary>
     /// Gets the vertices of the face.
@@ -84,11 +84,6 @@ public partial class Geometry<TNum, TConv>
     /// Gets the normal vector of the face.
     /// </summary>
     public Vector Normal { get; }
-
-    /// <summary>
-    /// Gets the hyper plane corresponding to this face.
-    /// </summary>
-    public HyperPlane HPlane => new HyperPlane(Vertices.First(), Normal);
 
     /// <summary>
     /// Initializes a new instance of the Facet class.
@@ -207,10 +202,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public int SpaceDim { get; }
 
-    /// <summary>
-    /// Gets the dimension of the polytop.
-    /// </summary>
-    public int PolytopDim => ???;
+    // /// <summary>
+    // /// Gets the dimension of the polytop.
+    // /// </summary>
+    // public int PolytopDim => ???; todo Как быть с этим полем?!
 
     //todo FL знает о связи гиперграней и точек, которые лежат в них!
 
@@ -307,8 +302,6 @@ public partial class Geometry<TNum, TConv>
     public ConvexPolytop(FaceLattice FL) {
       _FL   = FL;
       _VRep = new VPolytop(FL.Vertices);
-      // todo HRep можно получить, взяв ABasis из уровня гиперграней. Ориентируем так: Top.InnerPoint в отрицательной
-      // см в FaceLattice
     }
 
     public ConvexPolytop(GiftWrapping gw) {
@@ -327,39 +320,45 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop WrapPolytop(IEnumerable<Vector> S) => new ConvexPolytop(new GiftWrapping(S));
 #endregion
 
-    /// <summary>
-    /// Converts the polytop to a convex polygon.
-    /// </summary>
-    /// <param name="basis">The affine basis used for the conversion.</param>
-    /// <returns>A convex polygon representing the polytop in 2D space.</returns>
-    public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
-      if (PolytopDim != 2) {
-        throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
+#region Aux functions
+    private List<Facet> CalcFacets() {
+      List<Facet> Fs = new List<Facet>();
+      foreach (FLNode face in FL.Lattice[^2]) {
+        Fs.Add(new Facet(face.Vertices, new HyperPlane(new AffineBasis(face.AffBasis), (FL.Top.InnerPoint, false)).Normal));
       }
 
-      return new ConvexPolygon(basis.ProjectPoints(Vertices));
+      return Fs;
     }
+#endregion
+
+    // /// <summary>
+    // /// Converts the polytop to a convex polygon.
+    // /// </summary>
+    // /// <param name="basis">The affine basis used for the conversion.</param>
+    // /// <returns>A convex polygon representing the polytop in 2D space.</returns>
+    // public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
+    //   if (PolytopDim != 2) {
+    //     throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
+    //   }
+    //
+    //   return new ConvexPolygon(basis.ProjectPoints(Vertices));
+    // } todo зависит от PolytopDim
 
     /// <summary>
-    /// Writes Polytop to the file in 'PolytopTXT_format'.
+    /// Writes Polytop to the file in 'PolytopTXT_format'. It use the description as face lattice.
     /// </summary>
     /// <param name="filePath">The path to the file to write in.</param>
-    /// <param name="needGW">If the flag is true, then the GW procedure is applied and the order of the vertices is established.</param>
-    public void WriteTXT(string filePath, bool needGW = false) {
+    public void WriteTXT(string filePath) {
       List<Vector>   VList = Vertices.Order().ToList();
-      HashSet<Facet> FSet  = Faces;
-      if (needGW && PolytopDim == 3) {
-        // Это надо только для того, что бы красиво картинки в 3Д рисовать, так как в FL теряется инфа о порядке вершин
-        FSet = GiftWrapping.WrapPolytop(VList).Faces;
-      }
+      List<Facet> FSet  = CalcFacets();
       using (StreamWriter writer = new StreamWriter(filePath)) {
-        writer.WriteLine($"PDim: {PolytopDim}");
+        writer.WriteLine($"PDim: {FL.Top.Dim}");
         writer.WriteLine($"SDim: {SpaceDim}");
         writer.WriteLine();
         writer.WriteLine($"Vertices: {Vertices.Count}");
         writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
         writer.WriteLine();
-        writer.WriteLine($"Faces: {Faces.Count}");
+        writer.WriteLine($"Faces: {FSet.Count}");
         foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
           writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
