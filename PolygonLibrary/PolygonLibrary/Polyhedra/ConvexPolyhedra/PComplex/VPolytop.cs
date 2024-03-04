@@ -16,8 +16,8 @@ public partial class Geometry<TNum, TConv>
   public class VPolytop {
     public HashSet<Vector> Vertices { get; }
 
-    public VPolytop(IEnumerable<Vector> Vs) {
-      Vertices = new HashSet<Vector>(Vs);
+    public VPolytop(HashSet<Vector> Vs) {
+      Vertices = Vs;
     }
 
     private int? _hash;
@@ -25,7 +25,7 @@ public partial class Geometry<TNum, TConv>
       if (_hash is null) {
         List<int> sortedVs = Vertices.Order().Select(v => v.GetHashCode()).ToList();
         int hash = sortedVs.First();
-        for (int i = 1; i < sortedVs.Count(); i++) {
+        for (int i = 1; i < sortedVs.Count; i++) {
           hash = HashCode.Combine(hash, sortedVs[i]);
         }
         _hash = hash;

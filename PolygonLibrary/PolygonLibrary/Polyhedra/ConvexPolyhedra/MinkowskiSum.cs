@@ -108,13 +108,13 @@ public partial class Geometry<TNum, TConv>
           // Собираем все подграни в соответствующих решётках,
           // сортируя по убыванию размерности для удобства перебора.
           // Среди них будем искать подграни, которые при суммировании дают d-грани z
-          IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.Dim);
-          IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.Dim);
+          IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
+          IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
 
           foreach (FLNode xi in X) {
             foreach (FLNode yj in Y) {
               // -1) Смотрим потенциально набираем ли мы нужную размерность
-              if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.Dim - 1) { break; }
+              if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.PolytopDim - 1) { break; }
 
               // Берём очередного кандидата.
               // HashSet<Vector> candidate = AlgSumPoints(xi.Vertices, yj.Vertices); // todo Может его не надо считать?!

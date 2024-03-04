@@ -18,7 +18,7 @@ public partial class Geometry<TNum, TConv>
 
     public List<HyperPlane> Faces { get; }
 
-    public HPolytop(IEnumerable<HyperPlane> Fs) { Faces = new List<HyperPlane>(Fs); }
+    public HPolytop(List<HyperPlane> Fs) { Faces = Fs; }
 
   }
 

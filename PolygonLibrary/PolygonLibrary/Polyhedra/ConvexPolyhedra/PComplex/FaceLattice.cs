@@ -86,7 +86,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
     private FaceLattice TransformLattice(Func<FLNode, Vector> transformFunc) {
       List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
-      for (int i = 0; i <= Top.Dim; i++) {
+      for (int i = 0; i <= Top.PolytopDim; i++) {
         newFL.Add(new HashSet<FLNode>());
       }
 
@@ -148,7 +148,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       bool isEqual = true;
-      for (int i = this.Top.Dim; i > -1; i--) {
+      for (int i = this.Top.PolytopDim; i > -1; i--) {
         var otherDict = new Dictionary<int, FLNode>();
         foreach (var otherNode in other.Lattice[i]) {
           otherDict.Add(otherNode.GetHashCode(), otherNode);
@@ -184,7 +184,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The dimensional of the associated polytop.
     /// </summary>
-    public int Dim => AffBasis.SpaceDim;
+    public int PolytopDim => AffBasis.SpaceDim;
 
     /// <summary>
     /// Reference to the associated polytop to this node.
@@ -195,7 +195,7 @@ public partial class Geometry<TNum, TConv>
     /// In assumption that all nodes of a lower dimension are correct, it cerates a new Polytop based on vertices of the subs.
     /// </summary>
     public void ReconstructPolytop() {
-      if (Dim != 0) {
+      if (PolytopDim != 0) {
         Polytop = new VPolytop(Sub.SelectMany(s => s.Vertices));
       }
     }
@@ -254,7 +254,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="dim">The dimension of the level being queried.</param>
     /// <returns>The level being queried. If it lies above this node, it returns empty set.</returns>
-    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) => dim > Dim ? new HashSet<FLNode>() : GetLevel(dim);
+    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) => dim > PolytopDim ? new HashSet<FLNode>() : GetLevel(dim);
 
     /// <summary>
     /// Gets the entire levelNodes structure.
@@ -275,11 +275,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private void ConstructLevelNodes() {
       // добавили себя
-      _levelNodes.Add(Dim, new HashSet<FLNode>() { this });
+      _levelNodes.Add(PolytopDim, new HashSet<FLNode>() { this });
 
       // собираем верх
       HashSet<FLNode> superNodes = Super;
-      int             d          = Dim;
+      int             d          = PolytopDim;
       while (superNodes.Count != 0) {
         d++;
         _levelNodes.Add(d, superNodes);
@@ -288,7 +288,7 @@ public partial class Geometry<TNum, TConv>
 
       // собираем низ
       HashSet<FLNode> prevNodes = Sub;
-      d = Dim;
+      d = PolytopDim;
       while (prevNodes.Count != 0) {
         d--;
         _levelNodes.Add(d, prevNodes);
@@ -300,7 +300,7 @@ public partial class Geometry<TNum, TConv>
     /// Retrieves all sub-faces of the node, including the node itself.
     /// </summary>
     /// <returns>The collection that contains all non strict sub-faces of the node.</returns>
-    public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= Dim).SelectMany(ln => ln.Value);
+    public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
 
 
     /// <summary>

@@ -73,7 +73,9 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents an facet of the Polytop.
   /// </summary>
-  public class Facet { //todo Может её отнаследовать от HyperPlane и добавить только точки вершин? И заполнять при первой возможности?
+  public class Facet {
+
+    //todo Может её отнаследовать от HyperPlane и добавить только точки вершин? И заполнять при первой возможности?
 
     /// <summary>
     /// Gets the vertices of the face.
@@ -135,62 +137,6 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  // /// <summary>
-  // /// Represents an edge of the Polytop.
-  // /// </summary>
-  // public class Edge {
-  //
-  //   /// <summary>
-  //   /// Gets the vertices of the edge.
-  //   /// </summary>
-  //   public HashSet<Vector> Vertices { get; }
-  //
-  //   /// <summary>
-  //   /// Initializes a new instance of the Edge class.
-  //   /// </summary>
-  //   /// <param name="Vs">The vertices of the edge.</param>
-  //   public Edge(IEnumerable<Vector> Vs) => Vertices = new HashSet<Vector>(Vs);
-  //
-  //   /// <summary>
-  //   /// Determines whether the specified object is equal to edge.
-  //   /// Two edges are equal if they have same sets of their vertices.
-  //   /// </summary>
-  //   /// <param name="obj">The object to compare with edge.</param>
-  //   /// <returns>True if the specified object is equal to edge, False otherwise</returns>
-  //   public override bool Equals(object? obj) {
-  //     if (obj == null || this.GetType() != obj.GetType()) {
-  //       return false;
-  //     }
-  //
-  //     Edge other = (Edge)obj;
-  //
-  //     return this.Vertices.SetEquals(other.Vertices);
-  //   }
-  //
-  //   /// <summary>
-  //   /// Internal field for the hash of the edge
-  //   /// </summary>
-  //   private int? _hash = null;
-  //
-  //   /// <summary>
-  //   /// Returns a hash code for the edge based on specified set of vertices.
-  //   /// </summary>
-  //   /// <returns>A hash code for the specified set of vertices.</returns>
-  //   public override int GetHashCode() {
-  //     if (_hash is null) {
-  //       int hash = 0;
-  //
-  //       foreach (Vector vertex in Vertices.Order()) {
-  //         hash = HashCode.Combine(hash, vertex.GetHashCode());
-  //       }
-  //       _hash = hash;
-  //     }
-  //
-  //     return _hash.Value;
-  //   }
-  //
-  // }
-
   /// <summary>
   /// Represents a full-dimensional convex polytop in a d-dimensional space.
   /// </summary>
@@ -202,22 +148,27 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public int SpaceDim { get; }
 
-    // /// <summary>
-    // /// Gets the dimension of the polytop.
-    // /// </summary>
-    // public int PolytopDim => ???; todo Как быть с этим полем?!
+    /// <summary>
+    /// Gets the dimension of the polytop.
+    /// </summary>
+    public int PolytopDim => _FL is not null ? FL.Top.PolytopDim : GW.PolytopDim;
 
-    //todo FL знает о связи гиперграней и точек, которые лежат в них!
+    private GiftWrapping? _gw = null;
 
-    // VRep
-    private VPolytop? _VRep = null;
+    private GiftWrapping GW => _gw ??= new GiftWrapping(VRep.Vertices);
+
+    private VPolytop? _VRep = null; // todo список вершин или же vpolytop?
 
     public VPolytop VRep {
       get
         {
           if (_VRep is null) {
-            if (_HRep is not null) { // Если FL != null, то VRep уже есть
-              _VRep = HRepToVRep_Naive(HRep);
+            if (_FL is not null) {
+              _VRep = new VPolytop(FL.Vertices);
+            } else {
+              if (_HRep is not null) {
+                _VRep = HRepToVRep_Naive(HRep);
+              }
             }
           }
 
@@ -227,13 +178,8 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    /// <summary>
-    /// Gets the set of vertices of the polytop.
-    /// </summary>
     public HashSet<Vector> Vertices => VRep.Vertices;
 
-
-    // HRep
     private HPolytop? _HRep = null;
 
     public HPolytop HRep {
@@ -243,12 +189,10 @@ public partial class Geometry<TNum, TConv>
             if (_FL is not null) {
               // Если представлен в виде FL, но не HRep, то достанем эту информацию из решётки. VRep уже есть из конструктора.
               _HRep = new HPolytop
-                (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))));
+                (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))).ToList());
             } else {
               if (_VRep is not null) { // Если дано вершинное описаение, то прокатываем поарок.
-                GiftWrapping gw = new GiftWrapping(VRep.Vertices);
-                _HRep = gw.HPolytop;
-                _FL   = gw.FaceLattice; // Вроде невозможно, что FL != null, VRep != null, HRep = null;
+                _HRep = GW.HPolytop;
               }
             }
           }
@@ -258,21 +202,18 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    // FL
     private FaceLattice? _FL = null;
 
     public FaceLattice FL {
       get
         {
           if (_FL is null) {
-            if (_VRep is not null) { // Раз уж гоним GW, то и на решётку потратимся
-              GiftWrapping gw = new GiftWrapping(VRep.Vertices);
-              _VRep = gw.VPolytop;
-              _FL   = gw.FaceLattice;
+            if (_VRep is not null) {
+              _FL = GW.FaceLattice;
             } else {
               if (_HRep is not null) { // FL = null, VRep = null; Печаль ;( HRep --> VRep -(GW)-> FL
                 _VRep = VRep;          // VRep will be constructed
-                _FL   = GiftWrapping.WrapFaceLattice(VRep.Vertices);
+                _FL   = GW.FaceLattice;
               }
             }
           }
@@ -284,27 +225,68 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Constructors
-    public ConvexPolytop(VPolytop VP) {
-      _VRep    = VP;
-      SpaceDim = VP.Vertices.First().Dim;
+    private enum ConvexPolytopForm { VRep, HRep, FL }
+
+    private ConvexPolytop(HashSet<Vector> VP, bool toConvexify, ConvexPolytopForm form) {
+      SpaceDim = VP.First().Dim;
+      if (toConvexify) {
+        _gw   = new GiftWrapping(VP);
+        _VRep = GW.VPolytop;
+      } else {
+        _VRep = new VPolytop(VP);
+      }
+      switch (form) {
+        case ConvexPolytopForm.VRep: break; // уже всё сделали
+        case ConvexPolytopForm.HRep:
+          _HRep = GW.HPolytop;
+
+          break;
+        case ConvexPolytopForm.FL:
+          _FL = GW.FaceLattice;
+
+          break;
+      }
     }
 
-    public ConvexPolytop(IEnumerable<Vector> Vs) {
-      _VRep    = new VPolytop(Vs);
-      SpaceDim = Vs.First().Dim;
+    private ConvexPolytop(List<HyperPlane> HPs, bool doHRedundancy, ConvexPolytopForm form) {
+      SpaceDim = HPs.First().Normal.Dim;
+      if (doHRedundancy) {
+        throw new NotImplementedException("Надо сделать! Нужен симлекс метод и алгоритм Фукуды.");
+      } else {
+        _HRep = new HPolytop(HPs);
+      }
+
+      switch (form) {
+        case ConvexPolytopForm.HRep: break; // всё готово
+        case ConvexPolytopForm.VRep:
+          _VRep = HRepToVRep_Naive(new HPolytop(HPs));
+
+          break;
+        case ConvexPolytopForm.FL:
+          _VRep = HRepToVRep_Naive(new HPolytop(HPs));
+          _FL   = GW.FaceLattice;
+
+          break;
+      }
     }
 
-    public ConvexPolytop(HPolytop HP) {
-      _HRep    = HP;
-      SpaceDim = HP.Faces.First().Normal.Dim;
+    private ConvexPolytop(FaceLattice FL, ConvexPolytopForm form) {
+      _FL = FL;
+      switch (form) {
+        case ConvexPolytopForm.FL: break; // всё есть
+        case ConvexPolytopForm.VRep:
+          _VRep = new VPolytop(FL.Vertices);
+
+          break;
+        case ConvexPolytopForm.HRep:
+          _HRep = new HPolytop
+            (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))).ToList());
+
+          break;
+      }
     }
 
-    public ConvexPolytop(FaceLattice FL) {
-      _FL   = FL;
-      _VRep = new VPolytop(FL.Vertices);
-    }
-
-    public ConvexPolytop(GiftWrapping gw) {
+    private ConvexPolytop(GiftWrapping gw) {
       _FL   = gw.FaceLattice;
       _VRep = gw.VPolytop;
       _HRep = gw.HPolytop;
@@ -312,12 +294,27 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Fabrics
-    /// <summary>
-    /// Wraps a given swarm of points to the convex polytop.
-    /// </summary>
-    /// <param name="S">The swarm of points.</param>
-    /// <returns>The convex polytop.</returns>
-    public static ConvexPolytop WrapPolytop(IEnumerable<Vector> S) => new ConvexPolytop(new GiftWrapping(S));
+    public static ConvexPolytop AsVPolytop(HashSet<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.VRep);
+
+    public static ConvexPolytop AsHPolytop(HashSet<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.HRep);
+
+    public static ConvexPolytop AsFLPolytop(HashSet<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.FL);
+
+    public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false) // todo List or HashSet ?!
+      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.VRep);
+
+    public static ConvexPolytop AsHPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
+      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.HRep);
+
+    public static ConvexPolytop AsFLPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
+      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.FL);
+
+    public static ConvexPolytop AsVPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.VRep);
+    public static ConvexPolytop AsHPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.HRep);
+    public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FL);
 #endregion
 
 #region Aux functions
@@ -349,10 +346,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="filePath">The path to the file to write in.</param>
     public void WriteTXT(string filePath) {
-      List<Vector>   VList = Vertices.Order().ToList();
-      List<Facet> FSet  = CalcFacets();
+      List<Vector> VList = Vertices.Order().ToList();
+      List<Facet>  FSet  = CalcFacets();
       using (StreamWriter writer = new StreamWriter(filePath)) {
-        writer.WriteLine($"PDim: {FL.Top.Dim}");
+        writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
         writer.WriteLine($"SDim: {SpaceDim}");
         writer.WriteLine();
         writer.WriteLine($"Vertices: {Vertices.Count}");

@@ -26,46 +26,31 @@ public partial class Geometry<TNum, TConv>
     private readonly BaseSubCP BuiltPolytop;
 
     /// <summary>
-    /// The convex polytop. It describes by set of hyperplanes.
-    /// </summary>
-    private HPolytop? _Hpolytop;
-
-    /// <summary>
-    /// The convex polytop. It describes by is vertices.
-    /// </summary>
-    private VPolytop? _Vpolytop;
-
-    /// <summary>
-    /// Polytop as face lattice. I.e. complex.
-    /// </summary>
-    private FaceLattice? _faceLattice;
-
-    /// <summary>
-    /// Gets the face lattice.
-    /// </summary>
-    /// <returns>The face lattice.</returns>
-    public FaceLattice FaceLattice => _faceLattice ??= ConstructFL();
-
-    /// <summary>
     /// The dimension of the wrapped polytop.
     /// </summary>
     public int PolytopDim => BuiltPolytop.PolytopDim;
 
     /// <summary>
+    /// Gets the face lattice.
+    /// </summary>
+    /// <returns>The face lattice.</returns>
+    public FaceLattice FaceLattice => ConstructFL();
+
+    /// <summary>
     /// Gets the polytop in HRep form.
     /// </summary>
-    public HPolytop HPolytop => _Hpolytop ??= GetHPolytop();
+    public HPolytop HPolytop => GetHPolytop();
 
     /// <summary>
     /// Gets the polytop in VRep form.
     /// </summary>
-    public VPolytop VPolytop => _Vpolytop ??= new VPolytop(BuiltPolytop.OriginalVertices);
+    public VPolytop VPolytop => new VPolytop(BuiltPolytop.OriginalVertices);
     //todo Как в 3D сохранить порядок вершин, который есть в SubTwoDimensional.VerticesList ?!
 
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Vector> Vertices => VPolytop.Vertices;
+    public HashSet<Vector> Vertices => BuiltPolytop.OriginalVertices;
 #endregion
 
     /// <summary>
@@ -78,7 +63,8 @@ public partial class Geometry<TNum, TConv>
       } //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
       Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
 
-      HashSet<HyperPlane> Fs = new(BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
+      List<HyperPlane> Fs = new List<HyperPlane>
+        (BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
 
       return new HPolytop(Fs);
     }
@@ -136,59 +122,42 @@ public partial class Geometry<TNum, TConv>
         }
         FLNode node = new FLNode(sub);
         allNodes.Add(node.GetHashCode(), node);
-        lattice[node.Dim].Add(node);
+        lattice[node.PolytopDim].Add(node);
 
         return;
       }
     }
 
     /// <summary>
-    /// Gets the polytop as a list of its vertices.
-    /// </summary>
-    /// <returns>The polytop as a list of its vertices.</returns>
-    public List<Vector> VerticesList => VPolytop.Vertices.ToList();
-
-    /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.
     /// </summary>
     /// <param name="Swarm">The swarm of points to convexify.</param>
-    public GiftWrapping(IEnumerable<Vector> Swarm) {
-      // Пока не будет SubBaseCP размерности 0.
-      if (!Swarm.Any()) {
-        throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
-      }
-      // SOrig = new HashSet<Vector>(Swarm);
-      if (Swarm.Count() == 1) {
-        BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
-      } else {
-        // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
-        HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
-        AffineBasis       AffineS = new AffineBasis(S);
-        if (AffineS.SpaceDim < AffineS.VecDim) {
-          // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
-          // уходим в подпространство и там овыпукляем.
-          S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
-        }
+    public GiftWrapping(HashSet<Vector> Swarm) {
+      switch (Swarm.Count) {
+        // Пока не будет SubBaseCP размерности 0.
+        case 0: throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
+        // SOrig = new HashSet<Vector>(Swarm);
+        case 1:
+          BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
 
-        GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
-        BuiltPolytop = gwSwarm.BuiltPolytop;
+          break;
+        default: {
+          // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
+          HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
+          AffineBasis       AffineS = new AffineBasis(S);
+          if (AffineS.SpaceDim < AffineS.VecDim) {
+            // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
+            // уходим в подпространство и там овыпукляем.
+            S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
+          }
+
+          GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
+          BuiltPolytop = gwSwarm.BuiltPolytop;
+
+          break;
+        }
       }
     }
-
-
-    /// <summary>
-    /// Wraps a given swarm of points to the face lattice.
-    /// </summary>
-    /// <param name="S">The swarm of points.</param>
-    /// <returns>The face lattice, which represents the convex polytop.</returns>
-    public static FaceLattice WrapFaceLattice(IEnumerable<Vector> S) => new GiftWrapping(S).FaceLattice;
-
-    /// <summary>
-    /// Wraps a given swarm of points to the VPolytop, excludes the inner point of conv(S).
-    /// </summary>
-    /// <param name="S">Thw swarm to be thin out.</param>
-    /// <returns>The vertices of conv(S).</returns>
-    public static VPolytop WrapVPolytop(IEnumerable<Vector> S) => new GiftWrapping(S).VPolytop;
 
     /// <summary>
     /// Perform an gift wrapping algorithm. It holds a necessary fields to construct a d-polytop.

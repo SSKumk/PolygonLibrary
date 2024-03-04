@@ -31,7 +31,7 @@ public class SpeedTestMinkSum {
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumCH(CubesFL[i], CubesFL[i]); }
       timer.Stop();
-      writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
+      writer.Write($"{CubesFL[i].Top.PolytopDim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumCH(CubesFL[i], CubesFL[i]); }
       timer.Stop();
@@ -58,7 +58,7 @@ public class SpeedTestMinkSum {
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkowskiSum.BySandipDas(CubesFL[i], CubesRotatedFL[i]); }
       timer.Stop();
-      writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
+      writer.Write($"{CubesFL[i].Top.PolytopDim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumCH(CubesFL[i], CubesRotatedFL[i]); }
       timer.Stop();
@@ -85,7 +85,7 @@ public class SpeedTestMinkSum {
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkowskiSum.BySandipDas(CubesFL[i], SimplicesFL[i]); }
       timer.Stop();
-      writer.Write($"{CubesFL[i].Top.Dim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
+      writer.Write($"{CubesFL[i].Top.PolytopDim} & {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture)}");
       timer.Restart();
       for (int k = 0; k < N; k++) { Sum = MinkSumCH(CubesFL[i], SimplicesFL[i]); }
       timer.Stop();
