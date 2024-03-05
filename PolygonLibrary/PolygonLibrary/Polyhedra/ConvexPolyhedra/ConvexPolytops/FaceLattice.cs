@@ -183,21 +183,21 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reference to the associated polytop to this node.
     /// </summary>
-    public VPolytop Polytop { get; protected set; } //todo Выяснить, ссылки или объекты хранятся тут
+    private HashSet<Vector> Polytop { get; set; } //todo Выяснить, ссылки или объекты хранятся тут
 
     /// <summary>
     /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
     /// </summary>
     public void ReconstructPolytop() {
       if (PolytopDim != 0) {
-        Polytop = new VPolytop(Sub.SelectMany(s => s.Vertices).ToHashSet());
+        Polytop = new HashSet<Vector>(Sub.SelectMany(s => s.Vertices).ToHashSet());
       }
     }
 
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Vector> Vertices => Polytop.Vertices;
+    public HashSet<Vector> Vertices => Polytop;
 
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
@@ -315,7 +315,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
     public FLNode(Vector vertex) {
-      Polytop    = new VPolytop(new HashSet<Vector>() { vertex });
+      Polytop    = new HashSet<Vector>(new HashSet<Vector>() { vertex });
       InnerPoint = vertex;
       AffBasis   = new AffineBasis(vertex);
     }
@@ -327,7 +327,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
     internal FLNode(HashSet<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
-      Polytop       = new VPolytop(Vs);
+      Polytop       = Vs;
       InnerPoint    = innerPoint;
       this.AffBasis = aBasis;
     }
@@ -337,8 +337,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(List<FLNode> sub) {
-      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices).ToHashSet()); // todo А может не надо на каждый узел новые точки сохранять?!
-      Sub     = new HashSet<FLNode>(sub);
+      Polytop = new HashSet<Vector>
+        (sub.SelectMany(s => s.Vertices).ToHashSet()); // todo А может не надо на каждый узел новые точки сохранять?!
+      Sub = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
         subNode.AddSuper(this);
@@ -360,11 +361,26 @@ public partial class Geometry<TNum, TConv>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
     public bool PolytopEq(FLNode other) => this.Polytop.Equals(other.Polytop);
 
+
+    private int? _hash = null;
+
     /// <summary>
     /// The hash of the node is hash of the associated polytop.
     /// </summary>
     /// <returns>The hash of the polytop.</returns>
-    public override int GetHashCode() => Polytop.GetHashCode();
+    public override int GetHashCode() {
+      if (_hash is null) {
+        IOrderedEnumerable<Vector> sortedVs = Vertices.Order();
+
+        int hash = 0;
+        foreach (Vector v in sortedVs) {
+          hash = HashCode.Combine(hash, v.GetHashCode());
+        }
+        _hash = hash;
+      }
+
+      return _hash.Value;
+    }
 
     /// <summary>
     /// This is the equality function for FLNode.
@@ -413,11 +429,9 @@ public partial class Geometry<TNum, TConv>
       }
 
       // 3) this == other
-      return this.Polytop.Equals(other.Polytop);
+      return this.Polytop.SetEquals(other.Polytop);
     }
 
   }
-
-
 
 }
