@@ -15,7 +15,7 @@ namespace Tests.SpeedTests;
 public class SpeedTestMinkSum {
 
   private static FaceLattice MinkSumCH(FaceLattice F, FaceLattice G)
-    => MinkowskiSum.ByConvexHull(new ConvexPolytop(F.Vertices), new ConvexPolytop(G.Vertices)).FL;
+    => MinkowskiSum.ByConvexHull(ConvexPolytop.AsVPolytop(F.Vertices), ConvexPolytop.AsVPolytop(G.Vertices)).FL;
   
   [Test]
   public void CubesSum() {
@@ -106,8 +106,8 @@ public class SpeedTestMinkSum {
     List<FaceLattice> SecondSphere = new List<FaceLattice>();
     for (int dim = 2; dim <= 5; dim++) {
       var Sphere = Sphere_list(dim, theta, phi, 1);
-      FirstSphere.Add(GiftWrapping.WrapFaceLattice(Sphere));
-      SecondSphere.Add(GiftWrapping.WrapFaceLattice(RotateRND(Sphere)));
+      FirstSphere.Add(GiftWrapping.WrapFaceLattice(Sphere.ToHashSet()));
+      SecondSphere.Add(GiftWrapping.WrapFaceLattice(RotateRND(Sphere).ToHashSet()));
     }
     Stopwatch    timer = new Stopwatch();
     FaceLattice? Sum   = null;

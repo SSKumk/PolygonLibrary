@@ -43,11 +43,11 @@ public partial class Geometry<TNum, TConv>
      * Но в среднем мы будем проигрывать, так как симплекс-метод не идёт по всем вершинам и множитель |V(G)| - грубая оценка сверху.
      */
 
-    public static Vector FindExtrInCPOnVector_Naive(VPolytop P, Vector l) {
-      Vector extr    = new Vector(P.Vertices.First());
+    public static Vector FindExtrInCPOnVector_Naive(HashSet<Vector> P, Vector l) {
+      Vector extr    = new Vector(P.First());
       TNum   extrVal = l * extr;
 
-      foreach (Vector vertex in P.Vertices) {
+      foreach (Vector vertex in P) {
         Vector vec = new Vector(vertex);
         TNum   val = l * vec;
         if (val > extrVal) {
@@ -90,17 +90,17 @@ public partial class Geometry<TNum, TConv>
 
 
     public static bool MinkDiff(
-        HPolytop                                  F
-      , VPolytop                                  G
+        List<HyperPlane>                          F
+      , HashSet<Vector>                           G
       , out ConvexPolytop                         diffFG
-      , Func<VPolytop, Vector, Vector>            findExtrInG_on_lFromNF
+      , Func<HashSet<Vector>, Vector, Vector>     findExtrInG_on_lFromNF
       , Func<HyperPlane, Vector, HyperPlane>      doSubtract // <-- todo Как назвать?
-      , Func<HPolytop, VPolytop>                  HRepToVRep
-      , Func<IEnumerable<Vector>, FaceLattice>    produceFL
+      , Func<List<HyperPlane>, HashSet<Vector>>   HRepToVRep
+      , Func<HashSet<Vector>, FaceLattice>    produceFL
       , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null
       ) {
       List<HyperPlane> gamma = new List<HyperPlane>();
-      foreach (HyperPlane hpF in F.Faces) {
+      foreach (HyperPlane hpF in F) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
         Vector extrOn_l = findExtrInG_on_lFromNF(G, hpF.Normal);
 
@@ -114,17 +114,17 @@ public partial class Geometry<TNum, TConv>
 
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
-      VPolytop VRepFminusG = HRepToVRep(new HPolytop(gamma));
+      HashSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
 
 
       // 5) Построить FL роя V(F-G)
-      if (VRepFminusG.Vertices.Count < 3) {
+      if (VRepFminusG.Count < 3) {
         diffFG = ConvexPolytop.AsVPolytop(new HashSet<Vector>());
 
         return false;
       }
 
-      diffFG = ConvexPolytop.AsFLPolytop(produceFL(VRepFminusG.Vertices));
+      diffFG = ConvexPolytop.AsFLPolytop(produceFL(VRepFminusG));
 
       return true;
     }

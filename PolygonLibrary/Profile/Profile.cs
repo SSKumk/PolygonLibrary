@@ -27,11 +27,11 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    var F = Sphere(4, 5, 5, 2);
-    var G = Sphere(4, 4, 4, 1);
+    var F = ConvexPolytop.Sphere(4, 5, 5, 2);
+    var G = ConvexPolytop.Sphere(4, 4, 4, 1);
 
-    bool isDiffNonEmpty = MinkowskiDiff.Naive(F, G);
-    Console.WriteLine($"{isDiffNonEmpty}");
+    ConvexPolytop? diff = MinkowskiDiff.Naive(F, G);
+    Console.WriteLine($"diff is null: {diff is null}");
   }
 
 
@@ -45,27 +45,27 @@ class Program {
     // var Q = Simplex4D_FL;
     // var P = GiftWrapping.WrapFaceLattice(Sphere_list(3, 10, 10, 1));
     // var Q = GiftWrapping.WrapFaceLattice(Sphere_list(3, 20, 4, 1));
-    var P = GiftWrapping.WrapFaceLattice(Cube5D_list);
-    var Q = GiftWrapping.WrapFaceLattice(SimplexRND5D_list);
-    Console.WriteLine($"GW = {timer.ElapsedMilliseconds}");
-
-    const int N = 100;
-
-    FaceLattice? x = null;
-    timer.Restart();
-    for (int i = 0; i < N; i++) {
-      x = MinkSumSDas(P, Q);
-    }
-    Console.WriteLine($"MinkSumSDas = {timer.ElapsedMilliseconds}");
-
-    FaceLattice? y = null;
-    timer.Restart();
-    for (int i = 0; i < N; i++) {
-      y = MinkSumCH(P, Q);
-    }
-    Console.WriteLine($"ByConvexHull = {timer.ElapsedMilliseconds}");
-
-    if (!x!.Equals(y)) { throw new ArgumentException("AAAAAA"); }
+    // var P = GiftWrapping.WrapFaceLattice(Cube5D_list);
+    // var Q = GiftWrapping.WrapFaceLattice(SimplexRND5D_list);
+    // Console.WriteLine($"GW = {timer.ElapsedMilliseconds}");
+    //
+    // const int N = 100;
+    //
+    // FaceLattice? x = null;
+    // timer.Restart();
+    // for (int i = 0; i < N; i++) {
+    //   x = MinkSumSDas(P, Q);
+    // }
+    // Console.WriteLine($"MinkSumSDas = {timer.ElapsedMilliseconds}");
+    //
+    // FaceLattice? y = null;
+    // timer.Restart();
+    // for (int i = 0; i < N; i++) {
+    //   y = MinkSumCH(P, Q);
+    // }
+    // Console.WriteLine($"ByConvexHull = {timer.ElapsedMilliseconds}");
+    //
+    // if (!x!.Equals(y)) { throw new ArgumentException("AAAAAA"); }
   }
 
 }

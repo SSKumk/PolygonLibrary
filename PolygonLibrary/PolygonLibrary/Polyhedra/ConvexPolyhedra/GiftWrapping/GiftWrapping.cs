@@ -37,25 +37,20 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the polytop in HRep form.
     /// </summary>
-    public HPolytop HPolytop => GetHPolytop();
+    public List<HyperPlane> HRep => GetHPolytop();
 
-    /// <summary>
-    /// Gets the polytop in VRep form.
-    /// </summary>
-    public VPolytop VPolytop => new VPolytop(BuiltPolytop.OriginalVertices);
     //todo Как в 3D сохранить порядок вершин, который есть в SubTwoDimensional.VerticesList ?!
-
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Vector> Vertices => BuiltPolytop.OriginalVertices;
+    public HashSet<Vector> VRep => BuiltPolytop.OriginalVertices;
 #endregion
 
     /// <summary>
     /// Builds Hyper plane Polytop from BuiltPolytop.
     /// </summary>
-    /// <returns>The HPolytop.</returns>
-    private HPolytop GetHPolytop() {
+    /// <returns>The List<HyperPlane>.</returns>
+    private List<HyperPlane> GetHPolytop() {
       if (BuiltPolytop.PolytopDim <= 2) {
         throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");
       } //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
@@ -64,7 +59,7 @@ public partial class Geometry<TNum, TConv>
       List<HyperPlane> Fs = new List<HyperPlane>
         (BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
 
-      return new HPolytop(Fs);
+      return new List<HyperPlane>(Fs);
     }
 
     /// <summary>
@@ -72,8 +67,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The face lattice.</returns>
     private FaceLattice ConstructFL() {
-      if (Vertices.Count == 1) {
-        return new FaceLattice(Vertices.First());
+      if (VRep.Count == 1) {
+        return new FaceLattice(VRep.First());
       }
 
       Dictionary<int, FLNode> allNodes = new Dictionary<int, FLNode>();
@@ -112,7 +107,7 @@ public partial class Geometry<TNum, TConv>
         List<FLNode> sub = new List<FLNode>();
 
         foreach (BaseSubCP subF in BSP.Faces!) {
-          int hash = new VPolytop(subF.OriginalVertices).GetHashCode();
+          int hash = new HashSet<Vector>(subF.OriginalVertices).GetHashCode();
           if (!allNodes.ContainsKey(hash)) {
             ConstructFLN(subF, ref allNodes, ref lattice);
           }

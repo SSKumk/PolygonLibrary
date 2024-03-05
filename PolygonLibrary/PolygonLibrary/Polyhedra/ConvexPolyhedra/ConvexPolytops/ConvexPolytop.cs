@@ -104,13 +104,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="obj">The object to compare with face.</param>
     /// <returns>True if the specified object is equal to face, False otherwise</returns>
     public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
+      if (obj == null || GetType() != obj.GetType()) {
         return false;
       }
 
       Facet other = (Facet)obj;
 
-      return this.Normal.Equals(other.Normal) && (new HashSet<Vector>(this.Vertices)).SetEquals(other.Vertices);
+      return Normal.Equals(other.Normal) && (new HashSet<Vector>(Vertices)).SetEquals(other.Vertices);
     }
 
     /// <summary>
@@ -155,16 +155,16 @@ public partial class Geometry<TNum, TConv>
 
     private GiftWrapping? _gw = null;
 
-    private GiftWrapping GW => _gw ??= new GiftWrapping(VRep.Vertices);
+    private GiftWrapping GW => _gw ??= new GiftWrapping(VRep);
 
-    private VPolytop? _VRep = null; // todo список вершин или же vpolytop?
+    private HashSet<Vector>? _VRep = null; // todo список вершин или же vpolytop?
 
-    public VPolytop VRep {
+    public HashSet<Vector> VRep {
       get
         {
           if (_VRep is null) {
             if (_FL is not null) {
-              _VRep = new VPolytop(FL.Vertices);
+              _VRep = new HashSet<Vector>(FL.Vertices);
             } else if (_HRep is not null) {
               _VRep = HRepToVRep_Naive(HRep);
             }
@@ -176,21 +176,21 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    public HashSet<Vector> Vertices => VRep.Vertices;
+    public HashSet<Vector> Vertices => VRep;
 
-    private HPolytop? _HRep = null;
+    private List<HyperPlane>? _HRep = null;
 
-    public HPolytop HRep {
+    public List<HyperPlane> HRep {
       get
         {
           if (_HRep is null) {
             if (_FL is not null) {
               // Если представлен в виде FL, но не HRep, то достанем эту информацию из решётки. VRep уже есть из конструктора.
-              _HRep = new HPolytop
+              _HRep = new List<HyperPlane>
                 (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))).ToList());
             } else {
               if (_VRep is not null) { // Если дано вершинное описаение, то прокатываем поарок.
-                _HRep = GW.HPolytop;
+                _HRep = GW.HRep;
               }
             }
           }
@@ -231,14 +231,15 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = VP.First().Dim;
       if (toConvexify) {
         _gw   = new GiftWrapping(VP);
-        _VRep = GW.VPolytop;
+        _VRep = GW.VRep;
       } else {
-        _VRep = new VPolytop(VP); // todo VPolytop --> в поле ConvexPolytop и HPolytop --> в поле ConvexPolytop
+        _VRep = new HashSet<Vector>
+          (VP); // todo HashSet<Vector> --> в поле ConvexPolytop и List<HyperPlane> --> в поле ConvexPolytop
       }
       switch (form) {
         case ConvexPolytopForm.VRep: break; // уже всё сделали
         case ConvexPolytopForm.HRep:
-          _HRep = GW.HPolytop;
+          _HRep = GW.HRep;
 
           break;
         case ConvexPolytopForm.FL:
@@ -253,17 +254,17 @@ public partial class Geometry<TNum, TConv>
       if (doHRedundancy) {
         throw new NotImplementedException("Надо сделать! Нужен симлекс метод и алгоритм Фукуды.");
       } else {
-        _HRep = new HPolytop(HPs);
+        _HRep = new List<HyperPlane>(HPs);
       }
 
       switch (form) {
         case ConvexPolytopForm.HRep: break; // всё готово
         case ConvexPolytopForm.VRep:
-          _VRep = HRepToVRep_Naive(new HPolytop(HPs));
+          _VRep = HRepToVRep_Naive(new List<HyperPlane>(HPs));
 
           break;
         case ConvexPolytopForm.FL:
-          _VRep = HRepToVRep_Naive(new HPolytop(HPs));
+          _VRep = HRepToVRep_Naive(new List<HyperPlane>(HPs));
           _FL   = GW.FaceLattice;
 
           break;
@@ -275,11 +276,11 @@ public partial class Geometry<TNum, TConv>
       switch (form) {
         case ConvexPolytopForm.FL: break; // всё есть
         case ConvexPolytopForm.VRep:
-          _VRep = new VPolytop(FL.Vertices);
+          _VRep = new HashSet<Vector>(FL.Vertices);
 
           break;
         case ConvexPolytopForm.HRep:
-          _HRep = new HPolytop
+          _HRep = new List<HyperPlane>
             (FL.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FL.Top.InnerPoint, false))).ToList());
 
           break;
@@ -288,8 +289,8 @@ public partial class Geometry<TNum, TConv>
 
     private ConvexPolytop(GiftWrapping gw) {
       _FL   = gw.FaceLattice;
-      _VRep = gw.VPolytop;
-      _HRep = gw.HPolytop;
+      _VRep = gw.VRep;
+      _HRep = gw.HRep;
     }
 #endregion
 
@@ -315,6 +316,167 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsVPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.VRep);
     public static ConvexPolytop AsHPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.HRep);
     public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FL);
+
+
+    /// <summary>
+    /// Generates a full-dimension hypercube in the specified dimension.
+    /// </summary>
+    /// <param name="cubeDim">The dimension of the hypercube.</param>
+    /// <param name="d">The value of non-zero coordinates.</param>
+    /// <returns>A convex polytop as VRep representing the hypercube.</returns>
+    public static ConvexPolytop Cube(int cubeDim, TNum d) {
+      if (cubeDim == 1) {
+        HashSet<Vector> oneDimCube = new HashSet<Vector>() { new Vector(new TNum[] { TNum.Zero }), new Vector(new TNum[] { d }) };
+
+        return AsVPolytop(oneDimCube);
+      }
+
+      List<List<TNum>> cube_prev = new List<List<TNum>>();
+      List<List<TNum>> cube      = new List<List<TNum>>();
+      cube_prev.Add(new List<TNum>() { TNum.Zero });
+      cube_prev.Add(new List<TNum>() { d });
+
+      for (int i = 1; i < cubeDim; i++) {
+        cube.Clear();
+
+        foreach (List<TNum> coords in cube_prev) {
+          cube.Add(new List<TNum>(coords) { TNum.Zero });
+          cube.Add(new List<TNum>(coords) { d });
+        }
+
+        cube_prev = new List<List<TNum>>(cube);
+      }
+
+      HashSet<Vector> Cube = new HashSet<Vector>();
+
+      foreach (List<TNum> v in cube) {
+        Cube.Add(new Vector(v.ToArray()));
+      }
+
+      return AsVPolytop(Cube);
+    }
+
+    /// <summary>
+    /// Generates a d-simplex in d-space.
+    /// </summary>
+    /// <param name="simplexDim">The dimension of the simplex.</param>
+    /// <returns>A convex polytop as VRep representing the random simplex.</returns>
+    public static ConvexPolytop SimplexRND(int simplexDim) {
+      GRandomLC random = new GRandomLC();
+
+      HashSet<Vector> simplex = new HashSet<Vector>();
+      do {
+        for (int i = 0; i < simplexDim + 1; i++) {
+          simplex.Add(new Vector(Vector.GenVector(simplexDim, TConv.FromInt(0), TConv.FromInt(10), random)));
+        }
+      } while (!new AffineBasis(simplex).IsFullDim);
+
+      return AsVPolytop(simplex);
+    }
+
+    /// <summary>
+    /// Makes the cyclic polytop in specified dimension with specified amount of points.
+    /// </summary>
+    /// <param name="pDim">The dimension of the cyclic polytop.</param>
+    /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>
+    /// <param name="step">The step of increasing the moment on the moments curve. init = 1 + step.</param>
+    /// <returns>A convex polytop as VRep representing the cyclic polytop.</returns>
+    public static ConvexPolytop CyclicPolytop(int pDim, int amountOfPoints, TNum step) {
+      Debug.Assert
+        (
+         amountOfPoints > pDim
+       , $"TestPolytopes.CyclicPolytop: The amount of points must be greater than the dimension of the space. Dim = {pDim}, amount = {amountOfPoints}"
+        );
+      HashSet<Vector> cycP      = new HashSet<Vector>() { new Vector(pDim) };
+      TNum            baseCoord = Tools.One + step;
+      for (int i = 1; i < amountOfPoints; i++) {
+        TNum[] point      = new TNum[pDim];
+        TNum   coordinate = baseCoord;
+        TNum   multiplyer = coordinate;
+        for (int t = 0; t < pDim; t++) { // (i, i^2, i^3 , ... , i^d)
+          point[t]   =  coordinate;
+          coordinate *= multiplyer;
+        }
+        cycP.Add(new Vector(point));
+        baseCoord += step;
+      }
+
+      return AsVPolytop(cycP);
+    }
+
+    /// <summary>
+    /// Generates a list of Cartesian coordinates for points on a hD-sphere.
+    /// </summary>
+    /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
+    /// <param name="thetaPoints">The number of points at each zenith angle. Theta in [0, Pi].
+    ///  thetaPoints should be greater than 2 for proper calculation.</param>
+    /// <param name="phiPoints">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="radius">The radius of a sphere.</param>
+    /// <returns>A convex polytop as VRep representing the sphere in hD.</returns>
+    public static ConvexPolytop Sphere(int dim, int thetaPoints, int phiPoints, TNum radius) {
+      Debug.Assert(dim > 1, "The dimension of a sphere must be 2 or greater.");
+      // Phi in [0, 2*Pi)
+      // Theta in [0, Pi]
+      HashSet<Vector> Ps        = new HashSet<Vector>();
+      int             N         = dim - 2;
+      TNum            thetaStep = Tools.PI / TConv.FromInt(thetaPoints);
+      TNum            phiStep   = Tools.PI2 / TConv.FromInt(phiPoints);
+
+      List<TNum> thetaAll = new List<TNum>();
+      for (int i = 0; i <= thetaPoints; i++) {
+        thetaAll.Add(thetaStep * TConv.FromInt(i));
+      }
+
+      // цикл по переменной [0, 2*Pi)
+      for (int i = 0; i < phiPoints; i++) {
+        TNum phi = phiStep * TConv.FromInt(i);
+
+        // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
+        // где t_i принимают все возможные свои значения из theta_all
+        List<List<TNum>> thetaAngles_prev = new List<List<TNum>>() { new List<TNum>() { phi } };
+        List<List<TNum>> thetaAngles      = new List<List<TNum>>() { new List<TNum>() { phi } };
+        // сколько раз нужно углы добавлять
+        for (int k = 0; k < N; k++) {
+          thetaAngles.Clear();
+          // формируем наборы добавляя к каждому текущему набору всевозможные углы из theta all
+          foreach (List<TNum> angle in thetaAngles_prev) {
+            foreach (TNum theta in thetaAll) {
+              thetaAngles.Add(new List<TNum>(angle) { theta });
+            }
+          }
+          thetaAngles_prev = new List<List<TNum>>(thetaAngles);
+        }
+
+        foreach (List<TNum> s in thetaAngles) {
+          List<TNum> point = new List<TNum>();
+          // собрали 1 и 2 координаты
+          TNum sinsN = Tools.One;
+          for (int k = 1; k <= N; k++) { sinsN *= TNum.Sin(s[k]); }
+          point.Add(radius * TNum.Cos(phi) * sinsN);
+          point.Add(radius * TNum.Sin(phi) * sinsN);
+
+
+          //добавляем серединные координаты
+          if (dim >= 4) { // Их нет для 2Д и 3Д сфер
+            TNum sinsJ = Tools.One;
+            for (int j = 2; j <= N; j++) {
+              sinsJ *= TNum.Sin(s[j - 1]);
+              point.Add(radius * TNum.Cos(s[j]) * sinsJ);
+            }
+          }
+
+          // последнюю координату
+          if (dim >= 3) { // У 2Д сферы её нет
+            point.Add(radius * TNum.Cos(s[1]));
+          }
+
+          // точка готова, добавляем в наш массив
+          Ps.Add(new Vector(point.ToArray()));
+        }
+      }
+
+      return AsVPolytop(Ps);
+    }
 #endregion
 
 #region Aux functions
@@ -368,14 +530,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="H">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static VPolytop HRepToVRep_Naive(HPolytop H) {
-      int n = H.Faces.Count;
-      int d = H.SpaceDim;
+    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> H) {
+      int n = H.Count;
+      int d = H.First().Normal.Dim;
 
       HashSet<Vector>      Vs          = new HashSet<Vector>();
       Combination          combination = new Combination(n, d);
-      Func<int, int, TNum> AFunc       = (r, l) => H.Faces[combination[r]].Normal[l];
-      Func<int, TNum>      bFunc       = r => H.Faces[combination[r]].ConstantTerm;
+      Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
+      Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
       bool                 belongs;
       GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
@@ -383,7 +545,7 @@ public partial class Geometry<TNum, TConv>
         gaussSLE.Solve();
         if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
           belongs = true;
-          foreach (HyperPlane hp in H.Faces) {
+          foreach (HyperPlane hp in H) {
             if (hp.ContainsPositive(point)) {
               belongs = false;
 
@@ -396,7 +558,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (combination.Next());
 
-      return new VPolytop(Vs);
+      return new HashSet<Vector>(Vs);
     }
 
   }

@@ -97,9 +97,9 @@ public partial class Geometry<TNum, TConv>
      ,
 
       /// <summary>
-      /// Rectangle axices parallel
+      /// Axis parallel Cube.
       /// </summary>
-      RectParallel
+      Cube
 
      ,
 
@@ -317,31 +317,29 @@ public partial class Geometry<TNum, TConv>
       TypeSet typeSet = typeSetInt switch
                           {
                             0 => TypeSet.VertList
-                          , 1 => TypeSet.RectParallel
+                          , 1 => TypeSet.Cube
                           , 2 => TypeSet.Sphere
                           , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be [0, 2]!"),
                           };
 
       // Array for coordinates of the next point
-      List<Vector>? res = null;
+      HashSet<Vector>? res = null;
       switch (typeSet) {
         case TypeSet.VertList: {
           int     Qnt  = pr.ReadInt(pref + "Qnt");
           TNum[,] Vert = pr.Read2DArray<TNum>(pref + "Vert", Qnt, dim);
-          res = Array2DToList(Vert, Qnt, dim);
+          res = Array2DToHashSet(Vert, Qnt, dim);
 
           break;
         }
-        case TypeSet.RectParallel: {
-          TNum[] leftCorner  = pr.Read1DArray<TNum>(pref + "RectParallelLeft", d);
-          TNum[] rightCorner = pr.Read1DArray<TNum>(pref + "RectParallelRight", d);
-          res = new List<Vector>() { new Vector(leftCorner), new Vector(rightCorner) };
+        case TypeSet.Cube: {
+          TNum MCube = TConv.FromInt(pr.ReadInt(pref + "Cube"));
+          res = ConvexPolytop.Cube(d,MCube).Vertices;
 
           break;
         }
         case TypeSet.Sphere: {
-          TNum[] center = pr.Read1DArray<TNum>(pref + "Center", d);
-          res = ; // todo Перенести фабрики многогранников в основную библиотеку (без генерации доп точек)
+          throw new NotImplementedException("Сделать сферу!");
 
           break;
         }
@@ -349,31 +347,31 @@ public partial class Geometry<TNum, TConv>
 
       switch (set) {
         case 'p':
-          P = new ConvexPolytop(res ?? throw new InvalidOperationException("First players set is empty!"));
+          P = ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException("First players set is empty!"));
 
           break;
         case 'q':
-          Q = new ConvexPolytop(res ?? throw new InvalidOperationException("Second players set is empty!"));
+          Q = ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException("Second players set is empty!"));
 
           break;
         case 'M':
-          M = new ConvexPolytop(res ?? throw new InvalidOperationException("Terminal set is empty!"));
+          M = ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException("Terminal set is empty!"));
 
           break;
       }
     }
 
     /// <summary>
-    /// Converts a two-dimensional array to a list of points.
+    /// Converts a two-dimensional array to a HashSet of points.
     /// </summary>
     /// <param name="ar">The two-dimensional array to convert.</param>
     /// <param name="row">The number of rows in the array.</param>
     /// <param name="col">The number of columns in the array.</param>
-    /// <returns>A list of points obtained from the two-dimensional array.</returns>
-    private static List<Vector> Array2DToList(TNum[,] ar, int row, int col) {
-      var list = new List<Vector>();
+    /// <returns>A hash set of points obtained from the two-dimensional array.</returns>
+    private static HashSet<Vector> Array2DToHashSet(TNum[,] ar, int row, int col) {
+      HashSet<Vector> list = new HashSet<Vector>();
       for (int i = 0; i < row; i++) {
-        var point = new TNum[col];
+        TNum[] point = new TNum[col];
         for (int j = 0; j < col; j++) {
           point[j] = ar[i, j];
         }

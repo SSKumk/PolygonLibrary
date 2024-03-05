@@ -13,7 +13,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a point in a subspace greater than 2.
   /// </summary>
-  public class SubPoint : Vector {
+  public class SubPoint : Vector { // todo Вернуть IComparable! (лексикографическое сравнение)
 
     // /// <summary>
     // /// Gets the original point in the original coordinate system.

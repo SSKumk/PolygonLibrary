@@ -11,7 +11,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  //todo Когда Сумма Минковского будет готова, перенести всё в этот класс
   public class MinkowskiSum {
 
     /// <summary>
@@ -20,7 +19,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="A">The first set of points.</param>
     /// <param name="B">The second set of points.</param>
     /// <returns>The set of points represented the Minkowski sum of two sets of points.</returns>
-    public static IEnumerable<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B) {
+    public static HashSet<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B) {
       HashSet<Vector> AB = new HashSet<Vector>();
       foreach (Vector a in A) {
         AB.UnionWith(Shift(B, a));
@@ -38,7 +37,7 @@ public partial class Geometry<TNum, TConv>
     /// Returns a face lattice of the sum.
     /// </returns>
     public static ConvexPolytop ByConvexHull(ConvexPolytop P, ConvexPolytop Q)
-      => new ConvexPolytop(GiftWrapping.WrapFaceLattice(AlgSumPoints(P.Vertices, Q.Vertices)));
+      => ConvexPolytop.AsFLPolytop(AlgSumPoints(P.Vertices, Q.Vertices), true);
 
     /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
@@ -53,7 +52,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// Returns a convex polytop of sum.
     /// </returns>
-    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q) => new ConvexPolytop(BySandipDas(P.FL, Q.FL));
+    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q)
+      => ConvexPolytop.AsFLPolytop(BySandipDas(P.FL, Q.FL));
 
     /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
@@ -91,7 +91,7 @@ public partial class Geometry<TNum, TConv>
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new[] { innerPQ }, innerPQ, affinePQ);
+      FLNode PQ      = new FLNode(new HashSet<Vector> { innerPQ }, innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.Top, Q.Top));
       xyToz.Add((P.Top, Q.Top), PQ);
       FL[^1].Add(PQ);
@@ -176,7 +176,7 @@ public partial class Geometry<TNum, TConv>
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
               // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new[] { newInner }, newInner, candBasis);
+              FLNode node = new FLNode(new HashSet<Vector> { newInner }, newInner, candBasis);
 
               // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
               FL[d].Add(node); // Добавляем узел в решётку

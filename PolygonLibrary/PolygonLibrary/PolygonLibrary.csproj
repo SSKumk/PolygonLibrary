@@ -34,7 +34,6 @@
         <Compile Include="Polygons\ConvexPolygons\SupportFunction.cs" />
         <Compile Include="Polygons\PolygonTools.cs" />
         <Compile Include="Polygons\Polyline.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytopesFabrics.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubNonSimplex.cs" />
@@ -48,8 +47,8 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\FaceLattice.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\HPolytop.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\VPolytop.cs" />
+<!--        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\HPolytop.cs" />-->
+<!--        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\VPolytop.cs" />-->
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
         <Compile Include="Toolkit\Combinations.cs" />
