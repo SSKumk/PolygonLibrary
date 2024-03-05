@@ -119,12 +119,12 @@ public partial class Geometry<TNum, TConv>
 
       // 5) Построить FL роя V(F-G)
       if (VRepFminusG.Vertices.Count < 3) {
-        diffFG = new ConvexPolytop(new List<Vector>());
+        diffFG = ConvexPolytop.AsVPolytop(new HashSet<Vector>());
 
         return false;
       }
 
-      diffFG = new ConvexPolytop(produceFL(VRepFminusG.Vertices));
+      diffFG = ConvexPolytop.AsFLPolytop(produceFL(VRepFminusG.Vertices));
 
       return true;
     }

@@ -12,8 +12,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  //todo Сделать статические методы (вершины, многогранник, комплекс, совокупность всех гиперграней заданной размерности)
-
   /// <summary>
   /// The GiftWrapping class represents a gift wrapping algorithm for convex polytop.
   /// </summary>
@@ -124,15 +122,21 @@ public partial class Geometry<TNum, TConv>
         allNodes.Add(node.GetHashCode(), node);
         lattice[node.PolytopDim].Add(node);
 
-        return;
       }
     }
+
+    /// <summary>
+    /// Wraps the convex polytop of the given swarm and produce it's face lattice.
+    /// </summary>
+    /// <param name="S">The swarm of </param>
+    /// <returns></returns>
+    public static FaceLattice WrapFaceLattice(HashSet<Vector> S) => new GiftWrapping(S).FaceLattice;
 
     /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.
     /// </summary>
     /// <param name="Swarm">The swarm of points to convexify.</param>
-    public GiftWrapping(HashSet<Vector> Swarm) {
+    public GiftWrapping(IReadOnlyCollection<Vector> Swarm) {
       switch (Swarm.Count) {
         // Пока не будет SubBaseCP размерности 0.
         case 0: throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");

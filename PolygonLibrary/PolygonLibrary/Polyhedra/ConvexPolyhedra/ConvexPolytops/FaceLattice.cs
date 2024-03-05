@@ -130,12 +130,6 @@ public partial class Geometry<TNum, TConv>
       return TransformLattice(vertex => aBasis.TranslateToOriginal(vertex.Vertices.First()) + aBasis.Origin);
     }
 
-    /// <summary>
-    /// Writes lattice as convex polytop to the file.
-    /// </summary>
-    /// <param name="filePath">The path to the file to write in.</param>
-    public void WriteTXTasCPolytop(string filePath) => new ConvexPolytop(this).WriteTXT(filePath); // Чтобы в 3Д красиво было
-
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
         return false;
@@ -189,14 +183,14 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reference to the associated polytop to this node.
     /// </summary>
-    public VPolytop Polytop { get; protected set; }
+    public VPolytop Polytop { get; protected set; } //todo Выяснить, ссылки или объекты хранятся тут
 
     /// <summary>
-    /// In assumption that all nodes of a lower dimension are correct, it cerates a new Polytop based on vertices of the subs.
+    /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
     /// </summary>
     public void ReconstructPolytop() {
       if (PolytopDim != 0) {
-        Polytop = new VPolytop(Sub.SelectMany(s => s.Vertices));
+        Polytop = new VPolytop(Sub.SelectMany(s => s.Vertices).ToHashSet());
       }
     }
 
@@ -321,7 +315,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
     public FLNode(Vector vertex) {
-      Polytop    = new VPolytop(new List<Vector>() { vertex });
+      Polytop    = new VPolytop(new HashSet<Vector>() { vertex });
       InnerPoint = vertex;
       AffBasis   = new AffineBasis(vertex);
     }
@@ -332,7 +326,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(IEnumerable<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
+    internal FLNode(HashSet<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
       Polytop       = new VPolytop(Vs);
       InnerPoint    = innerPoint;
       this.AffBasis = aBasis;
@@ -342,8 +336,8 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    public FLNode(IEnumerable<FLNode> sub) {
-      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices)); // todo А может не надо на каждый узел новые точки сохранять?!
+    public FLNode(List<FLNode> sub) {
+      Polytop = new VPolytop(sub.SelectMany(s => s.Vertices).ToHashSet()); // todo А может не надо на каждый узел новые точки сохранять?!
       Sub     = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {

@@ -165,10 +165,8 @@ public partial class Geometry<TNum, TConv>
           if (_VRep is null) {
             if (_FL is not null) {
               _VRep = new VPolytop(FL.Vertices);
-            } else {
-              if (_HRep is not null) {
-                _VRep = HRepToVRep_Naive(HRep);
-              }
+            } else if (_HRep is not null) {
+              _VRep = HRepToVRep_Naive(HRep);
             }
           }
 
@@ -224,6 +222,8 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
+// todo Нужен ли GetHashCode()? Если да, то как его считать?
+
 #region Constructors
     private enum ConvexPolytopForm { VRep, HRep, FL }
 
@@ -233,7 +233,7 @@ public partial class Geometry<TNum, TConv>
         _gw   = new GiftWrapping(VP);
         _VRep = GW.VPolytop;
       } else {
-        _VRep = new VPolytop(VP);
+        _VRep = new VPolytop(VP); // todo VPolytop --> в поле ConvexPolytop и HPolytop --> в поле ConvexPolytop
       }
       switch (form) {
         case ConvexPolytopForm.VRep: break; // уже всё сделали
@@ -303,7 +303,7 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsFLPolytop(HashSet<Vector> S, bool toConvexify = false)
       => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.FL);
 
-    public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false) // todo List or HashSet ?!
+    public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
       => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.VRep);
 
     public static ConvexPolytop AsHPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)

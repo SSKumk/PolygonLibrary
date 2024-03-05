@@ -14,6 +14,10 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  // todo Продумать систему пространства имён
+  // todo Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён.
+  // todo Закинуть в Toolkit всё, что не геометрия
+
   /// <summary>
   /// Class for keeping game parameter data
   /// </summary>
@@ -104,6 +108,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       Sphere
 
+      // todo Эллипсоид
     }
 
 
@@ -186,20 +191,6 @@ public partial class Geometry<TNum, TConv>
     public readonly SortedDictionary<TNum, Matrix> E;
 #endregion
 
-    /*
-        #region Control tubes data
-        /// <summary>
-        /// The vectogram tube of the first player
-        /// </summary>
-        public StableBridge2D PTube;
-
-        /// <summary>
-        /// The vectogram tube of the entire constraint of the second player
-        /// </summary>
-        public StableBridge2D QTube;
-        #endregion
-    */
-
 #region Constructor
     /// <summary>
     /// Reading and initializing data
@@ -234,6 +225,9 @@ public partial class Geometry<TNum, TConv>
       t0 = TConv.FromDouble(pr.ReadDouble("t0"));
       T  = TConv.FromDouble(pr.ReadDouble("T"));
       dt = TConv.FromDouble(pr.ReadDouble("dt"));
+
+      d     = pr.ReadInt("d");
+      projJ = pr.Read1DArray<int>("projJ", d);
 
       // The Cauchy matrix
       cauchyMatrix = new CauchyMatrix(A, T, dt);
@@ -273,9 +267,10 @@ public partial class Geometry<TNum, TConv>
 
       // Вычисляем вдоль всего моста выражения:  -dt*X(T,t_i)*B*P  и  dt*X(T,t_i)*C*Q
       for (t = T; Tools.GE(t, t0); t -= dt) {
-        TNum t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        Ps[t] = new ConvexPolytop(GiftWrapping.WrapFaceLattice(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint)));
-        Qs[t] = new ConvexPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint));
+        TNum
+          t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToHashSet(), true);
+        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToHashSet(), true);
       }
     }
 #endregion
@@ -310,7 +305,6 @@ public partial class Geometry<TNum, TConv>
           break;
         case 'M': {
           pref       = "M";
-          projJ      = pr.Read1DArray<int>("projJ", d);
           MTypeSet   = pr.ReadInt("MTypeSet");
           typeSetInt = MTypeSet;
           dim        = d;

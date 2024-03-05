@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv>
 
     public int SpaceDim => Faces.First().Normal.Dim;
 
-    public List<HyperPlane> Faces { get; }
+    public List<HyperPlane> Faces { get; } // если будет надо, то AVL-Сергей Сергеевича
 
     public HPolytop(List<HyperPlane> Fs) { Faces = Fs; }
 
