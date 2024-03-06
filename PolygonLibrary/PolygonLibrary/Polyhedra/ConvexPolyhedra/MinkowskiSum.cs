@@ -71,7 +71,7 @@ public partial class Geometry<TNum, TConv>
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
       AffineBasis affinePQ = new AffineBasis
-        (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
+        (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis), true);
       int dim = affinePQ.SpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
@@ -101,7 +101,6 @@ public partial class Geometry<TNum, TConv>
           // Будем описывать подграни по очереди для каждой грани с предыдущего уровня.
           (FLNode x, FLNode y) = zTo_xy[z];
           // Аффинное пространство грани z (F(+)G в терминах Лемм)
-          // AffineBasis zSpace = new AffineBasis(z.AffBasis);
           AffineBasis zSpace          = z.AffBasis;
           Vector      innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
@@ -117,9 +116,8 @@ public partial class Geometry<TNum, TConv>
               if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.PolytopDim - 1) { break; }
 
               // Берём очередного кандидата.
-              // HashSet<Vector> candidate = AlgSumPoints(xi.Vertices, yj.Vertices); // todo Может его не надо считать?!
               AffineBasis candBasis = new AffineBasis
-                (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
+                (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis), true);
 
               // 0) dim(xi (+) yj) == dim(z) - 1
               if (candBasis.SpaceDim != d) { continue; }
@@ -137,7 +135,6 @@ public partial class Geometry<TNum, TConv>
 
               // 1) Lemma 3.
               // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
-              // IEnumerable<Vector> candidateInAffine_z = zSpace.ProjectPoints(candidate);
 
               // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
               HyperPlane A = new HyperPlane(ReCalcAffineBasis(candBasis, zSpace));

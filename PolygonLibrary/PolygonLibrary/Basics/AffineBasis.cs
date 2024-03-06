@@ -67,32 +67,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
     public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
-      Debug.Assert(Origin.Dim == v.Dim, "Adding a vector with a wrong dimension into an affine basis.");
+      Debug.Assert
+        (Origin.Dim == v.Dim, "AffineBasis.AddVectorToBasis: Adding a vector with a wrong dimension into an affine basis.");
 
       return LinearBasis.AddVector(v, orthogonalize);
-    }
-
-    /// <summary>
-    /// Adds the specified point to the linear basis associated with the affine basis.
-    /// </summary>
-    /// <param name="p">The point to add.</param>
-    /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
-    /// <returns><c>true</c> if the point was added successfully; otherwise, <c>false</c>.</returns>
-    public bool AddPointToBasis(Vector p, bool orthogonalize = true) {
-      Debug.Assert(Origin.Dim == p.Dim, "Adding a point with a wrong dimension into an affine basis.");
-
-      return AddVectorToBasis(p - Origin, orthogonalize);
-    }
-
-    /// <summary>
-    /// Computes the expansion of the specified vector in the affine basis.
-    /// </summary>
-    /// <param name="v">The vector to expand.</param>
-    /// <returns>The expansion of the vector in the affine basis.</returns>
-    public Vector Expansion(Vector v) {
-      Debug.Assert(Origin.Dim == v.Dim, "Expansion a vector with a wrong dimension.");
-
-      return LinearBasis.Expansion(v);
     }
 
     /// <summary>
@@ -102,7 +80,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The projected point.</returns>
     public Vector ProjectPoint(Vector point) {
       Debug.Assert
-        (VecDim == point.Dim, "The dimension of the basis vectors should be equal to the dimension of the current point.");
+        (
+         VecDim == point.Dim
+       , "AffineBasis.ProjectPoint: The dimension of the basis vectors should be equal to the dimension of the current point."
+        );
 
       Vector t = point - Origin;
 
@@ -132,7 +113,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The point expressed in terms of the original affine system.</returns>
     public Vector TranslateToOriginal(Vector point) {
       Debug.Assert
-        (SpaceDim == point.Dim, "The dimension of the basis space should be equal to the dimension of the current point.");
+        (
+         SpaceDim == point.Dim
+       , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
+        );
 
       Vector np = new Vector(Origin);
       for (int i = 0; i < Basis.Count; i++) {
@@ -169,21 +153,6 @@ public partial class Geometry<TNum, TConv>
 
       return res.IsZero;
     }
-
-
-    /// <summary>
-    /// Gets the basis vectors as a list of points.
-    /// </summary>
-    /// <returns>The list of points representing the basis vectors.</returns>
-    public List<Vector> GetBasisAsPoints() {
-      List<Vector> points = new List<Vector>();
-
-      foreach (Vector bvec in Basis) {
-        points.Add(new Vector(bvec));
-      }
-
-      return points;
-    }
 #endregion
 
 #region Constructors
@@ -199,9 +168,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Construct the new affine basis of full dim with d-dim zero origin and d-orth
     /// </summary>
-    /// <param name="d">The dimension of the basis</param>
-    public AffineBasis(int d) {
-      Origin      = new Vector(d);
+    /// <param name="vecDim">The dimension of the basis</param>
+    public AffineBasis(int vecDim) {
+      Origin      = new Vector(vecDim);
       LinearBasis = new LinearBasis();
 
       for (int i = 0; i < Origin.Dim; i++) {
@@ -229,16 +198,16 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
-    ///Construct the new affine basis with the specified origin point and specified vectors.
+    /// Construct the new affine basis with the specified origin point and specified vectors.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public AffineBasis(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
+    public AffineBasis(Vector o, IEnumerable<Vector> Vs, bool orthogonalize) {
       Origin      = o;
       LinearBasis = new LinearBasis(Vs, orthogonalize);
     }
-
+// todo Хммм, как отличать эти два конструктора ^^^ vvv ? Сделать фабрики?
     /// <summary>
     /// Initializes a new instance of the <see cref="AffineBasis"/> class with the specified origin point and points.
     /// </summary>
@@ -250,6 +219,7 @@ public partial class Geometry<TNum, TConv>
 
       foreach (Vector p in Ps) {
         AddVectorToBasis(p - Origin);
+        if (IsFullDim) { break; }
       }
     }
 
@@ -259,7 +229,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Ps">The points to construct the affine basis.</param>
     public AffineBasis(IEnumerable<Vector> Ps) {
-      Debug.Assert(Ps.Any(), "At least one point should be in points");
+      Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
       Origin      = Ps.First();
       LinearBasis = new LinearBasis();

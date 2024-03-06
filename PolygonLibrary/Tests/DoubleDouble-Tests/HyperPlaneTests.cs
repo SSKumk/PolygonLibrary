@@ -1,14 +1,15 @@
 using DoubleDouble;
 using NUnit.Framework;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-namespace Tests.DoubleDouble_Tests; 
+
+namespace Tests.DoubleDouble_Tests;
 
 [TestFixture]
 public class HyperPlaneTests {
 
   [Test]
   public void ConstructorWithPointAndNormalTest() {
-    Vector      origin     = new Vector(new ddouble[] { 0, 0, 0 });
+    Vector     origin     = new Vector(new ddouble[] { 0, 0, 0 });
     Vector     normal     = new Vector(new ddouble[] { 1, 1, 1 });
     HyperPlane hyperplane = new HyperPlane(normal, origin);
 
@@ -17,15 +18,16 @@ public class HyperPlaneTests {
 
   [Test]
   public void ConstructorWithAffineBasisTest() {
-    List<Vector> vectors = new List<Vector>()
-      {
-        new Vector(new ddouble[] { 1, 0, 0 })
-      , new Vector(new ddouble[] { 0, 1, 0 })
-      };
+    List<Vector> vectors = new List<Vector>() { new Vector(new ddouble[] { 1, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0 }) };
 
-    AffineBasis affineBasis = new AffineBasis(new Vector(new ddouble[] { 1, 1, 1 }), vectors);
+    AffineBasis affineBasis = new AffineBasis(new Vector(new ddouble[] { 1, 1, 1 }), vectors,true);
     HyperPlane  hyperplane  = new HyperPlane(affineBasis);
 
+    Assert.That
+      (
+       hyperplane.ABasis.LinearBasis.Equals(new LinearBasis(vectors, false))
+     , "ConstructorWithAffineBasisTest: The linear basis must be the same!"
+      );
     AffineBasis.CheckCorrectness(hyperplane.ABasis);
   }
 
@@ -36,15 +38,7 @@ public class HyperPlaneTests {
     Vector v2     = new Vector(new ddouble[] { 1, -1, 1 });
     Vector v3     = new Vector(new ddouble[] { 0, 0, 1 });
 
-    AffineBasis aBasis = new AffineBasis
-      (
-       origin
-     , new List<Vector>()
-         {
-           v1
-         , v2
-         }
-      );
+    AffineBasis aBasis = new AffineBasis(origin, new List<Vector>() { v1, v2 });
 
     HyperPlane hp = new HyperPlane(aBasis);
 
@@ -88,10 +82,10 @@ public class HyperPlaneTests {
 
     Assert.That(hp.AllAtOneSide(Swarm).Item1, Is.False);
 
-    IEnumerable<Vector> inPlane    = hp.FilterIn(Swarm); 
+    IEnumerable<Vector> inPlane    = hp.FilterIn(Swarm);
     IEnumerable<Vector> notInPlane = hp.FilterNotIn(Swarm);
 
-    Assert.That(hp.AllAtOneSide(inPlane), Is.EqualTo((true,0)));
+    Assert.That(hp.AllAtOneSide(inPlane), Is.EqualTo((true, 0)));
     Assert.That(inPlane.Count(), Is.EqualTo(4));
     Assert.That(notInPlane.Count(), Is.EqualTo(5));
   }

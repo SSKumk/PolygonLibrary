@@ -94,25 +94,6 @@ public partial class Geometry<TNum, TConv>
       return true;
     }
 
-
-    /// <summary>
-    /// Expands a vector based on the basis of this linear space.
-    /// </summary>
-    /// <param name="v">The vector to expand.</param>
-    /// <returns>The expanded vector.</returns>
-    public Vector Expansion(Vector v) {
-      Debug.Assert(v.Dim == VecDim, "Vector dimension and basis dimensions don't match!");
-      Debug.Assert(IsFullDim, "To expanse a vector the basis must be of full dimension!");
-
-      TNum[] expan = new TNum[VecDim];
-
-      for (int i = 0; i < VecDim; i++) {
-        expan[i] = v * Basis[i];
-      }
-
-      return new Vector(expan);
-    }
-
     /// <summary>
     /// The matrix representation of the basis.
     /// </summary>
@@ -135,7 +116,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected point.</returns>
     public Vector ProjectVector(Vector v) {
-      Debug.Assert(VecDim == v.Dim, "The dimension of the basis vectors should be equal to the dimension of the given vector.");
+      Debug.Assert(VecDim == v.Dim, "LinearBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the given vector.");
 
       TNum[] np = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
@@ -150,7 +131,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The set of vectors to project.</param>
     /// <returns>The projected vectors.</returns>
-    public IEnumerable<Vector> ProjectVectors(IEnumerable<Vector> Swarm) {
+    public IEnumerable<Vector> ProjectVectors(List<Vector> Swarm) {
       foreach (Vector v in Swarm) {
         yield return ProjectVector(v);
       }
@@ -199,6 +180,29 @@ public partial class Geometry<TNum, TConv>
       return lb;
     }
 #endregion
+
+    /// <summary>
+    /// Two linear basics are equal, if it spans same space.
+    /// </summary>
+    /// <param name="obj">Object to compare with this linear basis.</param>
+    /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+      LinearBasis other = (LinearBasis)obj;
+
+      // Если хотя бы один вектор не лежит в подпротранстве нашего линейного базиса, то они не равны.
+      foreach (Vector otherbv in other.Basis) {
+        Vector check = Vector.OrthonormalizeAgainstBasis(otherbv, this.Basis);
+        if (!check.IsZero) {
+          return false;
+        }
+      }
+
+      return true;
+    }
 
     /// <summary>
     /// Aux method to check then the basis is correct

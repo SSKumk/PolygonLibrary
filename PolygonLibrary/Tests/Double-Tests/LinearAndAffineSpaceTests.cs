@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
-namespace Tests.Double_Tests; 
+
+namespace Tests.Double_Tests;
 
 [TestFixture]
 public class LinearSpaceTests {
@@ -15,7 +16,8 @@ public class LinearSpaceTests {
 
     bool added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
 
-    Assert.That(basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
+    Assert.That
+      (basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
 
     bool added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
     bool added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
@@ -59,27 +61,13 @@ public class LinearSpaceTests {
     Assert.That(basis.VecDim, Is.EqualTo(3), "The dimension of the basis should be equal to the first vector dimension.");
 
     Assert.That
-      (basis.IsFullDim, Is.True, "The basis should have full dimension if subset of the input vectors (d-dim) are forming d-basis.");
+      (
+       basis.IsFullDim
+     , Is.True
+     , "The basis should have full dimension if subset of the input vectors (d-dim) are forming d-basis."
+      );
 
     Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty if at least one input vector are provided.");
-  }
-
-  /// <summary>
-  /// Simple test for the Expansion method of the LinearBasis class.
-  /// </summary>
-  [Test]
-  public void ExpansionTest() {
-    List<Vector> vectors = new List<Vector>()
-      {
-        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
-      };
-
-    LinearBasis basis = new LinearBasis(vectors);
-    Vector      v     = new Vector(new double[] { -2, 3, double.Pi * 2 });
-
-    Vector expansion = basis.Expansion(v);
-
-    Assert.That(v.CompareTo(expansion), Is.EqualTo(0), "Wrong expansion of a vector in the affine basis.");
   }
 
 }
@@ -208,81 +196,13 @@ public class AffineSpaceTests {
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
     Assert.That(basis.SpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
-    Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
+    Assert.That
+      (basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
 
     AffineBasis.CheckCorrectness(basis);
   }
 
-  /// <summary>
-  /// Simple add point test
-  /// </summary>
-  [Test]
-  public void AddPointToBasisTest() {
-    Vector origin = new Vector(new double[] { 1, 2, 3 });
-
-    List<Vector> points = new List<Vector>() { new Vector(new double[] { 2, 3, 4 }), new Vector(new double[] { 3, -4, 5 }) };
-
-    AffineBasis basis    = new AffineBasis(origin, points);
-    Vector       newPoint = new Vector(new double[] { 4, 5, -6 });
-
-
-    bool result = basis.AddPointToBasis(newPoint);
-    basis.AddPointToBasis(newPoint);
-
-    bool result0 = basis.AddVectorToBasis(new Vector(origin));
-
-
-    Assert.That(result, Is.True, "The point should be added to the linear basis associated with the affine basis.");
-    Assert.That(result0, Is.False, "The zero point should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis.SpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
-    Assert.That(basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
-    Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input points are provided.");
-
-    AffineBasis.CheckCorrectness(basis);
-  }
-
-  /// <summary>
-  /// Simple expansion test
-  /// </summary>
-  [Test]
-  public void ExpansionWithVectorTest() {
-    Vector origin = new Vector(new double[] { double.Pi, 1, 4 });
-
-    List<Vector> vectors = new List<Vector>()
-      {
-        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
-      };
-
-    AffineBasis basis = new AffineBasis(origin, vectors);
-    Vector      v     = new Vector(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
-
-    Vector expansion = basis.Expansion(v);
-
-    Assert.That(expansion.CompareTo(v), Is.EqualTo(0), "Wrong expansion of a vector in the affine basis.");
-    AffineBasis.CheckCorrectness(basis);
-  }
-
-  /// <summary>
-  /// Simple expansion with point test
-  /// </summary>
-  [Test]
-  public void ExpansionWithPointTest() {
-    Vector origin = new Vector(new double[] { 1, 0, 0 });
-
-    List<Vector> vectors = new List<Vector>()
-      {
-        new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }), new Vector(new double[] { 0, 0, 1 })
-      };
-
-    AffineBasis basis = new AffineBasis(origin, vectors);
-    Vector       p     = new Vector(new double[] { double.Pi, double.Pi / 2, double.Pi / 4 });
-
-    Vector expansion = basis.Expansion(p);
-
-
-    Assert.That(expansion.CompareTo(p - origin), Is.EqualTo(0), "Wrong expansion of a point in the affine basis.");
-  }
 
   /// <summary>
   /// Simple test
@@ -300,7 +220,7 @@ public class AffineSpaceTests {
 
     HashSet<Vector> expected = swarm;
 
-    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = new AffineBasis(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -327,7 +247,7 @@ public class AffineSpaceTests {
         new Vector(new double[] { -1, -1 }), new Vector(new double[] { -2, -3 }), new Vector(new double[] { 1, -4 })
       };
 
-    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = new AffineBasis(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -354,7 +274,7 @@ public class AffineSpaceTests {
         new Vector(new double[] { 1, 1 }), new Vector(new double[] { 0, -2 }), new Vector(new double[] { 6, -2 })
       };
 
-    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = new AffineBasis(origin, basis, true);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -386,7 +306,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 1, 1 })
       };
 
-    AffineBasis        aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = new AffineBasis(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));

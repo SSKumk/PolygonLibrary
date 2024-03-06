@@ -44,7 +44,8 @@ public partial class Geometry<TNum, TConv>
               lBasis.AddVector(orth);
             }
 
-            _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1));
+            // todo Проверить, надо ли тут ортогонализировать!
+            _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1),false);
           }
 
           return _affineBasis;
