@@ -124,18 +124,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     private int? _hash = null;
 
     /// <summary>
-    /// Returns a hash code for the convex polytop based on specified set of vertices and dimension.
+    /// AUX. IT MUST BE EQUAL TO FLNode.GetHashCode()!
     /// </summary>
-    /// <returns>A hash code for the specified set of vertices and dimension.</returns>
+    /// <returns>A hash code for the BaseSubCP.</returns>
     public override int GetHashCode() {
       if (_hash is null) {
+        IOrderedEnumerable<Vector> sortedVs = OriginalVertices.Order();
+
         int hash = 0;
-
-        foreach (SubPoint vertex in Vertices.OrderBy(v => v)) {
-          hash = HashCode.Combine(hash, vertex.GetHashCode());
+        foreach (Vector v in sortedVs) {
+          hash = HashCode.Combine(hash, v.GetHashCode());
         }
-
-        _hash = HashCode.Combine(hash, PolytopDim);
+        _hash = hash;
       }
 
       return _hash.Value;

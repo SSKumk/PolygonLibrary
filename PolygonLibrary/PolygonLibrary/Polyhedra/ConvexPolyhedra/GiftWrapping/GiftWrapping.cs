@@ -107,7 +107,7 @@ public partial class Geometry<TNum, TConv>
         List<FLNode> sub = new List<FLNode>();
 
         foreach (BaseSubCP subF in BSP.Faces!) {
-          int hash = new HashSet<Vector>(subF.OriginalVertices).GetHashCode();
+          int hash = subF.GetHashCode();
           if (!allNodes.ContainsKey(hash)) {
             ConstructFLN(subF, ref allNodes, ref lattice);
           }
