@@ -20,7 +20,7 @@ public class HyperPlaneTests {
   public void ConstructorWithAffineBasisTest() {
     List<Vector> vectors = new List<Vector>() { new Vector(new ddouble[] { 1, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0 }) };
 
-    AffineBasis affineBasis = new AffineBasis(new Vector(new ddouble[] { 1, 1, 1 }), vectors,true);
+    AffineBasis affineBasis = AffineBasis.AsVectors(new Vector(new ddouble[] { 1, 1, 1 }), vectors);
     HyperPlane  hyperplane  = new HyperPlane(affineBasis);
 
     Assert.That
@@ -38,7 +38,7 @@ public class HyperPlaneTests {
     Vector v2     = new Vector(new ddouble[] { 1, -1, 1 });
     Vector v3     = new Vector(new ddouble[] { 0, 0, 1 });
 
-    AffineBasis aBasis = new AffineBasis(origin, new List<Vector>() { v1, v2 });
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, new List<Vector>() { v1, v2 });
 
     HyperPlane hp = new HyperPlane(aBasis);
 
@@ -63,7 +63,7 @@ public class HyperPlaneTests {
     Vector e2     = new Vector(new ddouble[] { 0, 1, 0 });
     Vector e3     = new Vector(new ddouble[] { 0, 0, 1 });
 
-    AffineBasis aBasis = new AffineBasis(origin, new Vector[] { e1, e2 });
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, new Vector[] { e1, e2 });
 
     HyperPlane hp = new HyperPlane(aBasis);
 

@@ -606,7 +606,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Creates the i-orth of given dimension
+    /// Creates the i-orth of given dimension. (1,0,0) == CreateOrth(3,1).
     /// </summary>
     /// <param name="dim">The dimension of the vector</param>
     /// <param name="pos">The position of '1'</param>

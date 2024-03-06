@@ -79,7 +79,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">Vector to be added</param>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns>True if vector added to the basis, false otherwise</returns>
-    public bool AddVector(Vector v, bool orthogonalize = true) {
+    public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
       if (!orthogonalize) { // Если вектор не нужно ортогонализировать, то просто добавляем в базис
         Basis.Add(v);
 
@@ -140,29 +140,41 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
     /// <summary>
-    /// Default constructor
+    /// Constructs the empty basis.
     /// </summary>
     public LinearBasis() => Basis = new List<Vector>();
+
+    /// <summary>
+    /// Construct the new linear basis of full dimension with d-dim zero origin and d-orth.
+    /// </summary>
+    /// <param name="vecDim">The dimension of the vectors in basis.</param>
+    public LinearBasis(int vecDim) {
+      Basis = new List<Vector>(vecDim);
+
+      for (int i = 0; i < vecDim; i++) {
+        AddVectorToBasis(Vector.CreateOrth(vecDim, i + 1), false);
+      }
+    }
+
+    /// <summary>
+    /// Constructs the linear basis based on given vectors.
+    /// </summary>
+    /// <param name="Vs">Vectors on which basis should be constructed.</param>
+    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
+    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
+      Basis = new List<Vector>();
+
+      foreach (Vector v in Vs) {
+        AddVectorToBasis(v, orthogonalize);
+        if (IsFullDim) { break; }
+      }
+    }
 
     /// <summary>
     /// Copy constructor.
     /// </summary>
     /// <param name="linearBasis">The linear basis to be copied.</param>
     public LinearBasis(LinearBasis linearBasis) { Basis = new List<Vector>(linearBasis.Basis); }
-
-    /// <summary>
-    /// Based on collection constructor
-    /// </summary>
-    /// <param name="Vs">Vectors on which basis should be constructed</param>
-    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      Basis = new List<Vector>();
-
-      foreach (Vector v in Vs) {
-        AddVector(v, orthogonalize);
-        if (IsFullDim) { break; }
-      }
-    }
 #endregion
 
 #region Fabrics
@@ -174,7 +186,7 @@ public partial class Geometry<TNum, TConv>
     public static LinearBasis GenLinearBasis(int dim) {
       LinearBasis lb = new LinearBasis();
       do {
-        lb.AddVector(Vector.GenVector(dim));
+        lb.AddVectorToBasis(Vector.GenVector(dim));
       } while (!lb.IsFullDim);
 
       return lb;

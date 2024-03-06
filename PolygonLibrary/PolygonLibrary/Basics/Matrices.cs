@@ -716,7 +716,7 @@ public partial class Geometry<TNum, TConv>
         TNum[] row;
         do {
           row = GenArray(dim, a, b, random);
-        } while (!toCheck.AddVector(new Vector(row)));
+        } while (!toCheck.AddVectorToBasis(new Vector(row)));
 
         for (int l = 0; l < dim; l++) { m[r, l] = row[l]; }
       }
@@ -742,7 +742,7 @@ public partial class Geometry<TNum, TConv>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null) {
       LinearBasis basis = new LinearBasis(new[] { Vector.GenVector(dim) });
       while (!basis.IsFullDim) {
-        basis.AddVector(Vector.GenVector(dim, random));
+        basis.AddVectorToBasis(Vector.GenVector(dim, random));
       }
 
       return basis.GetMatrix();

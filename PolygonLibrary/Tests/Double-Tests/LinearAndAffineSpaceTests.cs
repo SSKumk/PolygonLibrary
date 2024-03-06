@@ -14,14 +14,14 @@ public class LinearSpaceTests {
     LinearBasis basis = new LinearBasis();
     Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
 
-    bool added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
+    bool added1 = basis.AddVectorToBasis(new Vector(new double[] { 1, 0 }));
 
     Assert.That
       (basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
 
-    bool added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
-    bool added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
-    bool added4 = basis.AddVector(new Vector(new double[] { 0, 0 }));
+    bool added2 = basis.AddVectorToBasis(new Vector(new double[] { 0, 1 }));
+    bool added3 = basis.AddVectorToBasis(new Vector(new double[] { 1, 1 }));
+    bool added4 = basis.AddVectorToBasis(new Vector(new double[] { 0, 0 }));
 
     Assert.That(added1, Is.True, "The addition of the linear independent vector should be successful.");
     Assert.That(added2, Is.True, "The addition of the linear independent vector should be successful.");
@@ -116,11 +116,12 @@ public class AffineSpaceTests {
       };
 
 
-    AffineBasis basis = new AffineBasis(origin, vectors);
+    AffineBasis basis = AffineBasis.AsVectors(origin, vectors);
 
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
+    Assert.That(basis.LinearBasis.Equals(new LinearBasis(3)));
     Assert.That
       (
        basis.SpaceDim
@@ -157,7 +158,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { double.Pi / 2, 5, 5 })
       };
 
-    AffineBasis basis = new AffineBasis(origin, points);
+    AffineBasis basis = AffineBasis.AsPoints(origin, points);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
@@ -183,7 +184,7 @@ public class AffineSpaceTests {
 
     List<Vector> vectors = new List<Vector>() { new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }) };
 
-    AffineBasis basis     = new AffineBasis(origin, vectors);
+    AffineBasis basis     = AffineBasis.AsVectors(origin, vectors);
     Vector      newVector = new Vector(new double[] { 1, 1, 1 });
 
     bool result = basis.AddVectorToBasis(newVector);
@@ -220,7 +221,7 @@ public class AffineSpaceTests {
 
     HashSet<Vector> expected = swarm;
 
-    AffineBasis         aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis, false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -247,7 +248,7 @@ public class AffineSpaceTests {
         new Vector(new double[] { -1, -1 }), new Vector(new double[] { -2, -3 }), new Vector(new double[] { 1, -4 })
       };
 
-    AffineBasis         aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis,false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -274,7 +275,7 @@ public class AffineSpaceTests {
         new Vector(new double[] { 1, 1 }), new Vector(new double[] { 0, -2 }), new Vector(new double[] { 6, -2 })
       };
 
-    AffineBasis         aBasis = new AffineBasis(origin, basis, true);
+    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -306,7 +307,7 @@ public class AffineSpaceTests {
       , new Vector(new double[] { 1, 1 })
       };
 
-    AffineBasis         aBasis = new AffineBasis(origin, basis);
+    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis,false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));

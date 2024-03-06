@@ -70,8 +70,8 @@ public partial class Geometry<TNum, TConv>
     public static FaceLattice BySandipDas(FaceLattice P, FaceLattice Q) {
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
-      AffineBasis affinePQ = new AffineBasis
-        (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis), true);
+      AffineBasis affinePQ = AffineBasis.AsVectors
+        (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
       int dim = affinePQ.SpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
@@ -116,8 +116,8 @@ public partial class Geometry<TNum, TConv>
               if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.PolytopDim - 1) { break; }
 
               // Берём очередного кандидата.
-              AffineBasis candBasis = new AffineBasis
-                (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis), true);
+              AffineBasis candBasis = AffineBasis.AsVectors
+                (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
 
               // 0) dim(xi (+) yj) == dim(z) - 1
               if (candBasis.SpaceDim != d) { continue; }

@@ -70,7 +70,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (Origin.Dim == v.Dim, "AffineBasis.AddVectorToBasis: Adding a vector with a wrong dimension into an affine basis.");
 
-      return LinearBasis.AddVector(v, orthogonalize);
+      return LinearBasis.AddVectorToBasis(v, orthogonalize);
     }
 
     /// <summary>
@@ -157,6 +157,15 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
     /// <summary>
+    /// Construct the new affine basis of full dim with d-dim zero origin and d-orth
+    /// </summary>
+    /// <param name="vecDim">The dimension of the basis</param>
+    public AffineBasis(int vecDim) {
+      Origin      = new Vector(vecDim);
+      LinearBasis = new LinearBasis(vecDim);
+    }
+
+    /// <summary>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
@@ -166,65 +175,17 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Construct the new affine basis of full dim with d-dim zero origin and d-orth
-    /// </summary>
-    /// <param name="vecDim">The dimension of the basis</param>
-    public AffineBasis(int vecDim) {
-      Origin      = new Vector(vecDim);
-      LinearBasis = new LinearBasis();
-
-      for (int i = 0; i < Origin.Dim; i++) {
-        LinearBasis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
-      }
-    }
-
-
-    /// <summary>
-    /// Construct the new affine basis for a given dimension using a d-dimensional origin of zero,
-    /// and a given amount of d-orth starting from e1.
-    /// </summary>
-    /// <param name="basisDim">The amount of basis vectors in the basis.</param>
-    /// <param name="vecDim">The dimension of the basis vectors.</param>
-    public AffineBasis(int basisDim, int vecDim) {
-      Debug.Assert(basisDim <= vecDim, "The dimension of the basis should be non greater than dimension of the vectors.");
-
-      Origin      = new Vector(vecDim);
-      LinearBasis = new LinearBasis();
-
-      for (int i = 0; i < basisDim; i++) {
-        LinearBasis.AddVector(Vector.CreateOrth(Origin.Dim, i + 1), false);
-      }
-    }
-
-
-    /// <summary>
-    /// Construct the new affine basis with the specified origin point and specified vectors.
+    /// Construct the new affine basis based on origin and linear basis.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
-    /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
-    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public AffineBasis(Vector o, IEnumerable<Vector> Vs, bool orthogonalize) {
+    /// <param name="lBasis">The linear basis associated with the affine basis.</param>
+    public AffineBasis(Vector o, LinearBasis lBasis) {
       Origin      = o;
-      LinearBasis = new LinearBasis(Vs, orthogonalize);
-    }
-// todo Хммм, как отличать эти два конструктора ^^^ vvv ? Сделать фабрики?
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AffineBasis"/> class with the specified origin point and points.
-    /// </summary>
-    /// <param name="o">The origin point of the affine basis.</param>
-    /// <param name="Ps">The points to use in the linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, IEnumerable<Vector> Ps) {
-      Origin      = o;
-      LinearBasis = new LinearBasis();
-
-      foreach (Vector p in Ps) {
-        AddVectorToBasis(p - Origin);
-        if (IsFullDim) { break; }
-      }
+      LinearBasis = new LinearBasis(lBasis); // new надо так как есть AddVectorToBasis()
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AffineBasis"/> class with the enumerable of points.
+    /// Construct the new affine basis which spans given points.
     /// The first point is interpret as origin.
     /// </summary>
     /// <param name="Ps">The points to construct the affine basis.</param>
@@ -232,31 +193,41 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
       Origin      = Ps.First();
-      LinearBasis = new LinearBasis();
-
-      foreach (Vector p in Ps) {
-        AddVectorToBasis(p - Origin);
-        if (IsFullDim) { break; }
-      }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AffineBasis"/> class with the specified origin point and linear basis.
-    /// </summary>
-    /// <param name="o">The origin point of the affine basis.</param>
-    /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis) {
-      Origin      = o;
-      LinearBasis = new LinearBasis(lBasis);
+      LinearBasis = new LinearBasis(Ps.Select(v => v - Origin));
     }
 
     /// <summary>
     /// Copy constructor.
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
-    public AffineBasis(AffineBasis affineBasis) : this(affineBasis.Origin, affineBasis.Basis, false) { }
+    public AffineBasis(AffineBasis affineBasis) {
+      Origin      = affineBasis.Origin;
+      LinearBasis = new LinearBasis(affineBasis.LinearBasis);
+    }
 #endregion
 
+#region Fabrics
+    /// <summary>
+    /// Produce the new affine basis with the specified origin point and specified vectors.
+    /// </summary>
+    /// <param name="o">The origin point of the affine basis.</param>
+    /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
+    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
+    /// <returns>The affine basis.</returns>
+    public static AffineBasis AsVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
+      return new AffineBasis(o, new LinearBasis(Vs, orthogonalize));
+    }
+
+    /// <summary>
+    /// Produce the new affine basis which is the span of {o, Ps}.
+    /// </summary>
+    /// <param name="o">The origin of the affine basis.</param>
+    /// <param name="Ps">The points which lies in affine space.</param>
+    /// <returns>The affine basis.</returns>
+    public static AffineBasis AsPoints(Vector o, IEnumerable<Vector> Ps) {
+      return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)));
+    }
+#endregion
 
     /// <summary>
     /// Aux method to check then the basis is correct

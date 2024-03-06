@@ -37,15 +37,15 @@ public partial class Geometry<TNum, TConv>
           if (_affineBasis is null) {
             int         spaceDim = Origin.Dim;
             LinearBasis lBasis   = new LinearBasis();
-            lBasis.AddVector(Normal);
+            lBasis.AddVectorToBasis(Normal);
 
             for (int i = 1; i <= spaceDim; i++) {
               Vector orth = Vector.CreateOrth(spaceDim, i);
-              lBasis.AddVector(orth);
+              lBasis.AddVectorToBasis(orth);
             }
 
             // todo Проверить, надо ли тут ортогонализировать!
-            _affineBasis = new AffineBasis(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1),false);
+            _affineBasis = AffineBasis.AsVectors(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1),false);
           }
 
           return _affineBasis;
