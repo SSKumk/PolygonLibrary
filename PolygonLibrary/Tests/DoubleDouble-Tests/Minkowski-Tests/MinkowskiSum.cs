@@ -6,132 +6,132 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 namespace Tests.DoubleDouble_Tests.Minkowski_Tests;
 
-// [TestFixture]
-// public class MinkowskiSum2D {
-//
-//   private Vector      u0, u1, u2, u3, u4;
-//   private Vector      p0, p1, p2, p3;
-//   private FaceLattice pu3;
-//   private FaceLattice su1,    su2, su3, su4;
-//   private FaceLattice qu1_GW, qp1_GW;
-//
-//   [OneTimeSetUp]
-//   public void SetUp() {
-//     u0 = new Vector(new ddouble[] { 0, 0 });
-//     u1 = new Vector(new ddouble[] { 1, 0 });
-//     u2 = new Vector(new ddouble[] { 0, 1 });
-//     u3 = new Vector(new ddouble[] { 1, 1 });
-//     u4 = new Vector(new ddouble[] { 1, 2 });
-//
-//
-//     p0 = new Vector(new ddouble[] { 0.5, 0 });
-//     p1 = new Vector(new ddouble[] { 1, 0.5 });
-//     p2 = new Vector(new ddouble[] { 0.5, 1 });
-//     p3 = new Vector(new ddouble[] { 0, 0.5 });
-//
-//     pu3 = new FaceLattice(u3);
-//     su1 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u1 });
-//     su2 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u2 });
-//     su3 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u3 });
-//     su4 = GiftWrapping.WrapFaceLattice(new List<Vector> { u3, u4 });
-//
-//     qu1_GW = GiftWrapping.WrapFaceLattice
-//       (
-//        new List<Vector>
-//          {
-//            u0
-//          , u1
-//          , u2
-//          , u3
-//          }
-//       );
-//     qp1_GW = GiftWrapping.WrapFaceLattice
-//       (
-//        new List<Vector>
-//          {
-//            p0
-//          , p1
-//          , p2
-//          , p3
-//          }
-//       );
-//   }
-//
-//   private static FaceLattice MSumCH(FaceLattice F, FaceLattice G)
-//     => MinkowskiSum.ByConvexHull(new ConvexPolytop(F.Vertices), new ConvexPolytop(G.Vertices)).FL;
-//
-//
-//   // Сумма точек
-//   [Test]
-//   public void Point_Point() {
-//     FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3);
-//     Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Vector(new ddouble[] { 2, 2 }))));
-//   }
-//
-//   // Сдвинутый отрезок
-//   [Test]
-//   public void Point_Seg() {
-//     FaceLattice pu3_su1 = MinkowskiSum.BySandipDas(pu3, su1);
-//     Assert.That(pu3_su1, Is.EqualTo(MSumCH(pu3, su1)));
-//   }
-//
-//   // Сдвинутый отрезок
-//   [Test]
-//   public void Point_Seg1() {
-//     FaceLattice pu3_su3 = MinkowskiSum.BySandipDas(pu3, su3);
-//     Assert.That(pu3_su3, Is.EqualTo(MSumCH(pu3, su3)));
-//   }
-//
-//   // Удвоенный отрезок
-//   [Test]
-//   public void doubled_Seg() {
-//     FaceLattice su3_su3 = MinkowskiSum.BySandipDas(su3, su3);
-//     Assert.That(su3_su3, Is.EqualTo(MSumCH(su3, su3)));
-//   }
-//
-//   // Единичный квадрат
-//   [Test]
-//   public void Seg_Seg() {
-//     FaceLattice qu1 = MinkowskiSum.BySandipDas(su1, su2);
-//     Assert.That(qu1, Is.EqualTo(qu1_GW));
-//   }
-//
-//   // Отрезки
-//   [Test]
-//   public void Seg_AnotherSeg() {
-//     FaceLattice q = MinkowskiSum.BySandipDas(su3, su4);
-//     Assert.That(q, Is.EqualTo(MSumCH(su3, su4)));
-//   }
-//
-//   // Прямоугольник
-//   [Test]
-//   public void Seg_Square() {
-//     FaceLattice su1_qu1 = MinkowskiSum.BySandipDas(su1, qu1_GW);
-//     Assert.That(su1_qu1, Is.EqualTo(MSumCH(su1, qu1_GW)));
-//   }
-//
-//   // Шестиугольник
-//   [Test]
-//   public void Seg45_Square() {
-//     FaceLattice su3_qu1 = MinkowskiSum.BySandipDas(su3, qu1_GW);
-//     Assert.That(su3_qu1, Is.EqualTo(MSumCH(su3, qu1_GW)));
-//   }
-//
-//   // Квадрат в два раза больший
-//   [Test]
-//   public void Square_Square() {
-//     FaceLattice double_qu1 = MinkowskiSum.BySandipDas(qu1_GW, qu1_GW);
-//     Assert.That(double_qu1, Is.EqualTo(MSumCH(qu1_GW, qu1_GW)));
-//   }
-//
-//   [Test]
-//   public void Square45_Square() {
-//     FaceLattice qp1_qu1 = MinkowskiSum.BySandipDas(qp1_GW, qu1_GW);
-//     Assert.That(qp1_qu1, Is.EqualTo(MSumCH(qp1_GW, qu1_GW)));
-//   }
-//
-// }
-// //todo Прежде чем тут копаться нужно разделаться с TestPolytopes!
+[TestFixture]
+public class MinkowskiSum2D {
+
+  private Vector      u0, u1, u2, u3, u4;
+  private Vector      p0, p1, p2, p3;
+  private FaceLattice pu3;
+  private FaceLattice su1,    su2, su3, su4;
+  private FaceLattice qu1_GW, qp1_GW;
+
+  [OneTimeSetUp]
+  public void SetUp() {
+    u0 = new Vector(new ddouble[] { 0, 0 });
+    u1 = new Vector(new ddouble[] { 1, 0 });
+    u2 = new Vector(new ddouble[] { 0, 1 });
+    u3 = new Vector(new ddouble[] { 1, 1 });
+    u4 = new Vector(new ddouble[] { 1, 2 });
+
+
+    p0 = new Vector(new ddouble[] { 0.5, 0 });
+    p1 = new Vector(new ddouble[] { 1, 0.5 });
+    p2 = new Vector(new ddouble[] { 0.5, 1 });
+    p3 = new Vector(new ddouble[] { 0, 0.5 });
+
+    pu3 = new FaceLattice(u3);
+    su1 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u1 });
+    su2 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u2 });
+    su3 = GiftWrapping.WrapFaceLattice(new List<Vector> { u0, u3 });
+    su4 = GiftWrapping.WrapFaceLattice(new List<Vector> { u3, u4 });
+
+    qu1_GW = GiftWrapping.WrapFaceLattice
+      (
+       new List<Vector>
+         {
+           u0
+         , u1
+         , u2
+         , u3
+         }
+      );
+    qp1_GW = GiftWrapping.WrapFaceLattice
+      (
+       new List<Vector>
+         {
+           p0
+         , p1
+         , p2
+         , p3
+         }
+      );
+  }
+
+  private static FaceLattice MSumCH(FaceLattice F, FaceLattice G)
+    => MinkowskiSum.ByConvexHull(ConvexPolytop.AsVPolytop(F.Vertices), ConvexPolytop.AsVPolytop(G.Vertices)).FL;
+
+
+  // Сумма точек
+  [Test]
+  public void Point_Point() {
+    FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3);
+    Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Vector(new ddouble[] { 2, 2 }))));
+  }
+
+  // Сдвинутый отрезок
+  [Test]
+  public void Point_Seg() {
+    FaceLattice pu3_su1 = MinkowskiSum.BySandipDas(pu3, su1);
+    Assert.That(pu3_su1, Is.EqualTo(MSumCH(pu3, su1)));
+  }
+
+  // Сдвинутый отрезок
+  [Test]
+  public void Point_Seg1() {
+    FaceLattice pu3_su3 = MinkowskiSum.BySandipDas(pu3, su3);
+    Assert.That(pu3_su3, Is.EqualTo(MSumCH(pu3, su3)));
+  }
+
+  // Удвоенный отрезок
+  [Test]
+  public void doubled_Seg() {
+    FaceLattice su3_su3 = MinkowskiSum.BySandipDas(su3, su3);
+    Assert.That(su3_su3, Is.EqualTo(MSumCH(su3, su3)));
+  }
+
+  // Единичный квадрат
+  [Test]
+  public void Seg_Seg() {
+    FaceLattice qu1 = MinkowskiSum.BySandipDas(su1, su2);
+    Assert.That(qu1, Is.EqualTo(qu1_GW));
+  }
+
+  // Отрезки
+  [Test]
+  public void Seg_AnotherSeg() {
+    FaceLattice q = MinkowskiSum.BySandipDas(su3, su4);
+    Assert.That(q, Is.EqualTo(MSumCH(su3, su4)));
+  }
+
+  // Прямоугольник
+  [Test]
+  public void Seg_Square() {
+    FaceLattice su1_qu1 = MinkowskiSum.BySandipDas(su1, qu1_GW);
+    Assert.That(su1_qu1, Is.EqualTo(MSumCH(su1, qu1_GW)));
+  }
+
+  // Шестиугольник
+  [Test]
+  public void Seg45_Square() {
+    FaceLattice su3_qu1 = MinkowskiSum.BySandipDas(su3, qu1_GW);
+    Assert.That(su3_qu1, Is.EqualTo(MSumCH(su3, qu1_GW)));
+  }
+
+  // Квадрат в два раза больший
+  [Test]
+  public void Square_Square() {
+    FaceLattice double_qu1 = MinkowskiSum.BySandipDas(qu1_GW, qu1_GW);
+    Assert.That(double_qu1, Is.EqualTo(MSumCH(qu1_GW, qu1_GW)));
+  }
+
+  [Test]
+  public void Square45_Square() {
+    FaceLattice qp1_qu1 = MinkowskiSum.BySandipDas(qp1_GW, qu1_GW);
+    Assert.That(qp1_qu1, Is.EqualTo(MSumCH(qp1_GW, qu1_GW)));
+  }
+
+}
+//todo Прежде чем тут копаться нужно разделаться с TestPolytopes!
 // [TestFixture]
 // public class MinkowskiSum_hD {
 //
