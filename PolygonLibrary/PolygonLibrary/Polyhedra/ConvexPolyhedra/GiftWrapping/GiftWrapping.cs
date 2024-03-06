@@ -125,7 +125,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="S">The swarm of </param>
     /// <returns></returns>
-    public static FaceLattice WrapFaceLattice(HashSet<Vector> S) => new GiftWrapping(S).FaceLattice;
+    public static FaceLattice WrapFaceLattice(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).FaceLattice;
+
+    /// <summary>
+    /// Wraps the given swarm and returns the VRep. Removes points in inner of conv(S).
+    /// </summary>
+    /// <param name="S">The swarm to thin out.</param>
+    /// <returns>The VRep of wrapped swarm.</returns>
+    public static HashSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).VRep;
 
     /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.

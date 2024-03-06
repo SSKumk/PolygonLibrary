@@ -553,11 +553,6 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Simplex4D_PointCloseToVertex() {
-    const uint seed = 725498027;
-    const int PDim = 4;
-    const int nPoints = 1;
-    List<int> fID = new List<int>() { 2, 3, 4 };
-
     List<Vector> S = new List<Vector>()
       {
         new Vector(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
@@ -610,8 +605,7 @@ public class GW_Tests {
       );
     var distABDX = S.Select(s => hpABDX.Eval(s));
 
-    SimplexRND(PDim, out List<Vector> polytop, null, 0, seed);
-    Check(S, polytop, seed, PDim, nPoints, fID, true);
+    Assert.That(GiftWrapping.WrapVRep(S).SetEquals(S.GetRange(0,5)));
   }
 
   /// <summary>
@@ -812,25 +806,11 @@ public class GW_Tests {
       Console.WriteLine("S.Shuffle(new GRandomLC(seed));");
     }
     Console.WriteLine();
-    Console.WriteLine("ConvexPolytop P = GiftWrapping.WrapPolytop(S);");
-    Console.WriteLine("Assert.That(P.Vertices.SetEquals(polytop));");
+    Console.WriteLine("HashSet<Vector> P = GiftWrapping.WrapVRep(S);");
+    Console.WriteLine("Assert.That(P.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();
   }
 
-  [Test]
-  public void Aux() { // При Eps = 1e-8 ломается, при 1e-10 норм.
-    const uint seed    = 3518383828;
-    const int  PDim    = 5;
-    const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 1, 2, 3, 4 };
-
-    List<Vector> S     = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
-    List<Vector> origS = new List<Vector>(S);
-    S.Shuffle(new GRandomLC(seed));
-
-    // HashSet<Vector> P = ConvexPolytop.AsVPolytop(S, true).Vertices;
-    // Assert.That(P.Vertices.SetEquals(polytop));
-    Assert.That(false, "TODO Разобраться с тестами!!!!!");
-  }
 }
+

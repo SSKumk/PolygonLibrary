@@ -20,15 +20,16 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Vector comparer realizing the lexicographic order; coordinates are compared by precision
     /// </summary>
-    /// <param name="v">The point to be compared with</param>
+    /// <param name="v1">The first point to compare.</param>
+    /// <param name="v2">The second point to be compared with.</param>
     /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
     public static int CompareToNoEps(Vector2D v1, Vector2D v2) {
       int xRes = v1.x.CompareTo(v2.x);
       if (xRes != 0) {
         return xRes;
-      } else {
-        return v1.y.CompareTo(v2.y);
       }
+
+      return v1.y.CompareTo(v2.y);
     }
 
     /// <summary>
