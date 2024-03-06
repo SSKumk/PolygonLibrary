@@ -156,12 +156,10 @@ public partial class Geometry<TNum, TConv>
           isEqual = isEqual && (thisNode.Equals(otherNode));
         }
         if (!isEqual) {
+          Console.WriteLine($"Lattice are not equal: level i = {i}.");
+
           break;
         }
-
-
-        // isEqual = isEqual && this.Lattice[i].SetEquals(other.Lattice[i]);
-        // Console.WriteLine($"Lattice are not equal: level i = {i}.");
       }
 
       return isEqual;
@@ -190,8 +188,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public void ReconstructPolytop() {
       if (PolytopDim != 0) {
-        Polytop = new HashSet<Vector>(Sub.SelectMany(s => s.Vertices).ToHashSet());
+        Polytop = new HashSet<Vector>(Sub.SelectMany(s => s.Vertices));
       }
+      _hash = null;
     }
 
     /// <summary>
@@ -400,36 +399,55 @@ public partial class Geometry<TNum, TConv>
 
       // 1) this.Above == other.Above
       bool isEqual     = true;
-      var  thisAboveP  = this.Super.Select(a => a.Polytop).ToHashSet();
-      var  otherAboveP = other.Super.Select(a => a.Polytop).ToHashSet();
+      var  thisAboveP  = this.Super.Select(a => a.Polytop);
+      var  otherAboveP = other.Super.Select(a => a.Polytop);
 
-      // ? Верно ли что тут политопы сравниваются их Equals?
-      isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
+      isEqual = isEqual && isEqualFaces(thisAboveP, otherAboveP);
 
       if (!isEqual) {
         Console.WriteLine("Above!");
-        Console.WriteLine($"This:  {string.Join('\n', this.Super.Select(n => n.Polytop))}");
-        Console.WriteLine($"Other: {string.Join('\n', other.Super.Select(n => n.Polytop))}");
+        Console.WriteLine($"This:  {string.Join(' ', this.Super.Select(n => n.GetHashCode()))}");
+        Console.WriteLine($"Other: {string.Join(' ', other.Super.Select(n => n.GetHashCode()))}");
 
         return false;
       }
 
       // 2) this.Sub == other.Sub
-      var thisSubP  = this.Sub.Select(s => s.Polytop).ToHashSet();
-      var otherSubP = other.Sub.Select(s => s.Polytop).ToHashSet();
+      var thisSubP  = this.Sub.Select(s => s.Polytop);
+      var otherSubP = other.Sub.Select(s => s.Polytop);
 
-      isEqual = isEqual && thisSubP.SetEquals(otherSubP);
+      isEqual = isEqual && isEqualFaces(thisSubP, otherSubP);
 
       if (!isEqual) {
         Console.WriteLine(value: "Below!");
-        Console.WriteLine($"This:  {string.Join('\n', this.Sub.Select(n => n.Polytop))}");
-        Console.WriteLine($"Other: {string.Join('\n', other.Sub.Select(n => n.Polytop))}");
+        Console.WriteLine($"This:  {string.Join(' ', this.Sub.Select(n => n.GetHashCode()))}");
+        Console.WriteLine($"Other: {string.Join(' ', other.Sub.Select(n => n.GetHashCode()))}");
 
         return false;
       }
 
       // 3) this == other
       return this.Polytop.SetEquals(other.Polytop);
+    }
+
+    private static bool isEqualFaces(IEnumerable<HashSet<Vector>> faces1, IEnumerable<HashSet<Vector>> faces2) {
+      bool isEq = true;
+      foreach (HashSet<Vector> face1 in faces1) {
+        bool isInFace2 = false;
+        foreach (HashSet<Vector> face2 in faces2) {
+          if (face1.SetEquals(face2)) {
+            isInFace2 = true;
+
+            break;
+          }
+        }
+        isEq = isEq && isInFace2;
+        if (isEq == false) {
+          return false;
+        }
+      }
+
+      return true;
     }
 
   }
