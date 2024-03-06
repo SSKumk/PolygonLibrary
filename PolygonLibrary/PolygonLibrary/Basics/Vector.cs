@@ -15,7 +15,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Class of multidimensional vector
   /// </summary>
-  public class Vector {
+  public class Vector : IComparable<Vector> {
 
 #region Internal storage, access properties, and convertors
     /// <summary>
@@ -111,14 +111,14 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(Vector? v) {
       int d = Dim, res;
 #if DEBUG
-      Debug.Assert(v is not null, nameof(v) + " != null");
+      Debug.Assert(v is not null, $"Vector.CompareTo: second vector is null!");
 
       if (d != v.Dim) {
         throw new ArgumentException("Cannot compare vectors of different dimensions");
       }
 #endif
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(this[i], v![i]);
+        res = Tools.CMP(this[i], v[i]);
 
         if (res != 0) {
           return res;
