@@ -233,8 +233,7 @@ public partial class Geometry<TNum, TConv>
         _gw   = new GiftWrapping(VP);
         _VRep = GW.VRep;
       } else {
-        _VRep = new HashSet<Vector>
-          (VP); // todo HashSet<Vector> --> в поле ConvexPolytop и List<HyperPlane> --> в поле ConvexPolytop
+        _VRep = new HashSet<Vector>(VP);
       }
       switch (form) {
         case ConvexPolytopForm.VRep: break; // уже всё сделали

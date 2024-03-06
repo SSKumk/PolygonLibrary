@@ -9,52 +9,52 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
-// #region Pre-defined objects
-//   public static readonly List<Vector> Octahedron3D_list = MakePointsOnSphere_3D(2, 4, true, true);
-//   public static readonly List<Vector> Pyramid3D_list    = MakePointsOnSphere_3D(2, 4, true);
-//   public static readonly List<Vector> Simplex2D_list    = Simplex_list(2);
-//   public static readonly List<Vector> Simplex3D_list    = Simplex_list(3);
-//   public static readonly List<Vector> Simplex4D_list    = Simplex_list(4);
-//   public static readonly List<Vector> Simplex5D_list    = Simplex_list(5);
-//   public static readonly List<Vector> SimplexRND2D_list = SimplexRND_list(2);
-//   public static readonly List<Vector> SimplexRND3D_list = SimplexRND_list(3);
-//   public static readonly List<Vector> SimplexRND4D_list = SimplexRND_list(4);
-//   public static readonly List<Vector> SimplexRND5D_list = SimplexRND_list(5);
-//   public static readonly List<Vector> Cube2D_list       = Cube_list(2);
-//   public static readonly List<Vector> Cube3D_list       = Cube_list(3);
-//   public static readonly List<Vector> Cube4D_list       = Cube_list(4);
-//   public static readonly List<Vector> Cube5D_list       = Cube_list(5);
-//
-//
-//   public static readonly ConvexPolytop Cube3D       = CubeGW(3).CPolytop;
-//   public static readonly ConvexPolytop Cube4D       = CubeGW(4).CPolytop;
-//   public static readonly ConvexPolytop Simplex3D    = Simplex(3).CPolytop;
-//   public static readonly ConvexPolytop Simplex4D    = Simplex(4).CPolytop;
-//   public static readonly ConvexPolytop Octahedron3D = new GiftWrapping(Octahedron3D_list).CPolytop;
-//
-//
-//   public static readonly FaceLattice Cube3D_FL    = CubeFL(3);
-//   public static readonly FaceLattice Cube4D_FL    = CubeFL(4);
-//   public static readonly FaceLattice Simplex3D_FL = Simplex(3).FaceLattice;
-//   public static readonly FaceLattice Simplex4D_FL = Simplex(4).FaceLattice;
-//
-//
-//   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
-//   public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
-// #endregion
+#region Pre-defined objects
+  public static readonly List<Vector> Octahedron3D_list = MakePointsOnSphere_3D(2, 4, true, true);
+  public static readonly List<Vector> Pyramid3D_list    = MakePointsOnSphere_3D(2, 4, true);
+  public static readonly List<Vector> Simplex2D_list    = Simplex_list(2);
+  public static readonly List<Vector> Simplex3D_list    = Simplex_list(3);
+  public static readonly List<Vector> Simplex4D_list    = Simplex_list(4);
+  public static readonly List<Vector> Simplex5D_list    = Simplex_list(5);
+  public static readonly List<Vector> SimplexRND2D_list = SimplexRND_list(2);
+  public static readonly List<Vector> SimplexRND3D_list = SimplexRND_list(3);
+  public static readonly List<Vector> SimplexRND4D_list = SimplexRND_list(4);
+  public static readonly List<Vector> SimplexRND5D_list = SimplexRND_list(5);
+  public static readonly List<Vector> Cube2D_list       = Cube_list(2);
+  public static readonly List<Vector> Cube3D_list       = Cube_list(3);
+  public static readonly List<Vector> Cube4D_list       = Cube_list(4);
+  public static readonly List<Vector> Cube5D_list       = Cube_list(5);
+
+
+  public static readonly ConvexPolytop Cube3D       = ConvexPolytop.AsVPolytop(CubeGW(3).VRep);
+  public static readonly ConvexPolytop Cube4D       = ConvexPolytop.AsVPolytop(CubeGW(4).VRep);
+  public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.AsVPolytop(Simplex(3).VRep);
+  public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.AsVPolytop(Simplex(4).VRep);
+  public static readonly ConvexPolytop Octahedron3D = ConvexPolytop.AsVPolytop(Octahedron3D_list.ToHashSet());
+
+
+  public static readonly FaceLattice Cube3D_FL    = CubeFL(3);
+  public static readonly FaceLattice Cube4D_FL    = CubeFL(4);
+  public static readonly FaceLattice Simplex3D_FL = Simplex(3).FaceLattice;
+  public static readonly FaceLattice Simplex4D_FL = Simplex(4).FaceLattice;
+
+
+  public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
+  public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
+#endregion
 
 #region Polytopes and Polytopes-list Fabrics
-  public static List<Vector> Cube_list(int           dim) => Cube(dim, out _);
-  public static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
-  public static List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);
-  public static List<Vector> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
+  private static List<Vector> Cube_list(int           dim) => Cube(dim, out _);
+  private static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
+  public static  List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);
+  public static  List<Vector> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
 
-  public static GiftWrapping CubeGW(int         dim) => new GiftWrapping(Cube_list(dim));
-  public static GiftWrapping CubeRotatedRND(int dim) => new GiftWrapping(CubeRotatedRND_list(dim));
-  public static GiftWrapping Simplex(int        dim) => new GiftWrapping(Simplex(dim, out _));
-  public static GiftWrapping SimplexRND(int     dim) => new GiftWrapping(SimplexRND(dim, out _));
+  private static GiftWrapping CubeGW(int         dim) => new GiftWrapping(Cube_list(dim));
+  private static GiftWrapping CubeRotatedRND(int dim) => new GiftWrapping(CubeRotatedRND_list(dim));
+  public static  GiftWrapping Simplex(int        dim) => new GiftWrapping(Simplex(dim, out _));
+  private static GiftWrapping SimplexRND(int     dim) => new GiftWrapping(SimplexRND(dim, out _));
 
-  public static GiftWrapping Sphere(int dim, int theta, int phi, TNum radius) =>
+  private static GiftWrapping Sphere(int dim, int theta, int phi, TNum radius) =>
     new GiftWrapping(Sphere_list(dim, theta, phi, radius));
 
 

@@ -40,6 +40,17 @@ public partial class Geometry<TNum, TConv>
       => ConvexPolytop.AsFLPolytop(AlgSumPoints(P.Vertices, Q.Vertices), true);
 
     /// <summary>
+    /// Computes the Minkowski sum of two polytopes via convex hull algorithm.
+    /// </summary>
+    /// <param name="P">The first polytope represented as a VPolytop.</param>
+    /// <param name="Q">The second polytope represented as a VPolytop..</param>
+    /// <returns>
+    /// Returns a face lattice of the sum.
+    /// </returns>
+    public static ConvexPolytop ByConvexHull(HashSet<Vector> P, HashSet<Vector> Q)
+      => ConvexPolytop.AsFLPolytop(AlgSumPoints(P, Q), true);
+
+    /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
     /// If FL does not exist than both for P and Q will be compute before starting a sum algorithm.
     /// <para>
