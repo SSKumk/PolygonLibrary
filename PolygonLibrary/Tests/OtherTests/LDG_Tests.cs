@@ -12,12 +12,13 @@ namespace Tests.OtherTests;
 public class LDG_Tests {
 
   private static string pathData =
-    "F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\PolygonLibrary\\Tests\\OtherTests\\LDG_computations";
+    "F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\PolygonLibrary\\Tests\\OtherTests\\LDG_computations\\";
 
   [Test]
   public void SimplestCube3D() {
-    SolverLDG ldg = new SolverLDG(pathData, "simplest.c");
+    SolverLDG ldg = new SolverLDG(pathData, "simplest");
     ldg.Solve();
+    ldg.WriteBridge3D();
   }
 
 }
