@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets the face lattice.
     /// </summary>
     /// <returns>The face lattice.</returns>
-    public FaceLattice FaceLattice => ConstructFL();
+    public FaceLattice FaceLattice => ConstructFL(); // todo Может её сохранять? Или нет?
 
     /// <summary>
     /// Gets the polytop in HRep form.
@@ -116,8 +116,36 @@ public partial class Geometry<TNum, TConv>
         FLNode node = new FLNode(sub);
         allNodes.Add(node.GetHashCode(), node);
         lattice[node.PolytopDim].Add(node);
-
       }
+    }
+
+    /// <summary>
+    /// Gets the facets of 3D-polytop. They holds vertices in counterclockwise order and the outward normal.
+    /// </summary>
+    /// <returns>The array of facets.</returns>
+    public Facet[] Get2DFacets() {
+      Debug.Assert
+        (
+         PolytopDim == 3
+       , $"GiftWrapping.Get2DFacets: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
+        );
+      Debug.Assert(BuiltPolytop.Faces is not null, "GiftWrapping.VerticesList2D: There are no facets!");
+      Facet[] res = new Facet[BuiltPolytop.Faces.Count];
+
+      int i = 0;
+      foreach (BaseSubCP polytop in BuiltPolytop.Faces) {
+        TNum                convCoeff      = Tools.One / TConv.FromInt(VRep.Count);
+        IEnumerable<Vector> convCombVs     = VRep.Select(v => v * convCoeff);
+        Vector              innerPoint     = Vector.CreateOrigin(PolytopDim);
+        foreach (Vector v in convCombVs) { innerPoint += v; }
+
+        SubTwoDimensional   twoDimensional = (SubTwoDimensional)polytop;
+        HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesList), (innerPoint, false));
+        res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
+        i++;
+      }
+
+      return res;
     }
 
     /// <summary>
@@ -212,7 +240,7 @@ public partial class Geometry<TNum, TConv>
           // Для этого проецируем точки, а так как наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
           List<Vector2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
 
-          return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList());
+          return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToArray());
         }
         if (S.Count == spaceDim + 1) {
           // Отдельно обработали случай симплекса.
