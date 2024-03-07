@@ -218,6 +218,25 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
+
+    /// <summary>
+    /// Method for reading two-dimensional array of doubles.
+    /// </summary>
+    /// <param name="name">The name of the object</param>
+    /// <param name="rows">Number of rows in the array</param>
+    /// <param name="cols">Number of columns in the array</param>
+    /// <returns>The read array of appropriate type and size</returns>
+    public TNum[,] Read2DArray_double(string name, int rows, int cols, char term = ';') {
+      double[,] r   = Read2DArray<double>(name, rows, cols, term);
+      TNum[,]   res = new TNum[rows,cols];
+      for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+          res[i, j] = TConv.FromDouble(r[i, j]);
+        }
+      }
+
+      return res;
+    }
 #endregion
 
 #region Internal methods
