@@ -34,7 +34,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the list of vertices of the polygon.
     /// </summary>
-    public List<SubPoint> VerticesList { get; }
+    public Vector[] VerticesList { get; }
 
     /// <summary>
     /// Gets the faces of the polygon.
@@ -51,16 +51,16 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
     /// <param name="Vs">The list of vertices of the polygon given in clockwise or counter-clockwise order.</param>
-    public SubTwoDimensional(List<SubPoint> Vs) {
+    public SubTwoDimensional(IReadOnlyList<SubPoint> Vs) {
       Debug.Assert
         (
          Vs.Count > 2
        , $"GW-->SubTwoDimensional: At least three points must be used to construct a TwoDimensional! Found {Vs.Count}"
         );
 
-      List<SubPoint> vertices = new List<SubPoint>(Vs);
-      Vertices = new HashSet<SubPoint>(vertices);
-      VerticesList = vertices;
+      // List<SubPoint> vertices = new List<SubPoint>(Vs);
+      Vertices = new HashSet<SubPoint>(Vs);
+      VerticesList = Vs.Select(v => new Vector(v.GetRootVertex())).ToArray();
 
       HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
 
@@ -75,7 +75,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns>The converted polygon in the previous space.</returns>
     public override BaseSubCP ToPreviousSpace() {
-      List<SubPoint> Vs = new List<SubPoint>(VerticesList.Select(v => v.Parent)!);
+      SubPoint[] Vs = Vertices.Select(v => v.Parent).ToArray()!;
 
       return new SubTwoDimensional(Vs);
     }
@@ -86,7 +86,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubTwoDimensional(VerticesList.Select(s => s.ProjectTo(aBasis)).ToList());
+      return new SubTwoDimensional(Vertices.Select(s => s.ProjectTo(aBasis)).ToArray());
     }
 
   }

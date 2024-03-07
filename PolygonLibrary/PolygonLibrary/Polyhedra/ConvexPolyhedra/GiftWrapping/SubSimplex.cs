@@ -56,7 +56,7 @@ public partial class Geometry<TNum, TConv>
 
                   break;
                 case 3: {
-                  _faces.Add(new SubTwoDimensional(new List<SubPoint>() { faceVert[0], faceVert[1], faceVert[2] }));
+                  _faces.Add(new SubTwoDimensional([ faceVert[0], faceVert[1], faceVert[2] ]));
 
                   break;
                 }
