@@ -14,6 +14,7 @@
 
 **/gnuplot-dat/**
 **/PNGs/**
+**/LDG_computations/**
 
 # TikZ & PGF
 *.dpth
