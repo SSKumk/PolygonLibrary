@@ -99,7 +99,7 @@ public partial class Geometry<TNum, TConv>
       /// <summary>
       /// Axis parallel Cube.
       /// </summary>
-      Cube
+      RectParallel
 
      ,
 
@@ -109,6 +109,7 @@ public partial class Geometry<TNum, TConv>
       Sphere
 
       // todo Эллипсоид
+
     }
 
 
@@ -216,11 +217,11 @@ public partial class Geometry<TNum, TConv>
 
       // Dynamics
       n = pr.ReadInt("n");
-      A = new Matrix(pr.Read2DArray<TNum>("A", n, n));
+      A = new Matrix(pr.Read2DArray_double("A", n, n));
       p = pr.ReadInt("p");
-      B = new Matrix(pr.Read2DArray<TNum>("B", n, p));
+      B = new Matrix(pr.Read2DArray_double("B", n, p));
       q = pr.ReadInt("q");
-      C = new Matrix(pr.Read2DArray<TNum>("C", n, q));
+      C = new Matrix(pr.Read2DArray_double("C", n, q));
 
       t0 = TConv.FromDouble(pr.ReadDouble("t0"));
       T  = TConv.FromDouble(pr.ReadDouble("T"));
@@ -317,9 +318,8 @@ public partial class Geometry<TNum, TConv>
       TypeSet typeSet = typeSetInt switch
                           {
                             1 => TypeSet.VertList
-                          , 2 => TypeSet.Cube
-                          // , 2 => TypeSet.Sphere
-                          , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be [0, 2]!"),
+                          , 2 => TypeSet.RectParallel
+                          , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be 1 or 2!"),
                           };
 
       // Array for coordinates of the next point
@@ -327,19 +327,15 @@ public partial class Geometry<TNum, TConv>
       switch (typeSet) {
         case TypeSet.VertList: {
           int     Qnt  = pr.ReadInt(pref + "Qnt");
-          TNum[,] Vert = pr.Read2DArray<TNum>(pref + "Vert", Qnt, dim);
+          TNum[,] Vert = pr.Read2DArray_double(pref + "Vert", Qnt, dim);
           res = Array2DToHashSet(Vert, Qnt, dim);
 
           break;
         }
-        case TypeSet.Cube: {
-          TNum MCube = TConv.FromDouble(pr.ReadDouble(pref + "Cube"));
-          res = ConvexPolytop.Cube(d,MCube).Vertices;
-
-          break;
-        }
-        case TypeSet.Sphere: {
-          throw new NotImplementedException("Сделать сферу!");
+        case TypeSet.RectParallel: {
+          TNum[] left  = pr.Read1DArray<double>(pref + "RectPLeft", dim).Select(TConv.FromDouble).ToArray();
+          TNum[] right = pr.Read1DArray<double>(pref + "RectPRight", dim).Select(TConv.FromDouble).ToArray();
+          res = ConvexPolytop.RectParallel(left, right).Vertices;
 
           break;
         }

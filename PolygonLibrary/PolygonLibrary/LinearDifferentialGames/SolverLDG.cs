@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -54,9 +55,10 @@ public partial class Geometry<TNum, TConv>
     /// Constructor which creates GameData and init three StableBridges
     /// </summary>
     /// <param name="workDir">The directory where source file and result folder are placed</param>
-    /// <param name="fileName">The name of source file</param>
+    /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
     /// <exception cref="ArgumentException">If there are no path to working directory this exception is thrown</exception>
     public SolverLDG(string workDir, string fileName) {
+      CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
       // origDir = Directory.GetCurrentDirectory();
       // try {
       //   Directory.SetCurrentDirectory(workDir);
@@ -67,7 +69,7 @@ public partial class Geometry<TNum, TConv>
 
       this.workDir  = workDir;
       this.fileName = fileName;
-      gd            = new GameData(this.workDir + "/" + fileName);
+      gd            = new GameData(this.workDir + fileName + ".c");
       W             = new SortedDictionary<TNum, ConvexPolytop>();
     }
 
@@ -94,6 +96,17 @@ public partial class Geometry<TNum, TConv>
             W[t] = WNext;
           }
         }
+      }
+    }
+
+    public void WriteBridge3D() {
+      Debug.Assert(gd.d == 3, $"SolverLDG.WriteBridge3D: Can not write to .txt file non 3-dim bridge! Found = {gd.d}");
+      string fileDir = workDir + fileName;
+      if (!Directory.Exists(fileDir)) {
+        Directory.CreateDirectory(fileDir);
+      }
+      foreach (KeyValuePair<TNum, ConvexPolytop> t_CP in W) {
+        t_CP.Value.WriteTXT($"{fileDir}/{TConv.ToDouble(t_CP.Key):F2}){fileName}.txt");
       }
     }
 

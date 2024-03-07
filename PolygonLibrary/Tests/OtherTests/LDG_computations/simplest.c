@@ -35,7 +35,7 @@ t0 = 0.0;
 T = 1.0;
 
 // The time step
-dt = 0.1;
+dt = 0.2;
 
 // The dimension of projected space
 d = 3;
@@ -50,7 +50,7 @@ Type of the set:
 
     1 - List of the vertices:
 
-    2 - Cube:
+    2 - Rectangle axis-parallel:
 
 */
 
@@ -61,7 +61,8 @@ Type of the set:
 
 // 2 - case example
 PTypeSet = 2;
-PCube = 1.1;
+PRectPLeft = {-0.6, -0.6, -0.6};
+PRectPRight = {0.6, 0.6, 0.6};
 
 
 /* =================================================================================
@@ -71,7 +72,7 @@ Type of the set:
 
     1 - List of the vertices:
 
-    2 - Cube:
+    2 - Rectangle axis-parallel:
 
 */
 
@@ -82,7 +83,8 @@ Type of the set:
 
 // 2 - case example
 QTypeSet = 2;
-QCube = 1;
+QRectPLeft = {-0.5, -0.5, -0.5};
+QRectPRight = {0.5, 0.5, 0.5};
 
 /* =================================================================================
   Block of data defining the Terminal set
@@ -91,7 +93,7 @@ QCube = 1;
 
     1 - List of the vertices:
 
-    2 - Cube:
+    2 - Rectangle axis-parallel:
 
 */
 
@@ -102,5 +104,5 @@ QCube = 1;
 
 // 2 - case example
 MTypeSet = 2;
-MCube = 1;
-
+MRectPLeft = {-0.5, -0.5, -0.5};
+MRectPRight = {0.5, 0.5, 0.5};
