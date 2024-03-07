@@ -75,8 +75,6 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class Facet {
 
-    //todo Может её отнаследовать от HyperPlane и добавить только точки вершин? И заполнять при первой возможности?
-
     /// <summary>
     /// Gets the vertices of the face.
     /// </summary>
@@ -92,7 +90,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="normal">The outward normal vector of the face.</param>
-    public Facet(IEnumerable<Vector> Vs, Vector normal) {
+    public Facet(IReadOnlyList<Vector> Vs, Vector normal) {
       Vertices = new List<Vector>(Vs);
       Normal   = normal;
     }
@@ -124,7 +122,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A hash code for the specified set of vertices.</returns>
     public override int GetHashCode() {
       if (_hash is null) {
-        int hash = 0;
+        int hash = Normal.GetHashCode();
 
         foreach (Vector vertex in Vertices.Order()) {
           hash = HashCode.Combine(hash, vertex.GetHashCode());
@@ -318,37 +316,35 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
-    /// Generates a full-dimension hypercube in the specified dimension.
+    /// Generates a full-dimension axis-parallel rectangle based on two corners.
     /// </summary>
-    /// <param name="cubeDim">The dimension of the hypercube.</param>
-    /// <param name="d">The value of non-zero coordinates.</param>
     /// <returns>A convex polytop as VRep representing the hypercube.</returns>
-    public static ConvexPolytop Cube(int cubeDim, TNum d) {
-      if (cubeDim == 1) {
-        HashSet<Vector> oneDimCube = new HashSet<Vector>() { new Vector(new TNum[] { TNum.Zero }), new Vector(new TNum[] { d }) };
+    public static ConvexPolytop RectParallel(IReadOnlyList<TNum> left, IReadOnlyList<TNum> right) {
+      Debug.Assert
+        (
+         left.Count == right.Count
+       , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left ={left}, right = {right}"
+        );
 
-        return AsVPolytop(oneDimCube);
-      }
+      List<List<TNum>> rect_prev = new List<List<TNum>>();
+      List<List<TNum>> rect      = new List<List<TNum>>();
+      rect_prev.Add(new List<TNum>() { left[0] });
+      rect_prev.Add(new List<TNum>() { right[0] });
 
-      List<List<TNum>> cube_prev = new List<List<TNum>>();
-      List<List<TNum>> cube      = new List<List<TNum>>();
-      cube_prev.Add(new List<TNum>() { TNum.Zero });
-      cube_prev.Add(new List<TNum>() { d });
+      for (int i = 1; i < left.Count; i++) {
+        rect.Clear();
 
-      for (int i = 1; i < cubeDim; i++) {
-        cube.Clear();
-
-        foreach (List<TNum> coords in cube_prev) {
-          cube.Add(new List<TNum>(coords) { TNum.Zero });
-          cube.Add(new List<TNum>(coords) { d });
+        foreach (List<TNum> coords in rect_prev) {
+          rect.Add(new List<TNum>(coords) { left[i] });
+          rect.Add(new List<TNum>(coords) { right[i] });
         }
 
-        cube_prev = new List<List<TNum>>(cube);
+        rect_prev = new List<List<TNum>>(rect);
       }
 
       HashSet<Vector> Cube = new HashSet<Vector>();
 
-      foreach (List<TNum> v in cube) {
+      foreach (List<TNum> v in rect) {
         Cube.Add(new Vector(v.ToArray()));
       }
 
@@ -479,28 +475,21 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Aux functions
-    private List<Facet> CalcFacets() {
-      List<Facet> Fs = new List<Facet>();
-      foreach (FLNode face in FL.Lattice[^2]) {
-        Fs.Add(new Facet(face.Vertices, new HyperPlane(new AffineBasis(face.AffBasis), (FL.Top.InnerPoint, false)).Normal));
-      }
 
-      return Fs;
-    }
 #endregion
 
-    // /// <summary>
-    // /// Converts the polytop to a convex polygon.
-    // /// </summary>
-    // /// <param name="basis">The affine basis used for the conversion.</param>
-    // /// <returns>A convex polygon representing the polytop in 2D space.</returns>
-    // public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
-    //   if (PolytopDim != 2) {
-    //     throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
-    //   }
-    //
-    //   return new ConvexPolygon(basis.ProjectPoints(Vertices));
-    // } todo зависит от PolytopDim
+    /// <summary>
+    /// Converts the polytop to a convex polygon.
+    /// </summary>
+    /// <param name="basis">The affine basis used for the conversion.</param>
+    /// <returns>A convex polygon representing the polytop in 2D space.</returns>
+    public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
+      if (PolytopDim != 2) {
+        throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
+      }
+
+      return new ConvexPolygon(basis.ProjectPoints(Vertices));
+    }
 
     /// <summary>
     /// Writes Polytop to the file in 'PolytopTXT_format'. It use the description as face lattice.
@@ -508,7 +497,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="filePath">The path to the file to write in.</param>
     public void WriteTXT(string filePath) {
       List<Vector> VList = Vertices.Order().ToList();
-      List<Facet>  FSet  = CalcFacets();
+      Facet[]  FSet  = GW.Get2DFacets();
       using (StreamWriter writer = new StreamWriter(filePath)) {
         writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
         writer.WriteLine($"SDim: {SpaceDim}");
@@ -516,7 +505,7 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine($"Vertices: {Vertices.Count}");
         writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
         writer.WriteLine();
-        writer.WriteLine($"Faces: {FSet.Count}");
+        writer.WriteLine($"Faces: {FSet.Length}");
         foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
           writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
