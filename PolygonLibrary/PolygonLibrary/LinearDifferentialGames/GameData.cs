@@ -200,19 +200,19 @@ public partial class Geometry<TNum, TConv>
       ParamReader pr = new ParamReader(inFName);
 
       ProblemName = pr.ReadString("ProblemName");
-      path        = pr.ReadString("path");
-
-      if (path[^1] == '/') {
-        StringBuilder sb = new StringBuilder(path);
-        sb[^1] = '/';
-        path   = sb.ToString();
-      } else if (path[^1] != '/') {
-        path += '/';
-      }
-
-      if (!Directory.Exists(path)) { //Cur dir must be in work directory
-        Directory.CreateDirectory(path);
-      }
+      // path        = pr.ReadString("path"); // todo понадобится, когда в файл будем писать
+      //
+      // if (path[^1] == '/') {
+      //   StringBuilder sb = new StringBuilder(path);
+      //   sb[^1] = '/';
+      //   path   = sb.ToString();
+      // } else if (path[^1] != '/') {
+      //   path += '/';
+      // }
+      //
+      // if (!Directory.Exists(path)) { //Cur dir must be in work directory
+      //   Directory.CreateDirectory(path);
+      // }
 
       // Dynamics
       n = pr.ReadInt("n");
@@ -316,9 +316,9 @@ public partial class Geometry<TNum, TConv>
 
       TypeSet typeSet = typeSetInt switch
                           {
-                            0 => TypeSet.VertList
-                          , 1 => TypeSet.Cube
-                          , 2 => TypeSet.Sphere
+                            1 => TypeSet.VertList
+                          , 2 => TypeSet.Cube
+                          // , 2 => TypeSet.Sphere
                           , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be [0, 2]!"),
                           };
 
@@ -333,7 +333,7 @@ public partial class Geometry<TNum, TConv>
           break;
         }
         case TypeSet.Cube: {
-          TNum MCube = TConv.FromInt(pr.ReadInt(pref + "Cube"));
+          TNum MCube = TConv.FromDouble(pr.ReadDouble(pref + "Cube"));
           res = ConvexPolytop.Cube(d,MCube).Vertices;
 
           break;

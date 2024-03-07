@@ -89,7 +89,7 @@ public partial class Geometry<TNum, TConv>
      */
 
 
-    public static bool MinkDiff(
+    private static bool MinkDiff(
         List<HyperPlane>                          F
       , HashSet<Vector>                           G
       , out ConvexPolytop                         diffFG

@@ -49,7 +49,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Builds Hyper plane Polytop from BuiltPolytop.
     /// </summary>
-    /// <returns>The List<HyperPlane>.</returns>
+    /// <returns>The List of hyper planes.</returns>
     private List<HyperPlane> GetHPolytop() {
       if (BuiltPolytop.PolytopDim <= 2) {
         throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");

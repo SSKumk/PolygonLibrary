@@ -19,10 +19,10 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class SolverLDG {
 
-    /// <summary>
-    /// The main directory before solving the problem 
-    /// </summary>
-    private readonly string origDir;
+    // /// <summary>
+    // /// The main directory before solving the problem
+    // /// </summary>
+    // private readonly string origDir;
 
     /// <summary>
     /// The directory where source file and result folder are placed
@@ -47,7 +47,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Game-whole bridge
     /// </summary>
-    private SortedDictionary<TNum, ConvexPolytop> W;
+    private readonly SortedDictionary<TNum, ConvexPolytop> W;
 
 
     /// <summary>
@@ -57,25 +57,24 @@ public partial class Geometry<TNum, TConv>
     /// <param name="fileName">The name of source file</param>
     /// <exception cref="ArgumentException">If there are no path to working directory this exception is thrown</exception>
     public SolverLDG(string workDir, string fileName) {
-      origDir = Directory.GetCurrentDirectory();
-      try {
-        Directory.SetCurrentDirectory(workDir);
-      }
-      catch {
-        throw new ArgumentException("A problem to switch to the folder WorkDir:", workDir);
-      }
+      // origDir = Directory.GetCurrentDirectory();
+      // try {
+      //   Directory.SetCurrentDirectory(workDir);
+      // }
+      // catch {
+      //   throw new ArgumentException("A problem to switch to the folder WorkDir:", workDir);
+      // }
 
-      this.workDir  = Directory.GetCurrentDirectory();
+      this.workDir  = workDir;
       this.fileName = fileName;
       gd            = new GameData(this.workDir + "/" + fileName);
       W             = new SortedDictionary<TNum, ConvexPolytop>();
-      // gnuplotDat = gd.path + "gnuplot-dat/";
     }
 
     /// <summary>
     /// Computes LDG 
     /// </summary>
-    public void Compute() {
+    public void Solve() {
       TNum t = gd.T;
       TNum tPred;
 

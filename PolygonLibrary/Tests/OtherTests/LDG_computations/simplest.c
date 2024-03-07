@@ -1,9 +1,10 @@
 // Name of the problem
 ProblemName = "Simplest-Cube3D-problem";
 
-// Path to the folder whereto the result should be written
-path = "./";
-
+/*
+ Path to the folder whereto the result should be written
+ path = "./";
+*/
 
 /* =================================================================================
   Block of data defining the dynamics of the game
