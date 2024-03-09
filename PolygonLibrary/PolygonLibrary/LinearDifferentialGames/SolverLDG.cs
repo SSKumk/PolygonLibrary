@@ -59,15 +59,19 @@ public partial class Geometry<TNum, TConv>
     /// <exception cref="ArgumentException">If there are no path to working directory this exception is thrown</exception>
     public SolverLDG(string workDir, string fileName) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-      // origDir = Directory.GetCurrentDirectory();
-      // try {
-      //   Directory.SetCurrentDirectory(workDir);
-      // }
-      // catch {
-      //   throw new ArgumentException("A problem to switch to the folder WorkDir:", workDir);
-      // }
 
       this.workDir  = workDir;
+      if (workDir[^1] == '/') {
+        StringBuilder sb = new StringBuilder(workDir);
+        sb[^1] = '/';
+        workDir   = sb.ToString();
+      } else if (workDir[^1] != '/') {
+        workDir += '/';
+      }
+
+      if (!Directory.Exists(workDir)) { //Cur dir must be in work directory
+        Directory.CreateDirectory(workDir);
+      }
       this.fileName = fileName;
       gd            = new GameData(this.workDir + fileName + ".c");
       W             = new SortedDictionary<TNum, ConvexPolytop>();
@@ -84,6 +88,10 @@ public partial class Geometry<TNum, TConv>
 
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
+        if (gd.d == 3) {
+          // W[t].WriteTXT($"{workDir + fileName}/{TConv.ToDouble(t):F2}){fileName}.txt");
+        }
+
         tPred =  t;
         t     -= gd.dt;
         if (bridgeIsNotDegenerate) { // Формула Пшеничного
@@ -99,16 +107,16 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    public void WriteBridge3D() {
-      Debug.Assert(gd.d == 3, $"SolverLDG.WriteBridge3D: Can not write to .txt file non 3-dim bridge! Found = {gd.d}");
-      string fileDir = workDir + fileName;
-      if (!Directory.Exists(fileDir)) {
-        Directory.CreateDirectory(fileDir);
-      }
-      foreach (KeyValuePair<TNum, ConvexPolytop> t_CP in W) {
-        t_CP.Value.WriteTXT($"{fileDir}/{TConv.ToDouble(t_CP.Key):F2}){fileName}.txt");
-      }
-    }
+    // public void WriteBridge3D() {
+    //   Debug.Assert(gd.d == 3, $"SolverLDG.WriteBridge3D: Can not write to .txt file non 3-dim bridge! Found = {gd.d}");
+    //   string fileDir = workDir + fileName;
+    //   if (!Directory.Exists(fileDir)) {
+    //     Directory.CreateDirectory(fileDir);
+    //   }
+    //   foreach (KeyValuePair<TNum, ConvexPolytop> t_CP in W) {
+    //     t_CP.Value.WriteTXT($"{fileDir}/{TConv.ToDouble(t_CP.Key):F2}){fileName}.txt");
+    //   }
+    // }
 
   }
 
