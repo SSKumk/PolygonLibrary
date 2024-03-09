@@ -41,13 +41,17 @@ public partial class Geometry<TNum, TConv>
     }
 
 #region Fields
-    private int         _row, _col;
-    private TNum[,]     _A;
-    private TNum[]      _b, _result;
-    private GaussChoice _gaussChoice;
+    private readonly int         _row;
+    private readonly int         _col;
+    private readonly TNum[,]     _A;
+    private readonly TNum[]      _b;
+    private readonly TNum[]      _result;
+    private          GaussChoice _gaussChoice;
 
-    private int[] _indARow, _indACol, _indB;
-    private bool  isSuccess;
+    private readonly int[] _indARow;
+    private readonly int[] _indACol;
+    private readonly int[] _indB;
+    private          bool  isSuccess;
 #endregion
 
 #region Constructors
