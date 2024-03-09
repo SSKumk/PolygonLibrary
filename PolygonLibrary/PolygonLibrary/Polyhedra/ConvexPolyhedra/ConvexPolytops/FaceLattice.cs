@@ -397,34 +397,37 @@ public partial class Geometry<TNum, TConv>
 
       FLNode other = (FLNode)obj;
 
-      // 1) this.Above == other.Above
-      bool isEqual     = true;
-      var  thisAboveP  = this.Super.Select(a => a.Polytop);
-      var  otherAboveP = other.Super.Select(a => a.Polytop);
+      //todo HashSet<FLNode> и Dictionary<FLNode> сначала просят ХЕШ, а потом сравнивают на Equals!
+      // И vvv это ОЧЕНЬ медленно. Что можно сделать?
 
-      isEqual = isEqual && isEqualFaces(thisAboveP, otherAboveP);
-
-      if (!isEqual) {
-        Console.WriteLine("Above!");
-        Console.WriteLine($"This:  {string.Join(' ', this.Super.Select(n => n.GetHashCode()))}");
-        Console.WriteLine($"Other: {string.Join(' ', other.Super.Select(n => n.GetHashCode()))}");
-
-        return false;
-      }
-
-      // 2) this.Sub == other.Sub
-      var thisSubP  = this.Sub.Select(s => s.Polytop);
-      var otherSubP = other.Sub.Select(s => s.Polytop);
-
-      isEqual = isEqual && isEqualFaces(thisSubP, otherSubP);
-
-      if (!isEqual) {
-        Console.WriteLine(value: "Below!");
-        Console.WriteLine($"This:  {string.Join(' ', this.Sub.Select(n => n.GetHashCode()))}");
-        Console.WriteLine($"Other: {string.Join(' ', other.Sub.Select(n => n.GetHashCode()))}");
-
-        return false;
-      }
+      // // 1) this.Above == other.Above
+      // bool isEqual     = true;
+      // var  thisAboveP  = this.Super.Select(a => a.Polytop);
+      // var  otherAboveP = other.Super.Select(a => a.Polytop);
+      //
+      // isEqual = isEqual && isEqualFaces(thisAboveP, otherAboveP);
+      //
+      // if (!isEqual) {
+      //   Console.WriteLine("Above!");
+      //   Console.WriteLine($"This:  {string.Join(' ', this.Super.Select(n => n.GetHashCode()))}");
+      //   Console.WriteLine($"Other: {string.Join(' ', other.Super.Select(n => n.GetHashCode()))}");
+      //
+      //   return false;
+      // }
+      //
+      // // 2) this.Sub == other.Sub
+      // var thisSubP  = this.Sub.Select(s => s.Polytop);
+      // var otherSubP = other.Sub.Select(s => s.Polytop);
+      //
+      // isEqual = isEqual && isEqualFaces(thisSubP, otherSubP);
+      //
+      // if (!isEqual) {
+      //   Console.WriteLine(value: "Below!");
+      //   Console.WriteLine($"This:  {string.Join(' ', this.Sub.Select(n => n.GetHashCode()))}");
+      //   Console.WriteLine($"Other: {string.Join(' ', other.Sub.Select(n => n.GetHashCode()))}");
+      //
+      //   return false;
+      // }
 
       // 3) this == other
       return this.Polytop.SetEquals(other.Polytop);
