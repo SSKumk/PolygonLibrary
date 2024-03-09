@@ -29,11 +29,6 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public readonly string ProblemName;
 
-    /// <summary>
-    /// Path to the folder whereto the result should be written
-    /// </summary>
-    public readonly string path;
-
 #region Data defining the dynamics of the game
     /// <summary>
     /// Dimension of the phase vector
@@ -104,7 +99,7 @@ public partial class Geometry<TNum, TConv>
      ,
 
       /// <summary>
-      /// Sphere
+      /// hD-Sphere
       /// </summary>
       Sphere
 
@@ -201,19 +196,6 @@ public partial class Geometry<TNum, TConv>
       ParamReader pr = new ParamReader(inFName);
 
       ProblemName = pr.ReadString("ProblemName");
-      // path        = pr.ReadString("path"); // todo понадобится, когда в файл будем писать
-      //
-      // if (path[^1] == '/') {
-      //   StringBuilder sb = new StringBuilder(path);
-      //   sb[^1] = '/';
-      //   path   = sb.ToString();
-      // } else if (path[^1] != '/') {
-      //   path += '/';
-      // }
-      //
-      // if (!Directory.Exists(path)) { //Cur dir must be in work directory
-      //   Directory.CreateDirectory(path);
-      // }
 
       // Dynamics
       n = pr.ReadInt("n");
@@ -319,6 +301,7 @@ public partial class Geometry<TNum, TConv>
                           {
                             1 => TypeSet.VertList
                           , 2 => TypeSet.RectParallel
+                          , 3 => TypeSet.Sphere
                           , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be 1 or 2!"),
                           };
 
@@ -336,6 +319,14 @@ public partial class Geometry<TNum, TConv>
           TNum[] left  = pr.Read1DArray<double>(pref + "RectPLeft", dim).Select(TConv.FromDouble).ToArray();
           TNum[] right = pr.Read1DArray<double>(pref + "RectPRight", dim).Select(TConv.FromDouble).ToArray();
           res = ConvexPolytop.RectParallel(left, right).Vertices;
+
+          break;
+        }
+        case TypeSet.Sphere: {
+          int  Theta  = pr.ReadInt(pref + "Theta");
+          int  Phi    = pr.ReadInt(pref + "Phi");
+          TNum Radius = TConv.FromDouble(pr.ReadDouble(pref + "Radius"));
+          res = ConvexPolytop.Sphere(dim, Theta, Phi, Radius).Vertices;
 
           break;
         }
