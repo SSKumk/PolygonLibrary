@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Serialization;
 
 namespace CGLibrary;
 
@@ -887,6 +888,29 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(coords);
     }
+
+  }
+
+  public class VectorHashSet : HashSet<Vector> {
+
+    public VectorHashSet() { }
+    public VectorHashSet(IEnumerable<Vector> collection) : base(collection) { }
+    public VectorHashSet(IEnumerable<Vector> collection, IEqualityComparer<Vector>? comparer) : base(collection, comparer) { }
+    public VectorHashSet(IEqualityComparer<Vector>? comparer) : base(comparer) { }
+    public VectorHashSet(int capacity) : base(capacity) { }
+    public VectorHashSet(int capacity, IEqualityComparer<Vector>? comparer) : base(capacity, comparer) { }
+
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+      VectorHashSet other = (VectorHashSet)obj;
+
+      return this.SetEquals(other);
+    }
+
+    public override int GetHashCode() { return this.Select(v => v.GetHashCode()).Order().Aggregate(0, HashCode.Combine); }
 
   }
 
