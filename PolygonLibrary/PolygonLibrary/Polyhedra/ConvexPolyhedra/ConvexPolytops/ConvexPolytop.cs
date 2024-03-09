@@ -155,7 +155,7 @@ public partial class Geometry<TNum, TConv>
 
     private GiftWrapping GW => _gw ??= new GiftWrapping(VRep);
 
-    private HashSet<Vector>? _VRep = null; // todo список вершин или же vpolytop?
+    private HashSet<Vector>? _VRep = null;
 
     public HashSet<Vector> VRep {
       get
@@ -403,27 +403,27 @@ public partial class Geometry<TNum, TConv>
     /// Generates a list of Cartesian coordinates for points on a hD-sphere.
     /// </summary>
     /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
-    /// <param name="thetaPoints">The number of points at each zenith angle. Theta in [0, Pi].
+    /// <param name="thetaPartition">The number of points at each zenith angle. Theta in [0, Pi].
     ///  thetaPoints should be greater than 2 for proper calculation.</param>
-    /// <param name="phiPoints">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="phiPartition">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytop as VRep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(int dim, int thetaPoints, int phiPoints, TNum radius) {
+    public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, TNum radius) {
       Debug.Assert(dim > 1, "The dimension of a sphere must be 2 or greater.");
       // Phi in [0, 2*Pi)
       // Theta in [0, Pi]
       HashSet<Vector> Ps        = new HashSet<Vector>();
       int             N         = dim - 2;
-      TNum            thetaStep = Tools.PI / TConv.FromInt(thetaPoints);
-      TNum            phiStep   = Tools.PI2 / TConv.FromInt(phiPoints);
+      TNum            thetaStep = Tools.PI / TConv.FromInt(thetaPartition);
+      TNum            phiStep   = Tools.PI2 / TConv.FromInt(phiPartition);
 
       List<TNum> thetaAll = new List<TNum>();
-      for (int i = 0; i <= thetaPoints; i++) {
+      for (int i = 0; i <= thetaPartition; i++) {
         thetaAll.Add(thetaStep * TConv.FromInt(i));
       }
 
       // цикл по переменной [0, 2*Pi)
-      for (int i = 0; i < phiPoints; i++) {
+      for (int i = 0; i < phiPartition; i++) {
         TNum phi = phiStep * TConv.FromInt(i);
 
         // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
