@@ -37,9 +37,5 @@
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="OtherTests\LDG_computations\" />
-    </ItemGroup>
 
 </Project>
