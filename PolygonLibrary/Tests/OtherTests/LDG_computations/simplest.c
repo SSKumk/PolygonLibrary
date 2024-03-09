@@ -1,11 +1,6 @@
 // Name of the problem
 ProblemName = "Simplest-Cube3D-problem";
 
-/*
- Path to the folder whereto the result should be written
- path = "./";
-*/
-
 /* =================================================================================
   Block of data defining the dynamics of the game
 */
@@ -47,19 +42,23 @@ projJ = {0, 1, 2};
   Block of data defining the constraint for the first player's control
 
 Type of the set:
-
     1 - List of the vertices:
+      PTypeSet = 1;
+      PQnt     = 3;
+      PVert    = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
     2 - Rectangle axis-parallel:
+      PTypeSet    = 2;
+      PRectPLeft  = {-0.5, -0.5, -0.5};
+      PRectPRight = {0.5, 0.5, 0.5};
+
+    3 - Sphere:
+      PTheta  = 11;
+      PPhi    = 7;
+      PRadius = 1;
 
 */
 
-// 1 - case example
-// PTypeSet = 1;
-// PQnt = 3;
-// PVert = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
-
-// 2 - case example
 PTypeSet = 2;
 PRectPLeft = {-0.6, -0.6, -0.6};
 PRectPRight = {0.6, 0.6, 0.6};
@@ -71,17 +70,22 @@ PRectPRight = {0.6, 0.6, 0.6};
 Type of the set:
 
     1 - List of the vertices:
+      QTypeSet = 1;
+      QQnt     = 3;
+      QVert    = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
     2 - Rectangle axis-parallel:
+      QTypeSet    = 2;
+      QRectPLeft  = {-0.5, -0.5, -0.5};
+      QRectPRight = {0.5, 0.5, 0.5};
+
+    3 - Sphere:
+      QTheta  = 11;
+      QPhi    = 7;
+      QRadius = 1;
 
 */
 
-// 1 - case example
-// QTypeSet = 1;
-// QQnt = 3;
-// QVert = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
-
-// 2 - case example
 QTypeSet = 2;
 QRectPLeft = {-0.5, -0.5, -0.5};
 QRectPRight = {0.5, 0.5, 0.5};
@@ -92,17 +96,23 @@ QRectPRight = {0.5, 0.5, 0.5};
   Type of the set:
 
     1 - List of the vertices:
+      MTypeSet = 1;
+      MQnt     = 3;
+      MVert    = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
     2 - Rectangle axis-parallel:
+      MTypeSet    = 2;
+      MRectPLeft  = {-0.5, -0.5, -0.5};
+      MRectPRight = {0.5, 0.5, 0.5};
+
+    3 - Sphere:
+      MTheta  = 11;
+      MPhi    = 7;
+      MRadius = 1;
 
 */
 
-// 1 - case example
-// MTypeSet = 1;
-// MQnt = 3;
-// MVert = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
-// 2 - case example
 MTypeSet = 2;
 MRectPLeft = {-0.5, -0.5, -0.5};
 MRectPRight = {0.5, 0.5, 0.5};
