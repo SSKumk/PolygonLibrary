@@ -434,7 +434,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     private static bool isEqualFaces(IEnumerable<HashSet<Vector>> faces1, IEnumerable<HashSet<Vector>> faces2) {
-      bool isEq = true;
       foreach (HashSet<Vector> face1 in faces1) {
         bool isInFace2 = false;
         foreach (HashSet<Vector> face2 in faces2) {
@@ -444,8 +443,7 @@ public partial class Geometry<TNum, TConv>
             break;
           }
         }
-        isEq = isEq && isInFace2;
-        if (isEq == false) {
+        if (!isInFace2) {
           return false;
         }
       }
