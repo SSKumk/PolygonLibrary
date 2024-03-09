@@ -221,8 +221,6 @@ public partial class Geometry<TNum, TConv>
       // Reading data on the second player's control and generating the constraint if necessary
       ReadSets(pr, 'q');
 
-      // WriteQTubes = pr.ReadBoolean("WriteQTubes");
-
       //Reading data of terminal set type
       ReadSets(pr, 'M');
 
