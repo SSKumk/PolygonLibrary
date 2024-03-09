@@ -28,7 +28,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The directory where source file and result folder are placed
     /// </summary>
-    private string workDir;
+    private readonly string workDir;
 
     // /// <summary>
     // /// The directory where .dat files will be saved
@@ -38,7 +38,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The name of source file
     /// </summary>
-    private string fileName;
+    private readonly string fileName;
 
     /// <summary>
     /// Holds internal information about task
@@ -60,11 +60,11 @@ public partial class Geometry<TNum, TConv>
     public SolverLDG(string workDir, string fileName) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      this.workDir  = workDir;
+      this.workDir = workDir;
       if (workDir[^1] == '/') {
         StringBuilder sb = new StringBuilder(workDir);
-        sb[^1] = '/';
-        workDir   = sb.ToString();
+        sb[^1]  = '/';
+        workDir = sb.ToString();
       } else if (workDir[^1] != '/') {
         workDir += '/';
       }
@@ -80,7 +80,14 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Computes LDG 
     /// </summary>
-    public void Solve() {
+    public void Solve(bool isNeedWrite) {
+      string filesDir = workDir + gd.ProblemName;
+      if (isNeedWrite) {
+        if (!Directory.Exists(filesDir)) { //Cur dir must be in work directory
+          Directory.CreateDirectory(filesDir);
+        }
+      }
+
       TNum t = gd.T;
       TNum tPred;
 
@@ -88,8 +95,8 @@ public partial class Geometry<TNum, TConv>
 
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
-        if (gd.d == 3) {
-          // W[t].WriteTXT($"{workDir + fileName}/{TConv.ToDouble(t):F2}){fileName}.txt");
+        if (isNeedWrite) {
+          W[t].WriteTXT($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.txt");
         }
 
         tPred =  t;
