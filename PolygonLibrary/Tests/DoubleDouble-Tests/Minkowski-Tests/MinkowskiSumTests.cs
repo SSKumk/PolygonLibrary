@@ -364,19 +364,19 @@ public class MinkowskiSum2D {
 
    static MinkowskiSum5D() {
      cube5D = Cube5D_list;
-     cube4D = Cube4D_list.Select(p => p.ExpandTo(5)).ToList();
-     cube3D = Cube3D_list.Select(p => p.ExpandTo(5)).ToList();
-     cube2D = Cube2D_list.Select(p => p.ExpandTo(5)).ToList();
+     cube4D = Cube4D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     cube3D = Cube3D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     cube2D = Cube2D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
 
      simplex5D = Simplex5D_list;
-     simplex4D = Simplex4D_list.Select(p => p.ExpandTo(5)).ToList();
-     simplex3D = Simplex3D_list.Select(p => p.ExpandTo(5)).ToList();
-     simplex2D = Simplex2D_list.Select(p => p.ExpandTo(5)).ToList();
+     simplex4D = Simplex4D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     simplex3D = Simplex3D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     simplex2D = Simplex2D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
 
      simplexRND5D = SimplexRND5D_list;
-     simplexRND4D = SimplexRND4D_list.Select(p => p.ExpandTo(5)).ToList();
-     simplexRND3D = SimplexRND3D_list.Select(p => p.ExpandTo(5)).ToList();
-     simplexRND2D = SimplexRND2D_list.Select(p => p.ExpandTo(5)).ToList();
+     simplexRND4D = SimplexRND4D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     simplexRND3D = SimplexRND3D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
+     simplexRND2D = SimplexRND2D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
 
      allCubes_lst = new List<List<Vector>>()
        {
