@@ -319,11 +319,11 @@ public partial class Geometry<TNum, TConv>
     /// Generates a full-dimension axis-parallel rectangle based on two corners.
     /// </summary>
     /// <returns>A convex polytop as VRep representing the hypercube.</returns>
-    public static ConvexPolytop RectParallel(IReadOnlyList<TNum> left, IReadOnlyList<TNum> right) {
+    public static ConvexPolytop RectParallel(Vector left, Vector right) {
       Debug.Assert
         (
-         left.Count == right.Count
-       , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left ={left}, right = {right}"
+         left.Dim == right.Dim
+       , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left = {left}, right = {right}"
         );
 
       List<List<TNum>> rect_prev = new List<List<TNum>>();
@@ -331,7 +331,7 @@ public partial class Geometry<TNum, TConv>
       rect_prev.Add(new List<TNum>() { left[0] });
       rect_prev.Add(new List<TNum>() { right[0] });
 
-      for (int i = 1; i < left.Count; i++) {
+      for (int i = 1; i < left.Dim; i++) {
         rect.Clear();
 
         foreach (List<TNum> coords in rect_prev) {
@@ -400,12 +400,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Generates a list of Cartesian coordinates for points on a hD-sphere.
+    /// Makes a hD-sphere as VRep with given radius.
     /// </summary>
     /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
-    /// <param name="thetaPartition">The number of points at each zenith angle. Theta in [0, Pi].
+    /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].
     ///  thetaPoints should be greater than 2 for proper calculation.</param>
-    /// <param name="phiPartition">The number of points by azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytop as VRep representing the sphere in hD.</returns>
     public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, TNum radius) {
@@ -472,10 +472,32 @@ public partial class Geometry<TNum, TConv>
 
       return AsVPolytop(Ps);
     }
+
+    /// <summary>
+    /// Makes the ball in 1-norm.
+    /// </summary>
+    /// <param name="dim">The dimension of the ball.</param>
+    /// <returns>The ball in 1-norm.</returns>
+    public static ConvexPolytop Ball_1(int dim) {
+      HashSet<Vector> ball = new HashSet<Vector>(2 * dim);
+      for (int i = 1; i <= dim; i++) {
+        Vector e = Vector.MakeOrth(dim, i);
+        ball.Add(e);
+        ball.Add(-e);
+      }
+
+      return AsVPolytop(ball);
+    }
+
+    /// <summary>
+    /// Makes the ball in infinity norm.
+    /// </summary>
+    /// <param name="dim">The dimension of the ball.</param>
+    /// <returns>The ball in infinity norm.</returns>
+    public static ConvexPolytop Ball_oo(int dim) => RectParallel(-Vector.Ones(dim), Vector.Ones(dim));
 #endregion
 
 #region Aux functions
-
 #endregion
 
     /// <summary>
@@ -502,7 +524,7 @@ public partial class Geometry<TNum, TConv>
        , $"ConvexPolytop.WriteTXT_3D: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
         );
       List<Vector> VList = Vertices.Order().ToList();
-      Facet[]  FSet  = GW.Get2DFacets();
+      Facet[]      FSet  = GW.Get2DFacets();
       using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
         writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
         writer.WriteLine($"SDim: {SpaceDim}");
