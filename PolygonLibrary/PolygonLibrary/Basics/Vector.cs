@@ -343,20 +343,39 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(res);
     }
+    //
+    // /// <summary>
+    // /// Expands the vector to a higher dimension.
+    // /// </summary>
+    // /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the vector.</param>
+    // /// <param name="Ind">The array-dictionary which shows into w of indices expand to.
+    // /// If null, then 0..Dim-1 be used.</param>
+    // /// <returns>A new vector in the target dimension, with the some coordinates set to zero.</returns>
+    // public Vector LiftUp(int d, List<int>? Ind = null) {
+    //   Debug.Assert(d > Dim, "Vector.ExpandTo: Can't expand to lower dimension!");
+    //   List<int> ind = Ind ?? new List<int>(Enumerable.Range(0, Dim));
+    //   TNum[]    np  = new TNum[d];
+    //   for (int i = 0; i < Dim; i++) {
+    //     np[ind[i]] = _v[i];
+    //   }
+    //
+    //   return new Vector(np);
+    // }
 
     /// <summary>
     /// Expands the vector to a higher dimension.
     /// </summary>
     /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the vector.</param>
-    /// <param name="Ind">The array of indices expand to.
-    /// If null, then 0..Dim-1 be used.</param>
-    /// <returns>A new vector in the target dimension, with the some coordinates set to zero.</returns>
-    public Vector ExpandTo(int d, List<int>? Ind = null) {
-      Debug.Assert(d > Dim, "Vector.ExpandTo: Can't expand to lower dimension!");
-      List<int> ind = Ind ?? new List<int>(Enumerable.Range(0, Dim));
-      TNum[]    np  = new TNum[d];
+    /// <param name="val">The value to expand with.</param>
+    /// <returns>A new vector in the target dimension, with the last coordinates sets to val.</returns>
+    public Vector LiftUp(int d, TNum val) {
+      Debug.Assert(d > Dim, "Vector.LiftUp: Can't lift to lower dimension!");
+      TNum[] np = new TNum[d];
       for (int i = 0; i < Dim; i++) {
-        np[ind[i]] = _v[i];
+        np[i] = _v[i];
+      }
+      for (int i = Dim; i < d; i++) {
+        np[i] = val;
       }
 
       return new Vector(np);
