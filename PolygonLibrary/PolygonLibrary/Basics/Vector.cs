@@ -368,11 +368,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The string in the specified format.</returns>
     public string ToFileFormat() {
-      string res = $"{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
+      string res = $"{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
-        res += $" {_v[i].ToString(null, CultureInfo.InvariantCulture)}";
+        res += $" {TConv.ToDouble(_v[i]).ToString(null, CultureInfo.InvariantCulture)}";
       }
 
       return res;
@@ -596,28 +596,45 @@ public partial class Geometry<TNum, TConv>
 
 #region Fabrics
     /// <summary>
-    /// Get zero vector of given dimension.
+    /// Makes the zero vector of given dimension.
     /// </summary>
-    /// <param name="n">The dimension of the vector.</param>
+    /// <param name="dim">The dimension of the vector.</param>
     /// <returns>The zero vector.</returns>
-    public static Vector CreateOrigin(int n) {
-      TNum[] orig = new TNum[n];
+    public static Vector Zero(int dim) {
+      Debug.Assert(dim > 0, $"Vector.Zero: The dimension of the vector must be greater than 0! Found dim = {dim}");
+      TNum[] orig = new TNum[dim];
 
       return new Vector(orig);
     }
 
     /// <summary>
-    /// Creates the i-orth of given dimension. (1,0,0) == CreateOrth(3,1).
+    /// Makes the i-orth of given dimension. (1,0,0) == MakeOrth(3,1).
     /// </summary>
-    /// <param name="dim">The dimension of the vector</param>
-    /// <param name="pos">The position of '1'</param>
-    /// <returns>The i-orth of given dimension</returns>
-    public static Vector CreateOrth(int dim, int pos) {
-      Debug.Assert(pos > 0, "Position should be greater than 0.");
+    /// <param name="dim">The dimension of the vector.</param>
+    /// <param name="pos">The position of '1'.</param>
+    /// <returns>The i-orth of given dimension.</returns>
+    public static Vector MakeOrth(int dim, int pos) {
+      Debug.Assert(pos > 0, "Vector.MakeOrth: Position should be greater than 0.");
       TNum[] orth = new TNum[dim];
       orth[pos - 1] = TNum.MultiplicativeIdentity;
 
       return new Vector(orth);
+    }
+
+    /// <summary>
+    /// Makes the vector of '1' of given dimension.
+    /// </summary>
+    /// <param name="dim">The dimension of the vector.</param>
+    /// <returns>The vector of ones.</returns>
+    public static Vector Ones(int dim) {
+      Debug.Assert(dim > 0, $"Vector.Ones: The dimension of the vector must be greater than 0! Found dim = {dim}");
+
+      TNum[] ones = new TNum[dim];
+      for (int i = 0; i < dim; i++) {
+        ones[i] = Tools.One;
+      }
+
+      return new Vector(ones);
     }
 
     /// <summary>
