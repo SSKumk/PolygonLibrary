@@ -492,13 +492,18 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Writes Polytop to the file in 'PolytopTXT_format'. It use the description as face lattice.
+    /// Writes Polytop to the file in 'PolytopTXT_format'.
     /// </summary>
-    /// <param name="filePath">The path to the file to write in.</param>
-    public void WriteTXT(string filePath) {
+    /// <param name="filePath">The path to the file to write in without extension.</param>
+    public void WriteTXT_3D(string filePath) {
+      Debug.Assert
+        (
+         PolytopDim == 3
+       , $"ConvexPolytop.WriteTXT_3D: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
+        );
       List<Vector> VList = Vertices.Order().ToList();
       Facet[]  FSet  = GW.Get2DFacets();
-      using (StreamWriter writer = new StreamWriter(filePath)) {
+      using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
         writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
         writer.WriteLine($"SDim: {SpaceDim}");
         writer.WriteLine();

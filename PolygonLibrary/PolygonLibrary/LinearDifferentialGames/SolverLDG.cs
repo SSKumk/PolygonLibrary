@@ -96,7 +96,7 @@ public partial class Geometry<TNum, TConv>
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
         if (isNeedWrite) {
-          W[t].WriteTXT($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.txt");
+          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
