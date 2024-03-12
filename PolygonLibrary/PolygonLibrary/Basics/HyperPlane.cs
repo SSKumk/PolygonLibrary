@@ -40,7 +40,7 @@ public partial class Geometry<TNum, TConv>
             lBasis.AddVectorToBasis(Normal);
 
             for (int i = 1; i <= spaceDim; i++) {
-              Vector orth = Vector.CreateOrth(spaceDim, i);
+              Vector orth = Vector.MakeOrth(spaceDim, i);
               lBasis.AddVectorToBasis(orth);
             }
 
@@ -66,7 +66,7 @@ public partial class Geometry<TNum, TConv>
 
 
             for (int i = 1; i <= spaceDim; i++) {
-              Vector orth = Vector.CreateOrth(spaceDim, i);
+              Vector orth = Vector.MakeOrth(spaceDim, i);
               Vector n    = Vector.OrthonormalizeAgainstBasis(orth, _affineBasis.Basis);
 
               if (!n.IsZero) {

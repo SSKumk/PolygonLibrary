@@ -9,11 +9,11 @@ public class HashSetTests {
   [Test]
   public void HashCodeTest1() {
     Vector origin = new Vector(new Vector(5));
-    Vector e1     = new Vector(Vector.CreateOrth(5, 1));
-    Vector e2     = new Vector(Vector.CreateOrth(5, 2));
-    Vector e3     = new Vector(Vector.CreateOrth(5, 3));
-    Vector e4     = new Vector(Vector.CreateOrth(5, 4));
-    Vector e5     = new Vector(Vector.CreateOrth(5, 5));
+    Vector e1     = new Vector(Vector.MakeOrth(5, 1));
+    Vector e2     = new Vector(Vector.MakeOrth(5, 2));
+    Vector e3     = new Vector(Vector.MakeOrth(5, 3));
+    Vector e4     = new Vector(Vector.MakeOrth(5, 4));
+    Vector e5     = new Vector(Vector.MakeOrth(5, 5));
 
     Vector e6 = new Vector(new double[] { 1.0000000001, 0, 0, 0, 0 });
 

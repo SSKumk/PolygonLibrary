@@ -136,7 +136,7 @@ public partial class Geometry<TNum, TConv>
       foreach (BaseSubCP polytop in BuiltPolytop.Faces) {
         TNum                convCoeff      = Tools.One / TConv.FromInt(VRep.Count);
         IEnumerable<Vector> convCombVs     = VRep.Select(v => v * convCoeff);
-        Vector              innerPoint     = Vector.CreateOrigin(PolytopDim);
+        Vector              innerPoint     = Vector.Zero(PolytopDim);
         foreach (Vector v in convCombVs) { innerPoint += v; }
 
         SubTwoDimensional   twoDimensional = (SubTwoDimensional)polytop;
@@ -343,7 +343,7 @@ public partial class Geometry<TNum, TConv>
         AffineBasis FinalV = new AffineBasis(origin);
 
         // нормаль к плоскости начальной
-        Vector n = -Vector.CreateOrth(spaceDim, 1);
+        Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SpaceDim < spaceDim - 1) {
           Vector   e;
@@ -351,7 +351,7 @@ public partial class Geometry<TNum, TConv>
           Vector[] nBasis = { n };
           do {
             i++;
-            e = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis, nBasis);
+            e = Vector.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.Basis, nBasis);
           } while (e.IsZero && i <= spaceDim);
           Debug.Assert
             (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
@@ -385,7 +385,7 @@ public partial class Geometry<TNum, TConv>
           i = 0;
           do {
             i++;
-            n = Vector.OrthonormalizeAgainstBasis(Vector.CreateOrth(spaceDim, i), FinalV.Basis);
+            n = Vector.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.Basis);
           } while (n.IsZero && i <= spaceDim);
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
@@ -445,7 +445,7 @@ public partial class Geometry<TNum, TConv>
         // Его нормаль будет (1,0,...,0)
         BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
         if (prj_initFace is not null) {
-          prj_initFace.Normal = Vector.CreateOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
+          prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
         }
 
         // Овыпукляем в подпространстве

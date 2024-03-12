@@ -214,7 +214,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     List<Vector> simplex = new List<Vector> { new Vector(new TNum[simplexDim]) };
 
     for (int i = 1; i < simplexDim + 1; i++) {
-      simplex.Add(new Vector(Vector.CreateOrth(simplexDim, i)));
+      simplex.Add(new Vector(Vector.MakeOrth(simplexDim, i)));
     }
     pureSimplex = new List<Vector>(simplex);
 

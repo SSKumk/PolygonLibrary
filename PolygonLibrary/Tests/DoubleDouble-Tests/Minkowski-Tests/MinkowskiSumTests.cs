@@ -197,9 +197,9 @@ public class MinkowskiSum2D {
 
      // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube3D_Octahedron45XY.txt");
 
-     // Assert.That(sum.Faces.Count(F => Tools.EQ(F.Normal * Vector.CreateOrth(3, 3))), Is.EqualTo(8));
-     // Assert.That(sum.Faces.Count(F => Tools.GT(F.Normal * Vector.CreateOrth(3, 3))), Is.EqualTo(9));
-     // Assert.That(sum.Faces.Count(F => Tools.LT(F.Normal * Vector.CreateOrth(3, 3))), Is.EqualTo(9));
+     // Assert.That(sum.Faces.Count(F => Tools.EQ(F.Normal * Vector.MakeOrth(3, 3))), Is.EqualTo(8));
+     // Assert.That(sum.Faces.Count(F => Tools.GT(F.Normal * Vector.MakeOrth(3, 3))), Is.EqualTo(9));
+     // Assert.That(sum.Faces.Count(F => Tools.LT(F.Normal * Vector.MakeOrth(3, 3))), Is.EqualTo(9));
    }
 
    /// <summary>
