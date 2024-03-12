@@ -269,7 +269,8 @@ public partial class Geometry<TNum, TConv>
     }
 
     private ConvexPolytop(FaceLattice FL, ConvexPolytopForm form) {
-      _FL = FL;
+      SpaceDim = FL.Top.AffBasis.SpaceDim;
+      _FL      = FL;
       switch (form) {
         case ConvexPolytopForm.FL: break; // всё есть
         case ConvexPolytopForm.VRep:
@@ -285,9 +286,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     private ConvexPolytop(GiftWrapping gw) {
-      _FL   = gw.FaceLattice;
-      _VRep = gw.VRep;
-      _HRep = gw.HRep;
+      _FL      = gw.FaceLattice;
+      _VRep    = gw.VRep;
+      _HRep    = gw.HRep;
+      SpaceDim = VRep.First().Dim;
     }
 #endregion
 
@@ -313,8 +315,9 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsVPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.VRep);
     public static ConvexPolytop AsHPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.HRep);
     public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FL);
+#endregion
 
-
+#region Special polytopes
     /// <summary>
     /// Generates a full-dimension axis-parallel rectangle based on two corners.
     /// </summary>
@@ -400,16 +403,22 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Makes a hD-sphere as VRep with given radius.
+    /// Makes a hD-sphere as VRep with given radius. The euclidean norm.
     /// </summary>
     /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
     /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].
-    ///  thetaPoints should be greater than 2 for proper calculation.</param>
+    ///   thetaPoints should be greater than 2 for proper calculation.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="center"></param>
     /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytop as VRep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, TNum radius) {
-      Debug.Assert(dim > 1, "The dimension of a sphere must be 2 or greater.");
+    public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, Vector center, TNum radius) {
+      Debug.Assert(dim > 1, $"ConvexPolytop.Sphere: The dimension of a sphere must be 2 or greater. Found dim = {dim}.");
+      Debug.Assert
+        (
+         center.Dim == dim
+       , $"ConvexPolytop.Sphere: the dimension of the center of the sphere must be equal to dim = {dim}. Found center.Dim = {center.Dim}"
+        );
       // Phi in [0, 2*Pi)
       // Theta in [0, Pi]
       HashSet<Vector> Ps        = new HashSet<Vector>();
@@ -466,7 +475,7 @@ public partial class Geometry<TNum, TConv>
           }
 
           // точка готова, добавляем в наш массив
-          Ps.Add(new Vector(point.ToArray()));
+          Ps.Add(center + new Vector(point.ToArray()));
         }
       }
 
@@ -477,11 +486,13 @@ public partial class Geometry<TNum, TConv>
     /// Makes the ball in 1-norm.
     /// </summary>
     /// <param name="dim">The dimension of the ball.</param>
+    /// <param name="center">The center of the ball.</param>
+    /// <param name="radius">The radius of the ball.</param>
     /// <returns>The ball in 1-norm.</returns>
-    public static ConvexPolytop Ball_1(int dim) {
+    public static ConvexPolytop Ball_1(int dim, Vector center, TNum radius) {
       HashSet<Vector> ball = new HashSet<Vector>(2 * dim);
       for (int i = 1; i <= dim; i++) {
-        Vector e = Vector.MakeOrth(dim, i);
+        Vector e = radius * Vector.MakeOrth(dim, i) + center;
         ball.Add(e);
         ball.Add(-e);
       }
@@ -493,11 +504,104 @@ public partial class Geometry<TNum, TConv>
     /// Makes the ball in infinity norm.
     /// </summary>
     /// <param name="dim">The dimension of the ball.</param>
+    /// <param name="center">The center of the ball.</param>
+    /// <param name="radius">The radius of the ball.</param>
     /// <returns>The ball in infinity norm.</returns>
-    public static ConvexPolytop Ball_oo(int dim) => RectParallel(-Vector.Ones(dim), Vector.Ones(dim));
+    public static ConvexPolytop Ball_oo(int dim, Vector center, TNum radius) {
+      Vector one = Vector.Ones(dim) * radius;
+
+      return RectParallel(-one + center, one + center);
+    }
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance to the ball in dim-space.
+    /// </summary>
+    /// <param name="dim">The dimension of the sphere-ball. It is greater than 1.</param>
+    /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].</param>
+    /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="radius0">The radius of a initial sphere.</param>
+    /// <param name="radiusF">The radius of a final sphere.</param>
+    /// <param name="CMax">The value of the last coordinate of final sphere in dim+1 space.</param>
+    /// <returns>The convex polytop which represents the distance to the ball in dim-space. </returns>
+    public static ConvexPolytop DistanceToBall_2(
+        int  dim
+      , int  thetaPartition
+      , int  phiPartition
+      , TNum radius0
+      , TNum radiusF
+      , TNum CMax
+      ) {
+      ConvexPolytop ball0        = Sphere(dim, thetaPartition, phiPartition, Vector.Zero(dim), radius0);
+      TNum          scale        = radiusF / radius0;
+      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * scale).ToHashSet());
+      ConvexPolytop ball0_lifted = LiftUp(ball0, Tools.Zero);
+      ConvexPolytop ballF_lifted = LiftUp(ballF, CMax);
+      ball0_lifted.Vertices.UnionWith(ballF_lifted.Vertices); // Теперь тут лежат все точки
+
+      return AsVPolytop(ball0_lifted.Vertices, true);
+    }
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance to the given convex polytop in dim-space.
+    /// </summary>
+    /// <param name="P">Polytop the distance to which is constructed.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="ballCreator">Function that makes balls.</param>
+    /// <returns>A polytope representing the distance to the ball.</returns>
+    private static ConvexPolytop DistanceToPolytopBall(
+        ConvexPolytop                          P
+      , TNum                                   CMax
+      , Func<int, Vector, TNum, ConvexPolytop> ballCreator
+      ) {
+      // R (+) Ball(0, CMax)
+      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(P.SpaceDim, Vector.Zero(P.SpaceDim), CMax), P);
+
+      //{(R,0), (R (+) Ball(0, CMax),CMax)}
+      ConvexPolytop toConv = LiftUp(bigP, CMax);
+      toConv.Vertices.UnionWith(LiftUp(P, Tools.Zero).Vertices);
+
+      //conv{...}
+      return AsVPolytop(toConv.Vertices, true);
+    }
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "_1"-norm to the given convex polytop in dim-space.
+    /// </summary>
+    /// <param name="P">Polytop the distance to which is constructed.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the polytop P in ball_1 norm.</returns>
+    public static ConvexPolytop DistanceToPolytopBall_1(ConvexPolytop P, TNum CMax) => DistanceToPolytopBall(P, CMax, Ball_1);
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "infinity"-norm to the given convex polytop in dim-space.
+    /// </summary>
+    /// <param name="P">Polytop the distance to which is constructed.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the polytop P in ball_oo norm.</returns>
+    public static ConvexPolytop DistanceToPolytopBall_oo(ConvexPolytop P, TNum CMax) => DistanceToPolytopBall(P, CMax, Ball_oo);
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "euclidean"-norm to the given convex polytop in dim-space.
+    /// </summary>
+    /// <param name="P">Polytop the distance to which is constructed.</param>
+    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
+    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the polytop P in ball_2 norm.</returns>
+    public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int thetaPartition, int phiPartition, TNum CMax)
+      => DistanceToPolytopBall(P, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
 #endregion
 
-#region Aux functions
+
+#region Functions
+    /// <summary>
+    /// Lifts the given convex polytop to the one above dimension, extends with the given value.
+    /// </summary>
+    /// <param name="P">The polytop to be lifted.</param>
+    /// <param name="val">The value used in expansion.</param>
+    /// <returns>The polytop in higher dimension.</returns>
+    public static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
+      => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToHashSet());
 #endregion
 
     /// <summary>
