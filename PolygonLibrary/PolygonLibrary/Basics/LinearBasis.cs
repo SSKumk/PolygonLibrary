@@ -116,7 +116,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected point.</returns>
     public Vector ProjectVector(Vector v) {
-      Debug.Assert(VecDim == v.Dim, "LinearBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the given vector.");
+      Debug.Assert
+        (
+         VecDim == v.Dim
+       , "LinearBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the given vector."
+        );
 
       TNum[] np = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
@@ -147,12 +151,31 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Construct the new linear basis of full dimension with d-dim zero origin and d-orth.
     /// </summary>
-    /// <param name="vecDim">The dimension of the vectors in basis.</param>
-    public LinearBasis(int vecDim) {
-      Basis = new List<Vector>(vecDim);
+    /// <param name="spaceDim">The dimension of the space of basis.</param>
+    public LinearBasis(int spaceDim) {
+      Basis = new List<Vector>(spaceDim);
 
-      for (int i = 0; i < vecDim; i++) {
-        AddVectorToBasis(Vector.CreateOrth(vecDim, i + 1), false);
+      for (int i = 0; i < spaceDim; i++) {
+        AddVectorToBasis(Vector.MakeOrth(spaceDim, i + 1), false);
+      }
+    }
+
+    /// <summary>
+    /// Construct the new linear basis of given space dimension and the given vectors dim, with dim-zero origin and dim-orth
+    /// from 0 to the space dim.
+    /// </summary>
+    /// <param name="basisDim">The dimension of the space of basis.</param>
+    /// <param name="vecDim">The dimension of the vectors.</param>
+    public LinearBasis(int basisDim, int vecDim) {
+      Debug.Assert
+        (
+         vecDim >= basisDim
+       , $"LinearBasis: The dimension of the vectors in basis must be greater or equal than basis subspace! Found vecDim = {vecDim} < basisDim = {basisDim}."
+        );
+      Basis = new List<Vector>(basisDim);
+
+      for (int i = 0; i < basisDim; i++) {
+        AddVectorToBasis(Vector.MakeOrth(vecDim, i + 1), false);
       }
     }
 
