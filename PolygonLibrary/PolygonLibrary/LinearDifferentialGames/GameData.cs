@@ -316,7 +316,7 @@ public partial class Geometry<TNum, TConv>
         case TypeSet.RectParallel: {
           TNum[] left  = pr.Read1DArray<double>(pref + "RectPLeft", dim).Select(TConv.FromDouble).ToArray();
           TNum[] right = pr.Read1DArray<double>(pref + "RectPRight", dim).Select(TConv.FromDouble).ToArray();
-          res = ConvexPolytop.RectParallel(left, right).Vertices;
+          res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vertices;
 
           break;
         }
