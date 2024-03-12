@@ -321,10 +321,11 @@ public partial class Geometry<TNum, TConv>
           break;
         }
         case TypeSet.Sphere: {
-          int  Theta  = pr.ReadInt(pref + "Theta");
-          int  Phi    = pr.ReadInt(pref + "Phi");
-          TNum Radius = TConv.FromDouble(pr.ReadDouble(pref + "Radius"));
-          res = ConvexPolytop.Sphere(dim, Theta, Phi, Radius).Vertices;
+          int    Theta  = pr.ReadInt(pref + "Theta");
+          int    Phi    = pr.ReadInt(pref + "Phi");
+          TNum[] Center  = pr.Read1DArray<double>(pref + "Center", dim).Select(TConv.FromDouble).ToArray();
+          TNum   Radius = TConv.FromDouble(pr.ReadDouble(pref + "Radius"));
+          res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vertices;
 
           break;
         }
