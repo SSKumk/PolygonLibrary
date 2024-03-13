@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Security.Claims;
 
 
 namespace CGLibrary;
@@ -520,20 +521,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="radius0">The radius of a initial sphere.</param>
-    /// <param name="radiusF">The radius of a final sphere.</param>
     /// <param name="CMax">The value of the last coordinate of final sphere in dim+1 space.</param>
     /// <returns>The convex polytop which represents the distance to the ball in dim-space. </returns>
-    public static ConvexPolytop DistanceToBall_2(
-        int  dim
-      , int  thetaPartition
-      , int  phiPartition
-      , TNum radius0
-      , TNum radiusF
-      , TNum CMax
-      ) {
+    public static ConvexPolytop DistanceToBall_2(int dim, int thetaPartition, int phiPartition, TNum radius0, TNum CMax) {
       ConvexPolytop ball0        = Sphere(dim, thetaPartition, phiPartition, Vector.Zero(dim), radius0);
-      TNum          scale        = radiusF / radius0;
-      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * scale).ToHashSet());
+      TNum          radiusF      = radius0 + CMax;
+      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * radiusF).ToHashSet());
       ConvexPolytop ball0_lifted = LiftUp(ball0, Tools.Zero);
       ConvexPolytop ballF_lifted = LiftUp(ballF, CMax);
       ball0_lifted.Vertices.UnionWith(ballF_lifted.Vertices); // Теперь тут лежат все точки
@@ -641,6 +634,24 @@ public partial class Geometry<TNum, TConv>
           writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
           writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
         }
+      }
+    }
+
+    public void WriteTXT_3D_forDasha(string filePath) {
+      List<Vector> VList = Vertices.Order().ToList();
+      Facet[]      FSet  = GW.Get2DFacets();
+      using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
+        writer.Write("[");
+        writer.Write(string.Join(',', VList.Select(v => v.ToStringDouble('[', ']'))));
+        writer.Write("]");
+        writer.WriteLine();
+        writer.Write("[");
+        foreach (Facet face in FSet) {
+          writer.Write("[");
+          writer.Write(string.Join(',', face.Vertices.Select(v => VList.IndexOf(v) + 1)));
+          writer.Write("],");
+        }
+        writer.Write("]");
       }
     }
 
