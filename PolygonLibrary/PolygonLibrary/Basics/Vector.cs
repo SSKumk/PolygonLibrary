@@ -506,7 +506,7 @@ public partial class Geometry<TNum, TConv>
       return CompareTo((Vector)obj!) == 0;
     }
 
-    public override string ToString() => ToStringWithDiffBraces('(', ')');
+    public override string ToString() => ToStringTNum('(', ')');
 
 
     public override int GetHashCode() {
@@ -519,7 +519,7 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
-    public string ToStringWithDiffBraces(char braceOpen, char braceClose) {
+    public string ToStringTNum(char braceOpen, char braceClose) {
       string res = $"{braceOpen}{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
