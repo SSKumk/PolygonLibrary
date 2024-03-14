@@ -91,9 +91,9 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
     Debug.Assert
       (S.First().Dim == rotation.Rows, "ToolsTests.Rotate: the dimension of points must be equal to the count of rotation rows.");
 
-    IEnumerable<Vector> rotated = S.Select(s => new Vector(s) * rotation);
+    IEnumerable<Vector> rotated = S.Select(s => s * rotation);
 
-    return rotated.Select(v => new Vector(v)).ToList();
+    return rotated.Select(v => v).ToList();
   }
 
   /// <summary>

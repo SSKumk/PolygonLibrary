@@ -131,7 +131,6 @@ public class MinkowskiSum2D {
   }
 
 }
-// todo Прежде чем тут копаться нужно разделаться с TestPolytopes!
 
  [TestFixture]
  public class MinkowskiSum_hD {
