@@ -18,11 +18,13 @@ class Program {
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
 
   static void Main(string[] args) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    var         s4      = ConvexPolytop.Sphere(4, 10, 12, Vector.Zero(4), 1);
-    AffineBasis aBasis3 = new AffineBasis(Vector.Zero(4),new LinearBasis(3,4));
-    var         s3      = ConvexPolytop.AsVPolytop(aBasis3.ProjectPoints(s4.Vertices).ToHashSet(),true);
-    s3.WriteTXT_3D(pathData + "s4proj_s3");
+    // CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+    // var         s4      = ConvexPolytop.Sphere(4, 10, 12, Vector.Zero(4), 1);
+    // AffineBasis aBasis3 = new AffineBasis(Vector.Zero(4),new LinearBasis(3,4));
+    // var         s3      = ConvexPolytop.AsVPolytop(aBasis3.ProjectPoints(s4.Vertices).ToHashSet(),true);
+    // s3.WriteTXT_3D(pathData + "s4proj_s3");
+
+    FaceLattice x = ConvexPolytop.Cube01(5).FL;
 
     // SolverLDG ldg = new SolverLDG(pathData, "Spheres3D");
     // ldg.Solve(true);
