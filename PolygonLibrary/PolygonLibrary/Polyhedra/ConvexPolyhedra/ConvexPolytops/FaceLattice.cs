@@ -25,7 +25,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Set of vertices that form convex polytop.
     /// </summary>
-    public HashSet<Vector> Vertices => Top.Vertices;
+    public VectorHashSet Vertices => Top.Vertices;
 
     /// <summary>
     /// The maximum element in the lattice.
@@ -181,14 +181,14 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reference to the associated polytop to this node.
     /// </summary>
-    private HashSet<Vector> Polytop { get; set; } //todo Выяснить, ссылки или объекты хранятся тут
+    private VectorHashSet Polytop { get; set; } //todo Выяснить, ссылки или объекты хранятся тут
 
     /// <summary>
     /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
     /// </summary>
     public void ReconstructPolytop() {
       if (PolytopDim != 0) {
-        Polytop = new HashSet<Vector>(Sub.SelectMany(s => s.Vertices));
+        Polytop = new VectorHashSet(Sub.SelectMany(s => s.Vertices));
       }
       _hash = null;
     }
@@ -196,7 +196,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Vector> Vertices => Polytop;
+    public VectorHashSet Vertices => Polytop;
 
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
@@ -314,7 +314,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
     public FLNode(Vector vertex) {
-      Polytop    = new HashSet<Vector>(new HashSet<Vector>() { vertex });
+      Polytop    = new VectorHashSet(new VectorHashSet() { vertex });
       InnerPoint = vertex;
       AffBasis   = new AffineBasis(vertex);
     }
@@ -325,7 +325,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(HashSet<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
+    internal FLNode(VectorHashSet Vs, Vector innerPoint, AffineBasis aBasis) {
       Polytop       = Vs;
       InnerPoint    = innerPoint;
       this.AffBasis = aBasis;
@@ -336,7 +336,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(List<FLNode> sub) {
-      Polytop = new HashSet<Vector>
+      Polytop = new VectorHashSet
         (sub.SelectMany(s => s.Vertices).ToHashSet()); // todo А может не надо на каждый узел новые точки сохранять?!
       Sub = new HashSet<FLNode>(sub);
 
@@ -397,58 +397,31 @@ public partial class Geometry<TNum, TConv>
 
       FLNode other = (FLNode)obj;
 
-      //todo HashSet<FLNode> и Dictionary<FLNode> сначала просят ХЕШ, а потом сравнивают на Equals!
       // И vvv это ОЧЕНЬ медленно. Что можно сделать?
 
       // // 1) this.Above == other.Above
       // bool isEqual     = true;
-      // var  thisAboveP  = this.Super.Select(a => a.Polytop);
-      // var  otherAboveP = other.Super.Select(a => a.Polytop);
+      // var  thisAboveP  = this.Super.Select(a => a.Polytop).ToHashSet();
+      // var  otherAboveP = other.Super.Select(a => a.Polytop).ToHashSet();
       //
-      // isEqual = isEqual && isEqualFaces(thisAboveP, otherAboveP);
+      // isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
       //
       // if (!isEqual) {
-      //   Console.WriteLine("Above!");
-      //   Console.WriteLine($"This:  {string.Join(' ', this.Super.Select(n => n.GetHashCode()))}");
-      //   Console.WriteLine($"Other: {string.Join(' ', other.Super.Select(n => n.GetHashCode()))}");
-      //
       //   return false;
       // }
       //
       // // 2) this.Sub == other.Sub
-      // var thisSubP  = this.Sub.Select(s => s.Polytop);
-      // var otherSubP = other.Sub.Select(s => s.Polytop);
+      // var thisSubP  = this.Sub.Select(s => s.Polytop).ToHashSet();
+      // var otherSubP = other.Sub.Select(s => s.Polytop).ToHashSet();
       //
-      // isEqual = isEqual && isEqualFaces(thisSubP, otherSubP);
+      // isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
       //
       // if (!isEqual) {
-      //   Console.WriteLine(value: "Below!");
-      //   Console.WriteLine($"This:  {string.Join(' ', this.Sub.Select(n => n.GetHashCode()))}");
-      //   Console.WriteLine($"Other: {string.Join(' ', other.Sub.Select(n => n.GetHashCode()))}");
-      //
       //   return false;
       // }
 
       // 3) this == other
       return this.Polytop.SetEquals(other.Polytop);
-    }
-
-    private static bool isEqualFaces(IEnumerable<HashSet<Vector>> faces1, IEnumerable<HashSet<Vector>> faces2) {
-      foreach (HashSet<Vector> face1 in faces1) {
-        bool isInFace2 = false;
-        foreach (HashSet<Vector> face2 in faces2) {
-          if (face1.SetEquals(face2)) {
-            isInFace2 = true;
-
-            break;
-          }
-        }
-        if (!isInFace2) {
-          return false;
-        }
-      }
-
-      return true;
     }
 
   }

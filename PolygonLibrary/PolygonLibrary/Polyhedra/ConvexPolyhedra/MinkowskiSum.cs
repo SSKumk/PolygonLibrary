@@ -102,7 +102,7 @@ public partial class Geometry<TNum, TConv>
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new HashSet<Vector> { innerPQ }, innerPQ, affinePQ);
+      FLNode PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.Top, Q.Top));
       xyToz.Add((P.Top, Q.Top), PQ);
       FL[^1].Add(PQ);
@@ -184,7 +184,7 @@ public partial class Geometry<TNum, TConv>
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
               // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new HashSet<Vector> { newInner }, newInner, candBasis);
+              FLNode node = new FLNode(new VectorHashSet { newInner }, newInner, candBasis);
 
               // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
               FL[d].Add(node); // Добавляем узел в решётку
