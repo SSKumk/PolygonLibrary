@@ -320,9 +320,16 @@ public partial class Geometry<TNum, TConv>
 
 #region Special polytopes
     /// <summary>
-    /// Generates a full-dimension axis-parallel rectangle based on two corners.
+    /// Makes a full-dimension axis-parallel 0-1 cube of given dimension.
     /// </summary>
+    /// <param name="dim">The dimension of the cube.</param>
     /// <returns>A convex polytop as VRep representing the hypercube.</returns>
+    public static ConvexPolytop Cube01(int dim) => RectParallel(Vector.Zero(dim), Vector.Ones(dim));
+
+    /// <summary>
+    /// Makes a full-dimension axis-parallel rectangle based on two corners.
+    /// </summary>
+    /// <returns>A convex polytop as VRep representing the hyper rectangle.</returns>
     public static ConvexPolytop RectParallel(Vector left, Vector right) {
       Debug.Assert
         (
@@ -410,16 +417,43 @@ public partial class Geometry<TNum, TConv>
     /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].
     ///   thetaPoints should be greater than 2 for proper calculation.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
-    /// <param name="center"></param>
+    /// <param name="center">The center of a sphere.</param>
     /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytop as VRep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, Vector center, TNum radius) {
-      Debug.Assert(dim > 1, $"ConvexPolytop.Sphere: The dimension of a sphere must be 2 or greater. Found dim = {dim}.");
+    public static ConvexPolytop Sphere(int dim, int thetaPartition, int phiPartition, Vector center, TNum radius)
+      => Ellipsoid(dim, thetaPartition, phiPartition, center, Vector.Ones(dim) * radius);
+
+    /// <summary>
+    /// Makes a hD-ellipsoid as VRep with given semi-axis.
+    /// </summary>
+    /// <param name="dim">The dimension of the ellipsoid. It is greater than 1.</param>
+    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
+    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="center">The center of an ellipsoid.</param>
+    /// <param name="semiAxis">The vector each coordinate of it represents the length of corresponding semi-axe.</param>
+    /// <returns>A convex polytop as VRep representing the ellipsoid in hD.</returns>
+    public static ConvexPolytop Ellipsoid(int dim, int thetaPartition, int phiPartition, Vector center, Vector semiAxis) {
+      Debug.Assert(dim > 1, $"ConvexPolytop.Ellipsoid: The dimension of an ellipsoid must be 2 or greater. Found dim = {dim}.");
       Debug.Assert
         (
          center.Dim == dim
-       , $"ConvexPolytop.Sphere: the dimension of the center of the sphere must be equal to dim = {dim}. Found center.Dim = {center.Dim}"
+       , $"ConvexPolytop.Ellipsoid: the dimension of the center of an ellipsoid must be equal to dim = {dim}. Found center.Dim = {center.Dim}"
         );
+      Debug.Assert
+        (
+         semiAxis.Dim == dim
+       , $"ConvexPolytop.Ellipsoid: the dimension of the semiAxis-vector of an ellipsoid must be equal to dim = {dim}. Found semiAxis.Dim = {center.Dim}"
+        );
+#if DEBUG
+      for (int i = 0; i < dim; i++) {
+        Debug.Assert
+          (
+           Tools.GT(semiAxis[i])
+         , $"ConvexPolytop.Ellipsoid: The value of semi-axis must be greater than 0! Found i = {i}, val = {semiAxis[i]}"
+          );
+      }
+#endif
+
       // Phi in [0, 2*Pi)
       // Theta in [0, Pi]
       HashSet<Vector> Ps        = new HashSet<Vector>();
@@ -457,8 +491,8 @@ public partial class Geometry<TNum, TConv>
           // собрали 1 и 2 координаты
           TNum sinsN = Tools.One;
           for (int k = 1; k <= N; k++) { sinsN *= TNum.Sin(s[k]); }
-          point.Add(radius * TNum.Cos(phi) * sinsN);
-          point.Add(radius * TNum.Sin(phi) * sinsN);
+          point.Add(semiAxis[0] * TNum.Cos(phi) * sinsN);
+          point.Add(semiAxis[1] * TNum.Sin(phi) * sinsN);
 
 
           //добавляем серединные координаты
@@ -466,13 +500,13 @@ public partial class Geometry<TNum, TConv>
             TNum sinsJ = Tools.One;
             for (int j = 2; j <= N; j++) {
               sinsJ *= TNum.Sin(s[j - 1]);
-              point.Add(radius * TNum.Cos(s[j]) * sinsJ);
+              point.Add(semiAxis[j] * TNum.Cos(s[j]) * sinsJ);
             }
           }
 
           // последнюю координату
           if (dim >= 3) { // У 2Д сферы её нет
-            point.Add(radius * TNum.Cos(s[1]));
+            point.Add(semiAxis[dim - 1] * TNum.Cos(s[1]));
           }
 
           // точка готова, добавляем в наш массив
@@ -482,6 +516,7 @@ public partial class Geometry<TNum, TConv>
 
       return AsVPolytop(Ps);
     }
+
 
     /// <summary>
     /// Makes the ball in 1-norm.
@@ -595,6 +630,19 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The polytop in higher dimension.</returns>
     public static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
       => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToHashSet());
+
+    /// <summary>
+    /// Create a new convex polytop of (d-1)-dimension from the d-dim convex polytop P as section by given hyperplane.
+    /// </summary>
+    /// <param name="P">The given convex polytop P.</param>
+    /// <param name="hp">The hyper plane to sectioning P.</param>
+    /// <returns>The section of the polytop P.</returns>
+    public static ConvexPolytop SectionByHyperPlane(ConvexPolytop P, HyperPlane hp) {
+      HyperPlane       hp_  = new HyperPlane(-hp.Normal, hp.ConstantTerm);
+      List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
+
+      return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Naive(hrep)).ToHashSet(), true);
+    }
 #endregion
 
     /// <summary>
