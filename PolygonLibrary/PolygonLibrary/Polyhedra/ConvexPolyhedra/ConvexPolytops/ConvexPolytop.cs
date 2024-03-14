@@ -719,7 +719,7 @@ public partial class Geometry<TNum, TConv>
       bool                 belongs;
       GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
-        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.ColWise);
+        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.RowWise);
         gaussSLE.Solve();
         if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
           belongs = true;
