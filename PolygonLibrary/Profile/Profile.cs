@@ -17,7 +17,7 @@ class Program {
   private static readonly string pathData =
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
 
-  // static void Main(string[] args) {
+  static void Main(string[] args) {
     // CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     // var         s4      = ConvexPolytop.Sphere(4, 10, 12, Vector.Zero(4), 1);
     // AffineBasis aBasis3 = new AffineBasis(Vector.Zero(4),new LinearBasis(3,4));
@@ -30,7 +30,11 @@ class Program {
     // ldg.Solve(true);
 
     // ConvexPolytop.Sphere(5, 20, 30, Vector.Zero(5), 1);
+    SolverLDG.WriteSimplestFile(3, pathData);
+    SolverLDG solverLdg = new SolverLDG(pathData, "simplest");
+    solverLdg.Solve(true);
 
-  // }
+    // ConvexPolytop x = ConvexPolytop.AsVPolytop(new HashSet<Vector>() { Vector.Ones(3) });
+  }
 
 }
