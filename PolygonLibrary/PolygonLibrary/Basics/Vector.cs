@@ -509,17 +509,7 @@ public partial class Geometry<TNum, TConv>
     public override string ToString() => ToStringTNum('(', ')');
 
 
-    public override int GetHashCode() {
-      int res = 0, d = Dim;
-
-      for (int i = 0; i < d; i++) {
-        res = HashCode.Combine(res, TNum.Round(_v[i] / Tools.Eps));
-      }
-
-      return res;
-    }
-
-    public string ToStringTNum(char braceOpen, char braceClose) {
+    private string ToStringTNum(char braceOpen, char braceClose) {
       string res = $"{braceOpen}{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
@@ -532,12 +522,22 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
-    public string ToStringDouble(char braceOpen = '(', char braceClose = ')') {
+    public override int GetHashCode() {
+      int res = 0, d = Dim;
+
+      for (int i = 0; i < d; i++) {
+        res = HashCode.Combine(res, TNum.Round(_v[i] / Tools.Eps));
+      }
+
+      return res;
+    }
+
+    public string ToStringDouble(char braceOpen = '(', char braceClose = ')', char delim = ',') {
       string res = $"{braceOpen}{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
       for (i = 1; i < d; i++) {
-        res += $",{TConv.ToDouble(_v[i]).ToString(null, CultureInfo.InvariantCulture)}";
+        res += $"{delim}{TConv.ToDouble(_v[i]).ToString(null, CultureInfo.InvariantCulture)}";
       }
 
       res += $"{braceClose}";
