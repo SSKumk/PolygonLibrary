@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Frozen;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -320,6 +321,13 @@ public partial class Geometry<TNum, TConv>
 
 #region Special polytopes
     /// <summary>
+    /// The point-polytop of dim size.
+    /// </summary>
+    /// <param name="dim">The dimension of the point.</param>
+    /// <returns>The one point polytop.</returns>
+    public static ConvexPolytop Point(int dim) => AsVPolytop(new HashSet<Vector> { Vector.Ones(dim) });
+
+    /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension.
     /// </summary>
     /// <param name="dim">The dimension of the cube.</param>
@@ -576,7 +584,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
     /// <param name="ballCreator">Function that makes balls.</param>
     /// <returns>A polytope representing the distance to the ball.</returns>
-    private static ConvexPolytop DistanceToPolytopBall(
+    private static ConvexPolytop DistanceToPolytop(
         ConvexPolytop                          P
       , TNum                                   CMax
       , Func<int, Vector, TNum, ConvexPolytop> ballCreator
@@ -598,7 +606,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="P">Polytop the distance to which is constructed.</param>
     /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_1 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_1(ConvexPolytop P, TNum CMax) => DistanceToPolytopBall(P, CMax, Ball_1);
+    public static ConvexPolytop DistanceToPolytopBall_1(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_1);
 
     /// <summary>
     /// Makes the convex polytop which represents the distance in "infinity"-norm to the given convex polytop in dim-space.
@@ -606,7 +614,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="P">Polytop the distance to which is constructed.</param>
     /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_oo norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_oo(ConvexPolytop P, TNum CMax) => DistanceToPolytopBall(P, CMax, Ball_oo);
+    public static ConvexPolytop DistanceToPolytopBall_oo(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_oo);
 
     /// <summary>
     /// Makes the convex polytop which represents the distance in "euclidean"-norm to the given convex polytop in dim-space.
@@ -617,7 +625,50 @@ public partial class Geometry<TNum, TConv>
     /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_2 norm.</returns>
     public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int thetaPartition, int phiPartition, TNum CMax)
-      => DistanceToPolytopBall(P, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
+      => DistanceToPolytop(P, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "_1"-norm to the origin in dim-space;
+    /// </summary>
+    /// <param name="pointDim">The dimension of the origin.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the origin in ball_1 norm.</returns>
+    public static ConvexPolytop DistanceToOriginBall_1(int pointDim, TNum CMax) => DistanceToOrigin(pointDim, CMax, Ball_1);
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "_oo"-norm to the origin in dim-space;
+    /// </summary>
+    /// <param name="pointDim">The dimension of the origin.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the origin in ball_oo norm.</returns>
+    public static ConvexPolytop DistanceToOriginBall_oo(int pointDim, TNum CMax) => DistanceToOrigin(pointDim, CMax, Ball_oo);
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance in "_2"-norm to the origin in dim-space;
+    /// </summary>
+    /// <param name="pointDim">The dimension of the origin.</param>
+    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
+    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
+    public static ConvexPolytop DistanceToOriginBall_2(int pointDim, int thetaPartition, int phiPartition, TNum CMax)
+      => DistanceToOrigin(pointDim, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
+
+    /// <summary>
+    /// Makes the convex polytop which represents the distance to the origin in dim-space.
+    /// </summary>
+    /// <param name="pointDim">The dimension of the origin.</param>
+    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="ballCreator">Function that makes balls.</param>
+    /// <returns>A polytope representing the distance to the origin.</returns>
+    private static ConvexPolytop DistanceToOrigin(int pointDim, TNum CMax, Func<int, Vector, TNum, ConvexPolytop> ballCreator) {
+      ConvexPolytop ball   = ballCreator(pointDim, Vector.Zero(pointDim), CMax);
+      ConvexPolytop toConv = LiftUp(ball, CMax);
+      toConv.Vertices.Add(Vector.Zero(pointDim + 1));
+
+      //conv{...}
+      return AsVPolytop(toConv.Vertices);
+    }
 #endregion
 
 
@@ -628,7 +679,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="P">The polytop to be lifted.</param>
     /// <param name="val">The value used in expansion.</param>
     /// <returns>The polytop in higher dimension.</returns>
-    public static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
+    private static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
       => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToHashSet());
 
     /// <summary>
