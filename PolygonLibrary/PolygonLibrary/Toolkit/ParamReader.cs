@@ -97,10 +97,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Read the next object and treat it as a double
+    /// Read the next object and treat it as a double.
     /// </summary>
-    /// <param name="name">Name of the object</param>
-    /// <returns>The read double value</returns>
+    /// <param name="name">Name of the object.</param>
+    /// <returns>The read double value.</returns>
     public double ReadDouble(string name, char term = ';') {
       ReadNameAndPassEquivalence(name);
       state = State.ReadingToken;
@@ -111,6 +111,13 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
+
+    /// <summary>
+    /// Read the next object and treat it as a double and convert it to TNum.
+    /// </summary>
+    /// <param name="name">Name of the object.</param>
+    /// <returns>The read double value.</returns>
+    public TNum ReadDoubleAndConvertToTNum(string name, char term = ';') => TConv.FromDouble(ReadDouble(name, term));
 
     /// <summary>
     /// Read the next object and treat it as a string
@@ -176,6 +183,22 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Method for reading one-dimensional array of doubles.
+    /// </summary>
+    /// <param name="name">The name of the object.</param>
+    /// <param name="elemQnt">The number of elements in the array</param>
+    /// <returns>The read array of appropriate type and size</returns>
+    public TNum[] Read1DArray_double(string name, int elemQnt, char term = ';') {
+      double[] r   = Read1DArray<double>(name, elemQnt, term);
+      TNum[]   res = new TNum[elemQnt];
+      for (int i = 0; i < elemQnt; i++) {
+        res[i] = TConv.FromDouble(r[i]);
+      }
+
+      return res;
+    }
+
+    /// <summary>
     /// Method for reading two-dimensional array.
     /// </summary>
     /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
@@ -222,13 +245,13 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Method for reading two-dimensional array of doubles.
     /// </summary>
-    /// <param name="name">The name of the object</param>
-    /// <param name="rows">Number of rows in the array</param>
-    /// <param name="cols">Number of columns in the array</param>
-    /// <returns>The read array of appropriate type and size</returns>
-    public TNum[,] Read2DArray_double(string name, int rows, int cols, char term = ';') {
+    /// <param name="name">The name of the object.</param>
+    /// <param name="rows">Number of rows in the array.</param>
+    /// <param name="cols">Number of columns in the array.</param>
+    /// <returns>The read array of appropriate type and size.</returns>
+    public TNum[,] Read2DArrayAndConvertToTNum(string name, int rows, int cols, char term = ';') {
       double[,] r   = Read2DArray<double>(name, rows, cols, term);
-      TNum[,]   res = new TNum[rows,cols];
+      TNum[,]   res = new TNum[rows, cols];
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
           res[i, j] = TConv.FromDouble(r[i, j]);
