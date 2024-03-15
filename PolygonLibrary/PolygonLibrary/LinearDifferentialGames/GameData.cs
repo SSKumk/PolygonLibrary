@@ -29,6 +29,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public readonly string ProblemName;
 
+    /// <summary>
+    /// The type of the game
+    /// </summary>
+    public enum GoalType { Itself, PayoffSupergraphic }
+
 #region Data defining the dynamics of the game
     /// <summary>
     /// Dimension of the phase vector
@@ -82,10 +87,17 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Control constraints
-    public enum TypeSet {
+    /// <summary>
+    /// The type of the set.
+    /// VertList - List of the vertices: num dim Xi -> number_of_points dimension their_coordinates
+    /// RectParallel - Rectangle-parallel: dim X Y -> dimension opposite_vertices
+    /// Sphere - Sphere: dim x0 x1 .. xn theta phi R -> dimension center_coordinates theta_division phis_division radius
+    /// Ellipsoid - Ellipsoid: dim x0 x1 .. xn theta phi a0 a1 ... an -> dimension center_coordinates theta_division phis_division semi-axis_length
+    /// </summary>
+    public enum SetType {
 
       /// <summary>
-      /// List of vertices
+      /// List of vertices.
       /// </summary>
       VertList
 
@@ -99,27 +111,33 @@ public partial class Geometry<TNum, TConv>
      ,
 
       /// <summary>
-      /// hD-Sphere
+      /// hD-Sphere.
       /// </summary>
       Sphere
 
-      // todo Эллипсоид
+     ,
+
+      /// <summary>
+      /// hD-Ellipsoid.
+      /// </summary>
+      Ellipsoid
+
+    , DistanceToOrigin
+    , DistanceToPolytop
+    // , DistanceToCube SimplexRND???
 
     }
 
 
     /// <summary>
-    /// The type of the first player set
-    /// 0 - List of the vertices: num dim Xi -> number_of_points dimension their_coordinates
-    /// 1 - Rectangle-parallel: dim X Y -> dimension opposite_vertices
-    /// 3 - Sphere: dim x0 x1 .. xn theta phi R -> dimension center_coordinates theta_division phis_division radius
+    /// The type of constraints of the first player.
     /// </summary>
-    public int PTypeSet;
+    private string PSetType;
 
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the first player
     /// </summary>
-    public ConvexPolytop P = null!;
+    private ConvexPolytop P = null!;
 
 
     /// <summary>
@@ -128,17 +146,14 @@ public partial class Geometry<TNum, TConv>
     public readonly SortedDictionary<TNum, ConvexPolytop> Ps;
 
     /// <summary>
-    /// The type of the second player set
-    /// 0 - List of the vertices: num dim Xi -> number_of_points dimension their_coordinates
-    /// 1 - Rectangle-parallel: dim X Y -> dimension opposite_vertices
-    /// 3 - Sphere: dim x0 x1 .. xn theta phi R -> dimension center_coordinates theta_division phis_division radius
+    /// The type of constraints of the second player.
     /// </summary>
-    public int QTypeSet;
+    private string QSetType;
 
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the second player
     /// </summary>
-    public ConvexPolytop Q = null!;
+    private ConvexPolytop Q = null!;
 
     /// <summary>
     /// Precomputed vectograms of the second player
@@ -148,20 +163,22 @@ public partial class Geometry<TNum, TConv>
 
 #region Data defining terminal set
     /// <summary>
+    /// The goal type.
+    /// </summary>
+    private GoalType goalType;
+
+    /// <summary>
     /// The indices of the coordinates to be projected.
     /// </summary>
-    public int[] projJ;
+    private int[] projJ;
 
     /// <summary>
-    /// The type of the terminal set
-    /// 0 - List of the vertices: num dim Xi -> number_of_points dimension their_coordinates
-    /// 1 - Rectangle-parallel: dim X Y -> dimension opposite_vertices
-    /// 3 - Sphere: dim x0 x1 .. xn theta phi R -> dimension center_coordinates theta_division phis_division radius
+    /// The type of terminal set.
     /// </summary>
-    public int MTypeSet;
+    private string MSetType;
 
     /// <summary>
-    /// The terminal set
+    /// The type of terminal set
     /// </summary>
     public ConvexPolytop M = null!;
 #endregion
@@ -169,45 +186,62 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The fundamental Cauchy matrix of the corresponding system
     /// </summary>
-    public readonly CauchyMatrix cauchyMatrix;
+    private readonly CauchyMatrix cauchyMatrix;
 
     /// <summary>
     /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
     /// </summary>
-    public readonly Matrix ProjMatr;
+    private readonly Matrix ProjMatr;
 
     /// <summary>
     /// Collection of matrices D for the instants from the time grid
     /// </summary>
-    public readonly SortedDictionary<TNum, Matrix> D;
+    private readonly SortedDictionary<TNum, Matrix> D;
 
     /// <summary>
     /// Collection of matrices E for the instants from the time grid
     /// </summary>
-    public readonly SortedDictionary<TNum, Matrix> E;
+    private readonly SortedDictionary<TNum, Matrix> E;
 #endregion
 
 #region Constructor
     /// <summary>
-    /// Reading and initializing data
+    /// Reading and initializing data. Order is important!!!
     /// </summary>
-    /// <param name="inFName">File with the data</param>
+    /// <param name="inFName">File with the data.</param>
     public GameData(string inFName) {
       ParamReader pr = new ParamReader(inFName);
 
       ProblemName = pr.ReadString("ProblemName");
 
+      // Game type
+      goalType = pr.ReadInt("GoalType") switch
+                   {
+                     0 => GoalType.Itself
+                   , 1 => GoalType.PayoffSupergraphic
+                   , _ => throw new ArgumentOutOfRangeException($"GameData: goalType must be 0 or 1.")
+                   };
+
       // Dynamics
       n = pr.ReadInt("n");
-      A = new Matrix(pr.Read2DArray_double("A", n, n));
+      A = new Matrix(pr.Read2DArrayAndConvertToTNum("A", n, n));
       p = pr.ReadInt("p");
-      B = new Matrix(pr.Read2DArray_double("B", n, p));
+      B = new Matrix(pr.Read2DArrayAndConvertToTNum("B", n, p));
       q = pr.ReadInt("q");
-      C = new Matrix(pr.Read2DArray_double("C", n, q));
+      C = new Matrix(pr.Read2DArrayAndConvertToTNum("C", n, q));
 
-      t0 = TConv.FromDouble(pr.ReadDouble("t0"));
-      T  = TConv.FromDouble(pr.ReadDouble("T"));
-      dt = TConv.FromDouble(pr.ReadDouble("dt"));
+      // Расширяем систему, если решаем задачу с награфиком функции цены
+      if (goalType == GoalType.PayoffSupergraphic) {
+        Matrix zeroRow = Matrix.Zero(1, n);
+        A = Matrix.vcat(A, zeroRow);
+        A = Matrix.hcat(A, Matrix.Zero(n + 1, 1));
+        B = Matrix.vcat(B, zeroRow);
+        C = Matrix.vcat(C, zeroRow);
+      }
+
+      t0 = pr.ReadDoubleAndConvertToTNum("t0");
+      T  = pr.ReadDoubleAndConvertToTNum("T");
+      dt = pr.ReadDoubleAndConvertToTNum("dt");
 
       d     = pr.ReadInt("d");
       projJ = pr.Read1DArray<int>("projJ", d);
@@ -216,10 +250,11 @@ public partial class Geometry<TNum, TConv>
       cauchyMatrix = new CauchyMatrix(A, T, dt);
 
       // Reading data on the first player's control and generating the constraint if necessary
-      ReadSets(pr, 'p');
+      ReadSets(pr, 'P');
 
       // Reading data on the second player's control and generating the constraint if necessary
-      ReadSets(pr, 'q');
+      ReadSets(pr, 'Q');
+
 
       //Reading data of terminal set type
       ReadSets(pr, 'M');
@@ -261,33 +296,32 @@ public partial class Geometry<TNum, TConv>
     /// The function fills in the fields of the original sets
     /// </summary>
     /// <param name="pr">ParamReader</param>
-    /// <param name="set">p - first player. q - second player. M - terminal set.</param>
-    /// <exception cref="ArgumentException">If 'set' != p,q,M </exception>
-    /// <exception cref="InvalidOperationException">If the read set is empty</exception>
+    /// <param name="set">P - first player. Q - second player. M - terminal set.</param>
     private void ReadSets(ParamReader pr, char set) {
       string pref;
-      int    typeSetInt, dim;
+      int    dim;
+      string typeSetInt;
       switch (set) {
-        case 'p': {
+        case 'P': {
           pref       = "P";
-          PTypeSet   = pr.ReadInt("PTypeSet");
-          typeSetInt = PTypeSet;
+          PSetType   = pr.ReadString("PSetType");
+          typeSetInt = PSetType;
           dim        = p;
         }
 
           break;
-        case 'q': {
+        case 'Q': {
           pref       = "Q";
-          QTypeSet   = pr.ReadInt("QTypeSet");
-          typeSetInt = QTypeSet;
+          QSetType   = pr.ReadString("QSetType");
+          typeSetInt = QSetType;
           dim        = q;
         }
 
           break;
         case 'M': {
           pref       = "M";
-          MTypeSet   = pr.ReadInt("MTypeSet");
-          typeSetInt = MTypeSet;
+          MSetType   = pr.ReadString("MSetType");
+          typeSetInt = MSetType;
           dim        = d;
         }
 
@@ -295,48 +329,103 @@ public partial class Geometry<TNum, TConv>
         default: throw new ArgumentException($"{set} must be 'p', 'q' or 'M'!");
       }
 
-      TypeSet typeSet = typeSetInt switch
+      SetType setType = typeSetInt switch
                           {
-                            1 => TypeSet.VertList
-                          , 2 => TypeSet.RectParallel
-                          , 3 => TypeSet.Sphere
-                          , _ => throw new ArgumentOutOfRangeException($"{typeSetInt} must be 1 or 2!"),
+                            "VertList"          => SetType.VertList
+                          , "RectParallel"      => SetType.RectParallel
+                          , "Sphere"            => SetType.Sphere
+                          , "Ellipsoid"         => SetType.Ellipsoid
+                          , "DistanceToOrigin"  => SetType.DistanceToOrigin
+                          , "DistanceToPolytop" => SetType.DistanceToPolytop
+                          , _                   => throw new ArgumentOutOfRangeException($"{typeSetInt} must be TODO!")
                           };
 
       // Array for coordinates of the next point
       HashSet<Vector>? res = null;
-      switch (typeSet) {
-        case TypeSet.VertList: {
+      switch (setType) {
+        case SetType.VertList: {
           int     Qnt  = pr.ReadInt(pref + "Qnt");
-          TNum[,] Vert = pr.Read2DArray_double(pref + "Vert", Qnt, dim);
+          TNum[,] Vert = pr.Read2DArrayAndConvertToTNum(pref + "Vert", Qnt, dim);
           res = Array2DToHashSet(Vert, Qnt, dim);
 
           break;
         }
-        case TypeSet.RectParallel: {
-          TNum[] left  = pr.Read1DArray<double>(pref + "RectPLeft", dim).Select(TConv.FromDouble).ToArray();
-          TNum[] right = pr.Read1DArray<double>(pref + "RectPRight", dim).Select(TConv.FromDouble).ToArray();
+        case SetType.RectParallel: {
+          TNum[] left  = pr.Read1DArray_double(pref + "RectPLeft", dim);
+          TNum[] right = pr.Read1DArray_double(pref + "RectPRight", dim);
           res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vertices;
 
           break;
         }
-        case TypeSet.Sphere: {
+        case SetType.Sphere: {
           int    Theta  = pr.ReadInt(pref + "Theta");
           int    Phi    = pr.ReadInt(pref + "Phi");
-          TNum[] Center  = pr.Read1DArray<double>(pref + "Center", dim).Select(TConv.FromDouble).ToArray();
-          TNum   Radius = TConv.FromDouble(pr.ReadDouble(pref + "Radius"));
+          TNum[] Center = pr.Read1DArray_double(pref + "Center", dim);
+          TNum   Radius = pr.ReadDoubleAndConvertToTNum(pref + "Radius");
           res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vertices;
+
+          break;
+        }
+        case SetType.Ellipsoid: {
+          int    Theta          = pr.ReadInt(pref + "Theta");
+          int    Phi            = pr.ReadInt(pref + "Phi");
+          TNum[] Center         = pr.Read1DArray_double(pref + "Center", dim);
+          TNum[] SemiaxesLength = pr.Read1DArray_double(pref + "SemiaxesLength", dim);
+          res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vertices;
+
+          break;
+        }
+        case SetType.DistanceToOrigin: {
+          if (goalType == GoalType.PayoffSupergraphic) {
+            string BallType = pr.ReadString(pref + "BallType");
+            int    Theta    = 10, Phi = 10;
+            if (BallType == "Ball_2") {
+              Theta = pr.ReadInt(pref + "Theta");
+              Phi   = pr.ReadInt(pref + "Phi");
+            }
+            TNum CMax = pr.ReadDoubleAndConvertToTNum(pref + "CMax");
+            res = BallType switch
+                    {
+                      "Ball_1"  => ConvexPolytop.DistanceToOriginBall_1(dim, CMax).Vertices
+                    , "Ball_2"  => ConvexPolytop.DistanceToOriginBall_2(dim, Theta, Phi, CMax).Vertices
+                    , "Ball_oo" => ConvexPolytop.DistanceToOriginBall_oo(dim, CMax).Vertices
+                    , _         => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {BallType}")
+                    };
+          } else { throw new NotImplementedException("Надо сделать!"); }
+
+          break;
+        }
+        case SetType.DistanceToPolytop: {
+          if (goalType == GoalType.PayoffSupergraphic) {
+            int           VsQnt    = pr.ReadInt(pref + "VsQnt");
+            TNum[,]       Vs       = pr.Read2DArrayAndConvertToTNum(pref + "Polytop", VsQnt, dim);
+            ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToHashSet(Vs, VsQnt, dim));
+            string        BallType = pr.ReadString(pref + "BallType");
+            int           Theta    = 10, Phi = 10;
+            if (BallType == "Ball_2") {
+              Theta = pr.ReadInt(pref + "Theta");
+              Phi   = pr.ReadInt(pref + "Phi");
+            }
+            TNum CMax = pr.ReadDoubleAndConvertToTNum(pref + "CMax");
+            res = BallType switch
+                    {
+                      "Ball_1"  => ConvexPolytop.DistanceToPolytopBall_1(Polytop, CMax).Vertices
+                    , "Ball_2"  => ConvexPolytop.DistanceToPolytopBall_2(Polytop, Theta, Phi, CMax).Vertices
+                    , "Ball_oo" => ConvexPolytop.DistanceToPolytopBall_oo(Polytop, CMax).Vertices
+                    , _         => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {BallType}")
+                    };
+          } else { throw new NotImplementedException("Надо сделать!"); }
 
           break;
         }
       }
 
       switch (set) {
-        case 'p':
+        case 'P':
           P = ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException("First players set is empty!"));
 
           break;
-        case 'q':
+        case 'Q':
           Q = ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException("Second players set is empty!"));
 
           break;
