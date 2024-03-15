@@ -114,16 +114,80 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    // public void WriteBridge3D() {
-    //   Debug.Assert(gd.d == 3, $"SolverLDG.WriteBridge3D: Can not write to .txt file non 3-dim bridge! Found = {gd.d}");
-    //   string fileDir = workDir + fileName;
-    //   if (!Directory.Exists(fileDir)) {
-    //     Directory.CreateDirectory(fileDir);
-    //   }
-    //   foreach (KeyValuePair<TNum, ConvexPolytop> t_CP in W) {
-    //     t_CP.Value.WriteTXT($"{fileDir}/{TConv.ToDouble(t_CP.Key):F2}){fileName}.txt");
-    //   }
-    // }
+    public static void WriteSimplestFile(int dim, string folderPath) {
+      Vector vP = Vector.Ones(dim);
+      Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(dim);
+      Vector vM = Tools.Two * Vector.Ones(dim);
+      // Matrix
+      using (StreamWriter writer = new StreamWriter(folderPath + "simplest.c")) {
+        writer.WriteLine("// Name of the problem");
+        writer.WriteLine
+          ($"ProblemName = \"Cubes3D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#{vM.ToStringDouble()})\";");
+        writer.WriteLine();
+        writer.WriteLine();
+        writer.WriteLine("// The goal type of the game");
+        writer.WriteLine("// 0 - the game itself");
+        writer.WriteLine("// 1 - the game with super-graphic of payoff");
+        writer.WriteLine("GoalType = 0;");
+        writer.WriteLine();
+
+        writer.WriteLine("// ==================================================");
+
+        WriteSimplestDynamics(dim, writer);
+
+        WriteConstraintBlock(writer, "P", vP, vP);
+        WriteConstraintBlock(writer, "Q", vQ, vQ);
+        WriteConstraintBlock(writer, "M", vM, vM);
+      }
+    }
+
+    private static void WriteConstraintBlock(TextWriter writer, string setType, Vector left, Vector right) {
+      writer.WriteLine($"{setType}Type = \"RectParallel\";");
+      writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringDouble('{', '}')};");
+      writer.WriteLine($"{setType}RectPRight = {right.ToStringDouble('{', '}')};");
+      writer.WriteLine();
+      writer.WriteLine("// ==================================================");
+    }
+
+    private static void WriteSimplestDynamics(int dim, TextWriter writer) {
+      writer.WriteLine();
+      writer.WriteLine("// Block of data defining the dynamics of the game");
+      writer.WriteLine("// Dimension of the phase vector");
+      writer.WriteLine($"n = {dim};");
+      writer.WriteLine();
+      writer.WriteLine("// The main matrix");
+      writer.WriteLine($"A = {Matrix.Zero(dim)};");
+      writer.WriteLine();
+      writer.WriteLine("// Dimension of the useful control");
+      writer.WriteLine($"p = {dim};");
+      writer.WriteLine();
+      writer.WriteLine("// The useful control matrix");
+      writer.WriteLine($"B = {Matrix.Eye(dim)};");
+      writer.WriteLine();
+      writer.WriteLine("// Dimension of the disturbance");
+      writer.WriteLine($"q = {dim};");
+      writer.WriteLine();
+      writer.WriteLine("// The disturbance matrix");
+      writer.WriteLine($"C = {Matrix.Eye(dim)};");
+      writer.WriteLine();
+      writer.WriteLine("// The initial instant");
+      writer.WriteLine("t0 = 0;");
+      writer.WriteLine();
+      writer.WriteLine("// The final instant");
+      writer.WriteLine("T = 1;");
+      writer.WriteLine();
+      writer.WriteLine("// The time step");
+      writer.WriteLine("dt = 0.2;");
+      writer.WriteLine();
+      writer.WriteLine("// The dimension of projected space");
+      writer.WriteLine("d = 3;");
+      writer.WriteLine();
+      writer.WriteLine("// The indices to project onto");
+      writer.WriteLine($"projJ = {Enumerable.Range(0, dim)};");
+      writer.WriteLine();
+
+      writer.WriteLine("// ==================================================");
+    }
 
   }
 
