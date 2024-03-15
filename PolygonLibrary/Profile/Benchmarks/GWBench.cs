@@ -57,13 +57,13 @@ public class GWBench {
   public void GWCyclicPolytop() => GiftWrapping.WrapVRep(cycle!.VRep);
 
 
-  public class Program {
-
-    public static void Main(string[] args) {
-      var summary = BenchmarkRunner.Run<GWBench>();
-    }
-
-  }
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<GWBench>();
+  //   }
+  //
+  // }
 
   /*
 | Method          | dim | amountPoints| Mean              | Error             | StdDev          |
