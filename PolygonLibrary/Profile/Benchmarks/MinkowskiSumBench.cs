@@ -10,6 +10,7 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[ShortRunJob]
 public class MinkowskiSumBench {
 
   [Params(3, 4, 5, 6, 7)]

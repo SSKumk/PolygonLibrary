@@ -10,6 +10,7 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[ShortRunJob]
 public class GaussBench {
 
   [Params(10, 100, 1000)]
