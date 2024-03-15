@@ -8,7 +8,7 @@ namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
-[MemoryDiagnoser]
+
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
 public class GaussBench {
@@ -89,6 +89,7 @@ Intel Core i5-10400F CPU 2.90GHz, 1 CPU, 12 logical and 6 physical cores
 | GaussColChoice | 1000 |  8,531,047.33 us | 143,838.033 us | 280,545.037 us |     400 B |
 | GaussNoChoice  | 1000 | 12,622,569.28 us | 246,655.643 us | 649,789.623 us |     400 B |
 | GaussAllChoice | 1000 | 15,938,538.93 us | 318,318.237 us | 402,570.649 us |     400 B |
+
 
 // * Hints *
 Outliers

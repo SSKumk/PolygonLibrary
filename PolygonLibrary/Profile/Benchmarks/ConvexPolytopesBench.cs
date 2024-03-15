@@ -8,7 +8,7 @@ namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
-[MemoryDiagnoser]
+
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
 public class ConvexPolytopesBench {
@@ -32,6 +32,8 @@ public class ConvexPolytopesBench {
 
   /*
 
+// todo узнать можно ли посмотреть пиковое потребление памяти ?
+// todo не в микро секундах!
 
 | Method      | dimSpheres | thetaPartition | phiPartition | Mean             | Error             | StdDev          | Gen0         | Gen1         | Gen2       | Allocated      |
 |------------ |----------- |--------------- |------------- |-----------------:|------------------:|----------------:|-------------:|-------------:|-----------:|---------------:|
