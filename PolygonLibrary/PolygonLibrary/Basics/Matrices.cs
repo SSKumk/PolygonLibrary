@@ -211,11 +211,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     public override string ToString() {
-      string res = "[";
+      string res = "{";
       int    k   = 0, i, j;
 
       for (i = 0; i < Rows; i++) {
-        res += $" [{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
+        res += $"{{{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
         k++;
 
         for (j = 1; j < Cols; j++) {
@@ -223,10 +223,13 @@ public partial class Geometry<TNum, TConv>
           k++;
         }
 
-        res += "]";
+        res += "}";
+        if (i < Rows - 1) {
+          res += ",";
+        }
       }
 
-      res += " ]";
+      res += "}";
 
       return res;
     }
@@ -730,8 +733,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="dim">The dimension of the square matrix.</param>
     /// <param name="random">Optional instance of GRandomLC to use for generating random numbers. If null default one be used.</param>
     /// <returns>A non-singular Matrix.</returns>
-    public static Matrix GenNonSingular(int dim, GRandomLC? random = null) => GenNonSingular
-      (dim, -Tools.HalfOne, Tools.HalfOne, random);
+    public static Matrix GenNonSingular(int dim, GRandomLC? random = null)
+      => GenNonSingular(dim, -Tools.HalfOne, Tools.HalfOne, random);
 
     /// <summary>
     /// Generate orthonormal matrix.
