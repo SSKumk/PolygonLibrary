@@ -124,7 +124,7 @@ public partial class Geometry<TNum, TConv>
 
     , DistanceToOrigin
     , DistanceToPolytop
-    // , DistanceToCube SimplexRND???
+      // , DistanceToCube SimplexRND???
 
     }
 
@@ -233,11 +233,10 @@ public partial class Geometry<TNum, TConv>
       // Расширяем систему, если решаем задачу с награфиком функции цены
       if (goalType == GoalType.PayoffSupergraphic) {
         n++; // размерность стала на 1 больше
-        Matrix zeroRow = Matrix.Zero(1, n-1);
-        A = Matrix.vcat(A, zeroRow);
+        A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
         A = Matrix.hcat(A, Matrix.Zero(n, 1));
-        B = Matrix.vcat(B, zeroRow);
-        C = Matrix.vcat(C, zeroRow);
+        B = Matrix.vcat(B, Matrix.Zero(1, p));
+        C = Matrix.vcat(C, Matrix.Zero(1, q));
       }
 
       t0 = pr.ReadDoubleAndConvertToTNum("t0");
