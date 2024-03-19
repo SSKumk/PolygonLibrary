@@ -232,9 +232,10 @@ public partial class Geometry<TNum, TConv>
 
       // Расширяем систему, если решаем задачу с награфиком функции цены
       if (goalType == GoalType.PayoffSupergraphic) {
-        Matrix zeroRow = Matrix.Zero(1, n);
+        n++; // размерность стала на 1 больше
+        Matrix zeroRow = Matrix.Zero(1, n-1);
         A = Matrix.vcat(A, zeroRow);
-        A = Matrix.hcat(A, Matrix.Zero(n + 1, 1));
+        A = Matrix.hcat(A, Matrix.Zero(n, 1));
         B = Matrix.vcat(B, zeroRow);
         C = Matrix.vcat(C, zeroRow);
       }
@@ -246,6 +247,16 @@ public partial class Geometry<TNum, TConv>
       d     = pr.ReadInt("d");
       projJ = pr.Read1DArray<int>("projJ", d);
 
+      if (goalType == GoalType.PayoffSupergraphic) {
+        int[] projJ_ex = new int[d + 1];
+        for (int i = 0; i < d; i++) {
+          projJ_ex[i] = projJ[i];
+        }
+        projJ_ex[d] = n - 1;
+        d++; // расширили систему
+        projJ = projJ_ex;
+      }
+
       // The Cauchy matrix
       cauchyMatrix = new CauchyMatrix(A, T, dt);
 
@@ -254,7 +265,6 @@ public partial class Geometry<TNum, TConv>
 
       // Reading data on the second player's control and generating the constraint if necessary
       ReadSets(pr, 'Q');
-
 
       //Reading data of terminal set type
       ReadSets(pr, 'M');
@@ -322,7 +332,7 @@ public partial class Geometry<TNum, TConv>
           pref       = "M";
           MSetType   = pr.ReadString("MSetType");
           typeSetInt = MSetType;
-          dim        = d;
+          dim        = goalType == GoalType.PayoffSupergraphic ? d - 1 : d;
         }
 
           break;
