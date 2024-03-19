@@ -494,6 +494,51 @@ public partial class Geometry<TNum, TConv>
 
       return Basis;
     }
+
+    /// <summary>
+    /// The cross product of two 3D-vectors.
+    /// </summary>
+    /// <param name="v">The first vector.</param>
+    /// <param name="u">The second vector.</param>
+    /// <returns>The outward normal to the plane of v and u.</returns>
+    public static Vector CrossProduct(Vector v, Vector u) {
+      Debug.Assert(v.Dim == 3, $"Vector.CrossProduct: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
+      Debug.Assert
+        (
+         v.Dim == u.Dim
+       , $"Vector.CrossProduct: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
+        );
+      Debug.Assert(!AreParallel(v, u), $"Vector.CrossProduct: The vectors must be non collinear!");
+
+      TNum[] crossProduct = new TNum[3];
+      crossProduct[0] = v[1] * u[2] - v[2] * u[1];
+      crossProduct[1] = v[2] * u[0] - v[0] * u[2];
+      crossProduct[2] = v[0] * u[1] - v[1] * u[0];
+
+      return new Vector(crossProduct);
+    }
+
+    /// <summary>
+    /// Calculates the signed volume of the parallelepiped defined by the three vectors given.
+    /// </summary>
+    /// <param name="v">The first vector.</param>
+    /// <param name="u">The second vector.</param>
+    /// <param name="r">The third vector.</param>
+    /// <returns></returns>
+    public static TNum TripleProduct(Vector v, Vector u, Vector r) {
+      return v * CrossProduct(u, r);
+    }
+
+    // /// <summary>
+    // /// Calculates the determinant of the three 3D-vectors.
+    // /// </summary>
+    // /// <param name="v">The first vector.</param>
+    // /// <param name="u">The second vector.</param>
+    // /// <param name="r">The third vector.</param>
+    // /// <returns></returns>
+    // public static TNum TripleProduct(Vector v, Vector u, Vector r)
+    //   => v[0] * (u[1] * r[2] - u[2] * r[1]) - v[1] * (u[0] * r[2] - u[2] * r[0]) + v[2] * (u[0] * r[1] - u[1] * r[0]);
+
 #endregion
 
 #region Overrides
