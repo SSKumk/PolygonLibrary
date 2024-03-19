@@ -134,14 +134,29 @@ public partial class Geometry<TNum, TConv>
 
       int i = 0;
       foreach (BaseSubCP polytop in BuiltPolytop.Faces) {
-        TNum                convCoeff      = Tools.One / TConv.FromInt(VRep.Count);
-        IEnumerable<Vector> convCombVs     = VRep.Select(v => v * convCoeff);
-        Vector              innerPoint     = Vector.Zero(PolytopDim);
+        TNum                convCoeff  = Tools.One / TConv.FromInt(VRep.Count);
+        IEnumerable<Vector> convCombVs = VRep.Select(v => v * convCoeff);
+        Vector              innerPoint = Vector.Zero(PolytopDim);
         foreach (Vector v in convCombVs) { innerPoint += v; }
 
-        SubTwoDimensional   twoDimensional = (SubTwoDimensional)polytop;
-        HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesList), (innerPoint, false));
-        res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
+        SubTwoDimensional twoDimensional = (SubTwoDimensional)polytop;
+        HyperPlane        hp             = new HyperPlane(new AffineBasis(twoDimensional.VerticesList), (innerPoint, false));
+        if (Tools.LT
+              (
+               Vector.TripleProduct
+                 (
+                  hp.Normal
+                , twoDimensional.VerticesList[0] - twoDimensional.VerticesList[2]
+                , twoDimensional.VerticesList[1] - twoDimensional.VerticesList[2]
+                 )
+              )) {
+          Vector[] cclw = new Vector[twoDimensional.VerticesList.Length];
+          for (int k = 0; k < twoDimensional.VerticesList.Length; k++) {
+            cclw[k] = twoDimensional.VerticesList[twoDimensional.VerticesList.Length - k - 1];
+          }
+        } else {
+          res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
+        }
         i++;
       }
 
@@ -413,34 +428,16 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
       /// <param name="n">The outward normal of the building face.</param>
-      /// <param name="r"></param>
       /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space.</param>
       /// <returns>
       /// The BaseSubCP: (d-1)-dimensional polytop complex expressed in terms of d-dimensional points.
       /// </returns>
-      private BaseSubCP BuildFace(AffineBasis FaceBasis, Vector n, Vector? r = null, BaseSubCP? initEdge = null) {
+      private BaseSubCP BuildFace(AffineBasis FaceBasis, Vector n, BaseSubCP? initEdge = null) {
         Debug.Assert
           (FaceBasis.SpaceDim == spaceDim - 1, $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!");
 
-
-        // if (initEdge is not null) {
-        //   Debug.Assert
-        //     (
-        //      initEdge.PolytopDim == spaceDim - 2
-        //    , $"BuildFace (dim = {S.First().Dim}): The dimension of the initial edge must equal to (d-2)!"
-        //     );
-        //
-        //   // Debug.Assert(Tools.EQ(r!.Length,Tools.One));
-        //   // initEdge.Normal = r;
-        // }
-
-
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
-        HyperPlane hp = new HyperPlane(n, FaceBasis.Origin);
-        // HyperPlane hp = new HyperPlane(FaceBasis, (FaceBasis.Origin + n, true)); // хз что лучше (думаю, что нормаль)
-
-        // Берём только точки попавшие в плоскость, и их туда проецируем
-        HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s)).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
+        HashSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
@@ -482,7 +479,8 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert
           (edge.PolytopDim == spaceDim - 2, $"RollOverEdge (dim = {spaceDim}): The dimension of the edge must equal to d-2!");
         Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
-        Debug.Assert(Tools.EQ(face.Normal.Length2, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
+        Debug.Assert
+          (Tools.EQ(face.Normal.Length2, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
@@ -530,7 +528,7 @@ public partial class Geometry<TNum, TConv>
         // Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
 
-        return BuildFace(newF_aBasis, n, r, edge);
+        return BuildFace(newF_aBasis, n, edge);
       }
 #endregion
 
@@ -548,7 +546,9 @@ public partial class Geometry<TNum, TConv>
 #if DEBUG
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
-            ("GiftWrappingMain.CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension.");
+            (
+             "GiftWrappingMain.CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension."
+            );
         }
 #endif
 
