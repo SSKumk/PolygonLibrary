@@ -114,12 +114,12 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    public static void WriteSimplestFile(int dim, string folderPath) {
+    public static void WriteSimplestTask_TerminalSet_GameItself(int dim, string folderPath) {
       Vector vP = Vector.Ones(dim);
       Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(dim);
       Vector vM = Tools.Two * Vector.Ones(dim);
       // Matrix
-      using (StreamWriter writer = new StreamWriter(folderPath + "simplest.c")) {
+      using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame.c")) {
         writer.WriteLine("// Name of the problem");
         writer.WriteLine
           ($"ProblemName = \"Cubes3D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#{vM.ToStringDouble()})\";");
@@ -141,8 +141,38 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
+    public static void WriteSimplestTask_Payoff_Supergraphic_2D(string folderPath) {
+      Vector vP = Vector.Ones(2);
+      Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(2);
+      // Vector vM = Tools.Two * Vector.Ones(2);
+      using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
+        writer.WriteLine("// Name of the problem");
+        writer.WriteLine
+          ($"ProblemName = \"Cubes2D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#DistToZero_Ball1)\";");
+        writer.WriteLine();
+        writer.WriteLine();
+        writer.WriteLine("// The goal type of the game");
+        writer.WriteLine("// 0 - the game itself");
+        writer.WriteLine("// 1 - the game with super-graphic of payoff");
+        writer.WriteLine("GoalType = 1;");
+        writer.WriteLine();
+        writer.WriteLine("// ==================================================");
+
+        WriteSimplestDynamics(2, writer);
+
+        WriteConstraintBlock(writer, "P", vP, vP);
+        WriteConstraintBlock(writer, "Q", vQ, vQ);
+
+        writer.WriteLine("MSetType = \"DistanceToOrigin\";");
+        writer.WriteLine("MBallType = \"Ball_1\";");
+        writer.WriteLine("MCMax = 5;");
+        writer.WriteLine();
+        writer.WriteLine("// ==================================================");
+      }
+    }
+
     private static void WriteConstraintBlock(TextWriter writer, string setType, Vector left, Vector right) {
-      writer.WriteLine($"{setType}Type = \"RectParallel\";");
+      writer.WriteLine($"{setType}SetType = \"RectParallel\";");
       writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringDouble('{', '}')};");
       writer.WriteLine($"{setType}RectPRight = {right.ToStringDouble('{', '}')};");
       writer.WriteLine();
@@ -180,10 +210,14 @@ public partial class Geometry<TNum, TConv>
       writer.WriteLine("dt = 0.2;");
       writer.WriteLine();
       writer.WriteLine("// The dimension of projected space");
-      writer.WriteLine("d = 3;");
+      writer.WriteLine($"d = {dim};");
       writer.WriteLine();
       writer.WriteLine("// The indices to project onto");
-      writer.WriteLine($"projJ = {Enumerable.Range(0, dim)};");
+      writer.Write("projJ = {");
+      for (int i = 0; i < dim - 1; i++) {
+        writer.Write($"{i}, ");
+      }
+      writer.Write($"{dim - 1}}};\n");
       writer.WriteLine();
 
       writer.WriteLine("// ==================================================");
