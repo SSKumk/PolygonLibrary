@@ -345,6 +345,10 @@ public partial class Geometry<TNum, TConv>
        , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left = {left}, right = {right}"
         );
 
+      if (left.Dim == 1) {
+        return AsVPolytop(new HashSet<Vector>() { left, right });
+      }
+
       List<List<TNum>> rect_prev = new List<List<TNum>>();
       List<List<TNum>> rect      = new List<List<TNum>>();
       rect_prev.Add(new List<TNum>() { left[0] });
