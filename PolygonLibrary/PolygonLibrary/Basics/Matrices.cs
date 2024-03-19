@@ -451,7 +451,7 @@ public partial class Geometry<TNum, TConv>
           nv[k] = m1._m[k1];
         }
 
-        for (j = 0; j < c1; j++, k++, k2++) {
+        for (j = 0; j < c2; j++, k++, k2++) {
           nv[k] = m2._m[k2];
         }
       }
