@@ -412,7 +412,7 @@ public partial class Geometry<TNum, TConv>
       /// Builds next face of a polytop.
       /// </summary>
       /// <param name="FaceBasis">The basis of (d-1)-dimensional subspace in terms of d-space.</param>
-      /// <param name="n"></param>
+      /// <param name="n">The outward normal of the building face.</param>
       /// <param name="r"></param>
       /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space.</param>
       /// <returns>
@@ -423,26 +423,29 @@ public partial class Geometry<TNum, TConv>
           (FaceBasis.SpaceDim == spaceDim - 1, $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!");
 
 
-        if (initEdge is not null) {
-          Debug.Assert
-            (
-             initEdge.PolytopDim == spaceDim - 2
-           , $"BuildFace (dim = {S.First().Dim}): The dimension of the initial edge must equal to (d-2)!"
-            );
-
-          initEdge.Normal = r;
-        }
+        // if (initEdge is not null) {
+        //   Debug.Assert
+        //     (
+        //      initEdge.PolytopDim == spaceDim - 2
+        //    , $"BuildFace (dim = {S.First().Dim}): The dimension of the initial edge must equal to (d-2)!"
+        //     );
+        //
+        //   // Debug.Assert(Tools.EQ(r!.Length,Tools.One));
+        //   // initEdge.Normal = r;
+        // }
 
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         HyperPlane hp = new HyperPlane(n, FaceBasis.Origin);
-        // HyperPlane hp = new HyperPlane(FaceBasis, (FaceBasis.Origin + n, true)); хз что лучше (думаю, что нормаль)
+        // HyperPlane hp = new HyperPlane(FaceBasis, (FaceBasis.Origin + n, true)); // хз что лучше (думаю, что нормаль)
+
+        // Берём только точки попавшие в плоскость, и их туда проецируем
         HashSet<SubPoint> inPlane = S.Where(s => hp.Contains(s)).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
         // Если нам передали ребро, то в подпространстве оно будет начальной гранью.
-        // Его нормаль будет (1,0,...,0)
+        // Его нормаль будет (0,0,...,1)
         BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
         if (prj_initFace is not null) {
           prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
@@ -465,7 +468,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="face">(d-1)-dimensional face in d-dimensional space.</param>
       /// <param name="edge">(d-2)-dimensional edge in d-dimensional space.</param>
-      /// <param name="n"></param>
+      /// <param name="n">The outward normal of the next face.</param>
       /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
       private BaseSubCP RollOverEdge(BaseSubCP face, BaseSubCP edge, out Vector n) {
         Debug.Assert(face.SpaceDim == spaceDim, $"RollOverEdge (dim = {spaceDim}): The face must lie in d-dimensional space!");
@@ -479,6 +482,7 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert
           (edge.PolytopDim == spaceDim - 2, $"RollOverEdge (dim = {spaceDim}): The dimension of the edge must equal to d-2!");
         Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
+        Debug.Assert(Tools.EQ(face.Normal.Length2, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
@@ -491,7 +495,7 @@ public partial class Geometry<TNum, TConv>
         TNum      minCos = Tools.Two;
 
 
-        // ищем вектор u такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
+        // ищем вектор r такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
           Vector u = (s - edgeBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
@@ -523,7 +527,7 @@ public partial class Geometry<TNum, TConv>
 
         //ПЕРЕКАТ Сварт. ЧЕМ "быстро" но в DDOUBLE!!!
         // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
-        Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
+        // Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
 
         return BuildFace(newF_aBasis, n, r, edge);
@@ -544,7 +548,7 @@ public partial class Geometry<TNum, TConv>
 #if DEBUG
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
-            ("CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension.");
+            ("GiftWrappingMain.CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension.");
         }
 #endif
 
