@@ -141,7 +141,7 @@ public partial class Geometry<TNum, TConv>
 
         SubTwoDimensional twoDimensional = (SubTwoDimensional)polytop;
         HyperPlane        hp             = new HyperPlane(new AffineBasis(twoDimensional.VerticesList), (innerPoint, false));
-        if (Tools.LT
+        if (Tools.LT // хотим выводить точки в порядке "против часовой стрелки, если смотреть с конца внешней нормали"
               (
                Vector.TripleProduct
                  (
@@ -154,6 +154,7 @@ public partial class Geometry<TNum, TConv>
           for (int k = 0; k < twoDimensional.VerticesList.Length; k++) {
             cclw[k] = twoDimensional.VerticesList[twoDimensional.VerticesList.Length - k - 1];
           }
+          res[i] = new Facet(cclw, hp.Normal);
         } else {
           res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
         }
