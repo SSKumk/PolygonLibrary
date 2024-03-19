@@ -23,10 +23,24 @@ class Program {
     // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(3, pathData);
     // SolverLDG solverLdg = new SolverLDG(pathData, "simplestGame");
     // solverLdg.Solve(true);
+    //
+    // SolverLDG.WriteSimplestTask_Payoff_Supergraphic_2D(pathData);
+    // SolverLDG solverLdg = new SolverLDG(pathData, "simplestSupergraphic");
+    // solverLdg.Solve(true);
 
-    SolverLDG.WriteSimplestTask_Payoff_Supergraphic_2D(pathData);
-    SolverLDG solverLdg = new SolverLDG(pathData, "simplestSupergraphic");
-    solverLdg.Solve(true);
+    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-1-supG");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-1-supG");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-0.9-supG");
+
+
+    // solverLdg.Solve(true);
+
+    Vector e1 = Vector.MakeOrth(3,1);
+    Vector e2 = Vector.MakeOrth(3,2);
+    Vector x  = Vector.CrossProduct(e1, e2);
+    Console.WriteLine(x);
+    Console.WriteLine(Vector.TripleProduct(x,e1,e2));
 
   }
 
