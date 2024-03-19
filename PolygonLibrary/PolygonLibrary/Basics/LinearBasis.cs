@@ -35,11 +35,9 @@ public partial class Geometry<TNum, TConv>
     public bool IsFullDim {
       get
         {
-          if (Basis.Any())
-            return VecDim == Basis.Count;
-          else {
-            return false;
-          }
+          if (Basis.Count != 0) { return VecDim == Basis.Count; }
+
+          return false;
         }
     }
 
