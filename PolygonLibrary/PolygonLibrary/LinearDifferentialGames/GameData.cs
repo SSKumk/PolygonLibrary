@@ -301,6 +301,20 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Aux procedures
+
+    /*
+     * Логику чтения и обработки терминального множества надо разделить от P и Q!
+     * SetType наверное стоит оставить только явные множества, без distTo...
+     * Нужно ещё одно перечисление MType TerminalSet / Supergraphic
+     * MType.TerminalSet и GoalType.Itself, то только задание множества (в Rd)
+     * MType.TerminalSet и GoalType.Supergraphic, то множество в R{d+1}
+     * MType.Payoff и GoalType.Itself, то множество в Rd + сетка по С
+     * MType.Payoff и GoalType.Supergraphic, то расстояния до множества (множество в Rd) или нуля, итог в R{d+1}
+     */
+
+
+
+
     /// <summary>
     /// The function fills in the fields of the original sets
     /// </summary>
@@ -400,7 +414,7 @@ public partial class Geometry<TNum, TConv>
                     , "Ball_oo" => ConvexPolytop.DistanceToOriginBall_oo(dim, CMax).Vertices
                     , _         => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {BallType}")
                     };
-          } else { throw new NotImplementedException("Надо сделать!"); }
+          } else { throw new ArgumentException("DistanceToOrigin is allowed only if GoalType = 1!"); }
 
           break;
         }
@@ -423,7 +437,7 @@ public partial class Geometry<TNum, TConv>
                     , "Ball_oo" => ConvexPolytop.DistanceToPolytopBall_oo(Polytop, CMax).Vertices
                     , _         => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {BallType}")
                     };
-          } else { throw new NotImplementedException("Надо сделать!"); }
+          } else { throw new ArgumentException("DistanceToPolytop is allowed only if GoalType = 1!"); }
 
           break;
         }

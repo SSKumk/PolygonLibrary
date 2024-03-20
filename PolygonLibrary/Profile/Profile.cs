@@ -20,7 +20,7 @@ class Program {
   static void Main(string[] args) {
     // CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(3, pathData);
+    SolverLDG.WriteSimplestTask_TerminalSet_GameItself(3, pathData);
     // SolverLDG solverLdg = new SolverLDG(pathData, "simplestGame");
     // solverLdg.Solve(true);
     //
@@ -31,11 +31,11 @@ class Program {
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-1-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-1-supG");
-    SolverLDG solverLdg = new SolverLDG(pathData, "Spheres3D");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "Spheres3D");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-0.9-supG");
 
 
-    solverLdg.Solve(true);
+    // solverLdg.Solve(true);
 
   }
 
