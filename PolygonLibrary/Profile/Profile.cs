@@ -20,13 +20,18 @@ class Program {
   static void Main(string[] args) {
     // CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    SolverLDG.WriteSimplestTask_TerminalSet_GameItself(3, pathData);
-    // SolverLDG solverLdg = new SolverLDG(pathData, "simplestGame");
-    // solverLdg.Solve(true);
-    //
+    // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(3, pathData);
+    // SolverLDG solverLdg1 = new SolverLDG(pathData, "simplestGame");
+    // solverLdg1.Solve(true);
+    // //
     // SolverLDG.WriteSimplestTask_Payoff_Supergraphic_2D(pathData);
-    // SolverLDG solverLdg = new SolverLDG(pathData, "simplestSupergraphic");
-    // solverLdg.Solve(true);
+    // SolverLDG solverLdg2 = new SolverLDG(pathData, "simplestSupergraphic");
+    // solverLdg2.Solve(true);
+
+
+    // todo ПРОТЕСТИРОВАТЬ различные сочетания GoalType и MType !!!
+
+
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-1-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
