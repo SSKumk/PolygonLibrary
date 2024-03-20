@@ -125,18 +125,26 @@ public partial class Geometry<TNum, TConv>
           ($"ProblemName = \"Cubes3D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#{vM.ToStringDouble()})\";");
         writer.WriteLine();
         writer.WriteLine();
-        writer.WriteLine("// The goal type of the game");
-        writer.WriteLine("// 0 - the game itself");
-        writer.WriteLine("// 1 - the game with super-graphic of payoff");
-        writer.WriteLine("GoalType = 0;");
-        writer.WriteLine();
-
         writer.WriteLine("// ==================================================");
 
         WriteSimplestDynamics(dim, writer);
 
         WriteConstraintBlock(writer, "P", vP, vP);
         WriteConstraintBlock(writer, "Q", vQ, vQ);
+
+        writer.WriteLine("// The goal type of the game");
+        writer.WriteLine("// \"Itself\" - the game itself");
+        writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
+        writer.WriteLine("GoalType = \"Itself\";");
+        writer.WriteLine();
+
+        writer.WriteLine("// The type of the M");
+        writer.WriteLine("// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\"");
+        writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
+        writer.WriteLine("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
+        writer.WriteLine("MType = \"TerminalSet\";");
+        writer.WriteLine();
+
         WriteConstraintBlock(writer, "M", vM, vM);
       }
     }
@@ -144,17 +152,11 @@ public partial class Geometry<TNum, TConv>
     public static void WriteSimplestTask_Payoff_Supergraphic_2D(string folderPath) {
       Vector vP = Vector.Ones(2);
       Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(2);
-      // Vector vM = Tools.Two * Vector.Ones(2);
       using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
         writer.WriteLine("// Name of the problem");
         writer.WriteLine
-          ($"ProblemName = \"Cubes2D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#DistToZero_Ball1)\";");
+          ($"ProblemName = \"Epi_Cubes2D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#DistToZero_Ball1)\";");
         writer.WriteLine();
-        writer.WriteLine();
-        writer.WriteLine("// The goal type of the game");
-        writer.WriteLine("// 0 - the game itself");
-        writer.WriteLine("// 1 - the game with super-graphic of payoff");
-        writer.WriteLine("GoalType = 1;");
         writer.WriteLine();
         writer.WriteLine("// ==================================================");
 
@@ -163,7 +165,23 @@ public partial class Geometry<TNum, TConv>
         WriteConstraintBlock(writer, "P", vP, vP);
         WriteConstraintBlock(writer, "Q", vQ, vQ);
 
-        writer.WriteLine("MSetType = \"DistanceToOrigin\";");
+        writer.WriteLine("// The goal type of the game");
+        writer.WriteLine("// \"Itself\" - the game itself");
+        writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
+        writer.WriteLine("GoalType = \"Epigraph\";");
+        writer.WriteLine();
+
+        writer.WriteLine("// The type of the M");
+        writer.WriteLine
+          (
+           "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
+          );
+        writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
+        writer.WriteLine
+          ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
+        writer.WriteLine("MType = \"DistToOrigin\";");
+        writer.WriteLine();
+
         writer.WriteLine("MBallType = \"Ball_1\";");
         writer.WriteLine("MCMax = 5;");
         writer.WriteLine();
@@ -189,13 +207,13 @@ public partial class Geometry<TNum, TConv>
       writer.WriteLine($"A = {Matrix.Zero(dim)};");
       writer.WriteLine();
       writer.WriteLine("// Dimension of the useful control");
-      writer.WriteLine($"p = {dim};");
+      writer.WriteLine($"pDim = {dim};");
       writer.WriteLine();
       writer.WriteLine("// The useful control matrix");
       writer.WriteLine($"B = {Matrix.Eye(dim)};");
       writer.WriteLine();
       writer.WriteLine("// Dimension of the disturbance");
-      writer.WriteLine($"q = {dim};");
+      writer.WriteLine($"qDim = {dim};");
       writer.WriteLine();
       writer.WriteLine("// The disturbance matrix");
       writer.WriteLine($"C = {Matrix.Eye(dim)};");
