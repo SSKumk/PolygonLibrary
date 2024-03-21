@@ -147,7 +147,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the first player
     /// </summary>
-    private ConvexPolytop P = null!;
+    private ConvexPolytop P;
 
 
     /// <summary>
@@ -163,7 +163,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the second player
     /// </summary>
-    private ConvexPolytop Q = null!;
+    private ConvexPolytop Q;
 
     /// <summary>
     /// Precomputed vectograms of the second player
@@ -195,7 +195,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The type of terminal set
     /// </summary>
-    public ConvexPolytop M = null!;
+    public ConvexPolytop M;
 #endregion
 
     /// <summary>
@@ -227,7 +227,7 @@ public partial class Geometry<TNum, TConv>
     public GameData(string inFName) {
       _pr = new ParamReader(inFName);
 
-      ProblemName = _pr.ReadString("ProblemName");
+      string problemName = _pr.ReadString("ProblemName");
 
       // Dynamics
       n    = _pr.ReadInt("n");
@@ -254,10 +254,10 @@ public partial class Geometry<TNum, TConv>
       projJ = _pr.Read1DArray<int>("projJ", d);
 
       // Reading data of the first player's control
-      P = ReadSet('P', pDim);
+      P = ReadSet('P', pDim, out string PSetTypeInfo);
 
       // Reading data of the second player's control
-      Q = ReadSet('Q', qDim);
+      Q = ReadSet('Q', qDim, out string QSetTypeInfo);
 
 
       // Game type
@@ -279,7 +279,10 @@ public partial class Geometry<TNum, TConv>
 
 
       //Reading data of terminal set type
-      M = ReadTerminalSet();
+      M = ReadTerminalSet(out string describeM);
+
+      string gType = goalType == GoalType.Itself ? "It" : "Ep";
+      ProblemName = $"{gType}_{problemName}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
 
 
       // The Cauchy matrix
@@ -329,46 +332,64 @@ public partial class Geometry<TNum, TConv>
 
 #region Aux procedures
     /*
-     * Логику чтения и обработки терминального множества надо разделить от P и Q!
-     * SetType наверное стоит оставить только явные множества, без distTo...
-     * Нужно ещё одно перечисление MType TerminalSet / Supergraphic
-     * MType.TerminalSet и GoalType.Itself, то только задание множества (в Rd)
-     * MType.Payoff и GoalType.Itself, то множество в Rd + сетка по С
-     * MType.TerminalSet и GoalType.Supergraphic, то множество в R{d+1}
-     * MType.Payoff и GoalType.Supergraphic, то различные варианты:
-     *  - расстояние до множества (множество в Rd) или нуля, итог в R{d+1}
-     *  - квадрат расстояния расстояния до множества (множество в Rd) или нуля, итог в R{d+1}
-     *  - ещё какие-нибудь функции ...
+     * Надо автоматически генерировать имя выходной папки! ProblemName должно содержать только базовое название
+     *  - приставка I_ / E_ (Itself / Epigraph)
+     *  - само имя
+     *  - характеристики:
+     *      > [t_0 T] интервал времени, на котором решается задача
+     *      > Описание P и Q (ТИП)
+     *      > Описание M
+     *      >
      */
 
-    private ConvexPolytop ReadTerminalSet() {
+    /// <summary>
+    /// Reads the data of the terminal set from file.
+    /// </summary>
+    /// <returns>The polytop that describes terminal set.</returns>
+    private ConvexPolytop ReadTerminalSet(out string describeM) {
+      describeM = "";
       switch (goalType) {
         // Случай игры с терминальным множеством
         case GoalType.Itself:
           switch (_MType) {
             // Явно дано терминальное множество
-            case MType.TerminalSet: return ReadSet('M', d);
+            case MType.TerminalSet: {
+              ConvexPolytop readM = ReadSet('M', d, out string MSetTypeInfo);
+              describeM += MSetTypeInfo;
+
+              return readM;
+            }
 
             // Дано терминальное множество и разбиение по С. 'M (+) Ball(0, C_i)'
-            default:                throw new NotImplementedException("Случай, когда нужна сетка по С надо сделать!");
+            default: throw new NotImplementedException("Случай, когда нужна сетка по С надо сделать!");
           }
 
         // Случай игры с надграфиком функции платы
         case GoalType.PayoffEpigraph:
           switch (_MType) {
             // Явно дано терминальное множество расширенной системы
-            case MType.TerminalSet: return ReadSet('M', d + 1); //
+            case MType.TerminalSet: {
+              ConvexPolytop readM = ReadSet('M', d + 1, out string MSetTypeInfo);
+              describeM += MSetTypeInfo;
+
+              return readM;
+            }
 
 
             // Множество в виде расстояния до начала координат
             case MType.Payoff_DistToOrigin: {
+              describeM += "DtnOrigin_";
               string BallType = _pr.ReadString("MBallType");
-              int    Theta    = 10, Phi = 10;
+              describeM += BallType;
+              int Theta = 10, Phi = 10;
               if (BallType == "Ball_2") {
                 Theta = _pr.ReadInt("MTheta");
                 Phi   = _pr.ReadInt("MPhi");
+
+                describeM += $"-T{Theta}-P{Phi}_";
               }
               TNum CMax = _pr.ReadDoubleAndConvertToTNum("MCMax");
+              describeM += $"-CMax{CMax}";
 
               return BallType switch
                        {
@@ -381,23 +402,26 @@ public partial class Geometry<TNum, TConv>
 
             // Множество в виде расстояния до заданного выпуклого многогранника в Rd
             case MType.Payoff_distToPolytop: {
+              describeM += "DtnPolytop_";
               int           VsQnt    = _pr.ReadInt("MVsQnt");
               TNum[,]       Vs       = _pr.Read2DArrayAndConvertToTNum("MPolytop", VsQnt, d);
               ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToHashSet(Vs, VsQnt, d));
               string        BallType = _pr.ReadString("MBallType");
-              int           Theta    = 10, Phi = 10;
+              describeM += $"Vs-Qnt{VsQnt}_{BallType}";
+              int Theta = 10, Phi = 10;
               if (BallType == "Ball_2") {
                 Theta = _pr.ReadInt("MTheta");
                 Phi   = _pr.ReadInt("MPhi");
               }
               TNum CMax = _pr.ReadDoubleAndConvertToTNum("MCMax");
+              describeM += $"-CMax{CMax}";
 
               return BallType switch
                        {
                          "Ball_1"  => ConvexPolytop.DistanceToPolytopBall_1(Polytop, CMax)
                        , "Ball_2"  => ConvexPolytop.DistanceToPolytopBall_2(Polytop, Theta, Phi, CMax)
                        , "Ball_oo" => ConvexPolytop.DistanceToPolytopBall_oo(Polytop, CMax)
-                       , _         => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {BallType}")
+                       , _         => throw new ArgumentException($"Wrong type of the ball! Found {BallType}")
                        };
             }
 
@@ -405,7 +429,7 @@ public partial class Geometry<TNum, TConv>
             // Другие варианты функции платы
             // case :
 
-            default: throw new ArgumentOutOfRangeException();
+            default: throw new ArgumentException("Другие варианты непредусмотрены!");
           }
 
         default:
@@ -418,35 +442,17 @@ public partial class Geometry<TNum, TConv>
     /// The function fills in the fields of the original sets
     /// </summary>
     /// <param name="player">P - first player. Q - second player. M - terminal set.</param>
-    /// <param name="dim"></param>
-    private ConvexPolytop ReadSet(char player, int dim) {
-      string typeSetInt = _pr.ReadString($"{player}SetType");
-      switch (player) {
-        case 'P': {
-          PSetType = typeSetInt;
-        }
-
-          break;
-        case 'Q': {
-          QSetType = typeSetInt;
-        }
-
-          break;
-        case 'M': {
-          MSetType = typeSetInt;
-        }
-
-          break;
-        default: throw new ArgumentException($"{player} must be 'P', 'Q' or 'M'!");
-      }
-
-      SetType setType = typeSetInt switch
+    /// <param name="dim">The dimension of the set to be read.</param>
+    /// <param name="setTypeInfo">The auxiliary information to write into task folder name.</param>
+    private ConvexPolytop ReadSet(char player, int dim, out string setTypeInfo) {
+      setTypeInfo = _pr.ReadString($"{player}SetType");
+      SetType setType = setTypeInfo switch
                           {
                             "VertList"     => SetType.VertList
                           , "RectParallel" => SetType.RectParallel
                           , "Sphere"       => SetType.Sphere
                           , "Ellipsoid"    => SetType.Ellipsoid
-                          , _              => throw new ArgumentOutOfRangeException($"{typeSetInt} must be TODO!")
+                          , _              => throw new ArgumentOutOfRangeException($"{setTypeInfo} must be TODO!")
                           };
 
       // Array for coordinates of the next point
@@ -457,6 +463,8 @@ public partial class Geometry<TNum, TConv>
           TNum[,] Vert = _pr.Read2DArrayAndConvertToTNum($"{player}Vert", Qnt, dim);
           res = Array2DToHashSet(Vert, Qnt, dim);
 
+          setTypeInfo += $"-Qnt{Qnt}";
+
           break;
         }
         case SetType.RectParallel: {
@@ -464,6 +472,7 @@ public partial class Geometry<TNum, TConv>
           TNum[] right = _pr.Read1DArray_double($"{player}RectPRight", dim);
           res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vertices;
 
+          // setTypeStr += $"-{Qnt}"; ???? А что сюда можно написать?
           break;
         }
         case SetType.Sphere: {
@@ -473,6 +482,8 @@ public partial class Geometry<TNum, TConv>
           TNum   Radius = _pr.ReadDoubleAndConvertToTNum($"{player}Radius");
           res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vertices;
 
+          setTypeInfo += $"-T{Theta}-P{Phi}-R{Radius}";
+
           break;
         }
         case SetType.Ellipsoid: {
@@ -481,6 +492,8 @@ public partial class Geometry<TNum, TConv>
           TNum[] Center         = _pr.Read1DArray_double($"{player}Center", dim);
           TNum[] SemiaxesLength = _pr.Read1DArray_double($"{player}SemiaxesLength", dim);
           res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vertices;
+
+          setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength)}";
 
           break;
         }
