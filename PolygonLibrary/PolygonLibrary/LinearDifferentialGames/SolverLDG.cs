@@ -129,7 +129,7 @@ public partial class Geometry<TNum, TConv>
       using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame.c")) {
         writer.WriteLine("// Name of the problem");
         writer.WriteLine
-          ($"ProblemName = \"Cubes3D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#{vM.ToStringDouble()})\";");
+          ($"ProblemName = \"Cubes3D\";");
         writer.WriteLine();
         writer.WriteLine();
         writer.WriteLine("// ==================================================");
@@ -162,7 +162,7 @@ public partial class Geometry<TNum, TConv>
       using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
         writer.WriteLine("// Name of the problem");
         writer.WriteLine
-          ($"ProblemName = \"Epi_Cubes2D(P#{vP.ToStringDouble()})(Q#{vQ.ToStringDouble()})(M#DistToZero_Ball1)\";");
+          ($"ProblemName = \"Cubes2D\";");
         writer.WriteLine();
         writer.WriteLine();
         writer.WriteLine("// ==================================================");
