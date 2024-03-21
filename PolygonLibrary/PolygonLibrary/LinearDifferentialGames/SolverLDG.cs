@@ -50,6 +50,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private readonly SortedDictionary<TNum, ConvexPolytop> W;
 
+    /// <summary>
+    /// Gets the section of the bridge at given time.
+    /// </summary>
+    /// <param name="t">The time instant.</param>
+    /// <returns>The section of the bridge.</returns>
+    public ConvexPolytop GetSection(TNum t) => W[t];
+
 
     /// <summary>
     /// Constructor which creates GameData and init three StableBridges
@@ -74,7 +81,7 @@ public partial class Geometry<TNum, TConv>
       }
       this.fileName = fileName;
       gd            = new GameData(this.workDir + fileName + ".c");
-      W             = new SortedDictionary<TNum, ConvexPolytop>();
+      W             = new SortedDictionary<TNum, ConvexPolytop>(new CauchyMatrix.TimeComparer());
     }
 
     /// <summary>
