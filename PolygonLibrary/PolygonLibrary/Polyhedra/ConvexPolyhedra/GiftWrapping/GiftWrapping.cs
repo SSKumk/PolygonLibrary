@@ -129,7 +129,7 @@ public partial class Geometry<TNum, TConv>
          PolytopDim == 3
        , $"GiftWrapping.Get2DFacets: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
         );
-      Debug.Assert(BuiltPolytop.Faces is not null, "GiftWrapping.VerticesList2D: There are no facets!");
+      Debug.Assert(BuiltPolytop.Faces is not null, "GiftWrapping.Get2DFacets: There are no facets!");
       Facet[] res = new Facet[BuiltPolytop.Faces.Count];
 
       int i = 0;
@@ -162,6 +162,25 @@ public partial class Geometry<TNum, TConv>
       }
 
       return res;
+    }
+
+    /// <summary>
+    /// Gets the 2D-polytop as facet.
+    /// </summary>
+    /// <returns>The facet which represents the 2D-polytop.</returns>
+    internal Facet Get2DFacet_2DPolytop() {
+      Debug.Assert
+        (
+         PolytopDim == 2
+       , $"GiftWrapping.Get2DFacet_2DPolytop: The dimension of the polytop must be equal to 2! Found PDim = {PolytopDim}."
+        );
+
+      SubTwoDimensional twoDimensional = (SubTwoDimensional)BuiltPolytop;
+      HyperPlane        hp             = new HyperPlane(new AffineBasis(twoDimensional.VerticesList));
+
+      // В случае, когда многогранник плоский, мы не знаем куда надо ориентировать нормаль, так что
+      // пусть куда попала туда и смотрит.
+      return new Facet(twoDimensional.VerticesList, hp.Normal);
     }
 
     /// <summary>
