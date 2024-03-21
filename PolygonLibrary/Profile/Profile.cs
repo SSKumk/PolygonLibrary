@@ -25,12 +25,15 @@ class Program {
     // solverLdg1.Solve(true);
     // //
     // SolverLDG.WriteSimplestTask_Payoff_Supergraphic_2D(pathData);
-    // SolverLDG solverLdg2 = new SolverLDG(pathData, "simplestSupergraphic");
-    // solverLdg2.Solve(true);
+    SolverLDG solverLdg2 = new SolverLDG(pathData, "simplestSupergraphic");
+    solverLdg2.Solve(true);
 
+    // var sec0_2 = solverLdg2.GetSection(0.2);
+    // var slice  = ConvexPolytop.SectionByHyperPlane(sec0_2, new HyperPlane(Vector.Ones(3), Vector.Ones(3)));
+
+    // slice.WriteTXT_3D(pathData + "Other/slice");
 
     // todo ПРОТЕСТИРОВАТЬ различные сочетания GoalType и MType !!!
-
 
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-1-supG");
@@ -41,7 +44,6 @@ class Program {
 
 
     // solverLdg.Solve(true);
-
   }
 
 }
