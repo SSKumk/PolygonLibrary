@@ -19,10 +19,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   public class CauchyMatrix
   {
     /// <summary>
-    /// Double comparer based on epsilon comparison.
+    /// Comparer based on epsilon comparison.
     /// Necessary for the internal storage
     /// </summary>
-    protected class TimeComparer : IComparer<TNum>
+    internal class TimeComparer : IComparer<TNum>
     {
       public int Compare(TNum a, TNum b) => Tools.CMP(a, b);
     }
