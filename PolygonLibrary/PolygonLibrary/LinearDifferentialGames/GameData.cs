@@ -408,7 +408,6 @@ public partial class Geometry<TNum, TConv>
             default: throw new ArgumentOutOfRangeException();
           }
 
-          break;
         default:
           throw new ArgumentException($"GameData.ReadTerminalSet: goalType must be Itself or PayoffEpigraph. Found: {goalType}.");
       }
