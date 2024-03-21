@@ -687,13 +687,26 @@ public partial class Geometry<TNum, TConv>
       => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToHashSet());
 
     /// <summary>
-    /// Create a new convex polytop of (d-1)-dimension from the d-dim convex polytop P as section by given hyperplane.
+    /// Create a new convex d-dim polytop from the d-dim convex polytop P as section by given hyperplane.
     /// </summary>
     /// <param name="P">The given convex polytop P.</param>
     /// <param name="hp">The hyper plane to sectioning P.</param>
     /// <returns>The section of the polytop P.</returns>
     public static ConvexPolytop SectionByHyperPlane(ConvexPolytop P, HyperPlane hp) {
-      HyperPlane       hp_  = new HyperPlane(-hp.Normal, hp.ConstantTerm);
+      HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
+      List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
+
+      return AsVPolytop(HRepToVRep_Naive(hrep).ToHashSet(), true);
+    }
+
+    /// <summary>
+    /// Create a new convex polytop of (d-1)-dimension from the d-dim convex polytop P as section by given hyperplane.
+    /// </summary>
+    /// <param name="P">The given convex polytop P.</param>
+    /// <param name="hp">The hyper plane to sectioning P.</param>
+    /// <returns>The section of the polytop P.</returns>
+    public static ConvexPolytop SectionByHyperPlaneAndProject(ConvexPolytop P, HyperPlane hp) {
+      HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
       return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Naive(hrep)).ToHashSet(), true);
@@ -720,24 +733,54 @@ public partial class Geometry<TNum, TConv>
     public void WriteTXT_3D(string filePath) {
       Debug.Assert
         (
-         PolytopDim == 3
-       , $"ConvexPolytop.WriteTXT_3D: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
+         SpaceDim == 3
+       , $"ConvexPolytop.WriteTXT_3D: The dimension of the space must be equal to 3! Found spaceDim = {SpaceDim}."
         );
-      List<Vector> VList = Vertices.Order().ToList();
-      Facet[]      FSet  = GW.Get2DFacets();
-      using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
-        writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
-        writer.WriteLine($"SDim: {SpaceDim}");
-        writer.WriteLine();
-        writer.WriteLine($"Vertices: {Vertices.Count}");
-        writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
-        writer.WriteLine();
-        writer.WriteLine($"Faces: {FSet.Length}");
-        foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
-          writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
-          writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
+
+      switch (PolytopDim) {
+        case 3: {
+          List<Vector> VList = Vertices.Order().ToList();
+          Facet[]      FSet  = GW.Get2DFacets();
+          using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
+            WriteCommonData(writer, VList);
+            writer.WriteLine($"Faces: {FSet.Length}");
+            foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
+              writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
+              writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
+            }
+          }
+
+          break;
         }
+        case 2: {
+          List<Vector> VList = Vertices.Order().ToList();
+          Facet        F     = GW.Get2DFacet_2DPolytop();
+          using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
+            WriteCommonData(writer, VList);
+            writer.WriteLine("Faces: 1");
+            writer.WriteLine($"N: {F.Normal.ToFileFormat()}");
+            writer.WriteLine(string.Join(' ', F.Vertices.Select(v => VList.IndexOf(v))));
+          }
+
+          break;
+        }
+        default:
+          throw new ArgumentException("ConvexPolytop.WriteTXT_3D: Can not write polytop of dimension different from 2 or 3!");
       }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="VList"></param>
+    private void WriteCommonData(TextWriter writer, List<Vector> VList) {
+      writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
+      writer.WriteLine($"SDim: {SpaceDim}");
+      writer.WriteLine();
+      writer.WriteLine($"Vertices: {Vertices.Count}");
+      writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
+      writer.WriteLine();
     }
 
     public void WriteTXT_3D_forDasha(string filePath) {
