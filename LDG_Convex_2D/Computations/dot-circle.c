@@ -37,7 +37,7 @@ t0 = 0.0;
 T = 7.0;
 
 // The time step
-dt = 0.05;
+dt = 0.1;
 
 /* =================================================================================
   Block of data defining the constraint for the first player's control

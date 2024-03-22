@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <Reference Include="PolygonLibrary">
-        <HintPath>..\..\PolygonLibrary\PolygonLibrary\bin\Debug\net7.0\PolygonLibrary.dll</HintPath>
+        <HintPath>..\..\LDG_Convex_2D\TwoPartialPursuer\bin\Debug\net7.0\PolygonLibrary.dll</HintPath>
       </Reference>
     </ItemGroup>
 
