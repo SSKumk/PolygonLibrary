@@ -237,15 +237,6 @@ public partial class Geometry<TNum, TConv>
       qDim = _pr.ReadInt("qDim");
       C    = new Matrix(_pr.Read2DArrayAndConvertToTNum("C", n, qDim));
 
-      // Расширяем систему, если решаем задачу с награфиком функции цены
-      if (goalType == GoalType.PayoffEpigraph) {
-        n++; // размерность стала на 1 больше
-        A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
-        A = Matrix.hcat(A, Matrix.Zero(n, 1));
-        B = Matrix.vcat(B, Matrix.Zero(1, pDim));
-        C = Matrix.vcat(C, Matrix.Zero(1, qDim));
-      }
-
       t0 = _pr.ReadDoubleAndConvertToTNum("t0");
       T  = _pr.ReadDoubleAndConvertToTNum("T");
       dt = _pr.ReadDoubleAndConvertToTNum("dt");
@@ -284,19 +275,26 @@ public partial class Geometry<TNum, TConv>
       string gType = goalType == GoalType.Itself ? "It" : "Ep";
       ProblemName = $"{gType}_{problemName}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
 
+      // Расширяем систему, если решаем задачу с награфиком функции цены
+      if (goalType == GoalType.PayoffEpigraph) {
+        n++; // размерность стала на 1 больше
+        A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
+        A = Matrix.hcat(A, Matrix.Zero(n, 1));
+        B = Matrix.vcat(B, Matrix.Zero(1, pDim));
+        C = Matrix.vcat(C, Matrix.Zero(1, qDim));
+
+        projJ = new List<int>(projJ) { n - 1 }.ToArray(); //
+        d++; // расширили систему
+        // int[] projJ_ex = new int[d + 1]{projJ, 1};             // new List<int>(projJ){1}.ToArray()
+        // for (int i = 0; i < d; i++) {
+        //   projJ_ex[i] = projJ[i];
+        // }
+        // projJ_ex[d] = n - 1;
+        // projJ = projJ_ex;
+      }
 
       // The Cauchy matrix
       cauchyMatrix = new CauchyMatrix(A, T, dt);
-
-      if (goalType == GoalType.PayoffEpigraph) {
-        int[] projJ_ex = new int[d + 1];
-        for (int i = 0; i < d; i++) {
-          projJ_ex[i] = projJ[i];
-        }
-        projJ_ex[d] = n - 1;
-        d++; // расширили систему
-        projJ = projJ_ex;
-      }
 
       // The projection matrix
       TNum[,] ProjMatrArr = new TNum[d, n];
