@@ -770,10 +770,27 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    ///
+    /// Reads the polytop from the given file in 'PolytopTXT_format'.
     /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="VList"></param>
+    /// <param name="filePath">The path to the file to read from without extension.</param>
+    /// <returns>The convex polytop as VRep read from file.</returns>
+    public static ConvexPolytop ReadAsPoints(string filePath) {
+      HashSet<Vector> Vs;
+      using (StreamReader reader = new StreamReader(filePath + ".txt")) {
+        reader.ReadLine(); // scip PDim
+        reader.ReadLine(); // scip SDim
+        reader.ReadLine(); // scip empty line
+        int VsQnt = int.Parse(reader.ReadLine()!.Split(':')[1].Trim());
+        Vs = new HashSet<Vector>(VsQnt);
+        for (int i = 0; i < VsQnt; i++) {
+          Vs.Add(new Vector(reader.ReadLine()!.Split(' ').Select(v => TConv.FromDouble(double.Parse(v))).ToArray()));
+        }
+      }
+
+      return AsVPolytop(Vs);
+    }
+
+    // aux
     private void WriteCommonData(TextWriter writer, List<Vector> VList) {
       writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
       writer.WriteLine($"SDim: {SpaceDim}");
@@ -783,6 +800,7 @@ public partial class Geometry<TNum, TConv>
       writer.WriteLine();
     }
 
+    // aux
     public void WriteTXT_3D_forDasha(string filePath) {
       List<Vector> VList = Vertices.Order().ToList();
       Facet[]      FSet  = GW.Get2DFacets();
