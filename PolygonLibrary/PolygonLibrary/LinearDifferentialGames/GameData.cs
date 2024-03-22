@@ -273,7 +273,7 @@ public partial class Geometry<TNum, TConv>
       M = ReadTerminalSet(out string describeM);
 
       string gType = goalType == GoalType.Itself ? "It" : "Ep";
-      ProblemName = $"{gType}_{problemName}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
+      ProblemName = $"{gType}_{problemName}_T[{t0},{T}]_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
 
       // Расширяем систему, если решаем задачу с награфиком функции цены
       if (goalType == GoalType.PayoffEpigraph) {
@@ -285,12 +285,6 @@ public partial class Geometry<TNum, TConv>
 
         projJ = new List<int>(projJ) { n - 1 }.ToArray(); //
         d++; // расширили систему
-        // int[] projJ_ex = new int[d + 1]{projJ, 1};             // new List<int>(projJ){1}.ToArray()
-        // for (int i = 0; i < d; i++) {
-        //   projJ_ex[i] = projJ[i];
-        // }
-        // projJ_ex[d] = n - 1;
-        // projJ = projJ_ex;
       }
 
       // The Cauchy matrix
