@@ -45,7 +45,7 @@ public partial class Geometry<TNum, TConv>
             }
 
             // todo Проверить, надо ли тут ортогонализировать!
-            _affineBasis = AffineBasis.AsVectors(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1),false);
+            _affineBasis = AffineBasis.AsVectors(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1), false);
           }
 
           return _affineBasis;
@@ -263,6 +263,15 @@ public partial class Geometry<TNum, TConv>
 
       return (isAtOneSide, sign);
     }
+#endregion
+
+#region Fabrics
+    /// <summary>
+    /// Makes the hyper plane which xy parallel and goes throw point (0,0,z).
+    /// </summary>
+    /// <param name="z">The z coordinate of the oz axis at which the plane crosses it.</param>
+    /// <returns>The hyper plane which xy parallel and goes throw point (0,0,z).</returns>
+    public static HyperPlane Make3D_xyParallel(TNum z) => new(Vector.MakeOrth(3, 3), z * Vector.MakeOrth(3, 3));
 #endregion
 
     public override int GetHashCode() => HashCode.Combine(Normal.GetHashCode(), ConstantTerm);
