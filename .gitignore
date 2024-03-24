@@ -54,3 +54,4 @@
 *.synctex.gz(busy)
 *.pdfsync
 PolygonLibrary/inspectcode.xml
+*.plt
