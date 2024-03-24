@@ -25,6 +25,21 @@ public partial class Geometry<TNum, TConv>
     private readonly TNum[] _v;
 
     /// <summary>
+    /// Gets the coordinates of the vector as array.
+    /// </summary>
+    /// <returns>The array of vector coordinates.</returns>
+    public TNum[] GetAsArray() {
+      TNum[] v = new TNum[Dim];
+      int    i = 0;
+      foreach (TNum _vi in _v) {
+        v[i] = _vi;
+        i++;
+      }
+
+      return v;
+    }
+
+    /// <summary>
     /// Dimension of the vector
     /// </summary>
     public int Dim => _v.Length;
@@ -93,7 +108,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Property showing if the vector is zero vector
     /// </summary>
-    public bool IsZero => Tools.EQ(Length2);
+    public bool IsZero => Tools.EQ(Length);
 
     /// <summary>
     /// Convert a vector to a one-dimensional array
@@ -239,11 +254,11 @@ public partial class Geometry<TNum, TConv>
     /// Normalization of the vector with the zero vector check
     /// </summary>
     /// <returns>
-    /// The normalized vector. If the vector is zero, then zero is returned
+    /// The normalized vector. If the vector is zero, then zero is returned.
     /// </returns>
     public Vector NormalizeZero() {
-      if (Tools.EQ(Length)) {
-        return this;
+      if (IsZero) {
+        return Zero(Dim);
       }
 
       Vector res = new Vector(Dim);
@@ -406,13 +421,21 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Basis">The basis to orthonormalize against.</param>
     /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector.</returns>
     public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
+      TNum[] res = v.GetAsArray();
       foreach (Vector bvec in Basis) {
         Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
 
-        v -= (bvec * v) * bvec;
+        // Напишем явно!
+        // v -= (bvec * v) * bvec;
+
+        TNum dot = bvec * v;
+        for (int i = 0; i < res.Length; i++) {
+          res[i] -= dot * bvec[i];
+        }
       }
 
-      return v.NormalizeZero();
+      return new Vector(res).NormalizeZero();
+      // return v.NormalizeZero();
     }
 
     /// <summary>
@@ -525,9 +548,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="u">The second vector.</param>
     /// <param name="r">The third vector.</param>
     /// <returns></returns>
-    public static TNum TripleProduct(Vector v, Vector u, Vector r) {
-      return v * CrossProduct(u, r);
-    }
+    public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct(u, r); }
 
     // /// <summary>
     // /// Calculates the determinant of the three 3D-vectors.
@@ -538,7 +559,6 @@ public partial class Geometry<TNum, TConv>
     // /// <returns></returns>
     // public static TNum TripleProduct(Vector v, Vector u, Vector r)
     //   => v[0] * (u[1] * r[2] - u[2] * r[1]) - v[1] * (u[0] * r[2] - u[2] * r[0]) + v[2] * (u[0] * r[1] - u[1] * r[0]);
-
 #endregion
 
 #region Overrides
