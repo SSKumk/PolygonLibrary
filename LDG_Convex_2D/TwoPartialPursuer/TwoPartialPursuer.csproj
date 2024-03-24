@@ -8,13 +8,13 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="ParamReader">
-          <HintPath>..\ParamReader\bin\Debug\net7.0\ParamReader.dll</HintPath>
+          <HintPath>..\ParamReader\bin\Release\net7.0\ParamReader.dll</HintPath>
         </Reference>
         <Reference Include="PolygonLibrary">
-            <HintPath>..\..\PolygonLibrary\PolygonLibrary\bin\Debug\net7.0\PolygonLibrary.dll</HintPath>
+            <HintPath>..\..\LDG_Convex_2D\TwoPartialPursuer\bin\Debug\net7.0\PolygonLibrary.dll</HintPath>
         </Reference>
     </ItemGroup>
-    <ItemGroup>
-      <ClCompile Include="SourceData\ex00-VerySimple.c" />
-    </ItemGroup>
+<!--    <ItemGroup>-->
+<!--      <ClCompile Include="SourceData\ex00-VerySimple.c" />-->
+<!--    </ItemGroup>-->
 </Project>
