@@ -88,7 +88,8 @@ public partial class Geometry<TNum, TConv>
     /// Computes LDG 
     /// </summary>
     public void Solve(bool isNeedWrite) {
-      string filesDir = workDir + gd.ProblemName;
+      Stopwatch timer    = new Stopwatch();
+      string    filesDir = workDir + gd.ProblemName;
       if (isNeedWrite) {
         if (!Directory.Exists(filesDir)) { //Cur dir must be in work directory
           Directory.CreateDirectory(filesDir);
@@ -109,8 +110,13 @@ public partial class Geometry<TNum, TConv>
         tPred =  t;
         t     -= gd.dt;
         if (bridgeIsNotDegenerate) { // Формула Пшеничного
+          timer.Restart();
           ConvexPolytop  Sum   = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred]);
+          timer.Stop();
+          Console.WriteLine($"{TConv.ToDouble(t):F2})Sum  = {timer.Elapsed.TotalMilliseconds}");
+
           ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+
           if (WNext is null) {
             bridgeIsNotDegenerate = false;
             Console.WriteLine($"The bridge become degenerate at t = {t}.");

@@ -28,6 +28,7 @@ public partial class Geometry<TNum, TConv>
                : null;
     }
 
+
     /* 1.
      * Варианты первого пункта!
      * 1) Для каждого l тупо решить LP-задачу на G. O(|N(F)| * |N(G)|*d^3).
@@ -99,6 +100,9 @@ public partial class Geometry<TNum, TConv>
       , Func<HashSet<Vector>, FaceLattice>    produceFL
       , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null
       ) {
+
+      Stopwatch timer = new Stopwatch();
+      timer.Restart();
       List<HyperPlane> gamma = new List<HyperPlane>();
       foreach (HyperPlane hpF in F) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
@@ -111,11 +115,17 @@ public partial class Geometry<TNum, TConv>
 
 
       // 3? Провести H-redundancy на наборе gamma = {(l,C'(l))}.
+      timer.Stop();
+      Console.WriteLine($"Diff_1-2 = {timer.Elapsed.TotalMilliseconds}");
 
+      timer.Restart();
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
       HashSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
+      timer.Stop();
+      Console.WriteLine($"Diff_HtoV = {timer.Elapsed.TotalMilliseconds}");
 
+      timer.Restart();
 
       // 5) Построить FL роя V(F-G)
       if (VRepFminusG.Count < 3) {
@@ -126,6 +136,8 @@ public partial class Geometry<TNum, TConv>
 
       diffFG = ConvexPolytop.AsFLPolytop(produceFL(VRepFminusG));
 
+      timer.Stop();
+      Console.WriteLine($"Diff_VtoFL = {timer.Elapsed.TotalMilliseconds}");
       return true;
     }
 
