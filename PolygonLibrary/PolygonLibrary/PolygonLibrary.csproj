@@ -27,6 +27,7 @@
         <Compile Include="LinearAlgebra\GaussSLE.cs" />
         <Compile Include="LinearDifferentialGames\GameData.cs" />
         <Compile Include="LinearDifferentialGames\SolverLDG.cs" />
+        <Compile Include="LinearDifferentialGames\StableBridge.cs" />
         <Compile Include="Polygons\BasicPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\GammaPair.cs" />
@@ -47,14 +48,13 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\FaceLattice.cs" />
-<!--        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\HPolytop.cs" />-->
-<!--        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\VPolytop.cs" />-->
         <Compile Include="Segments\Segment.cs" />
         <Compile Include="Toolkit\CollectionOfEnumerables.cs" />
         <Compile Include="Toolkit\Combinations.cs" />
         <Compile Include="Toolkit\Convexification.cs" />
         <Compile Include="Toolkit\Extensions.cs" />
         <Compile Include="Toolkit\ParamReader.cs" />
+        <Compile Include="Toolkit\ParamWriter.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
         <Compile Include="Toolkit\Tools.cs" />
     </ItemGroup>
@@ -71,8 +71,13 @@
 
     <ItemGroup>
         <Reference Include="AVLUtils">
-                         <HintPath>..\..\AVLUtils\AVLUtils\bin\Debug\net7.0\AVLUtils.dll</HintPath> 
-<!--            <HintPath>..\..\AVLUtils\AVLUtils\bin\Release\net7.0\AVLUtils.dll</HintPath>-->
+            <HintPath>..\..\AVLUtils\AVLUtils\bin\Release\net8.0\AVLUtils.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="DoubleDouble">
+            <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
 
