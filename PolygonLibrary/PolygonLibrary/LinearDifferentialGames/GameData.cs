@@ -231,11 +231,11 @@ public partial class Geometry<TNum, TConv>
 
       // Dynamics
       n    = _pr.ReadInt("n");
-      A    = new Matrix(_pr.Read2DArrayAndConvertToTNum("A", n, n));
+      A    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("A", n, n));
       pDim = _pr.ReadInt("pDim");
-      B    = new Matrix(_pr.Read2DArrayAndConvertToTNum("B", n, pDim));
+      B    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("B", n, pDim));
       qDim = _pr.ReadInt("qDim");
-      C    = new Matrix(_pr.Read2DArrayAndConvertToTNum("C", n, qDim));
+      C    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("C", n, qDim));
 
       t0 = _pr.ReadDoubleAndConvertToTNum("t0");
       T  = _pr.ReadDoubleAndConvertToTNum("T");
@@ -396,7 +396,7 @@ public partial class Geometry<TNum, TConv>
             case MType.Payoff_distToPolytop: {
               describeM += "DtnPolytop_";
               int           VsQnt    = _pr.ReadInt("MVsQnt");
-              TNum[,]       Vs       = _pr.Read2DArrayAndConvertToTNum("MPolytop", VsQnt, d);
+              TNum[,]       Vs       = _pr.Read2DArray_doubleAndConvertToTNum("MPolytop", VsQnt, d);
               ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToHashSet(Vs, VsQnt, d));
               string        BallType = _pr.ReadString("MBallType");
               describeM += $"Vs-Qnt{VsQnt}_{BallType}";
@@ -452,7 +452,7 @@ public partial class Geometry<TNum, TConv>
       switch (setType) {
         case SetType.VertList: {
           int     Qnt  = _pr.ReadInt($"{player}Qnt");
-          TNum[,] Vert = _pr.Read2DArrayAndConvertToTNum($"{player}Vert", Qnt, dim);
+          TNum[,] Vert = _pr.Read2DArray_doubleAndConvertToTNum($"{player}Vert", Qnt, dim);
           res = Array2DToHashSet(Vert, Qnt, dim);
 
           setTypeInfo += $"-Qnt{Qnt}";
