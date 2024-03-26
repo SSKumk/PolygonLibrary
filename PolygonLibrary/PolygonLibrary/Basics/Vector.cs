@@ -571,10 +571,10 @@ public partial class Geometry<TNum, TConv>
       return CompareTo((Vector)obj!) == 0;
     }
 
-    public override string ToString() => ToStringTNum('(', ')');
+    public override string ToString() => ToStringWithBraces('(', ')');
 
 
-    private string ToStringTNum(char braceOpen, char braceClose) {
+    public string ToStringWithBraces(char braceOpen, char braceClose) {
       string res = $"{braceOpen}{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 
