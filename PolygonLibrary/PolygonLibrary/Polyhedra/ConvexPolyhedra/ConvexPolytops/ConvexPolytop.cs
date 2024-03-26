@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Security.Claims;
+using DoubleDouble;
 
 
 namespace CGLibrary;
@@ -317,6 +318,37 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsVPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.VRep);
     public static ConvexPolytop AsHPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.HRep);
     public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FL);
+
+    public static ConvexPolytop AsVPolytop(ParamReader pr, bool toConvexify = false) {
+      int             SDim  = pr.ReadInt("SDim");
+      int             VsQnt = pr.ReadInt("VsQnt");
+      TNum[,]         Vs    = pr.Read2DArray<TNum>("Vs", VsQnt, SDim);
+      HashSet<Vector> S     = new VectorHashSet(VsQnt);
+      for (int row = 0; row < VsQnt; row++) {
+        TNum[] v = new TNum[SDim];
+        for (int col = 0; col < SDim; col++) {
+          v[col] = Vs[row, col];
+        }
+        S.Add(new Vector(v));
+      }
+
+      return new ConvexPolytop(S, toConvexify, ConvexPolytopForm.VRep);
+    }
+
+    public static ConvexPolytop AsHPolytop(ParamReader pr, bool doHRedundancy = false) {
+      int             SDim   = pr.ReadInt("SDim");
+      int             HPsQnt = pr.ReadInt("HPsQnt");
+      TNum[,]         HPs    = pr.Read2DArray<TNum>("HPs", HPsQnt, SDim+1);
+      List<HyperPlane> hps      = new List<HyperPlane>(HPsQnt);
+      for (int row = 0; row < HPsQnt; row++) {
+        TNum[] n = new TNum[SDim];
+        for (int col = 0; col < SDim; col++) {
+          n[col] = HPs[row, col];
+        }
+        hps.Add(new HyperPlane(new Vector(n), HPs[row,SDim]));
+      }
+      return new ConvexPolytop(hps, doHRedundancy, ConvexPolytopForm.HRep);
+    }
 #endregion
 
 #region Special polytopes
@@ -710,6 +742,32 @@ public partial class Geometry<TNum, TConv>
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
       return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Naive(hrep)).ToHashSet(), true);
+    }
+#endregion
+
+#region Write out
+    public static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
+      pr.WriteNumber("SDim", P.SpaceDim);
+      pr.WriteNumber("VsQnt", P.Vertices.Count);
+      pr.Write2DArray("Vs", P.Vertices);
+    }
+
+    public static void WriteAsHRep(ParamWriter pr, ConvexPolytop P) {
+      int spaceDim = P.SpaceDim;
+      pr.WriteNumber("SDim", spaceDim);
+      pr.WriteNumber("HPsQnt", P.HRep.Count);
+
+      List<TNum[]> HPs = new List<TNum[]>(P.HRep.Count);
+      foreach (HyperPlane hp in P.HRep) {
+        TNum[] pl = new TNum[spaceDim+1];
+        pl[^1] = hp.ConstantTerm;
+        for (int i = 0; i < spaceDim; i++) {
+          pl[i] = hp.Normal[i];
+        }
+        HPs.Add(pl);
+      }
+
+      pr.Write2DArray("HPs",HPs);
     }
 #endregion
 
