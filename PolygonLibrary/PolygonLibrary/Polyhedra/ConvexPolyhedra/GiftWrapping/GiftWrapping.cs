@@ -274,10 +274,11 @@ public partial class Geometry<TNum, TConv>
 
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToArray());
         }
-        if (S.Count == spaceDim + 1) {
-          // Отдельно обработали случай симплекса.
-          return new SubSimplex(S);
-        }
+        // if (S.Count == spaceDim + 1) {
+        //   // Отдельно обработали случай симплекса.
+              // todo ЕМУ НАДО ПРАВИЛЬНЫМ ОБРАЗОМ ВЫСТАВИТЬ НОРМАЛИ К ГРАНЯМ!!!
+        //   return new SubSimplex(S);
+        // }
 
         // Создаём начальную грань. (Либо берём, если она передана).
         initFace ??= BuildFace(BuildInitialPlane(out Vector normal), normal);
