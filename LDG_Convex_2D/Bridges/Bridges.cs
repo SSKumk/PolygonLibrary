@@ -108,9 +108,9 @@ class Bridges {
       // using (StreamWriter writer = new StreamWriter($"{brPath}{br.c:F2}) t = {ts.t:F2}.dat")) {
       using (StreamWriter writer = new StreamWriter($"{brPath}Br_{i:000}.dat")) {
         foreach (Point2D p in ts.section.Vertices) {
-          writer.WriteLine($"{p.x:G3} {p.y:G3}");
+          writer.WriteLine($"{p.x:F6} {p.y:F6}");
         }
-        writer.WriteLine($"{ts.section.Vertices[0].x:G3} {ts.section.Vertices[0].y:G3}");
+        writer.WriteLine($"{ts.section.Vertices[0].x:F6} {ts.section.Vertices[0].y:F6}");
       }
       i++;
     }
