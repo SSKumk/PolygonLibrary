@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
+using DoubleDouble;
 
 namespace CGLibrary;
 
@@ -107,7 +108,23 @@ public partial class Geometry<TNum, TConv>
       string readData = ReadToken(name, term, State.TokenRead);
 
       if (!double.TryParse(readData, NumberStyles.Any, CultureInfo.InvariantCulture, out double res))
-        throw new Exception("Cannot convert data '" + data + "' read during parsing object '" + name + "' into double");
+        throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into double");
+
+      return res;
+    }
+
+    /// <summary>
+    /// Read the next object and treat it as a ddouble.
+    /// </summary>
+    /// <param name="name">Name of the object.</param>
+    /// <returns>The read ddouble value.</returns>
+    public ddouble ReadDDouble(string name, char term = ';') {
+      ReadNameAndPassEquivalence(name);
+      state = State.ReadingToken;
+      string readData = ReadToken(name, term, State.TokenRead);
+
+      if (!ddouble.TryParse(readData, NumberStyles.Any, CultureInfo.InvariantCulture, out ddouble res))
+        throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into ddouble");
 
       return res;
     }
@@ -210,7 +227,7 @@ public partial class Geometry<TNum, TConv>
       Type elemType = typeof(T);
 
       if (!elemType.IsPrimitive && elemType != typeof(String))
-        throw new Exception("Read2DArray: wrong type of array elements in Read1DArray!");
+        throw new Exception("Read2DArray: wrong type of array elements in Read2DArray!");
 
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
@@ -249,7 +266,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="rows">Number of rows in the array.</param>
     /// <param name="cols">Number of columns in the array.</param>
     /// <returns>The read array of appropriate type and size.</returns>
-    public TNum[,] Read2DArrayAndConvertToTNum(string name, int rows, int cols, char term = ';') {
+    public TNum[,] Read2DArray_doubleAndConvertToTNum(string name, int rows, int cols, char term = ';') {
       double[,] r   = Read2DArray<double>(name, rows, cols, term);
       TNum[,]   res = new TNum[rows, cols];
       for (int i = 0; i < rows; i++) {
