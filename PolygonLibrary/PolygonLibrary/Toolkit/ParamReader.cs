@@ -80,61 +80,21 @@ public partial class Geometry<TNum, TConv>
 
 #region Reading methods
     /// <summary>
-    /// Read the next object and treat it as an integer
-    /// </summary>
-    /// <param name="name">Name of the object</param>
-    /// <param name="term">The termination symbol; default is colon,
-    /// but for reading fields of a structure another symbols can be used</param>
-    /// <returns>The read integer value</returns>
-    public int ReadInt(string name, char term = ';') {
-      ReadNameAndPassEquivalence(name);
-      state = State.ReadingToken;
-      string readData = ReadToken(name, term, State.TokenRead);
-
-      if (!int.TryParse(readData, out int res))
-        throw new Exception("Cannot convert data '" + data + "' read during parsing object '" + name + "' into double");
-
-      return res;
-    }
-
-    /// <summary>
     /// Read the next object and treat it as a double.
     /// </summary>
     /// <param name="name">Name of the object.</param>
     /// <returns>The read double value.</returns>
-    public double ReadDouble(string name, char term = ';') {
+    public T ReadNumber<T>(string name, char term = ';') where T : IParsable<T> {
       ReadNameAndPassEquivalence(name);
       state = State.ReadingToken;
       string readData = ReadToken(name, term, State.TokenRead);
 
-      if (!double.TryParse(readData, NumberStyles.Any, CultureInfo.InvariantCulture, out double res))
-        throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into double");
+      if (!T.TryParse(readData, CultureInfo.InvariantCulture, out T? res)) {
+        throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " + typeof(T).FullName + "!");
+      }
 
       return res;
     }
-
-    /// <summary>
-    /// Read the next object and treat it as a ddouble.
-    /// </summary>
-    /// <param name="name">Name of the object.</param>
-    /// <returns>The read ddouble value.</returns>
-    public ddouble ReadDDouble(string name, char term = ';') {
-      ReadNameAndPassEquivalence(name);
-      state = State.ReadingToken;
-      string readData = ReadToken(name, term, State.TokenRead);
-
-      if (!ddouble.TryParse(readData, NumberStyles.Any, CultureInfo.InvariantCulture, out ddouble res))
-        throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into ddouble");
-
-      return res;
-    }
-
-    /// <summary>
-    /// Read the next object and treat it as a double and convert it to TNum.
-    /// </summary>
-    /// <param name="name">Name of the object.</param>
-    /// <returns>The read double value.</returns>
-    public TNum ReadDoubleAndConvertToTNum(string name, char term = ';') => TConv.FromDouble(ReadDouble(name, term));
 
     /// <summary>
     /// Read the next object and treat it as a string
@@ -151,23 +111,6 @@ public partial class Geometry<TNum, TConv>
       return readData;
     }
 
-    /// <summary>
-    /// Read the next object and treat it as a boolean value
-    /// </summary>
-    /// <param name="name">The name of the object</param>
-    /// <returns>The read boolean value</returns>
-    public bool ReadBoolean(string name, char term = ';') {
-      ReadNameAndPassEquivalence(name);
-      state = State.ReadingToken;
-      string readData = ReadToken(name, term, State.TokenRead);
-
-      bool res;
-
-      if (!bool.TryParse(readData, out res))
-        throw new Exception("Cannot convert data '" + data + "' read during parsing object '" + name + "' into boolean");
-
-      return res;
-    }
 
     /// <summary>
     /// Method for reading one-dimensional array.
@@ -176,12 +119,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="name">The name of the object</param>
     /// <param name="elemQnt">The number of elements in the array</param>
     /// <returns>The read array of appropriate type and size</returns>
-    public T[] Read1DArray<T>(string name, int elemQnt, char term = ';') {
-      Type elemType = typeof(T);
-
-      if (!elemType.IsPrimitive && elemType != typeof(String))
-        throw new Exception("Read1DArray: wrong type of array elements in Read1DArray!");
-
+    public T[] Read1DArray<T>(string name, int elemQnt, char term = ';') where T : IParsable<T> {
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
 
@@ -200,22 +138,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Method for reading one-dimensional array of doubles.
-    /// </summary>
-    /// <param name="name">The name of the object.</param>
-    /// <param name="elemQnt">The number of elements in the array</param>
-    /// <returns>The read array of appropriate type and size</returns>
-    public TNum[] Read1DArray_double(string name, int elemQnt, char term = ';') {
-      double[] r   = Read1DArray<double>(name, elemQnt, term);
-      TNum[]   res = new TNum[elemQnt];
-      for (int i = 0; i < elemQnt; i++) {
-        res[i] = TConv.FromDouble(r[i]);
-      }
-
-      return res;
-    }
-
-    /// <summary>
     /// Method for reading two-dimensional array.
     /// </summary>
     /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
@@ -223,12 +145,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="rows">Number of rows in the array</param>
     /// <param name="cols">Number of columns in the array</param>
     /// <returns>The read array of appropriate type and size</returns>
-    public T[,] Read2DArray<T>(string name, int rows, int cols, char term = ';') {
-      Type elemType = typeof(T);
-
-      if (!elemType.IsPrimitive && elemType != typeof(String))
-        throw new Exception("Read2DArray: wrong type of array elements in Read2DArray!");
-
+    public T[,] Read2DArray<T>(string name, int rows, int cols, char term = ';') where T : IParsable<T> {
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
 
@@ -255,25 +172,6 @@ public partial class Geometry<TNum, TConv>
       // Passing the final colon
       state = State.ReadingTerminator;
       ReadTerminator(name, term, State.TokenRead);
-
-      return res;
-    }
-
-    /// <summary>
-    /// Method for reading two-dimensional array of doubles.
-    /// </summary>
-    /// <param name="name">The name of the object.</param>
-    /// <param name="rows">Number of rows in the array.</param>
-    /// <param name="cols">Number of columns in the array.</param>
-    /// <returns>The read array of appropriate type and size.</returns>
-    public TNum[,] Read2DArray_doubleAndConvertToTNum(string name, int rows, int cols, char term = ';') {
-      double[,] r   = Read2DArray<double>(name, rows, cols, term);
-      TNum[,]   res = new TNum[rows, cols];
-      for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-          res[i, j] = TConv.FromDouble(r[i, j]);
-        }
-      }
 
       return res;
     }
@@ -508,11 +406,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="name">The name of the object</param>
     /// <param name="elemQnt">The number of elements in the array</param>
     /// <returns>Lazy enumerable of the read objects</returns>
-    private IEnumerable<T> ReadArrayRow<T>(string name, int elemQnt) {
+    private IEnumerable<T> ReadArrayRow<T>(string name, int elemQnt) where T : IParsable<T> {
       Type elemType = typeof(T);
-
-      if (!elemType.IsPrimitive && elemType != typeof(String))
-        throw new Exception("Internal - ReadArrayRow: wrong type of array elements in Read1DArray!");
 
       // Passing up to the opening '{'
       state = State.ReadingTerminator;
@@ -530,26 +425,16 @@ public partial class Geometry<TNum, TConv>
           yield return (T)(object)readData;
         }
       } else {
-        TypeConverter converter = TypeDescriptor.GetConverter(elemType);
-
-        if (converter == null)
-          throw new Exception
-            ("Read1DArray: strange type '" + elemType.FullName + "' of array elements - no conversion from a string!");
 
         for (int i = 0; i < elemQnt; i++) {
           state    = State.ReadingToken;
           readData = ReadToken(name, i == elemQnt - 1 ? '}' : ',', State.TokenRead);
 
-          object? result = converter.ConvertFrom(null, CultureInfo.InvariantCulture, readData);
+          if (!T.TryParse(readData, CultureInfo.InvariantCulture,  out T? result)) {
+            throw new Exception("Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " + elemType.FullName + "!");
+          }
 
-          if (result is null)
-            throw new Exception
-              (
-               "Read1DArray: cannot convert data '" + data + "' read during parsing object '" + name + "' into '" +
-               elemType.FullName + "'"
-              );
-
-          yield return (T)result;
+          yield return result;
         }
       }
     }

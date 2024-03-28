@@ -230,18 +230,18 @@ public partial class Geometry<TNum, TConv>
       string problemName = _pr.ReadString("ProblemName");
 
       // Dynamics
-      n    = _pr.ReadInt("n");
-      A    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("A", n, n));
-      pDim = _pr.ReadInt("pDim");
-      B    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("B", n, pDim));
-      qDim = _pr.ReadInt("qDim");
-      C    = new Matrix(_pr.Read2DArray_doubleAndConvertToTNum("C", n, qDim));
+      n    = _pr.ReadNumber<int>("n");
+      A    = new Matrix(_pr.Read2DArray<TNum>("A", n, n));
+      pDim = _pr.ReadNumber<int>("pDim");
+      B    = new Matrix(_pr.Read2DArray<TNum>("B", n, pDim));
+      qDim = _pr.ReadNumber<int>("qDim");
+      C    = new Matrix(_pr.Read2DArray<TNum>("C", n, qDim));
 
-      t0 = _pr.ReadDoubleAndConvertToTNum("t0");
-      T  = _pr.ReadDoubleAndConvertToTNum("T");
-      dt = _pr.ReadDoubleAndConvertToTNum("dt");
+      t0 = _pr.ReadNumber<TNum>("t0");
+      T  = _pr.ReadNumber<TNum>("T");
+      dt = _pr.ReadNumber<TNum>("dt");
 
-      d     = _pr.ReadInt("d");
+      d     = _pr.ReadNumber<int>("d");
       projJ = _pr.Read1DArray<int>("projJ", d);
 
       // Reading data of the first player's control
@@ -284,7 +284,7 @@ public partial class Geometry<TNum, TConv>
         C = Matrix.vcat(C, Matrix.Zero(1, qDim));
 
         projJ = new List<int>(projJ) { n - 1 }.ToArray(); //
-        d++; // расширили систему
+        d++;                                              // расширили систему
       }
 
       // The Cauchy matrix
@@ -375,12 +375,12 @@ public partial class Geometry<TNum, TConv>
               describeM += BallType;
               int Theta = 10, Phi = 10;
               if (BallType == "Ball_2") {
-                Theta = _pr.ReadInt("MTheta");
-                Phi   = _pr.ReadInt("MPhi");
+                Theta = _pr.ReadNumber<int>("MTheta");
+                Phi   = _pr.ReadNumber<int>("MPhi");
 
                 describeM += $"-T{Theta}-P{Phi}_";
               }
-              TNum CMax = _pr.ReadDoubleAndConvertToTNum("MCMax");
+              TNum CMax = _pr.ReadNumber<TNum>("MCMax");
               describeM += $"-CMax{CMax}";
 
               return BallType switch
@@ -395,17 +395,17 @@ public partial class Geometry<TNum, TConv>
             // Множество в виде расстояния до заданного выпуклого многогранника в Rd
             case MType.Payoff_distToPolytop: {
               describeM += "DtnPolytop_";
-              int           VsQnt    = _pr.ReadInt("MVsQnt");
-              TNum[,]       Vs       = _pr.Read2DArray_doubleAndConvertToTNum("MPolytop", VsQnt, d);
+              int           VsQnt    = _pr.ReadNumber<int>("MVsQnt");
+              TNum[,]       Vs       = _pr.Read2DArray<TNum>("MPolytop", VsQnt, d);
               ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToHashSet(Vs, VsQnt, d));
               string        BallType = _pr.ReadString("MBallType");
               describeM += $"Vs-Qnt{VsQnt}_{BallType}";
               int Theta = 10, Phi = 10;
               if (BallType == "Ball_2") {
-                Theta = _pr.ReadInt("MTheta");
-                Phi   = _pr.ReadInt("MPhi");
+                Theta = _pr.ReadNumber<int>("MTheta");
+                Phi   = _pr.ReadNumber<int>("MPhi");
               }
-              TNum CMax = _pr.ReadDoubleAndConvertToTNum("MCMax");
+              TNum CMax = _pr.ReadNumber<TNum>("MCMax");
               describeM += $"-CMax{CMax}";
 
               return BallType switch
@@ -451,8 +451,8 @@ public partial class Geometry<TNum, TConv>
       HashSet<Vector>? res = null;
       switch (setType) {
         case SetType.VertList: {
-          int     Qnt  = _pr.ReadInt($"{player}Qnt");
-          TNum[,] Vert = _pr.Read2DArray_doubleAndConvertToTNum($"{player}Vert", Qnt, dim);
+          int     Qnt  = _pr.ReadNumber<int>($"{player}Qnt");
+          TNum[,] Vert = _pr.Read2DArray<TNum>($"{player}Vert", Qnt, dim);
           res = Array2DToHashSet(Vert, Qnt, dim);
 
           setTypeInfo += $"-Qnt{Qnt}";
@@ -460,18 +460,18 @@ public partial class Geometry<TNum, TConv>
           break;
         }
         case SetType.RectParallel: {
-          TNum[] left  = _pr.Read1DArray_double($"{player}RectPLeft", dim);
-          TNum[] right = _pr.Read1DArray_double($"{player}RectPRight", dim);
+          TNum[] left  = _pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
+          TNum[] right = _pr.Read1DArray<TNum>($"{player}RectPRight", dim);
           res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vertices;
 
           // setTypeStr += $"-{Qnt}"; ???? А что сюда можно написать?
           break;
         }
         case SetType.Sphere: {
-          int    Theta  = _pr.ReadInt($"{player}Theta");
-          int    Phi    = _pr.ReadInt($"{player}Phi");
-          TNum[] Center = _pr.Read1DArray_double($"{player}Center", dim);
-          TNum   Radius = _pr.ReadDoubleAndConvertToTNum($"{player}Radius");
+          int    Theta  = _pr.ReadNumber<int>($"{player}Theta");
+          int    Phi    = _pr.ReadNumber<int>($"{player}Phi");
+          TNum[] Center = _pr.Read1DArray<TNum>($"{player}Center", dim);
+          TNum   Radius = _pr.ReadNumber<TNum>($"{player}Radius");
           res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vertices;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-R{Radius}";
@@ -479,10 +479,10 @@ public partial class Geometry<TNum, TConv>
           break;
         }
         case SetType.Ellipsoid: {
-          int    Theta          = _pr.ReadInt($"{player}Theta");
-          int    Phi            = _pr.ReadInt($"{player}Phi");
-          TNum[] Center         = _pr.Read1DArray_double($"{player}Center", dim);
-          TNum[] SemiaxesLength = _pr.Read1DArray_double($"{player}SemiaxesLength", dim);
+          int    Theta          = _pr.ReadNumber<int>($"{player}Theta");
+          int    Phi            = _pr.ReadNumber<int>($"{player}Phi");
+          TNum[] Center         = _pr.Read1DArray<TNum>($"{player}Center", dim);
+          TNum[] SemiaxesLength = _pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
           res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vertices;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength)}";
