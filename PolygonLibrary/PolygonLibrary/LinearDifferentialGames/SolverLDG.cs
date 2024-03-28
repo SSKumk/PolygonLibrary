@@ -104,7 +104,9 @@ public partial class Geometry<TNum, TConv>
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
         if (isNeedWrite) {
-          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
+          using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.сpolytop");
+          W[t].WriteIn(pr);
+          // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
