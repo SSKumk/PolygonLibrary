@@ -29,6 +29,8 @@ public partial class Geometry<TNum, TConv>
       WriteLine("};");
     }
 
+    public void WriteVector(string fieldName, Vector v) => Write1DArray(fieldName, v.GetAsArray());
+
     public void Write2DArray<T>(string fieldName, IEnumerable<IEnumerable<T>> ar2) where T : INumber<T> {
       Write(fieldName + " = {");
 
@@ -45,7 +47,7 @@ public partial class Geometry<TNum, TConv>
       WriteLine("};");
     }
 
-    public void Write2DArray(string fieldName, IEnumerable<Vector> Vs) => Write2DArray(fieldName, Vs.Select(v => v.GetAsArray()));
+    public void WriteVectors(string fieldName, IEnumerable<Vector> Vs) => Write2DArray(fieldName, Vs.Select(v => v.GetAsArray()));
 
   }
 
