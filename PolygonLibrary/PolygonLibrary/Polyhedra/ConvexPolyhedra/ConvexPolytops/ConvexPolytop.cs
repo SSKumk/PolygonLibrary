@@ -711,6 +711,20 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
+    /// The writer used to write the polytop depends on non-null representations.
+    /// </summary>
+    /// <param name="pr">The writer to write with.</param>
+    public void WriteIn(ParamWriter pr) {
+      if (_FL is not null) {
+        WriteAsFL(pr, this);
+      } else if (_VRep is not null) {
+        WriteAsVRep(pr, this);
+      } else {
+        WriteAsHRep(pr, this);
+      }
+    }
+
+    /// <summary>
     /// Lifts the given convex polytop to the one above dimension, extends with the given value.
     /// </summary>
     /// <param name="P">The polytop to be lifted.</param>
@@ -748,6 +762,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Write out
     public static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
+      pr.WriteLine("VRep");
       pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteNumber("VsQnt", P.Vertices.Count);
       pr.WriteVectors("Vs", P.Vertices);
@@ -755,6 +770,7 @@ public partial class Geometry<TNum, TConv>
 
     public static void WriteAsHRep(ParamWriter pr, ConvexPolytop P) {
       int spaceDim = P.SpaceDim;
+      pr.WriteLine("HRep");
       pr.WriteNumber("SDim", spaceDim);
       pr.WriteNumber("HPsQnt", P.HRep.Count);
 
@@ -772,8 +788,8 @@ public partial class Geometry<TNum, TConv>
     }
 
     public static void WriteAsFL(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteLine("FaceLattice");
+      pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteNumber("PDim", P.PolytopDim);
       pr.WriteNumber("VsQnt", P.Vertices.Count);
       List<Vector> Vs = P.FL.Lattice[0].Select(node => node.Vertices.First()).ToList();
