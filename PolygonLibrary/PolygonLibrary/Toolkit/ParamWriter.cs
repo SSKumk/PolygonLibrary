@@ -23,6 +23,10 @@ public partial class Geometry<TNum, TConv>
       WriteLine(';');
     }
 
+    public void WriteString(string fieldName, string mes) {
+      WriteLine($"{fieldName} = \"{mes}\";");
+    }
+
     public void Write1DArray<T>(string fieldName, IEnumerable<T> ar) where T : INumber<T> {
       Write(fieldName + " = {");
       Write(string.Join(',', ar));
