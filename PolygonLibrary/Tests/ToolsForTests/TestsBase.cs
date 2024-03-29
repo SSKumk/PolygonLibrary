@@ -89,7 +89,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <returns>The rotated swarm of points.</returns>
   public static List<Vector> Rotate(IEnumerable<Vector> S, Matrix rotation) {
     Debug.Assert
-      (S.First().Dim == rotation.Rows, "ToolsTests.Rotate: the dimension of points must be equal to the count of rotation rows.");
+      (S.First().Dim == rotation.Rows, "ToolsForTests.Rotate: the dimension of points must be equal to the count of rotation rows.");
 
     IEnumerable<Vector> rotated = S.Select(s => s * rotation);
 

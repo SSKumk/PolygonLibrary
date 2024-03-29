@@ -4,8 +4,8 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 namespace Tests.Double_Tests; 
 
 /// <summary>
-///This is a test class for ToolsTests and is intended
-///to contain all ToolsTests Unit Tests
+///This is a test class for ToolsForTests and is intended
+///to contain all ToolsForTests Unit Tests
 ///</summary>
 [TestFixture]
 public class RectangleParallelTests {
