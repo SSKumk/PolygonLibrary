@@ -136,6 +136,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Reads the vector from file.
+    /// </summary>
+    /// <param name="name">The name of the vector.</param>
+    /// <returns>The read vector.</returns>
+    public Vector ReadVector(string name) => new(ReadList<TNum>(name).ToArray());
+
+    /// <summary>
     /// Method for reading a list.
     /// </summary>
     /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
@@ -191,6 +198,14 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
+
+    /// <summary>
+    /// Reads the collection of vectors.
+    /// </summary>
+    /// <param name="name">The name of the collection of vectors.</param>
+    /// <returns>The collection of vectors.</returns>
+    public List<Vector> ReadVectors(string name)
+      => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray())).ToList();
 
     /// <summary>
     /// Method for reading two-dimensional array.
