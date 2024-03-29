@@ -320,6 +320,11 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FL);
 
     public static ConvexPolytop AsVPolytop(ParamReader pr, bool toConvexify = false) {
+      string nameRep = pr.ReadString("Rep");
+      if (nameRep != "VRep") {
+        throw new ArgumentException
+          ($"ConvexPolytop.AsVPolytop: Can not construct VRep from the file with Rep = {nameRep}, it must be 'VRep'.");
+      }
       int             SDim  = pr.ReadNumber<int>("SDim");
       int             VsQnt = pr.ReadNumber<int>("VsQnt");
       TNum[,]         Vs    = pr.Read2DArray<TNum>("Vs", VsQnt, SDim);
@@ -336,6 +341,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     public static ConvexPolytop AsHPolytop(ParamReader pr, bool doHRedundancy = false) {
+      string nameRep = pr.ReadString("Rep");
+      if (nameRep != "HRep") {
+        throw new ArgumentException
+          ($"ConvexPolytop.AsVPolytop: Can not construct HRep from the file with Rep = {nameRep}, it must be 'HRep'.");
+      }
       int              SDim   = pr.ReadNumber<int>("SDim");
       int              HPsQnt = pr.ReadNumber<int>("HPsQnt");
       TNum[,]          HPs    = pr.Read2DArray<TNum>("HPs", HPsQnt, SDim + 1);
@@ -349,6 +359,38 @@ public partial class Geometry<TNum, TConv>
       }
 
       return new ConvexPolytop(hps, doHRedundancy, ConvexPolytopForm.HRep);
+    }
+
+    public static ConvexPolytop AsFLPolytop(ParamReader pr) {
+      string nameRep = pr.ReadString("Rep");
+      if (nameRep != "FaceLattice") {
+        throw new ArgumentException
+          (
+           $"ConvexPolytop.AsVPolytop: Can not construct FaceLattice from the file with Rep = {nameRep}, it must be 'FaceLattice'."
+          );
+      }
+      int          SDim  = pr.ReadNumber<int>("SDim");
+      int          PDim  = pr.ReadNumber<int>("PDim");
+      int          VsQnt = pr.ReadNumber<int>("VsQnt");
+      List<Vector> Vs    = pr.ReadVectors("Vs");
+
+      Debug.Assert
+        (
+         Vs.Count == VsQnt
+       , $"ConvexPolytop.AsVPolytop: The number of vertices in the file does not match the number actually read ! VsQnt = {VsQnt}, found = {Vs.Count} "
+        );
+
+      List<List<FLNode>> lattice = new List<List<FLNode>>(PDim) { Vs.Select(v => new FLNode(v)).ToList() };
+      for (int i = 1; i <= PDim; i++) {
+        int             predI = i - 1;
+        List<List<int>> fk    = pr.Read2DJaggedArray<int>($"f{i}");
+        lattice.Add(new List<FLNode>(fk.Count));
+        foreach (List<int> fPred in fk) {
+          lattice[i].Add(new FLNode(fPred.Select(fPredInd => lattice[predI][fPredInd]).ToList()));
+        }
+      }
+
+      return ConvexPolytop.AsFLPolytop(new FaceLattice(lattice.Select(level => level.ToHashSet()).ToList()));
     }
 #endregion
 
@@ -762,7 +804,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Write out
     public static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteLine("VRep");
+      pr.WriteString("Rep", "VRep");
       pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteNumber("VsQnt", P.Vertices.Count);
       pr.WriteVectors("Vs", P.Vertices);
@@ -770,7 +812,7 @@ public partial class Geometry<TNum, TConv>
 
     public static void WriteAsHRep(ParamWriter pr, ConvexPolytop P) {
       int spaceDim = P.SpaceDim;
-      pr.WriteLine("HRep");
+      pr.WriteString("Rep", "HRep");
       pr.WriteNumber("SDim", spaceDim);
       pr.WriteNumber("HPsQnt", P.HRep.Count);
 
@@ -788,7 +830,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     public static void WriteAsFL(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteLine("FaceLattice");
+      pr.WriteString("Rep", "FaceLattice");
       pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteNumber("PDim", P.PolytopDim);
       pr.WriteNumber("VsQnt", P.Vertices.Count);
