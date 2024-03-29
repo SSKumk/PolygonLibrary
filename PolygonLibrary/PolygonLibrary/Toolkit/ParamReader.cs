@@ -48,14 +48,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       TokenRead
 
-     ,
-
-      /// <summary>
-      /// State when the '}' token is read
-      /// </summary>
-      RightBraceRead
-
-    };
+    }
 
     /// <summary>
     /// The content of the given file
@@ -91,7 +84,7 @@ public partial class Geometry<TNum, TConv>
     public T ReadNumber<T>(string name) where T : IParsable<T> {
       ReadNameAndPassEquivalence(name);
       state = State.ReadingToken;
-      string readData = ReadToken(name, ';');
+      ReadToken(name, ";", out string readData);
 
       if (!T.TryParse(readData, CultureInfo.InvariantCulture, out T? res)) {
         throw new Exception
@@ -111,117 +104,134 @@ public partial class Geometry<TNum, TConv>
 
       state = State.ReadingString;
       string readData = ReadStringToken(name);
-      ReadTerminator(name, ';');
+      ReadTerminator(name, ";");
 
       return readData;
     }
 
-
-    // /// <summary>
-    // /// Method for reading one-dimensional array.
-    // /// </summary>
-    // /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
-    // /// <param name="name">The name of the object</param>
-    // /// <param name="elemQnt">The number of elements in the array</param>
-    // /// <returns>The read array of appropriate type and size</returns>
-    // public T[] Read1DArray<T>(string name, int elemQnt, char term = ';') where T : IParsable<T> {
-    //   // Reading and checking the name
-    //   ReadNameAndPassEquivalence(name);
-    //
-    //   IEnumerable<T>       objs = ReadArrayRow<T>(name, elemQnt);
-    //   using IEnumerator<T> en   = objs.GetEnumerator();
-    //   T[]                  res  = new T[elemQnt];
-    //   for (int i = 0; i < elemQnt; i++) {
-    //     en.MoveNext();
-    //     res[i] = en.Current;
-    //   }
-    //
-    //   state = State.ReadingTerminator;
-    //   ReadTerminator(name, term);
-    //
-    //   return res;
-    // }
-
     /// <summary>
     /// Method for reading one-dimensional array.
     /// </summary>
-    /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
-    /// <param name="name">The name of the object</param>
-    /// <param name="elemQnt">The number of elements in the array</param>
-    /// <returns>The read array of appropriate type and size</returns>
-    public T[] Read1DArray<T>(string name, int? elemQnt = null) where T : IParsable<T> {
+    /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
+    /// <param name="name">The name of the object.</param>
+    /// <param name="elemQnt">The number of elements in the array.</param>
+    /// <returns>The read array of appropriate type and size.</returns>
+    public T[] Read1DArray<T>(string name, int elemQnt) where T : IParsable<T> {
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
 
-      IEnumerable<T>       objs = ReadArrayRow<T>(name);
-      using IEnumerator<T> en   = objs.GetEnumerator();
-      List<T>              res  = new List<T>(elemQnt ?? 16);
-      while (en.MoveNext()) {
-        res.Add(en.Current);
+      IEnumerable<T> objs = ReadArrayRow<T>(name, elemQnt);
+      IEnumerator<T> en   = objs.GetEnumerator();
+      T[]            res  = new T[elemQnt];
+      for (int i = 0; i < elemQnt; i++) {
+        en.MoveNext();
+        res[i] = en.Current;
       }
+      en.Dispose();
 
       state = State.ReadingTerminator;
-      ReadTerminator(name, ';');
+      ReadTerminator(name, ";");
 
-      return res.ToArray();
+      return res;
+    }
+
+    /// <summary>
+    /// Method for reading a list.
+    /// </summary>
+    /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
+    /// <param name="name">The name of the object</param>
+    /// <returns>The read list of appropriate type and arbitrary size.</returns>
+    public List<T> ReadList<T>(string name) where T : IParsable<T> {
+      // Reading and checking the name
+      ReadNameAndPassEquivalence(name);
+
+      List<T> objs = ReadArrayRow<T>(name).ToList();
+
+      state = State.ReadingTerminator;
+      ReadTerminator(name, ";");
+
+      return objs;
+    }
+
+
+    /// <summary>
+    /// Method for reading two-dimensional array.
+    /// </summary>
+    /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
+    /// <param name="name">The name of the object</param>
+    /// <returns>The read array of appropriate type and size</returns>
+    public List<List<T>> Read2DJaggedArray<T>(string name) where T : IParsable<T> {
+      // Reading and checking the name
+      ReadNameAndPassEquivalence(name);
+
+      // Passing the initial "{"
+      state = State.ReadingTerminator;
+      ReadTerminator(name, "{");
+
+      List<List<T>> res = new List<List<T>>();
+
+      char readTerm;
+      bool flagContinue = true;
+      while (flagContinue) {
+        // Reading the coming row of the array
+        List<T> objs = ReadArrayRow<T>(name).ToList();
+        res.Add(objs);
+
+        // Passing the following symbol: comma or closing '}'
+        state    = State.ReadingTerminator;
+        readTerm = ReadTerminator(name, ",}");
+        if (readTerm == '}') {
+          flagContinue = false;
+        }
+      }
+
+      // Passing the final colon
+      state = State.ReadingTerminator;
+      ReadTerminator(name, ";");
+
+      return res;
     }
 
     /// <summary>
     /// Method for reading two-dimensional array.
     /// </summary>
-    /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
-    /// <param name="name">The name of the object</param>
-    /// <param name="rows">Number of rows in the array</param>
-    /// <param name="cols">Number of columns in the array</param>
-    /// <returns>The read array of appropriate type and size</returns>
-    public List<T>[] Read2DJaggedArray<T>(string name, int? rows = null, int? cols = null) where T : IParsable<T> {
+    /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
+    /// <param name="name">The name of the object.</param>
+    /// <param name="rows">Number of rows in the array.</param>
+    /// <param name="cols">Number of columns in the array.</param>
+    /// <returns>The read array of appropriate type and size.</returns>
+    public T[,] Read2DArray<T>(string name, int rows, int cols) where T : IParsable<T> {
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
 
       // Passing the initial '{'
       state = State.ReadingTerminator;
-      ReadTerminator(name, '{');
+      ReadTerminator(name, "{");
 
-      List<List<T>> res = new List<List<T>>(rows ?? 16); // 16 используется по умолчанию в C#
+      T[,] res = new T[rows, cols];
 
-      while (state != State.RightBraceRead) {
+      for (int j = 0; j < rows; j++) {
         // Reading the coming row of the array
-        IEnumerable<T>       objs = ReadArrayRow<T>(name);
-        using IEnumerator<T> en   = objs.GetEnumerator();
-        List<T>              part = new List<T>(cols ?? 16);
-        while (en.MoveNext()) {
-          part.Add(en.Current);
+        IEnumerable<T> objs = ReadArrayRow<T>(name, cols);
+        IEnumerator<T> en   = objs.GetEnumerator();
+        for (int i = 0; i < cols; i++) {
+          en.MoveNext();
+          res[j, i] = en.Current;
         }
-        res.Add(part);
+        en.Dispose();
 
         // Passing the following symbol: comma or closing '}'
-        state = State.ReadingToken;
-        ReadToken(name, ',');
+        state = State.ReadingTerminator;
+        if (j == rows - 1) {
+          ReadTerminator(name, "}");
+        } else {
+          ReadTerminator(name, ",");
+        }
       }
 
       // Passing the final colon
       state = State.ReadingTerminator;
-      ReadTerminator(name, ';');
-
-      return res.ToArray();
-    }
-
-    /// <summary>
-    /// Method for reading two-dimensional array.
-    /// </summary>
-    /// <typeparam name="T">The type of array elements: bool, int, double, string</typeparam>
-    /// <param name="name">The name of the object</param>
-    /// <param name="rows">Number of rows in the array</param>
-    /// <param name="cols">Number of columns in the array</param>
-    /// <returns>The read array of appropriate type and size</returns>
-    public T[,] Read2DArray<T>(string name, int rows, int cols) where T : IParsable<T> {
-      List<T>[] ar  = Read2DJaggedArray<T>(name, rows, cols);
-      T[,]      res = new T[rows,cols];
-      for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-          res[i, j] = ar[i][j];
-        }
-      }
+      ReadTerminator(name, ";");
 
       return res;
     }
@@ -261,7 +271,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="ObjectName">The planned name</param>
     private void ReadNameAndPassEquivalence(string ObjectName) {
       state = State.ReadingToken;
-      string readName = ReadToken(ObjectName, '=');
+      ReadToken(ObjectName, "=", out string readName);
 
       if (!ObjectName.Equals(readName))
         throw new Exception("The read name '" + readName + "' doesn't coincide with the given name '" + ObjectName + "'");
@@ -271,13 +281,19 @@ public partial class Geometry<TNum, TConv>
     /// Method that reads the termination colon
     /// </summary>
     /// <param name="name">The planned object name (for diagnostic messages)</param>
-    /// <param name="term">The expected termination symbol</param>
-    private void ReadTerminator(string name, char term) {
+    /// <param name="term">The expected termination symbols</param>
+    /// <returns>The actually read terminator.</returns>
+    private char ReadTerminator(string name, string term) {
       if (state != State.ReadingTerminator)
         throw new Exception("Internal: ReadTerminator() method is called in a wrong state of the reader");
 
+      char readTerm     = '\0';
       bool flagContinue = true;
       while (flagContinue) {
+        if (ind >= data.Length) {
+          throw new IndexOutOfRangeException
+            ("ReadTerminator: During reading the string, the automaton has reached the end of the string!");
+        }
         switch (data[ind]) {
           case ' ':
           case '\t':
@@ -303,15 +319,9 @@ public partial class Geometry<TNum, TConv>
 
             break;
 
-          case '}':
-            ind++;
-            state        = State.RightBraceRead;
-            flagContinue = false;
-
-            break;
-
           default:
-            if (data[ind] == term) {
+            if (term.Contains(data[ind])) {
+              readTerm = data[ind];
               ind++;
               state        = State.TokenRead;
               flagContinue = false;
@@ -321,6 +331,8 @@ public partial class Geometry<TNum, TConv>
             break;
         }
       }
+
+      return readTerm;
     }
 
     /// <summary>
@@ -328,14 +340,20 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="name">The planned object name (for diagnostic messages)</param>
     /// <param name="term">The expected termination symbol</param>
-    private string ReadToken(string name, char term) {
+    /// <param name="readData">The data has been read up to the terminator.</param>
+    private char ReadToken(string name, string term, out string readData) {
       if (state != State.ReadingToken)
         throw new Exception("Internal: ReadToken() method is called in a wrong state of the reader");
 
-      string readData     = "";
-      bool   flagContinue = true;
+      readData = "";
+      bool flagContinue = true;
+      char readTerm     = '\0';
 
       while (flagContinue) {
+        if (ind >= data.Length) {
+          throw new IndexOutOfRangeException
+            ("ReadToken: During reading the string, the automaton has reached the end of the string!");
+        }
         switch (state) {
           case State.ReadingToken:
             switch (data[ind]) {
@@ -379,15 +397,9 @@ public partial class Geometry<TNum, TConv>
                 }
 
                 break;
-
-              case '}':
-                ind++;
-                state        = State.RightBraceRead;
-                flagContinue = false;
-
-                break;
               default:
-                if (data[ind] == term) {
+                if (term.Contains(data[ind])) {
+                  readTerm = data[ind];
                   ind++;
                   state        = State.TokenRead;
                   flagContinue = false;
@@ -404,10 +416,10 @@ public partial class Geometry<TNum, TConv>
       }
 
       if (state == State.ReadingTerminator) {
-        ReadTerminator(name, term);
+        readTerm = ReadTerminator(name, term);
       }
 
-      return readData;
+      return readTerm;
     }
 
     /// <summary>
@@ -423,7 +435,7 @@ public partial class Geometry<TNum, TConv>
       string readData     = "";
 
       state = State.ReadingTerminator;
-      ReadTerminator(name, '\"');
+      ReadTerminator(name, "\"");
 
       while (flagContinue) {
         switch (data[ind]) {
@@ -470,9 +482,9 @@ public partial class Geometry<TNum, TConv>
     // private IEnumerable<T> ReadArrayRow<T>(string name, int elemQnt) where T : IParsable<T> {
     //   Type elemType = typeof(T);
     //
-    //   // Passing up to the opening '{'
+    //   // Passing up to the opening "{"
     //   state = State.ReadingTerminator;
-    //   ReadTerminator(name, '{');
+    //   ReadTerminator(name, "{");
     //
     //   // Reading and parsing elements
     //   string readData;
@@ -507,35 +519,60 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <typeparam name="T">The type of array elements must be IParsable: int, double, string, etc.</typeparam>
     /// <param name="name">The name of the object</param>
+    /// <param name="elemQnt"></param>
     /// <returns>Lazy enumerable of the read objects</returns>
-    private IEnumerable<T> ReadArrayRow<T>(string name) where T : IParsable<T> {
+    private IEnumerable<T> ReadArrayRow<T>(string name, int? elemQnt = null) where T : IParsable<T> {
       Type elemType = typeof(T);
 
-      // Passing up to the opening '{'
+      // Passing up to the opening "{"
       state = State.ReadingTerminator;
-      ReadTerminator(name, '{');
+      ReadTerminator(name, "{");
 
       // Reading and parsing elements
       string readData;
-      if (elemType == typeof(String)) {
-        while (state != State.RightBraceRead) {
+      bool   flagContinue = true;
+      char   readTerm;
+      if (elemType == typeof(string)) {
+        int i = 0;
+        while (flagContinue) {
           state    = State.ReadingString;
           readData = ReadStringToken(name);
-          ReadTerminator(name, ',');
+          readTerm = ReadTerminator(name, ",}");
+          if (readTerm == '}') {
+            if (elemQnt is not null) {
+              if (i != elemQnt - 1) {
+                throw new IndexOutOfRangeException
+                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!");
+              }
+            }
+            flagContinue = false;
+          }
+          i++;
 
           yield return (T)(object)readData;
         }
       } else {
-        while (state != State.RightBraceRead) {
+        int i = 0;
+        while (flagContinue) {
           state    = State.ReadingToken;
-          readData = ReadToken(name, ',');
-
+          readTerm = ReadToken(name, ",}", out readData);
+          if (readTerm == '}') {
+            if (elemQnt is not null) {
+              if (i != elemQnt - 1) {
+                throw new IndexOutOfRangeException
+                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!");
+              }
+            }
+            flagContinue = false;
+          }
           if (!T.TryParse(readData, CultureInfo.InvariantCulture, out T? result)) {
             throw new Exception
               (
-               "Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " + typeof(T).FullName + "!"
+               "ReadArrayRow: Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " +
+               typeof(T).FullName + "!"
               );
           }
+          i++;
 
           yield return result;
         }
