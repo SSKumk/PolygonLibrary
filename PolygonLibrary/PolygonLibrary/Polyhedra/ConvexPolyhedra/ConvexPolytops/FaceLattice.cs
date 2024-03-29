@@ -130,6 +130,8 @@ public partial class Geometry<TNum, TConv>
       return TransformLattice(vertex => aBasis.TranslateToOriginal(vertex.Vertices.First()) + aBasis.Origin);
     }
 
+    // !!! При "наивном" Equals у FLNode, "потеря" одного элемента из Sub, если при этом множество вершин граней не уменьшилось
+    // НЕ ВЕДЁТ к тому, что объекты считаются разными !!!
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
         return false;
@@ -147,13 +149,37 @@ public partial class Geometry<TNum, TConv>
         foreach (var otherNode in other.Lattice[i]) {
           otherDict.Add(otherNode.GetHashCode(), otherNode);
         }
+        var thisDict = new Dictionary<int, FLNode>();
+        foreach (var thisNode in this.Lattice[i]) {
+          thisDict.Add(thisNode.GetHashCode(), thisNode);
+        }
+
+        if (thisDict.Count != otherDict.Count) {
+          isEqual = false;
+          Console.WriteLine($"Lattice are not equal: level i = {i}.");
+
+          break;
+        }
+
 
         foreach (var thisNode in this.Lattice[i]) {
           otherDict.TryGetValue(thisNode.GetHashCode(), out FLNode? otherNode);
           if (otherNode is null) {
             isEqual = false;
           }
-          isEqual = isEqual && (thisNode.Equals(otherNode));
+          isEqual = isEqual && thisNode.Equals(otherNode);
+        }
+        if (!isEqual) {
+          Console.WriteLine($"Lattice are not equal: level i = {i}.");
+
+          break;
+        }
+        foreach (var otherNode in other.Lattice[i]) {
+          thisDict.TryGetValue(otherNode.GetHashCode(), out FLNode? thisNode);
+          if (thisNode is null) {
+            isEqual = false;
+          }
+          isEqual = isEqual && otherNode.Equals(thisNode);
         }
         if (!isEqual) {
           Console.WriteLine($"Lattice are not equal: level i = {i}.");
@@ -336,9 +362,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(List<FLNode> sub) {
-      Polytop = new VectorHashSet
-        (sub.SelectMany(s => s.Vertices).ToHashSet()); // todo А может не надо на каждый узел новые точки сохранять?!
-      Sub = new HashSet<FLNode>(sub);
+      Polytop = new VectorHashSet(sub.SelectMany(s => s.Vertices).ToHashSet());
+      Sub     = new HashSet<FLNode>(sub);
 
       foreach (FLNode subNode in sub) {
         subNode.AddSuper(this);
@@ -396,32 +421,20 @@ public partial class Geometry<TNum, TConv>
       }
 
       FLNode other = (FLNode)obj;
+      // 1) this == other
+      bool isEqual = this.Polytop.SetEquals(other.Polytop);
+      // вообще говоря, это не делает 2 узла равными:
+      // Квадрат. У одного нет одного ребра-узла, у другого другого.
+      // Множество вершин одинаковое, а узлы различные.
 
-      // И vvv это ОЧЕНЬ медленно. Что можно сделать?
+      // 2) Немного наивно, но хоть что-то
+      isEqual &= this.Sub.Count == other.Sub.Count;
 
-      // // 1) this.Above == other.Above
-      // bool isEqual     = true;
-      // var  thisAboveP  = this.Super.Select(a => a.Polytop).ToHashSet();
-      // var  otherAboveP = other.Super.Select(a => a.Polytop).ToHashSet();
-      //
-      // isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
-      //
-      // if (!isEqual) {
-      //   return false;
-      // }
-      //
-      // // 2) this.Sub == other.Sub
-      // var thisSubP  = this.Sub.Select(s => s.Polytop).ToHashSet();
-      // var otherSubP = other.Sub.Select(s => s.Polytop).ToHashSet();
-      //
-      // isEqual = isEqual && thisAboveP.SetEquals(otherAboveP);
-      //
-      // if (!isEqual) {
-      //   return false;
-      // }
+      isEqual &= this.Super.Count == other.Super.Count;
 
-      // 3) this == other
-      return this.Polytop.SetEquals(other.Polytop);
+      // Полное сравнение решёток -- ОЧЕНЬ сложная (с вычислительной точки зрения) задача!
+
+      return isEqual;
     }
 
   }
