@@ -89,9 +89,9 @@ class Bridges {
       // Записываю .plt файлы
       WritePlt(dataPath, pngsPath, br);
 
-      // StreamWriter sr = new StreamWriter(gd.path + StableBridge2D.GenerateFileName(gd.cValues[ic]));
-      // br.WriteToFile(sr);
-      // sr.Close();
+      StreamWriter sr = new StreamWriter(gd.path + StableBridge2D.GenerateFileName(gd.cValues[ic]));
+      br.WriteToFile(sr);
+      sr.Close();
     }
 
     Directory.SetCurrentDirectory(origDir);
