@@ -62,17 +62,17 @@ public class GWBench_Cycles
   public void GWCyclicPolytop() => GiftWrapping.WrapVRep(cycle!.VRep);
 
 
-  public class Program
-  {
-
-    public static void Main(string[] args)
-    {
-      var summary = BenchmarkRunner.Run<GWBench_Cycles>(
-        DefaultConfig.Instance.WithSummaryStyle(
-          SummaryStyle.Default.WithTimeUnit(TimeUnit.Millisecond)));
-    }
-
-  }
+  // public class Program
+  // {
+  //
+  //   public static void Main(string[] args)
+  //   {
+  //     var summary = BenchmarkRunner.Run<GWBench_Cycles>(
+  //       DefaultConfig.Instance.WithSummaryStyle(
+  //         SummaryStyle.Default.WithTimeUnit(TimeUnit.Millisecond)));
+  //   }
+  //
+  // }
 
   /*
 | Method          | dim | amountPoints| Mean              | Error             | StdDev          |
