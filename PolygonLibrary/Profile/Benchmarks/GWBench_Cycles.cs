@@ -1,18 +1,22 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using CGLibrary;
 using DoubleDouble;
+using Perfolizer.Horology;
 
 namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
-[IterationCount(1)]
-public class GWBench_Cycles {
+//[IterationCount(1)]
+public class GWBench_Cycles
+{
 
-  [Params(3, 4, 5)]
+  [Params(3, 4, 5, 6)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -23,26 +27,52 @@ public class GWBench_Cycles {
   public int amountPointsOnMomentCurve;
 
   [GlobalSetup]
-  public void SetUp() {
+  public void SetUp()
+  {
     cycle = ConvexPolytop.CyclicPolytop
       (dim, amountPointsOnMomentCurve, 1 / (amountPointsOnMomentCurve * amountPointsOnMomentCurve));
   }
 
-/*
-  Заворачиваем циклические многогранники. Количество точек было выбрано "из головы".
-
-*/
+  /*
+    Заворачиваем циклические многогранники. Количество точек было выбрано "из головы".
+| Method          | dim | amountPointsOnMomentCurve | Mean      | Error     | StdDev    |
+|---------------- |---- |-------------------------- |----------:|----------:|----------:|
+| GWCyclicPolytop | 3   | 8                         | 0.0027 ms | 0.0000 ms | 0.0000 ms |
+| GWCyclicPolytop | 3   | 16                        | 0.0027 ms | 0.0002 ms | 0.0000 ms |
+| GWCyclicPolytop | 3   | 32                        | 0.0027 ms | 0.0001 ms | 0.0000 ms |
+| GWCyclicPolytop | 3   | 64                        | 0.0027 ms | 0.0007 ms | 0.0000 ms |
+| GWCyclicPolytop | 3   | 128                       | 0.0028 ms | 0.0002 ms | 0.0000 ms |
+| GWCyclicPolytop | 4   | 8                         | 0.0030 ms | 0.0020 ms | 0.0001 ms |
+| GWCyclicPolytop | 4   | 16                        | 0.0030 ms | 0.0001 ms | 0.0000 ms |
+| GWCyclicPolytop | 4   | 32                        | 0.0029 ms | 0.0004 ms | 0.0000 ms |
+| GWCyclicPolytop | 4   | 64                        | 0.0029 ms | 0.0001 ms | 0.0000 ms |
+| GWCyclicPolytop | 4   | 128                       | 0.0029 ms | 0.0002 ms | 0.0000 ms |
+| GWCyclicPolytop | 5   | 8                         | 0.0033 ms | 0.0007 ms | 0.0000 ms |
+| GWCyclicPolytop | 5   | 16                        | 0.0034 ms | 0.0003 ms | 0.0000 ms |
+| GWCyclicPolytop | 5   | 32                        | 0.0034 ms | 0.0000 ms | 0.0000 ms |
+| GWCyclicPolytop | 5   | 64                        | 0.0034 ms | 0.0002 ms | 0.0000 ms |
+| GWCyclicPolytop | 5   | 128                       | 0.0035 ms | 0.0005 ms | 0.0000 ms |
+| GWCyclicPolytop | 6   | 8                         | 0.0040 ms | 0.0009 ms | 0.0000 ms |
+| GWCyclicPolytop | 6   | 16                        | 0.0039 ms | 0.0030 ms | 0.0002 ms |
+| GWCyclicPolytop | 6   | 32                        | 0.0039 ms | 0.0004 ms | 0.0000 ms |
+| GWCyclicPolytop | 6   | 64                        | 0.0040 ms | 0.0014 ms | 0.0001 ms |
+| GWCyclicPolytop | 6   | 128                       | 0.0039 ms | 0.0006 ms | 0.0000 ms |
+  */
   [Benchmark]
   public void GWCyclicPolytop() => GiftWrapping.WrapVRep(cycle!.VRep);
 
 
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBench_Cycles>(DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
+  public class Program
+  {
+
+    public static void Main(string[] args)
+    {
+      var summary = BenchmarkRunner.Run<GWBench_Cycles>(
+        DefaultConfig.Instance.WithSummaryStyle(
+          SummaryStyle.Default.WithTimeUnit(TimeUnit.Millisecond)));
+    }
+
+  }
 
   /*
 | Method          | dim | amountPoints| Mean              | Error             | StdDev          |
