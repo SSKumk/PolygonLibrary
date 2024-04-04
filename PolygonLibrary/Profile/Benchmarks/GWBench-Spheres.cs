@@ -13,6 +13,8 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
+[WarmupCount(1)]
+[IterationCount(1)]
 public class GWBenchSpheres {
 
   // [Params(3, 4, 5, 6)]
