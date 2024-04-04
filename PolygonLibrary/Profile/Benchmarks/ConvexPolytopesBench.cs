@@ -9,7 +9,6 @@ namespace Profile.Benchmarks;
 using static Geometry<ddouble, Tests.DDConvertor>;
 
 
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
 public class ConvexPolytopesBench {
 
@@ -108,7 +107,7 @@ public class ConvexPolytopesBench {
   // public class Program {
   //
   //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<ConvexPolytopesBench>();
+  //     var summary = BenchmarkRunner.Run<ConvexPolytopesBench>(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second));
   //   }
   //
   // }
