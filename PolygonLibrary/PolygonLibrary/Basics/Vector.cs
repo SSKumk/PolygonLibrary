@@ -401,7 +401,7 @@ public partial class Geometry<TNum, TConv>
     /// x0 x1 ... xDim-1
     /// </summary>
     /// <returns>The string in the specified format.</returns>
-    public string ToFileFormat() {
+    public string ToStrSepBySpace() {
       string res = $"{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
 

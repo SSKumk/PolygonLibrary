@@ -882,7 +882,7 @@ public partial class Geometry<TNum, TConv>
             WriteCommonData(writer, VList);
             writer.WriteLine($"Faces: {FSet.Length}");
             foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
-              writer.WriteLine($"N: {face.Normal.ToFileFormat()}");
+              writer.WriteLine($"N: {face.Normal.ToStrSepBySpace()}");
               writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
             }
           }
@@ -895,7 +895,7 @@ public partial class Geometry<TNum, TConv>
           using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
             WriteCommonData(writer, VList);
             writer.WriteLine("Faces: 1");
-            writer.WriteLine($"N: {F.Normal.ToFileFormat()}");
+            writer.WriteLine($"N: {F.Normal.ToStrSepBySpace()}");
             writer.WriteLine(string.Join(' ', F.Vertices.Select(v => VList.IndexOf(v))));
           }
 
@@ -933,7 +933,7 @@ public partial class Geometry<TNum, TConv>
       writer.WriteLine($"SDim: {SpaceDim}");
       writer.WriteLine();
       writer.WriteLine($"Vertices: {Vertices.Count}");
-      writer.WriteLine(string.Join('\n', VList.Select(v => v.ToFileFormat())));
+      writer.WriteLine(string.Join('\n', VList.Select(v => v.ToStrSepBySpace())));
       writer.WriteLine();
     }
 
