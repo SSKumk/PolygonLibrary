@@ -8,46 +8,25 @@ namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
-
-
-
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
-public class GWBench {
+[IterationCount(1)]
+public class GWBench_Cycles {
 
-  [Params(3, 4, 5, 6, 7)]
+  [Params(3, 4, 5)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
-  private ConvexPolytop? simplex;
-  private ConvexPolytop? cube;
   private ConvexPolytop? cycle;
 
-  [Params(8, 16, 32)]
+  [Params(8, 16, 32, 64, 128)]
   // ReSharper disable once UnassignedField.Global
   public int amountPointsOnMomentCurve;
 
   [GlobalSetup]
   public void SetUp() {
-    simplex = ConvexPolytop.SimplexRND(dim);
-    cube    = ConvexPolytop.Cube01(dim);
     cycle = ConvexPolytop.CyclicPolytop
       (dim, amountPointsOnMomentCurve, 1 / (amountPointsOnMomentCurve * amountPointsOnMomentCurve));
   }
-
-/*
-  Заворачиваем случайные симплексы.
-
-*/
-  [Benchmark]
-  public void GWSimplexRND() => GiftWrapping.WrapVRep(simplex!.VRep);
-
-/*
-  Заворачиваем кубы.
-
-*/
-  [Benchmark]
-  public void GWCube() => GiftWrapping.WrapVRep(cube!.VRep);
 
 /*
   Заворачиваем циклические многогранники. Количество точек было выбрано "из головы".
@@ -60,7 +39,7 @@ public class GWBench {
   // public class Program {
   //
   //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBench>();
+  //     var summary = BenchmarkRunner.Run<GWBench_Cycles>(DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
   //   }
   //
   // }
@@ -115,4 +94,5 @@ public class GWBench {
 | GWCube          | 7   | 32          | 14,945,955.967 us | 4,871,682.2905 us | 267,033.3451 us |
 
   */
+
 }
