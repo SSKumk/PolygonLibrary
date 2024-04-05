@@ -175,14 +175,14 @@ public class ConvexPolytopesBench {
 
   */
 
-  public class Program {
-
-    public static void Main(string[] args) {
-      int[] fVector = ConvexPolytop.Sphere(4, 18, 16, Vector.Zero(4), 1).FVector;
-      Console.WriteLine($"4 18 16 fvec = {string.Join(' ', fVector)}");
-    }
-
-  }
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     int[] fVector = ConvexPolytop.Sphere(4, 18, 16, Vector.Zero(4), 1).FVector;
+  //     Console.WriteLine($"4 18 16 fvec = {string.Join(' ', fVector)}");
+  //   }
+  //
+  // }
 
 
   // количество точек в сферах

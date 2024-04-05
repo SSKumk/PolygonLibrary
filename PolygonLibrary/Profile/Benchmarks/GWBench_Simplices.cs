@@ -13,10 +13,9 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
-public class GWBenchSimplices {
+public class GWBench_Simplices {
 
-  [Params(3, 4, 5, 6)]
-  // [Params(3, 4)]
+  [Params(7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -53,6 +52,11 @@ public class GWBenchSimplices {
 | GWSimplexRND | 6   | 10     | 0.0357 s | 0.0133 s | 0.0007 s |
 | GWSimplexRND | 6   | 100    | 0.0371 s | 0.0016 s | 0.0001 s |
 | GWSimplexRND | 6   | 1000   | 0.0577 s | 0.0476 s | 0.0026 s |
+| GWSimplexRND | 7   | 0      | 0.2474 s | 0.0310 s | 0.0017 s |
+| GWSimplexRND | 7   | 10     | 0.2768 s | 0.0070 s | 0.0004 s |
+| GWSimplexRND | 7   | 100    | 0.2470 s | 0.0181 s | 0.0010 s |
+| GWSimplexRND | 7   | 1000   | 0.2756 s | 0.0159 s | 0.0009 s |
+
  */
 
   [Benchmark]
@@ -62,7 +66,7 @@ public class GWBenchSimplices {
   // public class Program {
   //
   //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBenchSimplices>
+  //     var summary = BenchmarkRunner.Run<GWBench_Simplices>
   //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
   //   }
   //
