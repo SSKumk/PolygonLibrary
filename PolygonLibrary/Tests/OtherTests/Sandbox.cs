@@ -25,7 +25,10 @@ public class Sandbox {
 
   [Test]
   public void Sandboxx() {
-    ConvexPolytop cycle4660 = ConvexPolytop.Cyclic(4, 4660,1.0 / (4660 * 4660));
+
+    for (int i = 3; i <= 7; i++) {
+      Console.WriteLine($"{i} | {string.Join(' ', ConvexPolytop.Cube01(i).FVector)}");
+    }
 
     // ConvexPolytop ellips = ConvexPolytop.Ellipsoid(3, 20, 100, Vector.Zero(3), new Vector(new ddouble[] { 1, 2, 3 }));
     // ConvexPolytop cube   = ConvexPolytop.AsVPolytop(Cube(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());
@@ -38,9 +41,8 @@ public class Sandbox {
 
     // ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, candy);
     // sum.WriteTXT_3D(pathPresentationFig + "Cube01_plus_Octahedron");
-    // using (StreamWriter sr = new StreamWriter(pathPresentationFig + "GW_example.obj")) {
-    //   PrVsObj(sr, cube);
-    //   PrVsObj(sr, candy);
+    // using (StreamWriter sr = new StreamWriter(pathPresentationFig + "GeneralPos.obj")) {
+      // PrVsObj(sr, ConvexPolytop.Cube01(3));
     // }
     // conv.WriteTXT_3D(pathPresentationFig + "GW_example_conv");
   }
