@@ -56,3 +56,4 @@
 PolygonLibrary/inspectcode.xml
 *.plt
 *.bat
+/PolygonLibrary/BenchmarkDotNet.Artifacts/results
