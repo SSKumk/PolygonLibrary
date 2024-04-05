@@ -272,7 +272,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     Debug.Assert
       (
        amountOfPoints > pDim
-     , $"TestPolytopes.CyclicPolytop: The amount of points must be greater than the dimenstion of the space. Dim = {pDim}, amount = {amountOfPoints}"
+     , $"TestPolytopes.Cyclic: The amount of points must be greater than the dimenstion of the space. Dim = {pDim}, amount = {amountOfPoints}"
       );
     List<Vector> cycP      = new List<Vector>() { new Vector(pDim) };
     TNum         baseCoord = Tools.One + step;

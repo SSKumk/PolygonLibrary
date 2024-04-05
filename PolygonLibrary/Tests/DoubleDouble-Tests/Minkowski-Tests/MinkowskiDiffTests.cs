@@ -105,7 +105,7 @@ public class MinkowskiDiff3D {
 
   [Test]
   public void Cyclic() {
-    ConvexPolytop  F    = ConvexPolytop.CyclicPolytop(3, 100, 0.01);
+    ConvexPolytop  F    = ConvexPolytop.Cyclic(3, 100, 0.01);
     ConvexPolytop? diff = MinkowskiDiff.Naive(F, ConvexPolytop.AsVPolytop(new HashSet<Vector>() { new Vector(3) }));
     diff.WriteTXT_3D(path + "Cyclic");
   }
