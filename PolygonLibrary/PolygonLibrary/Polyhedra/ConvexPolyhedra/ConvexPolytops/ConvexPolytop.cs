@@ -247,6 +247,8 @@ public partial class Geometry<TNum, TConv>
         return _FL;
       }
     }
+
+    public int[] FVector => FL.Lattice.Select(lvl => lvl.Count).ToArray();
     #endregion
 
     // todo Нужен ли GetHashCode()? Если да, то как его считать?
@@ -336,14 +338,14 @@ public partial class Geometry<TNum, TConv>
     #endregion
 
     #region Fabrics
-    public static ConvexPolytop AsVPolytop(HashSet<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.VRep);
+    public static ConvexPolytop AsVPolytop(IEnumerable<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.VRep);
 
-    public static ConvexPolytop AsHPolytop(HashSet<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.HRep);
+    public static ConvexPolytop AsHPolytop(IEnumerable<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.HRep);
 
-    public static ConvexPolytop AsFLPolytop(HashSet<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S, toConvexify, ConvexPolytopForm.FL);
+    public static ConvexPolytop AsFLPolytop(IEnumerable<Vector> S, bool toConvexify = false)
+      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.FL);
 
     public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
       => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.VRep);
@@ -509,8 +511,9 @@ public partial class Geometry<TNum, TConv>
     /// Generates a d-simplex in d-space.
     /// </summary>
     /// <param name="simplexDim">The dimension of the simplex.</param>
-    /// <returns>A convex polytop as VRep representing the random simplex.</returns>
-    public static ConvexPolytop SimplexRND(int simplexDim)
+    /// <param name="doFL">If the flag is true than face lattice will be construct, otherwise only VRep.</param>
+    /// <returns>A convex polytop as representing the random simplex.</returns>
+    public static ConvexPolytop SimplexRND(int simplexDim, bool doFL = false)
     {
       GRandomLC random = new GRandomLC();
 
@@ -523,7 +526,8 @@ public partial class Geometry<TNum, TConv>
         }
       } while (!new AffineBasis(simplex).IsFullDim);
 
-      return AsVPolytop(simplex);
+
+      return  doFL ? AsFLPolytop(simplex) : AsVPolytop(simplex);
     }
 
     /// <summary>
@@ -533,12 +537,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>
     /// <param name="step">The step of increasing the moment on the moments curve. init = 1 + step.</param>
     /// <returns>A convex polytop as VRep representing the cyclic polytop.</returns>
-    public static ConvexPolytop CyclicPolytop(int pDim, int amountOfPoints, TNum step)
+    public static ConvexPolytop Cyclic(int pDim, int amountOfPoints, TNum step)
     {
       Debug.Assert
         (
          amountOfPoints > pDim
-       , $"TestPolytopes.CyclicPolytop: The amount of points must be greater than the dimension of the space. Dim = {pDim}, amount = {amountOfPoints}"
+       , $"TestPolytopes.Cyclic: The amount of points must be greater than the dimension of the space. Dim = {pDim}, amount = {amountOfPoints}"
         );
       HashSet<Vector> cycP = new HashSet<Vector>() { new Vector(pDim) };
       TNum baseCoord = Tools.One + step;
@@ -831,6 +835,15 @@ public partial class Geometry<TNum, TConv>
 
 
     #region Functions
+    /// <summary>
+    /// Rotates the polytop by randomly generated orthonormal matrix.
+    /// </summary>
+    /// <returns>The rotated polytop</returns>
+    public ConvexPolytop RotateRND() {
+      Matrix rotate = Matrix.GenONMatrix(SpaceDim);
+      return AsVPolytop(Vertices.Select(v => v * rotate)); // todo Если дано FL, то надо его сохранить (просто вершины пересчитать)
+    }
+
     /// <summary>
     /// The writer used to write the polytop depends on non-null representations.
     /// </summary>

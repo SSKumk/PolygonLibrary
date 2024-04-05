@@ -106,6 +106,11 @@ public partial class Geometry<TNum, TConv>
     public static readonly TNum One = TNum.MultiplicativeIdentity;
 
     /// <summary>
+    /// Represents the Minus one value of TNum ('-1').
+    /// </summary>
+    public static readonly TNum MinusOne = -TNum.MultiplicativeIdentity;
+
+    /// <summary>
     /// Represents the value 2.
     /// </summary>
     public static readonly TNum Two = TNum.MultiplicativeIdentity + TNum.MultiplicativeIdentity;

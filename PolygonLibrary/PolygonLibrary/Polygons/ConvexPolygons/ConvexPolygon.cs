@@ -399,7 +399,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       List<int> suspiciousIndices = new List<int>();
       Debug.Assert(cp1.SF != null, "cp1.SF != null");
       Debug.Assert(cp2.SF != null, "cp2.SF != null");
-      SupportFunction? sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, Tools.One, -Tools.One, suspiciousIndices)
+      SupportFunction? sf = SupportFunction.CombineFunctions(cp1.SF, cp2.SF, Tools.One, Tools.MinusOne, suspiciousIndices)
                                            .ConvexifyFunctionWithInfo(suspiciousIndices);
       if (sf == null) {
         return null;

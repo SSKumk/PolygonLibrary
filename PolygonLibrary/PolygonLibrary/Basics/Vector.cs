@@ -286,11 +286,11 @@ public partial class Geometry<TNum, TConv>
       } else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
-        if (!(Tools.GE(dot, -Tools.One) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+        if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
         }
 #endif
-        if (Tools.EQ(dot, -Tools.One) && dot <= -Tools.One) {
+        if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
           return Math.PI;
         }
         if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
@@ -315,11 +315,11 @@ public partial class Geometry<TNum, TConv>
       } else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
-        if (!(Tools.GE(dot, -Tools.One) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+        if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
         }
 #endif
-        if (Tools.EQ(dot, -Tools.One) && dot <= -Tools.One) {
+        if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
           return TNum.Pi;
         }
         if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
