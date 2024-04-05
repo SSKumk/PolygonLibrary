@@ -25,16 +25,24 @@ public class Sandbox {
 
   [Test]
   public void Sandboxx() {
-    ConvexPolytop ellips = ConvexPolytop.Ellipsoid(3, 20, 100, Vector.Zero(3), new Vector(new ddouble[] { 1, 2, 3 }));
-    ConvexPolytop cube   = ConvexPolytop.AsVPolytop(Cube(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());
+    ConvexPolytop cycle4660 = ConvexPolytop.Cyclic(4, 4660,1.0 / (4660 * 4660));
 
-    using (StreamWriter sr = new StreamWriter(pathPresentationFig + "GW_example.obj")) {
-      PrVsObj(sr, cube);
-      PrVsObj(sr, ellips);
-    }
-    HashSet<Vector> S    = ellips.Vertices.Union(cube.Vertices).ToHashSet();
-    ConvexPolytop   conv = ConvexPolytop.AsVPolytop(S, true);
-    conv.WriteTXT_3D(pathPresentationFig + "GW_example_conv");
+    // ConvexPolytop ellips = ConvexPolytop.Ellipsoid(3, 20, 100, Vector.Zero(3), new Vector(new ddouble[] { 1, 2, 3 }));
+    // ConvexPolytop cube   = ConvexPolytop.AsVPolytop(Cube(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());
+
+    // ConvexPolytop cube  = ConvexPolytop.RectParallel(-Vector.Ones(3), Vector.Ones(3));
+    // ConvexPolytop candy = ConvexPolytop.Sphere(3, 2, 4, Vector.Zero(3), 1);
+
+    // cube.WriteTXT_3D(pathPresentationFig + "Cube01");
+    // candy.WriteTXT_3D(pathPresentationFig + "Octahedron");
+
+    // ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, candy);
+    // sum.WriteTXT_3D(pathPresentationFig + "Cube01_plus_Octahedron");
+    // using (StreamWriter sr = new StreamWriter(pathPresentationFig + "GW_example.obj")) {
+    //   PrVsObj(sr, cube);
+    //   PrVsObj(sr, candy);
+    // }
+    // conv.WriteTXT_3D(pathPresentationFig + "GW_example_conv");
   }
 
   public static void PrVsObj(StreamWriter sr, ConvexPolytop P) {
