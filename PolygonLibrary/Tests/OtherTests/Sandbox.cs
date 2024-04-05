@@ -26,9 +26,12 @@ public class Sandbox {
   [Test]
   public void Sandboxx() {
 
-    for (int i = 3; i <= 7; i++) {
-      Console.WriteLine($"{i} | {string.Join(' ', ConvexPolytop.Cube01(i).FVector)}");
-    }
+    // for (int i = 3; i <= 7; i++) {
+    //   ConvexPolytop P = ConvexPolytop.SimplexRND(i,true);
+    //   ConvexPolytop Q = ConvexPolytop.SimplexRND(i,true);
+    //   Console.WriteLine($"{i} | {string.Join(' ', MinkowskiSum.BySandipDas(P,Q).FVector)}");
+    // }
+    Console.WriteLine($"6 | {string.Join(' ', ConvexPolytop.Cyclic(6,64,0.01).FVector)}");
 
     // ConvexPolytop ellips = ConvexPolytop.Ellipsoid(3, 20, 100, Vector.Zero(3), new Vector(new ddouble[] { 1, 2, 3 }));
     // ConvexPolytop cube   = ConvexPolytop.AsVPolytop(Cube(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());

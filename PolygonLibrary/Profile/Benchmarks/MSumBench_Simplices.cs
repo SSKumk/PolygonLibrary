@@ -11,12 +11,11 @@ namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
-
 [ShortRunJob]
 [WarmupCount(1)]
 public class MSumBench_Simplices {
 
-  [Params(3, 4, 5, 6, 7)]
+  [Params(7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -44,6 +43,7 @@ public class MSumBench_Simplices {
   //   }
   //
   // }
+
 }
 
 /*
@@ -57,6 +57,7 @@ public class MSumBench_Simplices {
 | MSumSmSm_CH   | 5   |  0.2547 s |  0.0235 s | 0.0013 s |
 | MSumSmSm_SDas | 6   |  0.2695 s |  0.1675 s | 0.0092 s |
 | MSumSmSm_CH   | 6   |  4.9545 s |  1.4820 s | 0.0812 s |
-| MSumSmSm_SDas | 7   |  1.3786 s |  0.8522 s | 0.0467 s |
-| MSumSmSm_CH   | 7   | 99.8668 s | 41.4882 s | 2.2741 s |
+| MSumSmSm_SDas | 7   |  1.294 s  | 0.2285 s  | 0.0125 s |
+| MSumSmSm_CH   | 7   | 93.251 s  | 3.1477 s  | 0.1725 s |
+
  */

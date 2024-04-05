@@ -35,14 +35,14 @@ public class MSumBench_Cubes {
   [Benchmark]
   public void MSumCuCu_CH() => MinkowskiSum.ByConvexHull(P, Q);
 
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<MSumBench_Cubes>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
+  public class Program {
+
+    public static void Main(string[] args) {
+      var summary = BenchmarkRunner.Run<MSumBench_Cubes>
+        (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+    }
+
+  }
 
  /*
 | Method        | dim | Mean     | Error    | StdDev   |
