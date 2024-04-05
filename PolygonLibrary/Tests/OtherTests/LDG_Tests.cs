@@ -38,5 +38,4 @@ public class LDG_Tests {
     SolverLDG ldg = new SolverLDG(pathData, "Spheres3D-accurate");
     ldg.Solve(true);
   }
-
 }
