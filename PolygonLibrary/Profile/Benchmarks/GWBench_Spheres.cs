@@ -42,6 +42,22 @@ public class GWBenchSpheres {
     polytop = ConvexPolytop.AsVPolytop(S.ToHashSet());
   }
 
+
+  [Benchmark]
+  public void GWSphere() => GiftWrapping.WrapVRep(polytop!.VRep);
+
+
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<GWBenchSpheres>
+  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+  //   }
+  //
+  // }
+
+}
+
 /*
 Заворачиваем сферы с дополнительными точками
 | Method   | dim | amount | thetaPartition | phiPartition | Mean      | Error     | StdDev   |
@@ -81,18 +97,3 @@ public class GWBenchSpheres {
 
 
  */
-
-  [Benchmark]
-  public void GWSphere() => GiftWrapping.WrapVRep(polytop!.VRep);
-
-
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBenchSpheres>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
-
-}

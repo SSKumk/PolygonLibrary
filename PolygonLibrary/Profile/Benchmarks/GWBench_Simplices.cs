@@ -32,6 +32,22 @@ public class GWBench_Simplices {
 
   }
 
+
+
+  [Benchmark]
+  public void GWSimplexRND() => GiftWrapping.WrapVRep(simplex!.VRep);
+
+
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<GWBench_Simplices>
+  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+  //   }
+  //
+  // }
+
+}
 /*
 Заворачиваем случайные симплексы с дополнительными точками
 | Method       | dim | amount | Mean     | Error    | StdDev   |
@@ -58,18 +74,3 @@ public class GWBench_Simplices {
 | GWSimplexRND | 7   | 1000   | 0.2756 s | 0.0159 s | 0.0009 s |
 
  */
-
-  [Benchmark]
-  public void GWSimplexRND() => GiftWrapping.WrapVRep(simplex!.VRep);
-
-
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBench_Simplices>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
-
-}

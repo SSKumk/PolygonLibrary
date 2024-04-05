@@ -40,16 +40,16 @@ public class MDiffBench_Cyclic
   public void MDiffCyclic() => MinkowskiDiff.Naive(P, Q);
 
 
-  public class Program
-  {
-
-    public static void Main(string[] args)
-    {
-      var summary = BenchmarkRunner.Run<MDiffBench_Cyclic>
-        (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-    }
-
-  }
+  // public class Program
+  // {
+  //
+  //   public static void Main(string[] args)
+  //   {
+  //     var summary = BenchmarkRunner.Run<MDiffBench_Cyclic>
+  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+  //   }
+  //
+  // }
 
 }
 

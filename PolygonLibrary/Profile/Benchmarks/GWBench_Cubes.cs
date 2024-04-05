@@ -13,10 +13,11 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
+[WarmupCount(1)]
 public class GWBenchCubes {
 
   // [Params(3, 4, 5, 6)]
-  [Params(3, 4)]
+  [Params(7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -31,6 +32,21 @@ public class GWBenchCubes {
     polytop = ConvexPolytop.AsVPolytop(Cube(dim, out _, new int[]{dim}, amount).ToHashSet());
 
   }
+
+  [Benchmark]
+  public void GWCube() => GiftWrapping.WrapVRep(polytop!.VRep);
+
+
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<GWBenchCubes>
+  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+  //   }
+  //
+  // }
+
+}
 
 /*
 Заворачиваем кубы с дополнительными точками
@@ -52,20 +68,9 @@ public class GWBenchCubes {
 | GWCube | 6   | 10     | 0.9271 s | 0.2008 s | 0.0110 s |
 | GWCube | 6   | 100    | 0.8453 s | 0.2616 s | 0.0143 s |
 | GWCube | 6   | 1000   | 0.8339 s | 0.1995 s | 0.0109 s |
+| GWCube | 7   | 0      | 13.96 s  | 5.849 s  | 0.321 s  |
+| GWCube | 7   | 10     | 15.05 s  | 2.924 s  | 0.160 s  |
+| GWCube | 7   | 100    | 13.53 s  | 3.277 s  | 0.180 s  |
+| GWCube | 7   | 1000   | 15.32 s  | 3.632 s  | 0.199 s  |
 
  */
-
-  [Benchmark]
-  public void GWCube() => GiftWrapping.WrapVRep(polytop!.VRep);
-
-
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBenchCubes>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
-
-}

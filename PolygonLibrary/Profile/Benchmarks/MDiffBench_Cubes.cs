@@ -36,7 +36,7 @@ public class MDiffBench_Cubes {
   //
   //   public static void Main(string[] args) {
   //     var summary = BenchmarkRunner.Run<MDiffBench_Cubes>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Millisecond)));
   //   }
   //
   // }
@@ -44,5 +44,11 @@ public class MDiffBench_Cubes {
 }
 
 /*
+| Method     | dim | Mean      | Error     | StdDev    |
+|----------- |---- |----------:|----------:|----------:|
+| MDiffCubes | 3   | 0.0239 ms | 0.0019 ms | 0.0001 ms |
+| MDiffCubes | 4   | 0.1175 ms | 0.0111 ms | 0.0006 ms |
+| MDiffCubes | 5   | 0.6303 ms | 0.0636 ms | 0.0035 ms |
+| MDiffCubes | 6   | 3.3543 ms | 0.2918 ms | 0.0160 ms |
 
  */
