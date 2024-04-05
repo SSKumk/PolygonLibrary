@@ -1,13 +1,14 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using CGLibrary;
 using DoubleDouble;
+using Perfolizer.Horology;
 
 namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
-
 
 [ShortRunJob]
 public class ConvexPolytopesBench {
@@ -82,6 +83,57 @@ public class ConvexPolytopesBench {
 | MakeSpheres | 5          | 72             | 16           |  61,122,218.9 us |     500,425.66 us |    27,430.02 us | 1060000.0000 |  360000.0000 | 10000.0000 |  6957486.33 KB |
 | MakeSpheres | 5          | 72             | 32           | 125,565,156.7 us |  31,070,416.48 us | 1,703,074.37 us | 2113000.0000 |  686000.0000 | 12000.0000 | 13922975.24 KB |
 | MakeSpheres | 5          | 72             | 64           | 275,989,847.6 us | 110,431,568.47 us | 6,053,126.90 us | 4216000.0000 | 1365000.0000 | 14000.0000 | 27853990.65 KB |
+
+Количество точек:
+3 10 10 92
+3 10 16 146
+3 10 32 290
+3 10 64 578
+3 18 10 172
+3 18 16 274
+3 18 32 546
+3 18 64 1090
+3 36 10 352
+3 36 16 562
+3 36 32 1122
+3 36 64 2242
+3 72 10 712
+3 72 16 1138
+3 72 32 2274
+3 72 64 4546
+4 10 10 830
+4 10 16 1316
+4 10 32 2612
+4 10 64 5204
+4 18 10 2926
+4 18 16 4660 fvec = 4660 14452 14976 5184 1
+4 18 32 9284
+4 18 64 18532
+4 36 10 12322
+4 36 16 19672
+4 36 32 39272
+4 36 64 78472
+4 72 10 50554
+4 72 16 80800
+4 72 32 161456
+4 72 64 322768
+5 10 10 7472
+5 10 16 11846
+5 10 32 23510
+5 10 64 46838
+5 18 10 49744
+5 18 16 79222
+5 18 32 157830
+5 18 64 315046
+5 36 10 431272
+5 36 16 688522
+5 36 32 1374522
+5 36 64 2746522
+5 72 10 3589336
+5 72 16 5736802
+5 72 32 11463378
+5 72 64 22916530
+
    */
 
   // [Params(3, 4, 5)]
@@ -99,17 +151,59 @@ public class ConvexPolytopesBench {
   // [Benchmark]
   // public void MakeSpheres() => ConvexPolytop.Sphere(dimSpheres, thetaPartition, phiPartition, Vector.Zero(dimSpheres), 1);
 
-  /*
- Создаём только точки!
+/*
+Немного граней циклических
+3   8 fvec =   8   18    12     1
+3  16 fvec =  16   42    28     1
+3  32 fvec =  32   90    60     1
+3  64 fvec =  64  186   124     1
+3 128 fvec = 128  378   252     1
+4   8 fvec =   8   28    40    20     1
+4  16 fvec =  16  120   208   104     1
+4  32 fvec =  32  496   928   464     1
+4  64 fvec =  64 2016  3904  1952     1
+4 128 fvec = 128 8128 16000  8000     1
+5   8 fvec =   8   28    52    50    20    1
+5  16 fvec =  16  120   340   390   156    1
+5  32 fvec =  32  496  1684  2030   812    1
+5  64 fvec =  64 2016  7444  9150  3660    1
+5 128 fvec = 128 8128 31252 38750 15499    1
+6   8 fvec =   8   28    55    64    42   13 1
+6  16 fvec =  16  120   560  1160  1046  335 1
+6  32 fvec =  32  496  4960 13050 13139 4490 1
+
 
   */
 
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<ConvexPolytopesBench>(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second));
+  public class Program {
+
+    public static void Main(string[] args) {
+      int[] fVector = ConvexPolytop.Sphere(4, 18, 16, Vector.Zero(4), 1).FVector;
+      Console.WriteLine($"4 18 16 fvec = {string.Join(' ', fVector)}");
+    }
+
+  }
+
+
+  // количество точек в сферах
+  // for (int i = 3; i <= 5; i++) {
+  //   foreach (int theta in new List<int>()
+  //              {
+  //                10
+  //              , 18
+  //              , 36
+  //              , 72
+  //              }) {
+  //     foreach (int phi in new List<int>()
+  //                {
+  //                  10
+  //                , 16
+  //                , 32
+  //                , 64
+  //                }) {
+  //       Console.WriteLine($"{i} {theta} {phi} {Sphere_list(i, theta, phi, 1).Count}");
+  //     }
   //   }
-  //
   // }
 
 }
