@@ -51,13 +51,17 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The List of hyper planes.</returns>
     private List<HyperPlane> GetHPolytop() {
-      if (BuiltPolytop.PolytopDim <= 2) {
-        throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");
-      } //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
-      Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
+      List<HyperPlane> Fs = new List<HyperPlane>();
 
-      List<HyperPlane> Fs = new List<HyperPlane>
-        (BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
+      if (BuiltPolytop.PolytopDim == 2) {
+
+        throw new NotImplementedException("GiftWrapping.GetPolytop(): Faces of 2D-polytop have not Normal vectors yet!");
+      } else {
+        //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
+        Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
+
+        Fs = new List<HyperPlane>(BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
+      }
 
       return new List<HyperPlane>(Fs);
     }
@@ -276,7 +280,7 @@ public partial class Geometry<TNum, TConv>
         }
         // if (S.Count == spaceDim + 1) {
         //   // Отдельно обработали случай симплекса.
-              // todo ЕМУ НАДО ПРАВИЛЬНЫМ ОБРАЗОМ ВЫСТАВИТЬ НОРМАЛИ К ГРАНЯМ!!!
+        // todo ЕМУ НАДО ПРАВИЛЬНЫМ ОБРАЗОМ ВЫСТАВИТЬ НОРМАЛИ К ГРАНЯМ!!!
         //   return new SubSimplex(S);
         // }
 
