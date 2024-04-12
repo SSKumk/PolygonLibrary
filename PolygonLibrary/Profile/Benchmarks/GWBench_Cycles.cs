@@ -13,6 +13,7 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
 [WarmupCount(1)]
+[IterationCount(1)]
 public class GWBench_Cycles {
 
   [Params(6)]
@@ -21,7 +22,7 @@ public class GWBench_Cycles {
 
   private ConvexPolytop? cycle;
 
-  [Params(64)]
+  [Params(32)]
   // ReSharper disable once UnassignedField.Global
   public int amount;
 
