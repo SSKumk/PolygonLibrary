@@ -8,12 +8,11 @@ namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
 
-
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
 public class GaussBench {
 
-  [Params(10, 100, 1000)]
+  [Params(3, 4, 5, 6, 7)]
   public int k;
 
   private ddouble[,] A;
@@ -56,7 +55,7 @@ public class GaussBench {
     gaussSLE.SetGaussChoice(GaussSLE.GaussChoice.All);
     gaussSLE.Solve();
   }
-  //
+
   // public class Program {
   //
   //   public static void Main(string[] args) {
@@ -64,6 +63,7 @@ public class GaussBench {
   //   }
   //
   // }
+
 }
 /*
 // * Summary *
@@ -73,6 +73,31 @@ Intel Core i5-10400F CPU 2.90GHz, 1 CPU, 12 logical and 6 physical cores
 .NET SDK 8.0.101
   [Host]     : .NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2
   DefaultJob : .NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2
+
+| Method         | k | Mean       | Error       | StdDev    |
+|--------------- |-- |-----------:|------------:|----------:|
+| GaussRowChoice | 3 |   678.1 ns |    84.38 ns |   4.63 ns |
+| GaussAllChoice | 3 |   789.5 ns |    57.15 ns |   3.13 ns |
+| GaussColChoice | 3 |   824.7 ns |    67.90 ns |   3.72 ns |
+| GaussNoChoice  | 3 |   964.2 ns |    45.43 ns |   2.49 ns |
+| GaussNoChoice  | 4 | 1,130.9 ns |    30.10 ns |   1.65 ns |
+| GaussAllChoice | 4 | 1,428.5 ns |   133.02 ns |   7.29 ns |
+| GaussRowChoice | 4 | 1,512.5 ns |    10.11 ns |   0.55 ns |
+| GaussColChoice | 4 | 1,650.3 ns |    99.81 ns |   5.47 ns |
+| GaussColChoice | 5 | 2,452.6 ns |     3.23 ns |   0.18 ns |
+| GaussAllChoice | 5 | 2,523.1 ns |   426.69 ns |  23.39 ns |
+| GaussRowChoice | 5 | 2,746.2 ns |   111.00 ns |   6.08 ns |
+| GaussNoChoice  | 5 | 2,848.8 ns |   547.87 ns |  30.03 ns |
+| GaussColChoice | 6 | 3,108.5 ns |   105.64 ns |   5.79 ns |
+| GaussNoChoice  | 6 | 3,397.4 ns |    82.94 ns |   4.55 ns |
+| GaussRowChoice | 6 | 3,439.8 ns |   423.17 ns |  23.20 ns |
+| GaussAllChoice | 6 | 4,368.4 ns |   338.68 ns |  18.56 ns |
+| GaussColChoice | 7 | 4,409.4 ns |   483.53 ns |  26.50 ns |
+| GaussNoChoice  | 7 | 4,917.8 ns |   200.89 ns |  11.01 ns |
+| GaussRowChoice | 7 | 5,654.4 ns |   590.91 ns |  32.39 ns |
+| GaussAllChoice | 7 | 6,957.1 ns | 2,102.24 ns | 115.23 ns |
+
+
 
 
 | Method         | k    | Mean             | Error          | StdDev         | Allocated |

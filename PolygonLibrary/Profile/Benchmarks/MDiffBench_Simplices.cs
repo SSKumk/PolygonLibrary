@@ -17,7 +17,7 @@ using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 public class MDiffBench_Simplices
 {
 
-  [Params(3, 4, 5, 6)]
+  [Params(3, 4, 5, 6,7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -37,13 +37,13 @@ public class MDiffBench_Simplices
 
   // public class Program
   // {
-
+  //
   //   public static void Main(string[] args)
   //   {
   //     var summary = BenchmarkRunner.Run<MDiffBench_Simplices>
   //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Millisecond)));
   //   }
-
+  //
   // }
 
 }
@@ -51,8 +51,10 @@ public class MDiffBench_Simplices
 /*
 | Method          | dim | Mean      | Error     | StdDev    |
 |---------------- |---- |----------:|----------:|----------:|
-| MDiffSimplexRND | 3   | 0.0069 ms | 0.0027 ms | 0.0001 ms |
-| MDiffSimplexRND | 4   | 0.0125 ms | 0.0026 ms | 0.0001 ms |
-| MDiffSimplexRND | 5   | 0.0221 ms | 0.0044 ms | 0.0002 ms |
-| MDiffSimplexRND | 6   | 0.0359 ms | 0.0020 ms | 0.0001 ms |
+| MDiffSimplexRND | 3   | 0.0085 ms | 0.0006 ms | 0.0000 ms |
+| MDiffSimplexRND | 4   | 0.0162 ms | 0.0052 ms | 0.0003 ms |
+| MDiffSimplexRND | 5   | 0.0281 ms | 0.0056 ms | 0.0003 ms |
+| MDiffSimplexRND | 6   | 0.0454 ms | 0.0042 ms | 0.0002 ms |
+| MDiffSimplexRND | 7   | 0.0719 ms | 0.0016 ms | 0.0001 ms |
+
  */
