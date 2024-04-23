@@ -69,7 +69,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
     /// <para>
-    /// См. 2021. Sandip Das and Subhadeep Ranjan Dev.
+    /// См. 2021г. Sandip Das and Subhadeep Ranjan Dev.
     /// A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
     /// </para>
     /// </summary>
@@ -211,6 +211,102 @@ public partial class Geometry<TNum, TConv>
       }
 
       return new FaceLattice(FL);
+    }
+
+    /// <summary>
+    /// Computes the Minkowski sum of two polytopes via face lattice algorithm. It stops then calculate the facet-layer.
+    /// <para>
+    /// См. 2021. Sandip Das and Subhadeep Ranjan Dev.
+    /// A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.
+    /// </para>
+    /// </summary>
+    /// <param name="A">The first polytope represented as a face lattice.</param>
+    /// <param name="B">The second polytope represented as a face lattice.</param>
+    /// <returns>
+    /// Returns a HRep of the sum.
+    /// </returns>
+    public static ConvexPolytop BySandipDasCutted(ConvexPolytop A, ConvexPolytop B) {
+      FaceLattice P = A.FL;
+      FaceLattice Q = B.FL;
+
+      // Вычисляю аффинное пространство суммы P и Q
+      // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
+      AffineBasis affinePQ = AffineBasis.AsVectors
+        (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
+      int dim = affinePQ.SpaceDim;
+
+      if (dim == 0) { // Случай точки обработаем отдельно
+        return ConvexPolytop.AsHPolytop(new List<Vector>() { P.Top.InnerPoint + Q.Top.InnerPoint });
+      }
+
+      List<HyperPlane> HRep    = new List<HyperPlane>();
+      Vector           innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
+      FLNode           PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
+
+      FLNode      x               = P.Top;
+      FLNode      y               = Q.Top;
+      AffineBasis zSpace          = PQ.AffBasis;
+      Vector      innerInAffine_z = zSpace.ProjectPoint(PQ.InnerPoint);
+
+      // Собираем все подграни в соответствующих решётках,
+      // сортируя по убыванию размерности для удобства перебора.
+      // Среди них будем искать подграни, которые при суммировании дают гиперграни PQ
+      IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
+      IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
+
+      foreach (FLNode xi in X) {
+        foreach (FLNode yj in Y) {
+          // -1) Смотрим потенциально набираем ли мы нужную размерность
+          if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < PQ.PolytopDim - 1) { break; }
+
+          // Берём очередного кандидата.
+          AffineBasis candBasis = AffineBasis.AsVectors
+            (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
+
+          // 0) dim(xi (+) yj) == dim(PQ) - 1
+          if (candBasis.SpaceDim != PQ.AffBasis.SpaceDim - 1) { continue; }
+
+          // 1) Lemma 3.
+          // Живём в пространстве x (+) y == PQ, а потенциальная гипергрань xi (+) yj имеет на 1 размерность меньше.
+
+          // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
+          HyperPlane A_hp = new HyperPlane(ReCalcAffineBasis(candBasis, zSpace));
+
+          // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость.
+          if (A_hp.Contains(innerInAffine_z)) { continue; }
+          // Если внутренняя точка суммы попала на кандидата,
+          // то гарантировано он плохой. И не важно куда смотрит нормаль, там будут точки из PQ
+
+          // Ориентируем нормаль гиперплоскости суммы xi и yj
+          A_hp.OrientNormal(innerInAffine_z, false);
+
+          // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно.
+          IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SpaceDim + 1));
+          IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SpaceDim + 1));
+
+          // F = x >= f' > f = xi
+          // InnerPoint(f') + InnerPoint(g) \in A^-
+          bool xCheck = true;
+          foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+            xCheck = xCheck && A_hp.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
+          }
+
+          // G = y >= g' > g = yj
+          // InnerPoint(g') + InnerPoint(f) \in A^-
+          bool yCheck = true;
+          foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
+            yCheck = yCheck && A_hp.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
+          }
+
+          // Если условие Леммы 3 не выполняется, то xi+yj не может дать гипер-грань PQ.
+          if (!(xCheck && yCheck)) { continue; }
+
+          // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная гипер-грань PQ.
+          HRep.Add(new HyperPlane(candBasis, (PQ.InnerPoint, false)));
+        }
+      }
+
+      return ConvexPolytop.AsHPolytop(HRep);
     }
 
   }
