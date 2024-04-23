@@ -107,18 +107,19 @@ public partial class Geometry<TNum, TConv>
           using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
           pr.WriteNumber("t", TConv.ToDouble(t), "F3");
           W[t].WriteIn(pr);
-          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
+          // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
         t     -= gd.dt;
         if (bridgeIsNotDegenerate) { // Формула Пшеничного
           timer.Restart();
-          ConvexPolytop  Sum   = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred]);
-          timer.Stop();
-          Console.WriteLine($"{TConv.ToDouble(t):F2})Sum  = {timer.Elapsed.TotalMilliseconds}");
+          ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred]);
 
           ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+
+          timer.Stop();
+          Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}");
 
           if (WNext is null) {
             bridgeIsNotDegenerate = false;
@@ -135,10 +136,9 @@ public partial class Geometry<TNum, TConv>
       Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(dim);
       Vector vM = Tools.Two * Vector.Ones(dim);
       // Matrix
-      using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame.c")) {
+      using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame_" + dim + "D.c")) {
         writer.WriteLine("// Name of the problem");
-        writer.WriteLine
-          ($"ProblemName = \"Cubes3D\";");
+        writer.WriteLine($"ProblemName = \"Cubes{dim}D\";");
         writer.WriteLine();
         writer.WriteLine();
         writer.WriteLine("// ==================================================");
@@ -155,9 +155,13 @@ public partial class Geometry<TNum, TConv>
         writer.WriteLine();
 
         writer.WriteLine("// The type of the M");
-        writer.WriteLine("// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\"");
+        writer.WriteLine
+          (
+           "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
+          );
         writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
-        writer.WriteLine("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
+        writer.WriteLine
+          ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
         writer.WriteLine("MType = \"TerminalSet\";");
         writer.WriteLine();
 
@@ -170,8 +174,7 @@ public partial class Geometry<TNum, TConv>
       Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(2);
       using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
         writer.WriteLine("// Name of the problem");
-        writer.WriteLine
-          ($"ProblemName = \"Cubes2D\";");
+        writer.WriteLine($"ProblemName = \"Cubes2D\";");
         writer.WriteLine();
         writer.WriteLine();
         writer.WriteLine("// ==================================================");
