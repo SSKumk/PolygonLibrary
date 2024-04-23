@@ -13,10 +13,10 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
 [WarmupCount(1)]
-[IterationCount(1)]
+[IterationCount(2)]
 public class MSumBench_Cubes {
 
-  [Params(6)]
+  [Params(4,5,6,7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -30,11 +30,13 @@ public class MSumBench_Cubes {
     Q = ConvexPolytop.Cube01(dim).RotateRND(true);
   }
 
-  // [Benchmark]
-  // public void MSumCuCu_SDas() => MinkowskiSum.BySandipDas(P, Q);
-
   [Benchmark]
-  public void MSumCuCu_CH() => MinkowskiSum.ByConvexHull(P, Q);
+  public void MSumCuCu_SDas() => MinkowskiSum.BySandipDas(P, Q);
+  [Benchmark]
+  public void MSumCuCu_SDasCutted() => MinkowskiSum.BySandipDasCutted(P, Q);
+
+  // [Benchmark]
+  // public void MSumCuCu_CH() => MinkowskiSum.ByConvexHull(P, Q);
 
   // public class Program {
   //
@@ -54,9 +56,14 @@ public class MSumBench_Cubes {
 | MSumCuCu_CH   | 4   | 0.1499 s |
 | MSumCuCu_SDas | 5   | 0.5187 s |
 | MSumCuCu_CH   | 5   | 4.1384 s |
-| MSumCuCu_SDas | 6   | 68.64 s  |
+| MSumCuCu_SDas | 6   | 6.047 s  |
 | MSumCuCu_CH   | 6   | 152.1 s  |
-| MSumCuCu_SDas | 7   | 6.047 s  |
+| MSumCuCu_SDas | 7   | 68.64 s  |
+| MSumCuCu_SDasCutted | 4   |  0.0236 s |
+| MSumCuCu_SDasCutted | 5   |  0.2626 s |
+| MSumCuCu_SDasCutted | 6   |  3.2353 s |
+| MSumCuCu_SDasCutted | 7   | 31.3387 s |
+
  */
 
 }

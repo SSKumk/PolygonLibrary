@@ -15,7 +15,8 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 [WarmupCount(1)]
 public class MSumBench_Cyclic {
 
-  [Params(3, 4, 5)]
+  // Дальше 4 размерности вычисляется не пойми что
+  [Params(3, 4)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -29,12 +30,15 @@ public class MSumBench_Cyclic {
 
   [GlobalSetup]
   public void SetUp() {
-    P = ConvexPolytop.Cyclic(dim,amount, 1.123,true);
-    Q = ConvexPolytop.Cyclic(dim,amount, 1.457,true);
+    P = ConvexPolytop.Cyclic(dim,amount, 0.0123,true);
+    Q = ConvexPolytop.Cyclic(dim,amount, 0.0457,true);
   }
 
   [Benchmark]
   public void MSumClCl_SDas() => MinkowskiSum.BySandipDas(P, Q);
+
+  [Benchmark]
+  public void MSumClCl_SDasCutted() => MinkowskiSum.BySandipDasCutted(P, Q);
 
   [Benchmark]
   public void MSumClCl_CH() => MinkowskiSum.ByConvexHull(P, Q);
@@ -49,26 +53,38 @@ public class MSumBench_Cyclic {
   // }
 
  /*
-| Method        | dim | amount | Mean     | Error    | StdDev   |
-|-------------- |---- |------- |---------:|---------:|---------:|
-| MSumClCl_SDas | 3   | 8      | 0.0061 s | 0.0005 s | 0.0000 s |
-| MSumClCl_CH   | 3   | 8      | 0.0077 s | 0.0003 s | 0.0000 s |
-| MSumClCl_SDas | 3   | 12     | 0.0154 s | 0.0018 s | 0.0001 s |
-| MSumClCl_CH   | 3   | 12     | 0.0235 s | 0.0004 s | 0.0000 s |
-| MSumClCl_SDas | 3   | 16     | 0.0279 s | 0.0017 s | 0.0001 s |
-| MSumClCl_CH   | 3   | 16     | 0.0531 s | 0.0049 s | 0.0003 s |
-| MSumClCl_SDas | 4   | 8      | 0.0593 s | 0.0006 s | 0.0000 s |
-| MSumClCl_CH   | 4   | 8      | 0.0769 s | 0.0032 s | 0.0002 s |
-| MSumClCl_SDas | 4   | 12     | 0.3276 s | 0.0544 s | 0.0030 s |
-| MSumClCl_CH   | 4   | 12     | 0.2884 s | 0.0586 s | 0.0032 s |
-| MSumClCl_SDas | 4   | 16     | 1.1388 s | 0.1298 s | 0.0071 s |
-| MSumClCl_CH   | 4   | 16     | 0.6901 s | 0.0910 s | 0.0050 s |
-| MSumClCl_SDas | 5   | 8      | 0.2303 s | 0.0066 s | 0.0004 s |
-| MSumClCl_CH   | 5   | 8      | 0.8722 s | 0.0621 s | 0.0034 s |
-| MSumClCl_SDas | 5   | 12     | 1.9211 s | 0.1915 s | 0.0105 s |
-| MSumClCl_CH   | 5   | 12     | 2.8804 s | 0.4738 s | 0.0260 s |
-| MSumClCl_SDas | 5   | 16     | 8.1156 s | 0.9638 s | 0.0528 s |
-| MSumClCl_CH   | 5   | 16     | 5.9135 s | 0.7072 s | 0.0388 s |
+| Method              | dim | amount | Mean     |
+|-------------------- |---- |------- |---------:|
+| MSumClCl_SDas       | 3   | 8      | 0.0063 s |
+| MSumClCl_SDasCutted | 3   | 8      | 0.0049 s |
+| MSumClCl_CH         | 3   | 8      | 0.0077 s |
+| MSumClCl_SDas       | 3   | 12     | 0.0157 s |
+| MSumClCl_SDasCutted | 3   | 12     | 0.0130 s |
+| MSumClCl_CH         | 3   | 12     | 0.0235 s |
+| MSumClCl_SDas       | 3   | 16     | 0.0280 s |
+| MSumClCl_SDasCutted | 3   | 16     | 0.0244 s |
+| MSumClCl_CH         | 3   | 16     | 0.0522 s |
+| MSumClCl_SDas       | 4   | 8      | 0.0596 s |
+| MSumClCl_SDasCutted | 4   | 8      | 0.0447 s |
+| MSumClCl_CH         | 4   | 8      | 0.0817 s |
+| MSumClCl_SDas       | 4   | 12     | 0.3348 s |
+| MSumClCl_SDasCutted | 4   | 12     | 0.3005 s |
+| MSumClCl_CH         | 4   | 12     | 0.2830 s |
+| MSumClCl_SDas       | 4   | 16     | 1.1404 s |
+| MSumClCl_SDasCutted | 4   | 16     | 1.0879 s |
+| MSumClCl_CH         | 4   | 16     | 0.7089 s |
+| MSumClCl_SDas       | 5   | 8      | 0.2312 s |
+| MSumClCl_SDasCutted | 5   | 8      | 0.1629 s |
+| MSumClCl_CH         | 5   | 8      | 0.7972 s |
+| MSumClCl_SDas       | 5   | 12     | 2.0184 s |
+| MSumClCl_SDasCutted | 5   | 12     | 1.7010 s |
+| MSumClCl_CH         | 5   | 12     | 2.6561 s |
+| MSumClCl_SDas       | 5   | 16     | 8.4358 s |
+| MSumClCl_SDasCutted | 5   | 16     | 8.0215 s |
+| MSumClCl_CH         | 5   | 16     | 5.8697 s |
+
+
+
 
  */
 
