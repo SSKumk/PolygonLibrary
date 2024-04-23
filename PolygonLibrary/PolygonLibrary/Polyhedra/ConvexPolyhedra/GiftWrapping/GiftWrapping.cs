@@ -39,7 +39,6 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public List<HyperPlane> HRep => GetHPolytop();
 
-    //todo Как в 3D сохранить порядок вершин, который есть в SubTwoDimensional.VerticesList ?!
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
@@ -53,22 +52,31 @@ public partial class Geometry<TNum, TConv>
     private List<HyperPlane> GetHPolytop() {
       List<HyperPlane> Fs = new List<HyperPlane>();
 
-      if (BuiltPolytop.PolytopDim == 2) {
-        SubTwoDimensional twoD  = (SubTwoDimensional)BuiltPolytop;
-        Vector            inner = WrapFaceLattice(twoD.Vertices).Lattice.Last().First().InnerPoint;
-        // todo посчитать внутреннюю точку как выпуклую комбинацию из VerticesList!!!
-        for (int i = 0; i < twoD.Vertices.Count - 1; i++) {
-          HyperPlane n = new HyperPlane
-            (new AffineBasis(new List<Vector>() { twoD.VerticesList[i], twoD.VerticesList[i + 1] }), (inner, false));
-          Fs.Add(n);
-        }
-        Fs.Add
-          (new HyperPlane(new AffineBasis(new List<Vector>() { twoD.VerticesList[^1], twoD.VerticesList[0] }), (inner, false)));
-      } else {
-        //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
-        Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
+      switch (BuiltPolytop.PolytopDim) {
+        case 1: Fs.Add(new HyperPlane(new AffineBasis(BuiltPolytop.Vertices)));
 
-        Fs = new List<HyperPlane>(BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
+          break;
+        case 2: {
+          SubTwoDimensional twoD  = (SubTwoDimensional)BuiltPolytop;
+          Vector            inner = WrapFaceLattice(twoD.Vertices).Lattice.Last().First().InnerPoint;
+          // todo посчитать внутреннюю точку как выпуклую комбинацию из VerticesList!!!
+          for (int i = 0; i < twoD.Vertices.Count - 1; i++) {
+            HyperPlane n = new HyperPlane
+              (new AffineBasis(new List<Vector>() { twoD.VerticesList[i], twoD.VerticesList[i + 1] }), (inner, false));
+            Fs.Add(n);
+          }
+          Fs.Add
+            (new HyperPlane(new AffineBasis(new List<Vector>() { twoD.VerticesList[^1], twoD.VerticesList[0] }), (inner, false)));
+
+          break;
+        }
+        default:
+          //todo надо пройтись по контуру и "отогнуть" вектора, чтобы сделать их нормалями
+          Debug.Assert(BuiltPolytop is not null, "GiftWrapping.GetHPolytop(): built polytop is null!");
+
+          Fs = new List<HyperPlane>(BuiltPolytop.Faces!.Select(F => new HyperPlane(F.Normal!, F.OriginalVertices.First())));
+
+          break;
       }
 
       return new List<HyperPlane>(Fs);
