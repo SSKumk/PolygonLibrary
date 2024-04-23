@@ -269,13 +269,13 @@ public partial class Geometry<TNum, TConv>
                  };
 
 
-      //Reading data of terminal set type
+      //Reading data of the terminal set type
       M = ReadTerminalSet(out string describeM);
 
       string gType = goalType == GoalType.Itself ? "It" : "Ep";
       ProblemName = $"{gType}_{problemName}_T[{t0},{T}]_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
 
-      // Расширяем систему, если решаем задачу с награфиком функции цены
+      // Расширяем систему, если решаем задачу с надграфиком функции цены
       if (goalType == GoalType.PayoffEpigraph) {
         n++; // размерность стала на 1 больше
         A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
@@ -291,11 +291,11 @@ public partial class Geometry<TNum, TConv>
       cauchyMatrix = new CauchyMatrix(A, T, dt);
 
       // The projection matrix
-      TNum[,] ProjMatrArr = new TNum[d, n];
+      TNum[,] ProjMatrixArr = new TNum[d, n];
       for (int i = 0; i < d; i++) {
-        ProjMatrArr[i, projJ[i]] = Tools.One;
+        ProjMatrixArr[i, projJ[i]] = Tools.One;
       }
-      ProjMatr = new Matrix(ProjMatrArr);
+      ProjMatr = new Matrix(ProjMatrixArr);
 
       // The matrices D and E
       D = new SortedDictionary<TNum, Matrix>();
@@ -317,7 +317,7 @@ public partial class Geometry<TNum, TConv>
         TNum
           t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
         Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToHashSet(), true);
-        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToHashSet(), true);
+        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToHashSet(), false);
       }
     }
 #endregion
