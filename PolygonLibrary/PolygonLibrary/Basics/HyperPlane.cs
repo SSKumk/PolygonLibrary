@@ -126,9 +126,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
     public HyperPlane(Vector normal, TNum constant) {
-      _normal       = normal.Normalize();
+      TNum lengthN = normal.Length;
+      _normal       = normal / lengthN;
       SubSpaceDim   = normal.Dim - 1;
-      _constantTerm = constant;
+      _constantTerm = constant / lengthN;
       Origin        = new Vector(Normal * constant);
     }
 
