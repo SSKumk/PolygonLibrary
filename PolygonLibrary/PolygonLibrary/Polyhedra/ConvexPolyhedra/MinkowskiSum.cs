@@ -203,14 +203,9 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
       Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
-      // Убираем лишние точки из многогранников снизу-вверх.
-      foreach (HashSet<FLNode> level in FL) {
-        foreach (FLNode node in level) {
-          node.ReconstructPolytop();
-        }
-      }
 
-      return new FaceLattice(FL);
+      // Наполняем все k-грани точками снизу-вверх.
+      return new FaceLattice(FL).LinearVertexTransform(x => x);
     }
 
     /// <summary>

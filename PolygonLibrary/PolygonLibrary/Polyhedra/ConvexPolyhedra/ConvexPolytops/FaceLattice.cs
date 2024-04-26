@@ -8,8 +8,6 @@ using System.Numerics;
 
 namespace CGLibrary;
 
-// todo Разобраться с Equals(), GetHashCode() и IEquatable<T> ! повсюду !
-
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
@@ -22,21 +20,11 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class FaceLattice {
 
-    /// <summary>
-    /// Set of vertices that form convex polytop.
-    /// </summary>
-    public VectorHashSet Vertices => Top.Vertices;
-
+#region Fields and properties
     /// <summary>
     /// The maximum element in the lattice.
     /// </summary>
     public FLNode Top { get; init; }
-
-    /// <summary>
-    /// Gets the total amount of all k-faces in the lattice, except 0-faces.
-    /// </summary>
-    /// <value>A number of non zero k-faces in the lattice.</value>
-    public int NonZeroKFacesAmount => Lattice.Sum(lvl => lvl.Count) - Lattice[0].Count;
 
     /// <summary>
     /// The lattice is represented level by level.
@@ -45,12 +33,18 @@ public partial class Geometry<TNum, TConv>
     public List<HashSet<FLNode>> Lattice { get; init; }
 
     /// <summary>
-    /// Gets the requested level in the face lattice. If there is no key = dim, then an empty set is produced.
+    /// Set of vertices that form convex polytop.
     /// </summary>
-    /// <param name="dim">The dimension of the level being queried.</param>
-    /// <returns>The level being queried.</returns>
-    public HashSet<FLNode> GetLevel(int dim) => Top.GetLevel(dim);
+    public VectorHashSet Vertices => Top.Vertices;
 
+    /// <summary>
+    /// Gets the total number of all k-faces in the lattice, except 0-faces.
+    /// </summary>
+    /// <value>A number of nonzero k-faces in the lattice.</value>
+    public int NonZeroKFacesAmount => Lattice.Sum(lvl => lvl.Count) - Lattice[0].Count;
+#endregion
+
+#region Constructors
     /// <summary>
     /// The vertex forms a one-element lattice.
     /// </summary>
@@ -58,15 +52,6 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice(Vector point) {
       Top     = new FLNode(point);
       Lattice = new List<HashSet<FLNode>>() { new HashSet<FLNode>() { Top } };
-    }
-
-    /// <summary>
-    /// Construct a face lattice based on maximum element.
-    /// </summary>
-    /// <param name="Maximum">The maximum node.</param>
-    public FaceLattice(FLNode Maximum) {
-      Top     = Maximum;
-      Lattice = Maximum.GetAllLevels();
     }
 
     /// <summary>
@@ -79,12 +64,22 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Aux function. 
+    /// Construct a face lattice based on a maximum element.
+    /// </summary>
+    /// <param name="Maximum">The maximum node.</param>
+    public FaceLattice(FLNode Maximum) {
+      Top     = Maximum;
+      Lattice = Maximum.GetAllLevels();
+    }
+#endregion
+
+#region Functions
+    /// <summary>
     /// Transforms the lattice by applying a given function to each vertex of the lattice.
     /// </summary>
-    /// <param name="transformFunc">The function to be applied to each vertex. This function takes a node of the lattice and returns a new point.</param>
+    /// <param name="transformFunc">The function to be applied to each vertex. This function takes a vertex of the lattice and returns a new point.</param>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
-    private FaceLattice TransformLattice(Func<FLNode, Vector> transformFunc) {
+    public FaceLattice LinearVertexTransform(Func<Vector, Vector> transformFunc) {
       List<HashSet<FLNode>> newFL = new List<HashSet<FLNode>>();
       for (int i = 0; i <= Top.PolytopDim; i++) {
         newFL.Add(new HashSet<FLNode>());
@@ -94,14 +89,14 @@ public partial class Geometry<TNum, TConv>
 
       //Отдельно обрабатываем случай d == 0
       foreach (FLNode vertex in Lattice[0]) {
-        FLNode newVertex = new FLNode(transformFunc(vertex));
+        FLNode newVertex = new FLNode(transformFunc(vertex.Vertices.First()));
         oldToNew.Add(vertex, newVertex);
         newFL[0].Add(newVertex);
       }
 
       for (int i = 1; i < newFL.Count; i++) {
         foreach (FLNode node in Lattice[i]) {
-          List<FLNode> newSub = node.Sub!.Select(n => oldToNew[n]).ToList();
+          List<FLNode> newSub = node.Sub.Select(n => oldToNew[n]).ToList();
 
           FLNode newNode = new FLNode(newSub);
           oldToNew.Add(node, newNode);
@@ -111,25 +106,9 @@ public partial class Geometry<TNum, TConv>
 
       return new FaceLattice(newFL);
     }
+#endregion
 
-    /// <summary>
-    /// Projects the face lattice to given subspace.
-    /// </summary>
-    /// <param name="aBasis">The affine basis to project on.</param>
-    /// <returns>The face lattice in subspace space.</returns>
-    public FaceLattice ProjectTo(AffineBasis aBasis) {
-      return TransformLattice(vertex => aBasis.ProjectPoint(vertex.Vertices.First()));
-    }
-
-    /// <summary>
-    /// Translates the face lattice from subspace to original one with saving all its structure.
-    /// </summary>
-    /// <param name="aBasis">The affine basis from which it was projected.</param>
-    /// <returns>The face lattice in original space.</returns>
-    public FaceLattice TranslateToOriginalAndAddOrigin(AffineBasis aBasis) {
-      return TransformLattice(vertex => aBasis.TranslateToOriginal(vertex.Vertices.First()) + aBasis.Origin);
-    }
-
+#region Hash-Eq
     // !!! При "наивном" Equals у FLNode, "потеря" одного элемента из Sub, если при этом множество вершин граней не уменьшилось
     // НЕ ВЕДЁТ к тому, что объекты считаются разными !!!
     public override bool Equals(object? obj) {
@@ -190,67 +169,48 @@ public partial class Geometry<TNum, TConv>
 
       return isEqual;
     }
+#endregion
 
   }
 
   /// <summary>
-  /// The node of the face lattice. It stores references to the super-nodes and sub-nodes. 
-  /// In addition it maintains a set of vertices representing the face.
+  /// The node of the face lattice. It stores references to the supernodes and sub-nodes.
+  /// In addition, it maintains a set of vertices representing the face.
   /// </summary>
   public class FLNode {
 
-    /// <summary>
-    /// The dimensional of the associated polytop.
-    /// </summary>
-    public int PolytopDim => AffBasis.SpaceDim;
-
-    /// <summary>
-    /// Reference to the associated polytop to this node.
-    /// </summary>
-    private VectorHashSet Polytop { get; set; } //todo Выяснить, ссылки или объекты хранятся тут
-
-    /// <summary>
-    /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
-    /// </summary>
-    public void ReconstructPolytop() {
-      if (PolytopDim != 0) {
-        Polytop = new VectorHashSet(Sub.SelectMany(s => s.Vertices));
-      }
-      _hash = null;
-    }
-
-    /// <summary>
-    /// The vertices of the polytop.
-    /// </summary>
-    public VectorHashSet Vertices => Polytop;
-
+#region Data and properties
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
     public Vector InnerPoint { get; }
 
     /// <summary>
-    /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to the this polytop.
+    /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to this polytop.
     /// </summary>
     public AffineBasis AffBasis { get; }
 
     /// <summary>
-    /// The list of the super-nodes, whose Dim = this.Dim + 1.
+    /// The list of the supernodes, whose Dim = this.Dim + 1.
     /// </summary>
-    public HashSet<FLNode> Super { get; protected set; } = new HashSet<FLNode>();
+    public HashSet<FLNode> Super { get; } = new HashSet<FLNode>();
 
     /// <summary>
-    /// The list of the sub-nodes, which Dim = this.Dim - 1.
+    /// The list of the subnodes, which Dim = this.Dim - 1.
     /// </summary>
-    public HashSet<FLNode> Sub { get; protected set; } = new HashSet<FLNode>();
+    public HashSet<FLNode> Sub { get; } = new HashSet<FLNode>();
 
+    /// <summary>
+    /// Reference to the associated polytop to this node.
+    /// </summary>
+    private VectorHashSet Polytop { get; set; }
 
     /// <summary>
     /// Maps the dimension to the set of nodes within this dimension.
     /// </summary>
-    private Dictionary<int, HashSet<FLNode>> _levelNodes = new Dictionary<int, HashSet<FLNode>>();
+    private readonly Dictionary<int, HashSet<FLNode>> _levelNodes = new Dictionary<int, HashSet<FLNode>>();
 
-    public Dictionary<int, HashSet<FLNode>> LevelNodes {
+    private Dictionary<int, HashSet<FLNode>> LevelNodes {
       get
         {
           if (_levelNodes.Count == 0) {
@@ -262,35 +222,93 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// The vertices of the polytop.
+    /// </summary>
+    public VectorHashSet Vertices => Polytop;
+
+    /// <summary>
+    /// The dimension of the associated polytop.
+    /// </summary>
+    public int PolytopDim => AffBasis.SpaceDim;
+#endregion
+
+#region Constructors
+    /// <summary>
+    /// Constructs an instance of FLNode as a vertex.
+    /// </summary>
+    /// <param name="vertex">Vertex on which this instance will be created.</param>
+    public FLNode(Vector vertex) {
+      Polytop    = new VectorHashSet(new VectorHashSet() { vertex });
+      InnerPoint = vertex;
+      AffBasis   = new AffineBasis(vertex);
+    }
+
+    /// <summary>
+    /// Constructs a node based on its sub-nodes.
+    /// </summary>
+    /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
+    public FLNode(List<FLNode> sub) {
+      Polytop = new VectorHashSet(sub.SelectMany(s => s.Vertices).ToHashSet());
+      Sub     = new HashSet<FLNode>(sub);
+
+      foreach (FLNode subNode in sub) {
+        subNode.AddSuper(this);
+      }
+
+      InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
+
+      FLNode      subF   = Sub.First();
+      AffineBasis affine = new AffineBasis(subF.AffBasis);
+      affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
+      AffBasis = affine;
+    }
+
+    /// <summary>
+    /// Constructs an instance of FLNode as an face. (Aux for MinkSumSDas).
+    /// </summary>
+    /// <param name="Vs">The vertices of the face.</param>
+    /// <param name="innerPoint">Inner point of the face.</param>
+    /// <param name="aBasis">The affine basis of the face.</param>
+    internal FLNode(VectorHashSet Vs, Vector innerPoint, AffineBasis aBasis) {
+      Polytop       = Vs;
+      InnerPoint    = innerPoint;
+      this.AffBasis = aBasis;
+    }
+#endregion
+
+#region Internal methods
+    /// <summary>
     /// Gets the requested level in the node structure. If there is no key = dim, then an empty set is produced.
     /// <param name="dim">The dimension of the level being queried.</param>
     /// <returns>The level being queried.</returns>
-    internal HashSet<FLNode> GetLevel(int dim) => LevelNodes.ContainsKey(dim) ? LevelNodes[dim] : new HashSet<FLNode>();
+    /// </summary>
+    private HashSet<FLNode> GetLevel(int dim)
+      => LevelNodes.TryGetValue(dim, out HashSet<FLNode>? value) ? value : new HashSet<FLNode>();
 
     /// <summary>
     /// Gets the requested level in the node structure, that lies below this node.
     /// Otherwise returns empty set.
     /// </summary>
     /// <param name="dim">The dimension of the level being queried.</param>
-    /// <returns>The level being queried. If it lies above this node, it returns empty set.</returns>
-    internal HashSet<FLNode> GetLevelBelowNonStrict(int dim) => dim > PolytopDim ? new HashSet<FLNode>() : GetLevel(dim);
+    /// <returns>The level being queried. If it lies above this node, it returns the empty set.</returns>
+    internal IEnumerable<FLNode> GetLevelBelowNonStrict(int dim) => dim > PolytopDim ? new HashSet<FLNode>() : GetLevel(dim);
 
     /// <summary>
-    /// Gets the entire levelNodes structure.
+    /// Adds a given node to the set of super nodes for this node.
     /// </summary>
-    /// <returns>Returns the entire levelNodes structure.</returns>
-    public List<HashSet<FLNode>> GetAllLevels() {
-      List<HashSet<FLNode>> allLevels = new List<HashSet<FLNode>>();
-      for (int i = 0; i < LevelNodes.Count; i++) {
-        allLevels.Add(LevelNodes[i]);
-      }
+    /// <param name="node">The node to be added.</param>
+    internal void AddSub(FLNode node) => Sub.Add(node);
 
-      return allLevels;
-    }
+    /// <summary>
+    /// Adds a given node to the set of sub nodes for this node.
+    /// </summary>
+    /// <param name="node">The node to be added.</param>
+    internal void AddSuper(FLNode node) => Super.Add(node);
+
 
     /// <summary>
     /// Construct the mapping that takes the dimension and maps it onto the set of nodes in that dimension,
-    /// which are either sub-nodes or super-nodes of it.
+    /// which are either sub-nodes or supernodes of it.
     /// </summary>
     private void ConstructLevelNodes() {
       // добавили себя
@@ -314,78 +332,40 @@ public partial class Geometry<TNum, TConv>
         prevNodes = prevNodes.SelectMany(node => node.Sub).ToHashSet();
       }
     }
+#endregion
+
+#region Functions
+    /// <summary>
+    /// Gets the entire levelNodes structure.
+    /// </summary>
+    /// <returns>Returns the entire levelNodes structure.</returns>
+    public List<HashSet<FLNode>> GetAllLevels() {
+      List<HashSet<FLNode>> allLevels = new List<HashSet<FLNode>>();
+      for (int i = 0; i < LevelNodes.Count; i++) {
+        allLevels.Add(LevelNodes[i]);
+      }
+
+      return allLevels;
+    }
 
     /// <summary>
     /// Retrieves all sub-faces of the node, including the node itself.
     /// </summary>
-    /// <returns>The collection that contains all non strict sub-faces of the node.</returns>
+    /// <returns>The collection that contains all non-strict sub-faces of the node.</returns>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
-
-
-    /// <summary>
-    /// Adds a given node to the set of super nodes for this node.
-    /// </summary>
-    /// <param name="node">The node to be added.</param>
-    internal void AddSub(FLNode node) => Sub.Add(node);
+#endregion
 
     /// <summary>
-    /// Adds a given node to the set of sub nodes for this node.
+    /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
     /// </summary>
-    /// <param name="node">The node to be added.</param>
-    internal void AddSuper(FLNode node) => Super.Add(node);
-
-
-    /// <summary>
-    /// Constructs an instance of FLNode as a vertex.
-    /// </summary>
-    /// <param name="vertex">Vertex on which this instance will be created.</param>
-    public FLNode(Vector vertex) {
-      Polytop    = new VectorHashSet(new VectorHashSet() { vertex });
-      InnerPoint = vertex;
-      AffBasis   = new AffineBasis(vertex);
-    }
-
-    /// <summary>
-    /// Constructs an instance of FLNode as an face. (Aux for MinkSumSDas).
-    /// </summary>
-    /// <param name="Vs">The vertices of the face.</param>
-    /// <param name="innerPoint">Inner point of the face.</param>
-    /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(VectorHashSet Vs, Vector innerPoint, AffineBasis aBasis) {
-      Polytop       = Vs;
-      InnerPoint    = innerPoint;
-      this.AffBasis = aBasis;
-    }
-
-    /// <summary>
-    /// Constructs a node based on its sub-nodes.
-    /// </summary>
-    /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    public FLNode(List<FLNode> sub) {
-      Polytop = new VectorHashSet(sub.SelectMany(s => s.Vertices).ToHashSet());
-      Sub     = new HashSet<FLNode>(sub);
-
-      foreach (FLNode subNode in sub) {
-        subNode.AddSuper(this);
+    public void ReconstructPolytop() {
+      if (PolytopDim != 0) {
+        Polytop = new VectorHashSet(Sub.SelectMany(s => s.Vertices));
       }
-
-      InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
-
-      FLNode      subF   = Sub.First();
-      AffineBasis affine = new AffineBasis(subF.AffBasis);
-      affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
-      AffBasis = affine;
+      _hash = null;
     }
 
-
-    /// <summary>
-    /// Checks if the polytop of this node is equal to the polytop of other node.
-    /// </summary>
-    /// <param name="other">Node to compare with.</param>
-    /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
-    public bool PolytopEq(FLNode other) => this.Polytop.Equals(other.Polytop);
-
-
+#region Hash-Eq
     private int? _hash = null;
 
     /// <summary>
@@ -424,7 +404,7 @@ public partial class Geometry<TNum, TConv>
       // 1) this == other
       bool isEqual = this.Polytop.SetEquals(other.Polytop);
       // вообще говоря, это не делает 2 узла равными:
-      // Квадрат. У одного нет одного ребра-узла, у другого другого.
+      // Квадрат. У одного нет одного ребра-узла, у другого.
       // Множество вершин одинаковое, а узлы различные.
 
       // 2) Немного наивно, но хоть что-то
@@ -436,6 +416,7 @@ public partial class Geometry<TNum, TConv>
 
       return isEqual;
     }
+#endregion
 
   }
 
