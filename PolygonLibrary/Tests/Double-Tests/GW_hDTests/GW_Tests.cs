@@ -26,9 +26,9 @@ public class GW_Tests {
       , new Vector(new double[] { 1, 1, 1 })
       };
 
-    List<Vector> cube = Cube(3, out List<Vector> _);
+    List<Vector> cube = Cube01(3, out List<Vector> _);
 
-    Debug.Assert(S.SetEquals(new HashSet<Vector>(cube)), "S is not equal to generated Cube");
+    Debug.Assert(S.SetEquals(new HashSet<Vector>(cube)), "S is not equal to generated Cube01");
   }
 #endregion
 
@@ -36,7 +36,7 @@ public class GW_Tests {
 #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
   public void Cube3D_Rotated_Z45() {
-    List<Vector> S     = Cube(3, out List<Vector> _);
+    List<Vector> S     = Cube01(3, out List<Vector> _);
     double      angle = Tools.PI / 4;
     double      sin   = double.Sin(angle);
     double      cos   = double.Cos(angle);
@@ -118,7 +118,7 @@ public class GW_Tests {
   /// </summary>
   [Test]
   public void Cube3D_withInnerPoints_On_1D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1 }, 1, 131);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, 131);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -127,7 +127,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 2 }, 1, 132);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, 132);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -136,7 +136,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_3D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 3 }, 1, 133);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, 133);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -145,7 +145,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1312);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1312);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -154,7 +154,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D_3D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1323);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1323);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -163,7 +163,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D_3D() {
-    List<Vector> S = Cube(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -189,13 +189,13 @@ public class GW_Tests {
 
   [Test]
   public void Cube3D_Shuffled() {
-    List<Vector> S = Cube(3, out List<Vector> _);
+    List<Vector> S = Cube01(3, out List<Vector> _);
     SwarmShuffle(S, "Cube3D_Shuffled");
   }
 
   [Test]
   public void Cube4D_Suffled() {
-    List<Vector> S = Cube(4, out List<Vector> _);
+    List<Vector> S = Cube01(4, out List<Vector> _);
     SwarmShuffle(S, "Cube4D_Shuffled");
   }
 
@@ -215,7 +215,7 @@ public class GW_Tests {
 #region Cube4D-Static Тесты 4D-куба не зависящие от _random
   [Test]
   public void Cube4D_withInnerPoints_On_1D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1 }, 1, 141);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, 141);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -225,7 +225,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_2D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 2 }, 1, 142);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, 142);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -234,7 +234,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_3D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 3 }, 1, 143);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, 143);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -243,7 +243,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1412);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1412);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -252,7 +252,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_2D_3D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1423);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1423);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -261,7 +261,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D() {
-    List<Vector> S = Cube(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -270,7 +270,7 @@ public class GW_Tests {
 
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
-    List<Vector> S = Cube
+    List<Vector> S = Cube01
       (
        4
      , out List<Vector> cube
@@ -335,7 +335,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Vector> S = Cube(3, out List<Vector> P, fID, nPoints);
+      List<Vector> S = Cube01(3, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref S);
 
       Check(S, P, saveSeed, 3, nPoints, fID, true);
@@ -351,7 +351,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Vector> S = Cube(4, out List<Vector> P, fID, nPoints);
+      List<Vector> S = Cube01(4, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref S);
 
       Check(S, P, saveSeed, 4, nPoints, fID, true);
@@ -367,7 +367,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Vector> S = Cube(5, out List<Vector> P, fID, nPoints);
+      List<Vector> S = Cube01(5, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref S);
 
       Check(S, P, saveSeed, 5, nPoints, fID, true);
@@ -383,7 +383,7 @@ public class GW_Tests {
     foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
-      List<Vector> S = Cube(6, out List<Vector> P, fID, nPoints);
+      List<Vector> S = Cube01(6, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref S);
 
       Check(S, P, saveSeed, 6, nPoints, fID, true);

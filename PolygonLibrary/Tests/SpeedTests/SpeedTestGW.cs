@@ -135,7 +135,7 @@ public class SpeedTestGW {
     StreamWriter writer = new StreamWriter(Directory.GetCurrentDirectory() + "/SpeedBench/" + fileName + ".txt");
 
     for (int k = 1; k <= maxAmount; k *= 10) {
-      var cube = TestsPolytopes<TNum, TConv>.Cube(dim, out _, new int[] { dim }, k);
+      var cube = TestsPolytopes<TNum, TConv>.Cube01(dim, out _, new int[] { dim }, k);
       timer.Restart();
       var Cube = new Geometry<TNum, TConv>.GiftWrapping(cube);
       timer.Stop();
@@ -184,7 +184,7 @@ public class SpeedTestGW {
       List<int> fIDs = Enumerable.Range(1, dim).ToList();
 
       for (int n = 1; n <= nPoints; n *= 10) {
-        List<Geometry<ddouble, DDConvertor>.Vector> S = RotateRND(Cube(dim, out _, fIDs, n, 255, true));
+        List<Geometry<ddouble, DDConvertor>.Vector> S = RotateRND(Cube01(dim, out _, fIDs, n, 255, true));
         GiftWrapping?                               P = null;
         timer.Restart();
         for (int i = 0; i < N; i++) { P = new GiftWrapping(S); }

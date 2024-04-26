@@ -44,7 +44,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 #endregion
 
 #region Polytopes and Polytopes-list Fabrics
-  private static List<Vector> Cube_list(int           dim) => Cube(dim, out _);
+  private static List<Vector> Cube_list(int           dim) => Cube01(dim, out _);
   private static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
   public static  List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);
   public static  List<Vector> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
@@ -75,7 +75,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <param name="needShuffle"></param>
   /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
-  public static List<Vector> Cube(
+  public static List<Vector> Cube01(
       int               cubeDim
     , out List<Vector>  pureCube
     , IEnumerable<int>? facesDim    = null
@@ -83,7 +83,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     , uint?             seed        = null
     , bool              needShuffle = false
     )
-    => Cube
+    => Cube01
       (
        cubeDim
      , Tools.One
@@ -105,7 +105,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <param name="needShuffle"></param>
   /// <returns>A list of points representing the hypercube possibly with inner points.</returns>
-  public static List<Vector> Cube(
+  public static List<Vector> Cube01(
       int               cubeDim
     , TNum              d
     , out List<Vector>  pureCube
@@ -167,7 +167,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
         // Если размерность грани, куда нужно поместить точку меньше размерности куба
         foreach (List<int> fixedInd in allPoints) {
-          List<Vector> smallCube = TestsPolytopes<TNum, TConv>.Cube(cubeDim - dim, out List<Vector> _);
+          List<Vector> smallCube = TestsPolytopes<TNum, TConv>.Cube01(cubeDim - dim, out List<Vector> _);
           foreach (Vector pointCube in smallCube) {
             for (int k = 0; k < amount; k++) {
               TNum[] point = new TNum[cubeDim];
