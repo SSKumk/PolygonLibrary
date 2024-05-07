@@ -81,11 +81,6 @@ public partial class Geometry<TNum, TConv>
 
 #region Constants
     /// <summary>
-    /// The absolute accuracy expressed in double.
-    /// </summary>
-    public static readonly double EpsDouble = TConv.ToDouble(_eps);
-
-    /// <summary>
     /// Represents the positive infinity number.
     /// </summary>
     public static readonly TNum PositiveInfinity = TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
