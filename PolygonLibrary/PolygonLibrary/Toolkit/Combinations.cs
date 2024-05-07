@@ -16,7 +16,8 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Class for enumerating all combinations. Supports enumeration.
+  /// Class for listing all combinations of length k from n elements. Zero-based.
+  /// (3,2) --> [0,1]; [0,2]; [1,2];
   /// </summary>
   public class Combination {
 
