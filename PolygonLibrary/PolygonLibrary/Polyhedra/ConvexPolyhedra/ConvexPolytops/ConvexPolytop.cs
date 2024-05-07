@@ -979,16 +979,16 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Converts the H-representation of convex polytop to the V-representation by checking all possible d-tuples of the hyperplanes.
     /// </summary>
-    /// <param name="H">The hyperplane arrangement.</param>
+    /// <param name="HPs">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> H) {
-      int n = H.Count;
-      int d = H.First().Normal.Dim;
+    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> HPs) {
+      int n = HPs.Count;
+      int d = HPs.First().Normal.Dim;
 
       HashSet<Vector>      Vs          = new HashSet<Vector>();
       Combination          combination = new Combination(n, d);
-      Func<int, int, TNum> AFunc       = (r, l) => H[combination[r]].Normal[l];
-      Func<int, TNum>      bFunc       = r => H[combination[r]].ConstantTerm;
+      Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
+      Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
       bool                 belongs;
       GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
@@ -996,7 +996,7 @@ public partial class Geometry<TNum, TConv>
         gaussSLE.Solve();
         if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
           belongs = true;
-          foreach (HyperPlane hp in H) {
+          foreach (HyperPlane hp in HPs) {
             if (hp.ContainsPositive(point)) {
               belongs = false;
 
@@ -1012,6 +1012,15 @@ public partial class Geometry<TNum, TConv>
       return new HashSet<Vector>(Vs);
     }
 
+    public static HashSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
+
+      // Этап 1. Поиск какой-либо вершины
+        // Наивная реализация
+
+
+      // Этап 2. Поиск всех остальных вершин
+        return;
+    }
   }
 
 }
