@@ -4,11 +4,13 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using DoubleDouble;
 using Tests.ToolsTests;
-using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-// using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+
+using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
 namespace Profile;
 
@@ -21,14 +23,39 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    ConvexPolytop A = ConvexPolytop.SimplexRND(6);
-    ConvexPolytop B = ConvexPolytop.SimplexRND(6);
-    ConvexPolytop sum = MinkowskiSum.BySandipDas(A, B);
-    ConvexPolytop sumCH = MinkowskiSum.ByConvexHull(A, B);
-    Console.WriteLine(string.Join(' ', A.FVector));
-    Console.WriteLine(string.Join(' ', B.FVector));
-    Console.WriteLine(string.Join(' ', sum.FVector));
-    Console.WriteLine(string.Join(' ', sumCH.FVector));
+
+    // ConvexPolytop A       = ConvexPolytop.Cube01(4).RotateRND();
+    // ConvexPolytop B       = ConvexPolytop.Cube01(4).RotateRND();
+    // ConvexPolytop polytop = MinkowskiSum.BySandipDas(A, B);
+
+    ConvexPolytop polytop = ConvexPolytop.AsVPolytop(ConvexPolytop.Cube01(4).VRep.Union(new List<Vector>()
+      {
+        // new Vector(new double[]{0.5,0.5,0.5,2}),
+        new Vector(new double[]{0.5,0.5,0.5,-2})
+      }));
+    // ConvexPolytop polytop = ConvexPolytop.Cube01(4);
+
+    var           g       = ConvexPolytop.HRepToVRep_Geometric(polytop.HRep);
+    // var           n       = ConvexPolytop.HRepToVRep_Naive(polytop.HRep);
+    Console.WriteLine("p == g");
+    Console.WriteLine(polytop.VRep.SetEquals(g));
+    Console.WriteLine("p \\subset g");
+    Console.WriteLine(polytop.VRep.IsSubsetOf(g));
+    Console.WriteLine("g \\ p");
+    Console.WriteLine(string.Join('\n', g.Except(polytop.VRep)));
+    Console.WriteLine("p \\ g");
+    Console.WriteLine(string.Join('\n', polytop.VRep.Except(g)));
+    // Console.WriteLine(polytop.VRep.SetEquals(n));
+
+
+    // ConvexPolytop A = ConvexPolytop.SimplexRND(6);
+    // ConvexPolytop B = ConvexPolytop.SimplexRND(6);
+    // ConvexPolytop sum = MinkowskiSum.BySandipDas(A, B);
+    // ConvexPolytop sumCH = MinkowskiSum.ByConvexHull(A, B);
+    // Console.WriteLine(string.Join(' ', A.FVector));
+    // Console.WriteLine(string.Join(' ', B.FVector));
+    // Console.WriteLine(string.Join(' ', sum.FVector));
+    // Console.WriteLine(string.Join(' ', sumCH.FVector));
     // ConvexPolytop sumCutted = MinkowskiSum.BySandipDasCutted(A, B);
     // Console.WriteLine(sum.Vertices.SetEquals(sumCutted.Vertices));
 
