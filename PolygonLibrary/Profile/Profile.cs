@@ -30,7 +30,7 @@ class Program {
 
     ConvexPolytop polytop = ConvexPolytop.AsVPolytop(ConvexPolytop.Cube01(4).VRep.Union(new List<Vector>()
       {
-        // new Vector(new double[]{0.5,0.5,0.5,2}),
+        // new Vector(new double[]{0.5,0.5,0.5,2}), // - в общем-то, это не нужно, чтобы сломать
         new Vector(new double[]{0.5,0.5,0.5,-2})
       }));
     // ConvexPolytop polytop = ConvexPolytop.Cube01(4);

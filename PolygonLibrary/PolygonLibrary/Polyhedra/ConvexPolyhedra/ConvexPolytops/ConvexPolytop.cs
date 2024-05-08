@@ -1132,7 +1132,8 @@ public partial class Geometry<TNum, TConv>
 
               if (Tools.LT(ti, tNew)) {
                 tNew   = ti;
-                newHPs = new List<HyperPlane> { hp };
+                newHPs.Clear();
+                newHPs.Add(hp);
                 zNew   = z + tNew * v;
                 if (Vs.Contains(zNew)) {
                   foundPrev = true;
