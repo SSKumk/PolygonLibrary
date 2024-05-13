@@ -1110,7 +1110,7 @@ public partial class Geometry<TNum, TConv>
           }
           if (isEdge) {
             // Теперь v определяет луч, на котором лежит ребро
-            List<HyperPlane> newHPs    = new List<HyperPlane>();
+            // List<HyperPlane> newHPs    = new List<HyperPlane>();
             TNum             tNew      = Tools.PositiveInfinity;
             Vector           zNew      = Vector.Zero(d);
             bool             foundPrev = false;
@@ -1125,15 +1125,15 @@ public partial class Geometry<TNum, TConv>
               if (Tools.LE(ti) || Tools.GT(ti, tNew)) { continue; }
 
               if (Tools.EQ(ti, tNew)) {
-                newHPs.Add(hp);
+                // newHPs.Add(hp);
 
                 continue;
               }
 
               if (Tools.LT(ti, tNew)) {
                 tNew   = ti;
-                newHPs.Clear();
-                newHPs.Add(hp);
+                // newHPs.Clear();
+                // newHPs.Add(hp);
                 zNew   = z + tNew * v;
                 if (Vs.Contains(zNew)) {
                   foundPrev = true;
@@ -1144,7 +1144,7 @@ public partial class Geometry<TNum, TConv>
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
-              process.Enqueue((zNew, edge.Union(newHPs).ToList()));
+              process.Enqueue((zNew, HPs.Where(hp => hp.Contains(zNew)).ToList()));
             }
           }
         } while (J.Next());
