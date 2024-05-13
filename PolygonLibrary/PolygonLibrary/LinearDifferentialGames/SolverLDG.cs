@@ -107,7 +107,7 @@ public partial class Geometry<TNum, TConv>
           using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
           pr.WriteNumber("t", TConv.ToDouble(t), "F3");
           W[t].WriteIn(pr);
-          // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
+          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
@@ -116,7 +116,8 @@ public partial class Geometry<TNum, TConv>
           timer.Restart();
           ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred]);
 
-          ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+          // ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+          ConvexPolytop? WNext = MinkowskiDiff.H2VGeometric(Sum, gd.Qs[tPred]);
 
           timer.Stop();
           Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}");
