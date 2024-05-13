@@ -11,6 +11,7 @@ namespace Profile.Benchmarks;
 using static Geometry<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
+[WarmupCount(1)]
 public class ConvexPolytopesBench {
 
 /*
