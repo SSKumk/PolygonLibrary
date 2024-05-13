@@ -2,7 +2,6 @@
 ProblemName = "Oscillator-1-0.9";
 
 
-
 // ==================================================
 
 // Block of data defining the dynamics of the game
@@ -13,25 +12,25 @@ n = 2;
 A = {{0, 1},{-1, 0}};
 
 // Dimension of the useful control
-p = 1;
+pDim = 1;
 
 // The useful control matrix
 B = {{0}, {1}};
 
 // Dimension of the disturbance
-q = 1;
+qDim = 1;
 
 // The disturbance matrix
 C = {{1}, {0}};
 
 // The initial instant
-t0 = 0;
+t0 = 4;
 
 // The final instant
-T = 1;
+T = 7;
 
 // The time step
-dt = 0.2;
+dt = 0.1;
 
 // The dimension of projected space
 d = 2;
@@ -50,13 +49,12 @@ QRectPLeft = {-0.9};
 QRectPRight = {0.9};
 
 // ==================================================
-// The goal type of the game
-GoalType = Epigraph;
+GoalType = "Epigraph";
 MType = "DistToOrigin";
 
 MBallType = "Ball_2";
 MTheta = 4;
-MPhi = 15;
-MCMax = 5;
+MPhi = 100;
+MCMax = 2;
 
 // ==================================================

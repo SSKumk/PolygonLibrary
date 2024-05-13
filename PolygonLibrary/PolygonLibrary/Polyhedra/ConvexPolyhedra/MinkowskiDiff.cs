@@ -31,6 +31,22 @@ public partial class Geometry<TNum, TConv>
                : null;
     }
 
+    public static ConvexPolytop? H2VGeometric(ConvexPolytop F, ConvexPolytop G)
+    {
+      return MinkDiff
+               (
+                F.HRep
+              , G.VRep
+              , out ConvexPolytop diffFG
+              , FindExtrInCPOnVector_Naive
+              , doSubtract
+              , ConvexPolytop.HRepToVRep_Geometric
+              , GiftWrapping.WrapFaceLattice
+               )
+               ? diffFG
+               : null;
+    }
+
 
     /* 1.
      * Варианты первого пункта!
