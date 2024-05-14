@@ -13,7 +13,7 @@ public partial class Geometry<TNum, TConv>
 
   /// <summary>
   /// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.
-  /// N * x &lt; C, N - outward normal vector, c - constant.
+  /// N * x = C, N - outward normal vector, C - constant term.
   /// </summary>
   public class HyperPlane {
 
