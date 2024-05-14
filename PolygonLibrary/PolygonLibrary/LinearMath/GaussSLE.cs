@@ -10,19 +10,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo Теперь живём в классе (методы не статические как GW)
-  // Конструкторы
-  //  1) Только создание хранилищ ++
-  //  2) Создание хранилищ и заполнение матриц ++
-  //
-  // Методы
-  // - заполнения матриц с разными входными данными (функции, матрицы); в отладочном режиме проверять размеры ++
-  // - произвести решение; заполнить индексные массивы
-  // - взять результат
-  //
-  // Фабрики
-  // - создать и решить СЛАУ, выдать результат.
-
   /// <summary>
   /// Provides functionality for solving systems of linear equations using Gaussian elimination.
   /// </summary>
