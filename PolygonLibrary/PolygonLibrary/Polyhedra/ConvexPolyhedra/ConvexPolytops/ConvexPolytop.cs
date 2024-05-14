@@ -168,7 +168,7 @@ public partial class Geometry<TNum, TConv>
               _VRep = new HashSet<Vector>(FL.Vertices);
             }
             else if (_HRep is not null) {
-              _VRep = HRepToVRep_Naive(HRep);
+              _VRep = HRepToVRep_Geometric(HRep);
             }
           }
 
@@ -267,11 +267,11 @@ public partial class Geometry<TNum, TConv>
       switch (form) {
         case ConvexPolytopForm.HRep: break; // всё готово
         case ConvexPolytopForm.VRep:
-          _VRep = HRepToVRep_Naive(new List<HyperPlane>(HPs));
+          _VRep = HRepToVRep_Geometric(new List<HyperPlane>(HPs));
 
           break;
         case ConvexPolytopForm.FL:
-          _VRep = HRepToVRep_Naive(new List<HyperPlane>(HPs));
+          _VRep = HRepToVRep_Geometric(new List<HyperPlane>(HPs));
           _FL   = GW.FaceLattice;
 
           break;
@@ -809,7 +809,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
-      return AsVPolytop(HRepToVRep_Naive(hrep).ToHashSet(), true);
+      return AsVPolytop(HRepToVRep_Geometric(hrep).ToHashSet(), true);
     }
 
     /// <summary>
@@ -822,7 +822,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
-      return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Naive(hrep)).ToHashSet(), true);
+      return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToHashSet(), true);
     }
 #endregion
 
@@ -1025,6 +1025,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns></returns>
     public static HashSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
       HashSet<Vector> Vs = new HashSet<Vector>();
+      // Console.WriteLine("1 stage");
+
+      //todo менее наивный (наш 1 этап симплекса)
 
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
 
@@ -1057,6 +1060,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (goNext && combination.Next());
 
+      // Console.WriteLine("1 stage done");
 
       // Этап 2. Поиск всех остальных вершин
       Queue<(Vector, List<HyperPlane>)> process = new Queue<(Vector, List<HyperPlane>)>();
@@ -1064,6 +1068,7 @@ public partial class Geometry<TNum, TConv>
 
       // Обход в ширину
       while (process.TryDequeue(out (Vector, List<HyperPlane>) elem)) {
+        // Console.WriteLine($"Queue: {process.Count}. Vs: {Vs.Count}");
         (Vector z, List<HyperPlane> Hz) = elem;
         Combination J = new Combination(Hz.Count, d - 1);
 
@@ -1093,58 +1098,63 @@ public partial class Geometry<TNum, TConv>
             TNum dotProduct = v * hp.Normal;
 
             // Если скалярное произведение равно нулю, игнорируем
-            if (Tools.EQ(dotProduct)) { continue; }
-
-            // Первое ненулевое скалярное произведение определяет ориентацию вектора v
-            if (firstNonZeroProduct) {
-              if (Tools.GT(dotProduct)) { v = -v; }
-              firstNonZeroProduct = false;
-            }
-            else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
-              if (Tools.GT(dotProduct)) {
-                isEdge = false;
-
-                break;
+            if (!Tools.EQ(dotProduct)) {
+              // Первое ненулевое скалярное произведение определяет ориентацию вектора v
+              if (firstNonZeroProduct) {
+                if (Tools.GT(dotProduct)) { v = -v; }
+                firstNonZeroProduct = false;
               }
-            }
-          }
-          if (isEdge) {
-            // Теперь v определяет луч, на котором лежит ребро
-            // List<HyperPlane> newHPs    = new List<HyperPlane>();
-            TNum             tNew      = Tools.PositiveInfinity;
-            Vector           zNew      = Vector.Zero(d);
-            bool             foundPrev = false;
-            foreach (HyperPlane hp in HPs) {
-              TNum denominator = hp.Normal * v;
-
-              if (Tools.EQ(denominator)) { continue; } // если ноль, то мы сейчас находимся на пересечении этих плоскостей
-
-              TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
-
-
-              if (Tools.LE(ti) || Tools.GT(ti, tNew)) { continue; }
-
-              if (Tools.EQ(ti, tNew)) {
-                // newHPs.Add(hp);
-
-                continue;
-              }
-
-              if (Tools.LT(ti, tNew)) {
-                tNew   = ti;
-                // newHPs.Clear();
-                // newHPs.Add(hp);
-                zNew   = z + tNew * v;
-                if (Vs.Contains(zNew)) {
-                  foundPrev = true;
+              else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+                if (Tools.GT(dotProduct)) {
+                  isEdge = false;
 
                   break;
                 }
               }
             }
+          }
+          if (isEdge) {
+            // Теперь v определяет луч, на котором лежит ребро
+            List<HyperPlane> zNewHPs       = new List<HyperPlane>();
+            List<HyperPlane> orthToEdgeHPs = new List<HyperPlane>();
+            TNum             tMin          = Tools.PositiveInfinity;
+            Vector           zNew          = Vector.Zero(d);
+            bool             foundPrev     = false;
+            foreach (HyperPlane hp in HPs) {
+              TNum denominator = hp.Normal * v;
+
+              // если ноль, то мы сейчас находимся на пересечении этих плоскостей
+              if (Tools.EQ(denominator)) {
+                if (hp.Contains(z)) {
+                  orthToEdgeHPs.Add(hp);
+                }
+              }
+              else {
+                TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
+
+                // Если ti <= 0 или ti > tMin, то такая точка не годится
+                if (!(Tools.LE(ti) || Tools.GT(ti, tMin))) {
+                  if (Tools.EQ(ti, tMin)) {
+                    zNewHPs.Add(hp);
+                  }
+                  else if (Tools.LT(ti, tMin)) {
+                    tMin = ti;
+                    zNewHPs.Clear();
+                    zNewHPs.Add(hp);
+                    zNew = z + tMin * v;
+                    if (Vs.Contains(zNew)) {
+                      foundPrev = true;
+
+                      break;
+                    }
+                  }
+                }
+              }
+            }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
-              process.Enqueue((zNew, HPs.Where(hp => hp.Contains(zNew)).ToList()));
+              // process.Enqueue((zNew, HPs.Where(hp => hp.Contains(zNew)).ToList()));
+              process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
             }
           }
         } while (J.Next());
