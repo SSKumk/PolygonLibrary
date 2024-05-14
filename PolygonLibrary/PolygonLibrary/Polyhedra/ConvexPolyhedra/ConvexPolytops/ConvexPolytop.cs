@@ -1019,46 +1019,19 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    ///
+    /// Converts the H-representation of convex polytop to the V-representation by some geometric-inspired algorithm.
     /// </summary>
-    /// <param name="HPs"></param>
-    /// <returns></returns>
+    /// <param name="HPs">The hyperplane arrangement.</param>
+    /// <returns>The V-representation of the convex polytop.</returns>
     public static HashSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
       HashSet<Vector> Vs = new HashSet<Vector>();
-      // Console.WriteLine("1 stage");
-
-      //todo менее наивный (наш 1 этап симплекса)
-
+      int             m  = HPs.Count;
+      int             d  = HPs.First().Normal.Dim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
+      Vs.Add(FindInitialVertex_Simplex(HPs));
 
       // Наивная реализация
-      int m = HPs.Count;
-      int d = HPs.First().Normal.Dim;
-
-      Combination          combination = new Combination(m, d);
-      Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
-      Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
-      GaussSLE             gaussSLE    = new GaussSLE(d, d);
-      bool                 belongs;
-      bool                 goNext = true;
-      do { // Перебираем все сочетания из d элементов из набора гиперплоскостей в поиске любой вершины.
-        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.All);
-        gaussSLE.Solve();
-        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
-          belongs = true;
-          foreach (HyperPlane hp in HPs) {
-            if (hp.ContainsPositive(point)) {
-              belongs = false;
-
-              break;
-            }
-          }
-          if (belongs) {
-            Vs.Add(point);
-            goNext = false;
-          }
-        }
-      } while (goNext && combination.Next());
+      // Vs.Add(FindInitialVertex_Naive(HPs, m, d));
 
       // Console.WriteLine("1 stage done");
 
@@ -1161,6 +1134,50 @@ public partial class Geometry<TNum, TConv>
       }
 
       return Vs;
+    }
+
+    private static Vector FindInitialVertex_Simplex(List<HyperPlane> HPs) {
+      SimplexMethod sm = new SimplexMethod(HPs, _ => Tools.One);
+      (SimplexMethod.SimplexMethodResultStatus status, TNum _, TNum[]? x) = sm.Solve(true);
+#if DEBUG
+      if (status is not SimplexMethod.SimplexMethodResultStatus.InitialSolution) {
+        throw new ArgumentException($"ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
+      }
+#endif
+      Debug.Assert(x is not null, $"ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
+      Debug.Assert(HPs.Any(hp => hp.Contains(new Vector(x))), "ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
+
+      return new Vector(x);
+    }
+
+    private static Vector FindInitialVertex_Naive(List<HyperPlane> HPs, int m, int d) {
+      Combination          combination = new Combination(m, d);
+      Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
+      Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
+      GaussSLE             gaussSLE    = new GaussSLE(d, d);
+      bool                 belongs;
+      bool                 goNext     = true;
+      List<Vector>         firstPoint = new List<Vector>();
+      do { // Перебираем все сочетания из d элементов из набора гиперплоскостей в поиске любой вершины.
+        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.All);
+        gaussSLE.Solve();
+        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
+          belongs = true;
+          foreach (HyperPlane hp in HPs) {
+            if (hp.ContainsPositive(point)) {
+              belongs = false;
+
+              break;
+            }
+          }
+          if (belongs) {
+            firstPoint.Add(point);
+            goNext = false;
+          }
+        }
+      } while (goNext && combination.Next());
+
+      return firstPoint.First();
     }
 
   }
