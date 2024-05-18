@@ -38,7 +38,7 @@ public class MSumBench_Cyclic {
   public void MSumClCl_SDas() => MinkowskiSum.BySandipDas(P, Q);
 
   [Benchmark]
-  public void MSumClCl_SDasCutted() => MinkowskiSum.BySandipDasCutted(P, Q);
+  public void MSumClCl_SDasCutted() => MinkowskiSum.BySandipDas(P, Q, true);
 
   [Benchmark]
   public void MSumClCl_CH() => MinkowskiSum.ByConvexHull(P, Q);

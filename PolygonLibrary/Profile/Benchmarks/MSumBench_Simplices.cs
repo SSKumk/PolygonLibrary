@@ -33,7 +33,7 @@ public class MSumBench_Simplices {
   // public void MSumSmSm_SDas() => MinkowskiSum.BySandipDas(P, Q);
 
   [Benchmark]
-  public void MSumSmSm_SDasCutted() => MinkowskiSum.BySandipDasCutted(P, Q);
+  public void MSumSmSm_SDasCutted() => MinkowskiSum.BySandipDas(P, Q, true);
 
   // [Benchmark]
   // public void MSumSmSm_CH() => MinkowskiSum.ByConvexHull(P, Q);

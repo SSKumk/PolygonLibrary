@@ -316,7 +316,7 @@ public partial class Geometry<TNum, TConv>
       for (t = T; Tools.GE(t, t0); t -= dt) {
         TNum
           t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToHashSet(), true);
+        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToHashSet());
         Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToHashSet(), false);
       }
     }

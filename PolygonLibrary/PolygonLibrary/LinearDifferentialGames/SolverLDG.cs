@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="workDir">The directory where source file and result folder are placed</param>
     /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
-    /// <exception cref="ArgumentException">If there are no path to working directory this exception is thrown</exception>
+    /// <exception cref="ArgumentException">If there is no path to working directory, this exception is thrown</exception>
     public SolverLDG(string workDir, string fileName) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -72,16 +72,28 @@ public partial class Geometry<TNum, TConv>
         StringBuilder sb = new StringBuilder(workDir);
         sb[^1]  = '/';
         workDir = sb.ToString();
-      } else if (workDir[^1] != '/') {
+      }
+      else if (workDir[^1] != '/') {
         workDir += '/';
       }
 
-      if (!Directory.Exists(workDir)) { //Cur dir must be in work directory
+      if (!Directory.Exists(workDir)) { //Cur dir must be in the work directory
         Directory.CreateDirectory(workDir);
       }
       this.fileName = fileName;
       gd            = new GameData(this.workDir + fileName + ".c");
       W             = new StableBridge(new CauchyMatrix.TimeComparer());
+
+      foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
+        using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.tsection");
+        pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
+        P.Value.WriteIn(pr);
+      }
+      foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
+        using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.tsection");
+        pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
+        Q.Value.WriteIn(pr);
+      }
     }
 
     /// <summary>
@@ -91,7 +103,7 @@ public partial class Geometry<TNum, TConv>
       Stopwatch timer    = new Stopwatch();
       string    filesDir = workDir + gd.ProblemName;
       if (isNeedWrite) {
-        if (!Directory.Exists(filesDir)) { //Cur dir must be in work directory
+        if (!Directory.Exists(filesDir)) { //Cur dir must be in the work directory
           Directory.CreateDirectory(filesDir);
         }
       }
@@ -107,25 +119,26 @@ public partial class Geometry<TNum, TConv>
           using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
           pr.WriteNumber("t", TConv.ToDouble(t), "F3");
           W[t].WriteIn(pr);
-          // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
+          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
         t     -= gd.dt;
         if (bridgeIsNotDegenerate) { // Формула Пшеничного
           timer.Restart();
-          ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred]);
+          ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred], true);
 
           // ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
           ConvexPolytop? WNext = MinkowskiDiff.H2VGeometric(Sum, gd.Qs[tPred]);
 
           timer.Stop();
-          Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}");
 
           if (WNext is null) {
             bridgeIsNotDegenerate = false;
             Console.WriteLine($"The bridge become degenerate at t = {t}.");
-          } else {
+          }
+          else {
+            Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}. VRep.Count = {WNext.VRep.Count}");
             W[t] = WNext;
           }
         }

@@ -307,11 +307,11 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop AsVPolytop(IEnumerable<Vector> S, bool toConvexify = false)
       => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.VRep);
 
-    public static ConvexPolytop AsHPolytop(IEnumerable<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.HRep);
+    public static ConvexPolytop AsHPolytop(IEnumerable<Vector> S)
+      => new ConvexPolytop(S.ToHashSet(), true, ConvexPolytopForm.HRep);
 
-    public static ConvexPolytop AsFLPolytop(IEnumerable<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.FL);
+    public static ConvexPolytop AsFLPolytop(IEnumerable<Vector> S)
+      => new ConvexPolytop(S.ToHashSet(), true, ConvexPolytopForm.FL);
 
     public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
       => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.VRep);
@@ -826,6 +826,24 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
+#region Comparation
+    //!!! Вообще говоря, сравнивать многогранники тяжело!!! Тут "какая-то наивная" реализация сравнения
+    protected bool Equals(ConvexPolytop other) => this.FL.Equals(other.FL);
+
+    public override bool Equals(object? obj) {
+      if (ReferenceEquals(null, obj))
+        return false;
+      if (ReferenceEquals(this, obj))
+        return true;
+      if (obj.GetType() != this.GetType())
+        return false;
+
+      return Equals((ConvexPolytop)obj);
+    }
+
+    public override int GetHashCode() { throw new NotImplementedException(); }
+#endregion
+
 #region Write out
     public static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
       pr.WriteString("Rep", "VRep");
@@ -1028,10 +1046,10 @@ public partial class Geometry<TNum, TConv>
       int             m  = HPs.Count;
       int             d  = HPs.First().Normal.Dim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
-      Vs.Add(FindInitialVertex_Simplex(HPs));
+      // Vs.Add(FindInitialVertex_Simplex(HPs));
 
       // Наивная реализация
-      // Vs.Add(FindInitialVertex_Naive(HPs, m, d));
+      Vs.Add(FindInitialVertex_Naive(HPs, m, d));
 
       // Console.WriteLine("1 stage done");
 

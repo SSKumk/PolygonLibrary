@@ -33,7 +33,7 @@ public class MSumBench_Cubes {
   [Benchmark]
   public void MSumCuCu_SDas() => MinkowskiSum.BySandipDas(P, Q);
   [Benchmark]
-  public void MSumCuCu_SDasCutted() => MinkowskiSum.BySandipDasCutted(P, Q);
+  public void MSumCuCu_SDasCutted() => MinkowskiSum.BySandipDas(P, Q,true);
 
   // [Benchmark]
   // public void MSumCuCu_CH() => MinkowskiSum.ByConvexHull(P, Q);

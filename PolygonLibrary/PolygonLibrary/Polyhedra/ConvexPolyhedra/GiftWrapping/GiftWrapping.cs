@@ -232,7 +232,7 @@ public partial class Geometry<TNum, TConv>
           HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
           AffineBasis       AffineS = new AffineBasis(S);
           if (AffineS.SpaceDim < AffineS.VecDim) {
-            // Если рой точек образует подпространство размерности меньшей чем размерность самх точек, то
+            // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
             // уходим в подпространство и там овыпукляем.
             S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
           }
@@ -246,7 +246,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Perform an gift wrapping algorithm. It holds a necessary fields to construct a d-polytop.
+    /// Perform a gift wrapping algorithm. It holds the necessary fields to construct a d-polytop.
     /// </summary>
     private sealed class GiftWrappingMain {
 
