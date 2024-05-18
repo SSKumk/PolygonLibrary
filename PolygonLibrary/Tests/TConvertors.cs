@@ -1,5 +1,6 @@
 using CGLibrary;
 using DoubleDouble;
+using MultiPrecision;
 
 namespace Tests;
 //ТЕСТЫ очередного типа TNum: vvvv
@@ -15,7 +16,7 @@ public class DConvertor : INumConvertor<double> {
 
   public static double ToDouble(double   from) => from;
   public static double FromDouble(double from) => from;
-  public static int    ToInt(double      from) => (int) from;
+  public static int    ToInt(double      from) => (int)from;
   public static double FromInt(int       from) => from;
   public static uint   ToUInt(double     from) => (uint)from;
   public static double FromUInt(uint     from) => from;
@@ -33,5 +34,26 @@ public class DDConvertor : INumConvertor<ddouble> {
   public static ddouble FromInt(int       from) => from;
   public static uint    ToUInt(ddouble    from) => (uint)from;
   public static ddouble FromUInt(uint     from) => from;
+
+}
+
+public struct N8 : IConstant {
+
+  public readonly int Value => 8;
+
+}
+
+
+/// <summary>
+/// Interface for multi-precision conversions.
+/// </summary>
+public class MPConvertor : INumConvertor<MultiPrecision<N8>> {
+
+  public static double             ToDouble(MultiPrecision<N8> from) => (double)from;
+  public static MultiPrecision<N8> FromDouble(double           from) => from;
+  public static int                ToInt(MultiPrecision<N8>    from) => (int)from;
+  public static MultiPrecision<N8> FromInt(int                 from) => from;
+  public static uint               ToUInt(MultiPrecision<N8>   from) => (uint)from;
+  public static MultiPrecision<N8> FromUInt(uint               from) => from;
 
 }

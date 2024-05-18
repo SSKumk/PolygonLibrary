@@ -21,6 +21,9 @@
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
+        <Reference Include="MultiPrecision">
+          <HintPath>..\MultiPrecision.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>

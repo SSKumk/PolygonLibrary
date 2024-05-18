@@ -81,6 +81,11 @@
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
+    <ItemGroup>
+        <Reference Include="MultiPrecision">
+            <HintPath>..\MultiPrecision.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
     <ItemGroup>
         <Content Include="Segments\Bentley-Ottmann\BentleyOttmann.svg" />
