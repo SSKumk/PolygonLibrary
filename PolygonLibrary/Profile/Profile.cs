@@ -4,9 +4,16 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using DoubleDouble;
 using Tests.ToolsTests;
-using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+using MultiPrecision;
+using Tests;
+
+// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+
+// using static Tests.ToolsTests.TestsPolytopes<MultiPrecision.MultiPrecision<Tests.N8>, Tests.MPConvertor>;
+using static CGLibrary.Geometry<MultiPrecision.MultiPrecision<Tests.N8>, Tests.MPConvertor>;
+// using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 // using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 // using static CGLibrary.Geometry<double, Tests.DConvertor>;
@@ -22,29 +29,56 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    int        dim = 3;
-    ConvexPolytop polytop = ConvexPolytop.Sphere(dim,2,4,Vector.Zero(dim), 1);
-    // Console.WriteLine("#1");
-    // ConvexPolytop cutted  = ConvexPolytop.SectionByHyperPlaneAndProject(polytop, new HyperPlane(new Vector(new ddouble[]{1,1,1,1}),0.1));
-    // Console.WriteLine("#2");
-    // cutted.WriteTXT_3D(pathData + "sphere4D");
+    // MultiPrecision<N8> x = MultiPrecision<N8>.Pow2(2);
+    // //
+    // var y  = x + x;
+    // Console.WriteLine(y);
 
-    // ConvexPolytop polytop = ConvexPolytop.AsVPolytop(Shift(ConvexPolytop.Cube01(3).VRep, Vector.Ones(3)));
+    Vector a = Vector.Zero(3);
+    Vector b = Vector.Ones(3);
 
+    Console.WriteLine(a + b);
+
+    // int dim     = 3;
+    // ConvexPolytop    polytop = ConvexPolytop.Sphere(dim, 2, 4, Vector.Zero(dim), 1);
+
+
+    // string      matDot = "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2";
+    // string      t      = "5.20)";
+    // ParamReader pr     = new ParamReader($"{pathData}{matDot}/{t}materialDot1-0.9-supG.tsection");
+    // pr.ReadNumber<ddouble>("t");
+    // ConvexPolytop A = ConvexPolytop.AsFLPolytop(pr);
+    // Console.WriteLine(A.VRep.Count);
+    //
+    // pr = new ParamReader($"{pathData}{matDot}/{t} P materialDot1-0.9-supG.tsection");
+    // pr.ReadNumber<ddouble>("t");
+    // ConvexPolytop P = ConvexPolytop.AsFLPolytop(pr);
+    // Console.WriteLine(P.VRep.Count);
+    //
+    // pr = new ParamReader($"{pathData}{matDot}/{t} Q materialDot1-0.9-supG.tsection");
+    // pr.ReadNumber<ddouble>("t");
+    // ConvexPolytop Q = ConvexPolytop.AsVPolytop(pr);
+    // Console.WriteLine(Q.VRep.Count);
+    //
+    // ConvexPolytop  x = MinkowskiSum.BySandipDas(A, Q);
+    // ConvexPolytop? y = MinkowskiDiff.H2VGeometric(x, Q);
+    //
+    // Console.WriteLine(y!.VRep.Count);
 
 
     // ConvexPolytop A       = ConvexPolytop.SimplexRND(4).RotateRND();
     // ConvexPolytop B       = ConvexPolytop.SimplexRND(4).RotateRND();
-    // ConvexPolytop polytop = MinkowskiSum.BySandipDas(A, B);
+    // ConvexPolytop pp      = MinkowskiSum.BySandipDas(A, B);
+    // ConvexPolytop ppc      = MinkowskiSum.BySandipDas(A, B, true);
+    // Console.WriteLine(pp.HRep.Count);
+    // Console.WriteLine(ppc.HRep.Count);
+
     // ConvexPolytop polytop = ConvexPolytop.AsVPolytop(ConvexPolytop.Cube01(4).VRep.Union(new List<Vector>()
     //   {
     //     new Vector(new ddouble[]{0.5,0.5,0.5,2}), // - в общем-то, это не нужно, чтобы сломать
     //     new Vector(new ddouble[]{0.5,0.5,0.5,-2})
     //   }));
 
-    SimplexMethod sm = new SimplexMethod(polytop.HRep, i => 1);
-    (SimplexMethod.SimplexMethodResultStatus a, ddouble b, ddouble[]? c) = sm.Solve(true);
-    Console.WriteLine(new Vector(c!));
 
     // var           g       = ConvexPolytop.HRepToVRep_Geometric(polytop.HRep);
     // Console.WriteLine("polytop == geometricH2V");
@@ -57,24 +91,10 @@ class Program {
     // Console.WriteLine(string.Join('\n', polytop.VRep.Except(g)));
 
 
-    // ConvexPolytop A = ConvexPolytop.SimplexRND(6);
-    // ConvexPolytop B = ConvexPolytop.SimplexRND(6);
-    // ConvexPolytop sum = MinkowskiSum.BySandipDas(A, B);
-    // ConvexPolytop sumCH = MinkowskiSum.ByConvexHull(A, B);
-    // Console.WriteLine(string.Join(' ', A.FVector));
-    // Console.WriteLine(string.Join(' ', B.FVector));
-    // Console.WriteLine(string.Join(' ', sum.FVector));
-    // Console.WriteLine(string.Join(' ', sumCH.FVector));
-    // ConvexPolytop sumCutted = MinkowskiSum.BySandipDasCutted(A, B);
-    // Console.WriteLine(sum.Vertices.SetEquals(sumCutted.Vertices));
-
-
     // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(5, pathData);
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-0.9-supG");
-    // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
-    // SolverLDG solverLdg = new SolverLDG(pathData, "simplestGame_5D");
 
     // solverLdg.Solve(true);
   }
