@@ -87,12 +87,12 @@ public partial class Geometry<TNum, TConv>
       foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
         using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.tsection");
         pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
-        P.Value.WriteIn(pr);
+        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLRep);
       }
       foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
         using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.tsection");
         pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
-        Q.Value.WriteIn(pr);
+        Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLRep);
       }
     }
 
@@ -118,7 +118,7 @@ public partial class Geometry<TNum, TConv>
         if (isNeedWrite) {
           using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
           pr.WriteNumber("t", TConv.ToDouble(t), "F3");
-          W[t].WriteIn(pr);
+          W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
           W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 

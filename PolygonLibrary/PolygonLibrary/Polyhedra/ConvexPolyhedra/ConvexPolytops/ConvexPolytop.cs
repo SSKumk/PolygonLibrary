@@ -774,20 +774,38 @@ public partial class Geometry<TNum, TConv>
       return doFL ? AsFLPolytop(S) : AsVPolytop(S); // todo Если дано FL, то надо его сохранить (просто вершины пересчитать)
     }
 
+    public enum Rep { VRep, HRep, FLRep }
+
     /// <summary>
     /// The writer used to write the polytop depends on non-null representations.
     /// </summary>
     /// <param name="pr">The writer to write with.</param>
-    public void WriteIn(ParamWriter pr) {
-      if (_FL is not null) {
-        WriteAsFL(pr, this);
+    /// <param name="rep">The representation of the convex polytop in the Rep-form will be written.</param>
+    public void WriteIn(ParamWriter pr, Rep rep) {
+      switch (rep) {
+        case Rep.VRep:
+          WriteAsVRep(pr, this);
+
+          break;
+        case Rep.HRep:
+          WriteAsHRep(pr, this);
+
+          break;
+        case Rep.FLRep:
+          WriteAsFLRep(pr, this);
+
+          break;
       }
-      else if (_VRep is not null) {
-        WriteAsVRep(pr, this);
-      }
-      else {
-        WriteAsHRep(pr, this);
-      }
+      pr.Flush();
+      // if (_FL is not null) {
+      //   WriteAsFLRep(pr, this);
+      // }
+      // else if (_VRep is not null) {
+      //   WriteAsVRep(pr, this);
+      // }
+      // else {
+      //   WriteAsHRep(pr, this);
+      // }
     }
 
     /// <summary>
@@ -871,7 +889,7 @@ public partial class Geometry<TNum, TConv>
       pr.Write2DArray("HPs", HPs);
     }
 
-    public static void WriteAsFL(ParamWriter pr, ConvexPolytop P) {
+    public static void WriteAsFLRep(ParamWriter pr, ConvexPolytop P) {
       pr.WriteString("Rep", "FaceLattice");
       pr.WriteNumber("SDim", P.SpaceDim);
       pr.WriteNumber("PDim", P.PolytopDim);
