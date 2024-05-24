@@ -10,7 +10,7 @@ using System.Text;
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -293,6 +293,11 @@ public partial class Geometry<TNum, TConv>
       // The projection matrix
       TNum[,] ProjMatrixArr = new TNum[d, n];
       for (int i = 0; i < d; i++) {
+        for (int j = 0; j < n; j++) {
+          ProjMatrixArr[i, j] = Tools.Zero;
+        }
+      }
+      for (int i = 0; i < d; i++) {
         ProjMatrixArr[i, projJ[i]] = Tools.One;
       }
       ProjMatr = new Matrix(ProjMatrixArr);
@@ -485,7 +490,7 @@ public partial class Geometry<TNum, TConv>
           TNum[] SemiaxesLength = _pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
           res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vertices;
 
-          setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength)}";
+          setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength.ToList())}";
 
           break;
         }

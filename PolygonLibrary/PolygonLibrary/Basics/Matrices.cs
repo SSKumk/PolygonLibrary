@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -96,7 +97,11 @@ public partial class Geometry<TNum, TConv>
         throw new ArgumentException("Dimension of a matrix cannot be non-positive");
       }
 #endif
-      _m   = new TNum[n * m];
+      _m = new TNum[n * m];
+      int d = n * m;
+      for (int i = 0; i < d; i++) {
+        _m[i] = Tools.Zero;
+      }
       Rows = n;
       Cols = m;
     }
@@ -111,19 +116,23 @@ public partial class Geometry<TNum, TConv>
     public Matrix(int n, int m, TNum[] ar) {
 #if DEBUG
       if (n <= 0) {
-        throw new ArgumentException("Number of rows should be positive");
+        throw new ArgumentException("Matrices.Constructor: Number of rows should be positive");
       }
 
       if (m <= 0) {
-        throw new ArgumentException("Number of columns should be positive");
+        throw new ArgumentException("Matrices.Constructor: Number of columns should be positive");
       }
 
       if (n * m != ar.Length) {
-        throw new ArgumentException("Product of sizes does not equal to number of elements in the array");
+        throw new ArgumentException("Matrices.Constructor: Product of sizes does not equal to number of elements in the array");
       }
 
       if (ar.Rank != 1) {
-        throw new ArgumentException("The array is not one-dimensional");
+        throw new ArgumentException("Matrices.Constructor: The array is not one-dimensional");
+      }
+
+      foreach (TNum el in ar) {
+        if (el is null) { throw new ArgumentException("Matrices.Constructor: some elements of array is null!"); }
       }
 #endif
       Rows = n;
@@ -144,6 +153,8 @@ public partial class Geometry<TNum, TConv>
       if (nm.Rank != 2) {
         throw new ArgumentException("Cannot initialize a matrix by a array that is not two-dimensional");
       }
+
+
 #endif
       Rows = nm.GetLength(0);
       Cols = nm.GetLength(1);
@@ -154,6 +165,14 @@ public partial class Geometry<TNum, TConv>
 
       if (Cols <= 0) {
         throw new ArgumentException("Matrix cannot have a non-positive number of columns");
+      }
+
+      for (int i = 0; i < Rows; i++) {
+        for (int j = 0; j < Cols; j++) {
+          if (nm[i, j] is null) {
+            throw new ArgumentException("Matrices.Constructor: some elements of array is null!");
+          }
+        }
       }
 #endif
       _m = new TNum[Rows * Cols];
@@ -369,7 +388,10 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       TNum[] res = new TNum[m.Rows];
-      int    r   = m.Rows, c = m.Cols, i, j, k = 0;
+      for (int s = 0; s < m.Rows; s++) {
+        res[s] = Tools.Zero;
+      }
+      int r = m.Rows, c = m.Cols, i, j, k = 0;
 
       for (i = 0; i < r; i++) {
         for (j = 0; j < c; j++, k++) {
@@ -394,7 +416,10 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       TNum[] res = new TNum[m.Cols];
-      int    r   = m.Rows, c = m.Cols, i, j, k;
+      for (int s = 0; s < m.Cols; s++) {
+        res[s] = Tools.Zero;
+      }
+      int r = m.Rows, c = m.Cols, i, j, k;
 
       for (i = 0; i < c; i++) {
         for (j = 0, k = i; j < r; j++, k += c) {
@@ -419,6 +444,9 @@ public partial class Geometry<TNum, TConv>
 #endif
       int    r   = m1.Rows, c = m2.Cols, d = r * c, temp = m1.Cols, i, j, k, m1Ind, m1Start, m2Ind, resInd = 0;
       TNum[] res = new TNum[d];
+      for (int s = 0; s < d; s++) {
+        res[s] = Tools.Zero;
+      }
 
       for (i = 0, m1Start = 0; i < r; i++, m1Start += temp) {
         for (j = 0; j < c; j++, resInd++) {
@@ -503,6 +531,9 @@ public partial class Geometry<TNum, TConv>
 #endif
       int    c   = Cols, d = r * c, k = 0, ind, i, j;
       TNum[] res = new TNum[d];
+      for (int s = 0; s < d; s++) {
+        res[s] = Tools.Zero;
+      }
 
       for (i = 0; i < rows.Length; i++) {
         for (j = 0, ind = rows[i] * c; j < c; j++, ind++, k++) {
@@ -527,6 +558,10 @@ public partial class Geometry<TNum, TConv>
 #endif
       int    r   = Rows, d = r * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
+      for (int s = 0; s < d; s++) {
+        res[s] = Tools.Zero;
+      }
+
 
       for (i = 0, start = 0; i < r; i++, start += Cols) {
         for (j = 0; j < c; j++, k++) {
@@ -556,6 +591,9 @@ public partial class Geometry<TNum, TConv>
 #endif
       int    d   = r * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
+      for (int s = 0; s < d; s++) {
+        res[s] = Tools.Zero;
+      }
 
       for (i = 0; i < r; i++) {
         start = rows[i] * Cols;
@@ -673,7 +711,8 @@ public partial class Geometry<TNum, TConv>
         for (j = 0; j < m; j++, k++) {
           if (i == j) {
             nv[k] = Tools.One;
-          } else {
+          }
+          else {
             nv[k] = Tools.Zero;
           }
         }

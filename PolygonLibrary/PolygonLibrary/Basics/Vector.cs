@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -75,7 +75,7 @@ public partial class Geometry<TNum, TConv>
         {
           length ??= TNum.Sqrt(Length2);
 
-          return length.Value;
+          return length;
         }
     }
 
@@ -101,7 +101,7 @@ public partial class Geometry<TNum, TConv>
             length2 = res;
           }
 
-          return length2.Value;
+          return length2;
         }
     }
 
@@ -283,7 +283,8 @@ public partial class Geometry<TNum, TConv>
     public static double AngleDouble(Vector v1, Vector v2) {
       if (v1.IsZero || v2.IsZero) {
         return 0;
-      } else {
+      }
+      else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
         if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
@@ -312,7 +313,8 @@ public partial class Geometry<TNum, TConv>
     public static TNum Angle(Vector v1, Vector v2) {
       if (v1.IsZero || v2.IsZero) {
         return Tools.Zero;
-      } else {
+      }
+      else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
         if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
@@ -687,6 +689,9 @@ public partial class Geometry<TNum, TConv>
     public static Vector Zero(int dim) {
       Debug.Assert(dim > 0, $"Vector.Zero: The dimension of the vector must be greater than 0! Found dim = {dim}");
       TNum[] orig = new TNum[dim];
+      for (int i = 0; i < dim; i++) {
+        orig[i] = Tools.Zero;
+      }
 
       return new Vector(orig);
     }
@@ -700,6 +705,9 @@ public partial class Geometry<TNum, TConv>
     public static Vector MakeOrth(int dim, int pos) {
       Debug.Assert(pos > 0, "Vector.MakeOrth: Position should be greater than 0.");
       TNum[] orth = new TNum[dim];
+      for (int i = 0; i < dim; i++) {
+        orth[i] = Tools.Zero;
+      }
       orth[pos - 1] = TNum.MultiplicativeIdentity;
 
       return new Vector(orth);
@@ -975,6 +983,9 @@ public partial class Geometry<TNum, TConv>
 
       int    dim    = enPoint.Current.Dim;
       TNum[] coords = new TNum[dim];
+      for (int i = 0; i < dim; i++) {
+        coords[i] = Tools.Zero;
+      }
 
       do {
 #if DEBUG

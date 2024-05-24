@@ -98,7 +98,7 @@ public class SpeedTestGW {
   }
 
   public void SphereBench<TNum, TConv>(int dim, int thetaPoints, int maxAmount, string fileName)
-    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+    where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
     IFloatingPoint<TNum>
     where TConv : INumConvertor<TNum> {
     Stopwatch          timer  = new Stopwatch();
@@ -128,7 +128,7 @@ public class SpeedTestGW {
   }
 
   public void CubeBench<TNum, TConv>(int dim, int maxAmount, string fileName)
-    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+    where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
     IFloatingPoint<TNum>
     where TConv : INumConvertor<TNum> {
     Stopwatch    timer  = new Stopwatch();
@@ -150,7 +150,7 @@ public class SpeedTestGW {
 
 
   public void SimplexRNDBench<TNum, TConv>(int dim, int maxAmount, string fileName)
-    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+    where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
     IFloatingPoint<TNum>
     where TConv : INumConvertor<TNum> {
     Stopwatch    timer  = new Stopwatch();

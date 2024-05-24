@@ -5,7 +5,7 @@ using AVLUtils;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv> where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -20,7 +20,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   {
     /// <summary>
     /// Comparer based on epsilon comparison.
-    /// Necessary for the internal storage
+    /// Necessary for internal storage
     /// </summary>
     internal class TimeComparer : IComparer<TNum>
     {

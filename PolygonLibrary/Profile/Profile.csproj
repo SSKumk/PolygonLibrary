@@ -9,18 +9,19 @@
 
     <ItemGroup>
         <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj" />
-        <ProjectReference Include="..\Tests\Tests.csproj" />
+<!--        <ProjectReference Include="..\Tests\Tests.csproj" />-->
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="_Store\**" />
         <Compile Remove="BentlyOttmannTests.cs" />
+        <Compile Remove="Benchmarks\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="DoubleDouble">
-            <HintPath>..\DoubleDouble.dll</HintPath>
-        </Reference>
+<!--        <Reference Include="DoubleDouble">-->
+<!--            <HintPath>..\DoubleDouble.dll</HintPath>-->
+<!--        </Reference>-->
         <Reference Include="MultiPrecision">
           <HintPath>..\MultiPrecision.dll</HintPath>
         </Reference>
@@ -28,5 +29,13 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Benchmarks\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Benchmarks\**" />
     </ItemGroup>
 </Project>

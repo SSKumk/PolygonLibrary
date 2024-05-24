@@ -7,7 +7,7 @@ using System.Numerics;
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
-  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -134,7 +134,7 @@ public partial class Geometry<TNum, TConv>
         {
           length ??= TNum.Sqrt(x * x + y * y);
 
-          return length.Value;
+          return length;
         }
     }
 
@@ -161,7 +161,7 @@ public partial class Geometry<TNum, TConv>
               polarAngle = -Tools.PI;
           }
 
-          return polarAngle.Value;
+          return polarAngle;
         }
     }
 #endregion

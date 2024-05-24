@@ -7,7 +7,7 @@ using CGLibrary.Toolkit;
 
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv> where TNum : class, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
@@ -65,13 +65,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public TNum Square {
       get
         {
-          if (!_square.HasValue) {
+          if (_square is null) {
             GenerateTriangleWeights();
           }
 
           Debug.Assert(_square != null, nameof(_square) + " != null");
 
-          return _square.Value;
+          return _square;
         }
     }
 #endregion
@@ -273,7 +273,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Debug.Assert
         (triangleWeights is not null, "ConvexPolygon.GenerateDataForRandomPoint: triangleWeights of given polygon is null!");
 
-      TNum s = rnd.NextPrecise() * _square.Value;
+      TNum s = rnd.NextPrecise() * _square;
       trInd = triangleWeights.BinarySearch(s, new Tools.DoubleComparer(Tools.Eps));
       if (trInd < 0) {
         trInd = ~trInd;

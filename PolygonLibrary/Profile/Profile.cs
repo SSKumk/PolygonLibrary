@@ -2,23 +2,40 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using DoubleDouble;
-using Tests.ToolsTests;
+using CGLibrary;
+// using DoubleDouble;
+// using Tests.ToolsTests;
 using MultiPrecision;
-using Tests;
+// using Tests;
 
 // using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 // using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-// using static Tests.ToolsTests.TestsPolytopes<MultiPrecision.MultiPrecision<Tests.N8>, Tests.MPConvertor>;
-using static CGLibrary.Geometry<MultiPrecision.MultiPrecision<Tests.N8>, Tests.MPConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<MultiPrecision.MultiPrecision<Tests.MultiPrecision.Pow2.N8>, Tests.MPConvertor>;
+using static CGLibrary.Geometry<MultiPrecision.MultiPrecision<MultiPrecision.Pow2.N8>, Profile.MPConvertor>;
 // using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 // using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 // using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
 namespace Profile;
+
+
+
+/// <summary>
+/// Interface for multi-precision conversions.
+/// </summary>
+public class MPConvertor : INumConvertor<MultiPrecision<Pow2.N8>> {
+
+  public static double             ToDouble(MultiPrecision<Pow2.N8> from) => (double)from;
+  public static MultiPrecision<Pow2.N8> FromDouble(double           from) => from;
+  public static int                ToInt(MultiPrecision<Pow2.N8>    from) => (int)from;
+  public static MultiPrecision<Pow2.N8> FromInt(int                 from) => from;
+  public static uint               ToUInt(MultiPrecision<Pow2.N8>   from) => (uint)from;
+  public static MultiPrecision<Pow2.N8> FromUInt(uint               from) => from;
+
+}
 
 class Program {
 
@@ -29,15 +46,15 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    // MultiPrecision<N8> x = MultiPrecision<N8>.Pow2(2);
+    // MultiPrecision<MultiPrecision.Pow2.N8> x = MultiPrecision<MultiPrecision.Pow2.N8>.Pow2(2);
     // //
     // var y  = x + x;
     // Console.WriteLine(y);
 
-    Vector a = Vector.Zero(3);
-    Vector b = Vector.Ones(3);
+    // Vector a = Vector.Zero(3);
+    // Vector b = Vector.Ones(3);
 
-    Console.WriteLine(a + b);
+    // Console.WriteLine(a + b);
 
     // int dim     = 3;
     // ConvexPolytop    polytop = ConvexPolytop.Sphere(dim, 2, 4, Vector.Zero(dim), 1);
@@ -93,10 +110,10 @@ class Program {
 
     // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(5, pathData);
 
-    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
+    SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-0.9-supG");
 
-    // solverLdg.Solve(true);
+    solverLdg.Solve(true);
   }
 
 }
