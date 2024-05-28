@@ -226,6 +226,21 @@ public partial class Geometry<TNum, TConv>
     }
 
     public int[] FVector => FL.Lattice.Select(lvl => lvl.Count).ToArray();
+
+    public TNum MinDistBtwVs() {
+      List<Vector> Vs      = VRep.ToList();
+      TNum         minDist = (Vs[0] - Vs[1]).Length;
+      for (int i = 0; i < Vs.Count; i++) {
+        for (int j = i + 1; j < Vs.Count; j++) {
+          TNum dist = (Vs[i] - Vs[j]).Length;
+          if (dist < minDist) {
+            minDist = dist;
+          }
+        }
+      }
+
+      return minDist;
+    }
 #endregion
 
     // todo Нужен ли GetHashCode()? Если да, то как его считать?

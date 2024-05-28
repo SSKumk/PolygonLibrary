@@ -567,6 +567,43 @@ public partial class Geometry<TNum, TConv>
 
       return new Matrix(r, c, res);
     }
+
+    public Vector TakeCol(int col) {
+      TNum[] res = new TNum[Rows];
+      for (int i = 0; i < Rows; i++) {
+        res[i] = this[i, col];
+        // res[i] = _m[i * Cols + col];
+      }
+
+      return new Vector(res);
+    }
+
+    public Matrix SubMatrix(int startRow, int startCol, int numRows, int numCols, Matrix subMatrix) {
+      if (numRows != subMatrix.Rows || numCols != subMatrix.Cols) {
+        throw new ArgumentException("Submatrix dimensions must match the specified region dimensions.");
+      }
+
+      TNum[] newElements = (TNum[])_m.Clone();
+
+      for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+          newElements[(startRow + i) * Cols + (startCol + j)] = subMatrix[i, j];
+        }
+      }
+
+      return new Matrix(Rows, Cols, newElements);
+    }
+
+    public Matrix Transpose() {
+      TNum[] transposedElements = new TNum[Cols * Rows];
+      for (int i = 0; i < Rows; i++) {
+        for (int j = 0; j < Cols; j++) {
+          transposedElements[j * Rows + i] = _m[i * Cols + j];
+        }
+      }
+
+      return new Matrix(Cols, Rows, transposedElements);
+    }
 #endregion
 
 #region Matrix factories
@@ -673,7 +710,8 @@ public partial class Geometry<TNum, TConv>
         for (j = 0; j < m; j++, k++) {
           if (i == j) {
             nv[k] = Tools.One;
-          } else {
+          }
+          else {
             nv[k] = Tools.Zero;
           }
         }

@@ -550,6 +550,25 @@ public partial class Geometry<TNum, TConv>
     /// <returns></returns>
     public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct(u, r); }
 
+    public Matrix OuterProduct(Vector other) {
+      TNum[,] result = new TNum[this.Dim, other.Dim];
+      for (int i = 0; i < this.Dim; i++) {
+        for (int j = 0; j < other.Dim; j++) {
+          result[i, j] = this[i] * other[j];
+        }
+      }
+
+      return new Matrix(result);
+    }
+
+    public Vector SubVector(int startIndex, int length) {
+      TNum[] subElements = new TNum[length];
+      Array.Copy(_v, startIndex, subElements, 0, length);
+
+      return new Vector(subElements);
+    }
+
+
     // /// <summary>
     // /// Calculates the determinant of the three 3D-vectors.
     // /// </summary>

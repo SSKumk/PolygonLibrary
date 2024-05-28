@@ -96,6 +96,15 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
+    public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
+      ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP);
+      ConvexPolytop? next = MinkowskiDiff.H2VGeometric(sum, predQ);
+
+      return next;
+
+    }
+
+
     /// <summary>
     /// Computes LDG 
     /// </summary>
