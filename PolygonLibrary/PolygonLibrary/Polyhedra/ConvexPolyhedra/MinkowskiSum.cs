@@ -536,7 +536,7 @@ public partial class Geometry<TNum, TConv>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to)
   {
     Vector newO = to.ProjectPoint(from.Origin);
-    LinearBasis newLB = new LinearBasis(to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.GetAsList()), false);
+    LinearBasis newLB = new LinearBasis(to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
 
 #if DEBUG
     LinearBasis.CheckCorrectness(newLB);

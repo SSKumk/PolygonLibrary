@@ -35,6 +35,12 @@ class Program
   {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+    LinearBasis lb = new LinearBasis(3,5);
+    lb.AddVectorToBasis(Vector.GenVector(5));
+    System.Console.WriteLine(lb[3]); 
+    System.Console.WriteLine(lb[3].Length);
+    LinearBasis.CheckCorrectness(lb);
+
     // Matrix A = new Matrix(new double[,] { { 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1 }, { 0, 0, 1, 0, 0 } });
 
     // A = A.Transpose();
@@ -47,7 +53,9 @@ class Program
     // Console.WriteLine(Q.TakeVector(0) * Q.TakeVector(2));
 
 
-    System.Console.WriteLine(LinearBasis.IsVectorBelongsToLinBasis(Vector.Ones(3).LiftUp(5, 0), new LinearBasis(3, 5)));
+    System.Console.WriteLine(LinearBasis.DoesVectorBelongToLinBasis(Vector.Ones(3).LiftUp(5, 0), new LinearBasis(3, 5)));
+
+
 
     //todo Посмотреть как ведёт себя QR на линейно-зависимых векторах!
 

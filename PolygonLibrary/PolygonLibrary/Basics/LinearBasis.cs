@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Orthonormal basis
   /// </summary>
-  public class LinearBasis : IEnumerable
+  public class LinearBasis : IEnumerable<Vector>
   {
 
     #region Data and Properties
@@ -79,22 +79,6 @@ public partial class Geometry<TNum, TConv>
     /// Gets the current basis of the linear space as a list of vectors.
     /// </summary>
     public Matrix? Basis { get; private set; }
-
-
-    /// <summary>
-    /// Get the basis as a list of vectors;
-    /// </summary>
-    /// <returns>The list of column-vectors.</returns>
-    public List<Vector> GetAsList()
-    {
-      List<Vector> Vs = new List<Vector>(SubSpaceDim);
-      foreach (Vector bvec in this)
-      {
-        Vs.Add(bvec);
-      }
-
-      return Vs;
-    }
     #endregion
 
     #region Functions
@@ -108,7 +92,7 @@ public partial class Geometry<TNum, TConv>
       return Q.TakeVector(linBasis.SubSpaceDim);
     }
 
-    public static bool IsVectorBelongsToLinBasis(Vector v, LinearBasis linBasis)
+    public static bool DoesVectorBelongToLinBasis(Vector v, LinearBasis linBasis)
     {
       Debug.Assert(v.Dim == linBasis.VecDim, "LinearBasis.IsVectorBelongsToLinBasis: The dimension of the vector must be equal to dimensions of basis vectors!");
       if (linBasis.IsFullDim) { return true; }
@@ -116,7 +100,7 @@ public partial class Geometry<TNum, TConv>
       Vector proj = Vector.Zero(v.Dim);
       foreach (Vector bvec in linBasis)
       {
-        proj += (proj * bvec) * bvec;
+        proj += (v * bvec) * bvec;
       }
 
       return proj.Equals(v);
@@ -132,6 +116,8 @@ public partial class Geometry<TNum, TConv>
     {
       if (linBasis.IsFullDim) { return Vector.Zero(v.Dim); }
       if (linBasis.IsEmpty) { return v.NormalizeZero(); }
+
+      throw new ArgumentException("", "");
 
       // (Matrix Q, Matrix R) = QRDecomposition.ByReflection(Matrix.hcat())
       return Vector.Zero(1);
@@ -360,6 +346,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     public IEnumerator GetEnumerator()
+    {
+      return (this as IEnumerable<Vector>).GetEnumerator();
+    }
+
+    IEnumerator<Vector> IEnumerable<Vector>.GetEnumerator()
     {
       List<Vector> Vs = new List<Vector>(SubSpaceDim);
       for (int i = 0; i < SubSpaceDim; i++)
