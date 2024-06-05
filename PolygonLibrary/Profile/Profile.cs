@@ -24,27 +24,30 @@ namespace Profile;
 
 using System;
 
-class Program {
+class Program
+{
 
   private static readonly string pathData =
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
 
 
-  static void Main(string[] args) {
+  static void Main(string[] args)
+  {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    Matrix A = new Matrix(new double[,] {{0,0,1,0,0}, { 0, 0, 0, 0, 1 },{0,0,1,0,0}});
+    // Matrix A = new Matrix(new double[,] { { 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1 }, { 0, 0, 1, 0, 0 } });
 
-    A              = A.Transpose();
-    (var Q, var R) = QRDecomposition.ByReflection(A);
-    Console.WriteLine($"A:\n{A}");
-    Console.WriteLine($"Q:\n{Q}");
-    Console.WriteLine($"R:\n{R}");
-    Console.WriteLine($"Q*R:\n{Q*R}");
-    Console.WriteLine((Q * R - A).Equals(Matrix.Zero(A.Rows,A.Cols)));
+    // A = A.Transpose();
+    // (var Q, var R) = QRDecomposition.ByReflection(A);
+    // Console.WriteLine($"A:\n{A}");
+    // Console.WriteLine($"Q:\n{Q}");
+    // Console.WriteLine($"R:\n{R}");
+    // Console.WriteLine($"Q*R:\n{Q * R}");
+    // Console.WriteLine((Q * R - A).Equals(Matrix.Zero(A.Rows, A.Cols)));
     // Console.WriteLine(Q.TakeVector(0) * Q.TakeVector(2));
 
 
+    System.Console.WriteLine(LinearBasis.IsVectorBelongsToLinBasis(Vector.Ones(3).LiftUp(5, 0), new LinearBasis(3, 5)));
 
     //todo Посмотреть как ведёт себя QR на линейно-зависимых векторах!
 

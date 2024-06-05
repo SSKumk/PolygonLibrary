@@ -9,9 +9,11 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum> {
+  where TConv : INumConvertor<TNum>
+{
 
-  public class MinkowskiSum {
+  public class MinkowskiSum
+  {
 
     /// <summary>
     /// The Minkowski sum of two sets of points. S1 (+) S2 = {p | p = P + Q, ∀P ∈ S1 and ∀Q ∈ S2}
@@ -19,9 +21,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="A">The first set of points.</param>
     /// <param name="B">The second set of points.</param>
     /// <returns>The set of points represented the Minkowski sum of two sets of points.</returns>
-    public static HashSet<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B) {
+    public static HashSet<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B)
+    {
       HashSet<Vector> AB = new HashSet<Vector>();
-      foreach (Vector a in A) {
+      foreach (Vector a in A)
+      {
         AB.UnionWith(Shift(B, a));
       }
 
@@ -337,19 +341,27 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// Returns a convex polytop defined by face lattice or HRep.
     /// </returns>
-    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool isOnlyHRep = false) {
+    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool isOnlyHRep = false)
+    {
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
-      LinearBasis linBasis = new LinearBasis(Matrix.hcat(P.FL.Top.AffBasis.LinBasis.Basis, Q.FL.Top.AffBasis.LinBasis.Basis));
-      AffineBasis affinePQ = new AffineBasis(P.FL.Top.AffBasis.Origin + Q.FL.Top.AffBasis.Origin, linBasis);
-      int         dim      = affinePQ.SubSpaceDim;
 
-      if (dim == 0) { // Случай точки обработаем отдельно
-        if (isOnlyHRep) {
+      // todo !!!!!
+      throw new NotImplementedException("TODO");
+      LinearBasis linBasis = new LinearBasis(3);
+      // LinearBasis linBasis = new LinearBasis(Matrix.hcat(P.FL.Top.AffBasis.LinBasis.Basis, Q.FL.Top.AffBasis.LinBasis.Basis));
+      AffineBasis affinePQ = new AffineBasis(P.FL.Top.AffBasis.Origin + Q.FL.Top.AffBasis.Origin, linBasis);
+      int dim = affinePQ.SubSpaceDim;
+
+      if (dim == 0)
+      { // Случай точки обработаем отдельно
+        if (isOnlyHRep)
+        {
           List<HyperPlane> HPs = new List<HyperPlane>();
 
           int vecDim = affinePQ.Origin.Dim;
-          for (int i = 0; i < vecDim; i++) {
+          for (int i = 0; i < vecDim; i++)
+          {
             Vector makeOrth = Vector.MakeOrth(vecDim, i + 1);
             HPs.Add(new HyperPlane(makeOrth, affinePQ.Origin[i]));
             HPs.Add(new HyperPlane(-makeOrth, -affinePQ.Origin[i]));
@@ -367,26 +379,32 @@ public partial class Geometry<TNum, TConv>
       Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
       // Сама решётка. Где на i-ом уровне находится множество всех граней соответствующей размерности.
       List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
-      for (int i = 0; i <= dim; i++) {
+      for (int i = 0; i <= dim; i++)
+      {
         FL.Add(new HashSet<FLNode>());
       }
 
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.FL.Top.InnerPoint + Q.FL.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
+      FLNode PQ = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.FL.Top, Q.FL.Top));
       xyToz.Add((P.FL.Top, Q.FL.Top), PQ);
       FL[^1].Add(PQ);
 
       bool doNext = true;
-      for (int d = dim - 1; d >= 0 && doNext; d--) {
-        foreach (FLNode z in FL[d + 1]) {
+      for (int d = dim - 1; d >= 0 && doNext; d--)
+      {
+        foreach (FLNode z in FL[d + 1])
+        {
           // Будем описывать подграни по очереди для каждой грани с предыдущего уровня.
           (FLNode x, FLNode y) = zTo_xy[z];
           // Аффинное пространство грани z (F(+)G в терминах Лемм)
-          AffineBasis zSpace          = z.AffBasis;
-          Vector      innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
+          // todo !!!!!
+          throw new NotImplementedException("TODO");
+          AffineBasis zSpace = new AffineBasis(3);
+          // AffineBasis zSpace = z.AffBasis;
+          Vector innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
 
           // Собираем все подграни в соответствующих решётках,
           // сортируя по убыванию размерности для удобства перебора.
@@ -394,20 +412,27 @@ public partial class Geometry<TNum, TConv>
           IEnumerable<FLNode> X = x.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
           IEnumerable<FLNode> Y = y.AllNonStrictSub.OrderByDescending(node => node.PolytopDim);
 
-          foreach (FLNode xi in X) {
-            foreach (FLNode yj in Y) {
+          foreach (FLNode xi in X)
+          {
+            foreach (FLNode yj in Y)
+            {
               // -1) Смотрим потенциально набираем ли мы нужную размерность
               if (xi.AffBasis.SubSpaceDim + yj.AffBasis.SubSpaceDim < z.PolytopDim - 1) { break; }
 
               // Берём очередного кандидата.
-              LinearBasis candLinBasis = new LinearBasis(Matrix.hcat(xi.AffBasis.LinBasis.Basis, yj.AffBasis.LinBasis.Basis));
-              AffineBasis candAffBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin, candLinBasis);
+              // todo !!!!!
+              throw new NotImplementedException("TODO");
+              LinearBasis linBasis1 = new LinearBasis(3);
+              // LinearBasis candLinBasis = new LinearBasis(Matrix.hcat(xi.AffBasis.LinBasis.Basis, yj.AffBasis.LinBasis.Basis));
+              AffineBasis candAffBasis = new AffineBasis(3);
+              // AffineBasis candAffBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin, candLinBasis);
 
               // 0) dim(xi (+) yj) == dim(z) - 1
               if (candAffBasis.SubSpaceDim != d) { continue; }
 
               { // 0+) Если такая пара граней уже встречалась, то строить её не надо, а надо установить связи
-                if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
+                if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj))
+                {
                   // Устанавливаем связи
                   z.AddSub(node_xiyj);
                   node_xiyj.AddSuper(z);
@@ -438,14 +463,16 @@ public partial class Geometry<TNum, TConv>
               // F = x >= f' > f = xi
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
-              foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+              foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint))
+              {
                 xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
               }
 
               // G = y >= g' > g = yj
               // InnerPoint(g') + InnerPoint(f) \in A^-
               bool yCheck = true;
-              foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
+              foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint))
+              {
                 yCheck = yCheck && A.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
               }
 
@@ -476,7 +503,8 @@ public partial class Geometry<TNum, TConv>
         if (isOnlyHRep) { doNext = false; }
       }
 
-      if (isOnlyHRep) {
+      if (isOnlyHRep)
+      {
         return ConvexPolytop.AsHPolytop
           (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
       }
@@ -505,8 +533,9 @@ public partial class Geometry<TNum, TConv>
   /// <param name="from">Basis to recalculate.</param>
   /// <param name="to">Basis to which 'from' should be recalculated.</param>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
-  private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
-    Vector      newO  = to.ProjectPoint(from.Origin);
+  private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to)
+  {
+    Vector newO = to.ProjectPoint(from.Origin);
     LinearBasis newLB = new LinearBasis(to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.GetAsList()), false);
 
 #if DEBUG
