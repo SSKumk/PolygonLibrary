@@ -28,7 +28,7 @@ public class LinearSpaceTests {
     Assert.That(added3, Is.False, "The addition of the linear dependent vector should not be successful.");
     Assert.That(added4, Is.False, "The addition of the zero vector should not be successful.");
 
-    Assert.That(basis.SpaceDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
+    Assert.That(basis.SubSpaceDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
     Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty after adding vectors.");
 
     Assert.That(basis.IsFullDim, Is.True, "The basis should have full dimension after adding two linearly independent vectors.");
@@ -53,7 +53,7 @@ public class LinearSpaceTests {
 
     Assert.That
       (
-       basis.SpaceDim
+       basis.SubSpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
@@ -80,7 +80,7 @@ public class AffineSpaceTests {
   /// </summary>
   /// <param name="basis">Basis to be checked</param>
   private static void CheckVectorsLength(AffineBasis basis) {
-    foreach (Vector bvec in basis.Basis) {
+    foreach (Vector bvec in basis.LinBasis) {
       Assert.That(Tools.CMP(bvec.Length, 1), Is.EqualTo(0), "All vectors in the basis must have an unit length.");
     }
   }
@@ -95,7 +95,7 @@ public class AffineSpaceTests {
     AffineBasis basis = new AffineBasis(origin);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
-    Assert.That(basis.Basis, Is.Empty, "The linear basis associated with the affine basis should be initially empty.");
+    Assert.That(basis.LinBasis.IsEmpty, "The linear basis associated with the affine basis should be initially empty.");
     Assert.That(basis.IsFullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
     Assert.That(basis.IsEmpty, Is.True, "The affine basis should be empty if no vectors are added.");
   }
@@ -121,10 +121,10 @@ public class AffineSpaceTests {
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
-    Assert.That(basis.LinearBasis.Equals(new LinearBasis(3)));
+    Assert.That(basis.LinBasis.Equals(new LinearBasis(3)));
     Assert.That
       (
-       basis.SpaceDim
+       basis.SubSpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
@@ -164,7 +164,7 @@ public class AffineSpaceTests {
 
     Assert.That
       (
-       basis.SpaceDim
+       basis.SubSpaceDim
      , Is.EqualTo(3)
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
@@ -196,7 +196,7 @@ public class AffineSpaceTests {
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
     Assert.That(result0, Is.False, "The zero vector should not be added to the linear basis associated with the affine basis.");
-    Assert.That(basis.SpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
+    Assert.That(basis.SubSpaceDim, Is.EqualTo(3), "The linear basis associated with the affine basis should have one more vector.");
     Assert.That
       (basis.IsFullDim, Is.True, "The affine basis should be full dimension if the current basis vectors span a linear space.");
     Assert.That(basis.IsEmpty, Is.False, "The affine basis should not be empty if input non zero vectors are provided.");
@@ -275,7 +275,7 @@ public class AffineSpaceTests {
         new Vector(new double[] { 1, 1 }), new Vector(new double[] { 0, -2 }), new Vector(new double[] { 6, -2 })
       };
 
-    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
+    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis,false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));

@@ -229,7 +229,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The dimension of the associated polytop.
     /// </summary>
-    public int PolytopDim => AffBasis.SpaceDim;
+    public int PolytopDim => AffBasis.SubSpaceDim;
 #endregion
 
 #region Constructors

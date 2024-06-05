@@ -294,7 +294,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     private ConvexPolytop(FaceLattice FL, ConvexPolytopForm form) {
-      SpaceDim = FL.Top.AffBasis.SpaceDim;
+      SpaceDim = FL.Top.AffBasis.SubSpaceDim;
       _FL      = FL;
       switch (form) {
         case ConvexPolytopForm.FL: break; // всё есть
@@ -1111,7 +1111,7 @@ public partial class Geometry<TNum, TConv>
           int    i = 0;
           do {
             i++;
-            v = Vector.OrthonormalizeAgainstBasis(Vector.MakeOrth(d, i), edgeLinSpace.Basis);
+            v = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(d, i), edgeLinSpace);
           } while (v.IsZero && i <= d);
           Debug.Assert
             (i <= d, $"ConvexPolytop.HRepToVRep_Geometric (dim = {d}): Can't find vector e! That orthogonal to the HzLinSpace.");

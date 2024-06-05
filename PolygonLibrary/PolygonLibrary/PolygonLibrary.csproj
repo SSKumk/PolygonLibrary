@@ -28,6 +28,7 @@
         <Compile Include="LinearDifferentialGames\GameData.cs" />
         <Compile Include="LinearDifferentialGames\SolverLDG.cs" />
         <Compile Include="LinearDifferentialGames\StableBridge.cs" />
+        <Compile Include="LinearMath\QRDecomposition.cs" />
         <Compile Include="LinearMath\SimplexMethod.cs" />
         <Compile Include="Polygons\BasicPolygon.cs" />
         <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs" />

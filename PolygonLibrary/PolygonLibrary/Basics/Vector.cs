@@ -64,7 +64,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The length field
     /// </summary>
-    private TNum? length = null;
+    private TNum? _length = null;
 
     /// <summary>
     /// Getter
@@ -73,9 +73,9 @@ public partial class Geometry<TNum, TConv>
     public TNum Length {
       get
         {
-          length ??= TNum.Sqrt(Length2);
+          _length ??= TNum.Sqrt(Length2);
 
-          return length.Value;
+          return _length.Value;
         }
     }
 
@@ -245,7 +245,7 @@ public partial class Geometry<TNum, TConv>
         res._v[i] = _v[i] / Length;
       }
 
-      res.length = TNum.MultiplicativeIdentity;
+      res._length = TNum.MultiplicativeIdentity;
 
       return res;
     }
@@ -267,7 +267,7 @@ public partial class Geometry<TNum, TConv>
         res._v[i] = _v[i] / Length;
       }
 
-      res.length = TNum.MultiplicativeIdentity;
+      res._length = TNum.MultiplicativeIdentity;
 
       return res;
     }
@@ -414,109 +414,109 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Functions related to Vectors
-    /// <summary>
-    /// Orthonormalizes the given vector against the given basis.
-    /// </summary>
-    /// <param name="v">The input vector to orthonormalize.</param>
-    /// <param name="Basis">The basis to orthonormalize against.</param>
-    /// <returns>The resulting orthonormalized vector. If the basis is empty returns normalized vector.</returns>
-    public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
-      TNum[] res = v.GetAsArray();
-      foreach (Vector bvec in Basis) {
-        Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
+    // /// <summary>
+    // /// Orthonormalizes the given vector against the given basis. It uses Gram-Schmidt procedure. Numerically unstable.
+    // /// </summary>
+    // /// <param name="v">The input vector to orthonormalize.</param>
+    // /// <param name="Basis">The basis to orthonormalize against.</param>
+    // /// <returns>The resulting orthonormalized vector. If the basis is empty, returns normalized vector.</returns>
+    // public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
+    //   TNum[] res = v.GetAsArray();
+    //   foreach (Vector bvec in Basis) {
+    //     Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
+    //
+    //     // Напишем явно!
+    //     // v -= (bvec * v) * bvec;
+    //
+    //     TNum dot = bvec * v;
+    //     for (int i = 0; i < res.Length; i++) {
+    //       res[i] -= dot * bvec[i];
+    //     }
+    //   }
+    //
+    //   return new Vector(res).NormalizeZero();
+    //   // return v.NormalizeZero();
+    // }
 
-        // Напишем явно!
-        // v -= (bvec * v) * bvec;
+    // /// <summary>
+    // /// Orthonormalizes the given vector against given two bases. Order of bases is important.
+    // /// </summary>
+    // /// <param name="v">The input vector to orthonormalize.</param>
+    // /// <param name="Basis1">The first basis to orthonormalize against.</param>
+    // /// <param name="Basis2">The second basis to orthonormalize against.</param>
+    // /// <returns></returns>
+    // public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
+    //   return OrthonormalizeAgainstBasis(OrthonormalizeAgainstBasis(v, Basis1), Basis2);
+    // }
+    //
+    // /// <summary>
+    // /// Orthonormalizes the given collection of vectors against the given basis.
+    // /// </summary>
+    // /// <param name="Vs">The input collection of vectors to orthonormalize.</param>
+    // /// <param name="Basis">The basis to orthonormalize against.</param>
+    // /// <returns>The resulting collection of orthonormalized vectors. If the basis is empty returns normalized vectors.</returns>
+    // public static IEnumerable<Vector> OrthonormalizeAgainstBasis(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
+    //   List<Vector> res = new List<Vector>();
+    //
+    //   foreach (Vector v in Vs) {
+    //     res.Add(OrthonormalizeAgainstBasis(v, Basis, res));
+    //   }
+    //
+    //   return res;
+    // }
 
-        TNum dot = bvec * v;
-        for (int i = 0; i < res.Length; i++) {
-          res[i] -= dot * bvec[i];
-        }
-      }
-
-      return new Vector(res).NormalizeZero();
-      // return v.NormalizeZero();
-    }
-
-    /// <summary>
-    /// Orthonormalizes the given vector against given two bases. Order of bases is important.
-    /// </summary>
-    /// <param name="v">The input vector to orthonormalize.</param>
-    /// <param name="Basis1">The first basis to orthonormalize against.</param>
-    /// <param name="Basis2">The second basis to orthonormalize against.</param>
-    /// <returns></returns>
-    public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
-      return OrthonormalizeAgainstBasis(OrthonormalizeAgainstBasis(v, Basis1), Basis2);
-    }
-
-    /// <summary>
-    /// Orthonormalizes the given collection of vectors against the given basis.
-    /// </summary>
-    /// <param name="Vs">The input collection of vectors to orthonormalize.</param>
-    /// <param name="Basis">The basis to orthonormalize against.</param>
-    /// <returns>The resulting collection of orthonormalized vectors. If the basis is empty returns normalized vectors.</returns>
-    public static IEnumerable<Vector> OrthonormalizeAgainstBasis(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
-      List<Vector> res = new List<Vector>();
-
-      foreach (Vector v in Vs) {
-        res.Add(OrthonormalizeAgainstBasis(v, Basis, res));
-      }
-
-      return res;
-    }
-
-    /// <summary>
-    /// Computes an orthonormal system from a given set of vectors using the Gram-Schmidt algorithm.
-    /// </summary>
-    /// <param name="V">An collection of vectors to use in the orthonormalizing process.</param>
-    /// <returns>An orthonormal system of less or equal dimension than the input vectors.</returns>
-    public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
-#if DEBUG
-      if (!V.Any()) {
-        throw new ArgumentException($"Set of vectors {V} must have at least one element!");
-      }
-
-      if (V.First().IsZero) {
-        throw new ArgumentException($"The first vector from {V} can't be Zero!");
-      }
-#endif
-      return GramSchmidtMain(new[] { V.First().Normalize() }, V);
-    }
-
-    /// <summary>
-    /// Computes an orthonormal system for an union of orthonormal system and set of vectors using the Gram-Schmidt algorithm.
-    /// </summary>
-    /// <param name="Orthonormal">The collection of orthonormal vectors.</param>
-    /// <param name="V">The collection of vectors.</param>
-    /// <returns>A list of orthonormal vectors.</returns>
-    public static List<Vector> GramSchmidt(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
-      return GramSchmidtMain(Orthonormal.ToList(), V);
-    }
-
-    /// <summary>
-    /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
-    /// </summary>
-    /// <param name="BasisInit">A collection of vectors forming the initial basis.</param>
-    /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
-    /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
-    private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
-      int          dim   = V.First().Dim;
-      List<Vector> Basis = BasisInit.ToList();
-
-      foreach (Vector v in V) {
-        Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
-
-        if (!conceivable.IsZero) {
-          Basis.Add(conceivable);
-        }
-
-        if (Basis.Count == dim) { //We found Basis
-          break;
-        }
-      }
-
-      return Basis;
-    }
+//     /// <summary>
+//     /// Computes an orthonormal system from a given set of vectors using the Gram-Schmidt algorithm.
+//     /// </summary>
+//     /// <param name="V">An collection of vectors to use in the orthonormalizing process.</param>
+//     /// <returns>An orthonormal system of less or equal dimension than the input vectors.</returns>
+//     public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
+// #if DEBUG
+//       if (!V.Any()) {
+//         throw new ArgumentException($"Set of vectors {V} must have at least one element!");
+//       }
+//
+//       if (V.First().IsZero) {
+//         throw new ArgumentException($"The first vector from {V} can't be Zero!");
+//       }
+// #endif
+//       return GramSchmidtMain(new[] { V.First().Normalize() }, V);
+//     }
+//
+//     /// <summary>
+//     /// Computes an orthonormal system for an union of orthonormal system and set of vectors using the Gram-Schmidt algorithm.
+//     /// </summary>
+//     /// <param name="Orthonormal">The collection of orthonormal vectors.</param>
+//     /// <param name="V">The collection of vectors.</param>
+//     /// <returns>A list of orthonormal vectors.</returns>
+//     public static List<Vector> GramSchmidt(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
+//       return GramSchmidtMain(Orthonormal.ToList(), V);
+//     }
+//
+//     /// <summary>
+//     /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
+//     /// </summary>
+//     /// <param name="BasisInit">A collection of vectors forming the initial basis.</param>
+//     /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
+//     /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
+//     private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
+//       int          dim   = V.First().Dim;
+//       List<Vector> Basis = BasisInit.ToList();
+//
+//       foreach (Vector v in V) {
+//         Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
+//
+//         if (!conceivable.IsZero) {
+//           Basis.Add(conceivable);
+//         }
+//
+//         if (Basis.Count == dim) { //We found Basis
+//           break;
+//         }
+//       }
+//
+//       return Basis;
+//     }
 
     /// <summary>
     /// The cross product of two 3D-vectors.
@@ -561,23 +561,16 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(result);
     }
 
-    public Vector SubVector(int startIndex, int length) {
+    public Vector SubVector(int startIndex, int endIndex) {
+      Debug.Assert(startIndex <= endIndex, "Vector.SubVector: start index must be less or equal than end index!");
+      Debug.Assert(startIndex >= 0, "Vector.SubVector: start index must be non negative.");
+      Debug.Assert(endIndex < Dim, "Vector.SubVector: end index must be lesser than dimension of the vector.");
+      int    length      = endIndex - startIndex + 1;
       TNum[] subElements = new TNum[length];
       Array.Copy(_v, startIndex, subElements, 0, length);
 
       return new Vector(subElements);
     }
-
-
-    // /// <summary>
-    // /// Calculates the determinant of the three 3D-vectors.
-    // /// </summary>
-    // /// <param name="v">The first vector.</param>
-    // /// <param name="u">The second vector.</param>
-    // /// <param name="r">The third vector.</param>
-    // /// <returns></returns>
-    // public static TNum TripleProduct(Vector v, Vector u, Vector r)
-    //   => v[0] * (u[1] * r[2] - u[2] * r[1]) - v[1] * (u[0] * r[2] - u[2] * r[0]) + v[2] * (u[0] * r[1] - u[1] * r[0]);
 #endregion
 
 #region Overrides
@@ -717,7 +710,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="pos">The position of '1'.</param>
     /// <returns>The i-orth of given dimension.</returns>
     public static Vector MakeOrth(int dim, int pos) {
-      Debug.Assert(pos > 0, "Vector.MakeOrth: Position should be greater than 0.");
+      Debug.Assert(pos > 0 && pos <= dim, "Vector.MakeOrth: Position should be greater than 0 and less or equal than dimension of the vector.");
       TNum[] orth = new TNum[dim];
       orth[pos - 1] = TNum.MultiplicativeIdentity;
 

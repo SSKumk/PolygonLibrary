@@ -25,7 +25,7 @@ public class HyperPlaneTests {
 
     Assert.That
       (
-       hyperplane.ABasis.LinearBasis.Equals(new LinearBasis(vectors, false))
+       hyperplane.ABasis.LinBasis.Equals(new LinearBasis(vectors, false))
      , "ConstructorWithAffineBasisTest: The linear basis must be the same!"
       );
     AffineBasis.CheckCorrectness(hyperplane.ABasis);

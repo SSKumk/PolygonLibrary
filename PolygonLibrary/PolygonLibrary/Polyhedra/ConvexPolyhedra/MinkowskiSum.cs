@@ -83,7 +83,7 @@ public partial class Geometry<TNum, TConv>
     //   // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
     //   AffineBasis affinePQ = AffineBasis.AsVectors
     //     (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
-    //   int dim = affinePQ.SpaceDim;
+    //   int dim = affinePQ.SubSpaceDim;
     //
     //   if (dim == 0) { // Случай точки обработаем отдельно
     //     return new FaceLattice(P.Top.InnerPoint + Q.Top.InnerPoint);
@@ -124,14 +124,14 @@ public partial class Geometry<TNum, TConv>
     //       foreach (FLNode xi in X) {
     //         foreach (FLNode yj in Y) {
     //           // -1) Смотрим потенциально набираем ли мы нужную размерность
-    //           if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.PolytopDim - 1) { break; }
+    //           if (xi.AffBasis.SubSpaceDim + yj.AffBasis.SubSpaceDim < z.PolytopDim - 1) { break; }
     //
     //           // Берём очередного кандидата.
     //           AffineBasis candBasis = AffineBasis.AsVectors
     //             (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
     //
     //           // 0) dim(xi (+) yj) == dim(z) - 1
-    //           if (candBasis.SpaceDim != d) { continue; }
+    //           if (candBasis.SubSpaceDim != d) { continue; }
     //
     //           { // 0+) Если такая пара граней уже встречалась, то строить её не надо, а надо установить связи
     //             if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
@@ -159,8 +159,8 @@ public partial class Geometry<TNum, TConv>
     //           A.OrientNormal(innerInAffine_z, false);
     //
     //           // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-    //           IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SpaceDim + 1));
-    //           IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SpaceDim + 1));
+    //           IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+    //           IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
     //
     //           // F = x >= f' > f = xi
     //           // InnerPoint(f') + InnerPoint(g) \in A^-
@@ -240,7 +240,7 @@ public partial class Geometry<TNum, TConv>
     //   // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
     //   AffineBasis affinePQ = AffineBasis.AsVectors
     //     (P.Top.AffBasis.Origin + Q.Top.AffBasis.Origin, P.Top.AffBasis.Basis.Concat(Q.Top.AffBasis.Basis));
-    //   int dim = affinePQ.SpaceDim;
+    //   int dim = affinePQ.SubSpaceDim;
     //
     //   if (dim == 0) { // Случай точки обработаем отдельно
     //     List<HyperPlane> HPs = new List<HyperPlane>();
@@ -271,14 +271,14 @@ public partial class Geometry<TNum, TConv>
     //   foreach (FLNode xi in X) {
     //     foreach (FLNode yj in Y) {
     //       // -1) Смотрим потенциально набираем ли мы нужную размерность
-    //       if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < PQ.PolytopDim - 1) { break; }
+    //       if (xi.AffBasis.SubSpaceDim + yj.AffBasis.SubSpaceDim < PQ.PolytopDim - 1) { break; }
     //
     //       // Берём очередного кандидата.
     //       AffineBasis candBasis = AffineBasis.AsVectors
     //         (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
     //
     //       // 0) dim(xi (+) yj) == dim(PQ) - 1
-    //       if (candBasis.SpaceDim != PQ.AffBasis.SpaceDim - 1) { continue; }
+    //       if (candBasis.SubSpaceDim != PQ.AffBasis.SubSpaceDim - 1) { continue; }
     //
     //       // 1) Lemma 3.
     //       // Живём в пространстве x (+) y == PQ, а потенциальная гипергрань xi (+) yj имеет на 1 размерность меньше.
@@ -295,8 +295,8 @@ public partial class Geometry<TNum, TConv>
     //       A_hp.OrientNormal(innerInAffine_z, false);
     //
     //       // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно.
-    //       IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SpaceDim + 1));
-    //       IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SpaceDim + 1));
+    //       IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+    //       IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
     //
     //       // F = x >= f' > f = xi
     //       // InnerPoint(f') + InnerPoint(g) \in A^-
@@ -340,9 +340,9 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool isOnlyHRep = false) {
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
-      AffineBasis affinePQ = AffineBasis.AsVectors
-        (P.FL.Top.AffBasis.Origin + Q.FL.Top.AffBasis.Origin, P.FL.Top.AffBasis.Basis.Concat(Q.FL.Top.AffBasis.Basis));
-      int dim = affinePQ.SpaceDim;
+      LinearBasis linBasis = new LinearBasis(Matrix.hcat(P.FL.Top.AffBasis.LinBasis.Basis, Q.FL.Top.AffBasis.LinBasis.Basis));
+      AffineBasis affinePQ = new AffineBasis(P.FL.Top.AffBasis.Origin + Q.FL.Top.AffBasis.Origin, linBasis);
+      int         dim      = affinePQ.SubSpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
         if (isOnlyHRep) {
@@ -397,14 +397,14 @@ public partial class Geometry<TNum, TConv>
           foreach (FLNode xi in X) {
             foreach (FLNode yj in Y) {
               // -1) Смотрим потенциально набираем ли мы нужную размерность
-              if (xi.AffBasis.SpaceDim + yj.AffBasis.SpaceDim < z.PolytopDim - 1) { break; }
+              if (xi.AffBasis.SubSpaceDim + yj.AffBasis.SubSpaceDim < z.PolytopDim - 1) { break; }
 
               // Берём очередного кандидата.
-              AffineBasis candBasis = AffineBasis.AsVectors
-                (xi.AffBasis.Origin + yj.AffBasis.Origin, xi.AffBasis.Basis.Concat(yj.AffBasis.Basis));
+              LinearBasis candLinBasis = new LinearBasis(Matrix.hcat(xi.AffBasis.LinBasis.Basis, yj.AffBasis.LinBasis.Basis));
+              AffineBasis candAffBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin, candLinBasis);
 
               // 0) dim(xi (+) yj) == dim(z) - 1
-              if (candBasis.SpaceDim != d) { continue; }
+              if (candAffBasis.SubSpaceDim != d) { continue; }
 
               { // 0+) Если такая пара граней уже встречалась, то строить её не надо, а надо установить связи
                 if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
@@ -421,7 +421,7 @@ public partial class Geometry<TNum, TConv>
               // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
 
               // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
-              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candBasis, zSpace));
+              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candAffBasis, zSpace));
 
               // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость.
               if (A.Contains(innerInAffine_z)) { continue; }
@@ -432,8 +432,8 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false);
 
               // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-              IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SpaceDim + 1));
-              IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SpaceDim + 1));
+              IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
               // F = x >= f' > f = xi
               // InnerPoint(f') + InnerPoint(g) \in A^-
@@ -457,7 +457,7 @@ public partial class Geometry<TNum, TConv>
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
               // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new VectorHashSet { newInner }, newInner, candBasis);
+              FLNode node = new FLNode(new VectorHashSet { newInner }, newInner, candAffBasis);
 
               // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
               FL[d].Add(node); // Добавляем узел в решётку
@@ -477,7 +477,8 @@ public partial class Geometry<TNum, TConv>
       }
 
       if (isOnlyHRep) {
-        return ConvexPolytop.AsHPolytop(FL[dim-1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
+        return ConvexPolytop.AsHPolytop
+          (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
       }
 
       Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
@@ -504,9 +505,9 @@ public partial class Geometry<TNum, TConv>
   /// <param name="from">Basis to recalculate.</param>
   /// <param name="to">Basis to which 'from' should be recalculated.</param>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
-  public static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
+  private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
     Vector      newO  = to.ProjectPoint(from.Origin);
-    LinearBasis newLB = new LinearBasis(to.LinearBasis.ProjectVectors(from.Basis), false);
+    LinearBasis newLB = new LinearBasis(to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.GetAsList()), false);
 
 #if DEBUG
     LinearBasis.CheckCorrectness(newLB);

@@ -582,9 +582,9 @@ public class GW_Tests {
 
     AffineBasis ABDbasis = new AffineBasis(new List<Vector>() { S[2], S[0], S[4] });
 
-    Vector BC = Vector.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.Basis);
-    Vector BX = Vector.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.Basis);
-    Vector BF = Vector.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.Basis);
+    Vector BC = LinearBasis.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.LinBasis);
+    Vector BX = LinearBasis.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.LinBasis);
+    Vector BF = LinearBasis.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.LinBasis);
 
     ddouble angleCBX = ddouble.Acos(BC * BX);
     ddouble angleCBF = ddouble.Acos(BC * BF);

@@ -36,16 +36,18 @@ public partial class Geometry<TNum, TConv>
         {
           if (_affineBasis is null) {
             int         spaceDim = Origin.Dim;
-            LinearBasis lBasis   = new LinearBasis();
-            lBasis.AddVectorToBasis(Normal);
+            LinearBasis lBasis   = new LinearBasis(Normal);
 
             for (int i = 1; i <= spaceDim; i++) {
               Vector orth = Vector.MakeOrth(spaceDim, i);
               lBasis.AddVectorToBasis(orth);
             }
 
-            // todo Проверить, надо ли тут ортогонализировать!
-            _affineBasis = AffineBasis.AsVectors(Origin, lBasis.Basis.GetRange(1, lBasis.SpaceDim - 1), false);
+            // aff = (origin, lBasis(:, 1:))
+            LinearBasis linBasis = new LinearBasis
+              (lBasis.Basis!.TakeSubMatrix(null, Enumerable.Range(1, lBasis.SubSpaceDim - 1).ToArray()));
+            _affineBasis = new AffineBasis(Origin, linBasis);
+            CheckCorrectness(this);
           }
 
           return _affineBasis;
@@ -61,20 +63,18 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_normal is null) {
-            Debug.Assert(_affineBasis != null, nameof(_affineBasis) + " != null");
+            Debug.Assert(_affineBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
             int spaceDim = Origin.Dim;
 
 
-            for (int i = 1; i <= spaceDim; i++) {
-              Vector orth = Vector.MakeOrth(spaceDim, i);
-              Vector n    = Vector.OrthonormalizeAgainstBasis(orth, _affineBasis.Basis);
-
-              if (!n.IsZero) {
-                _normal = n;
-
-                break;
-              }
-            }
+            int    i = 0;
+            Vector n;
+            do {
+              i++;
+              n = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), _affineBasis.LinBasis);
+            } while (n.IsZero);
+            _normal = n;
+#if DEBUG
             Debug.Assert
               (
                _normal is not null
@@ -85,6 +85,8 @@ public partial class Geometry<TNum, TConv>
                !_normal.IsZero
              , "HyperPlane: Computation of the normal on the basis of the affine basis of the plane gives zero vector!"
               );
+            CheckCorrectness(this);
+#endif
           }
 
           return _normal;
@@ -118,6 +120,11 @@ public partial class Geometry<TNum, TConv>
       Origin      = origin;
       _normal     = normal.Normalize();
       SubSpaceDim = Origin.Dim - 1;
+
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 
     /// <summary>
@@ -131,6 +138,11 @@ public partial class Geometry<TNum, TConv>
       SubSpaceDim   = normal.Dim - 1;
       _constantTerm = constant / lengthN;
       Origin        = new Vector(Normal * constant);
+
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 
     /// <summary>
@@ -144,8 +156,8 @@ public partial class Geometry<TNum, TConv>
     public HyperPlane(AffineBasis affineBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
-         affineBasis.SpaceDim == affineBasis.Origin.Dim - 1
-       , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SpaceDim}"
+         affineBasis.SubSpaceDim == affineBasis.Origin.Dim - 1
+       , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SubSpaceDim}"
         );
 
       Origin       = affineBasis.Origin;
@@ -155,6 +167,11 @@ public partial class Geometry<TNum, TConv>
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
       }
+
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 #endregion
 
@@ -289,6 +306,15 @@ public partial class Geometry<TNum, TConv>
       }
 
       return Tools.EQ(this.ConstantTerm, other.ConstantTerm) && this.Normal == other.Normal;
+    }
+
+    private static void CheckCorrectness(HyperPlane hp) {
+      AffineBasis.CheckCorrectness(hp.ABasis);
+      foreach (Vector bvec in hp.ABasis.LinBasis) {
+        if (Tools.NE(hp.Normal * bvec)) {
+          throw new ArgumentException("Normal is not orthogonal to affine basis of hyperplane!");
+        }
+      }
     }
 
   }

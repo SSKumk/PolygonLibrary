@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +15,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents an affine basis.
   /// </summary>
-  public class AffineBasis {
+  public class AffineBasis : IEnumerable {
 
 #region Data and Properties
     /// <summary>
@@ -30,33 +31,29 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// <c>True</c> if this affine basis is full dimension.
     /// </summary>
-    public bool IsFullDim => LinearBasis.IsFullDim;
+    public bool IsFullDim => LinBasis.IsFullDim;
 
     /// <summary>
     /// Gets the number of vectors in the linear basis associated with the affine basis.
     /// </summary>
-    public int SpaceDim => LinearBasis.SpaceDim;
+    public int SubSpaceDim => LinBasis.SubSpaceDim;
 
     /// <summary>
     /// Gets a value indicating whether this affine basis is empty.
     /// </summary>
-    public bool IsEmpty => SpaceDim == 0;
+    public bool IsEmpty => LinBasis.IsEmpty;
 
     /// <summary>
     /// Gets the vector corresponding to the specified index in the linear basis associated with the affine basis.
     /// </summary>
     /// <param name="ind">The index of the vector to get.</param>
-    public Vector this[int ind] => LinearBasis[ind];
-
-    /// <summary>
-    /// Gets the current basis of the affine space as list of vectors.
-    /// </summary>
-    public List<Vector> Basis => LinearBasis.Basis;
+    public Vector this[int ind] => LinBasis[ind];
 
     /// <summary>
     /// The linear basis associated with the affine basis.
     /// </summary>
-    public LinearBasis LinearBasis { get; }
+    public LinearBasis LinBasis { get; }
+
 #endregion
 
 #region Functions
@@ -70,7 +67,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (Origin.Dim == v.Dim, "AffineBasis.AddVectorToBasis: Adding a vector with a wrong dimension into an affine basis.");
 
-      return LinearBasis.AddVectorToBasis(v, orthogonalize);
+      return LinBasis.AddVectorToBasis(v, orthogonalize);
     }
 
     /// <summary>
@@ -87,9 +84,9 @@ public partial class Geometry<TNum, TConv>
 
       Vector t = point - Origin;
 
-      TNum[] np = new TNum[SpaceDim];
-      for (int i = 0; i < SpaceDim; i++) {
-        np[i] = LinearBasis[i] * t;
+      TNum[] np = new TNum[SubSpaceDim];
+      for (int i = 0; i < SubSpaceDim; i++) {
+        np[i] = LinBasis[i] * t;
       }
 
       return new Vector(np);
@@ -114,13 +111,13 @@ public partial class Geometry<TNum, TConv>
     public Vector TranslateToOriginal(Vector point) {
       Debug.Assert
         (
-         SpaceDim == point.Dim
+         SubSpaceDim == point.Dim
        , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
         );
 
       Vector np = new Vector(Origin);
-      for (int i = 0; i < Basis.Count; i++) {
-        np += point[i] * Basis[i];
+      for (int i = 0; i < SubSpaceDim; i++) {
+        np += point[i] * this[i];
       }
 
       return new Vector(np);
@@ -149,7 +146,7 @@ public partial class Geometry<TNum, TConv>
        , "AffineBasis.Contains: The dimension of a point does not match to the vector dimension of the affine basis."
         );
 
-      Vector res = Vector.OrthonormalizeAgainstBasis(p - Origin, Basis);
+      Vector res = LinearBasis.OrthonormalizeAgainstBasis(p - Origin, LinBasis);
 
       return res.IsZero;
     }
@@ -162,7 +159,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="vecDim">The dimension of the basis</param>
     public AffineBasis(int vecDim) {
       Origin      = new Vector(vecDim);
-      LinearBasis = new LinearBasis(vecDim);
+      LinBasis = new LinearBasis(vecDim);
     }
 
     /// <summary>
@@ -171,7 +168,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     public AffineBasis(Vector o) {
       Origin      = o;
-      LinearBasis = new LinearBasis();
+      LinBasis = new LinearBasis();
     }
 
     /// <summary>
@@ -181,7 +178,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     public AffineBasis(Vector o, LinearBasis lBasis) {
       Origin      = o;
-      LinearBasis = new LinearBasis(lBasis); // new надо так как есть AddVectorToBasis()
+      LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVectorToBasis()
+
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 
     /// <summary>
@@ -193,7 +195,12 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
       Origin      = Ps.First();
-      LinearBasis = new LinearBasis(Ps.Select(v => v - Origin));
+      LinBasis = new LinearBasis(Ps.Select(v => v - Origin));
+
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 
     /// <summary>
@@ -202,7 +209,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="affineBasis">The affine basis to be copied.</param>
     public AffineBasis(AffineBasis affineBasis) {
       Origin      = affineBasis.Origin;
-      LinearBasis = new LinearBasis(affineBasis.LinearBasis);
+      LinBasis = new LinearBasis(affineBasis.LinBasis);
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 #endregion
 
@@ -230,14 +241,13 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
     /// <summary>
-    /// Aux method to check then the basis is correct
+    /// Method to check then the basis is correct
     /// </summary>
     /// <param name="affineBasis">Basis to be checked</param>
-    public static void CheckCorrectness(AffineBasis affineBasis) {
-#if DEBUG
-      LinearBasis.CheckCorrectness(affineBasis.LinearBasis);
-#endif
-    }
+    internal static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(affineBasis.LinBasis); }
+
+                                          //todo А как правильно тут vvv
+    public IEnumerator GetEnumerator() { return LinBasis.GetEnumerator(); }
 
   }
 

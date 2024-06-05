@@ -476,22 +476,37 @@ public class GW_Tests {
 
   // Не хватает точности double-ов для успешного решения этих задач
   // #region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
-  //   [Test]
-  //   public void AllSimplicesRND_3D_TestRND() {
-  //     const int nPoints    = 1;
-  //     const int simplexDim = 3;
-  //
-  //     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
-  //
-  //     for (int i = 0; i < 1e6; i++) {
-  //       foreach (List<int> fID in fIDs) {
-  //         uint saveSeed = _random.Seed;
-  //
-  //         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-  //         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
-  //       }
-  //     }
-  //   }
+  [Test]
+  public void AllSimplicesRND_3D_TestRND() {
+    const int nPoints    = 1;
+    const int simplexDim = 3;
+
+    List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
+
+    for (int i = 0; i < 1e6; i++) {
+      foreach (List<int> fID in fIDs) {
+        uint saveSeed = _random.Seed;
+
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
+        Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
+      }
+    }
+  }
+
+  [Test]
+  public void Aux() {
+    const uint seed    = 3366503608;
+    const int  PDim    = 3;
+    const int  nPoints = 1;
+    List<int>  fID     = new List<int>() { 1 };
+
+    List<Vector> S     = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
+    List<Vector> origS = new List<Vector>(S);
+    S.Shuffle(new RandomLC(seed));
+
+    GiftWrapping P = new GiftWrapping(S);
+    Assert.That(P.VRep.SetEquals(polytop));
+  }
   //
   //   [Test]
   //   public void AllSimplicesRND_4D_TestRND() {

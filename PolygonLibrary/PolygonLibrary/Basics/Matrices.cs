@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
+using System.Text;
 
 namespace CGLibrary;
 
@@ -19,7 +22,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The internal linear storage of the matrix as a one-dimensional array
     /// </summary>
-    private readonly TNum[] _m;
+    protected readonly TNum[] _m;
 
     /// <summary>
     /// Number of rows of the matrix
@@ -180,6 +183,42 @@ public partial class Geometry<TNum, TConv>
         k++;
       }
     }
+
+    /// <summary>
+    /// Construct the matrix based on a given vector.
+    /// </summary>
+    /// <param name="v">The vector used to construct the matrix.</param>
+    public Matrix(Vector v) {
+      Rows = v.Dim;
+      Cols = 1;
+      _m   = v.GetAsArray();
+    }
+
+    public Matrix(IEnumerable<Vector> Vs) {
+      Cols = Vs.Count();
+      Rows = Vs.First().Dim;
+
+#if DEBUG
+      if (Cols <= 0) {
+        throw new ArgumentException("Matrix cannot have a non-positive number of columns");
+      }
+
+      foreach (Vector v in Vs) {
+        if (v.Dim != Rows) {
+          throw new ArgumentException("Matrix cannot have a different length of columns");
+        }
+      }
+#endif
+      _m = new TNum[Rows * Cols];
+
+      int k = 0;
+      foreach (Vector v in Vs) {
+        for (int i = 0; i < Rows; i++) {
+          _m[i * Cols + k] = v[i];
+        }
+        k++;
+      }
+    }
 #endregion
 
 #region Overrides
@@ -210,29 +249,52 @@ public partial class Geometry<TNum, TConv>
       return true;
     }
 
+    // public override string ToString() {
+    //   string res = "{";
+    //   int    k   = 0, i, j;
+    //
+    //   for (i = 0; i < Rows; i++) {
+    //     res += $"{{{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
+    //     k++;
+    //
+    //     for (j = 1; j < Cols; j++) {
+    //       res += $", {_m[k].ToString(null, CultureInfo.InvariantCulture)}";
+    //       k++;
+    //     }
+    //
+    //     res += "}";
+    //     if (i < Rows - 1) {
+    //       res += ",";
+    //     }
+    //   }
+    //
+    //   res += "}";
+    //
+    //   return res;
+    // }
+
     public override string ToString() {
-      string res = "{";
-      int    k   = 0, i, j;
-
-      for (i = 0; i < Rows; i++) {
-        res += $"{{{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
-        k++;
-
-        for (j = 1; j < Cols; j++) {
-          res += $", {_m[k].ToString(null, CultureInfo.InvariantCulture)}";
-          k++;
-        }
-
-        res += "}";
-        if (i < Rows - 1) {
-          res += ",";
-        }
+      // Вычисляем максимальную длину числа в каждом столбце
+      var maxLengths = new int[Cols];
+      for (int i = 0; i < _m.Length; i++) {
+        int colIndex = i % Cols;
+        maxLengths[colIndex] = Math.Max(maxLengths[colIndex], _m[i].ToString()!.Length);
       }
 
-      res += "}";
+      // Формируем строку вывода
+      StringBuilder sb = new StringBuilder();
+      for (int row = 0; row < Rows; row++) {
+        for (int col = 0; col < Cols; col++) {
+          int index = row * Cols + col;
+          sb.Append(_m[index].ToString()?.PadLeft(maxLengths[col]));
+          if (col != Cols - 1) { sb.Append("  "); }
+        }
+        sb.AppendLine();
+      }
 
-      return res;
+      return sb.ToString();
     }
+
 
     public override int GetHashCode() {
       int res = 0;
@@ -432,14 +494,23 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Horizontal concatenation of two matrices (with equal number of rows)
+    /// Horizontal concatenation of two matrices (with equal number of rows).
     /// </summary>
-    /// <param name="m1">The left concatenated matrix</param>
-    /// <param name="m2">The right concatenated matrix</param>
-    /// <returns>The resultant matrix</returns>
-    public static Matrix hcat(Matrix m1, Matrix m2) {
+    /// <param name="m1">The left concatenated matrix.</param>
+    /// <param name="m2">The right concatenated matrix.</param>
+    /// <returns>The resultant matrix.</returns>
+    public static Matrix? hcat(Matrix? m1, Matrix? m2) {
+      if (m1 is null && m2 is null) {
+        return null;
+      }
+      if (m1 is null && m2 is not null) {
+        return m2;
+      }
+      if (m1 is not null && m2 is null) {
+        return m2;
+      }
 #if DEBUG
-      if (m1.Rows != m2.Rows) {
+      if (m1!.Rows != m2!.Rows) {
         throw new ArgumentException("Cannot concatenate horizontally matrices with different number of rows");
       }
 #endif
@@ -460,11 +531,19 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Vertical concatenation of two matrices (with equal number of columns)
+    /// Horizontal concatenation of matrix and a vector (with equal number of rows).
     /// </summary>
-    /// <param name="m1">The upper concatenated matrix</param>
-    /// <param name="m2">The lower concatenated matrix</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="m">The left concatenated matrix.</param>
+    /// <param name="v">The right concatenated vector.</param>
+    /// <returns>The resultant matrix.</returns>
+    public static Matrix hcat(Matrix? m, Vector v) => m is null ? new Matrix(v) : hcat(m, new Matrix(v));
+
+    /// <summary>
+    /// Vertical concatenation of two matrices (with equal number of columns).
+    /// </summary>
+    /// <param name="m1">The upper concatenated matrix.</param>
+    /// <param name="m2">The lower concatenated matrix.</param>
+    /// <returns>The resultant matrix.</returns>
     public static Matrix vcat(Matrix m1, Matrix m2) {
 #if DEBUG
       if (m1.Cols != m2.Cols) {
@@ -540,11 +619,28 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Construct a submatrix consisting of elements at crossing of given rows and columns of the original matrix
     /// </summary>
-    /// <param name="rows">List of row indices to be taken</param>
-    /// <param name="cols">List of column indices to be taken</param>
+    /// <param name="rows">List of row indices to be taken. If null, all row indices be taken.</param>
+    /// <param name="cols">List of column indices to be taken. If null, all column indices be taken.</param>
     /// <returns>The resultant matrix</returns>
-    public Matrix TakeElems(int[] rows, int[] cols) {
-      int r = rows.Length, c = cols.Length;
+    public Matrix TakeSubMatrix(int[]? rows, int[]? cols) {
+      int r, c;
+      if (rows is null) {
+        rows = Enumerable.Range(0, Rows).ToArray();
+        r    = Rows;
+      }
+      else {
+        r = rows.Length;
+      }
+
+
+      if (cols is null) {
+        cols = Enumerable.Range(0, Cols).ToArray();
+        c    = Cols;
+      }
+      else {
+        c = cols.Length;
+      }
+
 #if DEBUG
       if (r <= 0) {
         throw new ArgumentException("Wrong number of rows to be taken");
@@ -568,31 +664,16 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(r, c, res);
     }
 
-    public Vector TakeCol(int col) {
+    public Vector TakeVector(int col) {
+      Debug.Assert(col >= 0 && col < Cols, "Matrices.TakeVector: Column index must lie in [0, Cols).");
       TNum[] res = new TNum[Rows];
       for (int i = 0; i < Rows; i++) {
         res[i] = this[i, col];
-        // res[i] = _m[i * Cols + col];
       }
 
       return new Vector(res);
     }
 
-    public Matrix SubMatrix(int startRow, int startCol, int numRows, int numCols, Matrix subMatrix) {
-      if (numRows != subMatrix.Rows || numCols != subMatrix.Cols) {
-        throw new ArgumentException("Submatrix dimensions must match the specified region dimensions.");
-      }
-
-      TNum[] newElements = (TNum[])_m.Clone();
-
-      for (int i = 0; i < numRows; i++) {
-        for (int j = 0; j < numCols; j++) {
-          newElements[(startRow + i) * Cols + (startCol + j)] = subMatrix[i, j];
-        }
-      }
-
-      return new Matrix(Rows, Cols, newElements);
-    }
 
     public Matrix Transpose() {
       TNum[] transposedElements = new TNum[Cols * Rows];
@@ -786,9 +867,94 @@ public partial class Geometry<TNum, TConv>
         basis.AddVectorToBasis(Vector.GenVector(dim, random));
       }
 
-      return basis.GetMatrix();
+      return basis.Basis!;
+    }
+
+    /// <summary>
+    /// Constructs a Hilbert matrix of given dimension. [1, 1/2 , 1/3 , ...]
+    /// </summary>
+    /// <param name="dim">The dimension of the Hilbert matrix.</param>
+    /// <returns>A Hilbert matrix of the specified dimension.</returns>
+    public static Matrix Hilbert(int dim) {
+      TNum[,] m = new TNum[dim, dim];
+      for (int i = 0; i < dim; i++) {
+        for (int j = 0; j < dim; j++) {
+          m[i, j] = Tools.One / (TConv.FromInt(i) + TConv.FromInt(j) + Tools.One);
+        }
+      }
+
+      return new Matrix(m);
     }
 #endregion
+
+  }
+
+  public class MutableMatrix : Matrix {
+
+    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar) { }
+
+    public MutableMatrix(Matrix m) : base(m) { }
+
+    public new TNum this[int i, int j] {
+      get
+        {
+#if DEBUG
+          if (i < 0 || i >= Rows) {
+            throw new IndexOutOfRangeException("The first index is out of range");
+          }
+
+          if (j < 0 || j >= Cols) {
+            throw new IndexOutOfRangeException("The second index is out of range");
+          }
+#endif
+          return _m[i * Cols + j];
+        }
+
+      set
+        {
+#if DEBUG
+          if (i < 0 || i >= Rows) {
+            throw new IndexOutOfRangeException("The first index is out of range");
+          }
+
+          if (j < 0 || j >= Cols) {
+            throw new IndexOutOfRangeException("The second index is out of range");
+          }
+#endif
+          _m[i * Cols + j] = value;
+        }
+    }
+
+    public new static MutableMatrix Eye(int d) {
+      int    i, j, k = 0;
+      TNum[] nv      = new TNum[d * d];
+
+      for (i = 0; i < d; i++) {
+        for (j = 0; j < d; j++, k++) {
+          if (i == j) {
+            nv[k] = Tools.One;
+          }
+          else {
+            nv[k] = Tools.Zero;
+          }
+        }
+      }
+
+      return new MutableMatrix(d, d, nv);
+    }
+
+    public void SetSubMatrix(int startRow, int startCol, int numRows, int numCols, Matrix subMatrix) {
+      if (numRows != subMatrix.Rows || numCols != subMatrix.Cols) {
+        throw new ArgumentException("Submatrix dimensions must match the specified region dimensions.");
+      }
+      for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+          _m[(startRow + i) * Cols + (startCol + j)] = subMatrix[i, j];
+        }
+      }
+    }
+
+    public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
 
   }
 

@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+// using System.Numerics;
+// using System.Numerics;
 using System.Runtime.InteropServices;
+using CGLibrary;
 using DoubleDouble;
 using Tests.ToolsTests;
 using MultiPrecision;
@@ -10,47 +13,16 @@ using Tests;
 // using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 // using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 // using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-
-
-// using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
-
+// using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 
 
 namespace Profile;
 
-public class QRDecomposition {
-
-  public Matrix Q { get; private set; }
-  public Matrix R { get; private set; }
-
-  public QRDecomposition(Matrix A) { Decompose(A); }
-
-  private void Decompose(Matrix A) {
-    int m = A.Rows;
-    int n = A.Cols;
-    Q = Matrix.Eye(m);
-    R = A;
-
-    for (int k = 0; k < n; k++) {
-      Vector x  = R.TakeCol(k).SubVector(k, m - k);
-      Vector e1 = Vector.MakeOrth(x.Dim, 1);
-
-      Vector u = x + e1 * x.Length * Math.Sign(x[0]);
-      u = u.Normalize();
-
-      Matrix Hk           = Matrix.Eye(m);
-      Matrix outerProduct = u.OuterProduct(u);
-      Hk.SubMatrix(k, k, m - k, m - k, Matrix.Eye(m - k) - 2 * outerProduct);
-
-      R =  Hk * R;
-      Q *= Hk.Transpose();
-    }
-  }
-
-}
+using System;
 
 class Program {
 
@@ -61,16 +33,54 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    Matrix a = Matrix.Eye(4);
-    Console.WriteLine(a.TakeCol(3));
+    Matrix A = new Matrix(new double[,] {{0,0,1,0,0}, { 0, 0, 0, 0, 1 },{0,0,1,0,0}});
+
+    A              = A.Transpose();
+    (var Q, var R) = QRDecomposition.ByReflection(A);
+    Console.WriteLine($"A:\n{A}");
+    Console.WriteLine($"Q:\n{Q}");
+    Console.WriteLine($"R:\n{R}");
+    Console.WriteLine($"Q*R:\n{Q*R}");
+    Console.WriteLine((Q * R - A).Equals(Matrix.Zero(A.Rows,A.Cols)));
+    // Console.WriteLine(Q.TakeVector(0) * Q.TakeVector(2));
 
 
-    int dim     = 3;
-    // ConvexPolytop    polytop = ConvexPolytop.Sphere(dim, 2, 4, Vector.Zero(dim), 1);
 
-    QRDecomposition q = new QRDecomposition(Matrix.GenMatrix(4,4,-10,10));
-    Console.WriteLine(q.Q);
-    Console.WriteLine(q.R);
+    //todo Посмотреть как ведёт себя QR на линейно-зависимых векторах!
+
+    // AffineBasis affb  = new AffineBasis(new Vector[] { origin, B, C });
+    // HyperPlane  hpaff = new HyperPlane(affb);
+    // Console.WriteLine(hpaff.Normal * (B - origin));
+
+    // Matrix A = Matrix.hcat
+    //   (affb.LinBasis, new Matrix(affb.LinBasis.VecDim, 1, Vector.MakeOrth(3, 1).GetAsArray()));
+    // QRDecomposition q = new QRDecomposition(A);
+    //
+    // Console.WriteLine(q.Q.TakeVector(2) * (B - origin));
+    //
+    // Console.WriteLine(q.R);
+
+
+    // Console.WriteLine(Vector.OrthonormalizeAgainstBasis(B - origin, affb.Basis));
+
+    // Console.WriteLine(lb.GetMatrix());
+
+    // Matrix A = new Matrix(new double[,] { { 1, 2.5307302532090645 }, { 0, 3.7737420279937193 }, { 0, -2.0523162773000814 } });
+    // QRDecomposition q = new QRDecomposition(A);
+    // Console.WriteLine(q.Q);
+
+
+    // Matrix          A = Matrix.Hilbert(15);
+    // LinearBasis linearBasis = LinearBasis.FromMatrix(A);
+
+    // Console.WriteLine(q.Q);
+    // Console.WriteLine();
+    // Console.WriteLine(linearBasis.GetMatrix());
+
+    // Console.WriteLine(q.Q.TakeVector(0) + linearBasis.Basis[0]);
+
+
+    // Console.WriteLine((q.Q * q.R).Equals(A));
 
     // string      matDot = "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2";
     //
@@ -87,7 +97,6 @@ class Program {
     // ConvexPolytop Q   = ConvexPolytop.AsFLPolytop(prQ);
 
     // Console.WriteLine(sec.MinDistBtwVs());
-
 
 
     // ConvexPolytop A = ConvexPolytop.AsFLPolytop(pr);
@@ -132,7 +141,6 @@ class Program {
     // Console.WriteLine(string.Join('\n', g.Except(polytop.VRep)));
     // Console.WriteLine("polytop \\ geometricH2V");
     // Console.WriteLine(string.Join('\n', polytop.VRep.Except(g)));
-
 
 
     // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(5, pathData);

@@ -53,7 +53,8 @@ public partial class Geometry<TNum, TConv>
       List<HyperPlane> Fs = new List<HyperPlane>();
 
       switch (BuiltPolytop.PolytopDim) {
-        case 1: Fs.Add(new HyperPlane(new AffineBasis(BuiltPolytop.Vertices)));
+        case 1:
+          Fs.Add(new HyperPlane(new AffineBasis(BuiltPolytop.Vertices)));
 
           break;
         case 2: {
@@ -123,7 +124,8 @@ public partial class Geometry<TNum, TConv>
         FLNode seg = new FLNode(sub);
         allNodes.Add(seg.GetHashCode(), seg);
         lattice[1].Add(seg);
-      } else {
+      }
+      else {
         List<FLNode> sub = new List<FLNode>();
 
         foreach (BaseSubCP subF in BSP.Faces!) {
@@ -172,7 +174,8 @@ public partial class Geometry<TNum, TConv>
             cclw[k] = twoDimensional.VerticesList[twoDimensional.VerticesList.Length - k - 1];
           }
           res[i] = new Facet(cclw, hp.Normal);
-        } else {
+        }
+        else {
           res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
         }
         i++;
@@ -231,7 +234,7 @@ public partial class Geometry<TNum, TConv>
           // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
           HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
           AffineBasis       AffineS = new AffineBasis(S);
-          if (AffineS.SpaceDim < AffineS.VecDim) {
+          if (AffineS.SubSpaceDim < AffineS.VecDim) {
             // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
             // уходим в подпространство и там овыпукляем.
             S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
@@ -355,7 +358,8 @@ public partial class Geometry<TNum, TConv>
             foreach (BaseSubCP newEdge in nextFace.Faces!) {
               if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
                 buildIncidence[newEdge] = E.F1.GetHashCode() <= nextFace.GetHashCode() ? (E.F1, nextFace) : (nextFace, E.F1);
-              } else {
+              }
+              else {
                 buildIncidence.Add(newEdge, (nextFace, null));
                 hasFreeEdges = true;
               }
@@ -386,7 +390,7 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="normal">The outward normal to the initial plane.</param>
       /// <returns>
-      /// Affine basis of the plane, the dimension of the basis is less than d, dimension of the vectors is d.
+      /// Affine basis of the plane, the dimension of the basis is less than d, the dimension of the vectors is d.
       /// </returns>
       private AffineBasis BuildInitialPlane(out Vector normal) {
         Debug.Assert(S.Count != 0, $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
@@ -398,18 +402,20 @@ public partial class Geometry<TNum, TConv>
         // нормаль к плоскости начальной
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
-        while (FinalV.SpaceDim < spaceDim - 1) {
-          Vector   e;
-          int      i      = 0;
-          Vector[] nBasis = { n };
+        while (FinalV.SubSpaceDim < spaceDim - 1) {
+          Vector e;
+          int    i = 0;
+          // Vector[] nBasis = { n };
+          LinearBasis nLinBasis = new LinearBasis(n);
           do {
             i++;
-            e = Vector.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.Basis, nBasis);
+            e = LinearBasis.OrthonormalizeAgainstBasis
+              (LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.LinBasis), nLinBasis);
           } while (e.IsZero && i <= spaceDim);
           Debug.Assert
             (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
-          // Vector? r = null; нужен для процедуры Сварта (ниже)
+          // Vector? r = null; // нужен для процедуры Сварта (ниже)
           TNum      minCos = Tools.Two;
           SubPoint? sExtr  = null;
           foreach (SubPoint s in S) {
@@ -438,8 +444,8 @@ public partial class Geometry<TNum, TConv>
           i = 0;
           do {
             i++;
-            n = Vector.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.Basis);
-          } while (n.IsZero && i <= spaceDim);
+            n = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.LinBasis);
+          } while (n.IsZero);
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
           // r = r.Normalize();
@@ -472,7 +478,10 @@ public partial class Geometry<TNum, TConv>
       /// </returns>
       private BaseSubCP BuildFace(AffineBasis FaceBasis, Vector n, BaseSubCP? initEdge = null) {
         Debug.Assert
-          (FaceBasis.SpaceDim == spaceDim - 1, $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!");
+          (
+           FaceBasis.SubSpaceDim == spaceDim - 1
+         , $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!"
+          );
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         HashSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
@@ -483,7 +492,7 @@ public partial class Geometry<TNum, TConv>
         // Его нормаль будет (0,0,...,1)
         BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
         if (prj_initFace is not null) {
-          prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SpaceDim, FaceBasis.SpaceDim);
+          prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SubSpaceDim, FaceBasis.SubSpaceDim);
         }
 
         // Овыпукляем в подпространстве
@@ -524,7 +533,7 @@ public partial class Geometry<TNum, TConv>
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
         AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
         SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector      v         = Vector.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.Basis);
+        Vector      v         = LinearBasis.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.LinBasis);
 
         Vector?   r      = null;
         SubPoint? sStar  = null;
@@ -550,7 +559,7 @@ public partial class Geometry<TNum, TConv>
 
         Debug.Assert
           (
-           newF_aBasis.SpaceDim == face.PolytopDim
+           newF_aBasis.SubSpaceDim == face.PolytopDim
          , $"RollOverEdge (dim = {spaceDim}): The dimension of the basis of new F' must equals to F dimension!"
           );
 
