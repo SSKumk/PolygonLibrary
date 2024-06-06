@@ -10,27 +10,24 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum>
-{
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Orthonormal basis
   /// </summary>
-  public class LinearBasis : IEnumerable<Vector>
-  {
+  public class LinearBasis : IEnumerable<Vector> {
 
-    #region Data and Properties
+#region Data and Properties
     /// <summary>
     /// The dimension of the basis vectors
     /// </summary>
-    public int VecDim
-    {
+    public int VecDim {
       get
-      {
-        Debug.Assert(Basis is not null, "LinearBasis.VecDim: Basis is null. Can't do this task.");
+        {
+          Debug.Assert(Basis is not null, "LinearBasis.VecDim: Basis is null. Can't do this task.");
 
-        return Basis!.Rows;
-      }
+          return Basis!.Rows;
+        }
     }
 
     /// <summary>
@@ -41,17 +38,15 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Property True if the basis contains d-linear independent vectors in dD
     /// </summary>
-    public bool IsFullDim
-    {
+    public bool IsFullDim {
       get
-      {
-        if (IsEmpty)
         {
-          return false;
-        }
+          if (IsEmpty) {
+            return false;
+          }
 
-        return VecDim == SubSpaceDim;
-      }
+          return VecDim == SubSpaceDim;
+        }
     }
 
     /// <summary>
@@ -63,43 +58,54 @@ public partial class Geometry<TNum, TConv>
     /// Index access
     /// </summary>
     /// <param name="ind">Index to be accessed</param>
-    public Vector this[int ind]
-    {
+    public Vector this[int ind] {
       get
-      {
-        Debug.Assert(ind >= 0 && ind < SubSpaceDim);
+        {
+          Debug.Assert(ind >= 0 && ind < SubSpaceDim);
 
-        Debug.Assert(Basis is not null, "LinearBasis.this[]: Basis is null. Can't do this task.");
+          Debug.Assert(Basis is not null, "LinearBasis.this[]: Basis is null. Can't do this task.");
 
-        return Basis.TakeVector(ind);
-      }
+          return Basis.TakeVector(ind);
+        }
     }
 
     /// <summary>
     /// Gets the current basis of the linear space as a list of vectors.
     /// </summary>
     public Matrix? Basis { get; private set; }
-    #endregion
+#endregion
 
-    #region Functions
-    public static Vector? FindOrthonormalVector(LinearBasis linBasis)
-    {
+#region Functions
+    public static LinearBasis? FindOrthogonalComplement(LinearBasis linBasis) {
       if (linBasis.IsFullDim) { return null; }
       if (linBasis.IsEmpty) { return null; }
 
-      (Matrix Q, Matrix R) = QRDecomposition.ByReflection(linBasis.Basis!);
+      (Matrix Q, _) = QRDecomposition.ByReflection(linBasis.Basis!);
 
-      return Q.TakeVector(linBasis.SubSpaceDim);
+      Matrix ogBasis = Q.TakeSubMatrix
+        (null, Enumerable.Range(linBasis.SubSpaceDim, linBasis.VecDim - linBasis.SubSpaceDim).ToArray());
+
+      return new LinearBasis(ogBasis);
+
     }
 
-    public static bool DoesVectorBelongToLinBasis(Vector v, LinearBasis linBasis)
-    {
-      Debug.Assert(v.Dim == linBasis.VecDim, "LinearBasis.IsVectorBelongsToLinBasis: The dimension of the vector must be equal to dimensions of basis vectors!");
+    //todo tests!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public static Vector FindOrthonormalVector(LinearBasis linBasis) {
+      LinearBasis? oc = FindOrthogonalComplement(linBasis);
+
+      return oc is null ? Vector.Zero(linBasis.VecDim) : oc[0];
+    }
+
+    public static bool IsContains(Vector v, LinearBasis linBasis) {
+      Debug.Assert
+        (
+         v.Dim == linBasis.VecDim
+       , "LinearBasis.IsVectorBelongsToLinBasis: The dimension of the vector must be equal to dimensions of basis vectors!"
+        );
       if (linBasis.IsFullDim) { return true; }
 
       Vector proj = Vector.Zero(v.Dim);
-      foreach (Vector bvec in linBasis)
-      {
+      foreach (Vector bvec in linBasis) {
         proj += (v * bvec) * bvec;
       }
 
@@ -117,10 +123,21 @@ public partial class Geometry<TNum, TConv>
       if (linBasis.IsFullDim) { return Vector.Zero(v.Dim); }
       if (linBasis.IsEmpty) { return v.NormalizeZero(); }
 
-      throw new ArgumentException("", "");
+      Vector toAdd;
+      (Matrix Q, Matrix R) = QRDecomposition.ByReflection(Matrix.hcat(linBasis.Basis, v));
+      if (Tools.EQ(R[linBasis.SubSpaceDim, linBasis.SubSpaceDim])) {
+        toAdd = Vector.Zero(v.Dim);
+      }
+      else {
+        toAdd   = Q.TakeVector(linBasis.SubSpaceDim);
+      }
 
-      // (Matrix Q, Matrix R) = QRDecomposition.ByReflection(Matrix.hcat())
-      return Vector.Zero(1);
+      if (Tools.LT(v * toAdd)) {
+        toAdd = -toAdd;
+      }
+
+
+      return toAdd;
     }
 
     /// <summary>
@@ -129,35 +146,28 @@ public partial class Geometry<TNum, TConv>
     /// /// <param name="v">Vector to be added</param>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns>True if vector added to the basis, false otherwise</returns>
-    public bool AddVectorToBasis(Vector v, bool orthogonalize = true)
-    {
+    public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
       if (IsFullDim) { return false; }
       if (v.IsZero) { return false; }
 
-      bool isAdded = false;
-      if (Basis is null)
-      {
+      bool isAdded;
+      if (IsEmpty) {
         Vector init = orthogonalize ? v.Normalize() : v;
-        Basis = new Matrix(init);
+        Basis   = new Matrix(init);
         isAdded = true;
       }
-      else
-      {
-        if (!orthogonalize)
-        {
-          Basis = Matrix.hcat(Basis, v);
+      else {
+        if (!orthogonalize) {
+          Basis   = Matrix.hcat(Basis, v);
           isAdded = true;
         }
-        else
-        {
-          (Matrix Q, Matrix R) = QRDecomposition.ByReflection(Matrix.hcat(Basis, v));
-          if (Tools.EQ(R[SubSpaceDim, SubSpaceDim]))
-          {
+        else {
+          Vector toAdd = OrthonormalizeAgainstBasis(v, this);
+          if (toAdd.IsZero) {
             isAdded = false;
           }
-          else
-          {
-            Basis = Matrix.hcat(Basis, Q.TakeVector(SubSpaceDim));
+          else {
+            Basis   = Matrix.hcat(Basis, toAdd);
             isAdded = true;
           }
         }
@@ -176,8 +186,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected point.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v)
-    {
+    public Vector ProjectVectorToSubSpace(Vector v) {
       Debug.Assert
         (
          VecDim == v.Dim
@@ -185,8 +194,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       TNum[] np = new TNum[SubSpaceDim];
-      for (int i = 0; i < SubSpaceDim; i++)
-      {
+      for (int i = 0; i < SubSpaceDim; i++) {
         np[i] = this[i] * v;
       }
 
@@ -198,23 +206,20 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The set of vectors to project.</param>
     /// <returns>The projected vectors.</returns>
-    public IEnumerable<Vector> ProjectVectorsToSubSpace(List<Vector> Swarm)
-    {
-      foreach (Vector v in Swarm)
-      {
+    public IEnumerable<Vector> ProjectVectorsToSubSpace(List<Vector> Swarm) {
+      foreach (Vector v in Swarm) {
         yield return ProjectVectorToSubSpace(v);
       }
     }
-    #endregion
+#endregion
 
-    #region Constructors
+#region Constructors
     /// <summary>
     /// Constructs the empty basis.
     /// </summary>
     public LinearBasis() => Basis = null;
 
-    public LinearBasis(Vector v)
-    {
+    public LinearBasis(Vector v) {
       Debug.Assert(!v.IsZero, "LinearBasis: Can't construct the linear basis based ob zero-vector!");
       Basis = new Matrix(v.Normalize());
 
@@ -235,8 +240,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="basisDim">The dimension of the space of basis.</param>
     /// <param name="vecDim">The dimension of the vectors.</param>
-    public LinearBasis(int basisDim, int vecDim)
-    {
+    public LinearBasis(int basisDim, int vecDim) {
       Debug.Assert
         (
          vecDim >= basisDim
@@ -250,12 +254,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Vs">Vectors on which basis should be constructed.</param>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
-    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true)
-    {
+    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
       Basis = null;
 
-      foreach (Vector v in Vs)
-      {
+      foreach (Vector v in Vs) {
         AddVectorToBasis(v, orthogonalize);
         if (IsFullDim) { break; }
       }
@@ -269,27 +271,29 @@ public partial class Geometry<TNum, TConv>
     /// Copy constructor.
     /// </summary>
     /// <param name="linearBasis">The linear basis to be copied.</param>
-    public LinearBasis(LinearBasis linearBasis)
-    {
+    public LinearBasis(LinearBasis linearBasis) {
       Basis = linearBasis.Basis is null ? null : new Matrix(linearBasis.Basis);
 
 #if DEBUG
       CheckCorrectness(this);
 #endif
     }
-    #endregion
 
-    #region Fabrics
+    // Хорошая матрица! m x n, m >= n; rang = n
+    private LinearBasis(Matrix m) {
+      Basis = m;
+    }
+#endregion
+
+#region Fabrics
     /// <summary>
     /// Generates a linear basis of given dimension.
     /// </summary>
     /// <param name="dim">The dimension of the basis.</param>
     /// <returns>A full dimensional basis.</returns>
-    public static LinearBasis GenLinearBasis(int dim)
-    {
+    public static LinearBasis GenLinearBasis(int dim) {
       LinearBasis lb = new LinearBasis();
-      do
-      {
+      do {
         lb.AddVectorToBasis(Vector.GenVector(dim));
       } while (!lb.IsFullDim);
 
@@ -304,57 +308,43 @@ public partial class Geometry<TNum, TConv>
     /// M is GOOD: row >= col and rang(M) = col
     /// </summary>
     /// <param name="M">The column-based matrix of the basis.</param>
-    public static LinearBasis FromMatrix(Matrix? M)
-    {
+    public static LinearBasis FromMatrix(Matrix? M) {
       if (M is null) { return new LinearBasis(); }
 
       List<Vector> Vs = new List<Vector>(M.Cols);
-      for (int i = 0; i < M.Cols; i++)
-      {
+      for (int i = 0; i < M.Cols; i++) {
         Vs.Add(M.TakeVector(i));
       }
 
       return new LinearBasis(Vs);
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Two linear basics are equal, if it spans same space.
     /// </summary>
     /// <param name="obj">Object to compare with this linear basis.</param>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
-    public override bool Equals(object? obj)
-    {
-      if (obj == null || this.GetType() != obj.GetType())
-      {
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
         return false;
       }
 
       LinearBasis other = (LinearBasis)obj;
 
       // Если хотя бы один вектор не лежит в подпространстве нашего линейного базиса, то они не равны.
-      foreach (Vector otherbv in other)
-      {
-        Vector check = OrthonormalizeAgainstBasis(otherbv, this);
-        if (!check.IsZero)
-        {
-          return false;
-        }
+      foreach (Vector otherbv in other) {
+        if (!IsContains(otherbv, this)) { return false; }
       }
 
       return true;
     }
 
-    public IEnumerator GetEnumerator()
-    {
-      return (this as IEnumerable<Vector>).GetEnumerator();
-    }
+    public IEnumerator GetEnumerator() { return (this as IEnumerable<Vector>).GetEnumerator(); }
 
-    IEnumerator<Vector> IEnumerable<Vector>.GetEnumerator()
-    {
+    IEnumerator<Vector> IEnumerable<Vector>.GetEnumerator() {
       List<Vector> Vs = new List<Vector>(SubSpaceDim);
-      for (int i = 0; i < SubSpaceDim; i++)
-      {
+      for (int i = 0; i < SubSpaceDim; i++) {
         Vs.Add(this[i]);
       }
 
@@ -365,12 +355,9 @@ public partial class Geometry<TNum, TConv>
     /// Method to check then the linear basis is correct
     /// </summary>
     /// <param name="linearBasis">Basis to be checked</param>
-    public static void CheckCorrectness(LinearBasis linearBasis)
-    {
-      if (!linearBasis.IsEmpty)
-      {
-        if (linearBasis.SubSpaceDim > linearBasis[0].Dim)
-        {
+    public static void CheckCorrectness(LinearBasis linearBasis) {
+      if (!linearBasis.IsEmpty) {
+        if (linearBasis.SubSpaceDim > linearBasis[0].Dim) {
           throw new ArgumentException
             (
              "LinearBasis.CheckCorrectness: Number of the vectors in the linear basis must be less or equal than dimension of the it's vectors."
@@ -378,20 +365,15 @@ public partial class Geometry<TNum, TConv>
         }
 
 
-        foreach (Vector bvec in linearBasis)
-        {
-          if (Tools.NE(bvec.Length, Tools.One))
-          {
+        foreach (Vector bvec in linearBasis) {
+          if (Tools.NE(bvec.Length, Tools.One)) {
             throw new ArgumentException("LinearBasis.CheckCorrectness: All vectors in the basis must have a unit length.");
           }
         }
 
-        for (int i = 0; i < linearBasis.SubSpaceDim - 1; i++)
-        {
-          for (int k = i + 1; k < linearBasis.SubSpaceDim; k++)
-          {
-            if (Tools.NE(linearBasis[i] * linearBasis[k]))
-            {
+        for (int i = 0; i < linearBasis.SubSpaceDim - 1; i++) {
+          for (int k = i + 1; k < linearBasis.SubSpaceDim; k++) {
+            if (Tools.NE(linearBasis[i] * linearBasis[k])) {
               throw new ArgumentException("LinearBasis.CheckCorrectness: All pairwise different vectors must be orthogonal.");
             }
           }

@@ -13,7 +13,7 @@ public class HyperPlaneTests {
     Vector     normal     = new Vector(new ddouble[] { 1, 1, 1 });
     HyperPlane hyperplane = new HyperPlane(normal, origin);
 
-    AffineBasis.CheckCorrectness(hyperplane.ABasis);
+    AffineBasis.CheckCorrectness(hyperplane.AffBasis);
   }
 
   [Test]
@@ -25,10 +25,10 @@ public class HyperPlaneTests {
 
     Assert.That
       (
-       hyperplane.ABasis.LinBasis.Equals(new LinearBasis(vectors, false))
+       hyperplane.AffBasis.LinBasis.Equals(new LinearBasis(vectors, false))
      , "ConstructorWithAffineBasisTest: The linear basis must be the same!"
       );
-    AffineBasis.CheckCorrectness(hyperplane.ABasis);
+    AffineBasis.CheckCorrectness(hyperplane.AffBasis);
   }
 
   [Test]

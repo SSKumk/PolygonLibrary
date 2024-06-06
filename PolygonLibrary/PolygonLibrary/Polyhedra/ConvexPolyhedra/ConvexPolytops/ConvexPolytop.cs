@@ -855,7 +855,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
-      return AsVPolytop(hp.ABasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToHashSet(), true);
+      return AsVPolytop(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToHashSet(), true);
     }
 #endregion
 

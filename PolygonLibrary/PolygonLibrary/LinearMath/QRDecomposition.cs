@@ -13,10 +13,10 @@ public partial class Geometry<TNum, TConv>
   public class QRDecomposition {
 
     /// <summary>
-    ///
+    /// Does the QR-decomposition of given m x n matrix A.
     /// </summary>
-    /// <param name="A"></param>
-    /// <returns></returns>
+    /// <param name="A">The matrix A to be decomposed.</param>
+    /// <returns>A = Q*R. m x m Q - orthonormal matrix (Q^-1 = Q^T). m x n R - upper triangle matrix.</returns>
     public static (Matrix Q, Matrix R) ByReflection(Matrix A) {
       int    m = A.Rows;
       int    n = A.Cols;
@@ -42,9 +42,12 @@ public partial class Geometry<TNum, TConv>
           Hk.SetSubMatrix(k, k, m - k, m - k, Householder);
 
           R = Hk * R;
-          Q = Hk * Q;
+          Q = Q * Hk;
         }
       }
+
+      // Console.WriteLine($"Q:\n{Q}");
+      // Console.WriteLine($"QR = R: {(Q*R).Equals(A)}");
 
       return (Q, R);
     }

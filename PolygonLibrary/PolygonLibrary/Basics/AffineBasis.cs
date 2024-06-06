@@ -139,17 +139,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
-    public bool Contains(Vector p) {
-      Debug.Assert
-        (
-         p.Dim == VecDim
-       , "AffineBasis.Contains: The dimension of a point does not match to the vector dimension of the affine basis."
-        );
-
-      Vector res = LinearBasis.OrthonormalizeAgainstBasis(p - Origin, LinBasis);
-
-      return res.IsZero;
-    }
+    public bool Contains(Vector p) => LinearBasis.IsContains(p - Origin, LinBasis);
 #endregion
 
 #region Constructors
@@ -188,7 +178,7 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Construct the new affine basis which spans given points.
-    /// The first point is interpret as origin.
+    /// The first point is interpreted as origin.
     /// </summary>
     /// <param name="Ps">The points to construct the affine basis.</param>
     public AffineBasis(IEnumerable<Vector> Ps) {

@@ -411,7 +411,7 @@ public partial class Geometry<TNum, TConv>
             i++;
             e = LinearBasis.OrthonormalizeAgainstBasis
               (LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.LinBasis), nLinBasis);
-          } while (e.IsZero && i <= spaceDim);
+          } while (e.IsZero);
           Debug.Assert
             (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
@@ -441,11 +441,8 @@ public partial class Geometry<TNum, TConv>
             );
 
           // НАЧАЛЬНАЯ Нормаль Наша (точная)
-          i = 0;
-          do {
-            i++;
-            n = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.LinBasis);
-          } while (n.IsZero);
+          n = LinearBasis.FindOrthonormalVector(FinalV.LinBasis)!;
+          Debug.Assert(n is not null,"GiftWrapping.BuildInitialPlane: Normal to initial plane is null.");
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
           // r = r.Normalize();
@@ -527,13 +524,15 @@ public partial class Geometry<TNum, TConv>
           (edge.PolytopDim == spaceDim - 2, $"RollOverEdge (dim = {spaceDim}): The dimension of the edge must equal to d-2!");
         Debug.Assert(face.Normal is not null, $"RollOverEdge (dim = {spaceDim}): face.Normal is null");
         Debug.Assert
-          (Tools.EQ(face.Normal.Length2, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
+          (Tools.EQ(face.Normal.Length, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
-        AffineBasis edgeBasis = new AffineBasis(edge.Vertices);
-        SubPoint    f         = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector      v         = LinearBasis.OrthonormalizeAgainstBasis(f - edgeBasis.Origin, edgeBasis.LinBasis);
+        AffineBasis  edgeAffBasis = new AffineBasis(edge.Vertices);
+        SubPoint     f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
+        Vector       v            = LinearBasis.OrthonormalizeAgainstBasis(f - edgeAffBasis.Origin, edgeAffBasis.LinBasis);
+
+        Debug.Assert(Tools.GT((f - edgeAffBasis.Origin) * v));
 
         Vector?   r      = null;
         SubPoint? sStar  = null;
@@ -542,7 +541,7 @@ public partial class Geometry<TNum, TConv>
 
         // ищем вектор r такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
-          Vector u = (s - edgeBasis.Origin).ProjectToPlane(v, face.Normal);
+          Vector u = (s - edgeAffBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
             TNum cos = v * u / u.Length;
 
@@ -554,7 +553,7 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-        AffineBasis newF_aBasis = new AffineBasis(edgeBasis);
+        AffineBasis newF_aBasis = new AffineBasis(edgeAffBasis);
         newF_aBasis.AddVectorToBasis(r!.Normalize(), false);
 
         Debug.Assert

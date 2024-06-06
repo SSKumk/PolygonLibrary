@@ -6,6 +6,33 @@ namespace Tests.Double_Tests;
 [TestFixture]
 public class LinearSpaceTests {
 
+  [Test]
+  public void FindOrthogonalComplementTest() {
+    LinearBasis lb1 = new LinearBasis();
+    LinearBasis lb2 = new LinearBasis(5);
+    LinearBasis lb3 = new LinearBasis(3, 5);
+
+
+    LinearBasis? oc_lb1 = LinearBasis.FindOrthogonalComplement(lb1);
+    LinearBasis? oc_lb2 = LinearBasis.FindOrthogonalComplement(lb2);
+    LinearBasis? oc_lb3 = LinearBasis.FindOrthogonalComplement(lb3);
+
+    Assert.That(oc_lb1 is null);
+    Assert.That(oc_lb2 is null);
+
+    Assert.That(oc_lb3 is not null);
+    Assert.That(oc_lb3!.SubSpaceDim, Is.EqualTo(2));
+    foreach (Vector ocvec in oc_lb3) {
+      foreach (Vector bvec in lb3) {
+        Assert.That(Tools.EQ(ocvec * bvec));
+
+      }
+    }
+
+
+
+  }
+
   /// <summary>
   /// Simple test for the AddVector method of the LinearBasis class.
   /// </summary>

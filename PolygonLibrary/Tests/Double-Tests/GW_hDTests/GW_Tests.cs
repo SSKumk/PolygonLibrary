@@ -495,10 +495,10 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const uint seed    = 3366503608;
+    const uint seed    = 589902958;
     const int  PDim    = 3;
     const int  nPoints = 1;
-    List<int>  fID     = new List<int>() { 1 };
+    List<int>  fID     = new List<int>() { 3 };
 
     List<Vector> S     = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
     List<Vector> origS = new List<Vector>(S);
@@ -827,7 +827,7 @@ public class GW_Tests {
     }
     Console.WriteLine();
     Console.WriteLine("GiftWrapping P = new GiftWrapping(S);");
-    Console.WriteLine("Assert.That(P.Vertices.SetEquals(polytop));");
+    Console.WriteLine("Assert.That(P.VRep.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();
   }
