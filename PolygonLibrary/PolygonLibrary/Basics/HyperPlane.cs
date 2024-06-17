@@ -45,9 +45,9 @@ public partial class Geometry<TNum, TConv>
             LinearBasis normalBasis = new LinearBasis(Normal);
             (Matrix Q, _) = QRDecomposition.ByReflection(normalBasis.Basis!); // span([1, VecDim - 1]) orthogonal to [0] = Normal
 
-            LinearBasis lb = new LinearBasis();
+            LinearBasis lb = new LinearBasis(Normal.Dim, 0);
             for (int i = 1; i < VecDim; i++) {
-              lb.AddVectorToBasis(Q.TakeVector(i), false);
+              lb.AddVector(Q.TakeVector(i), false);
             }
 
             _affineBasis = new AffineBasis(Origin, lb);

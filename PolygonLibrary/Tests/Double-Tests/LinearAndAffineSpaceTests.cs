@@ -8,16 +8,17 @@ public class LinearSpaceTests {
 
   [Test]
   public void FindOrthogonalComplementTest() {
-    LinearBasis lb1 = new LinearBasis();
-    LinearBasis lb2 = new LinearBasis(5);
-    LinearBasis lb3 = new LinearBasis(3, 5);
+    LinearBasis lb1 = new LinearBasis(5, 0);
+    LinearBasis lb2 = new LinearBasis(5,5);
+    LinearBasis lb3 = new LinearBasis(5, 3);
 
 
     LinearBasis? oc_lb1 = LinearBasis.FindOrthogonalComplement(lb1);
     LinearBasis? oc_lb2 = LinearBasis.FindOrthogonalComplement(lb2);
     LinearBasis? oc_lb3 = LinearBasis.FindOrthogonalComplement(lb3);
 
-    Assert.That(oc_lb1 is null);
+    Assert.That(oc_lb1.Equals(lb2));
+
     Assert.That(oc_lb2 is null);
 
     Assert.That(oc_lb3 is not null);
@@ -38,17 +39,17 @@ public class LinearSpaceTests {
   /// </summary>
   [Test]
   public void AddVectorTest() {
-    LinearBasis basis = new LinearBasis();
+    LinearBasis basis = new LinearBasis(2,0);
     Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
 
-    bool added1 = basis.AddVectorToBasis(new Vector(new double[] { 1, 0 }));
+    bool added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
 
     Assert.That
       (basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
 
-    bool added2 = basis.AddVectorToBasis(new Vector(new double[] { 0, 1 }));
-    bool added3 = basis.AddVectorToBasis(new Vector(new double[] { 1, 1 }));
-    bool added4 = basis.AddVectorToBasis(new Vector(new double[] { 0, 0 }));
+    bool added2 = basis.AddVector(new Vector(new double[] { 0, 1 }));
+    bool added3 = basis.AddVector(new Vector(new double[] { 1, 1 }));
+    bool added4 = basis.AddVector(new Vector(new double[] { 0, 0 }));
 
     Assert.That(added1, Is.True, "The addition of the linear independent vector should be successful.");
     Assert.That(added2, Is.True, "The addition of the linear independent vector should be successful.");
@@ -148,7 +149,7 @@ public class AffineSpaceTests {
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
-    Assert.That(basis.LinBasis.Equals(new LinearBasis(3)));
+    Assert.That(basis.LinBasis.Equals(new LinearBasis(3,3)));
     Assert.That
       (
        basis.SubSpaceDim

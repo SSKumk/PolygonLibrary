@@ -70,7 +70,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="aBasis">The affine basis of non greater dimension to project the point to.</param>
     /// <returns>The projected point.</returns>
-    public SubPoint ProjectTo(AffineBasis aBasis) => new SubPoint(aBasis.ProjectPoint(this), this);
+    public SubPoint ProjectTo(AffineBasis aBasis) => new SubPoint(aBasis.ProjectVector(this), this);
 
     /// <summary>
     /// Returns the point from which the current point was firstly projected.

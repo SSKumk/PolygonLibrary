@@ -113,7 +113,7 @@ public partial class Geometry<TNum, TConv>
     //       (FLNode x, FLNode y) = zTo_xy[z];
     //       // Аффинное пространство грани z (F(+)G в терминах Лемм)
     //       AffineBasis zSpace          = z.AffBasis;
-    //       Vector      innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
+    //       Vector      innerInAffine_z = zSpace.ProjectVector(z.InnerPoint);
     //
     //       // Собираем все подграни в соответствующих решётках,
     //       // сортируя по убыванию размерности для удобства перебора.
@@ -166,14 +166,14 @@ public partial class Geometry<TNum, TConv>
     //           // InnerPoint(f') + InnerPoint(g) \in A^-
     //           bool xCheck = true;
     //           foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
-    //             xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
+    //             xCheck = xCheck && A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint));
     //           }
     //
     //           // G = y >= g' > g = yj
     //           // InnerPoint(g') + InnerPoint(f) \in A^-
     //           bool yCheck = true;
     //           foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
-    //             yCheck = yCheck && A.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
+    //             yCheck = yCheck && A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint));
     //           }
     //
     //           // Если условие Леммы 3 не выполняется, то xi+yj не может дать d-грань z
@@ -260,7 +260,7 @@ public partial class Geometry<TNum, TConv>
     //   FLNode      x               = P.Top;
     //   FLNode      y               = Q.Top;
     //   AffineBasis zSpace          = PQ.AffBasis;
-    //   Vector      innerInAffine_z = zSpace.ProjectPoint(PQ.InnerPoint);
+    //   Vector      innerInAffine_z = zSpace.ProjectVector(PQ.InnerPoint);
     //
     //   // Собираем все подграни в соответствующих решётках,
     //   // сортируя по убыванию размерности для удобства перебора.
@@ -302,14 +302,14 @@ public partial class Geometry<TNum, TConv>
     //       // InnerPoint(f') + InnerPoint(g) \in A^-
     //       bool xCheck = true;
     //       foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
-    //         xCheck = xCheck && A_hp.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
+    //         xCheck = xCheck && A_hp.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint));
     //       }
     //
     //       // G = y >= g' > g = yj
     //       // InnerPoint(g') + InnerPoint(f) \in A^-
     //       bool yCheck = true;
     //       foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
-    //         yCheck = yCheck && A_hp.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
+    //         yCheck = yCheck && A_hp.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint));
     //       }
     //
     //       // Если условие Леммы 3 не выполняется, то xi+yj не может дать гипер-грань PQ.
@@ -388,7 +388,7 @@ public partial class Geometry<TNum, TConv>
           // Аффинное пространство грани z (F(+)G в терминах Лемм)
 
           AffineBasis zSpace          = z.AffBasis;
-          Vector      innerInAffine_z = zSpace.ProjectPoint(z.InnerPoint);
+          Vector      innerInAffine_z = zSpace.ProjectVector(z.InnerPoint);
 
           // Собираем все подграни в соответствующих решётках,
           // сортируя по убыванию размерности для удобства перебора.
@@ -441,14 +441,14 @@ public partial class Geometry<TNum, TConv>
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
               foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
-                xCheck = xCheck && A.ContainsNegative(zSpace.ProjectPoint(x_InnerPoint + yj.InnerPoint));
+                xCheck = xCheck && A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint));
               }
 
               // G = y >= g' > g = yj
               // InnerPoint(g') + InnerPoint(f) \in A^-
               bool yCheck = true;
               foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
-                yCheck = yCheck && A.ContainsNegative(zSpace.ProjectPoint(y_InnerPoint + xi.InnerPoint));
+                yCheck = yCheck && A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint));
               }
 
               // Если условие Леммы 3 не выполняется, то xi+yj не может дать d-грань z
@@ -508,12 +508,9 @@ public partial class Geometry<TNum, TConv>
   /// <param name="to">Basis to which 'from' should be recalculated.</param>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
-    Vector      newO  = to.ProjectPoint(from.Origin);
-    LinearBasis newLB = new LinearBasis(to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
+    Vector      newO  = to.ProjectVector(from.Origin);
+    LinearBasis newLB = new LinearBasis(newO.Dim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
 
-#if DEBUG
-    LinearBasis.CheckCorrectness(newLB);
-#endif
     return new AffineBasis(newO, newLB);
   }
 

@@ -434,7 +434,7 @@ public class MinkowskiSum5D {
     foreach (FaceLattice cube in allCubes_FL) {
       // перебираем всё остальное
       foreach (FaceLattice other in all_FL) {
-        yield return new TestCaseData(cube, other);
+        yield return new TestCaseData(ConvexPolytop.AsFLPolytop(cube), ConvexPolytop.AsFLPolytop(other));
       }
     }
   }

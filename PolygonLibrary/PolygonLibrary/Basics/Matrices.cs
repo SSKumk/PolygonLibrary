@@ -833,12 +833,12 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A non-singular Matrix with randomly generated elements between a and b.</returns>
     public static Matrix GenNonSingular(int dim, TNum a, TNum b, GRandomLC? random = null) {
       TNum[,]     m       = new TNum[dim, dim];
-      LinearBasis toCheck = new LinearBasis();
+      LinearBasis toCheck = new LinearBasis(dim, 0);
       for (int r = 0; r < dim; r++) {
         TNum[] row;
         do {
           row = GenArray(dim, a, b, random);
-        } while (!toCheck.AddVectorToBasis(new Vector(row)));
+        } while (!toCheck.AddVector(new Vector(row)));
 
         for (int l = 0; l < dim; l++) { m[r, l] = row[l]; }
       }
@@ -864,7 +864,7 @@ public partial class Geometry<TNum, TConv>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null) {
       LinearBasis basis = new LinearBasis(new[] { Vector.GenVector(dim) });
       while (!basis.IsFullDim) {
-        basis.AddVectorToBasis(Vector.GenVector(dim, random));
+        basis.AddVector(Vector.GenVector(dim, random));
       }
 
       return basis.Basis!;

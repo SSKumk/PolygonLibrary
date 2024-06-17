@@ -65,9 +65,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
     public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
       Debug.Assert
-        (Origin.Dim == v.Dim, "AffineBasis.AddVectorToBasis: Adding a vector with a wrong dimension into an affine basis.");
+        (Origin.Dim == v.Dim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
 
-      return LinBasis.AddVectorToBasis(v, orthogonalize);
+      return LinBasis.AddVector(v, orthogonalize);
     }
 
     /// <summary>
@@ -75,11 +75,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point to project.</param>
     /// <returns>The projected point.</returns>
-    public Vector ProjectPoint(Vector point) {
+    public Vector ProjectVector(Vector point) {
       Debug.Assert
         (
          VecDim == point.Dim
-       , "AffineBasis.ProjectPoint: The dimension of the basis vectors should be equal to the dimension of the current point."
+       , "AffineBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the current point."
         );
 
       Vector t = point - Origin;
@@ -99,7 +99,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The projected points.</returns>
     public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm) {
       foreach (Vector point in Swarm) {
-        yield return ProjectPoint(point);
+        yield return ProjectVector(point);
       }
     }
 
@@ -149,7 +149,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="vecDim">The dimension of the basis</param>
     public AffineBasis(int vecDim) {
       Origin      = new Vector(vecDim);
-      LinBasis = new LinearBasis(vecDim);
+      LinBasis = new LinearBasis(vecDim, vecDim);
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     public AffineBasis(Vector o) {
       Origin      = o;
-      LinBasis = new LinearBasis();
+      LinBasis = new LinearBasis(o.Dim, 0);
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     public AffineBasis(Vector o, LinearBasis lBasis) {
       Origin      = o;
-      LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVectorToBasis()
+      LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
 
 
 #if DEBUG

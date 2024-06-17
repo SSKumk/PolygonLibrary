@@ -12,17 +12,17 @@ public class LinearSpaceTests {
   /// </summary>
   [Test]
   public void AddVectorTest() {
-    LinearBasis basis = new LinearBasis();
+    LinearBasis basis = new LinearBasis(2,0);
     Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
 
-    bool added1 = basis.AddVectorToBasis(new Vector(new ddouble[] { 1, 0 }));
+    bool added1 = basis.AddVector(new Vector(new ddouble[] { 1, 0 }));
 
     Assert.That
       (basis.IsFullDim, Is.False, "The basis with a single vector is not full dimensional, while the space is two dimensional.");
 
-    bool added2 = basis.AddVectorToBasis(new Vector(new ddouble[] { 0, 1 }));
-    bool added3 = basis.AddVectorToBasis(new Vector(new ddouble[] { 1, 1 }));
-    bool added4 = basis.AddVectorToBasis(new Vector(new ddouble[] { 0, 0 }));
+    bool added2 = basis.AddVector(new Vector(new ddouble[] { 0, 1 }));
+    bool added3 = basis.AddVector(new Vector(new ddouble[] { 1, 1 }));
+    bool added4 = basis.AddVector(new Vector(new ddouble[] { 0, 0 }));
 
     Assert.That(added1, Is.True, "The addition of the linear independent vector should be successful.");
     Assert.That(added2, Is.True, "The addition of the linear independent vector should be successful.");
