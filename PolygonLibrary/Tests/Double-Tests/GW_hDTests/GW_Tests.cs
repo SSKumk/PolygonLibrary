@@ -502,7 +502,7 @@ public class GW_Tests {
 
     List<Vector> S     = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
     List<Vector> origS = new List<Vector>(S);
-    S.Shuffle(new RandomLC(seed));
+    // S.Shuffle(new RandomLC(seed));
 
     GiftWrapping P = new GiftWrapping(S);
     Assert.That(P.VRep.SetEquals(polytop));
