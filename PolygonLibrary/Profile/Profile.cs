@@ -36,7 +36,7 @@ class Program
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
     // LinearBasis lb = new LinearBasis(3,5);
-    // lb.AddVectorToBasis(Vector.GenVector(5));
+    // lb.AddVector(Vector.GenVector(5));
     // System.Console.WriteLine(lb[3]);
     // System.Console.WriteLine(lb[3].Length);
     // LinearBasis.CheckCorrectness(lb);
@@ -44,8 +44,8 @@ class Program
     // Matrix A = new Matrix(new double[,] { { 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0 } });
     // A = A.Transpose();
 
-    Matrix A = Matrix.GenMatrix(3,3,-10,10,new GRandomLC(10));
-    (var Q, var R) = QRDecomposition.ByReflection(A);
+    // Matrix A = Matrix.GenMatrix(3,3,-10,10,new GRandomLC(10));
+    // (var Q, var R) = QRDecomposition.ByReflection(A);
     // Console.WriteLine($"A:\n{A}");
     // Console.WriteLine($"Q:\n{Q}");
     // Console.WriteLine($"R:\n{R}");
@@ -54,11 +54,9 @@ class Program
     // Console.WriteLine(Q.TakeVector(0) * Q.TakeVector(2));
 
 
-    System.Console.WriteLine(LinearBasis.IsContains(Vector.Ones(3).LiftUp(5, 0), new LinearBasis(3, 5)));
+    // System.Console.WriteLine(LinearBasis.IsContains(Vector.Ones(3).LiftUp(5, 0), new LinearBasis(5, 3)));
 
 
-
-    //todo Посмотреть как ведёт себя QR на линейно-зависимых векторах!
 
     // AffineBasis affb  = new AffineBasis(new Vector[] { origin, B, C });
     // HyperPlane  hpaff = new HyperPlane(affb);
@@ -157,10 +155,10 @@ class Program
 
     // SolverLDG.WriteSimplestTask_TerminalSet_GameItself(5, pathData);
 
-    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
+    SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator1-0.9-supG");
 
-    // solverLdg.Solve(false);
+    solverLdg.Solve(false);
   }
 
 }
