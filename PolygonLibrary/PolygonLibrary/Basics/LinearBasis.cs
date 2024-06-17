@@ -86,7 +86,6 @@ public partial class Geometry<TNum, TConv>
         (null, Enumerable.Range(linBasis.SubSpaceDim, linBasis.VecDim - linBasis.SubSpaceDim).ToArray());
 
       return new LinearBasis(ogBasis);
-
     }
 
     //todo tests!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -118,8 +117,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The input vector to orthonormalize.</param>
     /// <param name="linBasis">The basis to orthonormalize against.</param>
     /// <returns>The resulting orthonormalized vector. If the basis is empty, returns normalized vector.</returns>
-    public static Vector OrthonormalizeAgainstBasis(Vector v, LinearBasis linBasis)
-    {
+    public static Vector OrthonormalizeAgainstBasis(Vector v, LinearBasis linBasis) {
       if (linBasis.IsFullDim) { return Vector.Zero(v.Dim); }
       if (linBasis.IsEmpty) { return v.NormalizeZero(); }
 
@@ -129,7 +127,7 @@ public partial class Geometry<TNum, TConv>
         toAdd = Vector.Zero(v.Dim);
       }
       else {
-        toAdd   = Q.TakeVector(linBasis.SubSpaceDim);
+        toAdd = Q.TakeVector(linBasis.SubSpaceDim);
       }
 
       if (Tools.LT(v * toAdd)) {
@@ -267,6 +265,20 @@ public partial class Geometry<TNum, TConv>
 #endif
     }
 
+    public LinearBasis(LinearBasis lb1, LinearBasis lb2) {
+      Basis = lb1.SubSpaceDim > lb2.SubSpaceDim ? lb1.Basis : lb2.Basis;
+      foreach (Vector bvec2 in lb2) {
+        AddVectorToBasis(bvec2);
+        if (IsFullDim) {
+          break;
+        }
+      }
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
+    }
+
     /// <summary>
     /// Copy constructor.
     /// </summary>
@@ -280,9 +292,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     // Хорошая матрица! m x n, m >= n; rang = n
-    private LinearBasis(Matrix m) {
-      Basis = m;
-    }
+    private LinearBasis(Matrix m) { Basis = m; }
 #endregion
 
 #region Fabrics
