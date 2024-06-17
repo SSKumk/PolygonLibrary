@@ -415,7 +415,7 @@ public partial class Geometry<TNum, TConv>
           Debug.Assert
             (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
 
-          // Vector? r = null; // нужен для процедуры Сварта (ниже)
+          Vector? r = null; // нужен для процедуры Сварта (ниже)
           TNum      minCos = Tools.Two;
           SubPoint? sExtr  = null;
           foreach (SubPoint s in S) {
@@ -428,7 +428,7 @@ public partial class Geometry<TNum, TConv>
               if (cos < minCos) {
                 minCos = cos;
                 sExtr  = s;
-                // r = u;
+                r = u;
               }
             }
           }
@@ -441,22 +441,24 @@ public partial class Geometry<TNum, TConv>
             );
 
           // НАЧАЛЬНАЯ Нормаль Наша (точная)
-          n = LinearBasis.FindOrthonormalVector(FinalV.LinBasis)!;
-          Debug.Assert(n is not null,"GiftWrapping.BuildInitialPlane: Normal to initial plane is null.");
+          // n = LinearBasis.FindOrthonormalVector(FinalV.LinBasis)!;
+          // Debug.Assert(n is not null,"GiftWrapping.BuildInitialPlane: Normal to initial plane is null.");
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
-          // r = r.Normalize();
-          // n = (r! * n) * e - (r! * e) * n;
+          r = r.Normalize();
+          n = (r! * n) * e - (r! * e) * n;
 
           OrientNormal(ref n, origin);
+          #if DEBUG
           if (S.All(s => new HyperPlane(n, origin).Contains(s))) {
             throw new ArgumentException
               (
                $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
               );
           }
+          #endif
 
-          Debug.Assert(!n.IsZero, $"BuildInitialPlaneSwart (dim = {spaceDim}): Normal is zero!");
+          Debug.Assert(!n.IsZero, $"BuildInitialPlan (dim = {spaceDim}): Normal is zero!");
         }
 
         normal = n;
@@ -620,6 +622,13 @@ public partial class Geometry<TNum, TConv>
             break;
           }
         }
+
+        #if DEBUG
+        HyperPlane hp = new HyperPlane(normal, origin);
+        if (!S.All(s => hp.ContainsNegativeNonStrict(s))) {
+          throw new ArgumentException("GiftWrapping.OrientNormal: The normal does not form a facet!");
+        }
+#endif
       }
 #endregion
 
