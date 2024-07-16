@@ -76,7 +76,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-10);
+    private static TNum _eps = TConv.FromDouble(1e-8);
 #endregion
 
 #region Constants
@@ -145,7 +145,7 @@ public partial class Geometry<TNum, TConv>
             throw new ArgumentOutOfRangeException("Tools Eps: Non-positive precision parameter");
           }
 #endif
-          _eps = value;
+          _eps  = value;
         }
     }
 
@@ -327,7 +327,8 @@ public partial class Geometry<TNum, TConv>
         TNum yx = y / x;
 
         return GE(x) ? TNum.Atan(yx) : (GE(y) ? TNum.Atan(yx) + PI : TNum.Atan(yx) - PI);
-      } else {
+      }
+      else {
         TNum xy = x / y;
 
         return GE(y) ? (HalfPI - TNum.Atan(xy)) : (-HalfPI - TNum.Atan(xy));
@@ -370,7 +371,8 @@ public partial class Geometry<TNum, TConv>
         throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
       }
 #endif
-      List<Vector2D> res = ps.Select
+      List<Vector2D> res = ps
+                          .Select
                              (
                               p => {
 #if DEBUG
@@ -382,7 +384,7 @@ public partial class Geometry<TNum, TConv>
                                 return (Vector2D)(m * p);
                               }
                              )
-                            .ToList();
+                          .ToList();
 
       return res;
     }
@@ -408,6 +410,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// todo
+    /// </summary>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    public static int GetHashCodeTNum(TNum n) => TConv.ToInt(TNum.Floor(n / Eps));
+
+    /// <summary>
     /// Advances the current combination to the next one in lexicographical order.
     /// </summary>
     /// <param name="combination">The current combination array.</param>
@@ -428,7 +437,6 @@ public partial class Geometry<TNum, TConv>
 
       return false;
     }
-
 #endregion
 
   }
