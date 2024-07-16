@@ -98,23 +98,29 @@ public partial class Geometry<TNum, TConv>
 
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
       ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP);
-      ConvexPolytop? next = MinkowskiDiff.H2VGeometric(sum, predQ);
+      ConvexPolytop? next = MinkowskiDiff.Geometric(sum, predQ);
 
       return next;
-
     }
 
+    // public void WriteTSection(TNum t, ParamWriter pr) {
+    //   pr.WriteNumber("t", TConv.ToDouble(t), "F3");
+    //   W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
+    // }
 
     /// <summary>
     /// Computes LDG 
     /// </summary>
-    public void Solve(bool isNeedWrite) {
+    public void Solve(bool isNaive, bool isNeedWrite, bool isDouble) {
       Stopwatch timer    = new Stopwatch();
       string    filesDir = workDir + gd.ProblemName;
+      double    eps      = TConv.ToDouble(Tools.Eps);
+
+      string valType = isDouble ? "double" : "ddouble";
+      string algType = isNaive ? "Naive" : "Geometric";
+
       if (isNeedWrite) {
-        if (!Directory.Exists(filesDir)) { //Cur dir must be in the work directory
-          Directory.CreateDirectory(filesDir);
-        }
+        Directory.CreateDirectory($"{filesDir}/{valType}/{algType}/{eps:e0}/");
       }
 
       TNum t = gd.T;
@@ -125,10 +131,14 @@ public partial class Geometry<TNum, TConv>
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
         if (isNeedWrite) {
-          using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
-          pr.WriteNumber("t", TConv.ToDouble(t), "F3");
+          using ParamWriter pr = new ParamWriter($"{filesDir}/{valType}/{algType}/{eps:e0}/{TConv.ToDouble(t):F2}){fileName}.cpolytop");
           W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
-          W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
+
+
+          // using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
+          // pr.WriteNumber("t", TConv.ToDouble(t), "F3");
+          // W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
+          // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
         tPred =  t;
@@ -137,8 +147,13 @@ public partial class Geometry<TNum, TConv>
           timer.Restart();
           ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred], true);
 
-          // ConvexPolytop? WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
-          ConvexPolytop? WNext = MinkowskiDiff.H2VGeometric(Sum, gd.Qs[tPred]);
+          ConvexPolytop? WNext;
+          if (isNaive) {
+            WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+          }
+          else {
+            WNext = MinkowskiDiff.Geometric(Sum, gd.Qs[tPred]);
+          }
 
           timer.Stop();
 
