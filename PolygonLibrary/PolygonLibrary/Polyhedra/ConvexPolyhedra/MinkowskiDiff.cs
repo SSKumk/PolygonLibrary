@@ -31,7 +31,7 @@ public partial class Geometry<TNum, TConv>
                : null;
     }
 
-    public static ConvexPolytop? H2VGeometric(ConvexPolytop F, ConvexPolytop G)
+    public static ConvexPolytop? Geometric(ConvexPolytop F, ConvexPolytop G)
     {
       return MinkDiff
                (
