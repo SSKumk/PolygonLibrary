@@ -1082,7 +1082,11 @@ public partial class Geometry<TNum, TConv>
       // Vs.Add(FindInitialVertex_Simplex(HPs));
 
       // Наивная реализация
-      Vs.Add(FindInitialVertex_Naive(HPs, m, d));
+      Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
+      if (firstPoint is null) {
+        return new HashSet<Vector>();
+      }
+      Vs.Add(firstPoint);
 
       // Console.WriteLine("1 stage done");
 
@@ -1107,14 +1111,15 @@ public partial class Geometry<TNum, TConv>
 
 
           // ищем направляющий вектор прямой, перпендикулярный линейному пространству edge
-          Vector v;
-          int    i = 0;
-          do {
-            i++;
-            v = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(d, i), edgeLinSpace);
-          } while (v.IsZero && i <= d);
-          Debug.Assert
-            (i <= d, $"ConvexPolytop.HRepToVRep_Geometric (dim = {d}): Can't find vector e! That orthogonal to the HzLinSpace.");
+          Vector v = LinearBasis.FindOrthonormalVector(edgeLinSpace);
+
+          // int    i = 0;
+          // do {
+          //   i++;
+          //   v = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(d, i), edgeLinSpace);
+          // } while (v.IsZero && i <= d);
+          // Debug.Assert
+          //   (i <= d, $"ConvexPolytop.HRepToVRep_Geometric (dim = {d}): Can't find vector e! That orthogonal to the HzLinSpace.");
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;
@@ -1201,7 +1206,7 @@ public partial class Geometry<TNum, TConv>
       return new Vector(x);
     }
 
-    private static Vector FindInitialVertex_Naive(List<HyperPlane> HPs, int m, int d) {
+    private static Vector? FindInitialVertex_Naive(List<HyperPlane> HPs, int m, int d) {
       Combination          combination = new Combination(m, d);
       Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
@@ -1228,7 +1233,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (goNext && combination.Next());
 
-      return firstPoint.First();
+      return firstPoint.Count != 0 ? firstPoint.First() : null;
     }
 
   }
