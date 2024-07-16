@@ -130,7 +130,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(v is not null, $"Vector.CompareTo: second vector is null!");
 
       if (d != v.Dim) {
-        throw new ArgumentException("Cannot compare vectors of different dimensions");
+        throw new ArgumentException("Vector.CompareTo: Cannot compare vectors of different dimensions");
       }
 #endif
       for (int i = 0; i < d; i++) {
@@ -603,7 +603,7 @@ public partial class Geometry<TNum, TConv>
       int res = 0, d = Dim;
 
       for (int i = 0; i < d; i++) {
-        res = HashCode.Combine(res, TNum.Round(_v[i] / Tools.Eps));
+        res = HashCode.Combine(res, Tools.GetHashCodeTNum(_v[i]));
       }
 
       return res;
