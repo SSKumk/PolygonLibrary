@@ -749,14 +749,24 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Generates an arbitrary vector of the specified dimension. Each coordinate: [a, b].
+    /// Generates an arbitrary vector of the specified dimension. Each coordinate: [a, b).
     /// </summary>
     /// <param name="dim">The dimension of the vector.</param>
     /// <param name="a">The minimum value of each coordinate.</param>
     /// <param name="b">The maximum value of each coordinate.</param>
-    /// <param name="random">If null then default one be used.</param>
+    /// <param name="random">If null, then default one be used.</param>
     /// <returns>A random vector.</returns>
     public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) => new Vector(GenArray(dim, a, b, random));
+
+    /// <summary>
+    /// Generates an arbitrary vector of integers of the specified dimension. Each coordinate: [a, b).
+    /// </summary>
+    /// <param name="dim">The dimension of the vector.</param>
+    /// <param name="a">The minimum value of each coordinate.</param>
+    /// <param name="b">The maximum value of each coordinate.</param>
+    /// <param name="random">If null, then default one be used.</param>
+    /// <returns>A random vector.</returns>
+    public static Vector GenVectorInt(int dim, int a, int b, GRandomLC? random = null) => new Vector(GenArrayInt(dim, a, b, random));
 #endregion
 
 #region Operators
