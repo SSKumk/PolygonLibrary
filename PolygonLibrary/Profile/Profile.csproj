@@ -24,6 +24,9 @@
         <Reference Include="MultiPrecision">
           <HintPath>..\MultiPrecision.dll</HintPath>
         </Reference>
+        <Reference Include="AVLUtils">
+          <HintPath>..\AVLUtils.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
