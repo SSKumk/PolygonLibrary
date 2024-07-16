@@ -403,17 +403,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e;
-          int    i = 0;
-          // Vector[] nBasis = { n };
-          LinearBasis nLinBasis = new LinearBasis(n);
-          do {
-            i++;
-            e = LinearBasis.OrthonormalizeAgainstBasis
-              (LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(spaceDim, i), FinalV.LinBasis), nLinBasis);
-          } while (e.IsZero);
-          Debug.Assert
-            (i <= spaceDim, $"BuildInitialPlaneSwart (dim = {spaceDim}): Can't find vector e! That orthogonal to FinalV and n.");
+          Vector e = LinearBasis.FindOrthonormalVector(new LinearBasis(FinalV.LinBasis, new LinearBasis(n)));
 
           Vector? r = null; // нужен для процедуры Сварта (ниже)
           TNum      minCos = Tools.Two;
