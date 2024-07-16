@@ -421,7 +421,6 @@ public class MinkowskiSum5D {
     IEnumerable<FaceLattice> all_FL_Rot   = all_lst.Select(l => GiftWrapping.WrapFaceLattice(Rotate(l, rotate5D)));
     IEnumerable<FaceLattice> all_FL_Shift = all_lst.Select(l => GiftWrapping.WrapFaceLattice(Shift(l, shift)));
 
-    // todo toTreat точно никуда не идёт?
     IEnumerable<FaceLattice> toTreat = all_FL;
     if (needToRot) {
       toTreat = all_FL_Rot;
@@ -433,8 +432,8 @@ public class MinkowskiSum5D {
     // перебираем кубы
     foreach (FaceLattice cube in allCubes_FL) {
       // перебираем всё остальное
-      foreach (FaceLattice other in all_FL) {
-        yield return new TestCaseData(cube, other);
+      foreach (FaceLattice other in toTreat) {
+        yield return new TestCaseData(ConvexPolytop.AsFLPolytop(cube), ConvexPolytop.AsFLPolytop(other));
       }
     }
   }
