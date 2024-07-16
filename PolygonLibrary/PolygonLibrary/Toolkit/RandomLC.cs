@@ -47,7 +47,7 @@ public class RandomLC {
   }
 
   /// <summary>
-  /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue].
+  /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue).
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
   /// <param name="rb">The upper bound of the range (inclusive).</param>
@@ -123,6 +123,25 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     TNum[] v = new TNum[dim];
     for (int i = 0; i < dim; i++) {
       v[i] = rnd.NextPrecise(a,b);
+    }
+
+    return v;
+  }
+
+  /// <summary>
+  /// Generates an array of integers of the specified dimension. Each component lies in [a, b).
+  /// </summary>
+  /// <param name="dim">The dimension of the array.</param>
+  /// <param name="a">The minimum value of each component.</param>
+  /// <param name="b">The maximum value of each component.</param>
+  /// <param name="random">If null, then default one be used.</param>
+  /// <returns>An array with random values.</returns>
+  public static TNum[] GenArrayInt(int dim, int a, int b, GRandomLC? random = null) {
+    GRandomLC rnd = random ?? Tools.rnd;
+
+    TNum[] v = new TNum[dim];
+    for (int i = 0; i < dim; i++) {
+      v[i] = TConv.FromInt(rnd.NextInt(a,b));
     }
 
     return v;
