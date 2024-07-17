@@ -23,22 +23,22 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the set of vertices of the simplex.
     /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
+    public override SortedSet<SubPoint> Vertices { get; }
 
 
     /// <summary>
     /// The set of (d-1)-dimensional faces of a simplex, which are in turn a Simplex.
     /// </summary>
-    private HashSet<BaseSubCP>? _faces = null;
+    private SortedSet<BaseSubCP>? _faces = null;
 
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the simplex, which are in turn a Simplex.
     /// </summary>
-    public override HashSet<BaseSubCP> Faces {
+    public override SortedSet<BaseSubCP> Faces {
       get
         {
           if (_faces is null) {
-            _faces = new HashSet<BaseSubCP>();
+            _faces = new SortedSet<BaseSubCP>();
 
             foreach (SubPoint vertex in Vertices) {
               SubPoint[] faceVert = Vertices.Where(v => !v.Equals(vertex)).ToArray();
@@ -85,11 +85,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="simplex">The set of vertices of the simplex.</param>
     /// <param name="faces">The set of faces of the simplex.</param>
     /// <param name="incidence">Information about face incidence.</param>
-    public SubSimplex(IEnumerable<SubPoint> simplex, HashSet<BaseSubCP>? faces = null, SubIncidenceInfo? incidence = null) {
+    public SubSimplex(IEnumerable<SubPoint> simplex, SortedSet<BaseSubCP>? faces = null, SubIncidenceInfo? incidence = null) {
       Debug.Assert(simplex.Count() >= 3, $"The simplex must have at least three points! Found {simplex.Count()}.");
 
       PolytopDim    = simplex.Count() - 1;
-      Vertices      = new HashSet<SubPoint>(simplex);
+      Vertices      = new SortedSet<SubPoint>(simplex);
       _faces        = faces;
       FaceIncidence = incidence;
     }

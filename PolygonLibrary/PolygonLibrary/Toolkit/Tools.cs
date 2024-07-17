@@ -403,13 +403,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// todo
-    /// </summary>
-    /// <param name="n"></param>
-    /// <returns></returns>
-    public static int GetHashCodeTNum(TNum n) => TConv.ToInt(TNum.Floor(n / Eps));
-
-    /// <summary>
     /// Advances the current combination to the next one in lexicographical order.
     /// </summary>
     /// <param name="combination">The current combination array.</param>

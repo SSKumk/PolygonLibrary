@@ -8,62 +8,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // /// <summary>
-  // /// Type of permanent storage of face incidence information.
-  // /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
-  // /// </summary>
-  // public class IncidenceInfo : Dictionary<Edge, (Facet F1, Facet F2)> {
-  //
-  //   public IncidenceInfo(IncidenceInfo incid) : base(incid) { }
-  //
-  //   public IncidenceInfo(SubIncidenceInfo info) : base
-  //     (
-  //      new Dictionary<Edge, (Facet F1, Facet F2)>
-  //        (
-  //         info.Select
-  //           (
-  //            x => {
-  //              Debug.Assert(x.Value.F1.Normal is not null, "IncidenceInfo: x.Value.F1.Normal != null");
-  //              Debug.Assert(x.Value.F2.Normal is not null, "IncidenceInfo: x.Value.F2.Normal != null");
-  //
-  //
-  //              return new KeyValuePair<Edge, (Facet F1, Facet F2)>
-  //                (
-  //                 new Edge(x.Key.OriginalVertices)
-  //               , (new Facet(x.Value.F1.OriginalVertices, x.Value.F1.Normal)
-  //                , new Facet(x.Value.F2.OriginalVertices, x.Value.F2.Normal))
-  //                );
-  //            }
-  //           )
-  //        )
-  //     ) { }
-  //
-  // }
-  //
-  // /// <summary>
-  // /// Type of permanent storage of fans information.
-  // /// Dictionary: point --> set of faces incident with a point.
-  // /// </summary>
-  // public class FansInfo : Dictionary<Vector, HashSet<Facet>> {
-  //
-  //   public FansInfo(FansInfo fansInfo) : base(fansInfo) { }
-  //
-  //   public FansInfo(HashSet<BaseSubCP> Fs) {
-  //     foreach (BaseSubCP F in Fs) {
-  //       foreach (Vector vertex in F.OriginalVertices) {
-  //         Debug.Assert(F.Normal is not null, "F.Normal != null");
-  //
-  //         if (TryGetValue(vertex, out HashSet<Facet>? value)) {
-  //           value.Add(new Facet(F.OriginalVertices, F.Normal));
-  //         } else {
-  //           base.Add(vertex, new HashSet<Facet>() { new Facet(F.OriginalVertices, F.Normal) });
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  // }
-
   /// <summary>
   /// Represents an facet of the Polytop.
   /// </summary>
@@ -102,31 +46,8 @@ public partial class Geometry<TNum, TConv>
 
       Facet other = (Facet)obj;
 
-      return Normal.Equals(other.Normal) && (new HashSet<Vector>(Vertices)).SetEquals(other.Vertices);
+      return Normal.Equals(other.Normal) && (new SortedSet<Vector>(Vertices)).SetEquals(other.Vertices);
     }
-
-    /// <summary>
-    /// Internal field for the hash of the face
-    /// </summary>
-    private int? _hash = null;
-
-    /// <summary>
-    /// Returns a hash code for the face based on specified set of vertices.
-    /// </summary>
-    /// <returns>A hash code for the specified set of vertices.</returns>
-    public override int GetHashCode() {
-      if (_hash is null) {
-        int hash = Normal.GetHashCode();
-
-        foreach (Vector vertex in Vertices.Order()) {
-          hash = HashCode.Combine(hash, vertex.GetHashCode());
-        }
-        _hash = hash;
-      }
-
-      return _hash.Value;
-    }
-
   }
 
   /// <summary>
@@ -149,14 +70,14 @@ public partial class Geometry<TNum, TConv>
 
     private GiftWrapping GW => _gw ??= new GiftWrapping(VRep);
 
-    private HashSet<Vector>? _VRep = null;
+    private SortedSet<Vector>? _VRep = null;
 
-    public HashSet<Vector> VRep {
+    public SortedSet<Vector> VRep {
       get
         {
           if (_VRep is null) {
             if (_FL is not null) {
-              _VRep = new HashSet<Vector>(FL.Vertices);
+              _VRep = new SortedSet<Vector>(FL.Vertices);
             }
             else if (_HRep is not null) {
               _VRep = HRepToVRep_Geometric(HRep);
@@ -169,7 +90,7 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    public HashSet<Vector> Vertices => VRep;
+    public SortedSet<Vector> Vertices => VRep;
 
     private List<HyperPlane>? _HRep = null;
 
@@ -233,20 +154,17 @@ public partial class Geometry<TNum, TConv>
       return minDist;
     }
 #endregion
-
-    // todo Нужен ли GetHashCode()? Если да, то как его считать?
-
 #region Constructors
     private enum ConvexPolytopForm { VRep, HRep, FL }
 
-    private ConvexPolytop(HashSet<Vector> VP, bool toConvexify, ConvexPolytopForm form) {
+    private ConvexPolytop(SortedSet<Vector> VP, bool toConvexify, ConvexPolytopForm form) {
       SpaceDim = VP.First().Dim;
       if (toConvexify) {
         _gw   = new GiftWrapping(VP);
         _VRep = GW.VRep;
       }
       else {
-        _VRep = new HashSet<Vector>(VP);
+        _VRep = new SortedSet<Vector>(VP);
       }
       switch (form) {
         case ConvexPolytopForm.VRep: break; // уже всё сделали
@@ -290,7 +208,7 @@ public partial class Geometry<TNum, TConv>
       switch (form) {
         case ConvexPolytopForm.FL: break; // всё есть
         case ConvexPolytopForm.VRep:
-          _VRep = new HashSet<Vector>(FL.Vertices);
+          _VRep = new SortedSet<Vector>(FL.Vertices);
 
           break;
         case ConvexPolytopForm.HRep:
@@ -311,13 +229,13 @@ public partial class Geometry<TNum, TConv>
 
 #region Fabrics
     public static ConvexPolytop AsVPolytop(IEnumerable<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S.ToHashSet(), toConvexify, ConvexPolytopForm.VRep);
+      => new ConvexPolytop(S.ToSortedSet(), toConvexify, ConvexPolytopForm.VRep);
 
     public static ConvexPolytop AsHPolytop(IEnumerable<Vector> S)
-      => new ConvexPolytop(S.ToHashSet(), true, ConvexPolytopForm.HRep);
+      => new ConvexPolytop(S.ToSortedSet(), true, ConvexPolytopForm.HRep);
 
     public static ConvexPolytop AsFLPolytop(IEnumerable<Vector> S)
-      => new ConvexPolytop(S.ToHashSet(), true, ConvexPolytopForm.FL);
+      => new ConvexPolytop(S.ToSortedSet(), true, ConvexPolytopForm.FL);
 
     public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
       => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.VRep);
@@ -338,10 +256,10 @@ public partial class Geometry<TNum, TConv>
         throw new ArgumentException
           ($"ConvexPolytop.AsVPolytop: Can not construct VRep from the file with Rep = {nameRep}, it must be 'VRep'.");
       }
-      int             SDim  = pr.ReadNumber<int>("SDim");
-      int             VsQnt = pr.ReadNumber<int>("VsQnt");
-      TNum[,]         Vs    = pr.Read2DArray<TNum>("Vs", VsQnt, SDim);
-      HashSet<Vector> S     = new VectorHashSet(VsQnt);
+      int               SDim  = pr.ReadNumber<int>("SDim");
+      int               VsQnt = pr.ReadNumber<int>("VsQnt");
+      TNum[,]           Vs    = pr.Read2DArray<TNum>("Vs", VsQnt, SDim);
+      SortedSet<Vector> S     = new SortedSet<Vector>();
       for (int row = 0; row < VsQnt; row++) {
         TNum[] v = new TNum[SDim];
         for (int col = 0; col < SDim; col++) {
@@ -403,7 +321,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return ConvexPolytop.AsFLPolytop(new FaceLattice(lattice.Select(level => level.ToHashSet()).ToList()));
+      return ConvexPolytop.AsFLPolytop(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList()));
     }
 #endregion
 
@@ -413,7 +331,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="dim">The dimension of the point.</param>
     /// <returns>The one point polytop.</returns>
-    public static ConvexPolytop Point(int dim) => AsVPolytop(new HashSet<Vector> { Vector.Ones(dim) });
+    public static ConvexPolytop Point(int dim) => AsVPolytop(new SortedSet<Vector> { Vector.Ones(dim) });
 
     /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension.
@@ -434,7 +352,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       if (left.Dim == 1) {
-        return AsVPolytop(new HashSet<Vector>() { left, right });
+        return AsVPolytop(new SortedSet<Vector>() { left, right });
       }
 
       List<List<TNum>> rect_prev = new List<List<TNum>>();
@@ -453,7 +371,7 @@ public partial class Geometry<TNum, TConv>
         rect_prev = new List<List<TNum>>(rect);
       }
 
-      HashSet<Vector> Cube = new HashSet<Vector>();
+      SortedSet<Vector> Cube = new SortedSet<Vector>();
 
       foreach (List<TNum> v in rect) {
         Cube.Add(new Vector(v.ToArray()));
@@ -471,7 +389,7 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop SimplexRND(int simplexDim, bool doFL = false) {
       GRandomLC random = new GRandomLC();
 
-      HashSet<Vector> simplex = new HashSet<Vector>();
+      SortedSet<Vector> simplex = new SortedSet<Vector>();
       do {
         for (int i = 0; i < simplexDim + 1; i++) {
           simplex.Add(new Vector(Vector.GenVector(simplexDim, TConv.FromInt(0), TConv.FromInt(10), random)));
@@ -496,8 +414,8 @@ public partial class Geometry<TNum, TConv>
          amountOfPoints > pDim
        , $"TestPolytopes.Cyclic: The amount of points must be greater than the dimension of the space. Dim = {pDim}, amount = {amountOfPoints}"
         );
-      HashSet<Vector> cycP      = new HashSet<Vector>() { new Vector(pDim) };
-      TNum            baseCoord = Tools.One + step;
+      SortedSet<Vector> cycP      = new SortedSet<Vector>() { new Vector(pDim) };
+      TNum              baseCoord = Tools.One + step;
       for (int i = 1; i < amountOfPoints; i++) {
         TNum[] point      = new TNum[pDim];
         TNum   coordinate = baseCoord;
@@ -559,10 +477,10 @@ public partial class Geometry<TNum, TConv>
 
       // Phi in [0, 2*Pi)
       // Theta in [0, Pi]
-      HashSet<Vector> Ps        = new HashSet<Vector>();
-      int             N         = dim - 2;
-      TNum            thetaStep = Tools.PI / TConv.FromInt(thetaPartition);
-      TNum            phiStep   = Tools.PI2 / TConv.FromInt(phiPartition);
+      SortedSet<Vector> Ps        = new SortedSet<Vector>();
+      int               N         = dim - 2;
+      TNum              thetaStep = Tools.PI / TConv.FromInt(thetaPartition);
+      TNum              phiStep   = Tools.PI2 / TConv.FromInt(phiPartition);
 
       List<TNum> thetaAll = new List<TNum>();
       for (int i = 0; i <= thetaPartition; i++) {
@@ -629,7 +547,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="radius">The radius of the ball.</param>
     /// <returns>The ball in 1-norm.</returns>
     public static ConvexPolytop Ball_1(int dim, Vector center, TNum radius) {
-      HashSet<Vector> ball = new HashSet<Vector>(2 * dim);
+      SortedSet<Vector> ball = new SortedSet<Vector>();
       for (int i = 1; i <= dim; i++) {
         Vector e = radius * Vector.MakeOrth(dim, i) + center;
         ball.Add(e);
@@ -664,7 +582,7 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop DistanceToBall_2(int dim, int thetaPartition, int phiPartition, TNum radius0, TNum CMax) {
       ConvexPolytop ball0        = Sphere(dim, thetaPartition, phiPartition, Vector.Zero(dim), radius0);
       TNum          radiusF      = radius0 + CMax;
-      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * radiusF).ToHashSet());
+      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * radiusF).ToSortedSet());
       ConvexPolytop ball0_lifted = LiftUp(ball0, Tools.Zero);
       ConvexPolytop ballF_lifted = LiftUp(ballF, CMax);
       ball0_lifted.Vertices.UnionWith(ballF_lifted.Vertices); // Теперь тут лежат все точки
@@ -821,7 +739,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="val">The value used in expansion.</param>
     /// <returns>The polytop in higher dimension.</returns>
     private static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
-      => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToHashSet());
+      => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToSortedSet());
 
     /// <summary>
     /// Create a new convex d-dim polytop from the d-dim convex polytop P as section by given hyperplane.
@@ -833,7 +751,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
-      return AsVPolytop(HRepToVRep_Geometric(hrep).ToHashSet(), true);
+      return AsVPolytop(HRepToVRep_Geometric(hrep).ToSortedSet(), true);
     }
 
     /// <summary>
@@ -846,7 +764,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
 
-      return AsVPolytop(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToHashSet(), true);
+      return AsVPolytop(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToSortedSet(), true);
     }
 #endregion
 
@@ -864,8 +782,6 @@ public partial class Geometry<TNum, TConv>
 
       return Equals((ConvexPolytop)obj);
     }
-
-    public override int GetHashCode() { throw new NotImplementedException(); }
 #endregion
 
 #region Write out
@@ -978,13 +894,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="filePath">The path to the file to read from without extension.</param>
     /// <returns>The convex polytop as VRep read from file.</returns>
     public static ConvexPolytop ReadAsPoints(string filePath) {
-      HashSet<Vector> Vs;
+      SortedSet<Vector> Vs;
       using (StreamReader reader = new StreamReader(filePath + ".txt")) {
         reader.ReadLine(); // scip PDim
         reader.ReadLine(); // scip SDim
         reader.ReadLine(); // scip empty line
         int VsQnt = int.Parse(reader.ReadLine()!.Split(':')[1].Trim());
-        Vs = new HashSet<Vector>(VsQnt);
+        Vs = new SortedSet<Vector>();
         for (int i = 0; i < VsQnt; i++) {
           Vs.Add(new Vector(reader.ReadLine()!.Split(' ').Select(v => TConv.FromDouble(double.Parse(v))).ToArray()));
         }
@@ -1029,11 +945,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static HashSet<Vector> HRepToVRep_Naive(List<HyperPlane> HPs) {
+    public static SortedSet<Vector> HRepToVRep_Naive(List<HyperPlane> HPs) {
       int m = HPs.Count;
       int d = HPs.First().Normal.Dim;
 
-      HashSet<Vector>      Vs          = new HashSet<Vector>();
+      SortedSet<Vector>    Vs          = new SortedSet<Vector>();
       Combination          combination = new Combination(m, d);
       Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
@@ -1057,7 +973,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (combination.Next());
 
-      return new HashSet<Vector>(Vs);
+      return new SortedSet<Vector>(Vs);
     }
 
     /// <summary>
@@ -1065,17 +981,17 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">The hyperplane arrangement.</param>
     /// <returns>The V-representation of the convex polytop.</returns>
-    public static HashSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
-      HashSet<Vector> Vs = new HashSet<Vector>();
-      int             m  = HPs.Count;
-      int             d  = HPs.First().Normal.Dim;
+    public static SortedSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
+      SortedSet<Vector> Vs = new SortedSet<Vector>();
+      int               m  = HPs.Count;
+      int               d  = HPs.First().Normal.Dim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
       // Vs.Add(FindInitialVertex_Simplex(HPs));
 
       // Наивная реализация
       Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
       if (firstPoint is null) {
-        return new HashSet<Vector>();
+        return new SortedSet<Vector>();
       }
       Vs.Add(firstPoint);
 

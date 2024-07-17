@@ -307,8 +307,8 @@ public partial class Geometry<TNum, TConv>
       for (t = T; Tools.GE(t, t0); t -= dt) {
         TNum
           t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToHashSet());
-        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToHashSet(), false);
+        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToSortedSet());
+        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToSortedSet(), false);
       }
     }
 #endregion
@@ -388,7 +388,7 @@ public partial class Geometry<TNum, TConv>
               describeM += "DtnPolytop_";
               int           VsQnt    = _pr.ReadNumber<int>("MVsQnt");
               TNum[,]       Vs       = _pr.Read2DArray<TNum>("MPolytop", VsQnt, d);
-              ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToHashSet(Vs, VsQnt, d));
+              ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToSortedSet(Vs, VsQnt, d));
               string        BallType = _pr.ReadString("MBallType");
               describeM += $"Vs-Qnt{VsQnt}_{BallType}";
               int Theta = 10, Phi = 10;
@@ -439,12 +439,12 @@ public partial class Geometry<TNum, TConv>
                           };
 
       // Array for coordinates of the next point
-      HashSet<Vector>? res = null;
+      SortedSet<Vector>? res = null;
       switch (setType) {
         case SetType.VertList: {
           int     Qnt  = _pr.ReadNumber<int>($"{player}Qnt");
           TNum[,] Vert = _pr.Read2DArray<TNum>($"{player}Vert", Qnt, dim);
-          res = Array2DToHashSet(Vert, Qnt, dim);
+          res = Array2DToSortedSet(Vert, Qnt, dim);
 
           setTypeInfo += $"-Qnt{Qnt}";
 
@@ -486,14 +486,14 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Converts a two-dimensional array to a HashSet of points.
+    /// Converts a two-dimensional array to a SortedSet of points.
     /// </summary>
     /// <param name="ar">The two-dimensional array to convert.</param>
     /// <param name="row">The number of rows in the array.</param>
     /// <param name="col">The number of columns in the array.</param>
     /// <returns>A hash set of points obtained from the two-dimensional array.</returns>
-    private static HashSet<Vector> Array2DToHashSet(TNum[,] ar, int row, int col) {
-      HashSet<Vector> list = new HashSet<Vector>();
+    private static SortedSet<Vector> Array2DToSortedSet(TNum[,] ar, int row, int col) {
+      SortedSet<Vector> list = new SortedSet<Vector>();
       for (int i = 0; i < row; i++) {
         TNum[] point = new TNum[col];
         for (int j = 0; j < col; j++) {

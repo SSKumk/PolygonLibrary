@@ -309,14 +309,6 @@ public partial class Geometry<TNum, TConv>
 
     public override string ToString()
       => $"({x.ToString(null, CultureInfo.InvariantCulture)};{y.ToString(null, CultureInfo.InvariantCulture)})";
-
-    public override int GetHashCode() {
-      int res = 0;
-      res = HashCode.Combine(res, TNum.Round(x / Tools.Eps));
-      res = HashCode.Combine(res, TNum.Round(y / Tools.Eps));
-
-      return res;
-    }
 #endregion
 
 #region Constructors and factories

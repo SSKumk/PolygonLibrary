@@ -318,14 +318,6 @@ public partial class Geometry<TNum, TConv>
 #endif
       return p1 == ((Segment)obj!).p1 && p2 == ((Segment)obj).p2;
     }
-
-    public override int GetHashCode() {
-      int res = 0;
-      res = HashCode.Combine(res, p1.GetHashCode());
-      res = HashCode.Combine(res, p2.GetHashCode());
-
-      return res;
-    }
 #endregion
 
 #region Constructors

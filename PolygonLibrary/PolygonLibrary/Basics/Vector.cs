@@ -593,16 +593,6 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
-    public override int GetHashCode() {
-      int res = 0, d = Dim;
-
-      for (int i = 0; i < d; i++) {
-        res = HashCode.Combine(res, Tools.GetHashCodeTNum(_v[i]));
-      }
-
-      return res;
-    }
-
     public string ToStringDouble(char braceOpen = '(', char braceClose = ')', char delim = ',') {
       string res = $"{braceOpen}{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
       int    d   = Dim, i;
@@ -1005,29 +995,6 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(coords);
     }
-
-  }
-
-  public class VectorHashSet : HashSet<Vector> {
-
-    public VectorHashSet() { }
-    public VectorHashSet(IEnumerable<Vector> collection) : base(collection) { }
-    public VectorHashSet(IEnumerable<Vector> collection, IEqualityComparer<Vector>? comparer) : base(collection, comparer) { }
-    public VectorHashSet(IEqualityComparer<Vector>? comparer) : base(comparer) { }
-    public VectorHashSet(int capacity) : base(capacity) { }
-    public VectorHashSet(int capacity, IEqualityComparer<Vector>? comparer) : base(capacity, comparer) { }
-
-    public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
-        return false;
-      }
-
-      VectorHashSet other = (VectorHashSet)obj;
-
-      return this.SetEquals(other);
-    }
-
-    public override int GetHashCode() { return this.Select(v => v.GetHashCode()).Order().Aggregate(0, HashCode.Combine); }
 
   }
 

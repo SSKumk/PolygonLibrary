@@ -277,8 +277,6 @@ public partial class Geometry<TNum, TConv>
     public static HyperPlane Make3D_xyParallel(TNum z) => new(Vector.MakeOrth(3, 3), z * Vector.MakeOrth(3, 3));
 #endregion
 
-    public override int GetHashCode() => HashCode.Combine(Normal.GetHashCode(), ConstantTerm);
-
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;

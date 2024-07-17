@@ -57,7 +57,7 @@ public partial class Geometry<TNum, TConv>
      * Но в среднем мы будем проигрывать, так как симплекс-метод не идёт по всем вершинам и множитель |V(G)| - грубая оценка сверху.
      */
 
-    public static Vector FindExtrInCPOnVector_Naive(HashSet<Vector> P, Vector l)
+    public static Vector FindExtrInCPOnVector_Naive(SortedSet<Vector> P, Vector l)
     {
       Vector extr = new Vector(P.First());
       TNum extrVal = l * extr;
@@ -109,12 +109,12 @@ public partial class Geometry<TNum, TConv>
 
     private static bool MinkDiff(
         List<HyperPlane> F
-      , HashSet<Vector> G
+      , SortedSet<Vector> G
       , out ConvexPolytop diffFG
-      , Func<HashSet<Vector>, Vector, Vector> findExtrInG_on_lFromNF
+      , Func<SortedSet<Vector>, Vector, Vector> findExtrInG_on_lFromNF
       , Func<HyperPlane, Vector, HyperPlane> doSubtract // <-- todo Как назвать?
-      , Func<List<HyperPlane>, HashSet<Vector>> HRepToVRep
-      , Func<HashSet<Vector>, FaceLattice> produceFL
+      , Func<List<HyperPlane>, SortedSet<Vector>> HRepToVRep
+      , Func<SortedSet<Vector>, FaceLattice> produceFL
       , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null
       )
     {
@@ -140,7 +140,7 @@ public partial class Geometry<TNum, TConv>
       // timer.Restart();
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
-      HashSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
+      SortedSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
       // timer.Stop();
       // Console.WriteLine($"Diff_HtoV = {timer.Elapsed.TotalMilliseconds}");
 

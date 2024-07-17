@@ -23,12 +23,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the set of vertices of the polytop.
     /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
+    public override SortedSet<SubPoint> Vertices { get; }
 
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.
     /// </summary>
-    public override HashSet<BaseSubCP> Faces { get; }
+    public override SortedSet<BaseSubCP>? Faces { get; }
 
 
     /// <summary>
@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns></returns>
     public override BaseSubCP ToPreviousSpace() {
-      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
+      SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
       // SubIncidenceInfo      info  = new SubIncidenceInfo();
 
       // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in FaceIncidence!) {
@@ -54,9 +54,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
       IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(aBasis));
-      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
+      SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
 
-      return new SubNonSimplex(faces, FaceIncidence!, new HashSet<SubPoint>(Vs));
+      return new SubNonSimplex(faces, FaceIncidence!, new SortedSet<SubPoint>(Vs));
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="faces">Faces to construct the convex polytop</param>
     /// <param name="incidence">Information about face incidence.</param>
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
-    public SubNonSimplex(HashSet<BaseSubCP> faces, SubIncidenceInfo incidence, HashSet<SubPoint>? Vs = null) {
+    public SubNonSimplex(SortedSet<BaseSubCP> faces, SubIncidenceInfo incidence, SortedSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
       Faces = faces;
 
@@ -76,7 +76,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       // }
 
       if (Vs is null) {
-        Vs = new HashSet<SubPoint>();
+        Vs = new SortedSet<SubPoint>();
 
         foreach (BaseSubCP face in faces) {
           Vs.UnionWith(face.Vertices);

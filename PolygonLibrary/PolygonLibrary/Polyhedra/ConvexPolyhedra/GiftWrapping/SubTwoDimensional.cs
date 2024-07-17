@@ -22,7 +22,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the vertices of the polygon.
     /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
+    public override SortedSet<SubPoint> Vertices { get; }
 
     /// <summary>
     /// Gets the list of vertices of the polygon.
@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the faces of the polygon.
     /// </summary>
-    public override HashSet<BaseSubCP>? Faces { get; }
+    public override SortedSet<BaseSubCP>? Faces { get; }
 
     /// <summary>
     /// There are no such information needed: if necessary, the neighborhood of 2d faces is established trivially.
@@ -52,10 +52,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         );
 
       // List<SubPoint> vertices = new List<SubPoint>(Vs);
-      Vertices = new HashSet<SubPoint>(Vs);
+      Vertices = new SortedSet<SubPoint>(Vs);
       VerticesList = Vs.Select(v => new Vector(v.GetRootVertex())).ToArray();
 
-      HashSet<BaseSubCP> faces = new HashSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
+      SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
 
       for (int i = 0; i < Vs.Count - 1; i++) {
         faces.Add(new SubTwoDimensionalEdge(Vs[i], Vs[i + 1]));

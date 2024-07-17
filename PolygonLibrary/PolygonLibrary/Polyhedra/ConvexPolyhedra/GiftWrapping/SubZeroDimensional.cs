@@ -23,14 +23,14 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the vertex.
     /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
+    public override SortedSet<SubPoint> Vertices { get; }
 
     private SubPoint vertex { get; }
 
     /// <summary>
     /// There are no Faces of the 0-dimensional vertex.
     /// </summary>
-    public override HashSet<BaseSubCP>? Faces => null;
+    public override SortedSet<BaseSubCP>? Faces => null;
 
     /// <summary>
     /// There are no Faces of the 0-dimensional vertex.
@@ -43,7 +43,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="vertex">The vertex.</param>
     public SubZeroDimensional(SubPoint vertex) {
       this.vertex = vertex;
-      Vertices    = new HashSet<SubPoint>() { vertex };
+      Vertices    = new SortedSet<SubPoint>() { vertex };
     }
 
     /// <summary>

@@ -13,8 +13,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="A">The first set of points.</param>
     /// <param name="B">The second set of points.</param>
     /// <returns>The set of points represented the Minkowski sum of two sets of points.</returns>
-    public static HashSet<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B) {
-      HashSet<Vector> AB = new HashSet<Vector>();
+    public static SortedSet<Vector> AlgSumPoints(IEnumerable<Vector> A, IEnumerable<Vector> B) {
+      SortedSet<Vector> AB = new SortedSet<Vector>();
       foreach (Vector a in A) {
         AB.UnionWith(Shift(B, a));
       }
@@ -41,7 +41,7 @@ public partial class Geometry<TNum, TConv>
     // /// <returns>
     // /// Returns a face lattice of the sum.
     // /// </returns>
-    // public static ConvexPolytop ByConvexHull(HashSet<Vector> P, HashSet<Vector> Q)
+    // public static ConvexPolytop ByConvexHull(SortedSet<Vector> P, SortedSet<Vector> Q)
     //   => ConvexPolytop.AsFLPolytop(AlgSumPoints(P, Q));
 
     // /// <summary>
@@ -88,15 +88,15 @@ public partial class Geometry<TNum, TConv>
     //   // Словарь (x \in P, y \in Q) --> z \in P (+) Q. (Нужен для уменьшения перебора в процессе движения по решёткам)
     //   Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
     //   // Сама решётка. Где на i-ом уровне находится множество всех граней соответствующей размерности.
-    //   List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
+    //   List<SortedSet<FLNode>> FL = new List<SortedSet<FLNode>>();
     //   for (int i = 0; i <= dim; i++) {
-    //     FL.Add(new HashSet<FLNode>());
+    //     FL.Add(new SortedSet<FLNode>());
     //   }
     //
     //   // Заполняем максимальный элемент
     //   // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
     //   Vector innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
-    //   FLNode PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
+    //   FLNode PQ      = new FLNode(new SortedSet<Vector>{ innerPQ }, innerPQ, affinePQ);
     //   zTo_xy.Add(PQ, (P.Top, Q.Top));
     //   xyToz.Add((P.Top, Q.Top), PQ);
     //   FL[^1].Add(PQ);
@@ -178,7 +178,7 @@ public partial class Geometry<TNum, TConv>
     //
     //           Vector newInner = xi.InnerPoint + yj.InnerPoint;
     //           // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-    //           FLNode node = new FLNode(new VectorHashSet { newInner }, newInner, candBasis);
+    //           FLNode node = new FLNode(new SortedSet<Vector>{ newInner }, newInner, candBasis);
     //
     //           // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
     //           FL[d].Add(node); // Добавляем узел в решётку
@@ -249,7 +249,7 @@ public partial class Geometry<TNum, TConv>
     //
     //   List<HyperPlane> HRep    = new List<HyperPlane>();
     //   Vector           innerPQ = P.Top.InnerPoint + Q.Top.InnerPoint;
-    //   FLNode           PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
+    //   FLNode           PQ      = new FLNode(new SortedSet<Vector>{ innerPQ }, innerPQ, affinePQ);
     //
     //   FLNode      x               = P.Top;
     //   FLNode      y               = Q.Top;
@@ -357,19 +357,19 @@ public partial class Geometry<TNum, TConv>
       }
 
       // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
-      Dictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new Dictionary<FLNode, (FLNode x, FLNode y)>();
+      SortedDictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new SortedDictionary<FLNode, (FLNode x, FLNode y)>();
       // Словарь (x \in P, y \in Q) --> z \in P (+) Q. (Нужен для уменьшения перебора в процессе движения по решёткам)
-      Dictionary<(FLNode x, FLNode y), FLNode> xyToz = new Dictionary<(FLNode x, FLNode y), FLNode>();
+      SortedDictionary<(FLNode x, FLNode y), FLNode> xyToz = new SortedDictionary<(FLNode x, FLNode y), FLNode>();
       // Сама решётка. Где на i-ом уровне находится множество всех граней соответствующей размерности.
-      List<HashSet<FLNode>> FL = new List<HashSet<FLNode>>();
+      List<SortedSet<FLNode>> FL = new List<SortedSet<FLNode>>();
       for (int i = 0; i <= dim; i++) {
-        FL.Add(new HashSet<FLNode>());
+        FL.Add(new SortedSet<FLNode>());
       }
 
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.FL.Top.InnerPoint + Q.FL.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new VectorHashSet { innerPQ }, innerPQ, affinePQ);
+      FLNode PQ      = new FLNode(new SortedSet<Vector>{ innerPQ }, innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.FL.Top, Q.FL.Top));
       xyToz.Add((P.FL.Top, Q.FL.Top), PQ);
       FL[^1].Add(PQ);
@@ -453,7 +453,7 @@ public partial class Geometry<TNum, TConv>
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
               // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new VectorHashSet { newInner }, newInner, candAffBasis);
+              FLNode node = new FLNode(new SortedSet<Vector>{ newInner }, newInner, candAffBasis);
 
               // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
               FL[d].Add(node); // Добавляем узел в решётку

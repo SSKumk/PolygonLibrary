@@ -5,7 +5,6 @@ using System.Globalization;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
 
-
 namespace Profile;
 
 class Program {
@@ -30,12 +29,6 @@ class Program {
     // Vector v2 = new Vector(new double[] { -1.5545745015129653, 0.4747626289226897, 2 }); // 11.0  11.1  11.2  11.3  11.4  11.5
 
     Console.WriteLine(v1 == v2);
-
-    Console.WriteLine($"{v1[0]}: {Tools.GetHashCodeTNum(v1[0])}");
-    Console.WriteLine($"{v2[0]}: {Tools.GetHashCodeTNum(v2[0])}");
-    Console.WriteLine($"{v1[1]}: {Tools.GetHashCodeTNum(v1[1])}");
-    Console.WriteLine($"{v2[1]}: {Tools.GetHashCodeTNum(v2[1])}");
-    Console.WriteLine($"{v2[1]}: {Tools.GetHashCodeTNum(v2[1] + Tools.Eps)}");
 
     // Console.WriteLine(Math.Floor(2.5));
     // Console.WriteLine(Math.Floor(-2.5));

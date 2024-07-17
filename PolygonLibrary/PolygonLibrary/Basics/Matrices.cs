@@ -288,19 +288,6 @@ public partial class Geometry<TNum, TConv>
 
       return sb.ToString();
     }
-
-
-    public override int GetHashCode() {
-      int res = 0;
-      res = HashCode.Combine(res, Rows);
-      res = HashCode.Combine(res, Cols);
-
-      foreach (TNum el in _m) {
-        res = HashCode.Combine(res, TNum.Round(el / Tools.Eps));
-      }
-
-      return res;
-    }
 #endregion
 
 #region Operators

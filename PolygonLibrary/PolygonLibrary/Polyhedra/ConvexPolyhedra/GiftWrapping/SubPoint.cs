@@ -8,43 +8,30 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a point in a subspace greater than 2.
   /// </summary>
-  public class SubPoint : Vector { // todo Вернуть IComparable! (лексикографическое сравнение)
-
-    // /// <summary>
-    // /// Gets the original point in the original coordinate system.
-    // /// Original point is the point before any projection to subspaces
-    // /// </summary>
-    // public Vector Original { get; }
-
+  public class SubPoint : Vector {
     /// <summary>
     /// Gets the parent point in the parent coordinate system.
     /// Parent point is the point from which the current point was obtained
     /// </summary>
     public SubPoint? Parent { get; }
 
-    /// <summary>
-    /// The dimension of the point
-    /// </summary>
-    public new int Dim => base.Dim;
+    // /// <summary>
+    // /// The dimension of the point
+    // /// </summary>
+    // public new int Dim => base.Dim;
 
-    /// <summary>
-    /// The comparison of the subspace point with another
-    /// </summary>
-    /// <param name="other">another subspace point to compare</param>
-    /// <returns>true if equal, false otherwise</returns>
-    public override bool Equals(object? other) {
-      if (other is null) {
-        return false;
-      }
-
-      return (Vector)this == (Vector)other;
-    }
-
-    /// <summary>
-    /// The hash code of SubPoint. It equal to Vector.GHC().
-    /// </summary>
-    /// <returns>The hash code.</returns>
-    public override int GetHashCode() => base.GetHashCode();
+    // /// <summary>
+    // /// The comparison of the subspace point with another
+    // /// </summary>
+    // /// <param name="other">another subspace point to compare</param>
+    // /// <returns>true if equal, false otherwise</returns>
+    // public override bool Equals(object? other) {
+    //   if (other is null) {
+    //     return false;
+    //   }
+    //
+    //   return (Vector)this == (Vector)other;
+    // }
 
     /// <summary>
     /// Construct a new instance of the <see cref="SubPoint"/> class.

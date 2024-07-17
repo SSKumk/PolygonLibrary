@@ -35,7 +35,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public HashSet<Vector> VRep => BuiltPolytop.OriginalVertices;
+    public SortedSet<Vector> VRep => BuiltPolytop.OriginalVertices;
 #endregion
 
     /// <summary>
@@ -85,13 +85,12 @@ public partial class Geometry<TNum, TConv>
         return new FaceLattice(VRep.First());
       }
 
-      Dictionary<int, FLNode> allNodes = new Dictionary<int, FLNode>();
-      List<HashSet<FLNode>>   lattice  = new List<HashSet<FLNode>>();
+      List<SortedSet<FLNode>> lattice = new List<SortedSet<FLNode>>();
       for (int i = 0; i < BuiltPolytop.PolytopDim + 1; i++) {
-        lattice.Add(new HashSet<FLNode>());
+        lattice.Add(new SortedSet<FLNode>());
       }
 
-      ConstructFLN(BuiltPolytop, ref allNodes, ref lattice);
+      ConstructFLN(BuiltPolytop, ref lattice);
 
       return new FaceLattice(lattice);
     }
@@ -100,37 +99,40 @@ public partial class Geometry<TNum, TConv>
     /// Auxiliary function. It constructs the face lattice node based on given BaseSubCP.
     /// </summary>
     /// <param name="BSP">The sub polytop on which this node will be constructed.</param>
-    /// <param name="allNodes">The additional structure. It holds (hash_of_node, node).</param>
     /// <param name="lattice">The lattice that builds.</param>
     /// <returns>The node, with all sub-nodes.</returns>
-    private void ConstructFLN(BaseSubCP BSP, ref Dictionary<int, FLNode> allNodes, ref List<HashSet<FLNode>> lattice) {
+    private FLNode ConstructFLN(BaseSubCP BSP, ref List<SortedSet<FLNode>> lattice) {
       if (BSP is SubTwoDimensionalEdge) {
         List<FLNode> sub = new List<FLNode>();
-        foreach (Vector p in BSP.OriginalVertices) {
-          if (!allNodes.ContainsKey(p.GetHashCode())) {
-            FLNode vertex = new FLNode(p);
-            allNodes.Add(p.GetHashCode(), vertex);
-            lattice[0].Add(vertex);
+        foreach (FLNode vertex in BSP.OriginalVertices.Select(p => new FLNode(p))) {
+          if (lattice[0].TryGetValue(vertex, out FLNode? vertexInLattice)) {
+            sub.Add(vertexInLattice);
           }
-          sub.Add(allNodes[p.GetHashCode()]);
+          else {
+            lattice[0].Add(vertex);
+            sub.Add(vertex);
+          }
         }
         FLNode seg = new FLNode(sub);
-        allNodes.Add(seg.GetHashCode(), seg);
         lattice[1].Add(seg);
+
+        return seg;
       }
       else {
         List<FLNode> sub = new List<FLNode>();
 
         foreach (BaseSubCP subF in BSP.Faces!) {
-          int hash = subF.GetHashCode();
-          if (!allNodes.ContainsKey(hash)) {
-            ConstructFLN(subF, ref allNodes, ref lattice);
-          }
-          sub.Add(allNodes[hash]);
+          sub.Add
+            (
+             lattice[subF.PolytopDim].TryGetValue(new FLNode(subF.OriginalVertices), out FLNode? polytopInLattice)
+               ? polytopInLattice
+               : ConstructFLN(subF, ref lattice)
+            );
         }
         FLNode node = new FLNode(sub);
-        allNodes.Add(node.GetHashCode(), node);
         lattice[node.PolytopDim].Add(node);
+
+        return node;
       }
     }
 
@@ -208,7 +210,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="S">The swarm to thin out.</param>
     /// <returns>The VRep of wrapped swarm.</returns>
-    public static HashSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).VRep;
+    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).VRep;
 
     /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.
@@ -218,19 +220,19 @@ public partial class Geometry<TNum, TConv>
       switch (Swarm.Count) {
         // Пока не будет SubBaseCP размерности 0.
         case 0: throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
-        // SOrig = new HashSet<Vector>(Swarm);
+        // SOrig = new SortedSet<Vector>(Swarm);
         case 1:
           BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
 
           break;
         default: {
           // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
-          HashSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToHashSet();
-          AffineBasis       AffineS = new AffineBasis(S);
+          SortedSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToSortedSet();
+          AffineBasis         AffineS = new AffineBasis(S);
           if (AffineS.SubSpaceDim < AffineS.VecDim) {
             // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
             // уходим в подпространство и там овыпукляем.
-            S = S.Select(s => s.ProjectTo(AffineS)).ToHashSet();
+            S = S.Select(s => s.ProjectTo(AffineS)).ToSortedSet();
           }
 
           GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
@@ -247,12 +249,12 @@ public partial class Geometry<TNum, TConv>
     private sealed class GiftWrappingMain {
 
 #region Internal fields for GW algorithm
-      private readonly HashSet<SubPoint> S;        // Рой точек
-      private readonly int               spaceDim; // Размерность пространства, в котором происходит овыпукление
-      private          BaseSubCP?        initFace; // Грань, с которой будем перекатываться в поисках других граней.
+      private readonly SortedSet<SubPoint> S;        // Рой точек
+      private readonly int                 spaceDim; // Размерность пространства, в котором происходит овыпукление
+      private          BaseSubCP?          initFace; // Грань, с которой будем перекатываться в поисках других граней.
 
-      private readonly HashSet<BaseSubCP> buildFaces  = new HashSet<BaseSubCP>(); // Копим грани текущей размерности.
-      private readonly HashSet<SubPoint>  buildPoints = new HashSet<SubPoint>();  // Копим точки для создаваемого многогранника
+      private readonly SortedSet<BaseSubCP> buildFaces  = new SortedSet<BaseSubCP>(); // Копим грани текущей размерности.
+      private readonly SortedSet<SubPoint>  buildPoints = new SortedSet<SubPoint>(); // Копим точки для создаваемого многогранника
 
       private readonly TempIncidenceInfo
         buildIncidence = new TempIncidenceInfo(); // ребро --> (F1, F2) которые соседствуют через это ребро
@@ -265,7 +267,7 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Constructors
-      public GiftWrappingMain(HashSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
+      public GiftWrappingMain(SortedSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
         S             = Swarm;
         spaceDim      = S.First().Dim;
         this.initFace = initFace;
@@ -350,7 +352,7 @@ public partial class Geometry<TNum, TConv>
             bool hasFreeEdges = false;
             foreach (BaseSubCP newEdge in nextFace.Faces!) {
               if (buildIncidence.TryGetValue(newEdge, out (BaseSubCP F1, BaseSubCP? F2) E)) {
-                buildIncidence[newEdge] = E.F1.GetHashCode() <= nextFace.GetHashCode() ? (E.F1, nextFace) : (nextFace, E.F1);
+                buildIncidence[newEdge] = E.F1 <= nextFace ? (E.F1, nextFace) : (nextFace, E.F1);
               }
               else {
                 buildIncidence.Add(newEdge, (nextFace, null));
@@ -398,7 +400,7 @@ public partial class Geometry<TNum, TConv>
         while (FinalV.SubSpaceDim < spaceDim - 1) {
           Vector e = LinearBasis.FindOrthonormalVector(new LinearBasis(FinalV.LinBasis, new LinearBasis(n)));
 
-          Vector? r = null; // нужен для процедуры Сварта (ниже)
+          Vector?   r      = null; // нужен для процедуры Сварта (ниже)
           TNum      minCos = Tools.Two;
           SubPoint? sExtr  = null;
           foreach (SubPoint s in S) {
@@ -411,7 +413,7 @@ public partial class Geometry<TNum, TConv>
               if (cos < minCos) {
                 minCos = cos;
                 sExtr  = s;
-                r = u;
+                r      = u;
               }
             }
           }
@@ -432,14 +434,14 @@ public partial class Geometry<TNum, TConv>
           n = (r! * n) * e - (r! * e) * n;
 
           OrientNormal(ref n, origin);
-          #if DEBUG
+#if DEBUG
           if (S.All(s => new HyperPlane(n, origin).Contains(s))) {
             throw new ArgumentException
               (
                $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
               );
           }
-          #endif
+#endif
 
           Debug.Assert(!n.IsZero, $"BuildInitialPlan (dim = {spaceDim}): Normal is zero!");
         }
@@ -466,7 +468,7 @@ public partial class Geometry<TNum, TConv>
           );
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
-        HashSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToHashSet();
+        SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
@@ -482,7 +484,7 @@ public partial class Geometry<TNum, TConv>
         buildedFace.Normal = n;
 
         // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
-        HashSet<SubPoint> toRemove = new HashSet<SubPoint>(inPlane.Select(s => s.Parent).ToHashSet()!);
+        SortedSet<SubPoint> toRemove = new SortedSet<SubPoint>(inPlane.Select(s => s.Parent).ToSortedSet()!);
         toRemove.ExceptWith(buildedFace.Vertices);
         S.ExceptWith(toRemove);
 
@@ -513,9 +515,9 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
-        AffineBasis  edgeAffBasis = new AffineBasis(edge.Vertices);
-        SubPoint     f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector       v            = LinearBasis.OrthonormalizeAgainstBasis(f - edgeAffBasis.Origin, edgeAffBasis.LinBasis);
+        AffineBasis edgeAffBasis = new AffineBasis(edge.Vertices);
+        SubPoint    f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
+        Vector      v            = LinearBasis.OrthonormalizeAgainstBasis(f - edgeAffBasis.Origin, edgeAffBasis.LinBasis);
 
         Debug.Assert(Tools.GT((f - edgeAffBasis.Origin) * v));
 
@@ -606,7 +608,7 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-        #if DEBUG
+#if DEBUG
         HyperPlane hp = new HyperPlane(normal, origin);
         if (!S.All(s => hp.ContainsNegativeNonStrict(s))) {
           throw new ArgumentException("GiftWrapping.OrientNormal: The normal does not form a facet!");

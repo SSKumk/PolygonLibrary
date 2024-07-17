@@ -74,7 +74,8 @@ public static class ListExtensions {
       int mid = (lower + upper) / 2;
       if (pred(list[mid])) {
         upper = mid;
-      } else {
+      }
+      else {
         lower = mid;
       }
     }
@@ -93,7 +94,8 @@ public static class ListExtensions {
   public static int NormalizeIndex<T>(this List<T> list, int index) {
     if (index < 0) {
       return index % list.Count + list.Count;
-    } else {
+    }
+    else {
       return index % list.Count;
     }
   }
@@ -144,7 +146,8 @@ public static class ListExtensions {
       int mid = (lower + upper) / 2;
       if (pred(list.GetAtCyclic(mid))) {
         upper = mid;
-      } else {
+      }
+      else {
         lower = mid;
       }
     }
@@ -317,7 +320,8 @@ public static class ArrayExtensions {
       int mid = (lower + upper) / 2;
       if (pred(array[mid])) {
         upper = mid;
-      } else {
+      }
+      else {
         lower = mid;
       }
     }
@@ -336,7 +340,8 @@ public static class ArrayExtensions {
   private static int NormalizeIndex<T>(this IReadOnlyCollection<T> array, int index) {
     if (index < 0) {
       return index % array.Count + array.Count;
-    } else {
+    }
+    else {
       return index % array.Count;
     }
   }
@@ -387,7 +392,8 @@ public static class ArrayExtensions {
       int mid = (lower + upper) / 2;
       if (pred(array.GetAtCyclic(mid))) {
         upper = mid;
-      } else {
+      }
+      else {
         lower = mid;
       }
     }
@@ -436,4 +442,8 @@ public static class LinkedListExtensions {
 
 }
 
-public static class ConvexPolygonExtensioins { }
+public static class EnumerableExtensions {
+
+  public static SortedSet<T> ToSortedSet<T>(this IEnumerable<T> source) => new(source);
+
+}

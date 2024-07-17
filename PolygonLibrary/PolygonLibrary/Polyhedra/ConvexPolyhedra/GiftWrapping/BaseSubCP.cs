@@ -1,19 +1,22 @@
+using System.Collections;
+
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Type of temporary storage of face incidence information
   /// </summary>
-  public class TempIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> { }
+  public class TempIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> { }
 
   /// <summary>
   /// Type of permanent storage of face incidence information.
   /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
   /// </summary>
-  public class SubIncidenceInfo : Dictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
+  public class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
   /// <summary>
   /// <para><b>Simplex</b> - the polytop is a simplex.</para>
@@ -34,7 +37,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// Represents the d-dimensional convex polytop
   /// </summary>
-  public abstract class BaseSubCP {
+  public abstract class BaseSubCP : IComparable<BaseSubCP> {
 
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
@@ -57,17 +60,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the set of vertices of the polytop.
     /// </summary>
-    public abstract HashSet<SubPoint> Vertices { get; }
+    public abstract SortedSet<SubPoint> Vertices { get; }
 
     /// <summary>
     /// Returns set of original points.
     /// </summary>
-    public HashSet<Vector> OriginalVertices => Vertices.Select(v => v.GetRootVertex()).ToHashSet();// todo их бы сохранить где-нибудь ...
+    public SortedSet<Vector> OriginalVertices
+      => Vertices.Select(v => v.GetRootVertex()).ToSortedSet(); // todo их бы сохранить где-нибудь ...
 
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.
     /// </summary>
-    public abstract HashSet<BaseSubCP>? Faces { get; }
+    public abstract SortedSet<BaseSubCP>? Faces { get; }
 
     /// <summary>
     /// The outward normal of the (d-1)-dimensional polytop (face).
@@ -94,6 +98,52 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
 
     /// <summary>
+    /// Compares the current instance with another object of type BaseSubCP.
+    /// </summary>
+    /// <param name="other">The BaseSubCP object to compare with.</param>
+    /// <returns>
+    /// <para>Returns '-1' if the number of vertices in 'this' is less than that of 'other'.</para>
+    /// Returns '+1' if the number of vertices in 'this' is greater than that of 'other'.
+    /// <para>Otherwise, it returns the result based on a lexicographical comparison of their elements.</para>
+    /// If all corresponding elements are equal, then the sets are considered equal.
+    /// </returns>
+    public int CompareTo(BaseSubCP? other) {
+      if (other is null) { return 1; } // null < this (always)
+
+      Debug.Assert(this.PolytopDim == other.PolytopDim, "BaseSubCP: The dimensions of the polytopes must be equal.");
+      Debug.Assert(this.SpaceDim == other.SpaceDim, "BaseSubCP: The dimensions of the spaces must be equal.");
+
+
+      if (this.Vertices.Count < other.Vertices.Count) { // this < other
+        return -1;
+      }
+
+      if (this.Vertices.Count > other.Vertices.Count) { // other < this
+        return 1;
+      }
+
+
+      SortedSet<SubPoint>.Enumerator e1       = this.Vertices.GetEnumerator();
+      SortedSet<SubPoint>.Enumerator e2       = other.Vertices.GetEnumerator();
+      Comparer<SubPoint>             comparer = Comparer<SubPoint>.Default;
+
+      while (e1.MoveNext() && e2.MoveNext()) {
+        int compare = comparer.Compare(e1.Current, e2.Current);
+        switch (compare) {
+          case > 0: // this < other
+            return -1;
+          case < 0: // other < this
+            return 1;
+        }
+      }
+
+      return 0;
+    }
+
+    public static bool operator <=(BaseSubCP p1, BaseSubCP p2) => p1.CompareTo(p2) <= 0;
+    public static bool operator >=(BaseSubCP p1, BaseSubCP p2) => p1.CompareTo(p2) >= 0;
+
+    /// <summary>
     /// Determines whether the specified object is equal to convex polytop.
     /// Two polyhedra are equal if they have the same dimensions and the sets of their vertices are equal.
     /// </summary>
@@ -110,30 +160,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         return false;
       }
 
-      return this.Vertices.SetEquals(other.Vertices);
-    }
-
-    /// <summary>
-    /// Internal field for the hash of the polytop
-    /// </summary>
-    private int? _hash = null;
-
-    /// <summary>
-    /// AUX. IT MUST BE EQUAL TO FLNode.GetHashCode()!
-    /// </summary>
-    /// <returns>A hash code for the BaseSubCP.</returns>
-    public override int GetHashCode() {
-      if (_hash is null) {
-        IOrderedEnumerable<Vector> sortedVs = OriginalVertices.Order();
-
-        int hash = 0;
-        foreach (Vector v in sortedVs) {
-          hash = HashCode.Combine(hash, v.GetHashCode());
-        }
-        _hash = hash;
+      if (this.SpaceDim != other.SpaceDim) {
+        return false;
       }
 
-      return _hash.Value;
+      return this.Vertices.SetEquals(other.Vertices);
     }
 
   }

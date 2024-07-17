@@ -22,7 +22,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the 2D-vertices of the edge.
     /// </summary>
-    public override HashSet<SubPoint> Vertices { get; }
+    public override SortedSet<SubPoint> Vertices { get; }
 
     private SubPoint first { get; }
     private SubPoint second { get; }
@@ -30,7 +30,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// There are no Faces of the 1-dimensional edge.
     /// </summary>
-    public override HashSet<BaseSubCP>? Faces => null;
+    public override SortedSet<BaseSubCP>? Faces => null;
 
     /// <summary>
     /// There are no Faces of the 1-dimensional edge.
@@ -45,7 +45,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
       this.first = first;
       this.second = second;
-      HashSet<SubPoint> vertices = new HashSet<SubPoint>() { first, second };
+      SortedSet<SubPoint> vertices = new SortedSet<SubPoint>() { first, second };
       Vertices = vertices;
     }
 
