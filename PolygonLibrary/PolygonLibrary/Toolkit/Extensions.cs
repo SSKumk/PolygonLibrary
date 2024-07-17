@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-namespace CGLibrary;
+﻿namespace CGLibrary;
 
 /// <summary>
 /// Extensions to standard ListOfT container

@@ -1,8 +1,3 @@
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Running;
-using CGLibrary;
-using DoubleDouble;
 using AVLUtils;
 
 namespace Profile.Benchmarks;
@@ -162,13 +157,13 @@ public class SetBench {
   public void AVLSetSet_ExceptWith() => aset_ForUW.ExceptWith(aset);
 
 
-  public class Program {
-
-    public static void Main(string[] args) {
-      var summary = BenchmarkRunner.Run<SetBench>();
-    }
-
-  }
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<SetBench>();
+  //   }
+  //
+  // }
 
 }
 

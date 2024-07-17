@@ -24,6 +24,7 @@
         <Compile Include="Basics\Matrices.cs" />
         <Compile Include="Basics\Vector.cs" />
         <Compile Include="Basics\Vector2D.cs" />
+        <Compile Include="GlobalUsings.cs" />
         <Compile Include="LinearMath\GaussSLE.cs" />
         <Compile Include="LinearDifferentialGames\GameData.cs" />
         <Compile Include="LinearDifferentialGames\SolverLDG.cs" />

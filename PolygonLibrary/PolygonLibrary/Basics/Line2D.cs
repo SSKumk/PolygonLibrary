@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿
 
 // TODO: Uncomment when segments are ready
 // using PolygonLibrary.Segments;

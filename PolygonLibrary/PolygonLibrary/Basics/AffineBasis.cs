@@ -1,9 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
+
 
 namespace CGLibrary;
 
@@ -53,7 +49,6 @@ public partial class Geometry<TNum, TConv>
     /// The linear basis associated with the affine basis.
     /// </summary>
     public LinearBasis LinBasis { get; }
-
 #endregion
 
 #region Functions
@@ -64,8 +59,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
     public bool AddVectorToBasis(Vector v, bool orthogonalize = true) {
-      Debug.Assert
-        (Origin.Dim == v.Dim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
+      Debug.Assert(Origin.Dim == v.Dim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
 
       return LinBasis.AddVector(v, orthogonalize);
     }
@@ -148,7 +142,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vecDim">The dimension of the basis</param>
     public AffineBasis(int vecDim) {
-      Origin      = new Vector(vecDim);
+      Origin   = new Vector(vecDim);
       LinBasis = new LinearBasis(vecDim, vecDim);
     }
 
@@ -157,7 +151,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     public AffineBasis(Vector o) {
-      Origin      = o;
+      Origin   = o;
       LinBasis = new LinearBasis(o.Dim, 0);
     }
 
@@ -167,7 +161,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     public AffineBasis(Vector o, LinearBasis lBasis) {
-      Origin      = o;
+      Origin   = o;
       LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
 
 
@@ -184,7 +178,7 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis(IEnumerable<Vector> Ps) {
       Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
-      Origin      = Ps.First();
+      Origin   = Ps.First();
       LinBasis = new LinearBasis(Ps.Select(v => v - Origin));
 
 
@@ -198,7 +192,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
     public AffineBasis(AffineBasis affineBasis) {
-      Origin      = affineBasis.Origin;
+      Origin   = affineBasis.Origin;
       LinBasis = new LinearBasis(affineBasis.LinBasis);
 
 #if DEBUG
@@ -236,7 +230,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="affineBasis">Basis to be checked</param>
     internal static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(affineBasis.LinBasis); }
 
-                                          //todo А как правильно тут vvv
+    //todo А как правильно тут vvv
     public IEnumerator GetEnumerator() { return LinBasis.GetEnumerator(); }
 
   }

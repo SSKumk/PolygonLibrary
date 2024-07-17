@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-
-
-namespace CGLibrary;
+﻿namespace CGLibrary;
 
 /// <summary>
 /// Enumeration of a polyline

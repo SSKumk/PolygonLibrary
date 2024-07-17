@@ -1,13 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Frozen;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Numerics;
-using System.Security.Claims;
-using DoubleDouble;
 
 
 namespace CGLibrary;

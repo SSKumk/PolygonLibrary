@@ -1,16 +1,6 @@
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Reports;
-using BenchmarkDotNet.Running;
-using CGLibrary;
-using DoubleDouble;
-using Perfolizer.Horology;
-
 namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
 [WarmupCount(1)]

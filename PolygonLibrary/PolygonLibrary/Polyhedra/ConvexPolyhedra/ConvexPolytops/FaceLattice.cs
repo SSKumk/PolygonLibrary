@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Numerics;
-
-
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
