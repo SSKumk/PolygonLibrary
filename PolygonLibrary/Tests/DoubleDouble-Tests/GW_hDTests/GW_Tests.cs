@@ -11,12 +11,14 @@ using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConve
 namespace Tests.DoubleDouble_Tests.GW_hDTests;
 
 [TestFixture]
-public class GW_Tests {
+public class GW_Tests
+{
 
   #region Auxiliary tests
   [Test]
-  public void GenCubeHDTest() {
-    HashSet<Vector> S = new HashSet<Vector>()
+  public void GenCubeHDTest()
+  {
+    SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new ddouble[] { 0, 0, 0 })
       , new Vector(new ddouble[] { 1, 0, 0 })
@@ -30,14 +32,15 @@ public class GW_Tests {
 
     List<Vector> cube = Cube01(3, out List<Vector> _);
 
-    Debug.Assert(S.SetEquals(new HashSet<Vector>(cube)), "S is not equal to generated Cube01");
+    Debug.Assert(S.SetEquals(new SortedSet<Vector>(cube)), "S is not equal to generated Cube01");
   }
   #endregion
 
 
   #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
-  public void Cube3D_Rotated_Z45() {
+  public void Cube3D_Rotated_Z45()
+  {
     List<Vector> S = Cube01(3, out List<Vector> _);
     ddouble angle = Tools.PI / 4;
     ddouble sin = ddouble.Sin(angle);
@@ -55,8 +58,9 @@ public class GW_Tests {
   /// Как-то повёрнутый куб
   /// </summary>
   [Test]
-  public void Cube3D_Rotated() {
-    HashSet<Vector> S = new HashSet<Vector>()
+  public void Cube3D_Rotated()
+  {
+    SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new ddouble[] { 0, 0, 0 })
       , new Vector(new ddouble[] { 0.6800213885880926, 0.3956859369533106, 0.6172548504143999 })
@@ -77,8 +81,9 @@ public class GW_Tests {
   /// Как-то сдвинутый куб
   /// </summary>
   [Test]
-  public void Cube3D_Shifted() {
-    HashSet<Vector> S = new HashSet<Vector>()
+  public void Cube3D_Shifted()
+  {
+    SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new ddouble[] { -10.029417029821644, -8.414457472370579, 12.142282885765258 })
       , new Vector(new ddouble[] { -10.029417029821644, -8.414457472370579, 13.142282885765258 })
@@ -95,8 +100,9 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_Rotated_Shifted() {
-    HashSet<Vector> S = new HashSet<Vector>()
+  public void Cube3D_Rotated_Shifted()
+  {
+    SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new ddouble[] { 4.989650328990457, 18.100255093909855, 14.491501515962065 })
       , new Vector(new ddouble[] { 5.66967171757855, 18.495941030863165, 15.108756366376465 })
@@ -119,7 +125,8 @@ public class GW_Tests {
   /// 2 - тетр
   /// </summary>
   [Test]
-  public void Cube3D_withInnerPoints_On_1D() {
+  public void Cube3D_withInnerPoints_On_1D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, 131);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -128,7 +135,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_2D() {
+  public void Cube3D_withInnerPoints_On_2D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, 132);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -137,7 +145,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_3D() {
+  public void Cube3D_withInnerPoints_On_3D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, 133);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -146,7 +155,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_1D_2D() {
+  public void Cube3D_withInnerPoints_On_1D_2D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1312);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -155,7 +165,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_2D_3D() {
+  public void Cube3D_withInnerPoints_On_2D_3D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1323);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -164,7 +175,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_1D_2D_3D() {
+  public void Cube3D_withInnerPoints_On_1D_2D_3D()
+  {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -180,8 +192,10 @@ public class GW_Tests {
   /// </summary>
   /// <param name="Polytop">The list of points representing the Polytop.</param>
   /// <param name="S">The list of points representing the S.</param>
-  private static void SwarmShuffle(List<Vector> S, string nameOfTest) {
-    for (int i = 0; i < 10 * S.Count; i++) {
+  private static void SwarmShuffle(List<Vector> S, string nameOfTest)
+  {
+    for (int i = 0; i < 10 * S.Count; i++)
+    {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
       GiftWrapping P = new GiftWrapping(S);
@@ -190,27 +204,31 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube3D_Shuffled() {
+  public void Cube3D_Shuffled()
+  {
     List<Vector> S = Cube01(3, out List<Vector> _);
     SwarmShuffle(S, "Cube3D_Shuffled");
   }
 
   [Test]
-  public void Cube4D_Suffled() {
+  public void Cube4D_Suffled()
+  {
     List<Vector> S = Cube01(4, out List<Vector> _);
     SwarmShuffle(S, "Cube4D_Shuffled");
 
   }
 
   [Test]
-  public void Simplex3D_Suffled() {
+  public void Simplex3D_Suffled()
+  {
     List<Vector> S = Simplex(3, out List<Vector> _);
     SwarmShuffle(S, "Simplex3D_Shuffled");
 
   }
 
   [Test]
-  public void Simplex4D_Suffled() {
+  public void Simplex4D_Suffled()
+  {
     List<Vector> S = Simplex(4, out List<Vector> _);
     SwarmShuffle(S, "Simplex4D_Shuffled");
 
@@ -219,7 +237,8 @@ public class GW_Tests {
 
   #region Cube4D-Static Тесты 4D-куба не зависящие от _random
   [Test]
-  public void Cube4D_withInnerPoints_On_1D() {
+  public void Cube4D_withInnerPoints_On_1D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, 141);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -229,7 +248,8 @@ public class GW_Tests {
 
 
   [Test]
-  public void Cube4D_withInnerPoints_On_2D() {
+  public void Cube4D_withInnerPoints_On_2D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, 142);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -238,7 +258,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_3D() {
+  public void Cube4D_withInnerPoints_On_3D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, 143);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -247,7 +268,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D() {
+  public void Cube4D_withInnerPoints_On_1D_2D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1412);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -256,7 +278,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_2D_3D() {
+  public void Cube4D_withInnerPoints_On_2D_3D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1423);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -265,7 +288,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D_3D() {
+  public void Cube4D_withInnerPoints_On_1D_2D_3D()
+  {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
 
     GiftWrapping P = new GiftWrapping(S);
@@ -274,7 +298,8 @@ public class GW_Tests {
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
+  public void Cube4D_withInnerPoints_On_1D_2D_3D_4D()
+  {
     List<Vector> S = Cube01
       (
        4
@@ -298,7 +323,8 @@ public class GW_Tests {
 
   #region Simplex4D Тесты 4D-симплекса не зависящие от _random
   [Test]
-  public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
+  public void Simplex4D_1DEdge_2DNeighborsPointsTest()
+  {
     Vector p0 = new Vector(new ddouble[] { 0, 0, 0, 0 });
     Vector p1 = new Vector(new ddouble[] { 1, 0, 0, 0 });
     Vector p2 = new Vector(new ddouble[] { 0, 1, 0, 0 });
@@ -332,12 +358,14 @@ public class GW_Tests {
 
   #region AllCubes Генераторы "плохих" тестов для кубов
   [Test]
-  public void AllCubes3D_TestRND() {
+  public void AllCubes3D_TestRND()
+  {
     const int nPoints = 5000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(3, out List<Vector> P, fID, nPoints);
@@ -348,12 +376,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllCubes4D_TestRND() {
+  public void AllCubes4D_TestRND()
+  {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(4, out List<Vector> P, fID, nPoints);
@@ -364,12 +394,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllCubes5D_TestRND() {
+  public void AllCubes5D_TestRND()
+  {
     const int nPoints = 5;
 
     List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(5, out List<Vector> P, fID, nPoints);
@@ -380,12 +412,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllCubes6D_TestRND() {
+  public void AllCubes6D_TestRND()
+  {
     const int nPoints = 2;
 
     List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(6, out List<Vector> P, fID, nPoints);
@@ -398,12 +432,14 @@ public class GW_Tests {
 
   #region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
   [Test]
-  public void AllSimplices3D_TestRND() {
+  public void AllSimplices3D_TestRND()
+  {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(3, out List<Vector> P, fID, nPoints);
@@ -414,12 +450,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplices4D_TestRND() {
+  public void AllSimplices4D_TestRND()
+  {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(4, out List<Vector> P, fID, nPoints);
@@ -430,12 +468,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplices5D_TestRND() {
+  public void AllSimplices5D_TestRND()
+  {
     const int nPoints = 1000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(5, out List<Vector> P, fID, nPoints);
@@ -446,12 +486,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplices6D_TestRND() {
+  public void AllSimplices6D_TestRND()
+  {
     const int nPoints = 5;
 
     List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(6, out List<Vector> P, fID, nPoints);
@@ -462,12 +504,14 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplices7D_TestRND() {
+  public void AllSimplices7D_TestRND()
+  {
     const int nPoints = 2;
 
     List<List<int>> fIDs = Enumerable.Range(1, 7).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs) {
+    foreach (List<int> fID in fIDs)
+    {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(7, out List<Vector> P, fID, nPoints);
@@ -480,14 +524,17 @@ public class GW_Tests {
 
   #region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
   [Test]
-  public void AllSimplicesRND_3D_TestRND() {
+  public void AllSimplicesRND_3D_TestRND()
+  {
     const int nPoints = 1;
     const int simplexDim = 3;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e4; i++) {
-      foreach (List<int> fID in fIDs) {
+    for (int i = 0; i < 1e4; i++)
+    {
+      foreach (List<int> fID in fIDs)
+      {
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
@@ -497,14 +544,17 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplicesRND_4D_TestRND() {
+  public void AllSimplicesRND_4D_TestRND()
+  {
     const int nPoints = 1;
     const int simplexDim = 4;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e3; i++) {
-      foreach (List<int> fID in fIDs) {
+    for (int i = 0; i < 1e3; i++)
+    {
+      foreach (List<int> fID in fIDs)
+      {
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
@@ -514,14 +564,17 @@ public class GW_Tests {
   }
 
   [Test]
-  public void AllSimplicesRND_5D_TestRND() {
+  public void AllSimplicesRND_5D_TestRND()
+  {
     const int nPoints = 1;
     const int simplexDim = 5;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e3; i++) {
-      foreach (List<int> fID in fIDs) {
+    for (int i = 0; i < 1e3; i++)
+    {
+      foreach (List<int> fID in fIDs)
+      {
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
@@ -552,7 +605,8 @@ public class GW_Tests {
   /// При загрублении точности до такого значения получается не гипер-тетраэдр.
   /// </summary>
   [Test]
-  public void Simplex4D_PointCloseToVertex() {
+  public void Simplex4D_PointCloseToVertex()
+  {
     List<Vector> S = new List<Vector>()
       {
         new Vector(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
@@ -605,7 +659,9 @@ public class GW_Tests {
       );
     var distABDX = S.Select(s => hpABDX.Eval(s));
 
-    Assert.That(GiftWrapping.WrapVRep(S).SetEquals(S.GetRange(0,5)));
+    var x = GiftWrapping.WrapVRep(S);
+    var y = S.GetRange(0, 5).ToSortedSet();
+    Assert.That(GiftWrapping.WrapVRep(S).SetEquals(S.GetRange(0, 5)));
   }
 
   /// <summary>
@@ -623,7 +679,8 @@ public class GW_Tests {
   /// [8] -2.290 1,4  -->;  [0] 7,8
   /// </summary>
   [Test]
-  public void Simplex4D_InnerPointsIn_1D() {
+  public void Simplex4D_InnerPointsIn_1D()
+  {
     List<Vector> Simplex = new List<Vector>()
       {
         new Vector(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
@@ -664,7 +721,8 @@ public class GW_Tests {
   /// Пример из какой-то статьи
   /// </summary>
   [Test]
-  public void SomePolytop_3D() {
+  public void SomePolytop_3D()
+  {
     List<Vector> S = new List<Vector>()
       {
         new Vector(new ddouble[] { 1, 0, 1 })
@@ -688,7 +746,8 @@ public class GW_Tests {
 
   // Проблема в том, что при построении плоскости ABC в даблах не хватает точности для достаточно точного построения базиса.
   [Test]
-  public void VeryFlatSimplex() {
+  public void VeryFlatSimplex()
+  {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     List<Vector> Simplex = new List<Vector>()
       {
@@ -720,7 +779,8 @@ public class GW_Tests {
   /// Параллелепипед расположенный в первом квадранте
   /// </summary>
   [Test]
-  public void SomeParallelogram() {
+  public void SomeParallelogram()
+  {
     Vector origin = new Vector(3);
     Vector v1 = new Vector(new ddouble[] { 0.5, 1, 1 });
     Vector v2 = new Vector(new ddouble[] { 1, 0.5, 1 });
@@ -758,12 +818,15 @@ public class GW_Tests {
                           , int PDim
                           , int nPoints
                           , List<int> fID
-                          , bool needShuffle = false) {
-    HashSet<Vector>? P = null;
+                          , bool needShuffle = false)
+  {
+    SortedSet<Vector>? P = null;
 
-    try {
-      if (needShuffle) {
-        HashSet<Vector> origS = new HashSet<Vector>(S);
+    try
+    {
+      if (needShuffle)
+      {
+        SortedSet<Vector> origS = new SortedSet<Vector>(S);
         S.Shuffle(new GRandomLC(seed));
         Debug.Assert(origS.SetEquals(S));
       }
@@ -771,17 +834,20 @@ public class GW_Tests {
       P = new GiftWrapping(S).VRep;
       Debug.Assert(P is not null, nameof(P) + " != null");
     }
-    catch (Exception e) {
+    catch (Exception e)
+    {
       Console.WriteLine("Gift wrapping does not success!");
       GenTest(seed, PDim, nPoints, fID, needShuffle);
 
       throw new ArgumentException($"Error in gift wrapping!\n{e.Message}");
     }
 
-    try {
+    try
+    {
       Assert.That(P.SetEquals(Answer), "The set of vertices must be equal.");
     }
-    catch (Exception e) {
+    catch (Exception e)
+    {
       Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
       GenTest(seed, PDim, nPoints, fID, needShuffle);
 
@@ -791,7 +857,8 @@ public class GW_Tests {
     }
   }
 
-  private static void GenTest(uint seed, int PDim, int nPoints, List<int> fID, bool needShuffle) {
+  private static void GenTest(uint seed, int PDim, int nPoints, List<int> fID, bool needShuffle)
+  {
     Console.WriteLine();
     Console.WriteLine($"[Test]");
     Console.WriteLine("public void Aux() {");
@@ -801,12 +868,13 @@ public class GW_Tests {
     Console.WriteLine($"List<int> fID     = new List<int>() {{ {string.Join(", ", fID)} }};");
     Console.WriteLine();
     Console.WriteLine("List<Vector> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Vector> polytop, fID, nPoints, seed);");
-    if (needShuffle) {
+    if (needShuffle)
+    {
       Console.WriteLine("List<Vector> origS = new List<Vector>(S);");
       Console.WriteLine("S.Shuffle(new GRandomLC(seed));");
     }
     Console.WriteLine();
-    Console.WriteLine("HashSet<Vector> P = GiftWrapping.WrapVRep(S);");
+    Console.WriteLine("SortedSet<Vector> P = GiftWrapping.WrapVRep(S);");
     Console.WriteLine("Assert.That(P.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();

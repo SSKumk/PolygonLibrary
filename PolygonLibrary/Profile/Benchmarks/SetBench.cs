@@ -6,22 +6,23 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 
 // [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [ShortRunJob]
-public class SetBench {
+public class SetBench
+{
 
   private List<Vector> Vs;
   private List<Vector> Vs_other;
 
-  private HashSet<Vector>   hset;
+  private SortedSet<Vector> hset;
   private SortedSet<Vector> sset;
-  private AVLSet<Vector>    aset;
+  private AVLSet<Vector> aset;
 
-  private HashSet<Vector>   hset_UnionWith_List;
+  private SortedSet<Vector> hset_UnionWith_List;
   private SortedSet<Vector> sset_UnionWith_List;
-  private AVLSet<Vector>    aset_UnionWith_List;
+  private AVLSet<Vector> aset_UnionWith_List;
 
-  private HashSet<Vector>   hset_ForUW;
+  private SortedSet<Vector> hset_ForUW;
   private SortedSet<Vector> sset_ForUW;
-  private AVLSet<Vector>    aset_ForUW;
+  private AVLSet<Vector> aset_ForUW;
 
   private Vector toAdd;
 
@@ -34,33 +35,36 @@ public class SetBench {
   public int size;
 
   [GlobalSetup]
-  public void GlobalSetup() {
+  public void GlobalSetup()
+  {
     Tools.Eps = 1;
 
     Vs = new List<Vector>(size);
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
       Vector genVectorInt = Vector.GenVectorInt(dim, -1000, 1001);
 
       Vs.Add(genVectorInt);
     }
     Vs_other = new List<Vector>(size);
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
       Vector genVectorInt = Vector.GenVectorInt(dim, -1000, 1001);
 
       Vs_other.Add(genVectorInt);
     }
 
-    hset = new HashSet<Vector>(Vs);
+    hset = new SortedSet<Vector>(Vs);
     sset = new SortedSet<Vector>(Vs);
     aset = new AVLSet<Vector>();
     foreach (Vector v in Vs) { aset.Add(v); }
 
-    hset_ForUW = new HashSet<Vector>(Vs_other);
+    hset_ForUW = new SortedSet<Vector>(Vs_other);
     sset_ForUW = new SortedSet<Vector>(Vs_other);
     aset_ForUW = new AVLSet<Vector>();
     foreach (Vector v in Vs_other) { aset_ForUW.Add(v); }
 
-    hset_UnionWith_List = new HashSet<Vector>(Vs);
+    hset_UnionWith_List = new SortedSet<Vector>(Vs);
     sset_UnionWith_List = new SortedSet<Vector>(Vs);
     aset_UnionWith_List = new AVLSet<Vector>();
     foreach (Vector v in Vs) { aset_UnionWith_List.Add(v); }
@@ -69,29 +73,34 @@ public class SetBench {
   }
 
   [Benchmark]
-  public void HashSet_Create() {
-    HashSet<Vector> Hs = new HashSet<Vector>(Vs);
-  }
-
-  [Benchmark]
-  public void SortedSet_Create() {
+  public void HashSet_Create()
+  {
     SortedSet<Vector> Hs = new SortedSet<Vector>(Vs);
   }
 
   [Benchmark]
-  public void HashSet_AddAll() {
-    HashSet<Vector> Hs = new HashSet<Vector>();
+  public void SortedSet_Create()
+  {
+    SortedSet<Vector> Hs = new SortedSet<Vector>(Vs);
+  }
+
+  [Benchmark]
+  public void HashSet_AddAll()
+  {
+    SortedSet<Vector> Hs = new SortedSet<Vector>();
     foreach (Vector v in Vs) { Hs.Add(v); }
   }
 
   [Benchmark]
-  public void SortedSet_AddAll() {
+  public void SortedSet_AddAll()
+  {
     SortedSet<Vector> Ss = new SortedSet<Vector>();
     foreach (Vector v in Vs) { Ss.Add(v); }
   }
 
   [Benchmark]
-  public void AVLSet_AddAll() {
+  public void AVLSet_AddAll()
+  {
     AVLSet<Vector> AVLs = new AVLSet<Vector>();
     foreach (Vector v in Vs) { AVLs.Add(v); }
   }

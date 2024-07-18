@@ -3,13 +3,15 @@ using DoubleDouble;
 using NUnit.Framework;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
-namespace Tests.DoubleDouble_Tests; 
+namespace Tests.DoubleDouble_Tests;
 
 [TestFixture]
-public class GrahamScanTests {
+public class GrahamScanTests
+{
 
   [Test]
-  public void SimpleScanCHTest() {
+  public void SimpleScanCHTest()
+  {
     GRandomLC? r = new GRandomLC(10);
 
     List<Vector2D> expected = new List<Vector2D>(), orig = new List<Vector2D>();
@@ -32,9 +34,11 @@ public class GrahamScanTests {
 
     Assert.Multiple
       (
-       () => {
+       () =>
+       {
          Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
-         for (int i = 0; i < expected.Count; i++) {
+         for (int i = 0; i < expected.Count; i++)
+         {
            Assert.That
              (
               hull[i]
@@ -48,7 +52,8 @@ public class GrahamScanTests {
   }
 
   [Test]
-  public void SquareScanCHTest() {
+  public void SquareScanCHTest()
+  {
     GRandomLC? r = new GRandomLC(10);
 
     List<Vector2D> expected = new List<Vector2D>(), orig = new List<Vector2D>();
@@ -64,7 +69,8 @@ public class GrahamScanTests {
     orig.AddRange(expected);
 
     // Some random internal points
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
       orig.Add(new Vector2D(r.NextPrecise(), r.NextPrecise()));
     }
 
@@ -91,7 +97,8 @@ public class GrahamScanTests {
     List<Vector2D> hull = Convexification.GrahamHull(orig);
 
     Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
-    for (int i = 0; i < expected.Count; i++) {
+    for (int i = 0; i < expected.Count; i++)
+    {
       Assert.That
         (
          hull[i]
@@ -102,7 +109,8 @@ public class GrahamScanTests {
   }
 
   [Test]
-  public void HexagonScanCHTest() {
+  public void HexagonScanCHTest()
+  {
     GRandomLC? r = new GRandomLC(10);
 
     List<Vector2D> expected = new List<Vector2D>(), orig = new List<Vector2D>();
@@ -120,9 +128,11 @@ public class GrahamScanTests {
     orig.AddRange(expected);
 
     // Some random internal points
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
       ddouble x, y;
-      do {
+      do
+      {
         x = 3 * r.NextPrecise();
         y = 2 * r.NextPrecise();
       } while (y > x + 1 || y < -x + 1 || y > -x + 4 || y < x - 2);
@@ -159,9 +169,11 @@ public class GrahamScanTests {
 
     Assert.Multiple
       (
-       () => {
+       () =>
+       {
          Assert.That(hull, Has.Count.EqualTo(expected.Count), "Wrong number of convex hull vertices");
-         for (int i = 0; i < expected.Count; i++) {
+         for (int i = 0; i < expected.Count; i++)
+         {
            Assert.That
              (
               hull[i]
@@ -176,7 +188,8 @@ public class GrahamScanTests {
 
 
   [Test]
-  public void ClosePointsTest() {
+  public void ClosePointsTest()
+  {
     List<Vector2D> S = new List<Vector2D>()
       {
         new Vector2D(0, 0)
@@ -190,11 +203,12 @@ public class GrahamScanTests {
 
     List<Vector2D> res = Convexification.GrahamHull(S);
 
-    Assert.That(new HashSet<Vector2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
+    Assert.That(new SortedSet<Vector2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
   }
 
   [Test]
-  public void ClosePoints2Test() {
+  public void ClosePoints2Test()
+  {
     List<Vector2D> S = new List<Vector2D>()
       {
         new Vector2D(1, 1.0000000000000002)
@@ -206,12 +220,13 @@ public class GrahamScanTests {
 
     List<Vector2D> res = Convexification.GrahamHull(S);
 
-    Assert.That(new HashSet<Vector2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
+    Assert.That(new SortedSet<Vector2D>(res).SetEquals(Convexification.ArcHull2D(S, false)), "Sets are not equal!");
   }
 
 
   [Test]
-  public void TriangleTest() {
+  public void TriangleTest()
+  {
     List<Vector2D> S = new List<Vector2D>()
       {
         new Vector2D(0.0, 0.0)
@@ -219,7 +234,7 @@ public class GrahamScanTests {
       , new Vector2D(1, 3.885780586188048E-16)
       };
 
-    HashSet<Vector2D> additionalPoints = new HashSet<Vector2D>()
+    SortedSet<Vector2D> additionalPoints = new SortedSet<Vector2D>()
       {
         new Vector2D(0.608885066492689, 1.942890293094024E-16)
       , new Vector2D(0.489370962020329, 0.5106290379796712)
@@ -228,7 +243,7 @@ public class GrahamScanTests {
 
     List<Vector2D> res = Convexification.GrahamHull(S.Union(additionalPoints));
 
-    Assert.That(new HashSet<Vector2D>(res).SetEquals(S), "Sets are not equal!");
+    Assert.That(new SortedSet<Vector2D>(res).SetEquals(S), "Sets are not equal!");
   }
 
 }

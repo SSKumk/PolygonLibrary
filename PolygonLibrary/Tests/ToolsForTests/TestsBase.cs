@@ -7,16 +7,18 @@ namespace Tests.ToolsTests;
 public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
-  where TConv : INumConvertor<TNum> {
+  where TConv : INumConvertor<TNum>
+{
 
   /// <summary>
   /// The random engine.
   /// </summary>
   public static readonly GRandomLC _random = new GRandomLC(0);
 
-#region Auxiliary functions
+  #region Auxiliary functions
   /// <summary>
   /// Generates a random TNum value in (0,1): a value between 0 and 1, excluding the values 0 and 1.
+  /// More accurate [1, 999] / 1000 
   /// </summary>
   /// <returns>The generated random TNum value.</returns>
   public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
@@ -35,12 +37,14 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="points">The list of point to lin-combine.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A linear combination of the given points.</returns>
-  public static Vector GenConvexCombination(IReadOnlyCollection<Vector> points, GRandomLC? random = null) {
-    GRandomLC  rnd = random ?? _random;
-    List<TNum> ws  = new List<TNum>();
+  public static Vector GenConvexCombination(IReadOnlyCollection<Vector> points, GRandomLC? random = null)
+  {
+    GRandomLC rnd = random ?? _random;
+    List<TNum> ws = new List<TNum>();
 
     TNum difA = Tools.One;
-    for (int i = 0; i < points.Count - 1; i++) {
+    for (int i = 0; i < points.Count - 1; i++)
+    {
       TNum alpha = GenInner(rnd) * difA;
       ws.Add(alpha);
       difA -= alpha;
@@ -68,11 +72,12 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   ///<param name="P">A reference to the list of points to be transformed.</param>
   ///<param name="S">A reference to the list of points representing the swarm to be transformed.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
-  public static void ShiftAndRotate(int PDim, ref List<Vector> P, ref List<Vector> S, uint? seed = null) {
+  public static void ShiftAndRotate(int PDim, ref List<Vector> P, ref List<Vector> S, uint? seed = null)
+  {
     GRandomLC random = seed is null ? _random : new GRandomLC(seed);
 
     Matrix rotation = Matrix.GenONMatrix(PDim, random);
-    Vector shift    = Vector.GenVector(PDim, TConv.FromInt(1), TConv.FromInt(10), random);
+    Vector shift = Vector.GenVector(PDim, TConv.FromInt(1), TConv.FromInt(10), random);
 
     P = Rotate(P, rotation);
     P = Shift(P, shift);
@@ -87,7 +92,8 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="S">The swarm of points to rotate.</param>
   /// <param name="rotation">Matrix to rotate a swarm.</param>
   /// <returns>The rotated swarm of points.</returns>
-  public static List<Vector> Rotate(IEnumerable<Vector> S, Matrix rotation) {
+  public static List<Vector> Rotate(IEnumerable<Vector> S, Matrix rotation)
+  {
     Debug.Assert
       (S.First().Dim == rotation.Rows, "ToolsForTests.Rotate: the dimension of points must be equal to the count of rotation rows.");
 
@@ -104,7 +110,8 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="ax2">The second axis for the rotation [1,2, ... d].</param>
   /// <param name="angle">The angle of rotation in radians.</param>
   /// <returns>A rotation matrix of type Matrix.</returns>
-  public static Matrix MakeRotationMatrix(int dim, int ax1, int ax2, TNum angle) {
+  public static Matrix MakeRotationMatrix(int dim, int ax1, int ax2, TNum angle)
+  {
 #if DEBUG
     Debug.Assert(dim > 1, "ToolsTest.GenRotationMatrix: the dimension must be greater than 1.");
     Debug.Assert(ax1 > 0 && ax1 < dim + 1, "ToolsTest.GenRotationMatrix: the rotation axis must be one of [1,2, ..., d].");
@@ -114,15 +121,20 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
     ax1--; //чтобы к индексам привести
     ax2--; //чтобы к индексам привести
     TNum[,] rotM = Matrix.Eye(dim);
-    for (int r = 0; r < dim; r++) {
-      for (int k = 0; k < dim; k++) {
-        if ((r == ax1 && k == ax1) || (r == ax2 && k == ax2)) { // индексы совпали
+    for (int r = 0; r < dim; r++)
+    {
+      for (int k = 0; k < dim; k++)
+      {
+        if ((r == ax1 && k == ax1) || (r == ax2 && k == ax2))
+        { // индексы совпали
           rotM[r, k] = TNum.Cos(angle);
         }
-        if (r == ax1 && k == ax2) { // у первого синуса минус
+        if (r == ax1 && k == ax2)
+        { // у первого синуса минус
           rotM[r, k] = -TNum.Sin(angle);
         }
-        if (r == ax2 && k == ax1) {
+        if (r == ax2 && k == ax1)
+        {
           rotM[r, k] = TNum.Sin(angle);
         }
       }
@@ -130,6 +142,6 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
 
     return new Matrix(rotM);
   }
-#endregion
+  #endregion
 
 }
