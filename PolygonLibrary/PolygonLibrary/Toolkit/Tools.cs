@@ -4,7 +4,8 @@
 /// Represents an interface for converting between TNum and other numeric types.
 /// </summary>
 /// <typeparam name="TNum">The type of number.</typeparam>
-public interface INumConvertor<TNum> where TNum : INumber<TNum> {
+public interface INumConvertor<TNum> where TNum : INumber<TNum>
+{
 
   /// <summary>
   /// Converts a TNum value to a double.
@@ -53,14 +54,16 @@ public interface INumConvertor<TNum> where TNum : INumber<TNum> {
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum> {
+  where TConv : INumConvertor<TNum>
+{
 
   /// <summary>
   /// Class with general purpose procedures
   /// </summary>
-  public class Tools {
+  public class Tools
+  {
 
-#region Fields
+    #region Fields
     /// <summary>
     /// The random generator.
     /// </summary>
@@ -69,10 +72,10 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-8);
-#endregion
+    private static TNum _eps = TConv.FromDouble(1e-12);
+    #endregion
 
-#region Constants
+    #region Constants
     /// <summary>
     /// Represents the positive infinity number.
     /// </summary>
@@ -122,24 +125,26 @@ public partial class Geometry<TNum, TConv>
     /// Represents doubled value of the PI.
     /// </summary>
     public static readonly TNum PI2 = PI * Two;
-#endregion
+    #endregion
 
-#region Comparison
+    #region Comparison
     /// <summary>
     /// Property to deal with the accuracy
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
-    public static TNum Eps {
+    public static TNum Eps
+    {
       get { return _eps; }
       set
-        {
+      {
 #if DEBUG
-          if (value <= TNum.AdditiveIdentity) {
-            throw new ArgumentOutOfRangeException("Tools Eps: Non-positive precision parameter");
-          }
-#endif
-          _eps  = value;
+        if (value <= TNum.AdditiveIdentity)
+        {
+          throw new ArgumentOutOfRangeException("Tools Eps: Non-positive precision parameter");
         }
+#endif
+        _eps = value;
+      }
     }
 
     /// <summary>
@@ -147,11 +152,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="a">The number.</param>
     /// <returns>+1, if a &gt; b; -1, if a &lt; b; 0, otherwise.</returns>
-    public static int CMP(TNum a) {
-      if (EQ(a)) {
+    public static int CMP(TNum a)
+    {
+      if (EQ(a))
+      {
         return 0;
       }
-      if (GT(a)) {
+      if (GT(a))
+      {
         return +1;
       }
 
@@ -261,13 +269,15 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Type of a comparer of numbers with the respect to given precision
     /// </summary>
-    public class DoubleComparer : IComparer<TNum> {
+    public class DoubleComparer : IComparer<TNum>
+    {
 
       private readonly TNum _epsLocal;
 
       public DoubleComparer(TNum eps) => _epsLocal = eps;
 
-      public int Compare(TNum a, TNum b) {
+      public int Compare(TNum a, TNum b)
+      {
         TNum oldEPS = Tools.Eps;
         Tools.Eps = _epsLocal;
         int res = Tools.CMP(a, b);
@@ -277,19 +287,22 @@ public partial class Geometry<TNum, TConv>
       }
 
     }
-#endregion
+    #endregion
 
-#region Common procedures
+    #region Common procedures
     /// <summary>
     /// Signum function based of approximate comparison of numbers
     /// </summary>
     /// <param name="x">The value which sign should be found</param>
     /// <returns>The sign of x</returns>
-    public static int Sign(TNum x) {
-      if (EQ(x)) {
+    public static int Sign(TNum x)
+    {
+      if (EQ(x))
+      {
         return 0;
       }
-      if (GT(x)) {
+      if (GT(x))
+      {
         return +1;
       }
 
@@ -311,17 +324,21 @@ public partial class Geometry<TNum, TConv>
     /// <param name="y">The y-coordinate of the point.</param>
     /// <param name="x">The x-coordinate of the point.</param>
     /// <returns>The angle, in radians, between the positive x-axis and the point (x, y).</returns>
-    public static TNum Atan2(TNum y, TNum x) {
-      if (EQ(x) && EQ(y)) {
+    public static TNum Atan2(TNum y, TNum x)
+    {
+      if (EQ(x) && EQ(y))
+      {
         return Zero;
       }
 
-      if (TNum.Abs(x) >= TNum.Abs(y)) {
+      if (TNum.Abs(x) >= TNum.Abs(y))
+      {
         TNum yx = y / x;
 
         return GE(x) ? TNum.Atan(yx) : (GE(y) ? TNum.Atan(yx) + PI : TNum.Atan(yx) - PI);
       }
-      else {
+      else
+      {
         TNum xy = x / y;
 
         return GE(y) ? (HalfPI - TNum.Atan(xy)) : (-HalfPI - TNum.Atan(xy));
@@ -333,11 +350,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="x">Given number.</param>
     /// <returns>The absolute value. |x|.</returns>
-    public static TNum Abs(TNum x) {
-      if (EQ(x)) {
+    public static TNum Abs(TNum x)
+    {
+      if (EQ(x))
+      {
         return Zero;
       }
-      if (x > Zero) {
+      if (x > Zero)
+      {
         return x;
       }
 
@@ -358,18 +378,22 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">The projection matrix</param>
     /// <param name="ps">The set of multidimensional points</param>
     /// <returns>List of two-dimensional projections</returns>
-    public static List<Vector2D> Project2D(Matrix m, IEnumerable<Vector> ps) {
+    public static List<Vector2D> Project2D(Matrix m, IEnumerable<Vector> ps)
+    {
 #if DEBUG
-      if (m.Rows != 2) {
+      if (m.Rows != 2)
+      {
         throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
       }
 #endif
       List<Vector2D> res = ps
                           .Select
                              (
-                              p => {
+                              p =>
+                              {
 #if DEBUG
-                                if (p.Dim != m.Cols) {
+                                if (p.Dim != m.Cols)
+                                {
                                   throw new ArgumentException
                                     ("During projection to the plane a point with wrong dimension has been found!");
                                 }
@@ -389,7 +413,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">The total number of items.</param>
     /// <param name="k">The size of each combination.</param>
     /// <returns>An enumerable sequence of integer arrays representing the combinations.</returns>
-    public static IEnumerable<int[]> GetCombinations(int n, int k) {
+    public static IEnumerable<int[]> GetCombinations(int n, int k)
+    {
       Debug.Assert(n > 0, $"Tools.GetCombinations: n must be positive! Found {n}.");
       Debug.Assert(k > 0, $"Tools.GetCombinations: n must be positive! Found {k}.");
       Debug.Assert(k <= n, $"Tools.GetCombinations: n must be greater or equal than k! Found n - k = {n - k}.");
@@ -397,7 +422,8 @@ public partial class Geometry<TNum, TConv>
       int[] combination = new int[k];
       for (int i = 0; i < k; i++) { combination[i] = i; }
 
-      do {
+      do
+      {
         yield return combination;
       } while (NextCombination(combination, n, k));
     }
@@ -409,11 +435,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">The total number of items.</param>
     /// <param name="k">The size of each combination.</param>
     /// <returns>True if the next combination was found, false otherwise.</returns>
-    private static bool NextCombination(int[] combination, int n, int k) {
-      for (int i = k - 1; i >= 0; i--) {
-        if (combination[i] <= n - k + i - 1) {
+    private static bool NextCombination(int[] combination, int n, int k)
+    {
+      for (int i = k - 1; i >= 0; i--)
+      {
+        if (combination[i] <= n - k + i - 1)
+        {
           combination[i]++;
-          for (int j = i + 1; j < k; j++) {
+          for (int j = i + 1; j < k; j++)
+          {
             combination[j] = combination[j - 1] + 1;
           }
 
@@ -423,7 +453,7 @@ public partial class Geometry<TNum, TConv>
 
       return false;
     }
-#endregion
+    #endregion
 
   }
 

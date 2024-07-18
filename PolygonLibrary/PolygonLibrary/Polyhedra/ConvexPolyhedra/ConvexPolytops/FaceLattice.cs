@@ -3,16 +3,18 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum> {
+  where TConv : INumConvertor<TNum>
+{
 
   /// <summary>
   /// Representation of a Convex Polytop as a Face Lattice:
   /// A face lattice is a lattice where the maximum is the polytop itself.
   /// The nodes of the lattice correspond to the faces of the polytop in their respective dimensions.
   /// </summary>
-  public class FaceLattice {
+  public class FaceLattice
+  {
 
-#region Fields and properties
+    #region Fields and properties
     /// <summary>
     /// The maximum element in the lattice.
     /// </summary>
@@ -34,15 +36,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <value>A number of nonzero k-faces in the lattice.</value>
     public int NonZeroKFacesAmount => Lattice.Sum(lvl => lvl.Count) - Lattice[0].Count;
-#endregion
+    #endregion
 
-#region Constructors
+    #region Constructors
     /// <summary>
     /// The vertex forms a one-element lattice.
     /// </summary>
     /// <param name="point">The point at which a face lattice is formed.</param>
-    public FaceLattice(Vector point) {
-      Top     = new FLNode(point);
+    public FaceLattice(Vector point)
+    {
+      Top = new FLNode(point);
       Lattice = new List<SortedSet<FLNode>>() { new SortedSet<FLNode>() { Top } };
     }
 
@@ -50,8 +53,9 @@ public partial class Geometry<TNum, TConv>
     /// Construct a face lattice based on given lattice.
     /// </summary>
     /// <param name="lattice">The lattice.</param>
-    public FaceLattice(List<SortedSet<FLNode>> lattice) {
-      Top     = lattice[^1].First();
+    public FaceLattice(List<SortedSet<FLNode>> lattice)
+    {
+      Top = lattice[^1].First();
       Lattice = lattice;
     }
 
@@ -59,35 +63,41 @@ public partial class Geometry<TNum, TConv>
     /// Construct a face lattice based on a maximum element.
     /// </summary>
     /// <param name="Maximum">The maximum node.</param>
-    public FaceLattice(FLNode Maximum) {
-      Top     = Maximum;
+    public FaceLattice(FLNode Maximum)
+    {
+      Top = Maximum;
       Lattice = Maximum.GetAllLevels();
     }
-#endregion
+    #endregion
 
-#region Functions
+    #region Functions
     /// <summary>
     /// Transforms the lattice by applying a given function to each vertex of the lattice.
     /// </summary>
     /// <param name="transformFunc">The function to be applied to each vertex. This function takes a vertex of the lattice and returns a new point.</param>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
-    public FaceLattice LinearVertexTransform(Func<Vector, Vector> transformFunc) {
+    public FaceLattice LinearVertexTransform(Func<Vector, Vector> transformFunc)
+    {
       List<SortedSet<FLNode>> newFL = new List<SortedSet<FLNode>>();
-      for (int i = 0; i <= Top.PolytopDim; i++) {
+      for (int i = 0; i <= Top.PolytopDim; i++)
+      {
         newFL.Add(new SortedSet<FLNode>());
       }
 
       SortedDictionary<FLNode, FLNode> oldToNew = new SortedDictionary<FLNode, FLNode>();
 
       //Отдельно обрабатываем случай d == 0
-      foreach (FLNode vertex in Lattice[0]) {
+      foreach (FLNode vertex in Lattice[0])
+      {
         FLNode newVertex = new FLNode(transformFunc(vertex.Vertices.First()));
         oldToNew.Add(vertex, newVertex);
         newFL[0].Add(newVertex);
       }
 
-      for (int i = 1; i < newFL.Count; i++) {
-        foreach (FLNode node in Lattice[i]) {
+      for (int i = 1; i < newFL.Count; i++)
+      {
+        foreach (FLNode node in Lattice[i])
+        {
           List<FLNode> newSub = node.Sub.Select(n => oldToNew[n]).ToList();
 
           FLNode newNode = new FLNode(newSub);
@@ -98,72 +108,58 @@ public partial class Geometry<TNum, TConv>
 
       return new FaceLattice(newFL);
     }
-#endregion
+    #endregion
 
-#region Compares
-    // !!! При "наивном" Equals у FLNode, "потеря" одного элемента из Sub, если при этом множество вершин граней не уменьшилось
-    // НЕ ВЕДЁТ к тому, что объекты считаются разными !!!
-    public override bool Equals(object? obj) {
-      if (obj == null || GetType() != obj.GetType()) {
+    #region Compares
+    public override bool Equals(object? obj)
+    {
+      if (obj == null || GetType() != obj.GetType())
+      {
         return false;
       }
 
       FaceLattice other = (FaceLattice)obj;
 
-      if (this.Lattice.Count != other.Lattice.Count) {
+      if (this.Lattice.Count != other.Lattice.Count)
+      {
         return false;
       }
 
-      throw new NotImplementedException();
-      //
-      // bool isEqual = true;
-      // for (int i = this.Top.PolytopDim; i > -1; i--) {
-      //   var otherDict = new Dictionary<int, FLNode>();
-      //   foreach (var otherNode in other.Lattice[i]) {
-      //     otherDict.Add(otherNode, otherNode);
-      //   }
-      //   var thisDict = new Dictionary<int, FLNode>();
-      //   foreach (var thisNode in this.Lattice[i]) {
-      //     thisDict.Add(thisNode.(), thisNode);
-      //   }
-      //
-      //   if (thisDict.Count != otherDict.Count) {
-      //     isEqual = false;
-      //     Console.WriteLine($"Lattice are not equal: level i = {i}.");
-      //
-      //     break;
-      //   }
-      //
-      //
-      //   foreach (var thisNode in this.Lattice[i]) {
-      //     otherDict.TryGetValue(thisNode.(), out FLNode? otherNode);
-      //     if (otherNode is null) {
-      //       isEqual = false;
-      //     }
-      //     isEqual = isEqual && thisNode.Equals(otherNode);
-      //   }
-      //   if (!isEqual) {
-      //     Console.WriteLine($"Lattice are not equal: level i = {i}.");
-      //
-      //     break;
-      //   }
-      //   foreach (var otherNode in other.Lattice[i]) {
-      //     thisDict.TryGetValue(otherNode.(), out FLNode? thisNode);
-      //     if (thisNode is null) {
-      //       isEqual = false;
-      //     }
-      //     isEqual = isEqual && otherNode.Equals(thisNode);
-      //   }
-      //   if (!isEqual) {
-      //     Console.WriteLine($"Lattice are not equal: level i = {i}.");
-      //
-      //     break;
-      //   }
-      // }
-      //
-      // return isEqual;
+      bool isEqual = true;
+      for (int i = this.Top.PolytopDim; isEqual && i > -1; i--)
+      {
+        foreach (var thisNode in this.Lattice[i])
+        {
+          if (!other.Lattice[i].TryGetValue(thisNode, out FLNode? otherNode))
+          {
+            isEqual = false;
+          }
+          else
+          {
+            isEqual = isEqual && thisNode.Sub.SetEquals(otherNode.Sub);
+            isEqual = isEqual && thisNode.Super.SetEquals(otherNode.Super);
+          }
+        }
+        if (isEqual)
+        {
+          foreach (var otherNode in other.Lattice[i])
+          {
+            if (!this.Lattice[i].TryGetValue(otherNode, out FLNode? thisNode))
+            {
+              isEqual = false;
+            }
+            else
+            {
+              isEqual = isEqual && otherNode.Sub.SetEquals(thisNode.Sub);
+              isEqual = isEqual && otherNode.Super.SetEquals(thisNode.Super);
+            }
+          }
+        }
+      }
+
+      return isEqual;
     }
-#endregion
+    #endregion
 
   }
 
@@ -171,9 +167,10 @@ public partial class Geometry<TNum, TConv>
   /// The node of the face lattice. It stores references to the supernodes and sub-nodes.
   /// In addition, it maintains a set of vertices representing the face.
   /// </summary>
-  public class FLNode {
+  public class FLNode : IComparable<FLNode>
+  {
 
-#region Data and properties
+    #region Data and properties
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
@@ -204,15 +201,17 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private readonly Dictionary<int, SortedSet<FLNode>> _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
 
-    private Dictionary<int, SortedSet<FLNode>> LevelNodes {
+    private Dictionary<int, SortedSet<FLNode>> LevelNodes
+    {
       get
+      {
+        if (_levelNodes.Count == 0)
         {
-          if (_levelNodes.Count == 0) {
-            ConstructLevelNodes();
-          }
-
-          return _levelNodes;
+          ConstructLevelNodes();
         }
+
+        return _levelNodes;
+      }
     }
 
     /// <summary>
@@ -224,46 +223,50 @@ public partial class Geometry<TNum, TConv>
     /// The dimension of the associated polytop.
     /// </summary>
     public int PolytopDim => AffBasis.SubSpaceDim;
-#endregion
+    #endregion
 
-#region Constructors
+    #region Constructors
     /// <summary>
     /// Constructs an instance of FLNode as a vertex.
     /// </summary>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
-    public FLNode(Vector vertex) {
-      Polytop    = new SortedSet<Vector>() { vertex };
+    public FLNode(Vector vertex)
+    {
+      Polytop = new SortedSet<Vector>() { vertex };
       InnerPoint = vertex;
-      AffBasis   = new AffineBasis(vertex);
+      AffBasis = new AffineBasis(vertex);
     }
 
     /// <summary>
     /// AUX. For Constructing FaceLattice in GW procedure.
     /// </summary>
     /// <param name="Vs">The points of the Polytop.</param>
-    internal FLNode(IEnumerable<Vector> Vs) {
-      Polytop    = new SortedSet<Vector>(Vs); // todo мб тут можно и не копировать
+    internal FLNode(IEnumerable<Vector> Vs)
+    {
+      Polytop = new SortedSet<Vector>(Vs); // todo мб тут можно и не копировать
       InnerPoint = Vector.Zero(1);
-      AffBasis   = new AffineBasis(Vs.First());
+      AffBasis = new AffineBasis(Vs.First());
     }
 
     /// <summary>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    public FLNode(List<FLNode> sub) {
+    public FLNode(List<FLNode> sub)
+    {
       Polytop = new SortedSet<Vector>(sub.SelectMany(s => s.Vertices).ToSortedSet());
-      Sub     = new SortedSet<FLNode>(sub);
+      Sub = new SortedSet<FLNode>(sub);
 
-      foreach (FLNode subNode in sub) {
+      foreach (FLNode subNode in sub)
+      {
         subNode.AddSuper(this);
       }
 
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
-      FLNode      subF   = Sub.First();
+      FLNode subF = Sub.First();
       AffineBasis affine = new AffineBasis(subF.AffBasis);
-      affine.AddVectorToBasis(InnerPoint - subF.InnerPoint);
+      affine.AddVector(InnerPoint - subF.InnerPoint);
       AffBasis = affine;
     }
 
@@ -273,14 +276,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vertices of the face.</param>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(SortedSet<Vector> Vs, Vector innerPoint, AffineBasis aBasis) {
-      Polytop       = Vs;
-      InnerPoint    = innerPoint;
+    internal FLNode(SortedSet<Vector> Vs, Vector innerPoint, AffineBasis aBasis)
+    {
+      Polytop = Vs;
+      InnerPoint = innerPoint;
       this.AffBasis = aBasis;
     }
-#endregion
+    #endregion
 
-#region Internal methods
+    #region Internal methods
     /// <summary>
     /// Gets the requested level in the node structure. If there is no key = dim, then an empty set is produced.
     /// <param name="dim">The dimension of the level being queried.</param>
@@ -314,14 +318,16 @@ public partial class Geometry<TNum, TConv>
     /// Construct the mapping that takes the dimension and maps it onto the set of nodes in that dimension,
     /// which are either sub-nodes or supernodes of it.
     /// </summary>
-    private void ConstructLevelNodes() {
+    private void ConstructLevelNodes()
+    {
       // добавили себя
       _levelNodes.Add(PolytopDim, new SortedSet<FLNode>() { this });
 
       // собираем верх
       SortedSet<FLNode> superNodes = Super;
-      int               d          = PolytopDim;
-      while (superNodes.Count != 0) {
+      int d = PolytopDim;
+      while (superNodes.Count != 0)
+      {
         d++;
         _levelNodes.Add(d, superNodes);
         superNodes = superNodes.SelectMany(node => node.Super).ToSortedSet();
@@ -330,22 +336,25 @@ public partial class Geometry<TNum, TConv>
       // собираем низ
       SortedSet<FLNode> prevNodes = Sub;
       d = PolytopDim;
-      while (prevNodes.Count != 0) {
+      while (prevNodes.Count != 0)
+      {
         d--;
         _levelNodes.Add(d, prevNodes);
         prevNodes = prevNodes.SelectMany(node => node.Sub).ToSortedSet();
       }
     }
-#endregion
+    #endregion
 
-#region Functions
+    #region Functions
     /// <summary>
     /// Gets the entire levelNodes structure.
     /// </summary>
     /// <returns>Returns the entire levelNodes structure.</returns>
-    public List<SortedSet<FLNode>> GetAllLevels() {
+    public List<SortedSet<FLNode>> GetAllLevels()
+    {
       List<SortedSet<FLNode>> allLevels = new List<SortedSet<FLNode>>();
-      for (int i = 0; i < LevelNodes.Count; i++) {
+      for (int i = 0; i < LevelNodes.Count; i++)
+      {
         allLevels.Add(LevelNodes[i]);
       }
 
@@ -357,18 +366,20 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The collection that contains all non-strict sub-faces of the node.</returns>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
-#endregion
+    #endregion
 
     /// <summary>
     /// In assumption that all nodes of a lower dimension are correct, it creates a new Polytop based on vertices of the subs.
     /// </summary>
-    public void ReconstructPolytop() {
-      if (PolytopDim != 0) {
+    public void ReconstructPolytop()
+    {
+      if (PolytopDim != 0)
+      {
         Polytop = new SortedSet<Vector>(Sub.SelectMany(s => s.Vertices));
       }
     }
 
-#region Compares
+    #region Compares
     /// <summary>
     /// The equality function for FLNode. It checks only the Node itself, not its neighbors.
     /// </summary>
@@ -376,8 +387,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>Two FLNodes are considered equal if obj is a FLNode:
     /// 1) polytopes corresponding to the nodes are equal.
     /// </returns>
-    public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
+    public override bool Equals(object? obj)
+    {
+      if (obj == null || this.GetType() != obj.GetType())
+      {
         return false;
       }
 
@@ -396,36 +409,41 @@ public partial class Geometry<TNum, TConv>
     /// Otherwise, it returns the result based on a lexicographical comparison of their elements.
     /// If all corresponding elements are equal, then the sets are considered equal.
     /// </returns>
-    public int CompareTo(FLNode? other) {
+    public int CompareTo(FLNode? other)
+    {
       if (other is null) { return 1; } // null < this (always)
 
-      Debug.Assert(this.PolytopDim == other.PolytopDim, "BaseSubCP: The dimensions of the polytopes must be equal.");
+      // Debug.Assert(this.PolytopDim == other.PolytopDim, "BaseSubCP: The dimensions of the polytopes must be equal.");
 
-      if (this.Vertices.Count < other.Vertices.Count) { // this < other
+      if (this.Vertices.Count < other.Vertices.Count)
+      { // this < other
         return -1;
       }
 
-      if (this.Vertices.Count > other.Vertices.Count) { // other < this
+      if (this.Vertices.Count > other.Vertices.Count)
+      { // this > other
         return 1;
       }
 
-      SortedSet<Vector>.Enumerator e1       = this.Vertices.GetEnumerator();
-      SortedSet<Vector>.Enumerator e2       = other.Vertices.GetEnumerator();
-      Comparer<Vector>             comparer = Comparer<Vector>.Default;
+      SortedSet<Vector>.Enumerator e1 = this.Vertices.GetEnumerator();
+      SortedSet<Vector>.Enumerator e2 = other.Vertices.GetEnumerator();
+      Comparer<Vector> comparer = Comparer<Vector>.Default;
 
-      while (e1.MoveNext() && e2.MoveNext()) {
+      while (e1.MoveNext() && e2.MoveNext())
+      {
         int compare = comparer.Compare(e1.Current, e2.Current);
-        switch (compare) {
-          case > 0: // this < other
-            return -1;
-          case < 0: // other < this
+        switch (compare)
+        {
+          case > 0: // this > other
             return 1;
+          case < 0: // this < other
+            return -1;
         }
       }
 
       return 0;
     }
-#endregion
+    #endregion
 
   }
 
