@@ -7,16 +7,18 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 namespace Tests.DoubleDouble_Tests.Minkowski_Tests;
 
 [TestFixture]
-public class MinkowskiSum2D {
+public class MinkowskiSum2D
+{
 
-  private Vector        u0, u1, u2, u3, u4;
-  private Vector        p0, p1, p2, p3;
+  private Vector u0, u1, u2, u3, u4;
+  private Vector p0, p1, p2, p3;
   private ConvexPolytop pu3;
-  private ConvexPolytop su1,    su2, su3, su4;
+  private ConvexPolytop su1, su2, su3, su4;
   private ConvexPolytop qu1_GW, qp1_GW;
 
   [OneTimeSetUp]
-  public void SetUp() {
+  public void SetUp()
+  {
     u0 = new Vector(new ddouble[] { 0, 0 });
     u1 = new Vector(new ddouble[] { 1, 0 });
     u2 = new Vector(new ddouble[] { 0, 1 });
@@ -63,69 +65,79 @@ public class MinkowskiSum2D {
 
   // Сумма точек
   [Test]
-  public void Point_Point() {
+  public void Point_Point()
+  {
     FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3).FL;
     Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Vector(new ddouble[] { 2, 2 }))));
   }
 
   // Сдвинутый отрезок
   [Test]
-  public void Point_Seg() {
+  public void Point_Seg()
+  {
     ConvexPolytop pu3_su1 = MinkowskiSum.BySandipDas(pu3, su1);
     Assert.That(pu3_su1, Is.EqualTo(MinkowskiSum.ByConvexHull(pu3, su1)));
   }
 
   // Сдвинутый отрезок
   [Test]
-  public void Point_Seg1() {
+  public void Point_Seg1()
+  {
     ConvexPolytop pu3_su3 = MinkowskiSum.BySandipDas(pu3, su3);
     Assert.That(pu3_su3, Is.EqualTo(MinkowskiSum.ByConvexHull(pu3, su3)));
   }
 
   // Удвоенный отрезок
   [Test]
-  public void doubled_Seg() {
+  public void doubled_Seg()
+  {
     ConvexPolytop su3_su3 = MinkowskiSum.BySandipDas(su3, su3);
     Assert.That(su3_su3, Is.EqualTo(MinkowskiSum.ByConvexHull(su3, su3)));
   }
 
   // Единичный квадрат
   [Test]
-  public void Seg_Seg() {
+  public void Seg_Seg()
+  {
     ConvexPolytop qu1 = MinkowskiSum.BySandipDas(su1, su2);
     Assert.That(qu1, Is.EqualTo(qu1_GW));
   }
 
   // Отрезки
   [Test]
-  public void Seg_AnotherSeg() {
+  public void Seg_AnotherSeg()
+  {
     ConvexPolytop q = MinkowskiSum.BySandipDas(su3, su4);
     Assert.That(q, Is.EqualTo(MinkowskiSum.ByConvexHull(su3, su4)));
   }
 
   // Прямоугольник
   [Test]
-  public void Seg_Square() {
+  public void Seg_Square()
+  {
     ConvexPolytop su1_qu1 = MinkowskiSum.BySandipDas(su1, qu1_GW);
     Assert.That(su1_qu1, Is.EqualTo(MinkowskiSum.ByConvexHull(su1, qu1_GW)));
   }
 
   // Шестиугольник
   [Test]
-  public void Seg45_Square() {
+  public void Seg45_Square()
+  {
     ConvexPolytop su3_qu1 = MinkowskiSum.BySandipDas(su3, qu1_GW);
     Assert.That(su3_qu1, Is.EqualTo(MinkowskiSum.ByConvexHull(su3, qu1_GW)));
   }
 
   // Квадрат в два раза больший
   [Test]
-  public void Square_Square() {
+  public void Square_Square()
+  {
     ConvexPolytop double_qu1 = MinkowskiSum.BySandipDas(qu1_GW, qu1_GW);
     Assert.That(double_qu1, Is.EqualTo(MinkowskiSum.ByConvexHull(qu1_GW, qu1_GW)));
   }
 
   [Test]
-  public void Square45_Square() {
+  public void Square45_Square()
+  {
     ConvexPolytop qp1_qu1 = MinkowskiSum.BySandipDas(qp1_GW, qu1_GW);
     Assert.That(qp1_qu1, Is.EqualTo(MinkowskiSum.ByConvexHull(qp1_GW, qu1_GW)));
   }
@@ -133,54 +145,60 @@ public class MinkowskiSum2D {
 }
 
 [TestFixture]
-public class MinkowskiSum_hD {
+public class MinkowskiSum_hD
+{
 
   // private static FaceLattice MinkSumCH(ConvexPolytop   F, ConvexPolytop   G) => MinkowskiSum.ByConvexHull(F, G).FL;
-  // private static FaceLattice MinkSumCH(HashSet<Vector> F, HashSet<Vector> G) => MinkowskiSum.ByConvexHull(F, G).FL;
+  // private static FaceLattice MinkSumCH(SortedSet<Vector> F, SortedSet<Vector> G) => MinkowskiSum.ByConvexHull(F, G).FL;
 
-#region Base Polytopes Tests
+  #region Base Polytopes Tests
   [Test]
-  public void Simplex_3D() {
+  public void Simplex_3D()
+  {
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(Simplex3D, Simplex3D);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(Simplex3D, Simplex3D);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(Simplex3D, Simplex3D);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
 
   [Test]
-  public void Cube_3D() {
+  public void Cube_3D()
+  {
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(Cube3D, Cube3D);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(Cube3D, Cube3D);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(Cube3D, Cube3D);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
 
   [Test]
-  public void Cube_4D() {
+  public void Cube_4D()
+  {
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(Cube4D, Cube4D);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(Cube4D, Cube4D);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(Cube4D, Cube4D);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
-#endregion
+  #endregion
 
-#region Base-polytopes-combined Tests
+  #region Base-polytopes-combined Tests
   [Test]
-  public void Cube3D_Simplex3D() {
+  public void Cube3D_Simplex3D()
+  {
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(Simplex3D, Cube3D);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(Simplex3D, Cube3D);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(Simplex3D, Cube3D);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
-#endregion
+  #endregion
 
-#region 3D tests with pictures
+  #region 3D tests with pictures
   /// <summary>
   /// Пример из статьи
   /// Computing the Minkowski sum of convex polytopes in Rd. Sandip Das, S. Swami. 2021г
   /// </summary>
   [Test]
-  public void Cube3D_Octahedron45XY() {
+  public void Cube3D_Octahedron45XY()
+  {
     List<Vector> p = MakePointsOnSphere_3D(3, 4);
     List<Vector> q = Octahedron3D_list;
     q = Rotate(q, rotate3D_45XY);
@@ -189,7 +207,7 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -210,9 +228,10 @@ public class MinkowskiSum_hD {
   /// MinkSum(P,Q) has 210 faces + vertices + edges.
   /// </summary>
   [Test]
-  public void WorstCase3D() {
-    const int    theta = 2;
-    List<Vector> p     = MakePointsOnSphere_3D(theta, 8, true, true);
+  public void WorstCase3D()
+  {
+    const int theta = 2;
+    List<Vector> p = MakePointsOnSphere_3D(theta, 8, true, true);
     p = Rotate(p, MakeRotationMatrix(3, 2, 3, -double.Pi / 18));
     List<Vector> q = MakePointsOnSphere_3D(theta, 8, true, true);
     q = Rotate(q, MakeRotationMatrix(3, 1, 3, double.Pi / 2));
@@ -221,7 +240,7 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -237,7 +256,8 @@ public class MinkowskiSum_hD {
   }
 
   [Test]
-  public void Octahedron_Octahedron45XY() {
+  public void Octahedron_Octahedron45XY()
+  {
     List<Vector> p = Octahedron3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
@@ -245,14 +265,15 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
     // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
   }
 
   [Test]
-  public void Pyramid_Pyramid45XY() {
+  public void Pyramid_Pyramid45XY()
+  {
     List<Vector> p = Pyramid3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
@@ -260,7 +281,7 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
@@ -272,7 +293,8 @@ public class MinkowskiSum_hD {
 
 
   [Test]
-  public void Cube_Cube45XY() {
+  public void Cube_Cube45XY()
+  {
     List<Vector> p = Cube3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
@@ -280,19 +302,20 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
     // sum.WriteTXTasCPolytop("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY.txt");
     // new GiftWrapping(MinkSum(p, q)).CPolytop.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Cube_Cube45XY++.txt");
   }
-#endregion
+  #endregion
 
 
-#region Other tests
+  #region Other tests
   [Test]
-  public void Cube4D_Cube4D45XY() {
+  public void Cube4D_Cube4D45XY()
+  {
     List<Vector> p = Cube4D_list;
     List<Vector> q = Rotate(p, rotate4D_45XY);
 
@@ -300,13 +323,14 @@ public class MinkowskiSum_hD {
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
 
   [Test]
-  public void Cube2D_Cube2DinAnotherPlane() {
+  public void Cube2D_Cube2DinAnotherPlane()
+  {
     var p0 = new Vector(new ddouble[] { 0, 0, 0, 0 });
     var p1 = new Vector(new ddouble[] { 1, 0, 0, 0 });
     var p2 = new Vector(new ddouble[] { 0, 1, 0, 0 });
@@ -319,7 +343,7 @@ public class MinkowskiSum_hD {
 
     ConvexPolytop P = ConvexPolytop.AsFLPolytop
       (
-       new HashSet<Vector>()
+       new SortedSet<Vector>()
          {
            p0
          , p1
@@ -329,7 +353,7 @@ public class MinkowskiSum_hD {
       );
     ConvexPolytop Q = ConvexPolytop.AsFLPolytop
       (
-       new HashSet<Vector>()
+       new SortedSet<Vector>()
          {
            u0
          , u1
@@ -339,29 +363,31 @@ public class MinkowskiSum_hD {
       );
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
   }
-#endregion
+  #endregion
 
 }
 
 [TestFixture]
-public class MinkowskiSum5D {
+public class MinkowskiSum5D
+{
 
   // private static Matrix rotate5D_45_12, rotate5D_45_35;
-  private static List<Vector> cube5D,       cube4D,       cube3D,       cube2D;
-  private static List<Vector> simplex5D,    simplex4D,    simplex3D,    simplex2D;
+  private static List<Vector> cube5D, cube4D, cube3D, cube2D;
+  private static List<Vector> simplex5D, simplex4D, simplex3D, simplex2D;
   private static List<Vector> simplexRND5D, simplexRND4D, simplexRND3D, simplexRND2D;
 
-  private static readonly List<List<Vector>> allCubes_lst,     all_lst;
-  private static          List<List<Vector>> allSimplices_lst, allSimplicesRND_lst;
+  private static readonly List<List<Vector>> allCubes_lst, all_lst;
+  private static List<List<Vector>> allSimplices_lst, allSimplicesRND_lst;
 
   // private List<FaceLattice> allCubes_FL;
   // private Vector shift;
 
-  static MinkowskiSum5D() {
+  static MinkowskiSum5D()
+  {
     cube5D = Cube5D_list;
     cube4D = Cube4D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
     cube3D = Cube3D_list.Select(p => p.LiftUp(5, Tools.Zero)).ToList();
@@ -406,33 +432,38 @@ public class MinkowskiSum5D {
   }
 
   public static IEnumerable<TestCaseData> AllCubes_AllTransformed(
-      bool   needToRot
-    , int    fst
-    , int    snd
+      bool needToRot
+    , int fst
+    , int snd
     , double angle
-    , bool   needToShift
-    ) {
+    , bool needToShift
+    )
+  {
     Matrix rotate5D = MakeRotationMatrix(5, fst, snd, angle);
-    Vector shift    = GenShift(5, new GRandomLC(111));
+    Vector shift = GenShift(5, new GRandomLC(111));
 
     IEnumerable<FaceLattice> allCubes_FL = allCubes_lst.Select(GiftWrapping.WrapFaceLattice);
 
-    IEnumerable<FaceLattice> all_FL       = all_lst.Select(GiftWrapping.WrapFaceLattice);
-    IEnumerable<FaceLattice> all_FL_Rot   = all_lst.Select(l => GiftWrapping.WrapFaceLattice(Rotate(l, rotate5D)));
+    IEnumerable<FaceLattice> all_FL = all_lst.Select(GiftWrapping.WrapFaceLattice);
+    IEnumerable<FaceLattice> all_FL_Rot = all_lst.Select(l => GiftWrapping.WrapFaceLattice(Rotate(l, rotate5D)));
     IEnumerable<FaceLattice> all_FL_Shift = all_lst.Select(l => GiftWrapping.WrapFaceLattice(Shift(l, shift)));
 
     IEnumerable<FaceLattice> toTreat = all_FL;
-    if (needToRot) {
+    if (needToRot)
+    {
       toTreat = all_FL_Rot;
     }
-    else if (needToShift) {
+    else if (needToShift)
+    {
       toTreat = all_FL_Shift;
     }
 
     // перебираем кубы
-    foreach (FaceLattice cube in allCubes_FL) {
+    foreach (FaceLattice cube in allCubes_FL)
+    {
       // перебираем всё остальное
-      foreach (FaceLattice other in toTreat) {
+      foreach (FaceLattice other in toTreat)
+      {
         yield return new TestCaseData(ConvexPolytop.AsFLPolytop(cube), ConvexPolytop.AsFLPolytop(other));
       }
     }
@@ -442,9 +473,10 @@ public class MinkowskiSum5D {
   /// All cubes sum to all (cubes, simplices, and rnd simplices)
   /// </summary>
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, false })]
-  public void AllCubes_AllTest(ConvexPolytop cube, ConvexPolytop other) {
+  public void AllCubes_AllTest(ConvexPolytop cube, ConvexPolytop other)
+  {
     ConvexPolytop sum_CH = MinkowskiSum.BySandipDas(cube, other);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(cube, other);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, other);
     ConvexPolytop sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
@@ -452,9 +484,10 @@ public class MinkowskiSum5D {
   }
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { false, 1, 2, 0, true })]
-  public void AllCubes_AllShiftedTest(ConvexPolytop cube, ConvexPolytop other) {
+  public void AllCubes_AllShiftedTest(ConvexPolytop cube, ConvexPolytop other)
+  {
     ConvexPolytop sum_CH = MinkowskiSum.BySandipDas(cube, other);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(cube, other);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, other);
     ConvexPolytop sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
@@ -462,9 +495,10 @@ public class MinkowskiSum5D {
   }
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 1, 2, 45, false })]
-  public void AllCubes_AllRotated12_45degTest(ConvexPolytop cube, ConvexPolytop other) {
+  public void AllCubes_AllRotated12_45degTest(ConvexPolytop cube, ConvexPolytop other)
+  {
     ConvexPolytop sum_CH = MinkowskiSum.BySandipDas(cube, other);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(cube, other);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, other);
     ConvexPolytop sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
@@ -472,9 +506,10 @@ public class MinkowskiSum5D {
   }
 
   [Test, TestCaseSource(nameof(AllCubes_AllTransformed), new object[] { true, 3, 5, 45, false })]
-  public void AllCubes_AllRotated35_45degTest(ConvexPolytop cube, ConvexPolytop other) {
+  public void AllCubes_AllRotated35_45degTest(ConvexPolytop cube, ConvexPolytop other)
+  {
     ConvexPolytop sum_CH = MinkowskiSum.BySandipDas(cube, other);
-    ConvexPolytop sum    = MinkowskiSum.BySandipDas(cube, other);
+    ConvexPolytop sum = MinkowskiSum.BySandipDas(cube, other);
     ConvexPolytop sumSim = MinkowskiSum.BySandipDas(other, cube);
 
     Assert.That(sum_CH, Is.EqualTo(sum));
