@@ -5,14 +5,16 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 namespace Tests.DoubleDouble_Tests;
 
 [TestFixture]
-public class LinearSpaceTests {
+public class LinearSpaceTests
+{
 
   /// <summary>
   /// Simple test for the AddVector method of the LinearBasis class.
   /// </summary>
   [Test]
-  public void AddVectorTest() {
-    LinearBasis basis = new LinearBasis(2,0);
+  public void AddVectorTest()
+  {
+    LinearBasis basis = new LinearBasis(2, 0);
     Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
 
     bool added1 = basis.AddVector(new Vector(new ddouble[] { 1, 0 }));
@@ -41,7 +43,8 @@ public class LinearSpaceTests {
   /// Tests the constructor of the LinearBasis class that takes a collection of vectors as input.
   /// </summary>
   [Test]
-  public void ConstructorWithVectorsTest() {
+  public void ConstructorWithVectorsTest()
+  {
     List<Vector> vectors = new List<Vector>()
       {
         new Vector(new ddouble[] { 2, 0, 0 })
@@ -74,14 +77,17 @@ public class LinearSpaceTests {
 }
 
 [TestFixture]
-public class AffineSpaceTests {
+public class AffineSpaceTests
+{
 
   /// <summary>
   /// Checks that all vectors in the basis have unit length.
   /// </summary>
   /// <param name="basis">Basis to be checked</param>
-  private static void CheckVectorsLength(AffineBasis basis) {
-    foreach (Vector bvec in basis.LinBasis) {
+  private static void CheckVectorsLength(AffineBasis basis)
+  {
+    foreach (Vector bvec in basis.LinBasis)
+    {
       Assert.That(Tools.CMP(bvec.Length, 1), Is.EqualTo(0), "All vectors in the basis must have an unit length.");
     }
   }
@@ -90,7 +96,8 @@ public class AffineSpaceTests {
   /// Simple constructor test
   /// </summary>
   [Test]
-  public void ConstructorWithOriginTest() {
+  public void ConstructorWithOriginTest()
+  {
     Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     AffineBasis basis = new AffineBasis(origin);
@@ -105,7 +112,8 @@ public class AffineSpaceTests {
   /// Vector constructor test
   /// </summary>
   [Test]
-  public void ConstructorWithOriginAndVectorsTest() {
+  public void ConstructorWithOriginAndVectorsTest()
+  {
     Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     List<Vector> vectors = new List<Vector>()
@@ -143,7 +151,8 @@ public class AffineSpaceTests {
 
 
   [Test]
-  public void ConstructorWithOriginAndPointsTest() {
+  public void ConstructorWithOriginAndPointsTest()
+  {
     Vector origin = new Vector(new ddouble[] { -1, ddouble.PI, -3 });
 
     List<Vector> points = new List<Vector>()
@@ -176,19 +185,20 @@ public class AffineSpaceTests {
   /// Simple vector adding test
   /// </summary>
   [Test]
-  public void AddVectorToBasisTest() {
+  public void AddVectorTest()
+  {
     Vector origin = new Vector(new ddouble[] { 1, 2, 3 });
 
     List<Vector> vectors = new List<Vector>() { new Vector(new ddouble[] { 1, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0 }) };
 
-    AffineBasis basis     = AffineBasis.AsVectors(origin, vectors,false);
-    Vector      newVector = new Vector(new ddouble[] { 1, 1, 1 });
+    AffineBasis basis = AffineBasis.AsVectors(origin, vectors, false);
+    Vector newVector = new Vector(new ddouble[] { 1, 1, 1 });
 
-    bool result = basis.AddVectorToBasis(newVector);
-    basis.AddVectorToBasis(newVector);
+    bool result = basis.AddVector(newVector);
+    basis.AddVector(newVector);
 
     Vector newVector0 = new Vector(origin);
-    bool   result0    = basis.AddVectorToBasis(newVector0);
+    bool result0 = basis.AddVector(newVector0);
 
 
     Assert.That(result, Is.True, "The vector should be added to the linear basis associated with the affine basis.");
@@ -206,19 +216,20 @@ public class AffineSpaceTests {
   /// Simple test
   /// </summary>
   [Test]
-  public void ProjectToAffineSpace_1() {
+  public void ProjectToAffineSpace_1()
+  {
     Vector origin = new Vector(new ddouble[] { 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { 1, 0 }), new Vector(new ddouble[] { 0, 1 }) };
 
-    HashSet<Vector> swarm = new HashSet<Vector>
+    SortedSet<Vector> swarm = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 3 }), new Vector(new ddouble[] { -1, 4 })
       };
 
-    HashSet<Vector> expected = swarm;
+    SortedSet<Vector> expected = swarm;
 
-    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -230,22 +241,23 @@ public class AffineSpaceTests {
   /// Reflect simple test
   /// </summary>
   [Test]
-  public void ProjectToAffineSpace_2() {
+  public void ProjectToAffineSpace_2()
+  {
     Vector origin = new Vector(new ddouble[] { 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { -1, 0 }), new Vector(new ddouble[] { 0, -1 }) };
 
-    HashSet<Vector> swarm = new HashSet<Vector>
+    SortedSet<Vector> swarm = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 3 }), new Vector(new ddouble[] { -1, 4 })
       };
 
-    HashSet<Vector> expected = new HashSet<Vector>
+    SortedSet<Vector> expected = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { -1, -1 }), new Vector(new ddouble[] { -2, -3 }), new Vector(new ddouble[] { 1, -4 })
       };
 
-    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -257,22 +269,23 @@ public class AffineSpaceTests {
   /// Reflect and shift simple test
   /// </summary>
   [Test]
-  public void ProjectToAffineSpace_3() {
+  public void ProjectToAffineSpace_3()
+  {
     Vector origin = new Vector(new ddouble[] { 2, 2 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { -1, 0 }), new Vector(new ddouble[] { 0, -1 }) };
 
-    HashSet<Vector> swarm = new HashSet<Vector>
+    SortedSet<Vector> swarm = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 2, 4 }), new Vector(new ddouble[] { -4, 4 })
       };
 
-    HashSet<Vector> expected = new HashSet<Vector>
+    SortedSet<Vector> expected = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 0, -2 }), new Vector(new ddouble[] { 6, -2 })
       };
 
-    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -283,12 +296,13 @@ public class AffineSpaceTests {
   /// 4D-test
   /// </summary>
   [Test]
-  public void ProjectToAffineSpace_4() {
+  public void ProjectToAffineSpace_4()
+  {
     Vector origin = new Vector(new ddouble[] { 0, 0, 0, 0 });
 
     List<Vector> basis = new List<Vector> { new Vector(new ddouble[] { 1, 0, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0, 0 }) };
 
-    HashSet<Vector> swarm = new HashSet<Vector>
+    SortedSet<Vector> swarm = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 0, 0, 0, 0 })
       , new Vector(new ddouble[] { 1, 0, 0, 0 })
@@ -296,7 +310,7 @@ public class AffineSpaceTests {
       , new Vector(new ddouble[] { 1, 1, 1, 1 })
       };
 
-    HashSet<Vector> expected = new HashSet<Vector>
+    SortedSet<Vector> expected = new SortedSet<Vector>
       {
         new Vector(new ddouble[] { 0, 0 })
       , new Vector(new ddouble[] { 1, 0 })
@@ -304,7 +318,7 @@ public class AffineSpaceTests {
       , new Vector(new ddouble[] { 1, 1 })
       };
 
-    AffineBasis         aBasis = AffineBasis.AsVectors(origin, basis);
+    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
