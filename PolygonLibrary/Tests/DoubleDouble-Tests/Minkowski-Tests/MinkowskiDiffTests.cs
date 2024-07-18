@@ -8,12 +8,14 @@ using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 namespace Tests.DoubleDouble_Tests.Minkowski_Tests;
 
 [TestFixture]
-public class MinkowskiDiff3D {
+public class MinkowskiDiff3D
+{
 
   // private string path;
 
   [OneTimeSetUp]
-  public void SetUp() {
+  public void SetUp()
+  {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     // path                       = Directory.GetCurrentDirectory() + "/MinkDiff/";
     // if (!Directory.Exists(path)) {
@@ -23,18 +25,22 @@ public class MinkowskiDiff3D {
 
 
   [Test]
-  public void Cube_Seg0_0_z() {
+  public void Cube_Seg0_0_z()
+  {
     ConvexPolytop F = Cube3D;
     Assert.Multiple
       (
-       () => {
+       () =>
+       {
          ddouble value = 0;
-         for (int i = 0; i <= 3; i++) {
+         for (int i = 0; i <= 3; i++)
+         {
            ConvexPolytop G = ConvexPolytop.AsVPolytop
              ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
-           ConvexPolytop? diff_naive     = MinkowskiDiff.Naive(F, G);
+           ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, G);
            ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, G);
-           switch (i) {
+           switch (i)
+           {
              case 0:
                Assert.That(diff_naive is not null);
                Assert.That(diff_geometric is not null);
@@ -74,16 +80,19 @@ public class MinkowskiDiff3D {
   }
 
   [Test]
-  public void Sphere_Seg0_0_z() {
+  public void Sphere_Seg0_0_z()
+  {
     ConvexPolytop F = ConvexPolytop.Sphere(3, 10, 20, Vector.Zero(3), 2);
     Assert.Multiple
       (
-       () => {
-         for (int i = 1; i <= 5; i++) {
+       () =>
+       {
+         for (int i = 1; i <= 5; i++)
+         {
            ddouble value = 0.5 * i;
            ConvexPolytop G = ConvexPolytop.AsVPolytop
              ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
-           ConvexPolytop? diff_naive     = MinkowskiDiff.Naive(F, G);
+           ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, G);
            ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, G);
            // switch (i) {
            //   case 1:
@@ -119,11 +128,12 @@ public class MinkowskiDiff3D {
   }
 
   [Test]
-  public void Cyclic() {
-    ConvexPolytop F     = ConvexPolytop.Cyclic(3, 100, 0.01);
-    ConvexPolytop point = ConvexPolytop.AsVPolytop(new HashSet<Vector>() { new Vector(3) });
+  public void Cyclic()
+  {
+    ConvexPolytop F = ConvexPolytop.Cyclic(3, 100, 0.01);
+    ConvexPolytop point = ConvexPolytop.AsVPolytop(new SortedSet<Vector>() { new Vector(3) });
 
-    ConvexPolytop? diff_naive     = MinkowskiDiff.Naive(F, point);
+    ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, point);
     ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, point);
     Assert.That(diff_naive, Is.EqualTo(diff_geometric));
 
