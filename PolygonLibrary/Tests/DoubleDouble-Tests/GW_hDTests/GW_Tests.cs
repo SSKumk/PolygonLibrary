@@ -16,7 +16,7 @@ public class GW_Tests
 
   #region Auxiliary tests
   [Test]
-  public void GenCubeHDTest()
+  public void GenCubeListHDTest()
   {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
@@ -38,13 +38,25 @@ public class GW_Tests
 
 
   #region Cube3D-Static Тесты 3D-куба не зависящие от _random
+
+  [Test]
+  public void Cube3D() {
+    List<Vector> S = Cube3D_list;
+
+    GiftWrapping P = new GiftWrapping(S);
+    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+
+  }
+
   [Test]
   public void Cube3D_Rotated_Z45()
   {
-    List<Vector> S = Cube01(3, out List<Vector> _);
-    ddouble angle = Tools.PI / 4;
-    ddouble sin = ddouble.Sin(angle);
-    ddouble cos = ddouble.Cos(angle);
+    List<Vector> S     = Cube3D_list;
+    ddouble      angle = Tools.PI / 4;
+    ddouble      sin   = ddouble.Sin(angle);
+    ddouble      cos   = ddouble.Cos(angle);
 
     ddouble[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
@@ -52,6 +64,8 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(Rotated);
     Assert.That(P.VRep.SetEquals(Rotated), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   /// <summary>
@@ -75,6 +89,8 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
     Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   /// <summary>
@@ -97,6 +113,8 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
     Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -117,13 +135,10 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
-  /// <summary>
-  /// Семена устанавливаются так: ТИП РАЗМЕРНОСТЬ НА_ГРАНЯХ_КАКИХ_РАЗМЕРНОСТЕЙ
-  /// 1 - куб
-  /// 2 - тетр
-  /// </summary>
   [Test]
   public void Cube3D_withInnerPoints_On_1D()
   {
@@ -132,6 +147,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -142,6 +159,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -152,6 +171,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -162,6 +183,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -172,6 +195,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -182,6 +207,8 @@ public class GW_Tests
     GiftWrapping P = new GiftWrapping(S);
 
     Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
   #endregion
 
@@ -190,9 +217,11 @@ public class GW_Tests
   /// Shuffles the elements of the S list and wraps it into a Polyhedron.
   /// Asserts that the set of vertices in the Polyhedron is equal to the Polytop list.
   /// </summary>
-  /// <param name="Polytop">The list of points representing the Polytop.</param>
-  /// <param name="S">The list of points representing the S.</param>
-  private static void SwarmShuffle(List<Vector> S, string nameOfTest)
+  /// <param name="S">The list of points representing the Polytop.</param>
+  /// <param name="nameOfTest">The name of the current test.</param>
+  /// <param name="numberOfHRep">The number of half-spaces in HRep.</param>
+  /// <param name="numberOfFVec">The number of all faces of the polytop.</param>
+  private static void SwarmShuffleAndCheckVertices(List<Vector> S, string nameOfTest, int numberOfHRep, int numberOfFVec)
   {
     for (int i = 0; i < 10 * S.Count; i++)
     {
@@ -200,6 +229,8 @@ public class GW_Tests
       S.Shuffle(_random);
       GiftWrapping P = new GiftWrapping(S);
       Assert.That(P.VRep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
+      Assert.That(P.HRep, Has.Count.EqualTo(numberOfHRep), $"The number of facets of the cube must be equal to {numberOfHRep}.");
+      Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(numberOfFVec), $"The number of faces of the cube must be equal to {numberOfFVec}.");
     }
   }
 
@@ -207,14 +238,14 @@ public class GW_Tests
   public void Cube3D_Shuffled()
   {
     List<Vector> S = Cube01(3, out List<Vector> _);
-    SwarmShuffle(S, "Cube3D_Shuffled");
+    SwarmShuffleAndCheckVertices(S, "Cube3D_Shuffled", 6, 27);
   }
 
   [Test]
   public void Cube4D_Suffled()
   {
     List<Vector> S = Cube01(4, out List<Vector> _);
-    SwarmShuffle(S, "Cube4D_Shuffled");
+    SwarmShuffleAndCheckVertices(S, "Cube4D_Shuffled", 8, 81);
 
   }
 
@@ -222,7 +253,7 @@ public class GW_Tests
   public void Simplex3D_Suffled()
   {
     List<Vector> S = Simplex(3, out List<Vector> _);
-    SwarmShuffle(S, "Simplex3D_Shuffled");
+    SwarmShuffleAndCheckVertices(S, "Simplex3D_Shuffled", 4, 15);
 
   }
 
@@ -230,7 +261,7 @@ public class GW_Tests
   public void Simplex4D_Suffled()
   {
     List<Vector> S = Simplex(4, out List<Vector> _);
-    SwarmShuffle(S, "Simplex4D_Shuffled");
+    SwarmShuffleAndCheckVertices(S, "Simplex4D_Shuffled", 5, 31);
 
   }
   #endregion
@@ -371,7 +402,10 @@ public class GW_Tests
       List<Vector> S = Cube01(3, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref S);
 
-      Check(S, P, saveSeed, 3, nPoints, fID, true);
+      Check(S, P, saveSeed, 3, nPoints, fID
+           , 6
+           , 27
+          , true);
     }
   }
 
@@ -389,7 +423,10 @@ public class GW_Tests
       List<Vector> S = Cube01(4, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref S);
 
-      Check(S, P, saveSeed, 4, nPoints, fID, true);
+      Check(S, P, saveSeed, 4, nPoints, fID
+           , 8
+           , 81
+          , true);
     }
   }
 
@@ -407,7 +444,10 @@ public class GW_Tests
       List<Vector> S = Cube01(5, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref S);
 
-      Check(S, P, saveSeed, 5, nPoints, fID, true);
+      Check(S, P, saveSeed, 5, nPoints, fID
+           , 10
+           , 243
+          , true);
     }
   }
 
@@ -425,7 +465,10 @@ public class GW_Tests
       List<Vector> S = Cube01(6, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref S);
 
-      Check(S, P, saveSeed, 6, nPoints, fID, true);
+      Check(S, P, saveSeed, 6, nPoints, fID
+           , 12
+           , 729
+          , true);
     }
   }
   #endregion
@@ -445,7 +488,10 @@ public class GW_Tests
       List<Vector> S = Simplex(3, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(3, ref P, ref S);
 
-      Check(S, P, saveSeed, 3, nPoints, fID, true);
+      Check(S, P, saveSeed, 3, nPoints, fID
+           , 4
+           , 15
+          , true);
     }
   }
 
@@ -463,7 +509,10 @@ public class GW_Tests
       List<Vector> S = Simplex(4, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(4, ref P, ref S);
 
-      Check(S, P, saveSeed, 4, nPoints, fID, true);
+      Check(S, P, saveSeed, 4, nPoints, fID
+           , 5
+           , 31
+          , true);
     }
   }
 
@@ -481,7 +530,10 @@ public class GW_Tests
       List<Vector> S = Simplex(5, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(5, ref P, ref S);
 
-      Check(S, P, saveSeed, 5, nPoints, fID, true);
+      Check(S, P, saveSeed, 5, nPoints, fID
+           , 6
+           , 63
+          , true);
     }
   }
 
@@ -499,7 +551,10 @@ public class GW_Tests
       List<Vector> S = Simplex(6, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(6, ref P, ref S);
 
-      Check(S, P, saveSeed, 6, nPoints, fID, true);
+      Check(S, P, saveSeed, 6, nPoints, fID
+           , 7
+           , 127
+          , true);
     }
   }
 
@@ -517,7 +572,10 @@ public class GW_Tests
       List<Vector> S = Simplex(7, out List<Vector> P, fID, nPoints);
       ShiftAndRotate(7, ref P, ref S);
 
-      Check(S, P, saveSeed, 7, nPoints, fID, true);
+      Check(S, P, saveSeed, 7, nPoints, fID
+           , 8
+           , 255
+          , true);
     }
   }
   #endregion
@@ -538,7 +596,10 @@ public class GW_Tests
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-        Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
+        Check(S, P, saveSeed, simplexDim, nPoints, fID
+             , 4
+             , 15
+            , true);
       }
     }
   }
@@ -558,7 +619,10 @@ public class GW_Tests
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-        Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
+        Check(S, P, saveSeed, simplexDim, nPoints, fID
+             , 5
+             , 31
+            , true);
       }
     }
   }
@@ -578,7 +642,10 @@ public class GW_Tests
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-        Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
+        Check(S, P, saveSeed, simplexDim, nPoints, fID
+             , 6
+             , 63
+            , true);
       }
     }
   }
@@ -661,7 +728,11 @@ public class GW_Tests
 
     var x = GiftWrapping.WrapVRep(S);
     var y = S.GetRange(0, 5).ToSortedSet();
-    Assert.That(GiftWrapping.WrapVRep(S).SetEquals(S.GetRange(0, 5)));
+
+    GiftWrapping P = new GiftWrapping(S);
+    Assert.That(P.VRep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
   /// <summary>
@@ -715,6 +786,8 @@ public class GW_Tests
     Assert.That(P.VRep.SetEquals(Simplex), "The set of vertices must be equal.");
     P = new GiftWrapping(S_shuffled);
     Assert.That(P.VRep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
+    Assert.That(P.HRep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
   /// <summary>
@@ -746,7 +819,7 @@ public class GW_Tests
 
   // Проблема в том, что при построении плоскости ABC в даблах не хватает точности для достаточно точного построения базиса.
   [Test]
-  public void VeryFlatSimplex()
+  public void VeryFlat3DSimplex()
   {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     List<Vector> Simplex = new List<Vector>()
@@ -754,24 +827,26 @@ public class GW_Tests
        new Vector(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 }) // Это начало базиса в GW
       , new Vector(new ddouble[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
       , new Vector(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
-      // , new Vector(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
+      , new Vector(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
       };
 
-    List<Vector> S = new List<Vector>(Simplex);
+    // List<Vector> S = new List<Vector>(Simplex);
     // Vector       p = new Vector(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
     // S.Add(p);
     // ! Мы строим базитс на таких точках. Скачёк на 6 порядков. В double печаль! eps = 1e-8 всё ломается!
     // ! А в ddouble нормально! 
-    var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[1], S[2] }));
+    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[1], S[2] }));
     // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[1], S[2], S[0] }));
     // Console.WriteLine((double)(S[0] - S[1]).Length);
     // Console.WriteLine((double)(S[0] - S[2]).Length);
     // Console.WriteLine((double)(S[1] - S[2]).Length);
-    var distABC = S.Select(s => hpABC.Eval(s));
-    Console.WriteLine(string.Join('\n', distABC));
+    // var distABC = S.Select(s => hpABC.Eval(s));
+    // Console.WriteLine(string.Join('\n', distABC));
 
-    // GiftWrapping P = new GiftWrapping(Simplex);
-    // Assert.That(P.Vertices.SetEquals(Simplex));d
+    GiftWrapping P = new GiftWrapping(Simplex);
+    Assert.That(P.VRep.SetEquals(Simplex));
+    Assert.That(P.HRep, Has.Count.EqualTo(4), "The number of facets of the 3D-simplex must be equal to 4.");
+    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(15), "The number of faces of the  3D-simplex must be equal to 15.");
   }
 
 
@@ -798,7 +873,7 @@ public class GW_Tests
       , origin + v1 + v2 + v3
       };
 
-    SwarmShuffle(S, "SomeParallelogram");
+    SwarmShuffleAndCheckVertices(S, "SomeParallelogram", 6, 27);
   }
   #endregion
 
@@ -811,16 +886,22 @@ public class GW_Tests
   /// <param name="PDim"></param>
   /// <param name="nPoints"></param>
   /// <param name="fID"></param>
+  /// <param name="numberHRep"></param>
+  /// <param name="numberFVec"></param>
   /// <param name="needShuffle"></param>
-  private static void Check(List<Vector> S
-                          , List<Vector> Answer
-                          , uint seed
-                          , int PDim
-                          , int nPoints
-                          , List<int> fID
-                          , bool needShuffle = false)
+  private static void Check(
+      List<Vector> S
+    , List<Vector> Answer
+    , uint         seed
+    , int          PDim
+    , int          nPoints
+    , List<int>    fID
+    , int          numberHRep
+    , int          numberFVec
+    , bool         needShuffle = false
+    )
   {
-    SortedSet<Vector>? P = null;
+    GiftWrapping P;
 
     try
     {
@@ -831,12 +912,12 @@ public class GW_Tests
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = new GiftWrapping(S).VRep;
+      P = new GiftWrapping(S);
       Debug.Assert(P is not null, nameof(P) + " != null");
     }
     catch (Exception e)
     {
-      Console.WriteLine("Gift wrapping does not success!");
+      // Console.WriteLine("Gift wrapping does not success!");
       GenTest(seed, PDim, nPoints, fID, needShuffle);
 
       throw new ArgumentException($"Error in gift wrapping!\n{e.Message}");
@@ -844,17 +925,47 @@ public class GW_Tests
 
     try
     {
-      Assert.That(P.SetEquals(Answer), "The set of vertices must be equal.");
+      Assert.That(P.VRep.SetEquals(Answer));
     }
     catch (Exception e)
     {
-      Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
+      // Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
       GenTest(seed, PDim, nPoints, fID, needShuffle);
 
       Console.WriteLine(e.Message);
 
       throw new ArgumentException("The set of vertices must be equal.");
     }
+
+    try
+    {
+      Assert.That(P.HRep, Has.Count.EqualTo(numberHRep));
+    }
+    catch (Exception e)
+    {
+      // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
+      GenTest(seed, PDim, nPoints, fID, needShuffle);
+
+      Console.WriteLine(e.Message);
+
+      throw new ArgumentException($"The half-spaces number must be equal to {numberHRep}.");
+    }
+
+    try
+    {
+      Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(numberFVec));
+    }
+    catch (Exception e)
+    {
+      // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
+      GenTest(seed, PDim, nPoints, fID, needShuffle);
+
+      Console.WriteLine(e.Message);
+
+      throw new ArgumentException($"The f-vector number must be equal to {numberFVec}.");
+    }
+
+
   }
 
   private static void GenTest(uint seed, int PDim, int nPoints, List<int> fID, bool needShuffle)
