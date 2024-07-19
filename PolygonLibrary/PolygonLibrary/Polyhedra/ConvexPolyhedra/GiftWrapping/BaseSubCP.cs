@@ -10,13 +10,13 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Type of temporary storage of face incidence information
   /// </summary>
-  public class TempIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> { }
+  internal class TempIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> { }
 
   /// <summary>
   /// Type of permanent storage of face incidence information.
   /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
   /// </summary>
-  public class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
+  internal class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
   /// <summary>
   /// <para><b>Simplex</b> - the polytop is a simplex.</para>
@@ -37,7 +37,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents the d-dimensional convex polytop
   /// </summary>
-  public abstract class BaseSubCP : IComparable<BaseSubCP> {
+  internal abstract class BaseSubCP : IComparable<BaseSubCP> {
 
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
@@ -118,7 +118,7 @@ public partial class Geometry<TNum, TConv>
         return -1;
       }
 
-      if (this.Vertices.Count > other.Vertices.Count) { // other < this
+      if (this.Vertices.Count > other.Vertices.Count) { // this > other
         return 1;
       }
 
@@ -130,9 +130,9 @@ public partial class Geometry<TNum, TConv>
       while (e1.MoveNext() && e2.MoveNext()) {
         int compare = comparer.Compare(e1.Current, e2.Current);
         switch (compare) {
-          case > 0: // this < other
+          case < 0: // this < other
             return -1;
-          case < 0: // other < this
+          case > 0: // this > other
             return 1;
         }
       }
