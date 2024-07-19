@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets the face lattice.
     /// </summary>
     /// <returns>The face lattice.</returns>
-    public FaceLattice FaceLattice => ConstructFL(); // todo Может её сохранять? Или нет?
+    public FaceLattice FaceLattice => ConstructFL();
 
     /// <summary>
     /// Gets the polytop in HRep form.
@@ -58,15 +58,15 @@ public partial class Geometry<TNum, TConv>
           {
             SubTwoDimensional twoD = (SubTwoDimensional)BuiltPolytop;
             Vector inner = WrapFaceLattice(twoD.Vertices).Lattice.Last().First().InnerPoint;
-            // todo посчитать внутреннюю точку как выпуклую комбинацию из VerticesList!!!
+            // todo посчитать внутреннюю точку как выпуклую комбинацию из VerticesInOrder!!!
             for (int i = 0; i < twoD.Vertices.Count - 1; i++)
             {
               HyperPlane n = new HyperPlane
-                (new AffineBasis(new List<Vector>() { twoD.VerticesList[i], twoD.VerticesList[i + 1] }), (inner, false));
+                (new AffineBasis(new List<Vector>() { twoD.VerticesInOrder[i], twoD.VerticesInOrder[i + 1] }), (inner, false));
               Fs.Add(n);
             }
             Fs.Add
-              (new HyperPlane(new AffineBasis(new List<Vector>() { twoD.VerticesList[^1], twoD.VerticesList[0] }), (inner, false)));
+              (new HyperPlane(new AffineBasis(new List<Vector>() { twoD.VerticesInOrder[^1], twoD.VerticesInOrder[0] }), (inner, false)));
 
             break;
           }
@@ -175,24 +175,24 @@ public partial class Geometry<TNum, TConv>
         foreach (Vector v in convCombVs) { innerPoint += v; }
 
         SubTwoDimensional twoDimensional = (SubTwoDimensional)polytop;
-        HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesList), (innerPoint, false));
+        HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder), (innerPoint, false));
         if (Vector.TripleProduct // хотим выводить точки в порядке "против часовой стрелки, если смотреть с конца внешней нормали"
               (
                hp.Normal
-             , twoDimensional.VerticesList[0] - twoDimensional.VerticesList[2]
-             , twoDimensional.VerticesList[1] - twoDimensional.VerticesList[2]
+             , twoDimensional.VerticesInOrder[0] - twoDimensional.VerticesInOrder[2]
+             , twoDimensional.VerticesInOrder[1] - twoDimensional.VerticesInOrder[2]
               ) < Tools.Zero)
         {
-          Vector[] cclw = new Vector[twoDimensional.VerticesList.Length];
-          for (int k = 0; k < twoDimensional.VerticesList.Length; k++)
+          Vector[] cclw = new Vector[twoDimensional.VerticesInOrder.Length];
+          for (int k = 0; k < twoDimensional.VerticesInOrder.Length; k++)
           {
-            cclw[k] = twoDimensional.VerticesList[twoDimensional.VerticesList.Length - k - 1];
+            cclw[k] = twoDimensional.VerticesInOrder[twoDimensional.VerticesInOrder.Length - k - 1];
           }
           res[i] = new Facet(cclw, hp.Normal);
         }
         else
         {
-          res[i] = new Facet(twoDimensional.VerticesList, hp.Normal);
+          res[i] = new Facet(twoDimensional.VerticesInOrder, hp.Normal);
         }
         i++;
       }
@@ -213,11 +213,11 @@ public partial class Geometry<TNum, TConv>
         );
 
       SubTwoDimensional twoDimensional = (SubTwoDimensional)BuiltPolytop;
-      HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesList));
+      HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder));
 
       // В случае, когда многогранник плоский, мы не знаем куда надо ориентировать нормаль, так что
       // пусть куда попала туда и смотрит.
-      return new Facet(twoDimensional.VerticesList, hp.Normal);
+      return new Facet(twoDimensional.VerticesInOrder, hp.Normal);
     }
 
     /// <summary>
