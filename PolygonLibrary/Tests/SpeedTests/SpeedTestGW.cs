@@ -189,7 +189,7 @@ public class SpeedTestGW {
         timer.Restart();
         for (int i = 0; i < N; i++) { P = new GiftWrapping(S); }
         timer.Stop();
-        writer.WriteLine($"{P!.FaceLattice.NonZeroKFacesAmount}-{S.Count,-5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
+        writer.WriteLine($"{P!.FaceLattice.NumberOfNonZeroKFaces}-{S.Count,-5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
         writer.Flush();
       }
     }
