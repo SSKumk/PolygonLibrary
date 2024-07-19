@@ -1,8 +1,8 @@
 using System.Globalization;
 // using System.Numerics;
-
-// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static CGLibrary.Geometry<double, Tests.DConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
 namespace Profile;
@@ -17,25 +17,34 @@ class Program {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
 
+    SortedSet<Vector> cube4d = new SortedSet<Vector>()
+      {
+        new Vector(new ddouble[] { 0, 0, 0, 0 })
+      , new Vector(new ddouble[] { 0, 0, 0, 1 })
+      , new Vector(new ddouble[] { 0, 0, 1, 0 })
+      , new Vector(new ddouble[] { 0, 0, 1, 1 })
+      , new Vector(new ddouble[] { 0, 1, 0, 0 })
+      , new Vector(new ddouble[] { 0, 1, 0, 1 })
+      , new Vector(new ddouble[] { 0, 1, 1, 0 })
+      , new Vector(new ddouble[] { 0, 1, 1, 1 })
+      , new Vector(new ddouble[] { 1, 0, 0, 0 })
+      , new Vector(new ddouble[] { 1, 0, 0, 1 })
+      , new Vector(new ddouble[] { 1, 0, 1, 0 })
+      , new Vector(new ddouble[] { 1, 0, 1, 1 })
+      , new Vector(new ddouble[] { 1, 1, 0, 0 })
+      , new Vector(new ddouble[] { 1, 1, 0, 1 })
+      , new Vector(new ddouble[] { 1, 1, 1, 0 })
+      , new Vector(new ddouble[] { 1, 1, 1, 1 })
+      };
+
+
+    GiftWrapping gw = new GiftWrapping(cube4d);
+    // GiftWrapping gw = new GiftWrapping(Simplex3D_list);
+    var x = gw.FaceLattice;
+
+
     Tools.Eps = 1e-8;
 
-    // Vector v1 = new Vector(new double[] { -1.0596541049778718, 1.1515585830401667, 2 });
-    // Vector v2 = new Vector(new double[] { -1.0596541050169939, 1.151558582963422, 2 });
-
-    Vector v1 = new Vector(new double[] { 1.9100000000000001, 0.09999999999999969, 2 });
-    Vector v2 = new Vector(new double[] { 1.9100000000000001, 0.10000000000000739, 2 });
-
-    // Vector v1 = new Vector(new double[] { -1.554574501452087, 0.4747626291950904, 2 });
-    // Vector v2 = new Vector(new double[] { -1.5545745015129653, 0.4747626289226897, 2 }); // 11.0  11.1  11.2  11.3  11.4  11.5
-
-    Console.WriteLine(v1 == v2);
-
-    // Console.WriteLine(Math.Floor(2.5));
-    // Console.WriteLine(Math.Floor(-2.5));
-
-    // Console.WriteLine(Tools.GetHashCodeTNum(-0.09999999999999969));
-    // Console.WriteLine(Tools.GetHashCodeTNum(-0.10000000000000739));
-    // Console.WriteLine(Tools.EQ(-0.09999999999999969, -0.10000000000000739));
 
     string materialdot_path =
       pathData + "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2/";
