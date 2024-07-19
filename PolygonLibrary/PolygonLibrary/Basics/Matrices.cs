@@ -910,7 +910,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A Matrix with randomly generated elements between a and b.</returns>
     public static Matrix GenMatrix(int dimRow, int dimCol, TNum a, TNum b, GRandomLC? random = null)
     {
-      GRandomLC rnd = random ?? Tools.rnd;
+      GRandomLC rnd = random ?? Tools.Random;
 
       TNum[,] m = new TNum[dimRow, dimCol];
       for (int r = 0; r < dimRow; r++)
@@ -963,7 +963,7 @@ public partial class Geometry<TNum, TConv>
     /// Generate orthonormal matrix.
     /// </summary>
     /// <param name="dim">The dimension d of the space.</param>
-    /// <param name="random">The random to be used. If null, the _random be used.</param>
+    /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>The orthonormal matrix d x d.</returns>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null)
     {

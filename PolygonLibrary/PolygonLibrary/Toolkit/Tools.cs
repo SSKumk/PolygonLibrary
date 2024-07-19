@@ -67,7 +67,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The random generator.
     /// </summary>
-    public static readonly GRandomLC rnd = new GRandomLC();
+    public static readonly GRandomLC Random = new GRandomLC();
 
     /// <summary>
     /// Absolute accuracy for comparison

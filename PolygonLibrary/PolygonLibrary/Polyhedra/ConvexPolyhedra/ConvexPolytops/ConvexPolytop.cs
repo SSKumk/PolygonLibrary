@@ -48,6 +48,7 @@ public partial class Geometry<TNum, TConv>
 
       return Normal.Equals(other.Normal) && (new SortedSet<Vector>(Vertices)).SetEquals(other.Vertices);
     }
+
   }
 
   /// <summary>
@@ -154,6 +155,7 @@ public partial class Geometry<TNum, TConv>
       return minDist;
     }
 #endregion
+
 #region Constructors
     private enum ConvexPolytopForm { VRep, HRep, FL }
 
@@ -384,10 +386,11 @@ public partial class Geometry<TNum, TConv>
     /// Generates a d-simplex in d-space.
     /// </summary>
     /// <param name="simplexDim">The dimension of the simplex.</param>
-    /// <param name="doFL">If the flag is true then face lattice will be construct, otherwise only VRep.</param>
+    /// <param name="doFL">If the flag is true, then face lattice will be constructed, otherwise only VRep.</param>
+    /// <param name="rnd"></param>
     /// <returns>A convex polytop as representing the random simplex.</returns>
-    public static ConvexPolytop SimplexRND(int simplexDim, bool doFL = false) {
-      GRandomLC random = new GRandomLC();
+    public static ConvexPolytop SimplexRND(int simplexDim, bool doFL = false, GRandomLC? rnd = null) {
+      GRandomLC random = rnd ?? Tools.Random;
 
       SortedSet<Vector> simplex = new SortedSet<Vector>();
       do {
@@ -689,10 +692,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Rotates the polytop by randomly generated orthonormal matrix.
     /// </summary>
-    /// <param name="doFL">If the flag is true then face lattice will be construct, otherwise only VRep.</param>
+    /// <param name="doFL">If the flag is true, then face lattice will be constructed, otherwise only VRep.</param>
+    /// <param name="rnd">The random engine to be used. If null, the Random be used.</param>
     /// <returns>The rotated polytop</returns>
-    public ConvexPolytop RotateRND(bool doFL = false) {
-      Matrix              rotate = Matrix.GenONMatrix(SpaceDim);
+    public ConvexPolytop RotateRND(bool doFL = false, GRandomLC? rnd = null) {
+      GRandomLC           random = rnd ?? Tools.Random;
+      Matrix              rotate = Matrix.GenONMatrix(SpaceDim, random);
       IEnumerable<Vector> S      = Vertices.Select(v => v * rotate);
 
       return doFL ? AsFLPolytop(S) : AsVPolytop(S); // todo Если дано FL, то надо его сохранить (просто вершины пересчитать)

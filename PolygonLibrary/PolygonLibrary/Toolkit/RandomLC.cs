@@ -115,7 +115,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <param name="random">If null then default one be used.</param>
   /// <returns>An array with random values.</returns>
   public static TNum[] GenArray(int dim, TNum a, TNum b, GRandomLC? random = null) {
-    GRandomLC rnd = random ?? Tools.rnd;
+    GRandomLC rnd = random ?? Tools.Random;
 
     TNum[] v = new TNum[dim];
     for (int i = 0; i < dim; i++) {
@@ -134,7 +134,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <param name="random">If null, then default one be used.</param>
   /// <returns>An array with random values.</returns>
   public static TNum[] GenArrayInt(int dim, int a, int b, GRandomLC? random = null) {
-    GRandomLC rnd = random ?? Tools.rnd;
+    GRandomLC rnd = random ?? Tools.Random;
 
     TNum[] v = new TNum[dim];
     for (int i = 0; i < dim; i++) {

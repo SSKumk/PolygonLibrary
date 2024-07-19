@@ -125,7 +125,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_1D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, 131);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(131));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -135,7 +135,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_2D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, 132);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(132));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -145,7 +145,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_3D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, 133);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(133));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -155,7 +155,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1312);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1312));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -165,7 +165,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_2D_3D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1323);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1323));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -175,7 +175,7 @@ public class GW_Tests
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D_3D()
   {
-    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 13123);
+    List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(13123));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -234,7 +234,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_1D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, 141);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(141));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -245,7 +245,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_2D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, 142);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(142));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -255,7 +255,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_3D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, 143);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(143));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -265,7 +265,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, 1412);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1412));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -275,7 +275,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_2D_3D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, 1423);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1423));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -285,7 +285,7 @@ public class GW_Tests
   [Test]
   public void Cube4D_withInnerPoints_On_1D_2D_3D()
   {
-    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, 14123);
+    List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(14123));
 
     GiftWrapping P = new GiftWrapping(S);
 
@@ -307,7 +307,7 @@ public class GW_Tests
          , 4
          }
      , 1
-     , 141234
+     , new GRandomLC(141234)
       );
 
     GiftWrapping P = new GiftWrapping(S);
@@ -515,39 +515,29 @@ public class GW_Tests
   // Не хватает точности double-ов для успешного решения этих задач
   // #region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
   [Test]
-  public void AllSimplicesRND_3D_TestRND()
-  {
-    const int nPoints = 1;
+  public void AllSimplicesRND_3D_TestRND() {
+    const int nPoints    = 1;
     const int simplexDim = 3;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e6; i++)
-    {
-      foreach (List<int> fID in fIDs)
-      {
+    for (int i = 0; i < 1e6; i++) {
+      foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-        Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
+        Check
+          (
+           S
+         , P
+         , saveSeed
+         , simplexDim
+         , nPoints
+         , fID
+         , true
+          );
       }
     }
-  }
-
-  [Test]
-  public void Aux()
-  {
-    const uint seed = 589902958;
-    const int PDim = 3;
-    const int nPoints = 1;
-    List<int> fID = new List<int>() { 3 };
-
-    List<Vector> S = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, seed);
-    List<Vector> origS = new List<Vector>(S);
-    // S.Shuffle(new RandomLC(seed));
-
-    GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(polytop));
   }
   //
   //   [Test]

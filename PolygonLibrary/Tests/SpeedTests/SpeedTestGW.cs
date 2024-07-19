@@ -175,7 +175,8 @@ public class SpeedTestGW {
     const int nPoints = 100;
     const int N       = 5;
 
-    Stopwatch timer = new Stopwatch();
+    GRandomLC random = new GRandomLC(255);
+    Stopwatch timer  = new Stopwatch();
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
     for (int dim = 3; dim <= 6; dim++) {
@@ -184,7 +185,7 @@ public class SpeedTestGW {
       List<int> fIDs = Enumerable.Range(1, dim).ToList();
 
       for (int n = 1; n <= nPoints; n *= 10) {
-        List<Geometry<ddouble, DDConvertor>.Vector> S = RotateRND(Cube01(dim, out _, fIDs, n, 255, true));
+        List<Geometry<ddouble, DDConvertor>.Vector> S = RotateRND(Cube01(dim, out _, fIDs, n, random, true), random);
         GiftWrapping?                               P = null;
         timer.Restart();
         for (int i = 0; i < N; i++) { P = new GiftWrapping(S); }
