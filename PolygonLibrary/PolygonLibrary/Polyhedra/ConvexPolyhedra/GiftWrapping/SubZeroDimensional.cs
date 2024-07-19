@@ -8,7 +8,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a vertex of the polytop.
   /// </summary>
-  public class SubZeroDimensional : BaseSubCP {
+  internal class SubZeroDimensional : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the vertex. It equal to 0.

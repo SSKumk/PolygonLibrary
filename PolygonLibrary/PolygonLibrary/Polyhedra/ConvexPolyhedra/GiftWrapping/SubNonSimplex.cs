@@ -7,7 +7,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// The polytop that is not a simplex in d-dimensional space (3 and higher dimension).
   /// </summary>
-  public class SubNonSimplex : BaseSubCP {
+  internal class SubNonSimplex : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the polytop.
@@ -43,12 +43,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns></returns>
     public override BaseSubCP ToPreviousSpace() {
       SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
-      // SubIncidenceInfo      info  = new SubIncidenceInfo();
-
-      // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in FaceIncidence!) {
-      //   info.Add(pair.Key.ToPreviousSpace(), (pair.Value.F1.ToPreviousSpace(), pair.Value.F2.ToPreviousSpace()));
-      // }
-
       return new SubNonSimplex(faces, FaceIncidence!);
     }
 

@@ -8,7 +8,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a simplex, which is a convex polytop with (d + 1) vertices in d-dimensional space.
   /// </summary>
-  public class SubSimplex : BaseSubCP {
+  internal class SubSimplex : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the simplex.

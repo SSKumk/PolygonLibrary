@@ -15,31 +15,6 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public SubPoint? Parent { get; }
 
-    // /// <summary>
-    // /// The dimension of the point
-    // /// </summary>
-    // public new int Dim => base.Dim;
-
-    // /// <summary>
-    // /// The comparison of the subspace point with another
-    // /// </summary>
-    // /// <param name="other">another subspace point to compare</param>
-    // /// <returns>true if equal, false otherwise</returns>
-    // public override bool Equals(object? other) {
-    //   if (other is null) {
-    //     return false;
-    //   }
-    //
-    //   return (Vector)this == (Vector)other;
-    // }
-
-    /// <summary>
-    /// Construct a new instance of the <see cref="SubPoint"/> class.
-    /// </summary>
-    /// <param name="np">The point.</param>
-    /// <param name="parent">The point from which the current point was projected.</param>
-    public SubPoint(TNum[] np, SubPoint? parent) : base(np) { Parent = parent; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SubPoint"/> class.
     /// </summary>
@@ -50,7 +25,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projects the current point to the specified affine basis.
     /// </summary>
-    /// <param name="aBasis">The affine basis of non greater dimension to project the point to.</param>
+    /// <param name="aBasis">The affine basis of non-greater dimension to project the point to.</param>
     /// <returns>The projected point.</returns>
     public SubPoint ProjectTo(AffineBasis aBasis) => new SubPoint(aBasis.ProjectVector(this), this);
 

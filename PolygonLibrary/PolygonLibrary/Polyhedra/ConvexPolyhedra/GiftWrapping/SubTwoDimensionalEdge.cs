@@ -7,7 +7,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// Represents a one-dimensional edge of a convex polytope expressed in 2D-coordinates.
   /// </summary>
-  public class SubTwoDimensionalEdge : BaseSubCP {
+  internal class SubTwoDimensionalEdge : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the edge. It equal to 1.
