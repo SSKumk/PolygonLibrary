@@ -226,7 +226,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="simplexDim">The dimension of the simplex.</param>
   /// <param name="pureSimplex">Only vertices of the simplex.</param>
   /// <param name="facesDim">The dimensions of the faces of the simplex to put points on.</param>
-  /// <param name="amount">The amount of points to be placed into each face of faceDim dimension.</param>
+  /// <param name="amount">The number of points to be placed into each face of faceDim dimension.</param>
   /// <param name="seed">The seed to be placed into GRandomLC. If null, the _random be used.</param>
   /// <returns>A list of points representing the axis-based simplex.</returns>
   public static List<Vector> Simplex(
