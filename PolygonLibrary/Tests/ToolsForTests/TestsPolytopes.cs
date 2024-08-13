@@ -44,7 +44,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 #endregion
 
 #region Polytopes and Polytopes-list Fabrics
-  private static List<Vector> Cube_list(int           dim) => Cube01(dim, out _);
+  public static List<Vector> Cube_list(int           dim) => Cube01(dim, out _);
   private static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
   public static  List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);
   public static  List<Vector> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
