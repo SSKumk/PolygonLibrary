@@ -15,8 +15,8 @@ public class MDiffBench_Cubes {
 
   [GlobalSetup]
   public void SetUp() {
-    P = ConvexPolytop.Cube01(dim).RotateRND(true);
-    Q = ConvexPolytop.Cube01(dim).RotateRND();
+    P = ConvexPolytop.Cube01_VRep(dim).RotateRND(true);
+    Q = ConvexPolytop.Cube01_VRep(dim).RotateRND();
   }
 
   [Benchmark]

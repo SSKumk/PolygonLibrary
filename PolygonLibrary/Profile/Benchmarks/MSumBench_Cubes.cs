@@ -17,8 +17,8 @@ public class MSumBench_Cubes {
 
   [GlobalSetup]
   public void SetUp() {
-    P = ConvexPolytop.Cube01(dim).RotateRND(true);
-    Q = ConvexPolytop.Cube01(dim).RotateRND(true);
+    P = ConvexPolytop.Cube01_VRep(dim).RotateRND(true);
+    Q = ConvexPolytop.Cube01_VRep(dim).RotateRND(true);
   }
 
   [Benchmark]

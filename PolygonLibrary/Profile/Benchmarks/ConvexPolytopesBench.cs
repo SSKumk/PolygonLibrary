@@ -19,7 +19,7 @@ public class ConvexPolytopesBench {
   // public int dimCubes;
   //
   // [Benchmark]
-  // public void MakeCubes01() => ConvexPolytop.Cube01(dimCubes);
+  // public void MakeCubes01() => ConvexPolytop.Cube01_VRep(dimCubes);
 
   /*
 
