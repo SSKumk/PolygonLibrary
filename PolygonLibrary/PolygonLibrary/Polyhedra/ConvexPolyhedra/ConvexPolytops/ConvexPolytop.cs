@@ -336,11 +336,27 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop Point(int dim) => AsVPolytop(new SortedSet<Vector> { Vector.Ones(dim) });
 
     /// <summary>
-    /// Makes a full-dimension axis-parallel 0-1 cube of given dimension.
+    /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of VRep.
     /// </summary>
     /// <param name="dim">The dimension of the cube.</param>
-    /// <returns>A convex polytop as VRep representing the hypercube.</returns>
-    public static ConvexPolytop Cube01(int dim) => RectParallel(Vector.Zero(dim), Vector.Ones(dim));
+    /// <returns>A convex polytop as VRep representation of the hypercube.</returns>
+    public static ConvexPolytop Cube01_VRep(int dim) => RectParallel(Vector.Zero(dim), Vector.Ones(dim));
+
+    /// <summary>
+    /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of HRep.
+    /// </summary>
+    /// <param name="dim">The dimension of the cube.</param>
+    /// <returns>A convex polytop as HRep representation of the hypercube.</returns>
+    public static ConvexPolytop Cube01_HRep(int dim) {
+      List<HyperPlane> cube = new List<HyperPlane>();
+
+      for (int i = 0; i < dim; i++) {
+        cube.Add(new HyperPlane(-Vector.MakeOrth(dim, i + 1), Tools.Zero));
+        cube.Add(new HyperPlane(Vector.MakeOrth(dim, i + 1), Tools.One));
+      }
+
+      return AsHPolytop(cube);
+    }
 
     /// <summary>
     /// Makes a full-dimension axis-parallel rectangle based on two corners.
