@@ -24,7 +24,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the dimension of the affine basis.
     /// </summary>
-    public int VecDim => Origin.Dim;
+    public int SpaceDim => Origin.Dim;
 
     /// <summary>
     /// <c>True</c> if this affine basis is full dimension.
@@ -78,7 +78,7 @@ public partial class Geometry<TNum, TConv>
     {
       Debug.Assert
         (
-         VecDim == point.Dim
+         SpaceDim == point.Dim
        , "AffineBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the current point."
         );
 
