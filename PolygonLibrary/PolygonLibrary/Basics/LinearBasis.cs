@@ -253,7 +253,7 @@ public partial class Geometry<TNum, TConv>
     // /// <param name="vecDim">The dimension of the space of basis.</param>
     // public LinearBasis(int vecDim) {
     //   Basis       = Matrix.Eye(vecDim);
-    //   this.VecDim = vecDim;
+    //   this.SpaceDim = vecDim;
     // }
 
     /// <summary>
