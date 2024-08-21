@@ -742,15 +742,6 @@ public partial class Geometry<TNum, TConv>
           break;
       }
       pr.Flush();
-      // if (_FL is not null) {
-      //   WriteAsFLRep(pr, this);
-      // }
-      // else if (_VRep is not null) {
-      //   WriteAsVRep(pr, this);
-      // }
-      // else {
-      //   WriteAsHRep(pr, this);
-      // }
     }
 
     /// <summary>
@@ -867,49 +858,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Writes Polytop to the file in 'PolytopTXT_format'.
-    /// </summary>
-    /// <param name="filePath">The path to the file to write in without extension.</param>
-    public void WriteTXT_3D(string filePath) {
-      Debug.Assert
-        (
-         SpaceDim == 3
-       , $"ConvexPolytop.WriteTXT_3D: The dimension of the space must be equal to 3! Found spaceDim = {SpaceDim}."
-        );
-
-      switch (PolytopDim) {
-        case 3: {
-          List<Vector> VList = Vertices.Order().ToList();
-          Facet[]      FSet  = GW.Get2DFacets();
-          using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
-            WriteCommonData(writer, VList);
-            writer.WriteLine($"Faces: {FSet.Length}");
-            foreach (Facet face in FSet.OrderBy(F => new Vector(F.Normal))) {
-              writer.WriteLine($"N: {face.Normal.ToStrSepBySpace()}");
-              writer.WriteLine(string.Join(' ', face.Vertices.Select(v => VList.IndexOf(v))));
-            }
-          }
-
-          break;
-        }
-        case 2: {
-          List<Vector> VList = Vertices.Order().ToList();
-          Facet        F     = GW.Get2DFacet_2DPolytop();
-          using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
-            WriteCommonData(writer, VList);
-            writer.WriteLine("Faces: 1");
-            writer.WriteLine($"N: {F.Normal.ToStrSepBySpace()}");
-            writer.WriteLine(string.Join(' ', F.Vertices.Select(v => VList.IndexOf(v))));
-          }
-
-          break;
-        }
-        default:
-          throw new ArgumentException("ConvexPolytop.WriteTXT_3D: Can not write polytop of dimension different from 2 or 3!");
-      }
-    }
-
-    /// <summary>
     /// Reads the polytop from the given file in 'PolytopTXT_format'.
     /// </summary>
     /// <param name="filePath">The path to the file to read from without extension.</param>
@@ -941,25 +889,25 @@ public partial class Geometry<TNum, TConv>
     }
 
     // aux
-    public void WriteTXT_3D_forDasha(string filePath) {
-      List<Vector> VList = Vertices.Order().ToList();
-      Facet[]      FSet  = GW.Get2DFacets();
-      using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
-        writer.Write("vertices = ");
-        writer.Write("[");
-        writer.Write(string.Join(',', VList.Select(v => v.ToStringDouble('(', ')'))));
-        writer.Write("]");
-        writer.WriteLine();
-        writer.Write("faces = ");
-        writer.Write("[");
-        foreach (Facet face in FSet) {
-          writer.Write("(");
-          writer.Write(string.Join(',', face.Vertices.Select(v => VList.IndexOf(v))));
-          writer.Write("),");
-        }
-        writer.Write("]");
-      }
-    }
+    // public void WriteTXT_3D_forDasha(string filePath) {
+    //   List<Vector> VList = Vertices.Order().ToList();
+    //   Facet[]      FSet  = GW.Get2DFacets();
+    //   using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
+    //     writer.Write("vertices = ");
+    //     writer.Write("[");
+    //     writer.Write(string.Join(',', VList.Select(v => v.ToStringDouble('(', ')'))));
+    //     writer.Write("]");
+    //     writer.WriteLine();
+    //     writer.Write("faces = ");
+    //     writer.Write("[");
+    //     foreach (Facet face in FSet) {
+    //       writer.Write("(");
+    //       writer.Write(string.Join(',', face.Vertices.Select(v => VList.IndexOf(v))));
+    //       writer.Write("),");
+    //     }
+    //     writer.Write("]");
+    //   }
+    // }
 
     /// <summary>
     /// Converts the H-representation of convex polytop to the V-representation by checking all possible d-tuples of the hyperplanes.
