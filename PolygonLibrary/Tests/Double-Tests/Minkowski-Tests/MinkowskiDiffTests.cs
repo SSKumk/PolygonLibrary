@@ -39,12 +39,10 @@ public class MinkowskiDiff3D
              case 0:
                Assert.That(diff is not null);
                Assert.That(diff.FL, Is.EqualTo(Cube3D_FL));
-               diff.WriteTXT_3D(path + "Cube_Seg0-0-0");
 
                break;
              case 1:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Cube_Seg0-0-0.5");
 
                // тут параллелепипед
                break;
@@ -83,27 +81,22 @@ public class MinkowskiDiff3D
            {
              case 1:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Sphere3-10-20-2_Seg0-0-0.5");
 
                break;
              case 2:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Sphere3-10-20-2_Seg0-0-1");
 
                break;
              case 3:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Sphere3-10-20-2_Seg0-0-1.5");
 
                break;
              case 4:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Sphere3-10-20-2_Seg0-0-2");
 
                break;
              case 5:
                Assert.That(diff is not null);
-               diff.WriteTXT_3D(path + "Sphere3-10-20-2_Seg0-0-2.5");
 
                break;
            }
@@ -112,12 +105,11 @@ public class MinkowskiDiff3D
       );
   }
 
-  [Test]
-  public void Cyclic()
-  {
-    ConvexPolytop F = ConvexPolytop.Cyclic(3, 100, 0.01);
-    ConvexPolytop? diff = MinkowskiDiff.Naive(F, ConvexPolytop.AsVPolytop(new SortedSet<Vector>() { new Vector(3) }));
-    diff.WriteTXT_3D(path + "Cyclic");
-  }
+  // [Test]
+  // public void Cyclic()
+  // {
+  //   ConvexPolytop F = ConvexPolytop.Cyclic(3, 100, 0.01);
+  //   ConvexPolytop? diff = MinkowskiDiff.Naive(F, ConvexPolytop.AsVPolytop(new SortedSet<Vector>() { new Vector(3) }));
+  // }
 
 }
