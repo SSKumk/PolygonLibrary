@@ -518,14 +518,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The first vector.</param>
     /// <param name="u">The second vector.</param>
     /// <returns>The outward normal to the plane of v and u.</returns>
-    public static Vector CrossProduct(Vector v, Vector u) {
-      Debug.Assert(v.Dim == 3, $"Vector.CrossProduct: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
+    public static Vector CrossProduct3D(Vector v, Vector u) {
+      Debug.Assert(v.Dim == 3, $"Vector.CrossProduct3D: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
       Debug.Assert
         (
          v.Dim == u.Dim
-       , $"Vector.CrossProduct: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
+       , $"Vector.CrossProduct3D: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
         );
-      Debug.Assert(!AreParallel(v, u), $"Vector.CrossProduct: The vectors must be non collinear!");
 
       TNum[] crossProduct = new TNum[3];
       crossProduct[0] = v[1] * u[2] - v[2] * u[1];
@@ -542,7 +541,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="u">The second vector.</param>
     /// <param name="r">The third vector.</param>
     /// <returns></returns>
-    public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct(u, r); }
+    public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct3D(u, r); }
 
     public Matrix OuterProduct(Vector other) {
       TNum[,] result = new TNum[this.Dim, other.Dim];
