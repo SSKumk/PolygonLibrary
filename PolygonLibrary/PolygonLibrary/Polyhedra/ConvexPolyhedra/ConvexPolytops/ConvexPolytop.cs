@@ -205,7 +205,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     private ConvexPolytop(FaceLattice FL, ConvexPolytopForm form) {
-      SpaceDim = FL.Top.AffBasis.SubSpaceDim;
+      SpaceDim = FL.Top.AffBasis.SpaceDim;
       _FL      = FL;
       switch (form) {
         case ConvexPolytopForm.FL: break; // всё есть
@@ -754,14 +754,13 @@ public partial class Geometry<TNum, TConv>
       => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToSortedSet());
 
     /// <summary>
-    /// Create a new convex d-dim polytop from the d-dim convex polytop P as section by given hyperplane.
+    /// Creates a new convex polytope in d-dimensional space by intersecting the given d-dimensional convex polytope P with a specified hyperplane.
     /// </summary>
-    /// <param name="P">The given convex polytop P.</param>
     /// <param name="hp">The hyper plane to sectioning P.</param>
     /// <returns>The section of the polytop P.</returns>
-    public static ConvexPolytop SectionByHyperPlane(ConvexPolytop P, HyperPlane hp) {
+    public ConvexPolytop SectionByHyperPlane(HyperPlane hp) {
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
-      List<HyperPlane> hrep = new List<HyperPlane>(P.HRep) { hp, hp_ };
+      List<HyperPlane> hrep = new List<HyperPlane>(HRep) { hp, hp_ };
 
       return AsVPolytop(HRepToVRep_Geometric(hrep).ToSortedSet(), true);
     }
@@ -858,58 +857,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Reads the polytop from the given file in 'PolytopTXT_format'.
-    /// </summary>
-    /// <param name="filePath">The path to the file to read from without extension.</param>
-    /// <returns>The convex polytop as VRep read from file.</returns>
-    public static ConvexPolytop ReadAsPoints(string filePath) {
-      SortedSet<Vector> Vs;
-      using (StreamReader reader = new StreamReader(filePath + ".txt")) {
-        reader.ReadLine(); // scip PDim
-        reader.ReadLine(); // scip SDim
-        reader.ReadLine(); // scip empty line
-        int VsQnt = int.Parse(reader.ReadLine()!.Split(':')[1].Trim());
-        Vs = new SortedSet<Vector>();
-        for (int i = 0; i < VsQnt; i++) {
-          Vs.Add(new Vector(reader.ReadLine()!.Split(' ').Select(v => TConv.FromDouble(double.Parse(v))).ToArray()));
-        }
-      }
-
-      return AsVPolytop(Vs);
-    }
-
-    // aux
-    private void WriteCommonData(TextWriter writer, List<Vector> VList) {
-      writer.WriteLine($"PDim: {FL.Top.PolytopDim}");
-      writer.WriteLine($"SDim: {SpaceDim}");
-      writer.WriteLine();
-      writer.WriteLine($"Vertices: {Vertices.Count}");
-      writer.WriteLine(string.Join('\n', VList.Select(v => v.ToStrSepBySpace())));
-      writer.WriteLine();
-    }
-
-    // aux
-    // public void WriteTXT_3D_forDasha(string filePath) {
-    //   List<Vector> VList = Vertices.Order().ToList();
-    //   Facet[]      FSet  = GW.Get2DFacets();
-    //   using (StreamWriter writer = new StreamWriter(filePath + ".txt")) {
-    //     writer.Write("vertices = ");
-    //     writer.Write("[");
-    //     writer.Write(string.Join(',', VList.Select(v => v.ToStringDouble('(', ')'))));
-    //     writer.Write("]");
-    //     writer.WriteLine();
-    //     writer.Write("faces = ");
-    //     writer.Write("[");
-    //     foreach (Facet face in FSet) {
-    //       writer.Write("(");
-    //       writer.Write(string.Join(',', face.Vertices.Select(v => VList.IndexOf(v))));
-    //       writer.Write("),");
-    //     }
-    //     writer.Write("]");
-    //   }
-    // }
-
-    /// <summary>
     /// Converts the H-representation of convex polytop to the V-representation by checking all possible d-tuples of the hyperplanes.
     /// </summary>
     /// <param name="HPs">The hyperplane arrangement.</param>
@@ -964,7 +911,7 @@ public partial class Geometry<TNum, TConv>
       }
       Vs.Add(firstPoint);
 
-      // Console.WriteLine("1 stage done");
+      Console.WriteLine("1 stage done");
 
       // Этап 2. Поиск всех остальных вершин
       Queue<(Vector, List<HyperPlane>)> process = new Queue<(Vector, List<HyperPlane>)>();
@@ -988,14 +935,6 @@ public partial class Geometry<TNum, TConv>
 
           // ищем направляющий вектор прямой, перпендикулярный линейному пространству edge
           Vector v = LinearBasis.FindOrthonormalVector(edgeLinSpace);
-
-          // int    i = 0;
-          // do {
-          //   i++;
-          //   v = LinearBasis.OrthonormalizeAgainstBasis(Vector.MakeOrth(d, i), edgeLinSpace);
-          // } while (v.IsZero && i <= d);
-          // Debug.Assert
-          //   (i <= d, $"ConvexPolytop.HRepToVRep_Geometric (dim = {d}): Can't find vector e! That orthogonal to the HzLinSpace.");
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;
@@ -1058,7 +997,9 @@ public partial class Geometry<TNum, TConv>
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
-              // process.Enqueue((zNew, HPs.Where(hp => hp.Contains(zNew)).ToList()));
+
+              Console.WriteLine(Vs.Count);
+
               process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
             }
           }
