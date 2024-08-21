@@ -254,7 +254,7 @@ public partial class Geometry<TNum, TConv>
             // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
             SortedSet<SubPoint> S = Swarm.Select(s => new SubPoint(s, null)).ToSortedSet();
             AffineBasis AffineS = new AffineBasis(S);
-            if (AffineS.SubSpaceDim < AffineS.VecDim)
+            if (AffineS.SubSpaceDim < AffineS.SpaceDim)
             {
               // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
               // уходим в подпространство и там овыпукляем.
