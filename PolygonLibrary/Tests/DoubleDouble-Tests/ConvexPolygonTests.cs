@@ -43,7 +43,7 @@ public partial class ConvexPolygonTests
 			Debug.WriteLine($"  ({p.x};{p.y})");
 		}
 
-		Debug.WriteLine("Vertices: ");
+		Debug.WriteLine("Vrep: ");
 		foreach (Vector2D p in cp.Vertices) {
 			Debug.WriteLine($"  ({p.x};{p.y})");
 		}
