@@ -81,12 +81,12 @@ public partial class Geometry<TNum, TConv>
       foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
         using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.tsection");
         pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
-        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLRep);
+        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
       }
       foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
         using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.tsection");
         pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
-        Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLRep);
+        Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
       }
     }
 
@@ -99,7 +99,7 @@ public partial class Geometry<TNum, TConv>
 
     // public void WriteTSection(TNum t, ParamWriter pr) {
     //   pr.WriteNumber("t", TConv.ToDouble(t), "F3");
-    //   W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
+    //   W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
     // }
 
     /// <summary>
@@ -126,12 +126,12 @@ public partial class Geometry<TNum, TConv>
       while (Tools.GT(t, gd.t0)) {
         if (isNeedWrite) {
           using ParamWriter pr = new ParamWriter($"{filesDir}/{valType}/{algType}/{eps:e0}/{TConv.ToDouble(t):F2}){fileName}.cpolytop");
-          W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
+          W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
 
 
           // using ParamWriter pr = new ParamWriter($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}.tsection");
           // pr.WriteNumber("t", TConv.ToDouble(t), "F3");
-          // W[t].WriteIn(pr, ConvexPolytop.Rep.FLRep);
+          // W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
           // W[t].WriteTXT_3D($"{filesDir}/{TConv.ToDouble(t):F2}){fileName}");
         }
 
@@ -156,7 +156,7 @@ public partial class Geometry<TNum, TConv>
             Console.WriteLine($"The bridge become degenerate at t = {t}.");
           }
           else {
-            Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}. VRep.Count = {WNext.VRep.Count}");
+            Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}. Vrep.Count = {WNext.Vrep.Count}");
             W[t] = WNext;
           }
         }

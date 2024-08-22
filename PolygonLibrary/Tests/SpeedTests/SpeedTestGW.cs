@@ -121,7 +121,7 @@ public class SpeedTestGW {
       writer.WriteLine
         (
          $"n = {n,-8} sec: {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {circle.Count,-8} inCH = {Circle!.VRep.Count}"
+         $" Total: {circle.Count,-8} inCH = {Circle!.Vrep.Count}"
         );
       writer.Flush();
     }
@@ -142,7 +142,7 @@ public class SpeedTestGW {
       writer.WriteLine
         (
          $"k = {k,-8} sec: {timer.Elapsed.TotalSeconds.ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {cube.Count,-8} inCH = {Cube.VRep.Count}"
+         $" Total: {cube.Count,-8} inCH = {Cube.Vrep.Count}"
         );
       writer.Flush();
     }
@@ -164,7 +164,7 @@ public class SpeedTestGW {
       writer.WriteLine
         (
          $"k = {k,-8} sec: {timer.Elapsed.TotalSeconds.ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {simplexRND.Count,-8} inCH = {Simplex.VRep.Count}"
+         $" Total: {simplexRND.Count,-8} inCH = {Simplex.Vrep.Count}"
         );
       writer.Flush();
     }

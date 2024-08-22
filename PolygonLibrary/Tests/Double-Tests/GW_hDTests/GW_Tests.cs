@@ -49,7 +49,7 @@ public class GW_Tests
     List<Vector> Rotated = Rotate(S, new Matrix(rotationZ45));
 
     GiftWrapping P = new GiftWrapping(Rotated);
-    Assert.That(P.VRep.SetEquals(Rotated), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Rotated), "The set of vertices must be equal.");
   }
 
   /// <summary>
@@ -72,7 +72,7 @@ public class GW_Tests
 
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
   /// <summary>
@@ -94,7 +94,7 @@ public class GW_Tests
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -114,7 +114,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
   /// <summary>
@@ -129,7 +129,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -139,7 +139,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -149,7 +149,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -159,7 +159,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -169,7 +169,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -179,7 +179,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
   #endregion
 
@@ -197,7 +197,7 @@ public class GW_Tests
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
       GiftWrapping P = new GiftWrapping(S);
-      Assert.That(P.VRep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
+      Assert.That(P.Vrep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
     }
   }
 
@@ -238,7 +238,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
 
@@ -249,7 +249,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -259,7 +259,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -269,7 +269,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -279,7 +279,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -289,7 +289,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -312,7 +312,7 @@ public class GW_Tests
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
   #endregion
 
@@ -347,7 +347,7 @@ public class GW_Tests
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
   }
   #endregion
 
@@ -706,9 +706,9 @@ public class GW_Tests
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
     P = new GiftWrapping(S_shuffled);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
   }
 
   /// <summary>
@@ -734,7 +734,7 @@ public class GW_Tests
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
 
@@ -823,7 +823,7 @@ public class GW_Tests
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = new GiftWrapping(S).VRep;
+      P = new GiftWrapping(S).Vrep;
       Debug.Assert(P is not null, nameof(P) + " is null");
     }
     catch (Exception e)
@@ -871,7 +871,7 @@ public class GW_Tests
     }
     Console.WriteLine();
     Console.WriteLine("GiftWrapping P = new GiftWrapping(S);");
-    Console.WriteLine("Assert.That(P.VRep.SetEquals(polytop));");
+    Console.WriteLine("Assert.That(P.Vrep.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();
   }

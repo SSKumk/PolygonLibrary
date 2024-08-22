@@ -23,14 +23,14 @@ public class HRepToVRepBench {
   [GlobalSetup]
   public void SetUp() {
     P = ConvexPolytop.Sphere(dim, theta, phi, Vector.Zero(3), 1);
-    Console.WriteLine($"HRep.Count = {P.HRep.Count}");
+    Console.WriteLine($"Hrep.Count = {P.Hrep.Count}");
   }
 
   [Benchmark]
-  public void H2V_Naive() => ConvexPolytop.HRepToVRep_Naive(P.HRep);
+  public void H2V_Naive() => ConvexPolytop.HRepToVRep_Naive(P.Hrep);
 
   [Benchmark]
-  public void H2V_Geometric() => ConvexPolytop.HRepToVRep_Geometric(P.HRep);
+  public void H2V_Geometric() => ConvexPolytop.HRepToVRep_Geometric(P.Hrep);
 
 
   // public class Program {

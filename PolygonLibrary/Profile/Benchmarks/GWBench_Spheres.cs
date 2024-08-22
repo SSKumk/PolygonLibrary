@@ -35,7 +35,7 @@ public class GWBenchSpheres {
 
 
   [Benchmark]
-  public void GWSphere() => GiftWrapping.WrapVRep(polytop!.VRep);
+  public void GWSphere() => GiftWrapping.WrapVRep(polytop!.Vrep);
 
 
   // public class Program {

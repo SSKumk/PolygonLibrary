@@ -13,8 +13,8 @@ public partial class Geometry<TNum, TConv>
     {
       return MinkDiff
                (
-                F.HRep
-              , G.VRep
+                F.Hrep
+              , G.Vrep
               , out ConvexPolytop diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
@@ -29,8 +29,8 @@ public partial class Geometry<TNum, TConv>
     {
       return MinkDiff
                (
-                F.HRep
-              , G.VRep
+                F.Hrep
+              , G.Vrep
               , out ConvexPolytop diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
@@ -146,7 +146,7 @@ public partial class Geometry<TNum, TConv>
 
       // timer.Restart();
 
-      // 5) Построить FL роя V(F-G)
+      // 5) Построить fLrep роя V(F-G)
       if (VRepFminusG.Count < 3)
       {
         diffFG = ConvexPolytop.AsVPolytop(new Vector[] { Vector.Zero(1) });

@@ -30,14 +30,14 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice FaceLattice => ConstructFL();
 
     /// <summary>
-    /// Gets the polytop in HRep form.
+    /// Gets the polytop in Hrep form.
     /// </summary>
-    public List<HyperPlane> HRep => GetHPolytop();
+    public List<HyperPlane> Hrep => GetHPolytop();
 
     /// <summary>
     /// The vertices of the polytop.
     /// </summary>
-    public SortedSet<Vector> VRep => BuiltPolytop.OriginalVertices;
+    public SortedSet<Vector> Vrep => BuiltPolytop.OriginalVertices;
     #endregion
 
     /// <summary>
@@ -88,9 +88,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The face lattice.</returns>
     private FaceLattice ConstructFL()
     {
-      if (VRep.Count == 1)
+      if (Vrep.Count == 1)
       {
-        return new FaceLattice(VRep.First());
+        return new FaceLattice(Vrep.First());
       }
 
       List<SortedSet<FLNode>> lattice = new List<SortedSet<FLNode>>();
@@ -169,8 +169,8 @@ public partial class Geometry<TNum, TConv>
       int i = 0;
       foreach (BaseSubCP polytop in BuiltPolytop.Faces)
       {
-        TNum convCoeff = Tools.One / TConv.FromInt(VRep.Count);
-        IEnumerable<Vector> convCombVs = VRep.Select(v => v * convCoeff);
+        TNum convCoeff = Tools.One / TConv.FromInt(Vrep.Count);
+        IEnumerable<Vector> convCombVs = Vrep.Select(v => v * convCoeff);
         Vector innerPoint = Vector.Zero(PolytopDim);
         foreach (Vector v in convCombVs) { innerPoint += v; }
 
@@ -228,11 +228,11 @@ public partial class Geometry<TNum, TConv>
     public static FaceLattice WrapFaceLattice(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).FaceLattice;
 
     /// <summary>
-    /// Wraps the given swarm and returns the VRep. Removes points in inner of conv(S).
+    /// Wraps the given swarm and returns the Vrep. Removes points in inner of conv(S).
     /// </summary>
     /// <param name="S">The swarm to thin out.</param>
-    /// <returns>The VRep of wrapped swarm.</returns>
-    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).VRep;
+    /// <returns>The Vrep of wrapped swarm.</returns>
+    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).Vrep;
 
     /// <summary>
     /// The class constructs a convex hull of the given swarm of a points during its initialization.

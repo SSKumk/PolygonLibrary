@@ -42,16 +42,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="P">The first polytope represented as a face lattice.</param>
     /// <param name="Q">The second polytope represented as a face lattice.</param>
-    /// <param name="isOnlyHRep">If the flag is set then only affine basis of facets will be computed and HRep be produced.</param>
+    /// <param name="isOnlyHRep">If the flag is set then only affine basis of facets will be computed and Hrep be produced.</param>
     /// <returns>
-    /// Returns a convex polytop defined by face lattice or HRep.
+    /// Returns a convex polytop defined by face lattice or Hrep.
     /// </returns>
     public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool isOnlyHRep = false) {
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
 
-      LinearBasis linBasisPQ = new LinearBasis(P.FL.Top.AffBasis.LinBasis, Q.FL.Top.AffBasis.LinBasis);
-      AffineBasis affinePQ   = new AffineBasis(P.FL.Top.AffBasis.Origin + Q.FL.Top.AffBasis.Origin, linBasisPQ);
+      LinearBasis linBasisPQ = new LinearBasis(P.FLrep.Top.AffBasis.LinBasis, Q.FLrep.Top.AffBasis.LinBasis);
+      AffineBasis affinePQ   = new AffineBasis(P.FLrep.Top.AffBasis.Origin + Q.FLrep.Top.AffBasis.Origin, linBasisPQ);
       int         dim        = affinePQ.SubSpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
@@ -68,7 +68,7 @@ public partial class Geometry<TNum, TConv>
           return ConvexPolytop.AsHPolytop(HPs);
         }
 
-        return ConvexPolytop.AsFLPolytop(new List<Vector>() { P.FL.Top.InnerPoint + Q.FL.Top.InnerPoint });
+        return ConvexPolytop.AsFLPolytop(new List<Vector>() { P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint });
       }
 
       // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
@@ -83,10 +83,10 @@ public partial class Geometry<TNum, TConv>
 
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
-      Vector innerPQ = P.FL.Top.InnerPoint + Q.FL.Top.InnerPoint;
+      Vector innerPQ = P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint;
       FLNode PQ      = new FLNode(new SortedSet<Vector>{ innerPQ }, innerPQ, affinePQ);
-      zTo_xy.Add(PQ, (P.FL.Top, Q.FL.Top));
-      xyToz.Add((P.FL.Top, Q.FL.Top), PQ);
+      zTo_xy.Add(PQ, (P.FLrep.Top, Q.FLrep.Top));
+      xyToz.Add((P.FLrep.Top, Q.FLrep.Top), PQ);
       FL[^1].Add(PQ);
 
       bool doNext = true;

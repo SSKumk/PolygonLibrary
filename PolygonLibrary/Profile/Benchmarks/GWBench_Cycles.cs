@@ -21,7 +21,7 @@ public class GWBench_Cycles {
   public void SetUp() { cycle = ConvexPolytop.Cyclic(dim, amount, 0.1); }
 
   [Benchmark]
-  public void GWCyclicPolytop() => GiftWrapping.WrapVRep(cycle!.VRep);
+  public void GWCyclicPolytop() => GiftWrapping.WrapVRep(cycle!.Vrep);
 
 
   // public class Program {

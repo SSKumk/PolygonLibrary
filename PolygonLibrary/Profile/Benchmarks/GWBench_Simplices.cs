@@ -26,7 +26,7 @@ public class GWBench_Simplices {
 
 
   [Benchmark]
-  public void GWSimplexRND() => GiftWrapping.WrapVRep(simplex!.VRep);
+  public void GWSimplexRND() => GiftWrapping.WrapVRep(simplex!.Vrep);
 
 
   // public class Program {

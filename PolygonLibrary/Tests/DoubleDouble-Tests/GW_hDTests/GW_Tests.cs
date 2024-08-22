@@ -48,8 +48,8 @@ public class GW_Tests {
 
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(polytop), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), $"The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), $"The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), $"The number of faces of the cube must be equal to 27.");
   }
 #endregion
@@ -61,8 +61,8 @@ public class GW_Tests {
     List<Vector> S = Cube3D_list;
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -78,8 +78,8 @@ public class GW_Tests {
     List<Vector> Rotated = Rotate(S, new Matrix(rotationZ45));
 
     GiftWrapping P = new GiftWrapping(Rotated);
-    Assert.That(P.VRep.SetEquals(Rotated), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(Rotated), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -102,8 +102,8 @@ public class GW_Tests {
 
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -125,8 +125,8 @@ public class GW_Tests {
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -146,8 +146,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -157,8 +157,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -168,8 +168,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -179,8 +179,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -190,8 +190,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -201,8 +201,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
@@ -212,8 +212,8 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 #endregion
@@ -225,15 +225,15 @@ public class GW_Tests {
   /// </summary>
   /// <param name="S">The list of points representing the Polytop.</param>
   /// <param name="nameOfTest">The name of the current test.</param>
-  /// <param name="numberOfHRep">The number of half-spaces in HRep.</param>
+  /// <param name="numberOfHRep">The number of half-spaces in Hrep.</param>
   /// <param name="numberOfFVec">The number of all faces of the polytop.</param>
   private static void SwarmShuffleAndCheckVertices(List<Vector> S, string nameOfTest, int numberOfHRep, int numberOfFVec) {
     for (int i = 0; i < 10 * S.Count; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
       GiftWrapping P = new GiftWrapping(S);
-      Assert.That(P.VRep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
-      Assert.That(P.HRep, Has.Count.EqualTo(numberOfHRep), $"The number of facets of the cube must be equal to {numberOfHRep}.");
+      Assert.That(P.Vrep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
+      Assert.That(P.Hrep, Has.Count.EqualTo(numberOfHRep), $"The number of facets of the cube must be equal to {numberOfHRep}.");
       Assert.That
         (
          P.FaceLattice.NumberOfKFaces
@@ -275,7 +275,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
 
@@ -285,7 +285,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -294,7 +294,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -303,7 +303,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -312,7 +312,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -321,7 +321,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 
   [Test]
@@ -343,7 +343,7 @@ public class GW_Tests {
 
     GiftWrapping P = new GiftWrapping(S);
 
-    Assert.That(P.VRep.SetEquals(cube), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
 #endregion
 
@@ -377,7 +377,7 @@ public class GW_Tests {
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
   }
 #endregion
 
@@ -771,8 +771,8 @@ public class GW_Tests {
     var y = S.GetRange(0, 5).ToSortedSet();
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
+    Assert.That(P.Vrep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
@@ -823,10 +823,10 @@ public class GW_Tests {
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
     P = new GiftWrapping(S_shuffled);
-    Assert.That(P.VRep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
-    Assert.That(P.HRep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
+    Assert.That(P.Vrep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
@@ -852,7 +852,7 @@ public class GW_Tests {
       };
 
     GiftWrapping P = new GiftWrapping(S);
-    Assert.That(P.VRep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
 
@@ -882,8 +882,8 @@ public class GW_Tests {
     // Console.WriteLine(string.Join('\n', distABC));
 
     GiftWrapping P = new GiftWrapping(Simplex);
-    Assert.That(P.VRep.SetEquals(Simplex));
-    Assert.That(P.HRep, Has.Count.EqualTo(4), "The number of facets of the 3D-simplex must be equal to 4.");
+    Assert.That(P.Vrep.SetEquals(Simplex));
+    Assert.That(P.Hrep, Has.Count.EqualTo(4), "The number of facets of the 3D-simplex must be equal to 4.");
     Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(15), "The number of faces of the  3D-simplex must be equal to 15.");
   }
 
@@ -955,7 +955,7 @@ public class GW_Tests {
     }
 
     try {
-      Assert.That(P.VRep.SetEquals(Answer));
+      Assert.That(P.Vrep.SetEquals(Answer));
     }
     catch (Exception e) {
       // Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
@@ -975,7 +975,7 @@ public class GW_Tests {
     }
 
     try {
-      Assert.That(P.HRep, Has.Count.EqualTo(numberHRep));
+      Assert.That(P.Hrep, Has.Count.EqualTo(numberHRep));
     }
     catch (Exception e) {
       // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
@@ -1041,10 +1041,10 @@ public class GW_Tests {
 
     Console.WriteLine();
     Console.WriteLine("GiftWrapping P = new GiftWrapping(S);");
-    Console.WriteLine($"Assert.That(P.VRep.SetEquals(polytop), \"The set of vertices must be equal.\");");
+    Console.WriteLine($"Assert.That(P.Vrep.SetEquals(polytop), \"The set of vertices must be equal.\");");
     Console.WriteLine
       (
-       $"Assert.That(P.HRep, Has.Count.EqualTo({numberHRep}), $\"The number of facets of the cube must be equal to {numberHRep}.\");"
+       $"Assert.That(P.Hrep, Has.Count.EqualTo({numberHRep}), $\"The number of facets of the cube must be equal to {numberHRep}.\");"
       );
     Console.WriteLine
       (

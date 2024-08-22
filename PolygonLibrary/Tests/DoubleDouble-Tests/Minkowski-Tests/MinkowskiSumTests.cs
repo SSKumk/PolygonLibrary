@@ -60,14 +60,14 @@ public class MinkowskiSum2D
   }
 
   // private static FaceLattice MinkowskiSum.ByConvexHull(FaceLattice F, FaceLattice G)
-  //   => MinkowskiSum.ByConvexHull(ConvexPolytop.AsVPolytop(F.Vertices), ConvexPolytop.AsVPolytop(G.Vertices)).FL;
+  //   => MinkowskiSum.ByConvexHull(ConvexPolytop.AsVPolytop(F.Vertices), ConvexPolytop.AsVPolytop(G.Vertices)).fLrep;
 
 
   // Сумма точек
   [Test]
   public void Point_Point()
   {
-    FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3).FL;
+    FaceLattice pu3_pu3 = MinkowskiSum.BySandipDas(pu3, pu3).FLrep;
     Assert.That(pu3_pu3, Is.EqualTo(new FaceLattice(new Vector(new ddouble[] { 2, 2 }))));
   }
 
@@ -148,8 +148,8 @@ public class MinkowskiSum2D
 public class MinkowskiSum_hD
 {
 
-  // private static FaceLattice MinkSumCH(ConvexPolytop   F, ConvexPolytop   G) => MinkowskiSum.ByConvexHull(F, G).FL;
-  // private static FaceLattice MinkSumCH(SortedSet<Vector> F, SortedSet<Vector> G) => MinkowskiSum.ByConvexHull(F, G).FL;
+  // private static FaceLattice MinkSumCH(ConvexPolytop   F, ConvexPolytop   G) => MinkowskiSum.ByConvexHull(F, G).fLrep;
+  // private static FaceLattice MinkSumCH(SortedSet<Vector> F, SortedSet<Vector> G) => MinkowskiSum.ByConvexHull(F, G).fLrep;
 
   #region Base Polytopes Tests
   [Test]

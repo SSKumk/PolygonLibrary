@@ -25,7 +25,7 @@ public class GWBenchCubes {
   }
 
   [Benchmark]
-  public void GWCube() => GiftWrapping.WrapVRep(polytop!.VRep);
+  public void GWCube() => GiftWrapping.WrapVRep(polytop!.Vrep);
 
 
   // public class Program {

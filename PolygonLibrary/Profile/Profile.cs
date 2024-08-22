@@ -1,8 +1,9 @@
 using System.Globalization;
+using Tests.ToolsTests;
 // using System.Numerics;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 // using static CGLibrary.Geometry<double, Tests.DConvertor>;
-// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
 namespace Profile;
@@ -15,39 +16,32 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+    Tools.Eps = 1e-16;
+
+    int           dim   = 5;
+    ConvexPolytop cube = ConvexPolytop.Cube01_VRep(dim);
+    Console.WriteLine(cube.FVector[0]);
+
+    // Console.WriteLine(cube.SectionByHyperPlane(new HyperPlane(Vector.MakeOrth(dim,1),0.5)).PolytopDim);
 
 
-    SortedSet<Vector> cube4d = new SortedSet<Vector>()
-      {
-        new Vector(new ddouble[] { 0, 0, 0, 0 })
-      , new Vector(new ddouble[] { 0, 0, 0, 1 })
-      , new Vector(new ddouble[] { 0, 0, 1, 0 })
-      , new Vector(new ddouble[] { 0, 0, 1, 1 })
-      , new Vector(new ddouble[] { 0, 1, 0, 0 })
-      , new Vector(new ddouble[] { 0, 1, 0, 1 })
-      , new Vector(new ddouble[] { 0, 1, 1, 0 })
-      , new Vector(new ddouble[] { 0, 1, 1, 1 })
-      , new Vector(new ddouble[] { 1, 0, 0, 0 })
-      , new Vector(new ddouble[] { 1, 0, 0, 1 })
-      , new Vector(new ddouble[] { 1, 0, 1, 0 })
-      , new Vector(new ddouble[] { 1, 0, 1, 1 })
-      , new Vector(new ddouble[] { 1, 1, 0, 0 })
-      , new Vector(new ddouble[] { 1, 1, 0, 1 })
-      , new Vector(new ddouble[] { 1, 1, 1, 0 })
-      , new Vector(new ddouble[] { 1, 1, 1, 1 })
-      };
 
 
-    GiftWrapping gw = new GiftWrapping(cube4d);
-    // GiftWrapping gw = new GiftWrapping(Simplex3D_list);
-    var x = gw.FaceLattice;
+    //
+    // string materialdot_path =
+    //   pathData + "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2/";
+    // string        filePath = $"{materialdot_path}/1.00)materialDot1-0.9-supG";
+    // ParamReader   pr       = new ParamReader($"{filePath}.cpolytop");
+    // ParamWriter   pw       = new ParamWriter(filePath);
+    // ConvexPolytop P        = ConvexPolytop.AsFLPolytop(pr);
+    // P.WriteIn(pw,ConvexPolytop.Rep.FLrep);
 
 
-    Tools.Eps = 1e-8;
+    // ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
+    // var cutted = cube.SectionByHyperPlane(new HyperPlane(Vector.Ones(3), 0.5));
 
+    // cutted.WriteIn(new ParamWriter($"F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\PolygonLibrary\\Tests\\OtherTests\\LDG_computations\\Other\\cube3dcut.cpolytop"), ConvexPolytop.Rep.FLrep);
 
-    string materialdot_path =
-      pathData + "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2/";
 
 
     // double t = 7.0;
@@ -59,12 +53,12 @@ class Program {
     //   ConvexPolytop first  = ConvexPolytop.AsFLPolytop(prFirst);
     //   ConvexPolytop second = ConvexPolytop.AsFLPolytop(prSecond);
     //
-    //   Console.WriteLine(first.VRep.SetEquals(second.VRep));
-    //   List<Vector> lnaive     = new List<Vector>(first.VRep).Order().ToList();
-    //   List<Vector> lgeometric = new List<Vector>(second.VRep).Order().ToList();
+    //   Console.WriteLine(first.Vrep.SetEquals(second.Vrep));
+    //   List<Vector> lnaive     = new List<Vector>(first.Vrep).Order().ToList();
+    //   List<Vector> lgeometric = new List<Vector>(second.Vrep).Order().ToList();
     //
-    //   List<int> lnaive_Hash     = new List<Vector>(first.VRep).Order().Select(v => v.GetHashCode()).ToList();
-    //   List<int> lgeometric_Hash = new List<Vector>(second.VRep).Order().Select(v => v.GetHashCode()).ToList();
+    //   List<int> lnaive_Hash     = new List<Vector>(first.Vrep).Order().Select(v => v.GetHashCode()).ToList();
+    //   List<int> lgeometric_Hash = new List<Vector>(second.Vrep).Order().Select(v => v.GetHashCode()).ToList();
     //
     //   int    diff  = 0;
     //   double error = 0;
