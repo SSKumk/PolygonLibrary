@@ -152,73 +152,73 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    /// <summary>
-    /// Gets the facets of 3D-polytop. They holds vertices in counterclockwise order and the outward normal.
-    /// </summary>
-    /// <returns>The array of facets.</returns>
-    public Facet[] Get2DFacets()
-    {
-      Debug.Assert
-        (
-         PolytopDim == 3
-       , $"GiftWrapping.Get2DFacets: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
-        );
-      Debug.Assert(BuiltPolytop.Faces is not null, "GiftWrapping.Get2DFacets: There are no facets!");
-      Facet[] res = new Facet[BuiltPolytop.Faces.Count];
+    // /// <summary>
+    // /// Gets the facets of 3D-polytop. They holds vertices in counterclockwise order and the outward normal.
+    // /// </summary>
+    // /// <returns>The array of facets.</returns>
+    // public Facet[] Get2DFacets()
+    // {
+    //   Debug.Assert
+    //     (
+    //      PolytopDim == 3
+    //    , $"GiftWrapping.Get2DFacets: The dimension of the polytop must be equal to 3! Found PDim = {PolytopDim}."
+    //     );
+    //   Debug.Assert(BuiltPolytop.Faces is not null, "GiftWrapping.Get2DFacets: There are no facets!");
+    //   Facet[] res = new Facet[BuiltPolytop.Faces.Count];
+    //
+    //   int i = 0;
+    //   foreach (BaseSubCP polytop in BuiltPolytop.Faces)
+    //   {
+    //     TNum convCoeff = Tools.One / TConv.FromInt(Vrep.Count);
+    //     IEnumerable<Vector> convCombVs = Vrep.Select(v => v * convCoeff);
+    //     Vector innerPoint = Vector.Zero(PolytopDim);
+    //     foreach (Vector v in convCombVs) { innerPoint += v; }
+    //
+    //     SubTwoDimensional twoDimensional = (SubTwoDimensional)polytop;
+    //     HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder), (innerPoint, false));
+    //     if (Vector.TripleProduct // хотим выводить точки в порядке "против часовой стрелки, если смотреть с конца внешней нормали"
+    //           (
+    //            hp.Normal
+    //          , twoDimensional.VerticesInOrder[0] - twoDimensional.VerticesInOrder[2]
+    //          , twoDimensional.VerticesInOrder[1] - twoDimensional.VerticesInOrder[2]
+    //           ) < Tools.Zero)
+    //     {
+    //       Vector[] cclw = new Vector[twoDimensional.VerticesInOrder.Length];
+    //       for (int k = 0; k < twoDimensional.VerticesInOrder.Length; k++)
+    //       {
+    //         cclw[k] = twoDimensional.VerticesInOrder[twoDimensional.VerticesInOrder.Length - k - 1];
+    //       }
+    //       res[i] = new Facet(cclw, hp.Normal);
+    //     }
+    //     else
+    //     {
+    //       res[i] = new Facet(twoDimensional.VerticesInOrder, hp.Normal);
+    //     }
+    //     i++;
+    //   }
+    //
+    //   return res;
+    // }
 
-      int i = 0;
-      foreach (BaseSubCP polytop in BuiltPolytop.Faces)
-      {
-        TNum convCoeff = Tools.One / TConv.FromInt(Vrep.Count);
-        IEnumerable<Vector> convCombVs = Vrep.Select(v => v * convCoeff);
-        Vector innerPoint = Vector.Zero(PolytopDim);
-        foreach (Vector v in convCombVs) { innerPoint += v; }
-
-        SubTwoDimensional twoDimensional = (SubTwoDimensional)polytop;
-        HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder), (innerPoint, false));
-        if (Vector.TripleProduct // хотим выводить точки в порядке "против часовой стрелки, если смотреть с конца внешней нормали"
-              (
-               hp.Normal
-             , twoDimensional.VerticesInOrder[0] - twoDimensional.VerticesInOrder[2]
-             , twoDimensional.VerticesInOrder[1] - twoDimensional.VerticesInOrder[2]
-              ) < Tools.Zero)
-        {
-          Vector[] cclw = new Vector[twoDimensional.VerticesInOrder.Length];
-          for (int k = 0; k < twoDimensional.VerticesInOrder.Length; k++)
-          {
-            cclw[k] = twoDimensional.VerticesInOrder[twoDimensional.VerticesInOrder.Length - k - 1];
-          }
-          res[i] = new Facet(cclw, hp.Normal);
-        }
-        else
-        {
-          res[i] = new Facet(twoDimensional.VerticesInOrder, hp.Normal);
-        }
-        i++;
-      }
-
-      return res;
-    }
-
-    /// <summary>
-    /// Gets the 2D-polytop as facet.
-    /// </summary>
-    /// <returns>The facet which represents the 2D-polytop.</returns>
-    internal Facet Get2DFacet_2DPolytop()
-    {
-      Debug.Assert
-        (
-         PolytopDim == 2
-       , $"GiftWrapping.Get2DFacet_2DPolytop: The dimension of the polytop must be equal to 2! Found PDim = {PolytopDim}."
-        );
-
-      SubTwoDimensional twoDimensional = (SubTwoDimensional)BuiltPolytop;
-      HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder));
-
-      // В случае, когда многогранник плоский, мы не знаем куда надо ориентировать нормаль, так что
-      // пусть куда попала туда и смотрит.
-      return new Facet(twoDimensional.VerticesInOrder, hp.Normal);
-    }
+    // /// <summary>
+    // /// Gets the 2D-polytop as facet.
+    // /// </summary>
+    // /// <returns>The facet which represents the 2D-polytop.</returns>
+    // internal Facet Get2DFacet_2DPolytop()
+    // {
+    //   Debug.Assert
+    //     (
+    //      PolytopDim == 2
+    //    , $"GiftWrapping.Get2DFacet_2DPolytop: The dimension of the polytop must be equal to 2! Found PDim = {PolytopDim}."
+    //     );
+    //
+    //   SubTwoDimensional twoDimensional = (SubTwoDimensional)BuiltPolytop;
+    //   HyperPlane hp = new HyperPlane(new AffineBasis(twoDimensional.VerticesInOrder));
+    //
+    //   // В случае, когда многогранник плоский, мы не знаем куда надо ориентировать нормаль, так что
+    //   // пусть куда попала туда и смотрит.
+    //   return new Facet(twoDimensional.VerticesInOrder, hp.Normal);
+    // }
 
     /// <summary>
     /// Wraps the convex polytop of the given swarm and produce it's face lattice.
