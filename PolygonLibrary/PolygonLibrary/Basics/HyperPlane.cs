@@ -20,7 +20,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The dimension of the vectors.
     /// </summary>
-    public int VecDim => Origin.Dim;
+    public int SpaceDim => Origin.Dim;
 
     /// <summary>
     /// The dimension of the hyperplane affine basis.
@@ -37,10 +37,10 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Affine basis is null. Can't construct the Normal.");
 
             LinearBasis normalBasis = new LinearBasis(Normal);
-            (Matrix Q, _) = QRDecomposition.ByReflection(normalBasis.Basis!); // span([1, VecDim - 1]) orthogonal to [0] = Normal
+            (Matrix Q, _) = QRDecomposition.ByReflection(normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
 
             LinearBasis lb = new LinearBasis(Normal.Dim, 0);
-            for (int i = 1; i < VecDim; i++) {
+            for (int i = 1; i < SpaceDim; i++) {
               lb.AddVector(Q.TakeVector(i), false);
             }
 
