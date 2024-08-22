@@ -17,9 +17,7 @@ public partial class Geometry<TNum, TConv>
       WriteLine(';');
     }
 
-    public void WriteString(string fieldName, string mes) {
-      WriteLine($"{fieldName} = \"{mes}\";");
-    }
+    public void WriteString(string fieldName, string mes) { WriteLine($"{fieldName} = \"{mes}\";"); }
 
     public void Write1DArray<T>(string fieldName, IEnumerable<T> ar) where T : INumber<T> {
       Write(fieldName + " = {");
@@ -46,6 +44,25 @@ public partial class Geometry<TNum, TConv>
     }
 
     public void WriteVectors(string fieldName, IEnumerable<Vector> Vs) => Write2DArray(fieldName, Vs.Select(v => v.GetAsArray()));
+
+    public void WriteHyperPlanes(string fieldName, IEnumerable<HyperPlane> HPs)
+      => Write2DArray
+        (
+         fieldName
+       , HPs.Select
+           (
+            hp => {
+              int    dim = hp.Normal.Dim;
+              TNum[] ar  = new TNum[dim + 1];
+              for (int i = 0; i < dim; i++) {
+                ar[i] = hp.Normal[i];
+              }
+              ar[^1] = hp.ConstantTerm;
+
+              return ar;
+            }
+           )
+        );
 
   }
 
