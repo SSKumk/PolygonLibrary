@@ -116,19 +116,19 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Vector comparer realizing the lexicographic order
     /// </summary>
-    /// <param name="v">The vector to be compared with</param>
-    /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-    public int CompareTo(Vector? v) {
+    /// <param name="other">The vector to be compared with</param>
+    /// <returns>+1, if this object greater than other; 0, if they are equal; -1, otherwise</returns>
+    public int CompareTo(Vector? other) {
       int d = Dim, res;
 #if DEBUG
-      Debug.Assert(v is not null, $"Vector.CompareTo: second vector is null!");
+      Debug.Assert(other is not null, $"Vector.CompareTo: second vector is null!");
 
-      if (d != v.Dim) {
-        throw new ArgumentException("Vector.CompareTo: Cannot compare vectors of different dimensions");
+      if (d != other.Dim) {
+        throw new ArgumentException($"Vector.CompareTo: Cannot compare vectors of different dimensions. This = {this} and other = {other}");
       }
 #endif
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(this[i], v[i]);
+        res = Tools.CMP(this[i], other[i]);
 
         if (res != 0) {
           return res;
