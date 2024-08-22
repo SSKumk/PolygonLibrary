@@ -144,7 +144,7 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice FLrep {
       get
         {
-          _FLrep ??= new GiftWrapping(Vrep).FaceLattice;
+          _FLrep ??= new GiftWrapping(Vrep).ConstructFL();
           Debug.Assert(_FLrep is not null, $"ConvexPolytop.FLrep: _FLrep is null after constructing. Something went wrong!");
 
           return _FLrep;
@@ -188,7 +188,7 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = VP.First().Dim;
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
         GiftWrapping GW = new GiftWrapping(VP);
-        _FLrep = GW.FaceLattice;
+        _FLrep = GW.ConstructFL();
         _Vrep  = Vrep;
       }
       else {
@@ -262,7 +262,7 @@ public partial class Geometry<TNum, TConv>
       switch (nameRep) {
         case "Vrep":        return CreateFromVRep(pr, action == PolytopAction.Convexify);
         case "Hrep":        return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
-        case "FaceLattice": return CreateFromFLrep(pr);
+        case "FLrep": return CreateFromFLrep(pr);
         default:            throw new ArgumentException($"Unsupported representation type: {nameRep}");
       }
     }
@@ -304,7 +304,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a convex polytop from a FaceLattice representation.
+    /// Constructs a convex polytop from a FLrep representation.
     /// </summary>
     /// <param name="pr">The parameter reader.</param>
     /// <returns>The constructed convex polytop.</returns>
@@ -805,7 +805,7 @@ public partial class Geometry<TNum, TConv>
     /// Writes the convex polytop as FLrep to the specified <see cref="ParamWriter"/>.
     /// </summary>
     private static void WriteAsFLRep(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteString("Rep", "FaceLattice");
+      pr.WriteString("Rep", "FLrep");
       pr.WriteNumber("PDim", P.PolytopDim);
       pr.WriteVectors("Vs", P.Vrep);
 

@@ -35,8 +35,8 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
   public static readonly FaceLattice Cube3D_FL    = CubeFL(3);
   public static readonly FaceLattice Cube4D_FL    = CubeFL(4);
-  public static readonly FaceLattice Simplex3D_FL = Simplex(3).FaceLattice;
-  public static readonly FaceLattice Simplex4D_FL = Simplex(4).FaceLattice;
+  public static readonly FaceLattice Simplex3D_FL = Simplex(3).ConstructFL();
+  public static readonly FaceLattice Simplex4D_FL = Simplex(4).ConstructFL();
 
 
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
@@ -58,10 +58,10 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     => new GiftWrapping(Sphere_list(dim, theta, phi, radius));
 
 
-  public static FaceLattice CubeFL(int dim) => CubeGW(dim).FaceLattice;
-  public static FaceLattice CubeRotatedRND_FL(int dim) => CubeRotatedRND(dim).FaceLattice;
-  public static FaceLattice SimplexFL(int dim) => SimplexRND(dim).FaceLattice;
-  public static FaceLattice SphereFL(int dim, int theta, int phi, TNum radius) => Sphere(dim, theta, phi, radius).FaceLattice;
+  public static FaceLattice CubeFL(int dim) => CubeGW(dim).ConstructFL();
+  public static FaceLattice CubeRotatedRND_FL(int dim) => CubeRotatedRND(dim).ConstructFL();
+  public static FaceLattice SimplexFL(int dim) => SimplexRND(dim).ConstructFL();
+  public static FaceLattice SphereFL(int dim, int theta, int phi, TNum radius) => Sphere(dim, theta, phi, radius).ConstructFL();
 #endregion
 
 #region Polytopes generators
