@@ -1,6 +1,3 @@
-using System.IO;
-
-
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
@@ -8,71 +5,101 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  /// <summary>
-  /// Represents an facet of the Polytop.
-  /// </summary>
-  public class Facet {
+  // /// <summary>
+  // /// Represents a facet (or face) of a convex polytop.
+  // /// </summary>
+  // public class Facet {
+  //
+  //   /// <summary>
+  //   /// Gets the vertices of the facet.
+  //   /// </summary>
+  //   /// <value>A list of <see cref="Vector"/> representing the vertices of the facet.</value>
+  //   public List<Vector> Vertices { get; }
+  //
+  //   /// <summary>
+  //   /// Gets the normal vector of the facet.
+  //   /// </summary>
+  //   /// <value>The <see cref="Vector"/> representing the outward normal vector of the facet.</value>
+  //   public Vector Normal { get; }
+  //
+  //   /// <summary>
+  //   /// Initializes a new instance of the <see cref="Facet"/> class.
+  //   /// </summary>
+  //   /// <param name="Vs">The vertices of the facet.</param>
+  //   /// <param name="normal">The outward normal vector of the facet.</param>
+  //   public Facet(IReadOnlyList<Vector> Vs, Vector normal) {
+  //     Vertices = new List<Vector>(Vs);
+  //     Normal   = normal;
+  //   }
+  //
+  //   /// <summary>
+  //   /// Determines whether the specified object is equal to the current facet.
+  //   /// Two facets are considered equal if they have the same set of vertices and the same normal vector.
+  //   /// </summary>
+  //   /// <param name="obj">The object to compare with the current facet.</param>
+  //   /// <returns>True if the specified object is equal to the current facet; otherwise, False.</returns>
+  //   public override bool Equals(object? obj) {
+  //     if (obj == null || GetType() != obj.GetType()) {
+  //       return false;
+  //     }
+  //
+  //     Facet other = (Facet)obj;
+  //
+  //     return Normal.Equals(other.Normal) && new SortedSet<Vector>(Vertices).SetEquals(other.Vertices);
+  //   }
+  //
+  // }
 
-    /// <summary>
-    /// Gets the vertices of the face.
-    /// </summary>
-    public List<Vector> Vertices { get; }
 
-    /// <summary>
-    /// Gets the normal vector of the face.
-    /// </summary>
-    public Vector Normal { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the Facet class.
-    /// </summary>
-    /// <param name="Vs">The vertices of the face.</param>
-    /// <param name="normal">The outward normal vector of the face.</param>
-    public Facet(IReadOnlyList<Vector> Vs, Vector normal) {
-      Vertices = new List<Vector>(Vs);
-      Normal   = normal;
-    }
-
-    /// <summary>
-    /// Determines whether the specified object is equal to face.
-    /// Two faces are equal if they have same sets of their vertices.
-    /// </summary>
-    /// <param name="obj">The object to compare with face.</param>
-    /// <returns>True if the specified object is equal to face, False otherwise</returns>
-    public override bool Equals(object? obj) {
-      if (obj == null || GetType() != obj.GetType()) {
-        return false;
-      }
-
-      Facet other = (Facet)obj;
-
-      return Normal.Equals(other.Normal) && (new SortedSet<Vector>(Vertices)).SetEquals(other.Vertices);
-    }
-
-  }
-
+  // todo Если появится быстрый Vrep -> Hrep, то стоит переделать эту конвертацию. Сейчас так: Vrep -> FLrep -(легко)-> Hrep
   /// <summary>
   /// Represents a full-dimensional convex polytop in a d-dimensional space.
   /// </summary>
   public class ConvexPolytop {
 
+    /// <summary>
+    /// Specifies the representation format of a convex polytop.
+    /// </summary>
+    public enum Rep {
+
+      /// <summary>
+      /// Vertex representation or V-representation or Vrep.
+      /// </summary>
+      Vrep
+
+     ,
+
+      /// <summary>
+      /// Half-space representation or H-representation or Hrep.
+      /// </summary>
+      Hrep
+
+     ,
+
+      /// <summary>
+      /// Face lattice representation or FLrep .
+      /// </summary>
+      FLrep
+
+    }
+
 #region Fields and Properties
     /// <summary>
-    /// Gets the dimension of the space in which the polytop is treated.
+    /// Gets the dimension of the space in which the polytop exists.
     /// </summary>
     public int SpaceDim { get; }
 
     /// <summary>
-    /// Gets the dimension of the polytop. It produces the face lattice.
+    /// Gets the dimension of the polytop. If the face lattice (FLrep) is not available, it will be computed first.
     /// </summary>
-    public int PolytopDim => _FLrep is not null ? FLrep.Top.PolytopDim : GW.PolytopDim;
-
-    private GiftWrapping? _gw = null;
-
-    private GiftWrapping GW => _gw ??= new GiftWrapping(Vrep); // todo Может сразу в fLrep перегонять в случае чего, тогда это поле не нужно.
+    public int PolytopDim => FLrep.Top.PolytopDim;
 
     private SortedSet<Vector>? _Vrep = null;
 
+    /// <summary>
+    /// Gets the vertex representation of the polytop.
+    /// The V-representation (Vrep) is lazily initialized from the face lattice or if not available, from the H-representation.
+    /// </summary>
     public SortedSet<Vector> Vrep {
       get
         {
@@ -91,25 +118,17 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    public SortedSet<Vector> Vertices => Vrep;
-
     private List<HyperPlane>? _Hrep = null;
 
+    /// <summary>
+    /// Gets the half-space representation of the polytop.
+    /// The H-representation (Hrep) is lazily initialized from the face lattice (FLrep).
+    /// </summary>
     public List<HyperPlane> Hrep {
       get
         {
-          if (_Hrep is null) {
-            if (_FLrep is not null) {
-              // Если представлен в виде FLrep, но не Hrep, то достанем эту информацию из решётки. Vrep уже есть из конструктора.
-              _Hrep = new List<HyperPlane>
-                (FLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FLrep.Top.InnerPoint, false))).ToList());
-            }
-            else {
-              if (_Vrep is not null) { // Если дано вершинное описание, то прокатываем подарок.
-                _Hrep = GW.Hrep;
-              }
-            }
-          }
+          _Hrep ??= new List<HyperPlane>
+            (FLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FLrep.Top.InnerPoint, false))).ToList());
           Debug.Assert(_Hrep is not null, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
 
           return _Hrep;
@@ -118,28 +137,30 @@ public partial class Geometry<TNum, TConv>
 
     private FaceLattice? _FLrep = null;
 
+    /// <summary>
+    /// Gets the face lattice representation of the polytop.
+    /// The face lattice (FLrep) is lazily initialized from the vertex representation (Vrep).
+    /// </summary>
     public FaceLattice FLrep {
       get
         {
-          if (_FLrep is null) {
-            if (_Vrep is not null) {
-              _FLrep = GW.FaceLattice;
-            }
-            else {
-              if (_Hrep is not null) { // FLrep = null, Vrep = null; Печаль ;( Hrep --> Vrep -(GW)-> FLrep
-                _Vrep = Vrep;          // Vrep will be constructed
-                _FLrep   = GW.FaceLattice;
-              }
-            }
-          }
+          _FLrep ??= new GiftWrapping(Vrep).FaceLattice;
           Debug.Assert(_FLrep is not null, $"ConvexPolytop.FLrep: _FLrep is null after constructing. Something went wrong!");
 
           return _FLrep;
         }
     }
 
+    /// <summary>
+    /// Gets the number of faces at each dimension level of the face lattice.
+    /// The f-vector represents the count of elements at each dimension level of the face lattice of the polytop.
+    /// </summary>
     public int[] FVector => FLrep.Lattice.Select(lvl => lvl.Count).ToArray();
 
+    /// <summary>
+    /// Computes the minimum distance between any pair of vertices in the Vrep.
+    /// </summary>
+    /// <returns>The minimum distance between any pair of vertices.</returns>
     public TNum MinDistBtwVs() {
       List<Vector> Vs      = Vrep.ToList();
       TNum         minDist = (Vs[0] - Vs[1]).Length;
@@ -157,161 +178,139 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Constructors
-    private enum ConvexPolytopForm { Vrep, Hrep, FLrep }
-
-    private ConvexPolytop(SortedSet<Vector> VP, bool toConvexify, ConvexPolytopForm form) {
+    /// <summary>
+    /// Constructs a ConvexPolytop using a set of vertices (Vrep).
+    /// Optionally convexifies the polytop and builds its face lattice.
+    /// </summary>
+    /// <param name="VP">The set of vertices defining the polytop.</param>
+    /// <param name="toConvexify">If true, convexifies the polytop and constructs the face lattice.</param>
+    private ConvexPolytop(SortedSet<Vector> VP, bool toConvexify) {
       SpaceDim = VP.First().Dim;
-      if (toConvexify) {
-        _gw   = new GiftWrapping(VP);
-        _Vrep = GW.Vrep;
+      if (toConvexify) { // Если уж овыпукляем, то и решётку построим
+        GiftWrapping GW = new GiftWrapping(VP);
+        _FLrep = GW.FaceLattice;
+        _Vrep  = Vrep;
       }
       else {
         _Vrep = new SortedSet<Vector>(VP);
       }
-      switch (form) {
-        case ConvexPolytopForm.Vrep: break; // уже всё сделали
-        case ConvexPolytopForm.Hrep:
-          _Hrep = GW.Hrep;
-
-          break;
-        case ConvexPolytopForm.FLrep:
-          _FLrep = GW.FaceLattice;
-
-          break;
-      }
     }
 
-    private ConvexPolytop(List<HyperPlane> HPs, bool doHRedundancy, ConvexPolytopForm form) {
+    /// <summary>
+    /// Constructs a ConvexPolytop using a set of hyperplanes (Hrep).
+    /// Optionally reduces redundant hyperplanes.
+    /// </summary>
+    /// <param name="HPs">The list of hyperplanes defining the polytop.</param>
+    /// <param name="doHRedundancy">If true, performs redundancy reduction on the hyperplanes (not yet implemented).</param>
+    private ConvexPolytop(List<HyperPlane> HPs, bool doHRedundancy) {
       SpaceDim = HPs.First().Normal.Dim;
       if (doHRedundancy) {
-        throw new NotImplementedException("Надо сделать! Нужен симлекс метод и алгоритм Фукуды.");
+        throw new NotImplementedException("Надо сделать! Нужен симлекс-метод и алгоритм Фукуды.");
       }
       else {
         _Hrep = new List<HyperPlane>(HPs);
       }
-
-      switch (form) {
-        case ConvexPolytopForm.Hrep: break; // всё готово
-        case ConvexPolytopForm.Vrep:
-          _Vrep = HRepToVRep_Geometric(new List<HyperPlane>(HPs));
-
-          break;
-        case ConvexPolytopForm.FLrep:
-          _Vrep = HRepToVRep_Geometric(new List<HyperPlane>(HPs));
-          _FLrep   = GW.FaceLattice;
-
-          break;
-      }
     }
 
-    private ConvexPolytop(FaceLattice fLrep, ConvexPolytopForm form) {
+    /// <summary>
+    /// Constructs a ConvexPolytop using a face lattice (FLrep).
+    /// </summary>
+    /// <param name="fLrep">The face lattice defining the polytop.</param>
+    private ConvexPolytop(FaceLattice fLrep) {
       SpaceDim = fLrep.Top.AffBasis.SpaceDim;
-      _FLrep      = fLrep;
-      switch (form) {
-        case ConvexPolytopForm.FLrep: break; // всё есть
-        case ConvexPolytopForm.Vrep:
-          _Vrep = new SortedSet<Vector>(fLrep.Vertices);
-
-          break;
-        case ConvexPolytopForm.Hrep:
-          _Hrep = new List<HyperPlane>
-            (fLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (fLrep.Top.InnerPoint, false))).ToList());
-
-          break;
-      }
-    }
-
-    private ConvexPolytop(GiftWrapping gw) {
-      _FLrep      = gw.FaceLattice;
-      _Vrep    = gw.Vrep;
-      _Hrep    = gw.Hrep;
-      SpaceDim = Vrep.First().Dim;
+      _FLrep   = fLrep;
     }
 #endregion
 
 #region Fabrics
-    public static ConvexPolytop AsVPolytop(IEnumerable<Vector> S, bool toConvexify = false)
-      => new ConvexPolytop(S.ToSortedSet(), toConvexify, ConvexPolytopForm.Vrep);
+    /// <summary>
+    /// Constructs a convex polytop from a set of points.
+    /// </summary>
+    /// <param name="S">The set of points.</param>
+    /// <param name="toDoGW">Specifies whether to apply the Gift Wrapping algorithm to convexify the set of points.</param>
+    public static ConvexPolytop CreateFromPoints(IEnumerable<Vector> S, bool toDoGW = false)
+      => new ConvexPolytop(S.ToSortedSet(), toDoGW);
 
-    public static ConvexPolytop AsHPolytop(IEnumerable<Vector> S)
-      => new ConvexPolytop(S.ToSortedSet(), true, ConvexPolytopForm.Hrep);
+    /// <summary>
+    /// Constructs a convex polytop from a set of half-spaces.
+    /// </summary>
+    /// <param name="HPs">The list of hyperplanes representing the half-spaces.</param>
+    /// <param name="doHRedundancy">Specifies whether to eliminate redundant half-spaces.</param>
+    public static ConvexPolytop CreateFromHalfSpaces(List<HyperPlane> HPs, bool doHRedundancy = false)
+      => new ConvexPolytop(HPs, doHRedundancy);
 
-    public static ConvexPolytop AsFLPolytop(IEnumerable<Vector> S)
-      => new ConvexPolytop(S.ToSortedSet(), true, ConvexPolytopForm.FLrep);
+    /// <summary>
+    /// Constructs a convex polytop from a face lattice.
+    /// </summary>
+    /// <param name="faceLattice">The face lattice representing the polytop.</param>
+    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice) => new ConvexPolytop(faceLattice);
 
-    public static ConvexPolytop AsVPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
-      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.Vrep);
+    /// <summary>
+    /// Represents the actions that can be performed on a built polytop.
+    /// </summary>
+    public enum PolytopAction { None, Convexify, HRedundancy }
 
-    public static ConvexPolytop AsHPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
-      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.Hrep);
-
-    public static ConvexPolytop AsFLPolytop(List<HyperPlane> HPs, bool doHRedundancy = false)
-      => new ConvexPolytop(HPs, doHRedundancy, ConvexPolytopForm.FLrep);
-
-    public static ConvexPolytop AsVPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.Vrep);
-    public static ConvexPolytop AsHPolytop(FaceLattice  faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.Hrep);
-    public static ConvexPolytop AsFLPolytop(FaceLattice faceLattice) => new ConvexPolytop(faceLattice, ConvexPolytopForm.FLrep);
-
-    public static ConvexPolytop AsVPolytop(ParamReader pr, bool toConvexify = false) {
+    /// <summary>
+    /// Constructs a convex polytop from a parameter reader.
+    /// </summary>
+    /// <param name="pr">The parameter reader.</param>
+    /// <param name="action">Specifies the action to be performed on the polytop (e.g., convexify or eliminate redundancies).</param>
+    /// <returns>The constructed convex polytop.</returns>
+    public static ConvexPolytop FromReader(ParamReader pr, PolytopAction action = PolytopAction.None) {
       string nameRep = pr.ReadString("Rep");
-      if (nameRep != "Vrep") {
-        throw new ArgumentException
-          ($"ConvexPolytop.AsVPolytop: Can not construct Vrep from the file with Rep = {nameRep}, it must be 'Vrep'.");
-      }
-      int               SDim  = pr.ReadNumber<int>("SDim");
-      int               VsQnt = pr.ReadNumber<int>("VsQnt");
-      TNum[,]           Vs    = pr.Read2DArray<TNum>("Vs", VsQnt, SDim);
-      SortedSet<Vector> S     = new SortedSet<Vector>();
-      for (int row = 0; row < VsQnt; row++) {
-        TNum[] v = new TNum[SDim];
-        for (int col = 0; col < SDim; col++) {
-          v[col] = Vs[row, col];
-        }
-        S.Add(new Vector(v));
-      }
 
-      return new ConvexPolytop(S, toConvexify, ConvexPolytopForm.Vrep);
+      switch (nameRep) {
+        case "Vrep":        return CreateFromVRep(pr, action == PolytopAction.Convexify);
+        case "Hrep":        return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
+        case "FaceLattice": return CreateFromFLrep(pr);
+        default:            throw new ArgumentException($"Unsupported representation type: {nameRep}");
+      }
     }
 
-    public static ConvexPolytop AsHPolytop(ParamReader pr, bool doHRedundancy = false) {
-      string nameRep = pr.ReadString("Rep");
-      if (nameRep != "Hrep") {
-        throw new ArgumentException
-          ($"ConvexPolytop.AsVPolytop: Can not construct Hrep from the file with Rep = {nameRep}, it must be 'Hrep'.");
-      }
-      int              SDim   = pr.ReadNumber<int>("SDim");
-      int              HPsQnt = pr.ReadNumber<int>("HPsQnt");
-      TNum[,]          HPs    = pr.Read2DArray<TNum>("HPs", HPsQnt, SDim + 1);
-      List<HyperPlane> hps    = new List<HyperPlane>(HPsQnt);
-      for (int row = 0; row < HPsQnt; row++) {
-        TNum[] n = new TNum[SDim];
-        for (int col = 0; col < SDim; col++) {
-          n[col] = HPs[row, col];
-        }
-        hps.Add(new HyperPlane(new Vector(n), HPs[row, SDim]));
-      }
-
-      return new ConvexPolytop(hps, doHRedundancy, ConvexPolytopForm.Hrep);
-    }
-
-    public static ConvexPolytop AsFLPolytop(ParamReader pr) {
-      string nameRep = pr.ReadString("Rep");
-      if (nameRep != "FaceLattice") {
-        throw new ArgumentException
-          (
-           $"ConvexPolytop.AsVPolytop: Can not construct FaceLattice from the file with Rep = {nameRep}, it must be 'FaceLattice'."
-          );
-      }
-      int          SDim  = pr.ReadNumber<int>("SDim");
-      int          PDim  = pr.ReadNumber<int>("PDim");
-      int          VsQnt = pr.ReadNumber<int>("VsQnt");
-      List<Vector> Vs    = pr.ReadVectors("Vs");
+    /// <summary>
+    /// Constructs a convex polytop from a Vrep representation.
+    /// </summary>
+    /// <param name="pr">The parameter reader.</param>
+    /// <param name="toConvexify">Specifies whether to apply the Gift Wrapping algorithm to convexify the set of points.</param>
+    /// <returns>The constructed convex polytop.</returns>
+    private static ConvexPolytop CreateFromVRep(ParamReader pr, bool toConvexify) {
+      List<Vector> S = pr.ReadVectors("Vs");
 
       Debug.Assert
         (
-         Vs.Count == VsQnt
-       , $"ConvexPolytop.AsVPolytop: The number of vertices in the file does not match the number actually read ! VsQnt = {VsQnt}, found = {Vs.Count} "
+         S.All(v => v.Dim == S.First().Dim)
+       , $"ConvexPolytop.FromReader: The dimension of all points must be the same at the path = {pr.filePath}"
         );
+
+      return new ConvexPolytop(S.ToSortedSet(), toConvexify);
+    }
+
+    /// <summary>
+    /// Constructs a convex polytop from an Hrep representation.
+    /// </summary>
+    /// <param name="pr">The parameter reader.</param>
+    /// <param name="doHRedundancy">Specifies whether to eliminate redundant half-spaces.</param>
+    /// <returns>The constructed convex polytop.</returns>
+    private static ConvexPolytop CreateFromHRep(ParamReader pr, bool doHRedundancy) {
+      List<HyperPlane> HPs = pr.ReadHyperPlanes("HPs");
+
+      Debug.Assert
+        (
+         HPs.All(v => v.SpaceDim == HPs.First().SpaceDim)
+       , $"ConvexPolytop.FromReader: The dimension of all points must be the same at the path = {pr.filePath}"
+        );
+
+      return new ConvexPolytop(HPs, doHRedundancy);
+    }
+
+    /// <summary>
+    /// Constructs a convex polytop from a FaceLattice representation.
+    /// </summary>
+    /// <param name="pr">The parameter reader.</param>
+    /// <returns>The constructed convex polytop.</returns>
+    private static ConvexPolytop CreateFromFLrep(ParamReader pr) {
+      int          PDim = pr.ReadNumber<int>("PDim");
+      List<Vector> Vs   = pr.ReadVectors("Vs");
 
       List<List<FLNode>> lattice = new List<List<FLNode>>(PDim) { Vs.Select(v => new FLNode(v)).ToList() };
       for (int i = 1; i <= PDim; i++) {
@@ -323,7 +322,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return ConvexPolytop.AsFLPolytop(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList()));
+      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList()));
     }
 #endregion
 
@@ -333,7 +332,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="dim">The dimension of the point.</param>
     /// <returns>The one point polytop.</returns>
-    public static ConvexPolytop Point(int dim) => AsVPolytop(new SortedSet<Vector> { Vector.Ones(dim) });
+    public static ConvexPolytop Point(int dim) => CreateFromPoints(new SortedSet<Vector> { Vector.Ones(dim) });
 
     /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of Vrep.
@@ -355,7 +354,7 @@ public partial class Geometry<TNum, TConv>
         cube.Add(new HyperPlane(Vector.MakeOrth(dim, i + 1), Tools.One));
       }
 
-      return AsHPolytop(cube);
+      return CreateFromHalfSpaces(cube);
     }
 
     /// <summary>
@@ -370,7 +369,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       if (left.Dim == 1) {
-        return AsVPolytop(new SortedSet<Vector>() { left, right });
+        return CreateFromPoints(new SortedSet<Vector>() { left, right });
       }
 
       List<List<TNum>> rect_prev = new List<List<TNum>>();
@@ -395,7 +394,7 @@ public partial class Geometry<TNum, TConv>
         Cube.Add(new Vector(v.ToArray()));
       }
 
-      return AsVPolytop(Cube);
+      return CreateFromPoints(Cube);
     }
 
     /// <summary>
@@ -403,7 +402,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="simplexDim">The dimension of the simplex.</param>
     /// <param name="doFL">If the flag is true, then face lattice will be constructed, otherwise only Vrep.</param>
-    /// <param name="rnd"></param>
+    /// <param name="rnd">Optional random number generator. If not provided, a default one will be used.</param>
     /// <returns>A convex polytop as representing the random simplex.</returns>
     public static ConvexPolytop SimplexRND(int simplexDim, bool doFL = false, GRandomLC? rnd = null) {
       GRandomLC random = rnd ?? Tools.Random;
@@ -416,16 +415,16 @@ public partial class Geometry<TNum, TConv>
       } while (!new AffineBasis(simplex).IsFullDim);
 
 
-      return doFL ? AsFLPolytop(simplex) : AsVPolytop(simplex);
+      return doFL ? CreateFromPoints(simplex, true) : CreateFromPoints(simplex);
     }
 
     /// <summary>
-    /// Makes the cyclic polytop in specified dimension with specified amount of points.
+    /// Makes the cyclic polytop in specified dimension with specified number of points.
     /// </summary>
     /// <param name="pDim">The dimension of the cyclic polytop.</param>
-    /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>
-    /// <param name="step">The step of increasing the moment on the moments curve. init = 1 + step.</param>
-    /// <param name="doFL">If the flag is true then face lattice will be construct, otherwise only Vrep.</param>
+    /// <param name="amountOfPoints">The number of vertices in cyclic polytop.</param>
+    /// <param name="step">The increment step for generating points on the moment curve. init = 1 + step.</param>
+    /// <param name="doFL">If the flag is true, then face lattice will be constructed, otherwise only Vrep.</param>
     /// <returns>A convex polytop as Vrep representing the cyclic polytop.</returns>
     public static ConvexPolytop Cyclic(int pDim, int amountOfPoints, TNum step, bool doFL = false) {
       Debug.Assert
@@ -447,14 +446,14 @@ public partial class Geometry<TNum, TConv>
         baseCoord += step;
       }
 
-      return doFL ? AsFLPolytop(cycP) : AsVPolytop(cycP);
+      return doFL ? CreateFromPoints(cycP, true) : CreateFromPoints(cycP);
     }
 
     /// <summary>
-    /// Makes a hD-sphere as Vrep with given radius. The euclidean norm.
+    /// Makes a hD-sphere as Vrep with given radius using the Euclidean norm.
     /// </summary>
     /// <param name="dim">The dimension of the sphere. It is greater than 1.</param>
-    /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].
+    /// <param name="thetaPartition">The number of partitions at a zenith angle. Theta in [0, Pi].
     ///   thetaPoints should be greater than 2 for proper calculation.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="center">The center of a sphere.</param>
@@ -467,10 +466,10 @@ public partial class Geometry<TNum, TConv>
     /// Makes a hD-ellipsoid as Vrep with given semi-axis.
     /// </summary>
     /// <param name="dim">The dimension of the ellipsoid. It is greater than 1.</param>
-    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
+    /// <param name="thetaPartition">The number of partitions at a zenith angle.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
     /// <param name="center">The center of an ellipsoid.</param>
-    /// <param name="semiAxis">The vector each coordinate of it represents the length of corresponding semi-axe.</param>
+    /// <param name="semiAxis">The vector where each coordinate represents the length of the corresponding semi-axis.</param>
     /// <returns>A convex polytop as Vrep representing the ellipsoid in hD.</returns>
     public static ConvexPolytop Ellipsoid(int dim, int thetaPartition, int phiPartition, Vector center, Vector semiAxis) {
       Debug.Assert(dim > 1, $"ConvexPolytop.Ellipsoid: The dimension of an ellipsoid must be 2 or greater. Found dim = {dim}.");
@@ -554,9 +553,8 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return AsVPolytop(Ps);
+      return CreateFromPoints(Ps);
     }
-
 
     /// <summary>
     /// Makes the ball in 1-norm.
@@ -573,7 +571,7 @@ public partial class Geometry<TNum, TConv>
         ball.Add(-e);
       }
 
-      return AsVPolytop(ball);
+      return CreateFromPoints(ball);
     }
 
     /// <summary>
@@ -593,20 +591,20 @@ public partial class Geometry<TNum, TConv>
     /// Makes the convex polytop which represents the distance to the ball in dim-space.
     /// </summary>
     /// <param name="dim">The dimension of the sphere-ball. It is greater than 1.</param>
-    /// <param name="thetaPartition">The number of partitions at zenith angle. Theta in [0, Pi].</param>
+    /// <param name="thetaPartition">The number of partitions at a zenith angle. Theta in [0, Pi].</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="radius0">The radius of a initial sphere.</param>
-    /// <param name="CMax">The value of the last coordinate of final sphere in dim+1 space.</param>
+    /// <param name="CMax">The value of the last coordinate of a final sphere in dim+1 space.</param>
     /// <returns>The convex polytop which represents the distance to the ball in dim-space. </returns>
     public static ConvexPolytop DistanceToBall_2(int dim, int thetaPartition, int phiPartition, TNum radius0, TNum CMax) {
       ConvexPolytop ball0        = Sphere(dim, thetaPartition, phiPartition, Vector.Zero(dim), radius0);
       TNum          radiusF      = radius0 + CMax;
-      ConvexPolytop ballF        = AsVPolytop(ball0.Vertices.Select(v => v * radiusF).ToSortedSet());
+      ConvexPolytop ballF        = CreateFromPoints(ball0.Vrep.Select(v => v * radiusF).ToSortedSet());
       ConvexPolytop ball0_lifted = LiftUp(ball0, Tools.Zero);
       ConvexPolytop ballF_lifted = LiftUp(ballF, CMax);
-      ball0_lifted.Vertices.UnionWith(ballF_lifted.Vertices); // Теперь тут лежат все точки
+      ball0_lifted.Vrep.UnionWith(ballF_lifted.Vrep); // Теперь тут лежат все точки
 
-      return AsVPolytop(ball0_lifted.Vertices, true);
+      return CreateFromPoints(ball0_lifted.Vrep, true);
     }
 
     /// <summary>
@@ -626,108 +624,113 @@ public partial class Geometry<TNum, TConv>
 
       //{(R,0), (R (+) Ball(0, CMax),CMax)}
       ConvexPolytop toConv = LiftUp(bigP, CMax);
-      toConv.Vertices.UnionWith(LiftUp(P, Tools.Zero).Vertices);
+      toConv.Vrep.UnionWith(LiftUp(P, Tools.Zero).Vrep);
 
       //conv{...}
-      return AsVPolytop(toConv.Vertices, true);
+      return CreateFromPoints(toConv.Vrep, true);
     }
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "_1"-norm to the given convex polytop in dim-space.
+    ///  Makes the convex polytop representing the distance in "_1"-norm to the given convex polytop in dimensional space.
     /// </summary>
-    /// <param name="P">Polytop the distance to which is constructed.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="P">The polytop to which the distance is constructed.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_1 norm.</returns>
     public static ConvexPolytop DistanceToPolytopBall_1(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_1);
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "infinity"-norm to the given convex polytop in dim-space.
+    /// Makes the convex polytop representing the distance in "infinity"-norm to the given convex polytop in dimensional space.
     /// </summary>
-    /// <param name="P">Polytop the distance to which is constructed.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="P">The polytop to which the distance is constructed.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_oo norm.</returns>
     public static ConvexPolytop DistanceToPolytopBall_oo(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_oo);
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "euclidean"-norm to the given convex polytop in dim-space.
+    /// Makes the convex polytop representing the distance in "euclidean"-norm to the given convex polytop in dimensional space.
     /// </summary>
-    /// <param name="P">Polytop the distance to which is constructed.</param>
+    /// <param name="P">The polytop to which the distance is constructed.</param>
     /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytop P in ball_2 norm.</returns>
     public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int thetaPartition, int phiPartition, TNum CMax)
       => DistanceToPolytop(P, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "_1"-norm to the origin in dim-space;
+    /// Makes the convex polytop representing the distance in "_1"-norm to the origin in dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the origin.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="pointDim">The dimension of the space.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_1 norm.</returns>
     public static ConvexPolytop DistanceToOriginBall_1(int pointDim, TNum CMax) => DistanceToOrigin(pointDim, CMax, Ball_1);
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "_oo"-norm to the origin in dim-space;
+    /// Makes the convex polytop representing the distance in "_oo"-norm to the origin in dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the origin.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="pointDim">The dimension of the space.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_oo norm.</returns>
     public static ConvexPolytop DistanceToOriginBall_oo(int pointDim, TNum CMax) => DistanceToOrigin(pointDim, CMax, Ball_oo);
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance in "_2"-norm to the origin in dim-space;
+    /// Makes the convex polytop representing the distance in "_2"-norm to the origin in (dim)-dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the origin.</param>
-    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
+    /// <param name="pointDim">The dimension of the space.</param>
+    /// <param name="thetaPartition">The number of partitions at a zenith angle.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
     public static ConvexPolytop DistanceToOriginBall_2(int pointDim, int thetaPartition, int phiPartition, TNum CMax)
       => DistanceToOrigin(pointDim, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
 
     /// <summary>
-    /// Makes the convex polytop which represents the distance to the origin in dim-space.
+    /// Makes the convex polytop representing the distance to the origin in (dim)-dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the origin.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
-    /// <param name="ballCreator">Function that makes balls.</param>
+    /// <param name="pointDim">The dimension of the space.</param>
+    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="ballCreator">Function that creates balls.</param>
     /// <returns>A polytope representing the distance to the origin.</returns>
     private static ConvexPolytop DistanceToOrigin(int pointDim, TNum CMax, Func<int, Vector, TNum, ConvexPolytop> ballCreator) {
       ConvexPolytop ball   = ballCreator(pointDim, Vector.Zero(pointDim), CMax);
       ConvexPolytop toConv = LiftUp(ball, CMax);
-      toConv.Vertices.Add(Vector.Zero(pointDim + 1));
+      toConv.Vrep.Add(Vector.Zero(pointDim + 1));
 
       //conv{...}
-      return AsVPolytop(toConv.Vertices);
+      return CreateFromPoints(toConv.Vrep);
     }
 #endregion
 
 
 #region Functions
     /// <summary>
-    /// Rotates the polytop by randomly generated orthonormal matrix.
+    /// Rotates the polytop by a randomly generated orthonormal matrix.
     /// </summary>
-    /// <param name="doFL">If the flag is true, then face lattice will be constructed, otherwise only Vrep.</param>
-    /// <param name="rnd">The random engine to be used. If null, the Random be used.</param>
+    /// <param name="doFL">If true, the face lattice will be constructed; otherwise, only the Vrep.</param>
+    /// <param name="rnd">The random engine to be used. If null, the default random engine will be used. (Tools.Random)</param>
     /// <returns>The rotated polytop</returns>
     public ConvexPolytop RotateRND(bool doFL = false, GRandomLC? rnd = null) {
       GRandomLC           random = rnd ?? Tools.Random;
       Matrix              rotate = Matrix.GenONMatrix(SpaceDim, random);
-      IEnumerable<Vector> S      = Vertices.Select(v => v * rotate);
+      IEnumerable<Vector> S      = Vrep.Select(v => v * rotate);
 
-      return doFL ? AsFLPolytop(S) : AsVPolytop(S); // todo Если дано FLrep, то надо его сохранить (просто вершины пересчитать)
+      return
+        doFL
+          ? CreateFromPoints(S, true)
+          : CreateFromPoints(S); // todo Если дано FLrep, то надо его сохранить (пересчитать вершины, базисы и внутренние точки)
     }
 
-    
-    public enum Rep { Vrep, Hrep, FLrep }
 
     /// <summary>
-    /// The writer used to write the polytop depends on non-null representations.
+    /// Writes the convex polytop representation to the specified <see cref="ParamWriter"/> in the chosen format.
     /// </summary>
-    /// <param name="pr">The writer to write with.</param>
-    /// <param name="rep">The representation of the convex polytop in the Rep-form will be written.</param>
-    public void WriteIn(ParamWriter pr, Rep rep) {
+    /// <param name="pr">The <see cref="ParamWriter"/> instance where the convex polytop will be written.</param>
+    /// <param name="rep">
+    /// The representation format of the convex polytop.
+    /// This determines whether the polytop will be written as a Vrep, Hrep, or FLrep.
+    /// Defaults to <see cref="Rep.FLrep"/>.
+    /// </param>
+    public void WriteIn(ParamWriter pr, Rep rep = Rep.FLrep) {
       switch (rep) {
         case Rep.Vrep:
           WriteAsVRep(pr, this);
@@ -746,43 +749,82 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Lifts the given convex polytop to the one above dimension, extends with the given value.
+    /// Lifts the given convex polytop to a higher dimension
+    /// by extending all its vertices with the specified value as the last coordinate.
     /// </summary>
     /// <param name="P">The polytop to be lifted.</param>
     /// <param name="val">The value used in expansion.</param>
     /// <returns>The polytop in higher dimension.</returns>
     private static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
-      => AsVPolytop(P.Vertices.Select(v => v.LiftUp(v.Dim + 1, val)).ToSortedSet());
+      => CreateFromPoints(P.Vrep.Select(v => v.LiftUp(v.Dim + 1, val)).ToSortedSet());
 
     /// <summary>
     /// Creates a new convex polytope in d-dimensional space by intersecting the given d-dimensional convex polytope P with a specified hyperplane.
     /// </summary>
-    /// <param name="hp">The hyper plane to sectioning P.</param>
+    /// <param name="hp">The hyperplane to section P.</param>
     /// <returns>The section of the polytop P.</returns>
     public ConvexPolytop SectionByHyperPlane(HyperPlane hp) {
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(Hrep) { hp, hp_ };
 
-      return AsVPolytop(HRepToVRep_Geometric(hrep).ToSortedSet(), true);
+      return CreateFromPoints(HRepToVRep_Geometric(hrep).ToSortedSet(), true);
     }
 
     /// <summary>
-    /// Create a new convex polytop of (d-1)-dimension from the d-dim convex polytop P as section by given hyperplane.
+    /// Creates a new convex polytop of (d-1)-dimension from the d-dimensional convex polytop P as a section by the given hyperplane. And project a result to it subspace.
     /// </summary>
     /// <param name="P">The given convex polytop P.</param>
-    /// <param name="hp">The hyper plane to sectioning P.</param>
+    /// <param name="hp">The hyperplane to section P.</param>
     /// <returns>The section of the polytop P.</returns>
     public static ConvexPolytop SectionByHyperPlaneAndProject(ConvexPolytop P, HyperPlane hp) {
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.Hrep) { hp, hp_ };
 
-      return AsVPolytop(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToSortedSet(), true);
+      return CreateFromPoints(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToSortedSet(), true);
     }
 #endregion
 
+#region Write out
+    /// <summary>
+    /// Writes the convex polytop as Vrep to the specified <see cref="ParamWriter"/>.
+    /// </summary>
+    private static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
+      pr.WriteString("Rep", "Vrep");
+      pr.WriteVectors("Vs", P.Vrep);
+    }
+
+    /// <summary>
+    /// Writes the convex polytop as Hrep to the specified <see cref="ParamWriter"/>.
+    /// </summary>
+    private static void WriteAsHRep(ParamWriter pr, ConvexPolytop P) {
+      pr.WriteString("Rep", "Hrep");
+      pr.WriteHyperPlanes("HPs", P.Hrep);
+    }
+
+    /// <summary>
+    /// Writes the convex polytop as FLrep to the specified <see cref="ParamWriter"/>.
+    /// </summary>
+    private static void WriteAsFLRep(ParamWriter pr, ConvexPolytop P) {
+      pr.WriteString("Rep", "FaceLattice");
+      pr.WriteNumber("PDim", P.PolytopDim);
+      pr.WriteVectors("Vs", P.Vrep);
+
+      for (int i = 1; i < P.FLrep.Lattice.Count; i++) {
+        List<FLNode>    levelPred = P.FLrep.Lattice[i - 1].ToList();
+        List<FLNode>    level     = P.FLrep.Lattice[i].ToList();
+        List<List<int>> f_k       = new List<List<int>>(level.Count);
+        foreach (FLNode subFace in level) {
+          f_k.Add(subFace.Sub.Select(pred => levelPred.IndexOf(pred)).ToList());
+        }
+        pr.Write2DArray($"f{i}", f_k);
+      }
+    }
+#endregion
+
+
 #region Comparation
     //!!! Вообще говоря, сравнивать многогранники тяжело!!! Тут "какая-то наивная" реализация сравнения
-    protected bool Equals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
+    private bool Equals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
 
     public override bool Equals(object? obj) {
       if (ReferenceEquals(null, obj))
@@ -796,72 +838,25 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Write out
-    public static void WriteAsVRep(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteString("Rep", "Vrep");
-      pr.WriteNumber("SDim", P.SpaceDim);
-      pr.WriteNumber("VsQnt", P.Vertices.Count);
-      pr.WriteVectors("Vs", P.Vertices);
-    }
-
-    public static void WriteAsHRep(ParamWriter pr, ConvexPolytop P) {
-      int spaceDim = P.SpaceDim;
-      pr.WriteString("Rep", "Hrep");
-      pr.WriteNumber("SDim", spaceDim);
-      pr.WriteNumber("HPsQnt", P.Hrep.Count);
-
-      List<TNum[]> HPs = new List<TNum[]>(P.Hrep.Count);
-      foreach (HyperPlane hp in P.Hrep) {
-        TNum[] pl = new TNum[spaceDim + 1];
-        pl[^1] = hp.ConstantTerm;
-        for (int i = 0; i < spaceDim; i++) {
-          pl[i] = hp.Normal[i];
-        }
-        HPs.Add(pl);
-      }
-
-      pr.Write2DArray("HPs", HPs);
-    }
-
-    public static void WriteAsFLRep(ParamWriter pr, ConvexPolytop P) {
-      pr.WriteString("Rep", "FaceLattice");
-      pr.WriteNumber("SDim", P.SpaceDim);
-      pr.WriteNumber("PDim", P.PolytopDim);
-      pr.WriteNumber("VsQnt", P.Vertices.Count);
-      List<Vector> Vs = P.FLrep.Lattice[0].Select(node => node.Vertices.First()).ToList();
-      pr.WriteVectors("Vs", Vs);
-
-      for (int i = 1; i < P.FLrep.Lattice.Count; i++) //
-      {
-        List<FLNode>    levelPred = P.FLrep.Lattice[i - 1].ToList();
-        List<FLNode>    level     = P.FLrep.Lattice[i].ToList();
-        List<List<int>> f_k       = new List<List<int>>(level.Count);
-        foreach (var subFace in level) {
-          f_k.Add(subFace.Sub.Select(pred => levelPred.IndexOf(pred)).ToList());
-        }
-        pr.Write2DArray($"f{i}", f_k);
-      }
-    }
-#endregion
 
     /// <summary>
-    /// /// Converts the polytop to a convex polygon.
+    /// Converts the polytop to a convex polygon in 2D space using the specified affine basis.
     /// </summary>
-    /// <param name="basis">The affine basis used for the conversion.</param>
+    /// <param name="basis">Affine basis for the conversion.</param>
     /// <returns>A convex polygon representing the polytop in 2D space.</returns>
     public ConvexPolygon ToConvexPolygon(AffineBasis basis) {
       if (PolytopDim != 2) {
         throw new ArgumentException($"The dimension of the polygon must equal to 2. Found = {PolytopDim}.");
       }
 
-      return new ConvexPolygon(basis.ProjectPoints(Vertices));
+      return new ConvexPolygon(basis.ProjectPoints(Vrep));
     }
 
     /// <summary>
-    /// Converts the H-representation of convex polytop to the V-representation by checking all possible d-tuples of the hyperplanes.
+    /// Converts the Hrep of a convex polytop to Vrep using a naive approach by checking all possible d-tuples of the hyperplanes.
     /// </summary>
-    /// <param name="HPs">The hyperplane arrangement.</param>
-    /// <returns>The V-representation of the convex polytop.</returns>
+    /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
+    /// <returns>The Vrep of the convex polytop.</returns>
     public static SortedSet<Vector> HRepToVRep_Naive(List<HyperPlane> HPs) {
       int m = HPs.Count;
       int d = HPs.First().Normal.Dim;
@@ -894,10 +889,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Converts the H-representation of convex polytop to the V-representation by some geometric-inspired algorithm.
+    /// Converts the Hrep of a convex polytop to Vrep using a geometric-inspired algorithm.
     /// </summary>
-    /// <param name="HPs">The hyperplane arrangement.</param>
-    /// <returns>The V-representation of the convex polytop.</returns>
+    /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
+    /// <returns>The Vrep of the convex polytop.</returns>
+    /// todo ОНА НЕ РАБОТАЕТ ДЛЯ d > 3 !!!!!!!!!!
     public static SortedSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               m  = HPs.Count;
@@ -1010,20 +1006,13 @@ public partial class Geometry<TNum, TConv>
       return Vs;
     }
 
-    private static Vector FindInitialVertex_Simplex(List<HyperPlane> HPs) {
-      SimplexMethod sm = new SimplexMethod(HPs, _ => Tools.One);
-      (SimplexMethod.SimplexMethodResultStatus status, TNum _, TNum[]? x) = sm.Solve(true);
-#if DEBUG
-      if (status is not SimplexMethod.SimplexMethodResultStatus.InitialSolution) {
-        throw new ArgumentException($"ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
-      }
-#endif
-      Debug.Assert(x is not null, $"ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
-      Debug.Assert(HPs.Any(hp => hp.Contains(new Vector(x))), "ConvexPolytop.HRepToVRep_Geometric: Can't find initial vertex!");
-
-      return new Vector(x);
-    }
-
+    /// <summary>
+    /// Finds an initial vertex of the convex polytop using a naive approach by checking combinations of hyperplanes.
+    /// </summary>
+    /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
+    /// <param name="m">Total number of hyperplanes.</param>
+    /// <param name="d">Dimension of the polytop.</param>
+    /// <returns>A vertex of the polytop, or null if no vertex is found.</returns>
     private static Vector? FindInitialVertex_Naive(List<HyperPlane> HPs, int m, int d) {
       Combination          combination = new Combination(m, d);
       Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
