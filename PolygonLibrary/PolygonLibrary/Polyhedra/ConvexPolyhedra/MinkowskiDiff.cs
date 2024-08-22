@@ -103,7 +103,7 @@ public partial class Geometry<TNum, TConv>
 
 
     /* 5.
-     * FaceLattice можно получить из класса GiftWrapping
+     * FLrep можно получить из класса GiftWrapping
      */
 
 
