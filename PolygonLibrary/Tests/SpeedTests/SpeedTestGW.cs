@@ -113,15 +113,15 @@ public class SpeedTestGW {
       // var circleSmall = TestsPolytopes<TNum, TConv>.Sphere_list(dim, thetaPoints, k, TConv.FromDouble(0.5));
       var circle = TestsPolytopes<TNum, TConv>.Sphere_list(dim, thetaPoints, n, TConv.FromInt(1));
       // circle.AddRange(circleSmall);
-      Geometry<TNum, TConv>.GiftWrapping? Circle = null;
+      int? circleVsCount = null;
       timer.Restart();
-      for (int i = 0; i < N; i++) { Circle = new Geometry<TNum, TConv>.GiftWrapping(circle); }
+      for (int i = 0; i < N; i++) { circleVsCount = Geometry<TNum, TConv>.GiftWrapping.WrapVRep(circle).Count; }
       timer.Stop();
 
       writer.WriteLine
         (
          $"n = {n,-8} sec: {(timer.Elapsed.TotalSeconds / N).ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {circle.Count,-8} inCH = {Circle!.Vrep.Count}"
+         $" Total: {circle.Count,-8} inCH = {circleVsCount}"
         );
       writer.Flush();
     }
@@ -137,12 +137,12 @@ public class SpeedTestGW {
     for (int k = 1; k <= maxAmount; k *= 10) {
       var cube = TestsPolytopes<TNum, TConv>.Cube01(dim, out _, new int[] { dim }, k);
       timer.Restart();
-      var Cube = new Geometry<TNum, TConv>.GiftWrapping(cube);
+      int cubeVsCount = Geometry<TNum, TConv>.GiftWrapping.WrapVRep(cube).Count;
       timer.Stop();
       writer.WriteLine
         (
          $"k = {k,-8} sec: {timer.Elapsed.TotalSeconds.ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {cube.Count,-8} inCH = {Cube.Vrep.Count}"
+         $" Total: {cube.Count,-8} inCH = {cubeVsCount}"
         );
       writer.Flush();
     }
@@ -159,12 +159,12 @@ public class SpeedTestGW {
     for (int k = 1; k <= maxAmount; k *= 10) {
       var simplexRND = TestsPolytopes<TNum, TConv>.SimplexRND(dim, out _, new int[] { dim }, k);
       timer.Restart();
-      var Simplex = new Geometry<TNum, TConv>.GiftWrapping(simplexRND);
+      int simplexVsCount = Geometry<TNum, TConv>.GiftWrapping.WrapVRep(simplexRND).Count;
       timer.Stop();
       writer.WriteLine
         (
          $"k = {k,-8} sec: {timer.Elapsed.TotalSeconds.ToString("F5", CultureInfo.InvariantCulture),-12}" +
-         $" Total: {simplexRND.Count,-8} inCH = {Simplex.Vrep.Count}"
+         $" Total: {simplexRND.Count,-8} inCH = {simplexVsCount}"
         );
       writer.Flush();
     }
@@ -190,7 +190,7 @@ public class SpeedTestGW {
         timer.Restart();
         for (int i = 0; i < N; i++) { P = new GiftWrapping(S); }
         timer.Stop();
-        writer.WriteLine($"{P!.FaceLattice.NumberOfNonZeroKFaces}-{S.Count,-5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
+        writer.WriteLine($"{P!.ConstructFL().NumberOfNonZeroKFaces}-{S.Count,-5} & {timer.Elapsed.TotalSeconds / N,-8:F5}");
         writer.Flush();
       }
     }

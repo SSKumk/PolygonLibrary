@@ -47,10 +47,10 @@ public class GW_Tests {
     S.Shuffle(random);
 
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), $"The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), $"The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), $"The number of faces of the cube must be equal to 27.");
   }
 #endregion
 
@@ -60,10 +60,10 @@ public class GW_Tests {
   public void Cube3D() {
     List<Vector> S = Cube3D_list;
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -77,10 +77,10 @@ public class GW_Tests {
 
     List<Vector> Rotated = Rotate(S, new Matrix(rotationZ45));
 
-    GiftWrapping P = new GiftWrapping(Rotated);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(Rotated, true);
     Assert.That(P.Vrep.SetEquals(Rotated), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   /// <summary>
@@ -101,10 +101,10 @@ public class GW_Tests {
       };
 
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   /// <summary>
@@ -124,10 +124,10 @@ public class GW_Tests {
       , new Vector(new ddouble[] { -9.029417029821644, -7.414457472370579, 13.142282885765258 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
@@ -144,77 +144,77 @@ public class GW_Tests {
       , new Vector(new ddouble[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(131));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(132));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(133));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1312));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_2D_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1323));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 
   [Test]
   public void Cube3D_withInnerPoints_On_1D_2D_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(13123));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
   }
 #endregion
 
@@ -231,12 +231,12 @@ public class GW_Tests {
     for (int i = 0; i < 10 * S.Count; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
-      GiftWrapping P = new GiftWrapping(S);
+      ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
       Assert.That(P.Vrep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
       Assert.That(P.Hrep, Has.Count.EqualTo(numberOfHRep), $"The number of facets of the cube must be equal to {numberOfHRep}.");
       Assert.That
         (
-         P.FaceLattice.NumberOfKFaces
+         P.FLrep.NumberOfKFaces
        , Is.EqualTo(numberOfFVec)
        , $"The number of faces of the cube must be equal to {numberOfFVec}."
         );
@@ -273,7 +273,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(141));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -283,7 +283,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(142));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -292,7 +292,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(143));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -301,7 +301,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1412));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -310,7 +310,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_2D_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1423));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -319,7 +319,7 @@ public class GW_Tests {
   public void Cube4D_withInnerPoints_On_1D_2D_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(14123));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -341,7 +341,7 @@ public class GW_Tests {
      , new GRandomLC(141234)
       );
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -376,7 +376,7 @@ public class GW_Tests {
       , Vector.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
   }
 #endregion
@@ -770,10 +770,10 @@ public class GW_Tests {
     var x = GiftWrapping.WrapVRep(S);
     var y = S.GetRange(0, 5).ToSortedSet();
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
   /// <summary>
@@ -822,12 +822,12 @@ public class GW_Tests {
       , new Vector(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
-    P = new GiftWrapping(S_shuffled);
+    P = ConvexPolytop.CreateFromPoints(S_shuffled, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
 
   /// <summary>
@@ -851,42 +851,9 @@ public class GW_Tests {
       , new Vector(new ddouble[] { -0.25, 1, -1 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
-
-
-  // Проблема в том, что при построении плоскости ABC в даблах не хватает точности для достаточно точного построения базиса.
-  [Test]
-  public void VeryFlat3DSimplex() {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    List<Vector> Simplex = new List<Vector>()
-      {
-        new Vector(new ddouble[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 }) // Это начало базиса в GW
-      , new Vector(new ddouble[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
-      , new Vector(new ddouble[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
-      , new Vector(new ddouble[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 }) // по-сути не нужна
-      };
-
-    // List<Vector> S = new List<Vector>(Simplex);
-    // Vector       p = new Vector(new ddouble[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
-    // S.Add(p);
-    // ! Мы строим базитс на таких точках. Скачёк на 6 порядков. В double печаль! eps = 1e-8 всё ломается!
-    // ! А в ddouble нормально!
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[1], S[2] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[1], S[2], S[0] }));
-    // Console.WriteLine((double)(S[0] - S[1]).Length);
-    // Console.WriteLine((double)(S[0] - S[2]).Length);
-    // Console.WriteLine((double)(S[1] - S[2]).Length);
-    // var distABC = S.Select(s => hpABC.Eval(s));
-    // Console.WriteLine(string.Join('\n', distABC));
-
-    GiftWrapping P = new GiftWrapping(Simplex);
-    Assert.That(P.Vrep.SetEquals(Simplex));
-    Assert.That(P.Hrep, Has.Count.EqualTo(4), "The number of facets of the 3D-simplex must be equal to 4.");
-    Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(15), "The number of faces of the  3D-simplex must be equal to 15.");
-  }
-
 
   /// <summary>
   /// Параллелепипед расположенный в первом квадранте
@@ -938,8 +905,8 @@ public class GW_Tests {
     ShiftAndRotate(PDim, ref Answer, ref S);
     S.Shuffle(_random);
 
-    GiftWrapping P;
-    try { P = new GiftWrapping(S); }
+    ConvexPolytop P;
+    try { P = ConvexPolytop.CreateFromPoints(S, true); }
     catch (Exception e) {
       GenTest
         (
@@ -995,7 +962,7 @@ public class GW_Tests {
     }
 
     try {
-      Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo(numberFVec));
+      Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(numberFVec));
     }
     catch (Exception e) {
       // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
@@ -1040,7 +1007,7 @@ public class GW_Tests {
     Console.WriteLine("Shuffle(random);");
 
     Console.WriteLine();
-    Console.WriteLine("GiftWrapping P = new GiftWrapping(S);");
+    Console.WriteLine("ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);");
     Console.WriteLine($"Assert.That(P.Vrep.SetEquals(polytop), \"The set of vertices must be equal.\");");
     Console.WriteLine
       (
@@ -1048,7 +1015,7 @@ public class GW_Tests {
       );
     Console.WriteLine
       (
-       $"Assert.That(P.FaceLattice.NumberOfKFaces, Is.EqualTo({numberFVec}), $\"The number of faces of the cube must be equal to {numberFVec}.\");"
+       $"Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo({numberFVec}), $\"The number of faces of the cube must be equal to {numberFVec}.\");"
       );
     Console.WriteLine("}");
     Console.WriteLine();

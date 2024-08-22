@@ -65,8 +65,11 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Returns set of original points.
     /// </summary>
-    public SortedSet<Vector> OriginalVertices
-      => Vertices.Select(v => v.GetRootVertex()).ToSortedSet(); // todo их бы сохранить где-нибудь ...
+    public SortedSet<Vector> OriginalVertices {
+      get { return _originalVertices ??= Vertices.Select(v => v.GetRootVertex()).ToSortedSet(); }
+    }
+
+    private SortedSet<Vector>? _originalVertices;
 
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.

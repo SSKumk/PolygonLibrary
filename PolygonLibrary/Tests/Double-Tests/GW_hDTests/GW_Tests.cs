@@ -48,7 +48,7 @@ public class GW_Tests
 
     List<Vector> Rotated = Rotate(S, new Matrix(rotationZ45));
 
-    GiftWrapping P = new GiftWrapping(Rotated);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(Rotated, true);
     Assert.That(P.Vrep.SetEquals(Rotated), "The set of vertices must be equal.");
   }
 
@@ -71,7 +71,7 @@ public class GW_Tests
       };
 
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
@@ -93,7 +93,7 @@ public class GW_Tests
       , new Vector(new double[] { -9.029417029821644, -7.414457472370579, 13.142282885765258 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
@@ -112,7 +112,7 @@ public class GW_Tests
       , new Vector(new double[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
@@ -127,7 +127,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(131));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -137,7 +137,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(132));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -147,7 +147,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(133));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -157,7 +157,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1312));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -167,7 +167,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1323));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -177,7 +177,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(13123));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -196,7 +196,7 @@ public class GW_Tests
     {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
-      GiftWrapping P = new GiftWrapping(S);
+      ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
       Assert.That(P.Vrep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
     }
   }
@@ -236,7 +236,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(141));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -247,7 +247,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(142));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -257,7 +257,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(143));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -267,7 +267,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1412));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -277,7 +277,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1423));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -287,7 +287,7 @@ public class GW_Tests
   {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(14123));
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -310,7 +310,7 @@ public class GW_Tests
      , new GRandomLC(141234)
       );
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
@@ -346,7 +346,7 @@ public class GW_Tests
       , Vector.LinearCombination(p1, 0.4, p4, 0.1)
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
   }
   #endregion
@@ -705,9 +705,9 @@ public class GW_Tests
       , new Vector(new double[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
-    P = new GiftWrapping(S_shuffled);
+    P = ConvexPolytop.CreateFromPoints(S_shuffled, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
   }
 
@@ -733,38 +733,9 @@ public class GW_Tests
       , new Vector(new double[] { -0.25, 1, -1 })
       };
 
-    GiftWrapping P = new GiftWrapping(S);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
-
-
-  //Не хватает точности double-ов для успешного решения этих задач
-  [Test]
-  public void VeryFlatSimplex()
-  {
-    List<Vector> Simplex = new List<Vector>()
-      {
-        new Vector(new double[] { -4.910117771921241, -1.4236623087021667, 0.854901237379504 })
-      , new Vector(new double[] { -3.1594402338749363, -4.895324262300349, 2.742933674655607 })
-      , new Vector(new double[] { -2.3793875187121767, 2.3500797192915526, -1.1974150399205774 })
-        // , new Vector(new double[] { 4.032485061099865, 4.553506423149609, -2.364029653222307 })
-      };
-
-    List<Vector> S = new List<Vector>(Simplex);
-    // Vector       p = new Vector(new double[] { 1.412740433333706, 2.802488742178694, -1.4210405632153025 });
-    // S.Add(p);
-
-    // var hpABC    = new HyperPlane(new AffineBasis(new List<Vector>() { S[1], S[2], S[0] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[2], S[index: 1], S[0] }));
-    // var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[index: 1], S[2] }));
-    var hpABC = new HyperPlane(new AffineBasis(new List<Vector>() { S[0], S[1], S[2] }));
-    var distABC = S.Select(s => hpABC.Eval(s));
-    Console.WriteLine(string.Join('\n', distABC));
-
-    // var P = GiftWrapping.WrapPolytop(S);
-    // Assert.That(P.Vertices.SetEquals(Simplex));
-  }
-
 
   /// <summary>
   /// Параллелепипед расположенный в первом квадранте
@@ -794,16 +765,6 @@ public class GW_Tests
   #endregion
 
 
-  /// <summary>
-  /// Aux procedure.
-  /// </summary>
-  /// <param name="S">The swarm to convexify.</param>
-  /// <param name="Answer">The final list of points.</param>
-  /// <param name="seed"></param>
-  /// <param name="PDim"></param>
-  /// <param name="nPoints"></param>
-  /// <param name="fID"></param>
-  /// <param name="needShuffle"></param>
   private static void Check(List<Vector> S
                           , List<Vector> Answer
                           , uint seed
@@ -812,8 +773,7 @@ public class GW_Tests
                           , List<int> fID
                           , bool needShuffle = false)
   {
-    SortedSet<Vector>? P = null;
-
+    ConvexPolytop? P;
     try
     {
       if (needShuffle)
@@ -823,7 +783,7 @@ public class GW_Tests
         Debug.Assert(origS.SetEquals(S));
       }
 
-      P = new GiftWrapping(S).Vrep;
+      P = ConvexPolytop.CreateFromPoints(S, true);
       Debug.Assert(P is not null, nameof(P) + " is null");
     }
     catch (Exception e)
@@ -838,7 +798,7 @@ public class GW_Tests
 
     try
     {
-      Assert.That(P.SetEquals(Answer), "The set of vertices must be equal.");
+      Assert.That(P.Vrep.SetEquals(Answer), "The set of vertices must be equal.");
     }
     catch (Exception e)
     {
@@ -870,7 +830,7 @@ public class GW_Tests
       Console.WriteLine("S.Shuffle(new RandomLC(seed));");
     }
     Console.WriteLine();
-    Console.WriteLine("GiftWrapping P = new GiftWrapping(S);");
+    Console.WriteLine("ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);");
     Console.WriteLine("Assert.That(P.Vrep.SetEquals(polytop));");
     Console.WriteLine("}");
     Console.WriteLine();
