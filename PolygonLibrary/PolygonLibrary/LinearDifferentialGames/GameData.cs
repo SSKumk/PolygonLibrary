@@ -305,10 +305,9 @@ public partial class Geometry<TNum, TConv>
 
       // Вычисляем вдоль всего моста выражения:  -dt*X(T,t_i)*B*P  и  dt*X(T,t_i)*C*Q
       for (t = T; Tools.GE(t, t0); t -= dt) {
-        TNum
-          t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        Ps[t] = ConvexPolytop.AsFLPolytop(P.Vertices.Select(pPoint => -dt * D[t1] * pPoint).ToSortedSet());
-        Qs[t] = ConvexPolytop.AsVPolytop(Q.Vertices.Select(qPoint => dt * E[t1] * qPoint).ToSortedSet(), false);
+        TNum t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+        Ps[t] = ConvexPolytop.CreateFromPoints(P.Vrep.Select(pPoint => -dt * D[t1] * pPoint).ToSortedSet(), true);
+        Qs[t] = ConvexPolytop.CreateFromPoints(Q.Vrep.Select(qPoint => dt * E[t1] * qPoint).ToSortedSet(), false);
       }
     }
 #endregion
@@ -388,7 +387,7 @@ public partial class Geometry<TNum, TConv>
               describeM += "DtnPolytop_";
               int           VsQnt    = _pr.ReadNumber<int>("MVsQnt");
               TNum[,]       Vs       = _pr.Read2DArray<TNum>("MPolytop", VsQnt, d);
-              ConvexPolytop Polytop  = ConvexPolytop.AsVPolytop(Array2DToSortedSet(Vs, VsQnt, d));
+              ConvexPolytop Polytop  = ConvexPolytop.CreateFromPoints(Array2DToSortedSet(Vs, VsQnt, d));
               string        BallType = _pr.ReadString("MBallType");
               describeM += $"Vs-Qnt{VsQnt}_{BallType}";
               int Theta = 10, Phi = 10;
@@ -453,7 +452,7 @@ public partial class Geometry<TNum, TConv>
         case SetType.RectParallel: {
           TNum[] left  = _pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
           TNum[] right = _pr.Read1DArray<TNum>($"{player}RectPRight", dim);
-          res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vertices;
+          res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vrep;
 
           // setTypeStr += $"-{Qnt}"; ???? А что сюда можно написать?
           break;
@@ -463,7 +462,7 @@ public partial class Geometry<TNum, TConv>
           int    Phi    = _pr.ReadNumber<int>($"{player}Phi");
           TNum[] Center = _pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum   Radius = _pr.ReadNumber<TNum>($"{player}Radius");
-          res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vertices;
+          res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vrep;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-R{Radius}";
 
@@ -474,7 +473,7 @@ public partial class Geometry<TNum, TConv>
           int    Phi            = _pr.ReadNumber<int>($"{player}Phi");
           TNum[] Center         = _pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum[] SemiaxesLength = _pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
-          res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vertices;
+          res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vrep;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength)}";
 
@@ -482,7 +481,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return ConvexPolytop.AsVPolytop(res ?? throw new InvalidOperationException($"Players {player} set is empty!"));
+      return ConvexPolytop.CreateFromPoints(res ?? throw new InvalidOperationException($"Players {player} set is empty!"));
     }
 
     /// <summary>

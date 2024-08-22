@@ -149,12 +149,12 @@ public partial class Geometry<TNum, TConv>
       // 5) Построить fLrep роя V(F-G)
       if (VRepFminusG.Count < 3)
       {
-        diffFG = ConvexPolytop.AsVPolytop(new Vector[] { Vector.Zero(1) });
+        diffFG = ConvexPolytop.CreateFromPoints(new Vector[] { Vector.Zero(1) });
 
         return false;
       }
 
-      diffFG = ConvexPolytop.AsFLPolytop(produceFL(VRepFminusG));
+      diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG));
 
       // timer.Stop();
       // Console.WriteLine($"Diff_VtoFL = {timer.Elapsed.TotalMilliseconds}");

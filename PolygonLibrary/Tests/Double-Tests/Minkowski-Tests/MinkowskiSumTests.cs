@@ -31,13 +31,13 @@ public class MinkowskiSum2D
     p2 = new Vector(new double[] { 0.5, 1 });
     p3 = new Vector(new double[] { 0, 0.5 });
 
-    pu3 = ConvexPolytop.AsFLPolytop(new List<Vector> { u3 });
-    su1 = ConvexPolytop.AsFLPolytop(new List<Vector> { u0, u1 });
-    su2 = ConvexPolytop.AsFLPolytop(new List<Vector> { u0, u2 });
-    su3 = ConvexPolytop.AsFLPolytop(new List<Vector> { u0, u3 });
-    su4 = ConvexPolytop.AsFLPolytop(new List<Vector> { u3, u4 });
+    pu3 = ConvexPolytop.CreateFromPoints(new List<Vector> { u3 });
+    su1 = ConvexPolytop.CreateFromPoints(new List<Vector> { u0, u1 });
+    su2 = ConvexPolytop.CreateFromPoints(new List<Vector> { u0, u2 });
+    su3 = ConvexPolytop.CreateFromPoints(new List<Vector> { u0, u3 });
+    su4 = ConvexPolytop.CreateFromPoints(new List<Vector> { u3, u4 });
 
-    qu1_GW = ConvexPolytop.AsFLPolytop
+    qu1_GW = ConvexPolytop.CreateFromPoints
       (
        new List<Vector>
          {
@@ -47,7 +47,7 @@ public class MinkowskiSum2D
          , u3
          }
       );
-    qp1_GW = ConvexPolytop.AsFLPolytop
+    qp1_GW = ConvexPolytop.CreateFromPoints
       (
        new List<Vector>
          {
@@ -60,7 +60,7 @@ public class MinkowskiSum2D
   }
 
   // private static FaceLattice MinkowskiSum.ByConvexHull(FaceLattice F, FaceLattice G)
-  //   => MinkowskiSum.ByConvexHull(ConvexPolytop.AsVPolytop(F.Vertices), ConvexPolytop.AsVPolytop(G.Vertices)).fLrep;
+  //   => MinkowskiSum.ByConvexHull(ConvexPolytop.CreateFromPoints(F.Vrep), ConvexPolytop.CreateFromPoints(G.Vrep)).fLrep;
 
 
   // Сумма точек
@@ -203,8 +203,8 @@ public class MinkowskiSum_hD
     List<Vector> q = Octahedron3D_list;
     q = Rotate(q, rotate3D_45XY);
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -236,8 +236,8 @@ public class MinkowskiSum_hD
     List<Vector> q = MakePointsOnSphere_3D(theta, 8, true, true);
     q = Rotate(q, MakeRotationMatrix(3, 1, 3, double.Pi / 2));
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -261,8 +261,8 @@ public class MinkowskiSum_hD
     List<Vector> p = Octahedron3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -277,8 +277,8 @@ public class MinkowskiSum_hD
     List<Vector> p = Pyramid3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -298,8 +298,8 @@ public class MinkowskiSum_hD
     List<Vector> p = Cube3D_list;
     List<Vector> q = Rotate(p, rotate3D_45XY);
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -319,8 +319,8 @@ public class MinkowskiSum_hD
     List<Vector> p = Cube4D_list;
     List<Vector> q = Rotate(p, rotate4D_45XY);
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop(p);
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop(q);
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(p);
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints(q);
 
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum = MinkowskiSum.BySandipDas(P, Q);
@@ -341,7 +341,7 @@ public class MinkowskiSum_hD
     var u2 = new Vector(new double[] { 0, 1, 1, 1 });
     var u3 = new Vector(new double[] { 1, 1, 1, 1 });
 
-    ConvexPolytop P = ConvexPolytop.AsFLPolytop
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints
       (
        new SortedSet<Vector>()
          {
@@ -351,7 +351,7 @@ public class MinkowskiSum_hD
          , p3
          }
       );
-    ConvexPolytop Q = ConvexPolytop.AsFLPolytop
+    ConvexPolytop Q = ConvexPolytop.CreateFromPoints
       (
        new SortedSet<Vector>()
          {
@@ -465,7 +465,7 @@ public class MinkowskiSum5D
       // перебираем всё остальное
       foreach (FaceLattice other in all_FL)
       {
-        yield return new TestCaseData(ConvexPolytop.AsFLPolytop(cube), ConvexPolytop.AsFLPolytop(other));
+        yield return new TestCaseData(ConvexPolytop.CreateFromFaceLattice(cube), ConvexPolytop.CreateFromFaceLattice(other));
       }
     }
   }

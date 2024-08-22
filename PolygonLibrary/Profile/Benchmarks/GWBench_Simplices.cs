@@ -19,7 +19,7 @@ public class GWBench_Simplices {
   [GlobalSetup]
   public void SetUp() {
     // simplex = ConvexPolytop.SimplexRND(dim);
-    simplex = ConvexPolytop.AsVPolytop(Simplex(dim, out _, new int[]{dim}, amount).ToHashSet());
+    simplex = ConvexPolytop.CreateFromPoints(Simplex(dim, out _, new int[]{dim}, amount).ToHashSet());
 
   }
 

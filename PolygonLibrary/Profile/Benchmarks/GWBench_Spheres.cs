@@ -30,7 +30,7 @@ public class GWBenchSpheres {
   public void SetUp() {
     var sphere = Sphere_list(dim, thetaPartition, phiPartition, 3);
     var S      = sphere.Union(SimplexRND(dim, out _, new int[] { dim }, amount - dim - 1));
-    polytop = ConvexPolytop.AsVPolytop(S.ToHashSet());
+    polytop = ConvexPolytop.CreateFromPoints(S.ToHashSet());
   }
 
 

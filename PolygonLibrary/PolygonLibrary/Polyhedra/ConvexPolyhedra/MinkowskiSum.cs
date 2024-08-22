@@ -31,7 +31,7 @@ public partial class Geometry<TNum, TConv>
     /// Returns a face lattice of the sum.
     /// </returns>
     public static ConvexPolytop ByConvexHull(ConvexPolytop P, ConvexPolytop Q)
-      => ConvexPolytop.AsFLPolytop(AlgSumPoints(P.Vertices, Q.Vertices));
+      => ConvexPolytop.CreateFromPoints(AlgSumPoints(P.Vrep, Q.Vrep));
 
     /// <summary>
     /// Computes the Minkowski sum of two polytopes via face lattice algorithm.
@@ -65,10 +65,10 @@ public partial class Geometry<TNum, TConv>
             HPs.Add(new HyperPlane(-makeOrth, -affinePQ.Origin[i]));
           }
 
-          return ConvexPolytop.AsHPolytop(HPs);
+          return ConvexPolytop.CreateFromHalfSpaces(HPs);
         }
 
-        return ConvexPolytop.AsFLPolytop(new List<Vector>() { P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint });
+        return ConvexPolytop.CreateFromPoints(new List<Vector>() { P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint });
       }
 
       // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
@@ -188,7 +188,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       if (isOnlyHRep) {
-        return ConvexPolytop.AsHPolytop
+        return ConvexPolytop.CreateFromHalfSpaces
           (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
       }
 
@@ -196,7 +196,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
       // Наполняем все k-грани точками снизу-вверх.
-      return ConvexPolytop.AsFLPolytop(new FaceLattice(FL).LinearVertexTransform(x => x));
+      return ConvexPolytop.CreateFromFaceLattice(new FaceLattice(FL).LinearVertexTransform(x => x));
     }
 
   }

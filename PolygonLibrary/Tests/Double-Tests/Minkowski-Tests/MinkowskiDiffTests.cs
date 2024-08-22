@@ -31,7 +31,7 @@ public class MinkowskiDiff3D
          double value = 0;
          for (int i = 0; i <= 3; i++)
          {
-           ConvexPolytop G = ConvexPolytop.AsVPolytop
+           ConvexPolytop G = ConvexPolytop.CreateFromPoints
              ([new Vector(new double[] { 0, 0, 0 }), new Vector(new double[] { 0, 0, value })]);
            ConvexPolytop? diff = MinkowskiDiff.Naive(F, G);
            switch (i)
@@ -74,7 +74,7 @@ public class MinkowskiDiff3D
          for (int i = 1; i <= 5; i++)
          {
            double value = 0.5 * i;
-           ConvexPolytop G = ConvexPolytop.AsVPolytop
+           ConvexPolytop G = ConvexPolytop.CreateFromPoints
              ([new Vector(new double[] { 0, 0, 0 }), new Vector(new double[] { 0, 0, value })]);
            ConvexPolytop? diff = MinkowskiDiff.Naive(F, G);
            switch (i)
@@ -109,7 +109,7 @@ public class MinkowskiDiff3D
   // public void Cyclic()
   // {
   //   ConvexPolytop F = ConvexPolytop.Cyclic(3, 100, 0.01);
-  //   ConvexPolytop? diff = MinkowskiDiff.Naive(F, ConvexPolytop.AsVPolytop(new SortedSet<Vector>() { new Vector(3) }));
+  //   ConvexPolytop? diff = MinkowskiDiff.Naive(F, ConvexPolytop.CreateFromPoints(new SortedSet<Vector>() { new Vector(3) }));
   // }
 
 }

@@ -35,7 +35,7 @@ public class MinkowskiDiff3D
          ddouble value = 0;
          for (int i = 0; i <= 3; i++)
          {
-           ConvexPolytop G = ConvexPolytop.AsVPolytop
+           ConvexPolytop G = ConvexPolytop.CreateFromPoints
              ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
            ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, G);
            ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, G);
@@ -90,7 +90,7 @@ public class MinkowskiDiff3D
          for (int i = 1; i <= 5; i++)
          {
            ddouble value = 0.5 * i;
-           ConvexPolytop G = ConvexPolytop.AsVPolytop
+           ConvexPolytop G = ConvexPolytop.CreateFromPoints
              ([new Vector(new ddouble[] { 0, 0, 0 }), new Vector(new ddouble[] { 0, 0, value })]);
            ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, G);
            ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, G);
@@ -131,7 +131,7 @@ public class MinkowskiDiff3D
   public void Cyclic()
   {
     ConvexPolytop F = ConvexPolytop.Cyclic(3, 100, 0.01);
-    ConvexPolytop point = ConvexPolytop.AsVPolytop(new SortedSet<Vector>() { new Vector(3) });
+    ConvexPolytop point = ConvexPolytop.CreateFromPoints(new SortedSet<Vector>() { new Vector(3) });
 
     ConvexPolytop? diff_naive = MinkowskiDiff.Naive(F, point);
     ConvexPolytop? diff_geometric = MinkowskiDiff.Geometric(F, point);

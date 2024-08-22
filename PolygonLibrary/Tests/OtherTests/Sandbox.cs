@@ -56,14 +56,14 @@ public class Sandbox {
     // ConvexPolytop? diff = MinkowskiDiff.Naive(P, Q);
     // Console.WriteLine($"diff is null = {diff is null}");
 
-    // ConvexPolytop trapz = ConvexPolytop.AsHPolytop(new List<Vector>()
+    // ConvexPolytop trapz = ConvexPolytop.CreateFromHalfSpaces(new List<Vector>()
     //   {
     //     new Vector(new ddouble[]{0,2}),
     //     new Vector(new ddouble[]{0,4}),
     //     new Vector(new ddouble[]{1,4}),
     //     new Vector(new ddouble[]{3,2}),
     //   });
-    // ConvexPolytop triag = ConvexPolytop.AsHPolytop(new List<Vector>()
+    // ConvexPolytop triag = ConvexPolytop.CreateFromHalfSpaces(new List<Vector>()
     //   {
     //     new Vector(new ddouble[]{0,0.6}),
     //     new Vector(new ddouble[]{1,1}),
@@ -81,7 +81,7 @@ public class Sandbox {
     // Console.WriteLine($"6 | {string.Join(' ', ConvexPolytop.Cyclic(6,64,0.01).FVector)}");
 
     // ConvexPolytop ellips = ConvexPolytop.Ellipsoid(3, 20, 100, Vector.Zero(3), new Vector(new ddouble[] { 1, 2, 3 }));
-    // ConvexPolytop cube   = ConvexPolytop.AsVPolytop(Cube01(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());
+    // ConvexPolytop cube   = ConvexPolytop.CreateFromPoints(Cube01(3, out _, new int[] { 1, 2, 3 }, 20).ToHashSet());
 
     // ConvexPolytop cube  = ConvexPolytop.RectParallel(-Vector.Ones(3), Vector.Ones(3));
     // ConvexPolytop candy = ConvexPolytop.Sphere(3, 2, 4, Vector.Zero(3), 1);
@@ -98,7 +98,7 @@ public class Sandbox {
   }
 
   public static void PrVsObj(StreamWriter sr, ConvexPolytop P) {
-    foreach (Vector v in P.Vertices) {
+    foreach (Vector v in P.Vrep) {
       sr.WriteLine($"v {v.ToStrSepBySpace()}");
     }
   }
