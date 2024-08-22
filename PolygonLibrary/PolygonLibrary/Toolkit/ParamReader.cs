@@ -8,10 +8,16 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  // todo Написать метод SkipObject() (чтобы переходить к следующему)
   /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>
   public class ParamReader {
+
+    /// <summary>
+    /// The path to the file from which data is read.
+    /// </summary>
+    public readonly string filePath;
 
     /// <summary>
     /// Enumerable type of the current state of the engine
@@ -61,11 +67,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     private State state;
 
+
     /// <summary>
     /// The only constructor connecting the object to the given file
     /// </summary>
     /// <param name="fileName">The name of the file to be read</param>
     public ParamReader(string fileName) {
+      filePath = fileName;
       StreamReader sr = new StreamReader(fileName);
       data = sr.ReadToEnd();
       sr.Close();
@@ -156,7 +164,6 @@ public partial class Geometry<TNum, TConv>
       return objs;
     }
 
-
     /// <summary>
     /// Method for reading two-dimensional array.
     /// </summary>
@@ -196,15 +203,34 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Reads the collection of vectors.
+    /// Reads a collection of vectors from a specified source.
+    /// Each vector may have a different length.
     /// </summary>
-    /// <param name="name">The name of the collection of vectors.</param>
-    /// <returns>The collection of vectors.</returns>
-    public List<Vector> ReadVectors(string name)
-      => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray())).ToList();
+    /// <param name="name">The identifier for the collection of vectors to be read.</param>
+    /// <returns>A list of <see cref="Vector"/> objects.</returns>
+    public List<Vector> ReadVectors(string name) => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray())).ToList();
+
 
     /// <summary>
-    /// Method for reading two-dimensional array.
+    /// Reads a collection of hyper planes defined by normal and constant term from a specified source.
+    /// Each plane may have a different length of its normal.
+    /// </summary>
+    /// <param name="name">The identifier for the collection of hyper planes to be read.</param>
+    /// <returns>A list of <see cref="HyperPlane"/> objects.</returns>
+    public List<HyperPlane> ReadHyperPlanes(string name) {
+      List<HyperPlane> HPs     = new List<HyperPlane>();
+      List<List<TNum>> hp_list = Read2DJaggedArray<TNum>(name);
+      foreach (List<TNum> hp in hp_list) {
+        TNum[] v = new TNum[hp.Count - 1];
+        hp.CopyTo(0, v, 0, hp.Count - 1);
+        HPs.Add(new HyperPlane(new Vector(v), hp[^1]));
+      }
+
+      return HPs;
+    }
+
+    /// <summary>
+    /// Method for reading a two-dimensional array.
     /// </summary>
     /// <typeparam name="T">The type of array elements must be IParsable: bool, int, double, string, etc.</typeparam>
     /// <param name="name">The name of the object.</param>
@@ -235,7 +261,8 @@ public partial class Geometry<TNum, TConv>
         state = State.ReadingTerminator;
         if (j == rows - 1) {
           ReadTerminator(name, "}");
-        } else {
+        }
+        else {
           ReadTerminator(name, ",");
         }
       }
@@ -258,7 +285,8 @@ public partial class Geometry<TNum, TConv>
         while (data[ind] != '\n')
           ind++;
         ind++;
-      } else
+      }
+      else
         throw new Exception("There is no one row comment!");
     }
 
@@ -271,7 +299,8 @@ public partial class Geometry<TNum, TConv>
         while (data[ind] != '*' || data[ind + 1] != '/')
           ind++;
         ind += 2;
-      } else
+      }
+      else
         throw new Exception("There is no multirow comment!");
     }
 
@@ -336,7 +365,8 @@ public partial class Geometry<TNum, TConv>
               ind++;
               state        = State.TokenRead;
               flagContinue = false;
-            } else
+            }
+            else
               throw new Exception("Erroneous symbol '" + data[ind] + "' during reading the terminator of the object " + name);
 
             break;
@@ -414,7 +444,8 @@ public partial class Geometry<TNum, TConv>
                   ind++;
                   state        = State.TokenRead;
                   flagContinue = false;
-                } else {
+                }
+                else {
                   readData += data[ind];
                   ind++;
                 }
@@ -483,48 +514,6 @@ public partial class Geometry<TNum, TConv>
       return readData;
     }
 
-    // /// <summary>
-    // /// Method that reads a collection of objects given in '{...}' and separated by comma
-    // /// </summary>
-    // /// <typeparam name="T">The type of array elements must be IParsable: int, double, string, etc.</typeparam>
-    // /// <param name="name">The name of the object</param>
-    // /// <param name="elemQnt">The number of elements in the array</param>
-    // /// <returns>Lazy enumerable of the read objects</returns>
-    // private IEnumerable<T> ReadArrayRow<T>(string name, int elemQnt) where T : IParsable<T> {
-    //   Type elemType = typeof(T);
-    //
-    //   // Passing up to the opening "{"
-    //   state = State.ReadingTerminator;
-    //   ReadTerminator(name, "{");
-    //
-    //   // Reading and parsing elements
-    //   string readData;
-    //   if (elemType == typeof(String)) {
-    //     for (int i = 0; i < elemQnt; i++) {
-    //       state    = State.ReadingString;
-    //       readData = ReadStringToken(name);
-    //
-    //       ReadTerminator(name, i == elemQnt - 1 ? '}' : ',');
-    //
-    //       yield return (T)(object)readData;
-    //     }
-    //   } else {
-    //     for (int i = 0; i < elemQnt; i++) {
-    //       state    = State.ReadingToken;
-    //       readData = ReadToken(name, i == elemQnt - 1 ? '}' : ',');
-    //
-    //       if (!T.TryParse(readData, CultureInfo.InvariantCulture, out T? result)) {
-    //         throw new Exception
-    //           (
-    //            "Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " + elemType.FullName + "!"
-    //           );
-    //       }
-    //
-    //       yield return result;
-    //     }
-    //   }
-    // }
-
     /// <summary>
     /// Method that reads a collection of objects given in '{...}' and separated by comma
     /// </summary>
@@ -562,7 +551,8 @@ public partial class Geometry<TNum, TConv>
 
           yield return (T)(object)readData;
         }
-      } else {
+      }
+      else {
         int i = 0;
         while (flagContinue) {
           state    = State.ReadingToken;
