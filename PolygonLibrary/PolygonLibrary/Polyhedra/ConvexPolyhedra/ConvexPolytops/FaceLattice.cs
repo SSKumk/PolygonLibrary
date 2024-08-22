@@ -36,9 +36,9 @@ public partial class Geometry<TNum, TConv>
     public int NumberOfNonZeroKFaces => NumberOfKFaces - Lattice[0].Count;
 
     /// <summary>
-    /// Gets the total number of all k-faces in the lattice, except 0-faces.
+    /// Gets the total number of all k-faces in the lattice.
     /// </summary>
-    /// <value>A number of nonzero k-faces in the lattice.</value>
+    /// <value>A number of all k-faces in the lattice.</value>
     public int NumberOfKFaces => Lattice.Sum(lvl => lvl.Count);
 #endregion
 
