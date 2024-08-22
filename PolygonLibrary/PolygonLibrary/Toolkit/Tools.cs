@@ -334,14 +334,6 @@ public partial class Geometry<TNum, TConv>
       }
 
       return -x;
-      // if (GT(x)) {
-      //   return x;
-      // }
-      // if (LT(x)) {
-      //   return -x;
-      // }
-      //
-      // return Zero;
     }
 
     /// <summary>
