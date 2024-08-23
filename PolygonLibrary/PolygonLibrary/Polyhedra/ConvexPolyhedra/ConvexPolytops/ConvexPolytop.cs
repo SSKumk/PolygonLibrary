@@ -108,7 +108,7 @@ public partial class Geometry<TNum, TConv>
               _Vrep = new SortedSet<Vector>(FLrep.Vertices);
             }
             else if (_Hrep is not null) {
-              _Vrep = HRepToVRep_Geometric(Hrep);
+              _Vrep = HrepToVrep_Geometric(Hrep);
             }
           }
 
@@ -256,13 +256,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="pr">The parameter reader.</param>
     /// <param name="action">Specifies the action to be performed on the polytop (e.g., convexify or eliminate redundancies).</param>
     /// <returns>The constructed convex polytop.</returns>
-    public static ConvexPolytop FromReader(ParamReader pr, PolytopAction action = PolytopAction.None) {
+    public static ConvexPolytop CreateFromReader(ParamReader pr, PolytopAction action = PolytopAction.None) {
       string nameRep = pr.ReadString("Rep");
 
       switch (nameRep) {
         case "Vrep":        return CreateFromVRep(pr, action == PolytopAction.Convexify);
         case "Hrep":        return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
-        case "FLrep": return CreateFromFLrep(pr);
+        case "FLrep":       return CreateFromFLrep(pr);
+        case "FaceLattice": return CreateFromFLrep(pr); // todo потом можно будет убрать, когда данные в новом формате нагенерятся
         default:            throw new ArgumentException($"Unsupported representation type: {nameRep}");
       }
     }
@@ -764,10 +765,37 @@ public partial class Geometry<TNum, TConv>
     /// <param name="hp">The hyperplane to section P.</param>
     /// <returns>The section of the polytop P.</returns>
     public ConvexPolytop SectionByHyperPlane(HyperPlane hp) {
-      HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
-      List<HyperPlane> hrep = new List<HyperPlane>(Hrep) { hp, hp_ };
+      HyperPlane hp_ = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
+      // List<HyperPlane> hrep = new List<HyperPlane>(Hrep) { hp, hp_ };
+      List<HyperPlane> xList = new List<HyperPlane> { hp };
+      xList.AddRange(Hrep);
+      SortedSet<Vector> x = HrepToVrep_Geometric(xList);
 
-      return CreateFromPoints(HRepToVRep_Geometric(hrep).ToSortedSet(), true);
+      List<HyperPlane> yList = new List<HyperPlane> { hp_ };
+      yList.AddRange(Hrep);
+      SortedSet<Vector> y = HrepToVrep_Geometric(yList);
+
+
+
+      // return CreateFromPoints(HrepToVrep_Geometric(hrep).ToSortedSet(), false);
+
+      x.IntersectWith(y);
+
+      return CreateFromPoints(x);
+    }
+
+    /// <summary>
+    /// Creates a new convex polytope in d-dimensional space by intersecting the given d-dimensional convex polytope P with a specified hyperplane.
+    /// </summary>
+    /// <param name="hp">The hyperplane to section P.</param>
+    /// <returns>The section of the polytop P.</returns>
+    public ConvexPolytop SectionByHyperPlaneNaive(HyperPlane hp) {
+      HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
+      List<HyperPlane> hrep = new List<HyperPlane> { hp, hp_ };
+      hrep.AddRange(Hrep);
+
+
+      return CreateFromPoints(HRepToVRep_Naive(hrep).ToSortedSet(), false);
     }
 
     /// <summary>
@@ -780,7 +808,7 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_  = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> hrep = new List<HyperPlane>(P.Hrep) { hp, hp_ };
 
-      return CreateFromPoints(hp.AffBasis.ProjectPoints(HRepToVRep_Geometric(hrep)).ToSortedSet(), true);
+      return CreateFromPoints(hp.AffBasis.ProjectPoints(HrepToVrep_Geometric(hrep)).ToSortedSet(), true);
     }
 #endregion
 
@@ -893,8 +921,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    /// todo ОНА НЕ РАБОТАЕТ ДЛЯ d > 3 !!!!!!!!!!
-    public static SortedSet<Vector> HRepToVRep_Geometric(List<HyperPlane> HPs) {
+    /// todo ОНА НЕ РАБОТАЕТ если в Hrep есть две гиперплоскости с противоположными нормалями и свободными членами! (думать!)
+    public static SortedSet<Vector> HrepToVrep_Geometric(List<HyperPlane> HPs) {
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               m  = HPs.Count;
       int               d  = HPs.First().Normal.Dim;
@@ -908,7 +936,7 @@ public partial class Geometry<TNum, TConv>
       }
       Vs.Add(firstPoint);
 
-      Console.WriteLine("1 stage done");
+      // Console.WriteLine($"1 stage done: Vs = {Vs.First()}");
 
       // Этап 2. Поиск всех остальных вершин
       Queue<(Vector, List<HyperPlane>)> process = new Queue<(Vector, List<HyperPlane>)>();
@@ -994,9 +1022,6 @@ public partial class Geometry<TNum, TConv>
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
-
-              Console.WriteLine(Vs.Count);
-
               process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
             }
           }
