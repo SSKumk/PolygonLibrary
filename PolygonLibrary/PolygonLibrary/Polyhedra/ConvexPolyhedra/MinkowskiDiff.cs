@@ -18,7 +18,7 @@ public partial class Geometry<TNum, TConv>
               , out ConvexPolytop diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
-              , ConvexPolytop.HRepToVRep_Naive
+              , ConvexPolytop.HrepToVrep_Naive
               , GiftWrapping.WrapFaceLattice
                )
                ? diffFG
@@ -34,7 +34,7 @@ public partial class Geometry<TNum, TConv>
               , out ConvexPolytop diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
-              , ConvexPolytop.HRepToVRep_Geometric
+              , ConvexPolytop.HrepToVrep_Geometric
               , GiftWrapping.WrapFaceLattice
                )
                ? diffFG

@@ -27,10 +27,10 @@ public class HRepToVRepBench {
   }
 
   [Benchmark]
-  public void H2V_Naive() => ConvexPolytop.HRepToVRep_Naive(P.Hrep);
+  public void H2V_Naive() => ConvexPolytop.HrepToVrep_Naive(P.Hrep);
 
   [Benchmark]
-  public void H2V_Geometric() => ConvexPolytop.HRepToVRep_Geometric(P.Hrep);
+  public void H2V_Geometric() => ConvexPolytop.HrepToVrep_Geometric(P.Hrep);
 
 
   // public class Program {

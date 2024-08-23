@@ -795,7 +795,7 @@ public partial class Geometry<TNum, TConv>
       hrep.AddRange(Hrep);
 
 
-      return CreateFromPoints(HRepToVRep_Naive(hrep).ToSortedSet(), false);
+      return CreateFromPoints(HrepToVrep_Naive(hrep).ToSortedSet(), false);
     }
 
     /// <summary>
@@ -885,7 +885,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    public static SortedSet<Vector> HRepToVRep_Naive(List<HyperPlane> HPs) {
+    public static SortedSet<Vector> HrepToVrep_Naive(List<HyperPlane> HPs) {
       int m = HPs.Count;
       int d = HPs.First().Normal.Dim;
 

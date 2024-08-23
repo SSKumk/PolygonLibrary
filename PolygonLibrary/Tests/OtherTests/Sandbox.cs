@@ -49,7 +49,7 @@ public class Sandbox {
       , new HyperPlane(new Vector(new double[] { -1, -2, 0, 0, 1 }), -2)
       , new HyperPlane(new Vector(new double[] { 1, 2, 0, 0, -1 }), 2)
       };
-    var x = ConvexPolytop.HRepToVRep_Naive(hp);
+    var x = ConvexPolytop.HrepToVrep_Naive(hp);
     Console.WriteLine(string.Join('\n', x));
 
     // ConvexPolytop Q = ConvexPolytop.Cyclic(5, 12, 1.457);
