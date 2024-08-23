@@ -71,23 +71,21 @@ public partial class Geometry<TNum, TConv>
         workDir += '/';
       }
 
-      if (!Directory.Exists(workDir)) { //Cur dir must be in the work directory
-        Directory.CreateDirectory(workDir);
-      }
       this.fileName = fileName;
       gd            = new GameData(this.workDir + fileName + ".c");
-      W             = new StableBridge(new CauchyMatrix.TimeComparer());
+      Directory.CreateDirectory(workDir + gd.ProblemName);
 
-      foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
-        using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.tsection");
-        pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
-        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-      }
-      foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
-        using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.tsection");
-        pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
-        Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-      }
+      W             = new StableBridge(new CauchyMatrix.TimeComparer());
+      // foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
+      //   using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.tsection");
+      //   pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
+      //   P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
+      // }
+      // foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
+      //   using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.tsection");
+      //   pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
+      //   Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
+      // }
     }
 
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
@@ -125,7 +123,8 @@ public partial class Geometry<TNum, TConv>
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0)) {
         if (isNeedWrite) {
-          using ParamWriter pr = new ParamWriter($"{filesDir}/{valType}/{algType}/{eps:e0}/{TConv.ToDouble(t):F2}){fileName}.cpolytop");
+          using ParamWriter pr = new ParamWriter
+            ($"{filesDir}/{valType}/{algType}/{eps:e0}/{TConv.ToDouble(t):F2}){fileName}.cpolytop");
           W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
 
 
