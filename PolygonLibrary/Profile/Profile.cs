@@ -18,11 +18,19 @@ class Program {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     Tools.Eps = 1e-16;
 
-    int           dim   = 5;
-    ConvexPolytop cube = ConvexPolytop.Cube01_VRep(dim);
-    Console.WriteLine(cube.FVector[0]);
+    int           dim      = 4;
+    ConvexPolytop cube     = ConvexPolytop.Cube01_VRep(dim);
+    string        filePath = $"{pathData}Temp/cube3d.cpolytop";
+    ParamWriter   pw       = new ParamWriter(filePath);
+    cube.WriteIn(pw, ConvexPolytop.Rep.FLrep);
+    pw.Close();
+    ParamReader   pr       = new ParamReader(filePath);
+    ConvexPolytop cube_read = ConvexPolytop.FromReader(pr);
+    Console.WriteLine(cube_read.FLrep.Lattice[^2].Max.InnerPoint);
+
 
     // Console.WriteLine(cube.SectionByHyperPlane(new HyperPlane(Vector.MakeOrth(dim,1),0.5)).PolytopDim);
+
 
 
 
@@ -33,7 +41,7 @@ class Program {
     // string        filePath = $"{materialdot_path}/1.00)materialDot1-0.9-supG";
     // ParamReader   pr       = new ParamReader($"{filePath}.cpolytop");
     // ParamWriter   pw       = new ParamWriter(filePath);
-    // ConvexPolytop P        = ConvexPolytop.AsFLPolytop(pr);
+    // ConvexPolytop P        = ConvexPolytop.CreateFromFaceLattice(pr);
     // P.WriteIn(pw,ConvexPolytop.Rep.FLrep);
 
 
@@ -50,8 +58,8 @@ class Program {
     //    ParamReader prFirst  = new ParamReader($"{materialdot_path}/double/Naive/1e-008/{t:F2})materialDot1-0.9-supG.cpolytop");
     //   ParamReader prSecond = new ParamReader($"{materialdot_path}/double/Geometric/1e-008/{t:F2})materialDot1-0.9-supG.cpolytop");
     //
-    //   ConvexPolytop first  = ConvexPolytop.AsFLPolytop(prFirst);
-    //   ConvexPolytop second = ConvexPolytop.AsFLPolytop(prSecond);
+    //   ConvexPolytop first  = ConvexPolytop.CreateFromFaceLattice(prFirst);
+    //   ConvexPolytop second = ConvexPolytop.CreateFromFaceLattice(prSecond);
     //
     //   Console.WriteLine(first.Vrep.SetEquals(second.Vrep));
     //   List<Vector> lnaive     = new List<Vector>(first.Vrep).Order().ToList();
