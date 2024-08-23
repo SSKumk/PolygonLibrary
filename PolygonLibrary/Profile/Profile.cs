@@ -18,15 +18,27 @@ class Program {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     Tools.Eps = 1e-16;
 
-    int           dim      = 4;
-    ConvexPolytop cube     = ConvexPolytop.Cube01_VRep(dim);
-    string        filePath = $"{pathData}Temp/cube3d.cpolytop";
-    ParamWriter   pw       = new ParamWriter(filePath);
-    cube.WriteIn(pw, ConvexPolytop.Rep.FLrep);
-    pw.Close();
-    ParamReader   pr       = new ParamReader(filePath);
-    ConvexPolytop cube_read = ConvexPolytop.FromReader(pr);
-    Console.WriteLine(cube_read.FLrep.Lattice[^2].Max.InnerPoint);
+
+    string materialdot_path =
+      pathData + "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2/";
+    // string        filePath = $"{materialdot_path}/5.80)materialDot1-0.9-supG";
+    // ParamReader   pr       = new ParamReader($"{filePath}.cpolytop");
+    // ConvexPolytop p          = ConvexPolytop.CreateFromReader(pr);
+    // var           x          = ConvexPolytop.HrepToVrep_Geometric(p.Hrep);
+    // var           y          = ConvexPolytop.HRepToVRep_Naive(p.Hrep);
+    //
+    // if (!x.SetEquals(y)) {
+    //   throw new ArithmeticException("AAAAAA");
+    // }
+
+    // ConvexPolytop cube     = ConvexPolytop.Cube01_VRep(dim);
+    // string        filePath = $"{pathData}Temp/cube3d.cpolytop";
+    // ParamWriter   pw       = new ParamWriter(filePath);
+    // cube.WriteIn(pw, ConvexPolytop.Rep.FLrep);
+    // pw.Close();
+    // ParamReader   pr       = new ParamReader(filePath);
+    // ConvexPolytop cube_read = ConvexPolytop.FromReader(pr);
+    // Console.WriteLine(cube_read.FLrep.Lattice[^2].Max.InnerPoint);
 
 
     // Console.WriteLine(cube.SectionByHyperPlane(new HyperPlane(Vector.MakeOrth(dim,1),0.5)).PolytopDim);
@@ -35,14 +47,7 @@ class Program {
 
 
 
-    //
-    // string materialdot_path =
-    //   pathData + "Ep_MaterialDot-1-0.9_T[4,7]_P#RectParallel_Q#RectParallel_M#DtnOrigin_Ball_2-T4-P100_-CMax2/";
-    // string        filePath = $"{materialdot_path}/1.00)materialDot1-0.9-supG";
-    // ParamReader   pr       = new ParamReader($"{filePath}.cpolytop");
-    // ParamWriter   pw       = new ParamWriter(filePath);
-    // ConvexPolytop P        = ConvexPolytop.CreateFromFaceLattice(pr);
-    // P.WriteIn(pw,ConvexPolytop.Rep.FLrep);
+
 
 
     // ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
@@ -106,8 +111,9 @@ class Program {
 
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
+    SolverLDG solverLdg = new SolverLDG(pathData, "oscillator-1-0.9");
 
-    // solverLdg.Solve(false, true, false);
+    solverLdg.Solve(false, true, false);
     // solverLdg.Solve(true, true, false);
   }
 
