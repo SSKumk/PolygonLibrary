@@ -26,10 +26,10 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly List<Vector> Cube5D_list       = Cube_list(5);
 
 
-  public static readonly ConvexPolytop Cube3D       = ConvexPolytop.CreateFromPoints(CubeGW(3).Vrep);
-  public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(CubeGW(4).Vrep);
-  public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(Simplex(3).Vrep);
-  public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(Simplex(4).Vrep);
+  public static readonly ConvexPolytop Cube3D       = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Cube_list(3)));
+  public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Cube_list(4)));
+  public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Simplex(3, out _)));
+  public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Simplex(4, out _)));
   public static readonly ConvexPolytop Octahedron3D = ConvexPolytop.CreateFromPoints(Octahedron3D_list.ToHashSet());
 
 
