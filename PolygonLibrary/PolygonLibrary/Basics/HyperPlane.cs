@@ -37,7 +37,8 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Affine basis is null. Can't construct the Normal.");
 
             LinearBasis normalBasis = new LinearBasis(Normal);
-            (Matrix Q, _) = QRDecomposition.ByReflection(normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
+            (Matrix Q, _) = QRDecomposition.ByReflection
+              (normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
 
             LinearBasis lb = new LinearBasis(Normal.Dim, 0);
             for (int i = 1; i < SpaceDim; i++) {
@@ -118,11 +119,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
     public HyperPlane(Vector normal, TNum constant) {
+      Origin      = new Vector(normal * constant);
+      SubSpaceDim = normal.Dim - 1;
       TNum lengthN = normal.Length;
       _normal       = normal / lengthN;
-      SubSpaceDim   = normal.Dim - 1;
       _constantTerm = constant / lengthN;
-      Origin        = new Vector(Normal * constant);
 
 
 #if DEBUG
