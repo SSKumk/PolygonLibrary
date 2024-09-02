@@ -35,22 +35,20 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const uint seed    = 3039689583;
-    const int  PDim    = 3;
-    const int  nPoints = 5000;
-    List<int>  fID     = new List<int>() { 1 };
+    const uint seed    = 0;
+    const int  PDim    = 4;
+    const int  nPoints = 2000;
+    List<int>  fID     = new List<int>() { };
+    GRandomLC  random  = new GRandomLC(0);
 
-    GRandomLC random = new GRandomLC(seed);
-
-    List<Vector> S = Cube01(PDim, out List<Vector> polytop, fID, nPoints, random);
-    ShiftAndRotate(PDim, ref polytop, ref S, random);
+    List<Vector> S = Simplex(PDim, out List<Vector> polytop, fID, nPoints, random);
+    ShiftAndRotate(4, ref polytop, ref S, random);
     S.Shuffle(random);
-
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(6), $"The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), $"The number of faces of the cube must be equal to 27.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(5), $"The number of facets of the cube must be equal to 5.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), $"The number of faces of the cube must be equal to 31.");
   }
 #endregion
 
@@ -235,11 +233,7 @@ public class GW_Tests {
       Assert.That(P.Vrep.SetEquals(S), $"{nameOfTest}: The set of vertices must be equal.\nSeed: {saveSeed}");
       Assert.That(P.Hrep, Has.Count.EqualTo(numberOfHRep), $"The number of facets of the cube must be equal to {numberOfHRep}.");
       Assert.That
-        (
-         P.FLrep.NumberOfKFaces
-       , Is.EqualTo(numberOfFVec)
-       , $"The number of faces of the cube must be equal to {numberOfFVec}."
-        );
+        (P.FLrep.NumberOfKFaces, Is.EqualTo(numberOfFVec), $"The number of faces of the cube must be equal to {numberOfFVec}.");
     }
   }
 
@@ -729,16 +723,13 @@ public class GW_Tests {
 
     var hpABCD = new HyperPlane
       (
-       new AffineBasis
-         (
-          new List<Vector>()
-            {
-              S[0]
-            , S[2]
-            , S[3]
-            , S[4]
-            }
-         )
+       new List<Vector>()
+         {
+           S[0]
+         , S[2]
+         , S[3]
+         , S[4]
+         }
       );
     var distABCD = S.Select(s => hpABCD.Eval(s));
 
@@ -1004,7 +995,7 @@ public class GW_Tests {
     Console.WriteLine();
     Console.WriteLine("List<Vector> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Vector> polytop, fID, nPoints, random);");
     Console.WriteLine($"ShiftAndRotate({PDim}, ref polytop, ref S, random);");
-    Console.WriteLine("Shuffle(random);");
+    Console.WriteLine("S.Shuffle(random);");
 
     Console.WriteLine();
     Console.WriteLine("ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);");
