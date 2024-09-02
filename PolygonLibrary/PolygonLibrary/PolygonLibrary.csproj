@@ -40,10 +40,9 @@
         <Compile Include="Polygons\Polyline.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubNonSimplex.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPolytop.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensionalEdge.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint2D.cs" />
-        <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubSimplex.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubZeroDimensional.cs" />
