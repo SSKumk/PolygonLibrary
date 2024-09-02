@@ -25,13 +25,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public override SortedSet<SubPoint> Vertices { get; }
 
     /// <summary>
-    /// Gets the vertices list of the polygon by order from plane GW procedure.
-    /// </summary>
-    public Vector[] VerticesInOrder { get; }
-
-    private SubPoint[] VerticesInOrderAsSP { get; }
-
-    /// <summary>
     /// Gets the faces of the polygon.
     /// </summary>
     public override SortedSet<BaseSubCP>? Faces { get; }
@@ -45,7 +38,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
-    /// <param name="Vs">The vertices list of the polygon given in clockwise or counter-clockwise order.</param>
+    /// <param name="Vs">The vertices list of the polygon.</param>
     public SubTwoDimensional(IReadOnlyList<SubPoint> Vs) {
       Debug.Assert
         (
@@ -54,9 +47,6 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         );
 
       Vertices            = new SortedSet<SubPoint>(Vs);
-      VerticesInOrder     = Vs.Select(v => new Vector(v.GetRootVertex())).ToArray();
-      VerticesInOrderAsSP = Vs.ToArray();
-
       SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
 
       for (int i = 0; i < Vs.Count - 1; i++) {
@@ -70,7 +60,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns>The converted polygon in the previous space.</returns>
     public override BaseSubCP ToPreviousSpace() {
-      SubPoint[] Vs = VerticesInOrderAsSP.Select(v => v.Parent).ToArray()!;
+      SubPoint[] Vs = Vertices.Select(v => v.Parent).ToArray()!;
 
       return new SubTwoDimensional(Vs);
     }
@@ -81,7 +71,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubTwoDimensional(VerticesInOrderAsSP.Select(s => s.ProjectTo(aBasis)).ToArray());
+      return new SubTwoDimensional(Vertices.Select(s => s.ProjectTo(aBasis)).ToArray());
     }
 
   }
