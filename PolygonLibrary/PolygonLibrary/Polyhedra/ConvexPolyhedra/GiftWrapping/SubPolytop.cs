@@ -7,7 +7,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// The polytop that is not a simplex in d-dimensional space (3 and higher dimension).
   /// </summary>
-  internal class SubNonSimplex : BaseSubCP {
+  internal class SubPolytop : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the polytop.
@@ -43,31 +43,25 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <returns></returns>
     public override BaseSubCP ToPreviousSpace() {
       SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
-      return new SubNonSimplex(faces, FaceIncidence!);
+      return new SubPolytop(faces, FaceIncidence!);
     }
 
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
       IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(aBasis));
       SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
 
-      return new SubNonSimplex(faces, FaceIncidence!, new SortedSet<SubPoint>(Vs));
+      return new SubPolytop(faces, FaceIncidence!, new SortedSet<SubPoint>(Vs));
     }
 
     /// <summary>
-    /// Construct a new instance of the <see cref="SubNonSimplex"/> class based on it's faces.
+    /// Construct a new instance of the <see cref="SubPolytop"/> class based on it's faces.
     /// </summary>
     /// <param name="faces">Faces to construct the convex polytop</param>
     /// <param name="incidence">Information about face incidence.</param>
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
-    public SubNonSimplex(SortedSet<BaseSubCP> faces, SubIncidenceInfo incidence, SortedSet<SubPoint>? Vs = null) {
+    public SubPolytop(SortedSet<BaseSubCP> faces, SubIncidenceInfo incidence, SortedSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
       Faces = faces;
-
-      // SubIncidenceInfo faceIncidence = new SubIncidenceInfo();
-      //
-      // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> pair in incidence) {
-      //   faceIncidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-      // }
 
       if (Vs is null) {
         Vs = new SortedSet<SubPoint>();
