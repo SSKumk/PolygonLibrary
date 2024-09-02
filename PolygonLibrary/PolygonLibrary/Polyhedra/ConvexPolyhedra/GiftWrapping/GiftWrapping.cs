@@ -195,10 +195,8 @@ public partial class Geometry<TNum, TConv>
 
           return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToArray());
         }
-        // if (S.Count == spaceDim + 1) {
-        //   // Отдельно обработали случай симплекса.
-        // todo ЕМУ НАДО ПРАВИЛЬНЫМ ОБРАЗОМ ВЫСТАВИТЬ НОРМАЛИ К ГРАНЯМ!!!
-        //   return new SubSimplex(S);
+        // if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
+        //  // todo А что делать в случае симплекса? 1. Что с нормалями к гипер-граням?
         // }
 
         // Создаём начальную грань. (Либо берём, если она передана).
@@ -274,12 +272,7 @@ public partial class Geometry<TNum, TConv>
         foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
           incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
         }
-        // if (buildFaces.Count == spaceDim + 1 && buildFaces.All(F => F.Type == SubCPType.Simplex)) { //todo нужна ли вторая часть???
-        if (buildFaces.Count == spaceDim + 1) {
-          return new SubSimplex(buildPoints, buildFaces, incidence);
-        }
-
-        return new SubNonSimplex(buildFaces, incidence, buildPoints);
+        return new SubPolytop(buildFaces, incidence, buildPoints);
       }
 
       /// <summary>
@@ -383,15 +376,15 @@ public partial class Geometry<TNum, TConv>
         }
 
         // Овыпукляем в подпространстве
-        BaseSubCP buildedFace = new GiftWrappingMain(inPlane, prj_initFace).BuiltPolytop.ToPreviousSpace();
-        buildedFace.Normal = n;
+        BaseSubCP builtFace = new GiftWrappingMain(inPlane, prj_initFace).BuiltPolytop.ToPreviousSpace();
+        builtFace.Normal = n;
 
         // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
         SortedSet<SubPoint> toRemove = new SortedSet<SubPoint>(inPlane.Select(s => s.Parent).ToSortedSet()!);
-        toRemove.ExceptWith(buildedFace.Vertices);
+        toRemove.ExceptWith(builtFace.Vertices);
         S.ExceptWith(toRemove);
 
-        return buildedFace;
+        return builtFace;
       }
 
       /// <summary>
