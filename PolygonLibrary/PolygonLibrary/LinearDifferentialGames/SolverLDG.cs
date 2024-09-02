@@ -14,20 +14,10 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class SolverLDG {
 
-    // /// <summary>
-    // /// The main directory before solving the problem
-    // /// </summary>
-    // private readonly string origDir;
-
     /// <summary>
     /// The directory where source file and result folder are placed
     /// </summary>
     private readonly string workDir;
-
-    // /// <summary>
-    // /// The directory where .dat files will be saved
-    // /// </summary>
-    // private string gnuplotDat;
 
     /// <summary>
     /// The name of source file
@@ -88,6 +78,14 @@ public partial class Geometry<TNum, TConv>
       // }
     }
 
+    /// <summary>
+    /// Computes the next section of a convex polytop by the second Pontryagin's method.
+    /// </summary>
+    /// <param name="predSec">The previous section of the bridge.</param>
+    /// <param name="predP">The first convex polytop (P) used in the Minkowski sum.</param>
+    /// <param name="predQ">The second convex polytop (Q) used in the Minkowski difference.</param>
+    /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
+
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
       ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP);
       ConvexPolytop? next = MinkowskiDiff.Geometric(sum, predQ);
@@ -95,13 +93,8 @@ public partial class Geometry<TNum, TConv>
       return next;
     }
 
-    // public void WriteTSection(TNum t, ParamWriter pr) {
-    //   pr.WriteNumber("t", TConv.ToDouble(t), "F3");
-    //   W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
-    // }
-
     /// <summary>
-    /// Computes LDG 
+    /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
     public void Solve(bool isNaive, bool isNeedWrite, bool isDouble) {
       Stopwatch timer    = new Stopwatch();
