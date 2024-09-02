@@ -136,14 +136,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="affineBasis">The affine basis that defines the hyperplane.</param>
     /// <param name="toOrient">A pair to orient the HyperPlane explicitly.
-    /// If null, no orientation is defined.
     /// If not null, the point part of the pair should belong to the positive semi-space
     /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
     public HyperPlane(AffineBasis affineBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
          affineBasis.SubSpaceDim == affineBasis.Origin.Dim - 1
-       , $"Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SubSpaceDim}"
+       , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SubSpaceDim}"
         );
 
       Origin       = affineBasis.Origin;
@@ -159,6 +158,18 @@ public partial class Geometry<TNum, TConv>
       CheckCorrectness(this);
 #endif
     }
+
+    /// <summary>
+    /// Constructs a hyperplane from a given set of points that lie within the plane.
+    /// </summary>
+    /// <param name="inPlane">A collection of vectors that define the hyperplane.</param>
+    /// <param name="toOrient">
+    /// A pair to explicitly orient the hyperplane.
+    /// If not null, the point part of the pair should belong to the positive semi-space
+    /// if the bool part of the pair is true, and to the negative semi-space otherwise.
+    /// </param>
+    public HyperPlane(IEnumerable<Vector> inPlane, (Vector point, bool isPositive)? toOrient = null) : this
+      (new AffineBasis(inPlane), toOrient) { }
 #endregion
 
 #region Functions
