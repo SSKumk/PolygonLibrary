@@ -1,11 +1,12 @@
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents convex two-dimensional polygon in a two-dimensional space.
+  /// Represents convex two-dimensional polygon in a d-dimensional space.
   /// </summary>
   internal class SubTwoDimensional : BaseSubCP {
 
@@ -27,32 +28,44 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Gets the faces of the polygon.
     /// </summary>
-    public override SortedSet<BaseSubCP>? Faces { get; }
+    public override List<BaseSubCP>? Faces { get; }
 
     /// <summary>
     /// There is no such information needed: if necessary, the neighborhood of 2d faces is established trivially.
     /// For GW algorithm, this information is needless.
     /// </summary>
-    public override SubIncidenceInfo? FaceIncidence => null;
+    public virtual SubIncidenceInfo? FaceIncidence => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
     /// <param name="Vs">The vertices list of the polygon.</param>
-    public SubTwoDimensional(IReadOnlyList<SubPoint> Vs) {
+    public SubTwoDimensional(SortedSet<SubPoint> Vs) {
       Debug.Assert
-        (
-         Vs.Count > 2
-       , $"GW-->SubTwoDimensional: At least three points must be used to construct a TwoDimensional! Found {Vs.Count}"
-        );
+        (Vs.Count > 2, $"SubTwoDimensional: At least three points must be used to construct a TwoDimensional! Found {Vs.Count}");
 
-      Vertices            = new SortedSet<SubPoint>(Vs);
-      SortedSet<BaseSubCP> faces = new SortedSet<BaseSubCP>() { new SubTwoDimensionalEdge(Vs[^1], Vs[0]) };
+      Debug.Assert(Vs.First().Dim == 2, $"SubTwoDimensional: The dimension of the points must be equal to 2!");
 
-      for (int i = 0; i < Vs.Count - 1; i++) {
-        faces.Add(new SubTwoDimensionalEdge(Vs[i], Vs[i + 1]));
+      // наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
+      List<Vector2D>       convexPolygon2D = Convexification.GrahamHull(Vs.Select(s => new SubPoint2D(s)));
+      List<SubPoint>       VsInOrder = convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList();
+      List<BaseSubCP> faces = new List<BaseSubCP>() { new SubTwoDimensionalEdge(VsInOrder[^1], VsInOrder[0]) };
+      for (int i = 0; i < VsInOrder.Count - 1; i++) {
+        faces.Add(new SubTwoDimensionalEdge(VsInOrder[i], VsInOrder[i + 1]));
       }
-      Faces = faces;
+
+      Vertices = VsInOrder.ToSortedSet();
+      Faces    = faces;
+    }
+
+    public SubTwoDimensional(List<BaseSubCP> faces) {
+      SortedSet<SubPoint> Vs = new SortedSet<SubPoint>();
+      foreach (BaseSubCP face in faces) {
+        Vs.UnionWith(face.Vertices);
+      }
+
+      Vertices = Vs;
+      Faces    = faces;
     }
 
     /// <summary>
@@ -60,9 +73,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     /// <returns>The converted polygon in the previous space.</returns>
     public override BaseSubCP ToPreviousSpace() {
-      SubPoint[] Vs = Vertices.Select(v => v.Parent).ToArray()!;
+      Debug.Assert(Faces is not null, $"SubTwoDimensional.ToPreviousSpace: Faces are null");
 
-      return new SubTwoDimensional(Vs);
+      return new SubTwoDimensional(new List<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace())));
     }
 
     /// <summary>
@@ -71,7 +84,9 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
-      return new SubTwoDimensional(Vertices.Select(s => s.ProjectTo(aBasis)).ToArray());
+      Debug.Assert(Faces is not null, $"SubTwoDimensional.ProjectTo: Faces are null");
+
+      return new SubTwoDimensional(new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis))));
     }
 
   }
