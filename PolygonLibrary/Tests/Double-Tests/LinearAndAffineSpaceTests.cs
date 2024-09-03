@@ -19,7 +19,7 @@ public class LinearSpaceTests
     LinearBasis? oc_lb2 = LinearBasis.FindOrthogonalComplement(lb2);
     LinearBasis? oc_lb3 = LinearBasis.FindOrthogonalComplement(lb3);
 
-    Assert.That(oc_lb1.Equals(lb2));
+    Assert.That(oc_lb1!.Equals(lb2));
 
     Assert.That(oc_lb2 is null);
 
@@ -66,7 +66,7 @@ public class LinearSpaceTests
 
     Assert.That(basis.IsFullDim, Is.True, "The basis should have full dimension after adding two linearly independent vectors.");
 
-    Assert.That(basis.VecDim, Is.EqualTo(2), "The dimension of the basis should be equal to 2.");
+    Assert.That(basis.SpaceDim, Is.EqualTo(2), "The dimension of the basis should be equal to 2.");
   }
 
   /// <summary>
@@ -92,7 +92,7 @@ public class LinearSpaceTests
      , "The number of vectors in the basis should be equal to the number of linearly independent input vectors."
       );
 
-    Assert.That(basis.VecDim, Is.EqualTo(3), "The dimension of the basis should be equal to the first vector dimension.");
+    Assert.That(basis.SpaceDim, Is.EqualTo(3), "The dimension of the basis should be equal to the first vector dimension.");
 
     Assert.That
       (
