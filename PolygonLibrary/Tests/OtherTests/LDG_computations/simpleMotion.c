@@ -30,7 +30,7 @@ t0 = 0;
 T = 7;
 
 // The time step
-dt = 0.2;
+dt = 0.1;
 
 // The dimension of projected space
 d = 3;
