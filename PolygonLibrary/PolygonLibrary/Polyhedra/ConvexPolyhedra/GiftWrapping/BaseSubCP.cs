@@ -20,14 +20,14 @@ public partial class Geometry<TNum, TConv>
 
   /// <summary>
   /// <para><b>Simplex</b> - the polytop is a simplex.</para>
-  /// <b>NonSimplex</b> - the polytop is a complex structure.
+  /// <b>SubPolytop</b> - the polytop is a complex structure.
   /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
   /// <b>OneDimensional</b> - the polytop is a 1D-segment.
   /// </summary>
   public enum SubCPType {
 
     Simplex
-  , NonSimplex
+  , SubPolytop
   , TwoDimensional
   , OneDimensional
   , ZeroDimensional
@@ -51,7 +51,7 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// <para><b>Simplex</b> - the polytop is a simplex.</para>
-    /// <b>NonSimplex</b> - the polytop is a complex structure.
+    /// <b>SubPolytop</b> - the polytop is a complex structure.
     /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
     /// <b>OneDimensional</b> - the polytop is a 1D-segment.
     /// </summary>
@@ -74,19 +74,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the set of (d-1)-dimensional faces of the polytop.
     /// </summary>
-    public abstract SortedSet<BaseSubCP>? Faces { get; }
+    public abstract List<BaseSubCP>? Faces { get; }
 
     /// <summary>
     /// The outward normal of the (d-1)-dimensional polytop (face).
     /// </summary>
     public Vector? Normal { get; set; }
-
-
-    /// <summary>
-    /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
-    /// The second face can be equal to null if it is not constructed yet.
-    /// </summary>
-    public abstract SubIncidenceInfo? FaceIncidence { get; }
 
 
     /// <summary>
@@ -153,6 +146,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="obj">The object to compare with convex polytop.</param>
     /// <returns>True if the specified object is equal to convex polytop, False otherwise</returns>
     public override bool Equals(object? obj) {
+
+      throw new InvalidOperationException($"BaseSubCP: Equals method is not supported for BaseSubCP");
+
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
       }
@@ -169,6 +165,8 @@ public partial class Geometry<TNum, TConv>
 
       return this.Vertices.SetEquals(other.Vertices);
     }
+
+    public override int GetHashCode() => HashCode.Combine(Vertices.Count);
 
   }
 
