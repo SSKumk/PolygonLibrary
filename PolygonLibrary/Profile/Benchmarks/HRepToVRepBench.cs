@@ -18,7 +18,7 @@ public class HRepToVRepBench {
   // ReSharper disable once UnassignedField.Global
   public int phi;
 
-  private ConvexPolytop P;
+  private ConvexPolytop P = null!;
 
   [GlobalSetup]
   public void SetUp() {

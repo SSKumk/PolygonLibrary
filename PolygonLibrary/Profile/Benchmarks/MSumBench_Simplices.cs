@@ -10,9 +10,8 @@ public class MSumBench_Simplices {
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
-  public ConvexPolytop P;
-
-  public ConvexPolytop Q;
+  public ConvexPolytop P = null!;
+  public ConvexPolytop Q = null!;
 
   [GlobalSetup]
   public void SetUp() {

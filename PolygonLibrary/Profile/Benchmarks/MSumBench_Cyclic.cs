@@ -15,9 +15,8 @@ public class MSumBench_Cyclic {
   // ReSharper disable once UnassignedField.Global
   public int amount;
 
-  private ConvexPolytop P;
-
-  private ConvexPolytop Q;
+  private ConvexPolytop P = null!;
+  private ConvexPolytop Q = null!;
 
   [GlobalSetup]
   public void SetUp() {

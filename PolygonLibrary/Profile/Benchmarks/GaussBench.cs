@@ -11,12 +11,12 @@ public class GaussBench {
   [Params(3, 4, 5, 6, 7)]
   public int k;
 
-  private ddouble[,] A;
-  private ddouble[]  b;
+  private ddouble[,] A = null!;
+  private ddouble[]  b = null!;
 
-  private Func<int, int, ddouble> AFunc;
-  private Func<int, ddouble>      bFunc;
-  private GaussSLE                gaussSLE;
+  private Func<int, int, ddouble> AFunc    = null!;
+  private Func<int, ddouble>      bFunc    = null!;
+  private GaussSLE                gaussSLE = null!;
 
   [GlobalSetup]
   public void GlobalSetup() {

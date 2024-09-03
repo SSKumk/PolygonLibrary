@@ -10,8 +10,8 @@ public class MDiffBench_Cubes {
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
-  private ConvexPolytop P;
-  private ConvexPolytop Q;
+  private ConvexPolytop P = null!;
+  private ConvexPolytop Q = null!;
 
   [GlobalSetup]
   public void SetUp() {
