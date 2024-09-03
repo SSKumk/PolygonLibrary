@@ -146,7 +146,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
-    public bool Contains(Vector p) => LinearBasis.IsContains(p - Origin, LinBasis);
+    public bool Contains(Vector p) => LinBasis.IsContains(p - Origin);
     #endregion
 
     #region Constructors
