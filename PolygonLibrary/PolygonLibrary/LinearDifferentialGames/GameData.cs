@@ -129,27 +129,15 @@ public partial class Geometry<TNum, TConv>
 
     }
 
-
-    /// <summary>
-    /// The type of constraints of the first player.
-    /// </summary>
-    private string PSetType;
-
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the first player
     /// </summary>
     private ConvexPolytop P;
 
-
     /// <summary>
     /// Precomputed vectograms of the first player
     /// </summary>
     public readonly SortedDictionary<TNum, ConvexPolytop> Ps;
-
-    /// <summary>
-    /// The type of constraints of the second player.
-    /// </summary>
-    private string QSetType;
 
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the second player
@@ -177,11 +165,6 @@ public partial class Geometry<TNum, TConv>
     /// The indices of the coordinates to be projected.
     /// </summary>
     private int[] projJ;
-
-    /// <summary>
-    /// The type of terminal set.
-    /// </summary>
-    private string MSetType;
 
     /// <summary>
     /// The type of terminal set
@@ -270,7 +253,7 @@ public partial class Geometry<TNum, TConv>
       if (goalType == GoalType.PayoffEpigraph) {
         n++; // размерность стала на 1 больше
         A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
-        A = Matrix.hcat(A, Matrix.Zero(n, 1));
+        A = Matrix.hcat(A, Matrix.Zero(n, 1))!;
         B = Matrix.vcat(B, Matrix.Zero(1, pDim));
         C = Matrix.vcat(C, Matrix.Zero(1, qDim));
 
