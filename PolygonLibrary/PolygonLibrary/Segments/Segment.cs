@@ -308,6 +308,8 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
+    public override int GetHashCode() => HashCode.Combine(IsVertical);
+
     public override string ToString() => $"[{p1};{p2}]";
 
     public override bool Equals(object? obj) {

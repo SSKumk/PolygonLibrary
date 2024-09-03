@@ -106,7 +106,9 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Compares
+#region Overrides
+    public override int GetHashCode() => HashCode.Combine(Vertices.Count, NumberOfNonZeroKFaces);
+
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
         return false;
@@ -349,7 +351,9 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-#region Compares
+#region Overrides
+    // public override int GetHashCode() => HashCode.Combine(Vertices.Count);
+
     /// <summary>
     /// The equality function for FLNode. It checks only the Node itself, not its neighbors.
     /// </summary>

@@ -567,6 +567,8 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
+    public override int GetHashCode() => HashCode.Combine(IsZero, Dim);
+
     public override bool Equals(object? obj) {
 #if DEBUG
       if (obj is not Vector vector) {

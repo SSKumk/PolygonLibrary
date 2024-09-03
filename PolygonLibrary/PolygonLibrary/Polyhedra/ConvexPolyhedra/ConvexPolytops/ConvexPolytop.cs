@@ -850,7 +850,9 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 
-#region Comparation
+#region Overrides
+    public override int GetHashCode() => HashCode.Combine(SpaceDim);
+
     //!!! Вообще говоря, сравнивать многогранники тяжело!!! Тут "какая-то наивная" реализация сравнения
     private bool Equals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
 
@@ -864,6 +866,7 @@ public partial class Geometry<TNum, TConv>
 
       return Equals((ConvexPolytop)obj);
     }
+
 #endregion
 
 

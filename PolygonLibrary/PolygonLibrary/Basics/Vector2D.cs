@@ -5,27 +5,23 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum>
-{
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Class of vectors in the plane
   /// </summary>
-  public class Vector2D : IComparable<Vector2D>
-  {
+  public class Vector2D : IComparable<Vector2D> {
 
-    #region Comparing
+#region Comparing
     /// <summary>
     /// Vector comparer realizing the lexicographic order; coordinates are compared by precision
     /// </summary>
     /// <param name="v1">The first point to compare.</param>
     /// <param name="v2">The second point to be compared with.</param>
     /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-    public static int CompareToNoEps(Vector2D v1, Vector2D v2)
-    {
+    public static int CompareToNoEps(Vector2D v1, Vector2D v2) {
       int xRes = v1.x.CompareTo(v2.x);
-      if (xRes != 0)
-      {
+      if (xRes != 0) {
         return xRes;
       }
 
@@ -37,17 +33,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be compared with</param>
     /// <returns>+1, if this object greater than v; 0, if they are equal; -1, otherwise</returns>
-    public int CompareTo(Vector2D? v)
-    {
+    public int CompareTo(Vector2D? v) {
       if (v is null) { return 1; } // null < this (always)
 
       int xRes = Tools.CMP(x, v.x);
-      if (xRes != 0)
-      {
+      if (xRes != 0) {
         return xRes;
       }
-      else
-      {
+      else {
         return Tools.CMP(y, v.y);
       }
     }
@@ -99,9 +92,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if p1 is less than or equal to p2; false, otherwise</returns>
     public static bool operator <=(Vector2D v1, Vector2D v2) => v1.CompareTo(v2) <= 0;
-    #endregion
+#endregion
 
-    #region Access properties
+#region Access properties
     /// <summary>
     /// The abscissa
     /// </summary>
@@ -119,13 +112,11 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The value of the corresponding component</returns>
     public TNum this[int i]
       => i switch
-      {
-        0 => x
-           ,
-        1 => y
-           ,
-        _ => throw new IndexOutOfRangeException()
-      };
+           {
+             0 => x
+           , 1 => y
+           , _ => throw new IndexOutOfRangeException()
+           };
 
 
     /// <summary>
@@ -136,14 +127,13 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// length of the vector
     /// </summary>
-    public TNum Length
-    {
+    public TNum Length {
       get
-      {
-        length ??= TNum.Sqrt(x * x + y * y);
+        {
+          length ??= TNum.Sqrt(x * x + y * y);
 
-        return length.Value;
-      }
+          return length.Value;
+        }
     }
 
     /// <summary>
@@ -159,24 +149,22 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The polar angle of the vector in the range (-pi;pi]
     /// </summary>
-    public TNum PolarAngle
-    {
+    public TNum PolarAngle {
       get
-      {
-        if (polarAngle is null)
         {
-          polarAngle = Tools.Atan2(y, x);
-          // КОСТЫЛИЩЕ - DUCT TAPE
-          if (Tools.EQ(PolarAngle, -Tools.PI))
-            polarAngle = -Tools.PI;
+          if (polarAngle is null) {
+            polarAngle = Tools.Atan2(y, x);
+            // КОСТЫЛИЩЕ - DUCT TAPE
+            if (Tools.EQ(PolarAngle, -Tools.PI))
+              polarAngle = -Tools.PI;
+          }
+
+          return polarAngle.Value;
         }
-
-        return polarAngle.Value;
-      }
     }
-    #endregion
+#endregion
 
-    #region Miscellaneous procedures
+#region Miscellaneous procedures
     /// <summary>
     /// Distance to the origin
     /// </summary>
@@ -207,11 +195,9 @@ public partial class Geometry<TNum, TConv>
     /// <exception cref="DivideByZeroException">
     /// Is thrown if the vector is zero
     /// </exception>
-    public Vector2D Normalize()
-    {
+    public Vector2D Normalize() {
 #if DEBUG
-      if (IsZero)
-      {
+      if (IsZero) {
         throw new DivideByZeroException();
       }
 #endif
@@ -244,8 +230,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="angle">The turn angle</param>
     /// <returns>The turned vector</returns>
-    public Vector2D Turn(TNum angle)
-    {
+    public Vector2D Turn(TNum angle) {
       (TNum sn, TNum cs) = TNum.SinCos(angle);
       // TNum cs = TNum.Cos(angle), sn = TNum.Sin(angle);
 
@@ -262,8 +247,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector, the clockwise boundary of the cone</param>
     /// <param name="v2">The second vector, the counterclockwise boundary of the cone</param>
     /// <returns>Flag showing whether the vector belongs to the given cone</returns>
-    public bool IsBetween(Vector2D v1, Vector2D v2)
-    {
+    public bool IsBetween(Vector2D v1, Vector2D v2) {
       TNum a1 = Vector2D.Angle2PI(v1, this), a2 = Vector2D.Angle2PI(v1, v2);
 
       return Tools.GT(a1) && Tools.LT(a1, a2);
@@ -276,14 +260,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
-    public static TNum Angle(Vector2D v1, Vector2D v2)
-    {
-      if (v1.IsZero || v2.IsZero)
-      {
+    public static TNum Angle(Vector2D v1, Vector2D v2) {
+      if (v1.IsZero || v2.IsZero) {
         return Tools.Zero;
       }
-      else
-      {
+      else {
         TNum s = (v1 ^ v2), c = (v1 * v2);
 
         return Tools.Atan2(s, c);
@@ -296,38 +277,35 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle; the angle between a zero vector and any other equals zero</returns>
-    public static TNum Angle2PI(Vector2D v1, Vector2D v2)
-    {
+    public static TNum Angle2PI(Vector2D v1, Vector2D v2) {
       TNum a = Angle(v1, v2);
 
       return a < Geometry<TNum, TConv>.Tools.Zero ? a + Tools.Two * Tools.PI : a;
     }
-    #endregion
+#endregion
 
-    #region Convertors
+#region Convertors
     /// <summary>
     /// Explicit convertor to a two-dimensional vector from a multidimensional vector of general kind
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant vector</returns>
-    public static explicit operator Vector2D(Vector v)
-    {
+    public static explicit operator Vector2D(Vector v) {
 #if DEBUG
-      if (v.Dim != 2)
-      {
+      if (v.Dim != 2) {
         throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional vector!");
       }
 #endif
       return new Vector2D(v[0], v[1]);
     }
-    #endregion
+#endregion
 
-    #region Overrides
-    public override bool Equals(object? obj)
-    {
+#region Overrides
+    public override int GetHashCode() => HashCode.Combine(IsZero);
+
+    public override bool Equals(object? obj) {
 #if DEBUG
-      if (obj is not Vector2D v)
-      {
+      if (obj is not Vector2D v) {
         throw new ArgumentException($"{obj} is not a Vector2D!");
       }
 #endif
@@ -336,14 +314,13 @@ public partial class Geometry<TNum, TConv>
 
     public override string ToString()
       => $"({x.ToString(null, CultureInfo.InvariantCulture)};{y.ToString(null, CultureInfo.InvariantCulture)})";
-    #endregion
+#endregion
 
-    #region Constructors and factories
+#region Constructors and factories
     /// <summary>
     /// The default construct producing the zero vector
     /// </summary>
-    public Vector2D()
-    {
+    public Vector2D() {
       x = Geometry<TNum, TConv>.Tools.Zero;
       y = Geometry<TNum, TConv>.Tools.Zero;
     }
@@ -353,8 +330,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="nx">The new abscissa</param>
     /// <param name="ny">The new ordinate</param>
-    public Vector2D(TNum nx, TNum ny)
-    {
+    public Vector2D(TNum nx, TNum ny) {
       x = nx;
       y = ny;
     }
@@ -363,8 +339,7 @@ public partial class Geometry<TNum, TConv>
     /// Copying constructor
     /// </summary>
     /// <param name="v">The vector to be copied</param>
-    public Vector2D(Vector2D v)
-    {
+    public Vector2D(Vector2D v) {
       x = v.x;
       y = v.y;
     }
@@ -376,9 +351,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="radius">The radius (can be negative!)</param>
     /// <returns>The resultant vector</returns>
     public static Vector2D FromPolar(TNum angle, TNum radius) => new Vector2D(radius * TNum.Cos(angle), radius * TNum.Sin(angle));
-    #endregion
+#endregion
 
-    #region Operators
+#region Operators
     /// <summary>
     /// Unary minus - the opposite vector
     /// </summary>
@@ -424,11 +399,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector dividend</param>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
-    public static Vector2D operator /(Vector2D v, TNum a)
-    {
+    public static Vector2D operator /(Vector2D v, TNum a) {
 #if DEBUG
-      if (Tools.EQ(a))
-      {
+      if (Tools.EQ(a)) {
         throw new DivideByZeroException();
       }
 #endif
@@ -450,7 +423,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The first vector factor</param>
     /// <returns>The z-component of the product</returns>
     public static TNum operator ^(Vector2D v1, Vector2D v2) => v1.x * v2.y - v1.y * v2.x;
-    #endregion
+#endregion
 
     /// <summary>
     /// Parallelism of vectors
@@ -508,11 +481,11 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant point</returns>
     public static Vector2D LinearCombination(
         Vector2D p1
-      , TNum w1
+      , TNum     w1
       , Vector2D p2
-      , TNum w2
+      , TNum     w2
       , Vector2D p3
-      , TNum w3
+      , TNum     w3
       )
       => new Vector2D(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 
@@ -522,13 +495,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="ps">Collection of the points</param>
     /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
     /// <returns>The resultant point</returns>
-    public static Vector2D LinearCombination(IEnumerable<Vector2D> ps, IEnumerable<TNum> ws)
-    {
-      using IEnumerator<Vector2D> enPoint = ps.GetEnumerator();
-      using IEnumerator<TNum> enWeight = ws.GetEnumerator();
-      TNum x = Tools.Zero, y = Tools.Zero;
-      while (enPoint.MoveNext() && enWeight.MoveNext())
-      {
+    public static Vector2D LinearCombination(IEnumerable<Vector2D> ps, IEnumerable<TNum> ws) {
+      using IEnumerator<Vector2D> enPoint  = ps.GetEnumerator();
+      using IEnumerator<TNum>     enWeight = ws.GetEnumerator();
+      TNum                        x        = Tools.Zero, y = Tools.Zero;
+      while (enPoint.MoveNext() && enWeight.MoveNext()) {
         x += enPoint.Current.x * enWeight.Current;
         y += enPoint.Current.y * enWeight.Current;
       }
@@ -537,7 +508,7 @@ public partial class Geometry<TNum, TConv>
     }
 
 
-    #region Vector constants
+#region Vector constants
     /// <summary>
     /// The zero vector
     /// </summary>
@@ -552,7 +523,7 @@ public partial class Geometry<TNum, TConv>
     /// The second unit vector
     /// </summary>
     public static readonly Vector2D E2 = new Vector2D(Tools.Zero, Tools.One);
-    #endregion
+#endregion
 
   }
 
