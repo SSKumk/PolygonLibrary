@@ -9,22 +9,22 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 public class SetBench
 {
 
-  private List<Vector> Vs;
-  private List<Vector> Vs_other;
+  private List<Vector> Vs       = null!;
+  private List<Vector> Vs_other = null!;
 
-  private SortedSet<Vector> hset;
-  private SortedSet<Vector> sset;
-  private AVLSet<Vector> aset;
+  private SortedSet<Vector> hset = null!;
+  private SortedSet<Vector> sset = null!;
+  private AVLSet<Vector>    aset = null!;
 
-  private SortedSet<Vector> hset_UnionWith_List;
-  private SortedSet<Vector> sset_UnionWith_List;
-  private AVLSet<Vector> aset_UnionWith_List;
+  private SortedSet<Vector> hset_UnionWith_List = null!;
+  private SortedSet<Vector> sset_UnionWith_List = null!;
+  private AVLSet<Vector>    aset_UnionWith_List = null!;
 
-  private SortedSet<Vector> hset_ForUW;
-  private SortedSet<Vector> sset_ForUW;
-  private AVLSet<Vector> aset_ForUW;
+  private SortedSet<Vector> hset_ForUW = null!;
+  private SortedSet<Vector> sset_ForUW = null!;
+  private AVLSet<Vector>    aset_ForUW = null!;
 
-  private Vector toAdd;
+  private Vector toAdd = null!;
 
   [Params(3, 4, 5, 6)]
   // [Params(3)]
