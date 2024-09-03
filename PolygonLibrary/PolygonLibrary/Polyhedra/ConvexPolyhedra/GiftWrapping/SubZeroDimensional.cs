@@ -30,12 +30,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// There are no Faces of the 0-dimensional vertex.
     /// </summary>
-    public override SortedSet<BaseSubCP>? Faces => null;
+    public override List<BaseSubCP>? Faces => null;
 
     /// <summary>
     /// There are no Faces of the 0-dimensional vertex.
     /// </summary>
-    public override SubIncidenceInfo? FaceIncidence => null;
+    public virtual SubIncidenceInfo? FaceIncidence => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubZeroDimensional"/> class.

@@ -30,12 +30,12 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// There are no Faces of the 1-dimensional edge.
     /// </summary>
-    public override SortedSet<BaseSubCP>? Faces => null;
+    public override List<BaseSubCP>? Faces => null;
 
     /// <summary>
     /// There are no Faces of the 1-dimensional edge.
     /// </summary>
-    public override SubIncidenceInfo? FaceIncidence => null;
+    public virtual SubIncidenceInfo? FaceIncidence => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensionalEdge"/> class.
