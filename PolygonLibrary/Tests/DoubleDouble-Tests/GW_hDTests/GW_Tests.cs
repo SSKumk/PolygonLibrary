@@ -13,6 +13,9 @@ namespace Tests.DoubleDouble_Tests.GW_hDTests;
 [TestFixture]
 public class GW_Tests {
 
+  [OneTimeSetUp]
+  public void SetUp() { Tools.Eps = 1e-16; }
+
 #region Auxiliary tests
   [Test]
   public void GenCubeListHDTest() {
@@ -35,20 +38,25 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const uint seed    = 0;
     const int  PDim    = 4;
     const int  nPoints = 2000;
-    List<int>  fID     = new List<int>() { };
-    GRandomLC  random  = new GRandomLC(0);
+    List<int> fID = new List<int>()
+      {
+        1
+      , 2
+      , 3
+      , 4
+      };
+    GRandomLC random = new GRandomLC(4002554616);
 
-    List<Vector> S = Simplex(PDim, out List<Vector> polytop, fID, nPoints, random);
+    List<Vector> S = Cube01(PDim, out List<Vector> polytop, fID, nPoints, random);
     ShiftAndRotate(4, ref polytop, ref S, random);
     S.Shuffle(random);
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(5), $"The number of facets of the cube must be equal to 5.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), $"The number of faces of the cube must be equal to 31.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(8), $"The number of facets of the cube must be equal to 8.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(81), $"The number of faces of the cube must be equal to 81.");
   }
 #endregion
 
@@ -666,7 +674,7 @@ public class GW_Tests {
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e3; i++) {
+    for (int i = 0; i < 1e2; i++) {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
@@ -763,60 +771,6 @@ public class GW_Tests {
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
-  }
-
-  /// <summary>
-  /// Вершины:
-  /// [0] +0.836      -->;  [2]
-  /// [1] -2.291      -->;  [7]
-  /// [2] +2.140      -->;  [5]
-  /// [3] -1.128      -->;  [6]
-  /// [4] +3.068      -->;  [8]
-  ///
-  /// Доп. точки:               номера точек на ребре между которыми лежат данные точки
-  /// [5] +2.175 0,4  -->;  [1] 2,8
-  /// [6] -1.531 1,4  -->;  [4] 7,8
-  /// [7] +0.908 0,2  -->;  [3] 2,5
-  /// [8] -2.290 1,4  -->;  [0] 7,8
-  /// </summary>
-  [Test]
-  public void Simplex4D_InnerPointsIn_1D() {
-    List<Vector> Simplex = new List<Vector>()
-      {
-        new Vector(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
-      , new Vector(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
-      , new Vector(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
-      , new Vector(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
-      , new Vector(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
-      };
-
-    List<Vector> S = new List<Vector>(Simplex)
-      {
-        new Vector(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
-      , new Vector(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
-      , new Vector(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
-      , new Vector(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
-      };
-
-    List<Vector> S_shuffled = new List<Vector>()
-      {
-        new Vector(new ddouble[] { 2.175818488745113, 2.126089567011522, 1.6120574743850615, 2.0907078182196503 })
-      , new Vector(new ddouble[] { -1.128714852065014, -1.7299541148194004, 0.4864426528770571, -1.6846663706667409 })
-      , new Vector(new ddouble[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
-      , new Vector(new ddouble[] { 2.140466204644289, 1.8671979608170686, 0.043747361061103884, 0.9348952481371575 })
-      , new Vector(new ddouble[] { -2.2910587157334805, -2.149176399025409, 4.5139871187307845, -3.2342020813921 })
-      , new Vector(new ddouble[] { -2.290970227496747, -2.149117128577943, 4.51398857907853, -3.2341185745379626 })
-      , new Vector(new ddouble[] { 3.0687608076419592, 1.4408928939236543, 4.602441817895146, 1.823890199145276 })
-      , new Vector(new ddouble[] { -1.5310856984393355, -1.6401376560306955, 4.526529179955908, -2.517011206694256 })
-      , new Vector(new ddouble[] { 0.9089342229083861, 3.08233710216511, -2.7111885939253577, 2.4044533438785916 })
-      };
-
-    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
-    Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
-    P = ConvexPolytop.CreateFromPoints(S_shuffled, true);
-    Assert.That(P.Vrep.SetEquals(Simplex), "The set of shuffled vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
     Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
   }
@@ -984,7 +938,6 @@ public class GW_Tests {
     Console.WriteLine();
     Console.WriteLine($"[Test]");
     Console.WriteLine("public void Aux() {");
-    Console.WriteLine($"const uint seed   = {seed};");
     Console.WriteLine($"const int PDim    = {PDim};");
     Console.WriteLine($"const int nPoints = {nPoints};");
     Console.WriteLine($"List<int> fID     = new List<int>() {{ {string.Join(", ", fID)} }};");

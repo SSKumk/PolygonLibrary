@@ -9,13 +9,16 @@ using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 namespace Tests.Double_Tests.GW_hDTests;
 
 [TestFixture]
-public class GW_Tests
-{
+public class GW_Tests {
 
-  #region Auxiliary tests
+  [OneTimeSetUp]
+  public void SetUp() {
+    Tools.Eps = 1e-8;
+  }
+
+#region Auxiliary tests
   [Test]
-  public void GenCubeHDTest()
-  {
+  public void GenCubeHDTest() {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new double[] { 0, 0, 0 })
@@ -32,17 +35,16 @@ public class GW_Tests
 
     Debug.Assert(S.SetEquals(new SortedSet<Vector>(cube)), "S is not equal to generated Cube01");
   }
-  #endregion
+#endregion
 
 
-  #region Cube3D-Static Тесты 3D-куба не зависящие от _random
+#region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
-  public void Cube3D_Rotated_Z45()
-  {
-    List<Vector> S = Cube01(3, out List<Vector> _);
-    double angle = Tools.PI / 4;
-    double sin = double.Sin(angle);
-    double cos = double.Cos(angle);
+  public void Cube3D_Rotated_Z45() {
+    List<Vector> S     = Cube01(3, out List<Vector> _);
+    double       angle = Tools.PI / 4;
+    double       sin   = double.Sin(angle);
+    double       cos   = double.Cos(angle);
 
     double[,] rotationZ45 = { { cos, -sin, 0 }, { sin, cos, 0 }, { 0, 0, 1 } };
 
@@ -56,8 +58,7 @@ public class GW_Tests
   /// Как-то повёрнутый куб
   /// </summary>
   [Test]
-  public void Cube3D_Rotated()
-  {
+  public void Cube3D_Rotated() {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new double[] { 0, 0, 0 })
@@ -79,8 +80,7 @@ public class GW_Tests
   /// Как-то сдвинутый куб
   /// </summary>
   [Test]
-  public void Cube3D_Shifted()
-  {
+  public void Cube3D_Shifted() {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new double[] { -10.029417029821644, -8.414457472370579, 12.142282885765258 })
@@ -98,8 +98,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_Rotated_Shifted()
-  {
+  public void Cube3D_Rotated_Shifted() {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
         new Vector(new double[] { 4.989650328990457, 18.100255093909855, 14.491501515962065 })
@@ -123,8 +122,7 @@ public class GW_Tests
   /// 2 - тетр
   /// </summary>
   [Test]
-  public void Cube3D_withInnerPoints_On_1D()
-  {
+  public void Cube3D_withInnerPoints_On_1D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(131));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -133,8 +131,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_2D()
-  {
+  public void Cube3D_withInnerPoints_On_2D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(132));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -143,8 +140,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_3D()
-  {
+  public void Cube3D_withInnerPoints_On_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(133));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -153,8 +149,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_1D_2D()
-  {
+  public void Cube3D_withInnerPoints_On_1D_2D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1312));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -163,8 +158,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_2D_3D()
-  {
+  public void Cube3D_withInnerPoints_On_2D_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1323));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -173,27 +167,24 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_withInnerPoints_On_1D_2D_3D()
-  {
+  public void Cube3D_withInnerPoints_On_1D_2D_3D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(13123));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
-  #endregion
+#endregion
 
-  #region Suffle-Zone PurePolytops Тесты перестановок без дополнительных точек
+#region Suffle-Zone PurePolytops Тесты перестановок без дополнительных точек
   /// <summary>
   /// Shuffles the elements of the S list and wraps it into a Polytop.
   /// Asserts that the set of vertices in the Polytop is equal to the S list.
   /// </summary>
   /// <param name="S">The list of points representing the S.</param>
   /// <param name="nameOfTest">The name of given test.</param>
-  private static void SwarmShuffle(List<Vector> S, string nameOfTest)
-  {
-    for (int i = 0; i < 10 * S.Count; i++)
-    {
+  private static void SwarmShuffle(List<Vector> S, string nameOfTest) {
+    for (int i = 0; i < 10 * S.Count; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
       ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -202,38 +193,33 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube3D_Shuffled()
-  {
+  public void Cube3D_Shuffled() {
     List<Vector> S = Cube01(3, out List<Vector> _);
     SwarmShuffle(S, "Cube3D_Shuffled");
   }
 
   [Test]
-  public void Cube4D_Suffled()
-  {
+  public void Cube4D_Suffled() {
     List<Vector> S = Cube01(4, out List<Vector> _);
     SwarmShuffle(S, "Cube4D_Shuffled");
   }
 
   [Test]
-  public void Simplex3D_Suffled()
-  {
+  public void Simplex3D_Suffled() {
     List<Vector> S = Simplex(3, out List<Vector> _);
     SwarmShuffle(S, "Simplex3D_Shuffled");
   }
 
   [Test]
-  public void Simplex4D_Suffled()
-  {
+  public void Simplex4D_Suffled() {
     List<Vector> S = Simplex(4, out List<Vector> _);
     SwarmShuffle(S, "Simplex4D_Shuffled");
   }
-  #endregion
+#endregion
 
-  #region Cube4D-Static Тесты 4D-куба не зависящие от _random
+#region Cube4D-Static Тесты 4D-куба не зависящие от _random
   [Test]
-  public void Cube4D_withInnerPoints_On_1D()
-  {
+  public void Cube4D_withInnerPoints_On_1D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(141));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -243,8 +229,7 @@ public class GW_Tests
 
 
   [Test]
-  public void Cube4D_withInnerPoints_On_2D()
-  {
+  public void Cube4D_withInnerPoints_On_2D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2 }, 1, new GRandomLC(142));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -253,8 +238,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_3D()
-  {
+  public void Cube4D_withInnerPoints_On_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 3 }, 1, new GRandomLC(143));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -263,8 +247,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D()
-  {
+  public void Cube4D_withInnerPoints_On_1D_2D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2 }, 1, new GRandomLC(1412));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -273,8 +256,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_2D_3D()
-  {
+  public void Cube4D_withInnerPoints_On_2D_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 2, 3 }, 1, new GRandomLC(1423));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -283,8 +265,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D_3D()
-  {
+  public void Cube4D_withInnerPoints_On_1D_2D_3D() {
     List<Vector> S = Cube01(4, out List<Vector> cube, new List<int>() { 1, 2, 3 }, 1, new GRandomLC(14123));
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -293,8 +274,7 @@ public class GW_Tests
   }
 
   [Test]
-  public void Cube4D_withInnerPoints_On_1D_2D_3D_4D()
-  {
+  public void Cube4D_withInnerPoints_On_1D_2D_3D_4D() {
     List<Vector> S = Cube01
       (
        4
@@ -314,12 +294,11 @@ public class GW_Tests
 
     Assert.That(P.Vrep.SetEquals(cube), "The set of vertices must be equal.");
   }
-  #endregion
+#endregion
 
-  #region Simplex4D Тесты 4D-симплекса не зависящие от _random
+#region Simplex4D Тесты 4D-симплекса не зависящие от _random
   [Test]
-  public void Simplex4D_1DEdge_2DNeighborsPointsTest()
-  {
+  public void Simplex4D_1DEdge_2DNeighborsPointsTest() {
     Vector p0 = new Vector(new double[] { 0, 0, 0, 0 });
     Vector p1 = new Vector(new double[] { 1, 0, 0, 0 });
     Vector p2 = new Vector(new double[] { 0, 1, 0, 0 });
@@ -349,179 +328,250 @@ public class GW_Tests
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(Simplex), "The set of vertices must be equal.");
   }
-  #endregion
+#endregion
 
-  #region AllCubes Генераторы "плохих" тестов для кубов
+
+
+
+#region AllCubes Генераторы "плохих" тестов для кубов
   [Test]
-  public void AllCubes3D_TestRND()
-  {
+  public void AllCubes3D_TestRND() {
     const int nPoints = 5000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(3, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(3, ref P, ref S);
 
-      Check(S, P, saveSeed, 3, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 3
+       , nPoints
+       , fID
+       , 6
+       , 27
+        );
     }
   }
 
   [Test]
-  public void AllCubes4D_TestRND()
-  {
+  public void AllCubes4D_TestRND() {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(4, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(4, ref P, ref S);
 
-      Check(S, P, saveSeed, 4, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 4
+       , nPoints
+       , fID
+       , 8
+       , 81
+        );
     }
   }
 
   [Test]
-  public void AllCubes5D_TestRND()
-  {
+  public void AllCubes5D_TestRND() {
     const int nPoints = 5;
 
     List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(5, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(5, ref P, ref S);
 
-      Check(S, P, saveSeed, 5, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 5
+       , nPoints
+       , fID
+       , 10
+       , 243
+        );
     }
   }
 
   [Test]
-  public void AllCubes6D_TestRND()
-  {
+  public void AllCubes6D_TestRND() {
     const int nPoints = 2;
 
     List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Cube01(6, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(6, ref P, ref S);
 
-      Check(S, P, saveSeed, 6, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 6
+       , nPoints
+       , fID
+       , 12
+       , 729
+        );
     }
   }
-  #endregion
+#endregion
 
-  #region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
+#region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
   [Test]
-  public void AllSimplices3D_TestRND()
-  {
+  public void AllSimplices3D_TestRND() {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(3, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(3, ref P, ref S);
 
-      Check(S, P, saveSeed, 3, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 3
+       , nPoints
+       , fID
+       , 4
+       , 15
+        );
     }
   }
 
   [Test]
-  public void AllSimplices4D_TestRND()
-  {
+  public void AllSimplices4D_TestRND() {
     const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 4).ToList().AllSubsets();
 
-    foreach (List<int> fID in fIDs)
-    {
+    foreach (List<int> fID in fIDs) {
       uint saveSeed = _random.Seed;
 
       List<Vector> S = Simplex(4, out List<Vector> P, fID, nPoints);
-      ShiftAndRotate(4, ref P, ref S);
 
-      Check(S, P, saveSeed, 4, nPoints, fID, true);
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 4
+       , nPoints
+       , fID
+       , 5
+       , 31
+        );
     }
   }
 
-  // Не хватает точности double-ов для успешного решения этих задач
-  // [Test]
-  // public void AllSimplices5D_TestRND() {
-  //   const int nPoints = 1000;
-  //
-  //   List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
-  //
-  //   foreach (List<int> fID in fIDs) {
-  //     uint saveSeed = _random.Seed;
-  //
-  //     List<Vector> S = Simplex(5, out List<Vector> P, fID, nPoints);
-  //     ShiftAndRotate(5, ref P, ref S);
-  //
-  //     Check(S, P, saveSeed, 5, nPoints, fID, true);
-  //   }
-  // }
-  //
-  // [Test]
-  // public void AllSimplices6D_TestRND() {
-  //   const int nPoints = 5;
-  //
-  //   List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
-  //
-  //   foreach (List<int> fID in fIDs) {
-  //     uint saveSeed = _random.Seed;
-  //
-  //     List<Vector> S = Simplex(6, out List<Vector> P, fID, nPoints);
-  //     ShiftAndRotate(6, ref P, ref S);
-  //
-  //     Check(S, P, saveSeed, 6, nPoints, fID, true);
-  //   }
-  // }
-  //
-  // [Test]
-  // public void AllSimplices7D_TestRND() {
-  //   const int nPoints = 2;
-  //
-  //   List<List<int>> fIDs = Enumerable.Range(1, 7).ToList().AllSubsets();
-  //
-  //   foreach (List<int> fID in fIDs) {
-  //     uint saveSeed = _random.Seed;
-  //
-  //     List<Vector> S = Simplex(7, out List<Vector> P, fID, nPoints);
-  //     ShiftAndRotate(7, ref P, ref S);
-  //
-  //     Check(S, P, saveSeed, 7, nPoints, fID, true);
-  //   }
-  // }
-  #endregion
+  [Test]
+  public void AllSimplices5D_TestRND() {
+    const int nPoints = 1000;
 
-  // Не хватает точности double-ов для успешного решения этих задач
-  // #region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
+    List<List<int>> fIDs = Enumerable.Range(1, 5).ToList().AllSubsets();
+
+    foreach (List<int> fID in fIDs) {
+      uint saveSeed = _random.Seed;
+
+      List<Vector> S = Simplex(5, out List<Vector> P, fID, nPoints);
+
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 5
+       , nPoints
+       , fID
+       , 6
+       , 63
+        );
+    }
+  }
+
+  [Test]
+  public void AllSimplices6D_TestRND() {
+    const int nPoints = 5;
+
+    List<List<int>> fIDs = Enumerable.Range(1, 6).ToList().AllSubsets();
+
+    foreach (List<int> fID in fIDs) {
+      uint saveSeed = _random.Seed;
+
+      List<Vector> S = Simplex(6, out List<Vector> P, fID, nPoints);
+
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 6
+       , nPoints
+       , fID
+       , 7
+       , 127
+        );
+    }
+  }
+
+  [Test]
+  public void AllSimplices7D_TestRND() {
+    const int nPoints = 2;
+
+    List<List<int>> fIDs = Enumerable.Range(1, 7).ToList().AllSubsets();
+
+    foreach (List<int> fID in fIDs) {
+      uint saveSeed = _random.Seed;
+
+      List<Vector> S = Simplex(7, out List<Vector> P, fID, nPoints);
+
+      Check
+        (
+         S
+       , P
+       , saveSeed
+       , 7
+       , nPoints
+       , fID
+       , 8
+       , 255
+        );
+    }
+  }
+#endregion
+
+
+#region AllSimplicesRND Генераторы "плохих" тестов для произвольных симплексов
   [Test]
   public void AllSimplicesRND_3D_TestRND() {
-    const int nPoints    = 1;
+    const int nPoints    = 10;
     const int simplexDim = 3;
 
     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
 
-    for (int i = 0; i < 1e6; i++) {
+    for (int i = 0; i < 1e4; i++) {
       foreach (List<int> fID in fIDs) {
         uint saveSeed = _random.Seed;
 
@@ -534,49 +584,70 @@ public class GW_Tests
          , simplexDim
          , nPoints
          , fID
-         , true
+         , 4
+         , 15
           );
       }
     }
   }
-  //
-  //   [Test]
-  //   public void AllSimplicesRND_4D_TestRND() {
-  //     const int nPoints    = 1;
-  //     const int simplexDim = 4;
-  //
-  //     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
-  //
-  //     for (int i = 0; i < 1e4; i++) {
-  //       foreach (List<int> fID in fIDs) {
-  //         uint saveSeed = _random.Seed;
-  //
-  //         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-  //         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
-  //       }
-  //     }
-  //   }
-  //
-  //   [Test]
-  //   public void AllSimplicesRND_5D_TestRND() {
-  //     const int nPoints    = 1;
-  //     const int simplexDim = 5;
-  //
-  //     List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
-  //
-  //     for (int i = 0; i < 1e3; i++) {
-  //       foreach (List<int> fID in fIDs) {
-  //         uint saveSeed = _random.Seed;
-  //
-  //         List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
-  //         Check(S, P, saveSeed, simplexDim, nPoints, fID, true);
-  //       }
-  //     }
-  //   }
-  // #endregion
+
+  [Test]
+  public void AllSimplicesRND_4D_TestRND() {
+    const int nPoints    = 10;
+    const int simplexDim = 4;
+
+    List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
+
+    for (int i = 0; i < 1e3; i++) {
+      foreach (List<int> fID in fIDs) {
+        uint saveSeed = _random.Seed;
+
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
+        Check
+          (
+           S
+         , P
+         , saveSeed
+         , simplexDim
+         , nPoints
+         , fID
+         , 5
+         , 31
+          );
+      }
+    }
+  }
+
+  [Test]
+  public void AllSimplicesRND_5D_TestRND() {
+    const int nPoints    = 10;
+    const int simplexDim = 5;
+
+    List<List<int>> fIDs = Enumerable.Range(1, simplexDim).ToList().AllSubsets();
+
+    for (int i = 0; i < 1e2; i++) {
+      foreach (List<int> fID in fIDs) {
+        uint saveSeed = _random.Seed;
+
+        List<Vector> S = SimplexRND(simplexDim, out List<Vector> P, fID, nPoints);
+        Check
+          (
+           S
+         , P
+         , saveSeed
+         , simplexDim
+         , nPoints
+         , fID
+         , 6
+         , 63
+          );
+      }
+    }
+  }
+#endregion
 
 
-  #region Other tests
+#region Other tests
   // /// <summary>
   // /// Вершины:
   // ///[0] +2.573  A
@@ -673,8 +744,7 @@ public class GW_Tests
   /// [8] -2.290 1,4  -->;  [0] 7,8
   /// </summary>
   [Test]
-  public void Simplex4D_InnerPointsIn_1D()
-  {
+  public void Simplex4D_InnerPointsIn_1D() {
     List<Vector> Simplex = new List<Vector>()
       {
         new Vector(new double[] { 0.8364793532147252, 3.1538275299020646, -2.8732700734104193, 2.4909120326607748 })
@@ -715,8 +785,7 @@ public class GW_Tests
   /// Пример из какой-то статьи
   /// </summary>
   [Test]
-  public void SomePolytop_3D()
-  {
+  public void SomePolytop_3D() {
     List<Vector> S = new List<Vector>()
       {
         new Vector(new double[] { 1, 0, 1 })
@@ -741,12 +810,11 @@ public class GW_Tests
   /// Параллелепипед расположенный в первом квадранте
   /// </summary>
   [Test]
-  public void SomeParallelogram()
-  {
+  public void SomeParallelogram() {
     Vector origin = new Vector(3);
-    Vector v1 = new Vector(new double[] { 0.5, 1, 1 });
-    Vector v2 = new Vector(new double[] { 1, 0.5, 1 });
-    Vector v3 = new Vector(new double[] { 1, 1, 0.5 });
+    Vector v1     = new Vector(new double[] { 0.5, 1, 1 });
+    Vector v2     = new Vector(new double[] { 1, 0.5, 1 });
+    Vector v3     = new Vector(new double[] { 1, 1, 0.5 });
 
     List<Vector> S = new List<Vector>()
       {
@@ -762,57 +830,118 @@ public class GW_Tests
 
     SwarmShuffle(S, "SomeParallelogram");
   }
-  #endregion
+#endregion
 
 
-  private static void Check(List<Vector> S
-                          , List<Vector> Answer
-                          , uint seed
-                          , int PDim
-                          , int nPoints
-                          , List<int> fID
-                          , bool needShuffle = false)
-  {
-    ConvexPolytop? P;
-    try
-    {
-      if (needShuffle)
-      {
-        SortedSet<Vector> origS = new SortedSet<Vector>(S);
-        S.Shuffle(new RandomLC(seed));
-        Debug.Assert(origS.SetEquals(S));
-      }
+  /// <summary>
+  /// Procedure checks the answer obtained by Gift Wrapping algorithm and the answer given by user.
+  /// </summary>
+  /// <param name="S">The swarm to convexify.</param>
+  /// <param name="Answer">The final list of points.</param>
+  /// <param name="seed"></param>
+  /// <param name="PDim"></param>
+  /// <param name="nPoints"></param>
+  /// <param name="fID"></param>
+  /// <param name="numberHRep"></param>
+  /// <param name="numberFVec"></param>
+  private static void Check(
+      List<Vector> S
+    , List<Vector> Answer
+    , uint         seed
+    , int          PDim
+    , int          nPoints
+    , List<int>    fID
+    , int          numberHRep
+    , int          numberFVec
+    ) {
+    ShiftAndRotate(PDim, ref Answer, ref S);
+    S.Shuffle(_random);
 
-      P = ConvexPolytop.CreateFromPoints(S, true);
-      Debug.Assert(P is not null, nameof(P) + " is null");
+    ConvexPolytop P;
+    try { P = ConvexPolytop.CreateFromPoints(S, true); }
+    catch (Exception e) {
+      GenTest
+        (
+         seed
+       , PDim
+       , nPoints
+       , fID
+       , numberHRep
+       , numberFVec
+        );
+
+      throw new ArgumentException($"Error in gift wrapping!\n{e.Message}");
     }
-    catch (Exception e)
-    {
-      Console.WriteLine("Gift wrapping does not succeed!");
-      GenTest(seed, PDim, nPoints, fID, needShuffle);
 
-      Console.WriteLine(e.Message);
-
-      throw new ArgumentException("Error in gift wrapping!");
+    try {
+      Assert.That(P.Vrep.SetEquals(Answer));
     }
-
-    try
-    {
-      Assert.That(P.Vrep.SetEquals(Answer), "The set of vertices must be equal.");
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
-      GenTest(seed, PDim, nPoints, fID, needShuffle);
+    catch (Exception e) {
+      // Console.WriteLine("Gift wrapping success. But sets of vertices do not equal!");
+      GenTest
+        (
+         seed
+       , PDim
+       , nPoints
+       , fID
+       , numberHRep
+       , numberFVec
+        );
 
       Console.WriteLine(e.Message);
 
       throw new ArgumentException("The set of vertices must be equal.");
     }
+
+    try {
+      Assert.That(P.Hrep, Has.Count.EqualTo(numberHRep));
+    }
+    catch (Exception e) {
+      // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
+      GenTest
+        (
+         seed
+       , PDim
+       , nPoints
+       , fID
+       , numberHRep
+       , numberFVec
+        );
+
+      Console.WriteLine(e.Message);
+
+      throw new ArgumentException($"The half-spaces number must be equal to {numberHRep}.");
+    }
+
+    try {
+      Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(numberFVec));
+    }
+    catch (Exception e) {
+      // Console.WriteLine("Gift wrapping success. But half-spaces number is not equal!");
+      GenTest
+        (
+         seed
+       , PDim
+       , nPoints
+       , fID
+       , numberHRep
+       , numberFVec
+        );
+
+      Console.WriteLine(e.Message);
+
+      throw new ArgumentException($"The f-vector number must be equal to {numberFVec}.");
+    }
   }
 
-  private static void GenTest(uint seed, int PDim, int nPoints, List<int> fID, bool needShuffle)
-  {
+  private static void GenTest(
+      uint      seed
+    , int       PDim
+    , int       nPoints
+    , List<int> fID
+    , int       numberHRep
+    , int       numberFVec
+    ) {
     Console.WriteLine();
     Console.WriteLine($"[Test]");
     Console.WriteLine("public void Aux() {");
@@ -820,18 +949,26 @@ public class GW_Tests
     Console.WriteLine($"const int PDim    = {PDim};");
     Console.WriteLine($"const int nPoints = {nPoints};");
     Console.WriteLine($"List<int> fID     = new List<int>() {{ {string.Join(", ", fID)} }};");
+
+    Console.WriteLine($"GRandomLC random = new GRandomLC({seed});");
+
+
     Console.WriteLine();
-    Console.WriteLine("List<Vector> S = TYPE_OF_POLYTOP(PDim, out List<Vector> polytop, fID, nPoints, seed);");
+    Console.WriteLine("List<Vector> S = ИМЯ_ФУНКЦИИ_ГЕНЕРАТОРА(PDim, out List<Vector> polytop, fID, nPoints, random);");
+    Console.WriteLine($"ShiftAndRotate({PDim}, ref polytop, ref S, random);");
+    Console.WriteLine("S.Shuffle(random);");
 
-
-    if (needShuffle)
-    {
-      Console.WriteLine("List<Vector> origS = new List<Vector>(S);");
-      Console.WriteLine("S.Shuffle(new RandomLC(seed));");
-    }
     Console.WriteLine();
     Console.WriteLine("ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);");
-    Console.WriteLine("Assert.That(P.Vrep.SetEquals(polytop));");
+    Console.WriteLine($"Assert.That(P.Vrep.SetEquals(polytop), \"The set of vertices must be equal.\");");
+    Console.WriteLine
+      (
+       $"Assert.That(P.Hrep, Has.Count.EqualTo({numberHRep}), $\"The number of facets of the cube must be equal to {numberHRep}.\");"
+      );
+    Console.WriteLine
+      (
+       $"Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo({numberFVec}), $\"The number of faces of the cube must be equal to {numberFVec}.\");"
+      );
     Console.WriteLine("}");
     Console.WriteLine();
   }
