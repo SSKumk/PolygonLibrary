@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public SubPoint SubPoint { get; }
 
     /// <summary>
-    /// Construct a aux point, based on given sub-point, which dimension should equals to 2.
+    /// Construct an aux point, based on given sub-point, which dimension should equal to 2.
     /// </summary>
     /// <param name="subPoint"></param>
     public SubPoint2D(SubPoint subPoint) : base(subPoint[0], subPoint[1]) { SubPoint = subPoint; }
