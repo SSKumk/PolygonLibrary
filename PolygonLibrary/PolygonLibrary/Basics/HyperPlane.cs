@@ -33,7 +33,7 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis AffBasis {
       get
         {
-          if (_affineBasis is null) {
+          if (_affBasis is null) {
             Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Affine basis is null. Can't construct the Normal.");
 
             LinearBasis normalBasis = new LinearBasis(Normal);
@@ -45,16 +45,16 @@ public partial class Geometry<TNum, TConv>
               lb.AddVector(Q.TakeVector(i), false);
             }
 
-            _affineBasis = new AffineBasis(Origin, lb);
+            _affBasis = new AffineBasis(Origin, lb);
 
             CheckCorrectness(this);
           }
 
-          return _affineBasis;
+          return _affBasis;
         }
     }
 
-    private AffineBasis? _affineBasis = null;
+    private AffineBasis? _affBasis = null;
 
     /// <summary>
     /// The normal vector to the hyperplane.
@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_normal is null) {
-            Debug.Assert(_affineBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
+            Debug.Assert(_affBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
             _normal = LinearBasis.FindOrthonormalVector(AffBasis.LinBasis);
 #if DEBUG
             Debug.Assert
@@ -98,7 +98,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
     /// <summary>
-    /// Constructs a hyperplane from a given point and normal vector.
+    /// Constructs a hyperplane from a normal vector and a given point.
     /// </summary>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="origin">The point through which the hyperplane passes.</param>
@@ -114,7 +114,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a hyperplane from a normal vector and the constant term.
+    /// Constructs a hyperplane from a normal vector and a constant term.
     /// </summary>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
@@ -134,20 +134,20 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Constructs a hyperplane from a given affine basis.
     /// </summary>
-    /// <param name="affineBasis">The affine basis that defines the hyperplane.</param>
+    /// <param name="affBasis">The affine basis that defines the hyperplane.</param>
     /// <param name="toOrient">A pair to orient the HyperPlane explicitly.
     /// If not null, the point part of the pair should belong to the positive semi-space
     /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
-    public HyperPlane(AffineBasis affineBasis, (Vector point, bool isPositive)? toOrient = null) {
+    public HyperPlane(AffineBasis affBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
-         affineBasis.SubSpaceDim == affineBasis.Origin.Dim - 1
-       , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affineBasis.Origin.Dim - 1} independent vectors in its basis. Found {affineBasis.SubSpaceDim}"
+         affBasis.SubSpaceDim == affBasis.Origin.Dim - 1
+       , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.Dim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
         );
 
-      Origin       = affineBasis.Origin;
-      _affineBasis = affineBasis;
-      SubSpaceDim  = Origin.Dim - 1;
+      Origin      = affBasis.Origin;
+      _affBasis   = affBasis;
+      SubSpaceDim = Origin.Dim - 1;
 
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
@@ -195,7 +195,6 @@ public partial class Geometry<TNum, TConv>
     /// <param name="point">The point at which the equation is to be evaluated.</param>
     /// <returns>The value of the equation of the hyperplane at the given point.</returns>
     public TNum Eval(Vector point) { return Normal * point - ConstantTerm; }
-
 
     /// <summary>
     /// Checks if the hyperplane contains a given point.
@@ -289,6 +288,7 @@ public partial class Geometry<TNum, TConv>
     public static HyperPlane Make3D_xyParallel(TNum z) => new(Vector.MakeOrth(3, 3), z * Vector.MakeOrth(3, 3));
 #endregion
 
+#region Overrides
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
@@ -303,6 +303,16 @@ public partial class Geometry<TNum, TConv>
       return Tools.EQ(this.ConstantTerm, other.ConstantTerm) && this.Normal == other.Normal;
     }
 
+
+    public override int GetHashCode() => HashCode.Combine(SubSpaceDim, SpaceDim);
+#endregion
+
+
+    /// <summary>
+    /// Validates the correctness of the provided hyperplane.
+    /// </summary>
+    /// <param name="hp">The hyperplane to be checked.</param>
+    /// <exception cref="ArgumentException">Thrown if the hyperplane is incorrect.</exception>
     private static void CheckCorrectness(HyperPlane hp) {
       AffineBasis.CheckCorrectness(hp.AffBasis);
 
