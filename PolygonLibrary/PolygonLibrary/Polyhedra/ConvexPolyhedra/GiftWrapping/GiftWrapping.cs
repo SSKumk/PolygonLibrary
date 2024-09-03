@@ -97,22 +97,21 @@ public partial class Geometry<TNum, TConv>
       switch (Swarm.Count) {
         // Пока не будет SubBaseCP размерности 0.
         case 0: throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
-        // SOrig = new SortedSet<Vector>(Swarm);
         case 1:
           BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
 
           break;
         default: {
           // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
-          SortedSet<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null)).ToSortedSet();
+          IEnumerable<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null));
           AffineBasis         AffineS = new AffineBasis(S);
           if (AffineS.SubSpaceDim < AffineS.SpaceDim) {
             // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
             // уходим в подпространство и там овыпукляем.
-            S = S.Select(s => s.ProjectTo(AffineS)).ToSortedSet();
+            S = S.Select(s => s.ProjectTo(AffineS));
           }
 
-          GiftWrappingMain gwSwarm = new GiftWrappingMain(S);
+          GiftWrappingMain gwSwarm = new GiftWrappingMain(S.ToSortedSet());
           BuiltPolytop = gwSwarm.BuiltPolytop;
 
           break;
@@ -144,7 +143,7 @@ public partial class Geometry<TNum, TConv>
       /// <summary>
       /// The set of faces of the current dimension being constructed.
       /// </summary>
-      private readonly SortedSet<BaseSubCP> buildFaces = new SortedSet<BaseSubCP>(); // Копим грани текущей размерности.
+      private readonly List<BaseSubCP> buildFaces = new List<BaseSubCP>(); // Копим грани текущей размерности.
 
       /// <summary>
       /// The set of points used for constructing the d-polytop.
@@ -175,6 +174,8 @@ public partial class Geometry<TNum, TConv>
         spaceDim      = S.First().Dim;
         this.initFace = initFace;
 
+        Debug.Assert(new AffineBasis(Swarm).SubSpaceDim == spaceDim, $"GiftWrappingMain: span(Swarm) does not form a d-polytop in d-space!");
+
         BuiltPolytop = GW();
       }
 #endregion
@@ -189,11 +190,7 @@ public partial class Geometry<TNum, TConv>
           return new SubTwoDimensionalEdge(S.Min()!, S.Max()!);
         }
         if (spaceDim == 2) {
-          // Если d == 2, то пользуемся плоскостным алгоритмом овыпукления.
-          // Для этого проецируем точки, а так как наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
-          List<Vector2D> convexPolygon2D = Convexification.GrahamHull(S.Select(s => new SubPoint2D(s)));
-
-          return new SubTwoDimensional(convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToArray());
+          return new SubTwoDimensional(S);
         }
         // if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
         //  // todo А что делать в случае симплекса? 1. Что с нормалями к гипер-граням?
@@ -201,6 +198,7 @@ public partial class Geometry<TNum, TConv>
 
         // Создаём начальную грань. (Либо берём, если она передана).
         initFace ??= BuildFace(BuildInitialPlane(out Vector normal), normal);
+        Debug.Assert(initFace.Vertices.Count >= spaceDim);
         buildFaces.Add(initFace);
         buildPoints.UnionWith(initFace.Vertices);
 
@@ -245,6 +243,7 @@ public partial class Geometry<TNum, TConv>
             BaseSubCP nextFace = RollOverEdge(face, edge, out Vector n);
             nextFace.Normal = n;
 
+            Debug.Assert(nextFace.Vertices.Count >= spaceDim);
             buildFaces.Add(nextFace);
             buildPoints.UnionWith(nextFace.Vertices);
 
@@ -272,6 +271,7 @@ public partial class Geometry<TNum, TConv>
         foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
           incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
         }
+
         return new SubPolytop(buildFaces, incidence, buildPoints);
       }
 
@@ -322,12 +322,12 @@ public partial class Geometry<TNum, TConv>
             );
 
           // НАЧАЛЬНАЯ Нормаль Наша (точная)
-          // n = LinearBasis.FindOrthonormalVector(FinalV.LinBasis)!;
-          // Debug.Assert(n is not null,"GiftWrapping.BuildInitialPlane: Normal to initial plane is null.");
+          // Temp / Final как-то через это надо
 
           //НАЧАЛЬНАЯ Нормаль по Сварту
-          r = r.Normalize();
-          n = (r! * n) * e - (r! * e) * n;
+          r = r!.Normalize();
+          n = (r * n) * e - (r * e) * n;
+          n = n.Normalize();
 
           OrientNormal(ref n, origin);
 #if DEBUG
@@ -338,8 +338,6 @@ public partial class Geometry<TNum, TConv>
               );
           }
 #endif
-
-          Debug.Assert(!n.IsZero, $"BuildInitialPlan (dim = {spaceDim}): Normal is zero!");
         }
 
         normal = n;
@@ -478,7 +476,7 @@ public partial class Geometry<TNum, TConv>
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
             (
-             "GiftWrappingMain.CalcOuterNormal: All points from S lies in initial plane! There are no convex hull of full dimension."
+             "GiftWrappingMain.CalcOuterNormal: All points from S lies in face! There are no convex hull of full dimension."
             );
         }
 #endif
@@ -492,6 +490,8 @@ public partial class Geometry<TNum, TConv>
       /// <param name="normal">The normal to orient.</param>
       /// <param name="origin">A point from S.</param>
       private void OrientNormal(ref Vector normal, Vector origin) {
+        Debug.Assert(Tools.EQ(normal.Length, Tools.One), "OrientNormal: normal is not unite!");
+
         foreach (SubPoint s in S) {
           TNum dot = (s - origin) * normal;
 
