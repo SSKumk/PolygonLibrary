@@ -128,7 +128,7 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       for (int i = 0; i < d; i++) {
-        res = Tools.CMP(this[i], other[i]);
+        res = Tools.CMP(this[i], other![i]);
 
         if (res != 0) {
           return res;
