@@ -143,20 +143,25 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false);
 
               // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-              IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+              SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
+              xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
+              yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+
+              // IEnumerable<FLNode> xiSuper  = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              // IEnumerable<FLNode> yjSuper  = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
               // F = x >= f' > f = xi
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
-              foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+              foreach (Vector? x_InnerPoint in xiSuper_clone.Select(n => n.InnerPoint)) {
                 xCheck = xCheck && A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint));
               }
 
               // G = y >= g' > g = yj
               // InnerPoint(g') + InnerPoint(f) \in A^-
               bool yCheck = true;
-              foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
+              foreach (Vector? y_InnerPoint in yjSuper_clone.Select(n => n.InnerPoint)) {
                 yCheck = yCheck && A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint));
               }
 
