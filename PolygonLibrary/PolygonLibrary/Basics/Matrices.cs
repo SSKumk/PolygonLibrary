@@ -498,7 +498,7 @@ public partial class Geometry<TNum, TConv>
         throw new ArgumentException("Cannot concatenate horizontally matrices with different number of rows");
       }
 #endif
-      int    r  = m1.Rows, c1 = m1.Cols, c2 = m2.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
+      int    r  = m1!.Rows, c1 = m1.Cols, c2 = m2!.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < r; i++) {
