@@ -294,7 +294,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e = LinearBasis.FindOrthonormalVector(new LinearBasis(FinalV.LinBasis, new LinearBasis(n)));
+          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector();
 
           Vector?   r      = null; // нужен для процедуры Сварта (ниже)
           TNum      minCos = Tools.Two;
@@ -411,7 +411,7 @@ public partial class Geometry<TNum, TConv>
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
         AffineBasis edgeAffBasis = new AffineBasis(edge.Vertices);
         SubPoint    f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector      v            = LinearBasis.OrthonormalizeAgainstBasis(f - edgeAffBasis.Origin, edgeAffBasis.LinBasis);
+        Vector      v            = edgeAffBasis.LinBasis.Orthonormalize(f - edgeAffBasis.Origin);
 
         Debug.Assert(Tools.GT((f - edgeAffBasis.Origin) * v));
 

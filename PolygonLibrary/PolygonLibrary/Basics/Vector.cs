@@ -414,7 +414,7 @@ public partial class Geometry<TNum, TConv>
     // /// <param name="v">The input vector to orthonormalize.</param>
     // /// <param name="Basis">The basis to orthonormalize against.</param>
     // /// <returns>The resulting orthonormalized vector. If the basis is empty, returns normalized vector.</returns>
-    // public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis) {
+    // public static Vector Orthonormalize(Vector v, IEnumerable<Vector> Basis) {
     //   TNum[] res = v.GetAsArray();
     //   foreach (Vector bvec in Basis) {
     //     Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
@@ -439,8 +439,8 @@ public partial class Geometry<TNum, TConv>
     // /// <param name="Basis1">The first basis to orthonormalize against.</param>
     // /// <param name="Basis2">The second basis to orthonormalize against.</param>
     // /// <returns></returns>
-    // public static Vector OrthonormalizeAgainstBasis(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
-    //   return OrthonormalizeAgainstBasis(OrthonormalizeAgainstBasis(v, Basis1), Basis2);
+    // public static Vector Orthonormalize(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
+    //   return Orthonormalize(Orthonormalize(v, Basis1), Basis2);
     // }
     //
     // /// <summary>
@@ -449,11 +449,11 @@ public partial class Geometry<TNum, TConv>
     // /// <param name="Vs">The input collection of vectors to orthonormalize.</param>
     // /// <param name="Basis">The basis to orthonormalize against.</param>
     // /// <returns>The resulting collection of orthonormalized vectors. If the basis is empty returns normalized vectors.</returns>
-    // public static IEnumerable<Vector> OrthonormalizeAgainstBasis(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
+    // public static IEnumerable<Vector> Orthonormalize(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
     //   List<Vector> res = new List<Vector>();
     //
     //   foreach (Vector v in Vs) {
-    //     res.Add(OrthonormalizeAgainstBasis(v, Basis, res));
+    //     res.Add(Orthonormalize(v, Basis, res));
     //   }
     //
     //   return res;
@@ -498,7 +498,7 @@ public partial class Geometry<TNum, TConv>
 //       List<Vector> Basis = BasisInit.ToList();
 //
 //       foreach (Vector v in V) {
-//         Vector conceivable = OrthonormalizeAgainstBasis(v, Basis);
+//         Vector conceivable = Orthonormalize(v, Basis);
 //
 //         if (!conceivable.IsZero) {
 //           Basis.Add(conceivable);

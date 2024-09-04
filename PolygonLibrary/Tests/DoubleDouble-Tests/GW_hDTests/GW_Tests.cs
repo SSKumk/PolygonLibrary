@@ -38,8 +38,8 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const int  PDim    = 4;
-    const int  nPoints = 2000;
+    const int PDim    = 4;
+    const int nPoints = 2000;
     List<int> fID = new List<int>()
       {
         1
@@ -743,9 +743,9 @@ public class GW_Tests {
 
     AffineBasis ABDbasis = new AffineBasis(new List<Vector>() { S[2], S[0], S[4] });
 
-    Vector BC = LinearBasis.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.LinBasis);
-    Vector BX = LinearBasis.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.LinBasis);
-    Vector BF = LinearBasis.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.LinBasis);
+    Vector BC = ABDbasis.LinBasis.Orthonormalize(S[3] - S[2]);
+    Vector BX = ABDbasis.LinBasis.Orthonormalize(S[1] - S[2]);
+    Vector BF = ABDbasis.LinBasis.Orthonormalize(S[7] - S[2]);
 
     ddouble angleCBX = ddouble.Acos(BC * BX);
     ddouble angleCBF = ddouble.Acos(BC * BF);

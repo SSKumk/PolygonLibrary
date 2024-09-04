@@ -64,7 +64,7 @@ public partial class Geometry<TNum, TConv>
         {
           if (_normal is null) {
             Debug.Assert(_affBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
-            _normal = LinearBasis.FindOrthonormalVector(AffBasis.LinBasis);
+            _normal = AffBasis.LinBasis.FindOrthonormalVector();
 #if DEBUG
             Debug.Assert
               (

@@ -962,7 +962,7 @@ public partial class Geometry<TNum, TConv>
 
 
           // ищем направляющий вектор прямой, перпендикулярный линейному пространству edge
-          Vector v = LinearBasis.FindOrthonormalVector(edgeLinSpace);
+          Vector v = edgeLinSpace.FindOrthonormalVector();
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;

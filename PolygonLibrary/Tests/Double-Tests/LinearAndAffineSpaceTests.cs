@@ -15,9 +15,9 @@ public class LinearSpaceTests
     LinearBasis lb3 = new LinearBasis(5, 3);
 
 
-    LinearBasis? oc_lb1 = LinearBasis.FindOrthogonalComplement(lb1);
-    LinearBasis? oc_lb2 = LinearBasis.FindOrthogonalComplement(lb2);
-    LinearBasis? oc_lb3 = LinearBasis.FindOrthogonalComplement(lb3);
+    LinearBasis? oc_lb1 = lb1.FindOrthogonalComplement();
+    LinearBasis? oc_lb2 = lb2.FindOrthogonalComplement();
+    LinearBasis? oc_lb3 = lb3.FindOrthogonalComplement();
 
     Assert.That(oc_lb1!.Equals(lb2));
 

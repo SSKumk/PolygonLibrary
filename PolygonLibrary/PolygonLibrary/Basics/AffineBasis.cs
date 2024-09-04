@@ -6,16 +6,14 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum>
-{
+  where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents an affine basis.
+  /// Represents an affine basis (origin, linear basis).
   /// </summary>
-  public class AffineBasis : IEnumerable
-  {
+  public class AffineBasis : IEnumerable {
 
-    #region Data and Properties
+#region Data and Properties
     /// <summary>
     /// Gets the origin point of the affine basis.
     /// </summary>
@@ -51,17 +49,16 @@ public partial class Geometry<TNum, TConv>
     /// The linear basis associated with the affine basis.
     /// </summary>
     public LinearBasis LinBasis { get; }
-    #endregion
+#endregion
 
-    #region Functions
+#region Functions
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
     /// </summary>
     /// <param name="v">The vector to add.</param>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
-    public bool AddVector(Vector v, bool orthogonalize = true)
-    {
+    public bool AddVector(Vector v, bool orthogonalize = true) {
       Debug.Assert(Origin.Dim == v.Dim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
 
       bool isAdded = LinBasis.AddVector(v, orthogonalize);
@@ -74,8 +71,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point to project.</param>
     /// <returns>The projected point.</returns>
-    public Vector ProjectVector(Vector point)
-    {
+    public Vector ProjectVector(Vector point) {
       Debug.Assert
         (
          SpaceDim == point.Dim
@@ -85,8 +81,7 @@ public partial class Geometry<TNum, TConv>
       Vector t = point - Origin;
 
       TNum[] np = new TNum[SubSpaceDim];
-      for (int i = 0; i < SubSpaceDim; i++)
-      {
+      for (int i = 0; i < SubSpaceDim; i++) {
         np[i] = LinBasis[i] * t;
       }
 
@@ -98,21 +93,18 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The set of points to project.</param>
     /// <returns>The projected points.</returns>
-    public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm)
-    {
-      foreach (Vector point in Swarm)
-      {
+    public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm) {
+      foreach (Vector point in Swarm) {
         yield return ProjectVector(point);
       }
     }
 
     /// <summary>
-    /// Translates given point from current coordinate system to the original one.
+    /// Translates given point from the current coordinate system to the original one.
     /// </summary>
     /// <param name="point">The point should be written in terms of this affine basis.</param>
     /// <returns>The point expressed in terms of the original affine system.</returns>
-    public Vector TranslateToOriginal(Vector point)
-    {
+    public Vector TranslateToOriginal(Vector point) {
       Debug.Assert
         (
          SubSpaceDim == point.Dim
@@ -120,8 +112,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       Vector np = new Vector(Origin);
-      for (int i = 0; i < SubSpaceDim; i++)
-      {
+      for (int i = 0; i < SubSpaceDim; i++) {
         np += point[i] * this[i];
       }
 
@@ -129,14 +120,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Translates given set of points from current coordinate system to the original one.
+    /// Translates given set of points from the current coordinate system to the original one.
     /// </summary>
     /// <param name="Ps">Points should be written in terms of this affine basis.</param>
     /// <returns>Points expressed in terms of the original affine system.</returns>
-    public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps)
-    {
-      foreach (Vector point in Ps)
-      {
+    public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps) {
+      foreach (Vector point in Ps) {
         yield return TranslateToOriginal(point);
       }
     }
@@ -146,17 +135,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
-    public bool Contains(Vector p) => LinBasis.IsContains(p - Origin);
-    #endregion
+    public bool Contains(Vector p) => LinBasis.Contains(p - Origin);
+#endregion
 
-    #region Constructors
+#region Constructors
     /// <summary>
     /// Construct the new affine basis of full dim with d-dim zero origin and d-orth
     /// </summary>
     /// <param name="vecDim">The dimension of the basis</param>
-    public AffineBasis(int vecDim)
-    {
-      Origin = new Vector(vecDim);
+    public AffineBasis(int vecDim) {
+      Origin   = new Vector(vecDim);
       LinBasis = new LinearBasis(vecDim, vecDim);
     }
 
@@ -164,9 +152,8 @@ public partial class Geometry<TNum, TConv>
     /// Construct the new affine basis with the specified origin point.
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
-    public AffineBasis(Vector o)
-    {
-      Origin = o;
+    public AffineBasis(Vector o) {
+      Origin   = o;
       LinBasis = new LinearBasis(o.Dim, 0);
     }
 
@@ -175,9 +162,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis)
-    {
-      Origin = o;
+    public AffineBasis(Vector o, LinearBasis lBasis) {
+      Origin   = o;
       LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
 
 
@@ -191,11 +177,10 @@ public partial class Geometry<TNum, TConv>
     /// The first point is interpreted as origin.
     /// </summary>
     /// <param name="Ps">The points to construct the affine basis.</param>
-    public AffineBasis(IEnumerable<Vector> Ps)
-    {
+    public AffineBasis(IEnumerable<Vector> Ps) {
       Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
-      Origin = Ps.First();
+      Origin   = Ps.First();
       LinBasis = new LinearBasis(Ps.Select(v => v - Origin));
 
 
@@ -208,18 +193,17 @@ public partial class Geometry<TNum, TConv>
     /// Copy constructor.
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
-    public AffineBasis(AffineBasis affineBasis)
-    {
-      Origin = affineBasis.Origin;
+    public AffineBasis(AffineBasis affineBasis) {
+      Origin   = affineBasis.Origin;
       LinBasis = new LinearBasis(affineBasis.LinBasis);
 
 #if DEBUG
       CheckCorrectness(this);
 #endif
     }
-    #endregion
+#endregion
 
-    #region Fabrics
+#region Fabrics
     /// <summary>
     /// Produce the new affine basis with the specified origin point and specified vectors.
     /// </summary>
@@ -227,8 +211,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
     /// <returns>The affine basis.</returns>
-    public static AffineBasis AsVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true)
-    {
+    public static AffineBasis AsVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
       return new AffineBasis(o, new LinearBasis(Vs, orthogonalize));
     }
 
@@ -236,22 +219,23 @@ public partial class Geometry<TNum, TConv>
     /// Produce the new affine basis which is the span of {o, Ps}.
     /// </summary>
     /// <param name="o">The origin of the affine basis.</param>
-    /// <param name="Ps">The points which lies in affine space.</param>
+    /// <param name="Ps">The points that lie in affine space.</param>
     /// <returns>The affine basis.</returns>
-    public static AffineBasis AsPoints(Vector o, IEnumerable<Vector> Ps)
-    {
+    public static AffineBasis AsPoints(Vector o, IEnumerable<Vector> Ps) {
       return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)));
     }
-    #endregion
+#endregion
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the linear basis of an affine basis as an IEnumerable.
+    /// </summary>
+    public IEnumerator GetEnumerator() { return LinBasis.GetEnumerator(); }
 
     /// <summary>
     /// Method to check then the basis is correct
     /// </summary>
     /// <param name="affineBasis">Basis to be checked</param>
     internal static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(affineBasis.LinBasis); }
-
-    //todo А как правильно тут vvv
-    public IEnumerator GetEnumerator() { return LinBasis.GetEnumerator(); }
 
   }
 

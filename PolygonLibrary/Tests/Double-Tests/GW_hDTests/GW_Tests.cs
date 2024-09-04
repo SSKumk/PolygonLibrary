@@ -702,9 +702,9 @@ public class GW_Tests {
   //
   //   AffineBasis ABDbasis = new AffineBasis(new List<Vector>() { S[2], S[0], S[4] });
   //
-  //   Vector BC = Vector.OrthonormalizeAgainstBasis(S[3] - S[2], ABDbasis.Basis);
-  //   Vector BX = Vector.OrthonormalizeAgainstBasis(S[1] - S[2], ABDbasis.Basis);
-  //   Vector BF = Vector.OrthonormalizeAgainstBasis(S[7] - S[2], ABDbasis.Basis);
+  //   Vector BC = Vector.Orthonormalize(S[3] - S[2], ABDbasis.Basis);
+  //   Vector BX = Vector.Orthonormalize(S[1] - S[2], ABDbasis.Basis);
+  //   Vector BF = Vector.Orthonormalize(S[7] - S[2], ABDbasis.Basis);
   //
   //   double angleCBX = double.Acos(BC * BX);
   //   double angleCBF = double.Acos(BC * BF);
