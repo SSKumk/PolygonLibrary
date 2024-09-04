@@ -149,21 +149,21 @@ public partial class Geometry<TNum, TConv>
 
       throw new InvalidOperationException($"BaseSubCP: Equals method is not supported for BaseSubCP");
 
-      if (obj == null || this.GetType() != obj.GetType()) {
-        return false;
-      }
-
-      BaseSubCP other = (BaseSubCP)obj;
-
-      if (this.PolytopDim != other.PolytopDim) {
-        return false;
-      }
-
-      if (this.SpaceDim != other.SpaceDim) {
-        return false;
-      }
-
-      return this.Vertices.SetEquals(other.Vertices);
+      // if (obj == null || this.GetType() != obj.GetType()) {
+      //   return false;
+      // }
+      //
+      // BaseSubCP other = (BaseSubCP)obj;
+      //
+      // if (this.PolytopDim != other.PolytopDim) {
+      //   return false;
+      // }
+      //
+      // if (this.SpaceDim != other.SpaceDim) {
+      //   return false;
+      // }
+      //
+      // return this.Vertices.SetEquals(other.Vertices);
     }
 
     public override int GetHashCode() => HashCode.Combine(Vertices.Count);
