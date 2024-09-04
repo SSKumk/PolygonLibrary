@@ -1,9 +1,8 @@
 using System.Globalization;
 using Tests.ToolsTests;
-// using System.Numerics;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-// using static CGLibrary.Geometry<double, Tests.DConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
 namespace Profile;
@@ -16,7 +15,6 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    Tools.Eps = 1e-16;
 
 
     string materialdot_path =
@@ -24,11 +22,14 @@ class Program {
 
 
 
-    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot1-0.9-supG");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator-1-0.9");
+    SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
+    // Tools.Eps = 1e-16;
     // solverLdg.Solve(false, true, false);
-    // solverLdg.Solve(true, true, false);
+    Tools.Eps = 1e-8;
+    solverLdg.Solve(false, true, true);
   }
 
 }
