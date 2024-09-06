@@ -20,18 +20,27 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The constructed face lattice.</returns>
     public FaceLattice ConstructFL() {
-      if (BuiltPolytop.OriginalVertices.Count == 1) {
+      if (BuiltPolytop.PolytopDim == 0) {
         return new FaceLattice(BuiltPolytop.OriginalVertices.First());
       }
 
-      List<SortedSet<FLNode>> lattice = new List<SortedSet<FLNode>>();
-      for (int i = 0; i < BuiltPolytop.PolytopDim + 1; i++) {
-        lattice.Add(new SortedSet<FLNode>());
+      int d = BuiltPolytop.PolytopDim;
+      List<SortedSet<BaseSubCP>> lattice = new List<SortedSet<BaseSubCP>>();
+      for (int i = 0; i <= BuiltPolytop.PolytopDim; i++) {
+        lattice.Add(new SortedSet<BaseSubCP>());
       }
 
-      ConstructFLN(BuiltPolytop, ref lattice);
+      // добавили себя
+      lattice[d].Add(BuiltPolytop);
 
-      return new FaceLattice(lattice);
+      // собираем низ
+      SortedSet<BaseSubCP> prevCP = BuiltPolytop.Faces!.ToSortedSet();
+      for (int i = d - 1; i >= 0; i--) {
+        lattice[i] = prevCP;
+        prevCP = prevCP.SelectMany(node => node.Faces is null ? new List<BaseSubCP>() : node.Faces!).ToSortedSet();
+      }
+
+      return FaceLattice.ConstructFromBaseSubCP(lattice);
     }
 
     /// <summary>
@@ -267,12 +276,12 @@ public partial class Geometry<TNum, TConv>
         } while (toTreat.Count != 0);
 
         // Подготавливаем и собираем многогранник из накопленных граней
-        SubIncidenceInfo incidence = new SubIncidenceInfo();
-        foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
-          incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
-        }
+        // SubIncidenceInfo incidence = new SubIncidenceInfo();
+        // foreach (KeyValuePair<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> pair in buildIncidence) {
+        //   incidence.Add(pair.Key, (pair.Value.F1, pair.Value.F2)!);
+        // }
 
-        return new SubPolytop(buildFaces, incidence, buildPoints);
+        return new SubPolytop(buildFaces, buildPoints);
       }
 
       /// <summary>
@@ -506,12 +515,12 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-#if DEBUG
+// #if DEBUG
         HyperPlane hp = new HyperPlane(normal, origin);
         if (!S.All(s => hp.ContainsNegativeNonStrict(s))) {
           throw new ArgumentException("GiftWrapping.OrientNormal: The normal does not form a facet!");
         }
-#endif
+// #endif
       }
 #endregion
 

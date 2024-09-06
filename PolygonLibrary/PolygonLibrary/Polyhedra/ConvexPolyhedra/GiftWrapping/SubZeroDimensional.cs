@@ -8,10 +8,10 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents a vertex of the polytop.
   /// </summary>
-  internal class SubZeroDimensional : BaseSubCP {
+  internal sealed class SubZeroDimensional : BaseSubCP {
 
     /// <summary>
-    /// Gets the dimension of the vertex. It equal to 0.
+    /// Gets the dimension of the vertex. It equals to 0.
     /// </summary>
     public override int PolytopDim => 0;
 
@@ -25,17 +25,12 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public override SortedSet<SubPoint> Vertices { get; }
 
-    private SubPoint vertex { get; }
+    public SubPoint vertex { get; }
 
     /// <summary>
     /// There are no Faces of the 0-dimensional vertex.
     /// </summary>
     public override List<BaseSubCP>? Faces => null;
-
-    /// <summary>
-    /// There are no Faces of the 0-dimensional vertex.
-    /// </summary>
-    public virtual SubIncidenceInfo? FaceIncidence => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubZeroDimensional"/> class.

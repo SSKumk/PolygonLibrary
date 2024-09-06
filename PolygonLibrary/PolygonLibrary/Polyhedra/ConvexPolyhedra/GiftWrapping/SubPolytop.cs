@@ -7,7 +7,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   /// <summary>
   /// The polytop that is not a simplex in d-dimensional space (3 and higher dimension).
   /// </summary>
-  internal class SubPolytop : BaseSubCP {
+  internal sealed class SubPolytop : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the polytop.
@@ -30,18 +30,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     public override List<BaseSubCP>? Faces { get; }
 
 
-    /// <summary>
-    /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
-    /// The second face can be equal to null if it is not constructed yet.
-    /// </summary>
-    public virtual SubIncidenceInfo? FaceIncidence { get; }
+    // /// <summary>
+    // /// Gets the dictionary, which key is (d-2)-dimensional edge and the value is a pair of incident (d-1)-dimensional faces.
+    // /// The second face can be equal to null if it is not constructed yet.
+    // /// </summary>
+    // public virtual SubIncidenceInfo? FaceIncidence { get; }
 
 
     public override BaseSubCP ToPreviousSpace() {
       Debug.Assert(Faces is not null,$"SubPolytop.ToPreviousSpace: Faces are null");
 
       List<BaseSubCP> faces = new List<BaseSubCP>(Faces.Select(F => F.ToPreviousSpace()));
-      return new SubPolytop(faces, FaceIncidence!);
+      return new SubPolytop(faces);
     }
 
     public override BaseSubCP ProjectTo(AffineBasis aBasis) {
@@ -50,16 +50,15 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(aBasis));
       List<BaseSubCP> faces = new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
 
-      return new SubPolytop(faces, FaceIncidence!, new SortedSet<SubPoint>(Vs));
+      return new SubPolytop(faces, new SortedSet<SubPoint>(Vs));
     }
 
     /// <summary>
     /// Construct a new instance of the <see cref="SubPolytop"/> class based on its faces.
     /// </summary>
     /// <param name="faces">Faces to construct the convex polytop</param>
-    /// <param name="incidence">Information about face incidence.</param>
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
-    public SubPolytop(List<BaseSubCP> faces, SubIncidenceInfo incidence, SortedSet<SubPoint>? Vs = null) {
+    public SubPolytop(List<BaseSubCP> faces, SortedSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
       Faces = faces;
 
@@ -68,11 +67,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
         foreach (BaseSubCP face in faces) {
           Vs.UnionWith(face.Vertices);
+          face.SuperFaces.Add(this);
         }
       }
 
-      FaceIncidence = incidence;
       Vertices = Vs;
+
+
     }
 
   }

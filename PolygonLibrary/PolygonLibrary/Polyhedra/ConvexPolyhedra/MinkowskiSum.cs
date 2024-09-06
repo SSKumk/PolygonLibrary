@@ -42,11 +42,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="P">The first polytope represented as a face lattice.</param>
     /// <param name="Q">The second polytope represented as a face lattice.</param>
-    /// <param name="isOnlyHRep">If the flag is set then only affine basis of facets will be computed and Hrep be produced.</param>
+    /// <param name="onlyHrep">If the flag is set then only affine basis of facets will be computed and Hrep be produced.</param>
     /// <returns>
     /// Returns a convex polytop defined by face lattice or Hrep.
     /// </returns>
-    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool isOnlyHRep = false) {
+    public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool onlyHrep = false) {
       // Вычисляю аффинное пространство суммы P и Q
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
 
@@ -55,7 +55,7 @@ public partial class Geometry<TNum, TConv>
       int         dim        = affinePQ.SubSpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
-        if (isOnlyHRep) {
+        if (onlyHrep) {
           List<HyperPlane> HPs = new List<HyperPlane>();
 
           int vecDim = affinePQ.Origin.Dim;
@@ -71,27 +71,28 @@ public partial class Geometry<TNum, TConv>
         return ConvexPolytop.CreateFromPoints(new List<Vector>() { P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint });
       }
 
+
       // z --> (x \in P, y \in Q) Словарь отображающий z \in P (+) Q в пару (x,y)
-      SortedDictionary<FLNode, (FLNode x, FLNode y)> zTo_xy = new SortedDictionary<FLNode, (FLNode x, FLNode y)>();
+      SortedDictionary<FLNodeSum, (FLNode x, FLNode y)> zTo_xy = new SortedDictionary<FLNodeSum, (FLNode x, FLNode y)>();
       // Словарь (x \in P, y \in Q) --> z \in P (+) Q. (Нужен для уменьшения перебора в процессе движения по решёткам)
-      SortedDictionary<(FLNode x, FLNode y), FLNode> xyToz = new SortedDictionary<(FLNode x, FLNode y), FLNode>();
+      SortedDictionary<(FLNode x, FLNode y), FLNodeSum> xyToz = new SortedDictionary<(FLNode x, FLNode y), FLNodeSum>();
       // Сама решётка. Где на i-ом уровне находится множество всех граней соответствующей размерности.
-      List<SortedSet<FLNode>> FL = new List<SortedSet<FLNode>>();
+      List<SortedSet<FLNodeSum>> FL = new List<SortedSet<FLNodeSum>>();
       for (int i = 0; i <= dim; i++) {
-        FL.Add(new SortedSet<FLNode>());
+        FL.Add(new SortedSet<FLNodeSum>());
       }
 
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new SortedSet<Vector> { innerPQ }, innerPQ, affinePQ);
+      FLNodeSum PQ      = new FLNodeSum(innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.FLrep.Top, Q.FLrep.Top));
       xyToz.Add((P.FLrep.Top, Q.FLrep.Top), PQ);
       FL[^1].Add(PQ);
 
       bool doNext = true;
       for (int d = dim - 1; d >= 0 && doNext; d--) {
-        foreach (FLNode z in FL[d + 1]) {
+        foreach (FLNodeSum z in FL[d + 1]) {
           // Будем описывать подграни по очереди для каждой грани с предыдущего уровня.
           (FLNode x, FLNode y) = zTo_xy[z];
 
@@ -118,7 +119,7 @@ public partial class Geometry<TNum, TConv>
               if (candAffBasis.SubSpaceDim != d) { continue; }
 
               { // 0+) Если такая пара граней уже встречалась, то строить её не надо, а надо установить связи
-                if (xyToz.TryGetValue((xi, yj), out FLNode? node_xiyj)) {
+                if (xyToz.TryGetValue((xi, yj), out FLNodeSum? node_xiyj)) {
                   // Устанавливаем связи
                   z.AddSub(node_xiyj);
                   node_xiyj.AddSuper(z);
@@ -143,18 +144,18 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false);
 
               // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-              // SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
-              // xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              // SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
-              // yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+              SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
+              xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
+              yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
-              IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+              // IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              // IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
               // F = x >= f' > f = xi
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
-              foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+              foreach (Vector? x_InnerPoint in xiSuper_clone.Select(n => n.InnerPoint)) {
                 if (!A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint))) {
                   xCheck = false;
 
@@ -165,7 +166,7 @@ public partial class Geometry<TNum, TConv>
               if (xCheck) {
                 // G = y >= g' > g = yj
                 // InnerPoint(g') + InnerPoint(f) \in A^-
-                foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
+                foreach (Vector? y_InnerPoint in yjSuper_clone.Select(n => n.InnerPoint)) {
                   if (!A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint))) {
                     yCheck = false;
 
@@ -181,10 +182,7 @@ public partial class Geometry<TNum, TConv>
               // Если такого узла ещё не было создано, то создаём его.
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
-              // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new SortedSet<Vector> { newInner }, newInner, candAffBasis);
-
-              // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
+              FLNodeSum node = new FLNodeSum(newInner, candAffBasis);
               FL[d].Add(node); // Добавляем узел в решётку
               // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
               zTo_xy.Add(node, (xi, yj));
@@ -198,10 +196,10 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-        if (isOnlyHRep) { doNext = false; }
+        if (onlyHrep) { doNext = false; }
       }
 
-      if (isOnlyHRep) {
+      if (onlyHrep) {
         return ConvexPolytop.CreateFromHalfSpaces
           (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
       }
@@ -210,7 +208,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
       // Наполняем все k-грани точками снизу-вверх.
-      return ConvexPolytop.CreateFromFaceLattice(new FaceLattice(FL).LinearVertexTransform(x => x));
+      return ConvexPolytop.CreateFromFaceLattice(FaceLattice.ConstructFromFLNodeSum(FL));
     }
 
   }

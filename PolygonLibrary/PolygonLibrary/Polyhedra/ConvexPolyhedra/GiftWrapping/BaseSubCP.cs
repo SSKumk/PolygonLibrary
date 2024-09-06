@@ -12,22 +12,22 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   internal class TempIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP? F2)> { }
 
-  /// <summary>
-  /// Type of permanent storage of face incidence information.
-  /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
-  /// </summary>
-  internal class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
+  // /// <summary>
+  // /// Type of permanent storage of face incidence information.
+  // /// For each pair (F1, F2) of incident faces, it is assumed that HashCode(F1) is less or equal than HashCode(F2)
+  // /// </summary>
+  // internal class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
+  // /// <para><b>Simplex</b> - the polytop is a simplex.</para>
   /// <summary>
-  /// <para><b>Simplex</b> - the polytop is a simplex.</para>
   /// <b>SubPolytop</b> - the polytop is a complex structure.
   /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
   /// <b>OneDimensional</b> - the polytop is a 1D-segment.
   /// </summary>
   public enum SubCPType {
 
-    Simplex
-  , SubPolytop
+    // Simplex,
+     SubPolytop
   , TwoDimensional
   , OneDimensional
   , ZeroDimensional
@@ -77,6 +77,11 @@ public partial class Geometry<TNum, TConv>
     public abstract List<BaseSubCP>? Faces { get; }
 
     /// <summary>
+    /// Gets the set of (d+1)-dimensional faces of the polytop.
+    /// </summary>
+    public virtual List<BaseSubCP> SuperFaces { get; } = new List<BaseSubCP>();
+
+    /// <summary>
     /// The outward normal of the (d-1)-dimensional polytop (face).
     /// </summary>
     public Vector? Normal { get; set; }
@@ -106,8 +111,8 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(BaseSubCP? other) {
       if (other is null) { return 1; } // null < this (always)
 
-      Debug.Assert(this.PolytopDim == other.PolytopDim, "BaseSubCP: The dimensions of the polytopes must be equal.");
-      Debug.Assert(this.SpaceDim == other.SpaceDim, "BaseSubCP: The dimensions of the spaces must be equal.");
+      // Debug.Assert(this.PolytopDim == other.PolytopDim, "BaseSubCP: The dimensions of the polytopes must be equal.");
+      // Debug.Assert(this.SpaceDim == other.SpaceDim, "BaseSubCP: The dimensions of the spaces must be equal.");
 
 
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
@@ -166,7 +171,7 @@ public partial class Geometry<TNum, TConv>
       // return this.Vertices.SetEquals(other.Vertices);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Vertices.Count);
+    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Vertices.Count);
 
   }
 

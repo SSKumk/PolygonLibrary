@@ -8,7 +8,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents convex two-dimensional polygon in a d-dimensional space.
   /// </summary>
-  internal class SubTwoDimensional : BaseSubCP {
+  internal sealed class SubTwoDimensional : BaseSubCP {
 
     /// <summary>
     /// Gets the dimension of the polygon. It equals to 2.
@@ -31,12 +31,6 @@ public partial class Geometry<TNum, TConv>
     public override List<BaseSubCP>? Faces { get; }
 
     /// <summary>
-    /// There is no such information needed: if necessary, the neighborhood of 2d faces is established trivially.
-    /// For GW algorithm, this information is needless.
-    /// </summary>
-    public virtual SubIncidenceInfo? FaceIncidence => null;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensional"/> class.
     /// </summary>
     /// <param name="Vs">The vertices list of the polygon.</param>
@@ -56,12 +50,17 @@ public partial class Geometry<TNum, TConv>
 
       Vertices = VsInOrder.ToSortedSet();
       Faces    = faces;
+
+      foreach (BaseSubCP face in faces) {
+        face.SuperFaces.Add(this);
+      }
     }
 
-    public SubTwoDimensional(List<BaseSubCP> faces) {
+    private SubTwoDimensional(List<BaseSubCP> faces) {
       SortedSet<SubPoint> Vs = new SortedSet<SubPoint>();
       foreach (BaseSubCP face in faces) {
         Vs.UnionWith(face.Vertices);
+        face.SuperFaces.Add(this);
       }
 
       Vertices = Vs;

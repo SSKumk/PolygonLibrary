@@ -1,16 +1,17 @@
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+public partial class Geometry<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
   /// Represents a one-dimensional edge of a convex polytope expressed in 2D-coordinates.
   /// </summary>
-  internal class SubTwoDimensionalEdge : BaseSubCP {
+  internal sealed class SubTwoDimensionalEdge : BaseSubCP {
 
     /// <summary>
-    /// Gets the dimension of the edge. It equal to 1.
+    /// Gets the dimension of the edge. It equals to 1.
     /// </summary>
     public override int PolytopDim => 1;
 
@@ -24,18 +25,13 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     public override SortedSet<SubPoint> Vertices { get; }
 
-    private SubPoint first { get; }
-    private SubPoint second { get; }
-
     /// <summary>
-    /// There are no Faces of the 1-dimensional edge.
+    /// Gets the faces of the 2d-edge.
     /// </summary>
-    public override List<BaseSubCP>? Faces => null;
+    public override List<BaseSubCP>? Faces { get; }
 
-    /// <summary>
-    /// There are no Faces of the 1-dimensional edge.
-    /// </summary>
-    public virtual SubIncidenceInfo? FaceIncidence => null;
+    private SubZeroDimensional first  => (SubZeroDimensional)Faces![0];
+    private SubZeroDimensional second => (SubZeroDimensional)Faces![1];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubTwoDimensionalEdge"/> class.
@@ -43,28 +39,28 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="first">The first vertex of the edge.</param>
     /// <param name="second">The second vertex of the edge.</param>
     public SubTwoDimensionalEdge(SubPoint first, SubPoint second) {
-      this.first = first;
-      this.second = second;
       SortedSet<SubPoint> vertices = new SortedSet<SubPoint>() { first, second };
       Vertices = vertices;
+
+      Faces = new List<BaseSubCP>() { new SubZeroDimensional(first), new SubZeroDimensional(second) };
+      Faces[0].SuperFaces.Add(this);
+      Faces[1].SuperFaces.Add(this);
     }
 
     /// <summary>
     /// Converts the edge to the previous space.
     /// </summary>
     /// <returns>The converted edge in the previous space.</returns>
-    public override BaseSubCP ToPreviousSpace() => new SubTwoDimensionalEdge(first.Parent!, second.Parent!);
+    public override BaseSubCP ToPreviousSpace()
+      => new SubTwoDimensionalEdge(first.ToPreviousSpace().Vertices.First(), second.ToPreviousSpace().Vertices.Last());
 
     /// <summary>
     /// Projects the edge to the specified affine basis.
     /// </summary>
     /// <param name="aBasis">The affine basis to project to.</param>
     /// <returns>The projected edge.</returns>
-    public override BaseSubCP ProjectTo(AffineBasis aBasis) => new SubTwoDimensionalEdge
-      (
-       first.ProjectTo(aBasis)
-     , second.ProjectTo(aBasis)
-      );
+    public override BaseSubCP ProjectTo(AffineBasis aBasis)
+      => new SubTwoDimensionalEdge(first.ProjectTo(aBasis).Vertices.First(), second.ProjectTo(aBasis).Vertices.Last());
 
   }
 
