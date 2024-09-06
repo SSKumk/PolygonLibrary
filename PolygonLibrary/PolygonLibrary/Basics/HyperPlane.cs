@@ -304,7 +304,7 @@ public partial class Geometry<TNum, TConv>
     }
 
 
-    public override int GetHashCode() => HashCode.Combine(SubSpaceDim, SpaceDim);
+    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(SubSpaceDim, SpaceDim);
 #endregion
 
 

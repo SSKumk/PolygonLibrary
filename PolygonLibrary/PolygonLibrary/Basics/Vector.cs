@@ -567,7 +567,7 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
-    public override int GetHashCode() => HashCode.Combine(IsZero, Dim);
+    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(IsZero, Dim);
 
     public override bool Equals(object? obj) {
 #if DEBUG

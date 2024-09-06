@@ -851,7 +851,7 @@ public partial class Geometry<TNum, TConv>
 
 
 #region Overrides
-    public override int GetHashCode() => HashCode.Combine(SpaceDim);
+    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(SpaceDim);
 
     //!!! Вообще говоря, сравнивать многогранники тяжело!!! Тут "какая-то наивная" реализация сравнения
     private bool Equals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
@@ -1025,7 +1025,9 @@ public partial class Geometry<TNum, TConv>
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
-              process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
+              orthToEdgeHPs.AddRange(zNewHPs);
+              process.Enqueue((zNew, orthToEdgeHPs));
+              // process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
             }
           }
         } while (J.Next());
