@@ -84,7 +84,7 @@ public partial class Geometry<TNum, TConv>
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
       Vector innerPQ = P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint;
-      FLNode PQ      = new FLNode(new SortedSet<Vector>{ innerPQ }, innerPQ, affinePQ);
+      FLNode PQ      = new FLNode(new SortedSet<Vector> { innerPQ }, innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.FLrep.Top, Q.FLrep.Top));
       xyToz.Add((P.FLrep.Top, Q.FLrep.Top), PQ);
       FL[^1].Add(PQ);
@@ -94,8 +94,8 @@ public partial class Geometry<TNum, TConv>
         foreach (FLNode z in FL[d + 1]) {
           // Будем описывать подграни по очереди для каждой грани с предыдущего уровня.
           (FLNode x, FLNode y) = zTo_xy[z];
-          // Аффинное пространство грани z (F(+)G в терминах Лемм)
 
+          // Аффинное пространство грани z (F(+)G в терминах Лемм)
           AffineBasis zSpace          = z.AffBasis;
           Vector      innerInAffine_z = zSpace.ProjectVector(z.InnerPoint);
 
@@ -143,26 +143,35 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false);
 
               // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-              SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
-              xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
-              yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+              // SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
+              // xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              // SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
+              // yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
-              // IEnumerable<FLNode> xiSuper  = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              // IEnumerable<FLNode> yjSuper  = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
+              IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
+              IEnumerable<FLNode> yjSuper = yj.Super.Intersect(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
               // F = x >= f' > f = xi
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
-              foreach (Vector? x_InnerPoint in xiSuper_clone.Select(n => n.InnerPoint)) {
-                xCheck = xCheck && A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint));
-              }
+              foreach (Vector? x_InnerPoint in xiSuper.Select(n => n.InnerPoint)) {
+                if (!A.ContainsNegative(zSpace.ProjectVector(x_InnerPoint + yj.InnerPoint))) {
+                  xCheck = false;
 
-              // G = y >= g' > g = yj
-              // InnerPoint(g') + InnerPoint(f) \in A^-
+                  break;
+                }
+              }
               bool yCheck = true;
-              foreach (Vector? y_InnerPoint in yjSuper_clone.Select(n => n.InnerPoint)) {
-                yCheck = yCheck && A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint));
+              if (xCheck) {
+                // G = y >= g' > g = yj
+                // InnerPoint(g') + InnerPoint(f) \in A^-
+                foreach (Vector? y_InnerPoint in yjSuper.Select(n => n.InnerPoint)) {
+                  if (!A.ContainsNegative(zSpace.ProjectVector(y_InnerPoint + xi.InnerPoint))) {
+                    yCheck = false;
+
+                    break;
+                  }
+                }
               }
 
               // Если условие Леммы 3 не выполняется, то xi+yj не может дать d-грань z
@@ -173,7 +182,7 @@ public partial class Geometry<TNum, TConv>
 
               Vector newInner = xi.InnerPoint + yj.InnerPoint;
               // newInner в качестве Polytop для FLNode это "костыль", чтобы правильно считался хеш и, притом, быстро.
-              FLNode node = new FLNode(new SortedSet<Vector>{ newInner }, newInner, candAffBasis);
+              FLNode node = new FLNode(new SortedSet<Vector> { newInner }, newInner, candAffBasis);
 
               // FLNode node = new FLNode(candidate, xi.InnerPoint + yj.InnerPoint, candBasis);
               FL[d].Add(node); // Добавляем узел в решётку
