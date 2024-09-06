@@ -116,11 +116,7 @@ public class GW_Tests {
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
   }
 
-  /// <summary>
-  /// Семена устанавливаются так: ТИП РАЗМЕРНОСТЬ НА_ГРАНЯХ_КАКИХ_РАЗМЕРНОСТЕЙ
-  /// 1 - куб
-  /// 2 - тетр
-  /// </summary>
+
   [Test]
   public void Cube3D_withInnerPoints_On_1D() {
     List<Vector> S = Cube01(3, out List<Vector> cube, new List<int>() { 1 }, 1, new GRandomLC(131));

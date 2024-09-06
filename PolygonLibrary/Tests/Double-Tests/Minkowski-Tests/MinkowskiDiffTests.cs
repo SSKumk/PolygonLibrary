@@ -38,7 +38,7 @@ public class MinkowskiDiff3D
            {
              case 0:
                Assert.That(diff is not null);
-               Assert.That(diff!.FLrep, Is.EqualTo(Cube3D_FL));
+               Assert.That(diff!.FLrep, Is.EqualTo(Cube3D.FLrep));
 
                break;
              case 1:

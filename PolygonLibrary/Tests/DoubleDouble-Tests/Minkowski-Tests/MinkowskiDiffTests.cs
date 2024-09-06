@@ -44,8 +44,8 @@ public class MinkowskiDiff3D
              case 0:
                Assert.That(diff_naive is not null);
                Assert.That(diff_geometric is not null);
-               Assert.That(diff_naive!.FLrep, Is.EqualTo(Cube3D_FL));
-               Assert.That(diff_geometric!.FLrep, Is.EqualTo(Cube3D_FL));
+               Assert.That(diff_naive!.FLrep, Is.EqualTo(Cube3D.FLrep));
+               Assert.That(diff_geometric!.FLrep, Is.EqualTo(Cube3D.FLrep));
                Assert.That(diff_naive, Is.EqualTo(diff_geometric));
                // diff_naive.WriteTXT_3D(path + "Cube_Seg0-0-0");
 

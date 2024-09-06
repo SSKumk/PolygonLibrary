@@ -26,17 +26,11 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly List<Vector> Cube5D_list       = Cube_list(5);
 
 
-  public static readonly ConvexPolytop Cube3D       = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Cube_list(3)));
-  public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Cube_list(4)));
-  public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Simplex(3, out _)));
-  public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(GiftWrapping.WrapVRep(Simplex(4, out _)));
+  public static readonly ConvexPolytop Cube3D       = ConvexPolytop.CreateFromPoints(Cube_list(3));
+  public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(Cube_list(4));
+  public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(Simplex(3, out _));
+  public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(Simplex(4, out _));
   public static readonly ConvexPolytop Octahedron3D = ConvexPolytop.CreateFromPoints(Octahedron3D_list.ToHashSet());
-
-
-  public static readonly FaceLattice Cube3D_FL    = CubeFL(3);
-  public static readonly FaceLattice Cube4D_FL    = CubeFL(4);
-  public static readonly FaceLattice Simplex3D_FL = Simplex(3).ConstructFL();
-  public static readonly FaceLattice Simplex4D_FL = Simplex(4).ConstructFL();
 
 
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
