@@ -40,15 +40,15 @@ projJ = {0, 1, 2};
 
 // ==================================================
 PSetType = "Sphere";
-PTheta = 8;
-PPhi = 14;
+PTheta = 7;
+PPhi = 12;
 PCenter = {0,0,0};
 PRadius = 1;
 
 // ==================================================
 QSetType = "Sphere";
-QTheta = 8;
-QPhi = 14;
+QTheta = 7;
+QPhi = 12;
 QCenter = {0,0,0};
 QRadius = 0.9;
 

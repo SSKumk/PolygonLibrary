@@ -17,12 +17,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The directory where source file and result folder are placed
     /// </summary>
-    private readonly string workDir;
+    public readonly string WorkDir;
 
     /// <summary>
     /// The name of source file
     /// </summary>
-    private readonly string fileName;
+    public readonly string fileName;
 
     /// <summary>
     /// Holds internal information about task
@@ -48,10 +48,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="workDir">The directory where source file and result folder are placed</param>
     /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
     /// <exception cref="ArgumentException">If there is no path to working directory, this exception is thrown</exception>
-    public SolverLDG(string workDir, string fileName) {
+    public SolverLDG(string workDir, string fileName, bool writePandQ = false) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      this.workDir = workDir;
+      this.WorkDir = workDir;
       if (workDir[^1] == '/') {
         StringBuilder sb = new StringBuilder(workDir);
         sb[^1]  = '/';
@@ -62,20 +62,22 @@ public partial class Geometry<TNum, TConv>
       }
 
       this.fileName = fileName;
-      gd            = new GameData(this.workDir + fileName + ".c");
+      gd            = new GameData(this.WorkDir + fileName + ".c");
       Directory.CreateDirectory(workDir + gd.ProblemName);
 
-      W             = new StableBridge(new CauchyMatrix.TimeComparer());
-      // foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
-      //   using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.cpolytop");
-      //   // pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
-      //   P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-      // }
-      // foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
-      //   using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.cpolytop");
-      //   // pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
-      //   Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-      // }
+      W = new StableBridge(new CauchyMatrix.TimeComparer());
+      if (writePandQ) {
+        foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
+          using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.cpolytop");
+          // pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
+          P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
+        }
+        foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
+          using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.cpolytop");
+          // pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
+          Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
+        }
+      }
     }
 
     /// <summary>
@@ -85,9 +87,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="predP">The first convex polytop (P) used in the Minkowski sum.</param>
     /// <param name="predQ">The second convex polytop (Q) used in the Minkowski difference.</param>
     /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
-
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
-      ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP,true);
+      ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP, true);
       ConvexPolytop? next = MinkowskiDiff.Geometric(sum, predQ);
 
       return next;
@@ -98,7 +99,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public void Solve(bool isNaive, bool isNeedWrite, bool isDouble) {
       Stopwatch timer    = new Stopwatch();
-      string    filesDir = workDir + gd.ProblemName;
+      string    filesDir = WorkDir + gd.ProblemName;
       double    eps      = TConv.ToDouble(Tools.Eps);
 
       string valType = isDouble ? "double" : "ddouble";
