@@ -1,5 +1,5 @@
 // Name of the problem
-ProblemName = "MaterialDot-1-0.9";
+ProblemName = "MassDot";
 
 // ==================================================
 
