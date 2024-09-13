@@ -69,24 +69,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projects a given point onto the affine basis.
     /// </summary>
-    /// <param name="point">The point to project.</param>
+    /// <param name="v">The point to project.</param>
     /// <returns>The projected point.</returns>
-    public Vector ProjectVector(Vector point) {
-      Debug.Assert
-        (
-         SpaceDim == point.Dim
-       , "AffineBasis.ProjectVector: The dimension of the basis vectors should be equal to the dimension of the current point."
-        );
-
-      Vector t = point - Origin;
-
-      TNum[] np = new TNum[SubSpaceDim];
-      for (int i = 0; i < SubSpaceDim; i++) {
-        np[i] = LinBasis[i] * t;
-      }
-
-      return new Vector(np);
-    }
+    public Vector ProjectVectorToSubSpace(Vector v) => LinBasis.ProjectVectorToSubSpace(v - Origin);
 
     /// <summary>
     /// Projects a given set of points onto the affine basis.
@@ -95,7 +80,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The projected points.</returns>
     public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm) {
       foreach (Vector point in Swarm) {
-        yield return ProjectVector(point);
+        yield return ProjectVectorToSubSpace(point);
       }
     }
 
