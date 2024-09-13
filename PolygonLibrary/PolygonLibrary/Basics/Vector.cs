@@ -267,33 +267,33 @@ public partial class Geometry<TNum, TConv>
     }
 
 
-    /// <summary>
-    /// The angle from the one vector to the another. It is from the interval [-pi, pi).
-    /// It uses the Math.Acos to calculate the angle.
-    /// </summary>
-    /// <param name="v1">The first vector</param>
-    /// <param name="v2">The second vector</param>
-    /// <returns>The angle</returns>
-    public static double AngleDouble(Vector v1, Vector v2) {
-      if (v1.IsZero || v2.IsZero) {
-        return 0;
-      } else {
-        TNum dot = (v1 * v2) / v1.Length / v2.Length;
-#if DEBUG
-        if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
-          throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
-        }
-#endif
-        if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
-          return Math.PI;
-        }
-        if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
-          return 0.0;
-        }
-
-        return Math.Acos(TConv.ToDouble(dot));
-      }
-    }
+//     /// <summary>
+//     /// The angle from the one vector to the another. It is from the interval [-pi, pi).
+//     /// It uses the Math.Acos to calculate the angle.
+//     /// </summary>
+//     /// <param name="v1">The first vector</param>
+//     /// <param name="v2">The second vector</param>
+//     /// <returns>The angle</returns>
+//     public static double AngleDouble(Vector v1, Vector v2) {
+//       if (v1.IsZero || v2.IsZero) {
+//         return 0;
+//       } else {
+//         TNum dot = (v1 * v2) / v1.Length / v2.Length;
+// #if DEBUG
+//         if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+//           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
+//         }
+// #endif
+//         if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
+//           return Math.PI;
+//         }
+//         if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+//           return 0.0;
+//         }
+//
+//         return Math.Acos(TConv.ToDouble(dot));
+//       }
+//     }
 
 
     /// <summary>
@@ -512,48 +512,59 @@ public partial class Geometry<TNum, TConv>
 //       return Basis;
 //     }
 
+    // /// <summary>
+    // /// The cross product of two 3D-vectors.
+    // /// </summary>
+    // /// <param name="v">The first vector.</param>
+    // /// <param name="u">The second vector.</param>
+    // /// <returns>The outward normal to the plane of v and u.</returns>
+    // public static Vector CrossProduct3D(Vector v, Vector u) {
+    //   Debug.Assert(v.Dim == 3, $"Vector.CrossProduct3D: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
+    //   Debug.Assert
+    //     (
+    //      v.Dim == u.Dim
+    //    , $"Vector.CrossProduct3D: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
+    //     );
+    //
+    //   TNum[] crossProduct = new TNum[3];
+    //   crossProduct[0] = v[1] * u[2] - v[2] * u[1];
+    //   crossProduct[1] = v[2] * u[0] - v[0] * u[2];
+    //   crossProduct[2] = v[0] * u[1] - v[1] * u[0];
+    //
+    //   return new Vector(crossProduct);
+    // }
+    //
+    // /// <summary>
+    // /// Calculates the signed volume of the parallelepiped defined by the three vectors given.
+    // /// </summary>
+    // /// <param name="v">The first vector.</param>
+    // /// <param name="u">The second vector.</param>
+    // /// <param name="r">The third vector.</param>
+    // /// <returns></returns>
+    // public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct3D(u, r); }
+
     /// <summary>
-    /// The cross product of two 3D-vectors.
+    /// Computes the outer product of the current vector and the given vector.
     /// </summary>
-    /// <param name="v">The first vector.</param>
-    /// <param name="u">The second vector.</param>
-    /// <returns>The outward normal to the plane of v and u.</returns>
-    public static Vector CrossProduct3D(Vector v, Vector u) {
-      Debug.Assert(v.Dim == 3, $"Vector.CrossProduct3D: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
-      Debug.Assert
-        (
-         v.Dim == u.Dim
-       , $"Vector.CrossProduct3D: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
-        );
-
-      TNum[] crossProduct = new TNum[3];
-      crossProduct[0] = v[1] * u[2] - v[2] * u[1];
-      crossProduct[1] = v[2] * u[0] - v[0] * u[2];
-      crossProduct[2] = v[0] * u[1] - v[1] * u[0];
-
-      return new Vector(crossProduct);
-    }
-
-    /// <summary>
-    /// Calculates the signed volume of the parallelepiped defined by the three vectors given.
-    /// </summary>
-    /// <param name="v">The first vector.</param>
-    /// <param name="u">The second vector.</param>
-    /// <param name="r">The third vector.</param>
-    /// <returns></returns>
-    public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct3D(u, r); }
-
-    public Matrix OuterProduct(Vector other) {
-      TNum[,] result = new TNum[this.Dim, other.Dim];
-      for (int i = 0; i < this.Dim; i++) {
-        for (int j = 0; j < other.Dim; j++) {
-          result[i, j] = this[i] * other[j];
+    /// <param name="v">The vector to compute the outer product with.</param>
+    /// <returns>A matrix representing the outer product of the two vectors.</returns>
+    public Matrix OuterProduct(Vector v) {
+      TNum[,] result = new TNum[Dim, v.Dim];
+      for (int i = 0; i < Dim; i++) {
+        for (int j = 0; j < v.Dim; j++) {
+          result[i, j] = this[i] * v[j];
         }
       }
 
       return new Matrix(result);
     }
 
+    /// <summary>
+    /// Extracts a subvector from the current vector, starting from the specified index and ending at the specified index.
+    /// </summary>
+    /// <param name="startIndex">The starting index of the subvector (inclusive).</param>
+    /// <param name="endIndex">The ending index of the subvector (inclusive).</param>
+    /// <returns>A new vector containing the elements from the specified range.</returns>
     public Vector SubVector(int startIndex, int endIndex) {
       Debug.Assert(startIndex <= endIndex, "Vector.SubVector: start index must be less or equal than end index!");
       Debug.Assert(startIndex >= 0, "Vector.SubVector: start index must be non negative.");
@@ -620,8 +631,6 @@ public partial class Geometry<TNum, TConv>
       }
 #endif
       _v = new TNum[n];
-
-      ComputeParameters();
     }
 
     /// <summary>
@@ -643,8 +652,6 @@ public partial class Geometry<TNum, TConv>
       for (int i = 0; i < nv.Length; i++) {
         _v[i] = nv[i];
       }
-
-      ComputeParameters();
     }
 
     /// <summary>
@@ -658,8 +665,6 @@ public partial class Geometry<TNum, TConv>
       for (i = 0; i < d; i++) {
         _v[i] = v._v[i];
       }
-
-      ComputeParameters();
     }
 
     /// <summary>
@@ -668,11 +673,6 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to be copied</param>
     /// <returns>The resultant vector</returns>
     public Vector(Vector2D v) : this(new TNum[] { v[0], v[1] }) { }
-
-    /// <summary>
-    /// Computing fields
-    /// </summary>
-    private void ComputeParameters() { }
 #endregion
 
 #region Fabrics
