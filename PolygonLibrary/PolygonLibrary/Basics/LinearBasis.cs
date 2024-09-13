@@ -227,7 +227,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The collection of vectors to project.</param>
     /// <returns>The projected vectors as an enumerable collection.</returns>
-    public IEnumerable<Vector> ProjectVectorsToSubSpace(List<Vector> Swarm) {
+    public IEnumerable<Vector> ProjectVectorsToSubSpace(IEnumerable<Vector> Swarm) {
       foreach (Vector v in Swarm) {
         yield return ProjectVectorToSubSpace(v);
       }
