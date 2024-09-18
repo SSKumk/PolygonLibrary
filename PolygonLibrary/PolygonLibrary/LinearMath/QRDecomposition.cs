@@ -30,7 +30,7 @@ public partial class Geometry<TNum, TConv>
           int sign = sx0 == 0 ? 1 : sx0;
           v[0] = x[0] + TConv.FromInt(sign) * x.Length;
 
-          Vector u = new Vector(v);
+          Vector u = new Vector(v, false);
 
           Matrix        Householder = Matrix.Eye(m - k) - Tools.Two * u.OuterProduct(u) / (u * u);
           MutableMatrix Hk          = MutableMatrix.Eye(m);

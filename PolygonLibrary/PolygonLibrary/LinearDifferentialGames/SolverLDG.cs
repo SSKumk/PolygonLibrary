@@ -229,8 +229,8 @@ public partial class Geometry<TNum, TConv>
 
     private static void WriteConstraintBlock(TextWriter writer, string setType, Vector left, Vector right) {
       writer.WriteLine($"{setType}SetType = \"RectParallel\";");
-      writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringWithBraces('{', '}', ',')};");
-      writer.WriteLine($"{setType}RectPRight = {right.ToStringWithBraces('{', '}', ',')};");
+      writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringBraceAndDelim('{', '}', ',')};");
+      writer.WriteLine($"{setType}RectPRight = {right.ToStringBraceAndDelim('{', '}', ',')};");
       writer.WriteLine();
       writer.WriteLine("// ==================================================");
     }

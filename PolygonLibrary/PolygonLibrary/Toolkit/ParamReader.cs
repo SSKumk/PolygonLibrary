@@ -144,7 +144,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="name">The name of the vector.</param>
     /// <returns>The read vector.</returns>
-    public Vector ReadVector(string name) => new(ReadList<TNum>(name).ToArray());
+    public Vector ReadVector(string name) => new(ReadList<TNum>(name).ToArray(), false);
 
     /// <summary>
     /// Method for reading a list.
@@ -208,7 +208,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="name">The identifier for the collection of vectors to be read.</param>
     /// <returns>A list of <see cref="Vector"/> objects.</returns>
-    public List<Vector> ReadVectors(string name) => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray())).ToList();
+    public List<Vector> ReadVectors(string name) => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray(), false)).ToList();
 
 
     /// <summary>
@@ -223,7 +223,7 @@ public partial class Geometry<TNum, TConv>
       foreach (List<TNum> hp in hp_list) {
         TNum[] v = new TNum[hp.Count - 1];
         hp.CopyTo(0, v, 0, hp.Count - 1);
-        HPs.Add(new HyperPlane(new Vector(v), hp[^1]));
+        HPs.Add(new HyperPlane(new Vector(v, false), hp[^1]));
       }
 
       return HPs;

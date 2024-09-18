@@ -105,6 +105,7 @@ public partial class Geometry<TNum, TConv>
          v.Dim == SpaceDim
        , "LinearBasis.IsVectorBelongsToLinBasis: The dimension of the vector must be equal to dimensions of basis vectors!"
         );
+
       if (IsFullDim) { return true; }
 
       TNum[] proj = new TNum[SpaceDim];
@@ -118,7 +119,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Vector(proj).Equals(v);
+      return new Vector(proj, false).Equals(v);
     }
 
     /// <summary>
@@ -219,7 +220,7 @@ public partial class Geometry<TNum, TConv>
         np[i] = this[i] * v;
       }
 
-      return new Vector(np);
+      return new Vector(np, false);
     }
 
     /// <summary>

@@ -98,18 +98,18 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
       Matrix mapMatrix = new Matrix(ar);
 
-      TNum[] ar_v0 = new TNum[3] { Tools.Zero, Tools.Zero, Tools.One }
-           , ar_v1 = new TNum[3] { a, Tools.Zero, Tools.One }
-           , ar_v2 = new TNum[3] { a, b, Tools.One }
-           , ar_v3 = new TNum[3] { Tools.Zero, b, Tools.One };
+      TNum[] ar_v0 = new TNum[] { Tools.Zero, Tools.Zero, Tools.One }
+           , ar_v1 = new TNum[] { a, Tools.Zero, Tools.One }
+           , ar_v2 = new TNum[] { a, b, Tools.One }
+           , ar_v3 = new TNum[] { Tools.Zero, b, Tools.One };
 
-      Vector v0o = new Vector(ar_v0)
+      Vector v0o = new Vector(ar_v0, false)
            , v0  = mapMatrix * v0o
-           , v1o = new Vector(ar_v1)
+           , v1o = new Vector(ar_v1, false)
            , v1  = mapMatrix * v1o
-           , v2o = new Vector(ar_v2)
+           , v2o = new Vector(ar_v2, false)
            , v2  = mapMatrix * v2o
-           , v3o = new Vector(ar_v3)
+           , v3o = new Vector(ar_v3, false)
            , v3  = mapMatrix * v3o;
 
       List<Vector2D> res = new List<Vector2D>();

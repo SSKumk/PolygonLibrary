@@ -423,7 +423,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Vector(res);
+      return new Vector(res, false);
     }
 
     /// <summary>
@@ -448,7 +448,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Vector(res);
+      return new Vector(res, false);
     }
 
     /// <summary>
@@ -655,7 +655,7 @@ public partial class Geometry<TNum, TConv>
         res[i] = this[i, col];
       }
 
-      return new Vector(res);
+      return new Vector(res, false);
     }
 
 
@@ -822,7 +822,7 @@ public partial class Geometry<TNum, TConv>
         TNum[] row;
         do {
           row = GenArray(dim, a, b, random);
-        } while (!toCheck.AddVector(new Vector(row)));
+        } while (!toCheck.AddVector(new Vector(row, false)));
 
         for (int l = 0; l < dim; l++) { m[r, l] = row[l]; }
       }

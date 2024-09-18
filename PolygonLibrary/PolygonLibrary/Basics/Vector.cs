@@ -24,7 +24,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The array of vector coordinates.</returns>
     public TNum[] GetAsArray() {
       TNum[] v = new TNum[Dim];
-      _v.CopyTo(v, 0); 
+      _v.CopyTo(v, 0);
+
       return v;
     }
 
@@ -119,7 +120,8 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(other is not null, $"Vector.CompareTo: second vector is null!");
 
       if (d != other.Dim) {
-        throw new ArgumentException($"Vector.CompareTo: Cannot compare vectors of different dimensions. This = {this} and other = {other}");
+        throw new ArgumentException
+          ($"Vector.CompareTo: Cannot compare vectors of different dimensions. This = {this} and other = {other}");
       }
 #endif
       for (int i = 0; i < d; i++) {
@@ -233,7 +235,8 @@ public partial class Geometry<TNum, TConv>
     public static TNum Angle(Vector v1, Vector v2) {
       if (v1.IsZero || v2.IsZero) {
         return Tools.Zero;
-      } else {
+      }
+      else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
         if (Tools.LT(dot, Tools.MinusOne) || Tools.GT(dot, Tools.One)) { // dot < -1 || dot > 1)
@@ -261,11 +264,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="u2">The second basis vector of the plane.</param>
     /// <returns>The projected vector.</returns>
     public Vector ProjectToPlane(Vector u1, Vector u2) {
-#if DEBUG
-      if (Dim != u1.Dim && Dim != u2.Dim) {
-        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
-      }
-#endif
+      Debug.Assert(u1.Dim == Dim && u2.Dim == Dim, $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.Dim} and {u2.Dim}.");
 
       TNum fst = Tools.Zero;
       TNum snd = Tools.Zero;
@@ -279,7 +278,7 @@ public partial class Geometry<TNum, TConv>
         res[i] = fst * u1[i] + snd * u2[i];
       }
 
-      return new Vector(res);
+      return new Vector(res, false);
     }
 
     /// <summary>
@@ -290,6 +289,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new vector in the target dimension, with the last coordinates sets to val.</returns>
     public Vector LiftUp(int d, TNum val) {
       Debug.Assert(d > Dim, "Vector.LiftUp: Can't lift to lower dimension!");
+
       TNum[] np = new TNum[d];
       for (int i = 0; i < Dim; i++) {
         np[i] = _v[i];
@@ -298,15 +298,8 @@ public partial class Geometry<TNum, TConv>
         np[i] = val;
       }
 
-      return new Vector(np);
+      return new Vector(np, false);
     }
-
-    /// <summary>
-    /// Returns the string contains coordinates of a point in the specified format.
-    /// x0 x1 ... xDim-1
-    /// </summary>
-    /// <returns>The string in the specified format.</returns>
-    public string ToStrSepBySpace() => string.Join(' ', _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture)));
 #endregion
 
 #region Functions related to Vectors
@@ -341,41 +334,49 @@ public partial class Geometry<TNum, TConv>
       TNum[] subElements = new TNum[length];
       Array.Copy(_v, startIndex, subElements, 0, length);
 
-      return new Vector(subElements);
+      return new Vector(subElements, false);
     }
 #endregion
 
 #region Overrides
-    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(IsZero, Dim);
+    public override int GetHashCode() => throw new InvalidOperationException();
 
     public override bool Equals(object? obj) {
-#if DEBUG
-      if (obj is not Vector vector) {
-        throw new ArgumentException($"{obj} is not a Vector!");
+      if (obj is not Vector) {
+        return false;
       }
-#endif
+
       return CompareTo((Vector)obj!) == 0;
     }
 
-    public override string ToString() => ToStringWithBraces('(', ')', ',');
+    /// <summary>
+    /// Creates a string representation of the vector using
+    /// parentheses and a comma as a delimiter.
+    /// </summary>
+    /// <returns>A string representing the vector.</returns>
+    public override string ToString() => ToStringBraceAndDelim('(', ')', ',');
 
-
-    public string ToStringWithBraces(char braceOpen, char braceClose, char delim) =>
-      braceOpen + string.Join(delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) + braceClose;
-
+    /// <summary>
+    /// Creates a string representation of the vector using
+    /// specified brace characters and a delimiter.
+    /// </summary>
+    /// <param name="braceOpen">The opening brace character.</param>
+    /// <param name="braceClose">The closing brace character.</param>
+    /// <param name="delim">The delimiter character.</param>
+    /// <returns>A string representing the vector with the given braces and delimiter.</returns>
+    public string ToStringBraceAndDelim(char braceOpen, char braceClose, char delim)
+      => braceOpen + string.Join
+           (delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) + braceClose;
 #endregion
 
 #region Constructors
     /// <summary>
-    /// The default construct producing the zero vector
+    /// The default construct producing the zero vector.
     /// </summary>
-    /// <param name="n">The dimension of the vector</param>
+    /// <param name="n">The dimension of the vector.</param>
     public Vector(int n) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Dimension of a vector cannot be non-positive");
-      }
-#endif
+      Debug.Assert(n > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {n}.");
+
       _v = new TNum[n];
     }
 
@@ -383,37 +384,34 @@ public partial class Geometry<TNum, TConv>
     /// Constructor on the basis of a one-dimensional array
     /// </summary>
     /// <param name="nv">The array</param>
-    public Vector(TNum[] nv) {  // TODO: bool needCopy = true
-#if DEBUG
-      if (nv.Length <= 0) {
-        throw new ArgumentException("Dimension of a vector cannot be non-positive");
-      }
+    public Vector(TNum[] nv, bool needCopy = true) {
+      Debug.Assert(nv.Length > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {nv.Length}.");
+      Debug.Assert(nv.Rank == 1, $"Vector.Ctor: Cannot initialize a vector by a multidimensional array. Found {nv.Rank}.");
 
-      if (nv.Rank != 1) {
-        throw new ArgumentException("Cannot initialize a vector by a multidimensional array");
-      }
-#endif
-      _v = new TNum[nv.Length];
+      if (needCopy) {
+        _v = new TNum[nv.Length];
 
-      for (int i = 0; i < nv.Length; i++) {
-        _v[i] = nv[i];
+        for (int i = 0; i < nv.Length; i++) {
+          _v[i] = nv[i];
+        }
+      }
+      else {
+        _v = nv;
       }
     }
 
     /// <summary>
-    /// Copying constructor
+    /// Copying constructor.
     /// </summary>
-    /// <param name="v">The vector to be copied</param>
-    public Vector(Vector v) {
-      _v = v.GetAsArray();
-    }
+    /// <param name="v">The vector to be copied.</param>
+    public Vector(Vector v) { _v = v.GetAsArray(); }
 
     /// <summary>
-    /// Constructor to a multidimensional vector from a two-dimensional vector
+    /// Constructor to a multidimensional vector from a two-dimensional vector.
     /// </summary>
     /// <param name="v">The vector to be copied</param>
     /// <returns>The resultant vector</returns>
-    public Vector(Vector2D v) : this(new TNum[] { v[0], v[1] }) { }
+    public Vector(Vector2D v) : this(new TNum[] { v[0], v[1] }, false) { }
 #endregion
 
 #region Fabrics
@@ -424,9 +422,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The zero vector.</returns>
     public static Vector Zero(int dim) {
       Debug.Assert(dim > 0, $"Vector.Zero: The dimension of the vector must be greater than 0! Found dim = {dim}");
-      TNum[] orig = new TNum[dim];
 
-      return new Vector(orig);
+      return new Vector(new TNum[dim], false);
     }
 
     /// <summary>
@@ -436,11 +433,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="pos">The position of '1'.</param>
     /// <returns>The i-orth of given dimension.</returns>
     public static Vector MakeOrth(int dim, int pos) {
-      Debug.Assert(pos > 0 && pos <= dim, "Vector.MakeOrth: Position should be greater than 0 and less or equal than dimension of the vector.");
+      Debug.Assert
+        (
+         pos > 0 && pos <= dim
+       , "Vector.MakeOrth: Position should be greater than 0 and less or equal than dimension of the vector."
+        );
+
       TNum[] orth = new TNum[dim];
       orth[pos - 1] = TNum.MultiplicativeIdentity;
 
-      return new Vector(orth);
+      return new Vector(orth, false);
     }
 
     /// <summary>
@@ -456,7 +458,7 @@ public partial class Geometry<TNum, TConv>
         ones[i] = Tools.One;
       }
 
-      return new Vector(ones);
+      return new Vector(ones, false);
     }
 
     /// <summary>
@@ -482,7 +484,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="b">The maximum value of each coordinate.</param>
     /// <param name="random">If null, then default one be used.</param>
     /// <returns>A random vector.</returns>
-    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) => new Vector(GenArray(dim, a, b, random));
+    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) => new Vector(GenArray(dim, a, b, random), false);
 
     /// <summary>
     /// Generates an arbitrary vector of integers of the specified dimension. Each coordinate: [a, b).
@@ -492,7 +494,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="b">The maximum value of each coordinate.</param>
     /// <param name="random">If null, then default one be used.</param>
     /// <returns>A random vector.</returns>
-    public static Vector GenVectorInt(int dim, int a, int b, GRandomLC? random = null) => new Vector(GenArrayInt(dim, a, b, random));
+    public static Vector GenVectorInt(int dim, int a, int b, GRandomLC? random = null)
+      => new Vector(GenArrayInt(dim, a, b, random), false);
 #endregion
 
 #region Operators
@@ -509,29 +512,26 @@ public partial class Geometry<TNum, TConv>
         nv[i] = -v._v[i];
       }
 
-      return new Vector(nv);
+      return new Vector(nv, false);
     }
 
     /// <summary>
-    /// Sum of two vectors
+    /// Sum of two vectors of similar dimension.
     /// </summary>
-    /// <param name="v1">The first vector summand</param>
-    /// <param name="v2">The second vector summand</param>
+    /// <param name="v1">The first vector summand.</param>
+    /// <param name="v2">The second vector summand.</param>
     /// <returns>The sum</returns>
     public static Vector operator +(Vector v1, Vector v2) {
+      Debug.Assert(v1.Dim == v2.Dim,$"Vector.+: Can not add two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+
       int d = v1.Dim, i;
-#if DEBUG
-      if (d != v2.Dim) {
-        throw new ArgumentException("Cannot add two vectors of different dimensions");
-      }
-#endif
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
         nv[i] = v1._v[i] + v2._v[i];
       }
 
-      return new Vector(nv);
+      return new Vector(nv, false);
     }
 
     /// <summary>
@@ -541,19 +541,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The vector subtrahend</param>
     /// <returns>The difference</returns>
     public static Vector operator -(Vector v1, Vector v2) {
+      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+
       int d = v1.Dim, i;
-#if DEBUG
-      if (d != v2.Dim) {
-        throw new ArgumentException("Cannot subtract two vectors of different dimensions");
-      }
-#endif
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
         nv[i] = v1._v[i] - v2._v[i];
       }
 
-      return new Vector(nv);
+      return new Vector(nv, false);
     }
 
     /// <summary>
@@ -570,7 +567,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = a * v._v[i];
       }
 
-      return new Vector(nv);
+      return new Vector(nv, false);
     }
 
     /// <summary>
@@ -588,11 +585,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
     public static Vector operator /(Vector v, TNum a) {
-#if DEBUG
-      if (Tools.EQ(a)) {
-        throw new DivideByZeroException();
-      }
-#endif
+      Debug.Assert(Tools.EQ(a), $"Vector./: Can not divide by zero.");
+
       int    d  = v.Dim, i;
       TNum[] nv = new TNum[d];
 
@@ -600,7 +594,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = v._v[i] / a;
       }
 
-      return new Vector(nv);
+      return new Vector(nv, false);
     }
 
     /// <summary>
@@ -610,12 +604,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector factor.</param>
     /// <returns>The product</returns>
     public static TNum operator *(Vector v1, Vector v2) {
+      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+
       int d = v1.Dim, i;
-#if DEBUG
-      if (d != v2.Dim) {
-        throw new ArgumentException("Cannot compute a dot production of two vectors of different dimensions");
-      }
-#endif
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
@@ -677,24 +668,21 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Linear combination of two points
     /// </summary>
-    /// <param name="p1">The first point</param>
+    /// <param name="v1">The first point</param>
     /// <param name="w1">The weight of the first point</param>
-    /// <param name="p2">The second point</param>
+    /// <param name="v2">The second point</param>
     /// <param name="w2">The weight of the second point</param>
     /// <returns>The resultant point</returns>
-    public static Vector LinearCombination(Vector p1, TNum w1, Vector p2, TNum w2) {
-#if DEBUG
-      if (p1.Dim != p2.Dim) {
-        throw new ArgumentException("Cannot combine two point of different dimensions");
-      }
-#endif
-      TNum[] coords = new TNum[p1.Dim];
+    public static Vector LinearCombination(Vector v1, TNum w1, Vector v2, TNum w2) {
+      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
-      for (int i = 0; i < p1.Dim; i++) {
-        coords[i] = w1 * p1[i] + w2 * p2[i];
+      TNum[] coords = new TNum[v1.Dim];
+
+      for (int i = 0; i < v1.Dim; i++) {
+        coords[i] = w1 * v1[i] + w2 * v2[i];
       }
 
-      return new Vector(coords);
+      return new Vector(coords, false);
     }
 
     /// <summary>
@@ -735,7 +723,7 @@ public partial class Geometry<TNum, TConv>
         }
       } while (enPoint.MoveNext() && enWeight.MoveNext());
 
-      return new Vector(coords);
+      return new Vector(coords, false);
     }
 
   }

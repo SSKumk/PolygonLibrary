@@ -435,7 +435,7 @@ public partial class Geometry<TNum, TConv>
         case SetType.RectParallel: {
           TNum[] left  = _pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
           TNum[] right = _pr.Read1DArray<TNum>($"{player}RectPRight", dim);
-          res = ConvexPolytop.RectParallel(new Vector(left), new Vector(right)).Vrep;
+          res = ConvexPolytop.RectParallel(new Vector(left, false), new Vector(right, false)).Vrep;
 
           // setTypeStr += $"-{Qnt}"; ???? А что сюда можно написать?
           break;
@@ -445,7 +445,7 @@ public partial class Geometry<TNum, TConv>
           int    Phi    = _pr.ReadNumber<int>($"{player}Phi");
           TNum[] Center = _pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum   Radius = _pr.ReadNumber<TNum>($"{player}Radius");
-          res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center), Radius).Vrep;
+          res = ConvexPolytop.Sphere(dim, Theta, Phi, new Vector(Center, false), Radius).Vrep;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-R{Radius}";
 
@@ -456,7 +456,7 @@ public partial class Geometry<TNum, TConv>
           int    Phi            = _pr.ReadNumber<int>($"{player}Phi");
           TNum[] Center         = _pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum[] SemiaxesLength = _pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
-          res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center), new Vector(SemiaxesLength)).Vrep;
+          res = ConvexPolytop.Ellipsoid(dim, Theta, Phi, new Vector(Center, false), new Vector(SemiaxesLength, false)).Vrep;
 
           setTypeInfo += $"-T{Theta}-P{Phi}-SA{string.Join(' ', SemiaxesLength)}";
 
@@ -482,7 +482,7 @@ public partial class Geometry<TNum, TConv>
           point[j] = ar[i, j];
         }
 
-        list.Add(new Vector(point));
+        list.Add(new Vector(point, false));
       }
 
       return list;

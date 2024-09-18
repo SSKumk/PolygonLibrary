@@ -392,7 +392,7 @@ public partial class Geometry<TNum, TConv>
       SortedSet<Vector> Cube = new SortedSet<Vector>();
 
       foreach (List<TNum> v in rect) {
-        Cube.Add(new Vector(v.ToArray()));
+        Cube.Add(new Vector(v.ToArray(), false));
       }
 
       return CreateFromPoints(Cube);
@@ -443,7 +443,7 @@ public partial class Geometry<TNum, TConv>
           point[t]   =  coordinate;
           coordinate *= multiplyer;
         }
-        cycP.Add(new Vector(point));
+        cycP.Add(new Vector(point, false));
         baseCoord += step;
       }
 
@@ -550,7 +550,7 @@ public partial class Geometry<TNum, TConv>
           }
 
           // точка готова, добавляем в наш массив
-          Ps.Add(center + new Vector(point.ToArray()));
+          Ps.Add(center + new Vector(point.ToArray(), false));
         }
       }
 
