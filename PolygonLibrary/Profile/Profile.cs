@@ -26,12 +26,14 @@ class Program {
 
     bool isDouble = ftype == "double";
 
+    // Vector v = Vector.Ones(4);
+    // Console.WriteLine(v.ToStringWithBraces('[', '}', ';'));
 
-    SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
     // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
-    solverLdg.Solve(false, true, isDouble);
+    // solverLdg.Solve(false, true, isDouble);
 
     // string      t   = "3.10";
     // ParamReader prP = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) P {solverLdg.fileName}.cpolytop");

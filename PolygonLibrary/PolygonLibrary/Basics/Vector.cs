@@ -24,12 +24,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The array of vector coordinates.</returns>
     public TNum[] GetAsArray() {
       TNum[] v = new TNum[Dim];
-      int    i = 0;
-      foreach (TNum _vi in _v) {
-        v[i] = _vi;
-        i++;
-      }
-
+      _v.CopyTo(v, 0); 
       return v;
     }
 
@@ -56,12 +51,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The length field
+    /// The vector length field
     /// </summary>
     private TNum? _length = null;
 
     /// <summary>
-    /// Getter
+    /// Getter for vector length
     /// </summary>
     /// <returns>The length of the vector</returns>
     public TNum Length {
@@ -74,12 +69,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The square of length field
+    /// The square of vector length field
     /// </summary>
     private TNum? length2 = null;
 
     /// <summary>
-    /// Getter
+    /// Getter for the squared length of the vector
     /// </summary>
     /// <returns>The square of length of the vector</returns>
     public TNum Length2 {
@@ -109,7 +104,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant array</returns>
-    public static explicit operator TNum[](Vector v) => v._v;
+    public static explicit operator TNum[](Vector v) => v.GetAsArray();
 #endregion
 
 #region Comparing
@@ -144,21 +139,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors coincide; false, otherwise</returns>
-    public static bool operator ==(Vector v1, Vector v2) {
-      int d = v1.Dim;
-#if DEBUG
-      if (d != v2.Dim) {
-        throw new ArgumentException("Cannot compare vectors of different dimensions");
-      }
-#endif
-      for (int i = 0; i < d; i++) {
-        if (!Tools.EQ(v1[i], v2[i])) {
-          return false;
-        }
-      }
-
-      return true;
-    }
+    public static bool operator ==(Vector v1, Vector v2) => v1.CompareTo(v2) == 0;
 
     /// <summary>
     /// Non-equality of vectors
@@ -166,23 +147,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>true, if the vectors do not coincide; false, otherwise</returns>
-    public static bool operator !=(Vector v1, Vector v2) {
-      int d = v1.Dim, res;
-#if DEBUG
-      if (d != v2.Dim) {
-        throw new ArgumentException("Cannot compare vectors of different dimensions");
-      }
-#endif
-      for (int i = 0; i < d; i++) {
-        res = Tools.CMP(v1[i], v2[i]);
-
-        if (res != 0) {
-          return true;
-        }
-      }
-
-      return false;
-    }
+    public static bool operator !=(Vector v1, Vector v2) => v1.CompareTo(v2) != 0;
 
     /// <summary>
     /// Check whether one vector is greater than another (in lexicographic order)
@@ -229,7 +194,7 @@ public partial class Geometry<TNum, TConv>
     /// </exception>
     public Vector Normalize() {
 #if DEBUG
-      if (Tools.EQ(Length)) {
+      if (IsZero) {
         throw new DivideByZeroException();
       }
 #endif
@@ -255,50 +220,12 @@ public partial class Geometry<TNum, TConv>
         return Zero(Dim);
       }
 
-      Vector res = new Vector(Dim);
-
-      for (int i = 0; i < Dim; i++) {
-        res._v[i] = _v[i] / Length;
-      }
-
-      res._length = TNum.MultiplicativeIdentity;
-
-      return res;
+      return Normalize();
     }
-
-
-//     /// <summary>
-//     /// The angle from the one vector to the another. It is from the interval [-pi, pi).
-//     /// It uses the Math.Acos to calculate the angle.
-//     /// </summary>
-//     /// <param name="v1">The first vector</param>
-//     /// <param name="v2">The second vector</param>
-//     /// <returns>The angle</returns>
-//     public static double AngleDouble(Vector v1, Vector v2) {
-//       if (v1.IsZero || v2.IsZero) {
-//         return 0;
-//       } else {
-//         TNum dot = (v1 * v2) / v1.Length / v2.Length;
-// #if DEBUG
-//         if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
-//           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
-//         }
-// #endif
-//         if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
-//           return Math.PI;
-//         }
-//         if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
-//           return 0.0;
-//         }
-//
-//         return Math.Acos(TConv.ToDouble(dot));
-//       }
-//     }
-
 
     /// <summary>
     /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
-    /// It uses the ddouble.Acos to calculate the angle.
+    /// It uses the TNum.Acos to calculate the angle.
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
@@ -309,10 +236,11 @@ public partial class Geometry<TNum, TConv>
       } else {
         TNum dot = (v1 * v2) / v1.Length / v2.Length;
 #if DEBUG
-        if (!(Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One))) { // !(dot >= -1 && dot <= 1)
+        if (Tools.LT(dot, Tools.MinusOne) || Tools.GT(dot, Tools.One)) { // dot < -1 || dot > 1)
           throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
         }
 #endif
+        // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
         if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
           return TNum.Pi;
         }
@@ -320,6 +248,7 @@ public partial class Geometry<TNum, TConv>
           return TNum.Zero;
         }
 
+        // Consider regular case (-1,1)
         return TNum.Acos(dot);
       }
     }
@@ -352,24 +281,6 @@ public partial class Geometry<TNum, TConv>
 
       return new Vector(res);
     }
-    //
-    // /// <summary>
-    // /// Expands the vector to a higher dimension.
-    // /// </summary>
-    // /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the vector.</param>
-    // /// <param name="Ind">The array-dictionary which shows into w of indices expand to.
-    // /// If null, then 0..Dim-1 be used.</param>
-    // /// <returns>A new vector in the target dimension, with the some coordinates set to zero.</returns>
-    // public Vector LiftUp(int d, List<int>? Ind = null) {
-    //   Debug.Assert(d > Dim, "Vector.ExpandTo: Can't expand to lower dimension!");
-    //   List<int> ind = Ind ?? new List<int>(Enumerable.Range(0, Dim));
-    //   TNum[]    np  = new TNum[d];
-    //   for (int i = 0; i < Dim; i++) {
-    //     np[ind[i]] = _v[i];
-    //   }
-    //
-    //   return new Vector(np);
-    // }
 
     /// <summary>
     /// Expands the vector to a higher dimension.
@@ -395,154 +306,10 @@ public partial class Geometry<TNum, TConv>
     /// x0 x1 ... xDim-1
     /// </summary>
     /// <returns>The string in the specified format.</returns>
-    public string ToStrSepBySpace() {
-      string res = $"{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
-
-      for (i = 1; i < d; i++) {
-        res += $" {TConv.ToDouble(_v[i]).ToString(null, CultureInfo.InvariantCulture)}";
-      }
-
-      return res;
-    }
+    public string ToStrSepBySpace() => string.Join(' ', _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture)));
 #endregion
 
 #region Functions related to Vectors
-    // /// <summary>
-    // /// Orthonormalizes the given vector against the given basis. It uses Gram-Schmidt procedure. Numerically unstable.
-    // /// </summary>
-    // /// <param name="v">The input vector to orthonormalize.</param>
-    // /// <param name="Basis">The basis to orthonormalize against.</param>
-    // /// <returns>The resulting orthonormalized vector. If the basis is empty, returns normalized vector.</returns>
-    // public static Vector Orthonormalize(Vector v, IEnumerable<Vector> Basis) {
-    //   TNum[] res = v.GetAsArray();
-    //   foreach (Vector bvec in Basis) {
-    //     Debug.Assert(v.Dim == Basis.First().Dim, $"Dimensions are different! Found {v.Dim} expected {Basis.First().Dim}.");
-    //
-    //     // Напишем явно!
-    //     // v -= (bvec * v) * bvec;
-    //
-    //     TNum dot = bvec * v;
-    //     for (int i = 0; i < res.Length; i++) {
-    //       res[i] -= dot * bvec[i];
-    //     }
-    //   }
-    //
-    //   return new Vector(res).NormalizeZero();
-    //   // return v.NormalizeZero();
-    // }
-
-    // /// <summary>
-    // /// Orthonormalizes the given vector against given two bases. Order of bases is important.
-    // /// </summary>
-    // /// <param name="v">The input vector to orthonormalize.</param>
-    // /// <param name="Basis1">The first basis to orthonormalize against.</param>
-    // /// <param name="Basis2">The second basis to orthonormalize against.</param>
-    // /// <returns></returns>
-    // public static Vector Orthonormalize(Vector v, IEnumerable<Vector> Basis1, IEnumerable<Vector> Basis2) {
-    //   return Orthonormalize(Orthonormalize(v, Basis1), Basis2);
-    // }
-    //
-    // /// <summary>
-    // /// Orthonormalizes the given collection of vectors against the given basis.
-    // /// </summary>
-    // /// <param name="Vs">The input collection of vectors to orthonormalize.</param>
-    // /// <param name="Basis">The basis to orthonormalize against.</param>
-    // /// <returns>The resulting collection of orthonormalized vectors. If the basis is empty returns normalized vectors.</returns>
-    // public static IEnumerable<Vector> Orthonormalize(IEnumerable<Vector> Vs, IEnumerable<Vector> Basis) {
-    //   List<Vector> res = new List<Vector>();
-    //
-    //   foreach (Vector v in Vs) {
-    //     res.Add(Orthonormalize(v, Basis, res));
-    //   }
-    //
-    //   return res;
-    // }
-
-//     /// <summary>
-//     /// Computes an orthonormal system from a given set of vectors using the Gram-Schmidt algorithm.
-//     /// </summary>
-//     /// <param name="V">An collection of vectors to use in the orthonormalizing process.</param>
-//     /// <returns>An orthonormal system of less or equal dimension than the input vectors.</returns>
-//     public static List<Vector> GramSchmidt(IEnumerable<Vector> V) {
-// #if DEBUG
-//       if (!V.Any()) {
-//         throw new ArgumentException($"Set of vectors {V} must have at least one element!");
-//       }
-//
-//       if (V.First().IsZero) {
-//         throw new ArgumentException($"The first vector from {V} can't be Zero!");
-//       }
-// #endif
-//       return GramSchmidtMain(new[] { V.First().Normalize() }, V);
-//     }
-//
-//     /// <summary>
-//     /// Computes an orthonormal system for an union of orthonormal system and set of vectors using the Gram-Schmidt algorithm.
-//     /// </summary>
-//     /// <param name="Orthonormal">The collection of orthonormal vectors.</param>
-//     /// <param name="V">The collection of vectors.</param>
-//     /// <returns>A list of orthonormal vectors.</returns>
-//     public static List<Vector> GramSchmidt(IEnumerable<Vector> Orthonormal, IEnumerable<Vector> V) {
-//       return GramSchmidtMain(Orthonormal.ToList(), V);
-//     }
-//
-//     /// <summary>
-//     /// Computes an orthonormal basis from a given set of vectors using the Gram-Schmidt algorithm.
-//     /// </summary>
-//     /// <param name="BasisInit">A collection of vectors forming the initial basis.</param>
-//     /// <param name="V">An enumerable collection of vectors to use in the orthonormalizing process.</param>
-//     /// <returns>An orthonormal basis of the same dimension less or equal than the input vectors.</returns>
-//     private static List<Vector> GramSchmidtMain(IEnumerable<Vector> BasisInit, IEnumerable<Vector> V) {
-//       int          dim   = V.First().Dim;
-//       List<Vector> Basis = BasisInit.ToList();
-//
-//       foreach (Vector v in V) {
-//         Vector conceivable = Orthonormalize(v, Basis);
-//
-//         if (!conceivable.IsZero) {
-//           Basis.Add(conceivable);
-//         }
-//
-//         if (Basis.Count == dim) { //We found Basis
-//           break;
-//         }
-//       }
-//
-//       return Basis;
-//     }
-
-    // /// <summary>
-    // /// The cross product of two 3D-vectors.
-    // /// </summary>
-    // /// <param name="v">The first vector.</param>
-    // /// <param name="u">The second vector.</param>
-    // /// <returns>The outward normal to the plane of v and u.</returns>
-    // public static Vector CrossProduct3D(Vector v, Vector u) {
-    //   Debug.Assert(v.Dim == 3, $"Vector.CrossProduct3D: The dimension of the vectors must be equal to 3! Found {v.Dim}.");
-    //   Debug.Assert
-    //     (
-    //      v.Dim == u.Dim
-    //    , $"Vector.CrossProduct3D: The dimensions of the vectors must be the same! Found v.Dim = {v.Dim}, u.Dim = {u.Dim}."
-    //     );
-    //
-    //   TNum[] crossProduct = new TNum[3];
-    //   crossProduct[0] = v[1] * u[2] - v[2] * u[1];
-    //   crossProduct[1] = v[2] * u[0] - v[0] * u[2];
-    //   crossProduct[2] = v[0] * u[1] - v[1] * u[0];
-    //
-    //   return new Vector(crossProduct);
-    // }
-    //
-    // /// <summary>
-    // /// Calculates the signed volume of the parallelepiped defined by the three vectors given.
-    // /// </summary>
-    // /// <param name="v">The first vector.</param>
-    // /// <param name="u">The second vector.</param>
-    // /// <param name="r">The third vector.</param>
-    // /// <returns></returns>
-    // public static TNum TripleProduct(Vector v, Vector u, Vector r) { return v * CrossProduct3D(u, r); }
-
     /// <summary>
     /// Computes the outer product of the current vector and the given vector.
     /// </summary>
@@ -569,6 +336,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(startIndex <= endIndex, "Vector.SubVector: start index must be less or equal than end index!");
       Debug.Assert(startIndex >= 0, "Vector.SubVector: start index must be non negative.");
       Debug.Assert(endIndex < Dim, "Vector.SubVector: end index must be lesser than dimension of the vector.");
+
       int    length      = endIndex - startIndex + 1;
       TNum[] subElements = new TNum[length];
       Array.Copy(_v, startIndex, subElements, 0, length);
@@ -589,34 +357,12 @@ public partial class Geometry<TNum, TConv>
       return CompareTo((Vector)obj!) == 0;
     }
 
-    public override string ToString() => ToStringWithBraces('(', ')');
+    public override string ToString() => ToStringWithBraces('(', ')', ',');
 
 
-    public string ToStringWithBraces(char braceOpen, char braceClose) {
-      string res = $"{braceOpen}{_v[0].ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
+    public string ToStringWithBraces(char braceOpen, char braceClose, char delim) =>
+      braceOpen + string.Join(delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) + braceClose;
 
-      for (i = 1; i < d; i++) {
-        res += $",{_v[i].ToString(null, CultureInfo.InvariantCulture)}";
-      }
-
-      res += $"{braceClose}";
-
-      return res;
-    }
-
-    public string ToStringDouble(char braceOpen = '(', char braceClose = ')', char delim = ',') {
-      string res = $"{braceOpen}{TConv.ToDouble(_v[0]).ToString(null, CultureInfo.InvariantCulture)}";
-      int    d   = Dim, i;
-
-      for (i = 1; i < d; i++) {
-        res += $"{delim}{TConv.ToDouble(_v[i]).ToString(null, CultureInfo.InvariantCulture)}";
-      }
-
-      res += $"{braceClose}";
-
-      return res;
-    }
 #endregion
 
 #region Constructors
@@ -637,7 +383,7 @@ public partial class Geometry<TNum, TConv>
     /// Constructor on the basis of a one-dimensional array
     /// </summary>
     /// <param name="nv">The array</param>
-    public Vector(TNum[] nv) {
+    public Vector(TNum[] nv) {  // TODO: bool needCopy = true
 #if DEBUG
       if (nv.Length <= 0) {
         throw new ArgumentException("Dimension of a vector cannot be non-positive");
@@ -659,12 +405,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be copied</param>
     public Vector(Vector v) {
-      int d = v.Dim, i;
-      _v = new TNum[d];
-
-      for (i = 0; i < d; i++) {
-        _v[i] = v._v[i];
-      }
+      _v = v.GetAsArray();
     }
 
     /// <summary>
@@ -689,7 +430,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Makes the i-orth of given dimension. (1,0,0) == MakeOrth(3,1).
+    /// Makes the i-th orth of given dimension. (1,0,0) == MakeOrth(3,1).
     /// </summary>
     /// <param name="dim">The dimension of the vector.</param>
     /// <param name="pos">The position of '1'.</param>
