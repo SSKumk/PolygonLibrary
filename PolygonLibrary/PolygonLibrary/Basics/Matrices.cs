@@ -528,6 +528,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The right concatenated vector.</param>
     /// <returns>The resultant matrix.</returns>
     public static Matrix hcat(Matrix? m, Vector v) => m is null ? new Matrix(v) : hcat(m, new Matrix(v))!;
+    // TODO: Сделать без вспомогательного создания промежуточной матрицы!
 
     /// <summary>
     /// Vertical concatenation of two matrices (with equal number of columns).

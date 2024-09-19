@@ -516,7 +516,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Sum of two vectors of similar dimension.
+    /// Sum of two vectors of equal dimension
     /// </summary>
     /// <param name="v1">The first vector summand.</param>
     /// <param name="v2">The second vector summand.</param>
@@ -535,7 +535,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Difference of two vectors
+    /// Difference of two vectors of the same dimensions
     /// </summary>
     /// <param name="v1">The vector minuend</param>
     /// <param name="v2">The vector subtrahend</param>
@@ -606,6 +606,8 @@ public partial class Geometry<TNum, TConv>
     public static TNum operator *(Vector v1, Vector v2) {
       Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
+      //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
+
       int d = v1.Dim, i;
       TNum res = Tools.Zero;
 
@@ -658,7 +660,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
-    /// <returns>true, if the vectors are orthognal; false, otherwise</returns>
+    /// <returns>true, if the vectors are orthogonal; false, otherwise</returns>
     public static bool AreOrthogonal(Vector v1, Vector v2) {
       TNum l1 = v1.Length, l2 = v2.Length;
 
@@ -666,13 +668,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Linear combination of two points
+    /// Linear combination of two vectors
     /// </summary>
-    /// <param name="v1">The first point</param>
-    /// <param name="w1">The weight of the first point</param>
-    /// <param name="v2">The second point</param>
-    /// <param name="w2">The weight of the second point</param>
-    /// <returns>The resultant point</returns>
+    /// <param name="v1">The first vector</param>
+    /// <param name="w1">The weight of the first vector</param>
+    /// <param name="v2">The second vector</param>
+    /// <param name="w2">The weight of the second vector</param>
+    /// <returns>The resultant vector</returns>
     public static Vector LinearCombination(Vector v1, TNum w1, Vector v2, TNum w2) {
       Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
@@ -686,11 +688,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Linear combination of a collection of points
+    /// Linear combination of a collection of vectors
     /// </summary>
-    /// <param name="ps">Collection of the points</param>
-    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of points)</param>
-    /// <returns>The resultant point</returns>
+    /// <param name="ps">Collection of the vector</param>
+    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of vectors)</param>
+    /// <returns>The resultant vector</returns>
     public static Vector LinearCombination(IEnumerable<Vector> ps, IEnumerable<TNum> ws) {
       using IEnumerator<Vector> enPoint  = ps.GetEnumerator();
       using IEnumerator<TNum>   enWeight = ws.GetEnumerator();

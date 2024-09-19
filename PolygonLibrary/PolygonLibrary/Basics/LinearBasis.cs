@@ -4,7 +4,7 @@ namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>, IFormattable
+  IFloatingPoint<TNum>, IFormattable  // TODO: Определить свой интерфейс IGeometryNumber, который все это объединит. Наверное, в Tools определить
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
@@ -108,6 +108,9 @@ public partial class Geometry<TNum, TConv>
 
       if (IsFullDim) { return true; }
 
+      // TODO: А точно проверка на принадлежность подпространству - это проверка совпадение спроектированного вектора и исходного? Проще нет пути?
+
+      // TODO: А не умножение ли это матрицы на вектор?! И вообще - это проектирование вектора в пространство базиса! Оно написано ниже!
       TNum[] proj = new TNum[SpaceDim];
       for (int j = 0; j < SubSpaceDim; j++) {
         TNum dotProduct = Tools.Zero;
@@ -215,6 +218,7 @@ public partial class Geometry<TNum, TConv>
        , "LinearBasis.ProjectVectorToSubSpace: The dimension of the basis vectors should be equal to the dimension of the given vector."
         );
 
+      // TODO: Тоже ведь матричное умножение!
       TNum[] np = new TNum[SubSpaceDim];
       for (int i = 0; i < SubSpaceDim; i++) {
         np[i] = this[i] * v;
@@ -295,17 +299,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Vs">The vectors to form the basis.</param>
     /// <param name="orthogonalize">Indicates whether the vectors should be orthogonalized.</param>
-    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      Debug.Assert(Vs.Count() != 0, "LinearBasis: The enumerable of points is empty! It requires at least one point!");
-      SpaceDim = Vs.First().Dim;
-      Basis    = null;
-
-      AddVectors(Vs, orthogonalize);
-
-#if DEBUG
-      CheckCorrectness(this);
-#endif
-    }
+    public LinearBasis(IEnumerable<Vector> Vs, bool orthogonalize = true) :
+      this(Vs.First().Dim, Vs, orthogonalize)
+    { }
 
     /// <summary>
     /// Merges two linear bases into one.
@@ -317,6 +313,8 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = lb1.SpaceDim;
       foreach (Vector bvec2 in lb2) {
         AddVector(bvec2);
+        // TODO: Как следует !*ПОДУМАТЬ*! об оптимальности - в предыдущей строке многократно пересоздается объект матрицы
+
         if (IsFullDim) {
           break;
         }
@@ -357,6 +355,7 @@ public partial class Geometry<TNum, TConv>
       LinearBasis lb = new LinearBasis(spaceDim, 0);
       do {
         lb.AddVector(Vector.GenVector(spaceDim));
+        // TODO: Опять *ПОДУМАТЬ* об оптимальности
       } while (!lb.IsFullDim);
 
 #if DEBUG
@@ -383,13 +382,12 @@ public partial class Geometry<TNum, TConv>
 
       LinearBasis other = (LinearBasis)obj;
 
+      // Сравниваем размерности пространств, задаваемых базисами
+      if (this.SubSpaceDim != other.SubSpaceDim) { return false; }
+
       // Если хотя бы один вектор не лежит в подпространстве нашего линейного базиса, то они не равны.
       foreach (Vector otherbv in other) {
         if (!Contains(otherbv)) { return false; }
-      }
-      // Если хотя бы один вектор не лежит в подпространстве другого линейного базиса, то они не равны.
-      foreach (Vector bv in this) {
-        if (!other.Contains(bv)) { return false; }
       }
 
       return true;
