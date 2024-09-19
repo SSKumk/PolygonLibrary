@@ -90,13 +90,14 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructor on the basis of information about sizes and one-dimensional array
-    /// that contains elements of the matrix in row-wise order
+    /// Construct a new matrix based on the number of rows, columns,
+    /// and a one-dimensional array containing the elements of the matrix in row-wise order.
     /// </summary>
-    /// <param name="n">Number of rows</param>
-    /// <param name="m">Number of columns</param>
-    /// <param name="ar">The array</param>
-    public Matrix(int n, int m, TNum[] ar, bool needCopy = true) {
+    /// <param name="n">The number of rows in the matrix.</param>
+    /// <param name="m">The number of columns in the matrix.</param>
+    /// <param name="ar">The one-dimensional array containing matrix elements in row-wise order.</param>
+    /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made; otherwise, the original array is used directly.</param>
+    public Matrix(int n, int m, TNum[] ar, bool needCopy) {
       Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows should be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns should be positive. Found {m}");
       Debug.Assert
@@ -261,7 +262,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = -m._m[i];
       }
 
-      return new Matrix(m.Rows, m.Cols, nv);
+      return new Matrix(m.Rows, m.Cols, nv, false);
     }
 
     /// <summary>
@@ -284,7 +285,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = m1._m[i] + m2._m[i];
       }
 
-      return new Matrix(m1.Rows, m1.Cols, nv);
+      return new Matrix(m1.Rows, m1.Cols, nv, false);
     }
 
     /// <summary>
@@ -306,7 +307,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = m1._m[i] - m2._m[i];
       }
 
-      return new Matrix(m1.Rows, m1.Cols, nv);
+      return new Matrix(m1.Rows, m1.Cols, nv, false);
     }
 
     /// <summary>
@@ -323,7 +324,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = a * m._m[i];
       }
 
-      return new Matrix(m.Rows, m.Cols, nv);
+      return new Matrix(m.Rows, m.Cols, nv, false);
     }
 
     /// <summary>
@@ -350,7 +351,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = m._m[i] / a;
       }
 
-      return new Matrix(m.Rows, m.Cols, nv);
+      return new Matrix(m.Rows, m.Cols, nv, false);
     }
 
     /// <summary>
@@ -430,7 +431,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(r, c, res);
+      return new Matrix(r, c, res, false);
     }
 
     /// <summary>
@@ -456,7 +457,7 @@ public partial class Geometry<TNum, TConv>
        , $"Matrix.hcat: Cannot concatenate horizontally matrices with different number of rows. Matrix m1 rows: {m1.Rows}, Matrix m2 rows: {m2.Rows}"
         );
 
-      int    r  = m1!.Rows, c1 = m1.Cols, c2 = m2!.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
+      int    r  = m1.Rows, c1 = m1.Cols, c2 = m2.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < r; i++) {
@@ -469,8 +470,17 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(r, c, nv);
+      return new Matrix(r, c, nv, false);
     }
+
+    // /// <summary>
+    // /// Horizontal concatenation of matrix and a vector (with equal number of rows).
+    // /// </summary>
+    // /// <param name="m">The left concatenated matrix.</param>
+    // /// <param name="v">The right concatenated vector.</param>
+    // /// <returns>The resultant matrix.</returns>
+    // public static Matrix hcat(Matrix? m, Vector v) => m is null ? new Matrix(v) : hcat(m, new Matrix(v))!;
+    // // TODO: Сделать без вспомогательного создания промежуточной матрицы!
 
     /// <summary>
     /// Horizontal concatenation of matrix and a vector (with equal number of rows).
@@ -478,8 +488,30 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">The left concatenated matrix.</param>
     /// <param name="v">The right concatenated vector.</param>
     /// <returns>The resultant matrix.</returns>
-    public static Matrix hcat(Matrix? m, Vector v) => m is null ? new Matrix(v) : hcat(m, new Matrix(v))!;
-    // TODO: Сделать без вспомогательного создания промежуточной матрицы!
+    public static Matrix hcat(Matrix? m, Vector v) {
+      if (m is null) {
+        return new Matrix(v);
+      }
+
+      Debug.Assert
+        (
+         m.Rows == v.Dim
+       , $"Matrix.hcat: Cannot concatenate matrix and vector with different number of rows. Matrix rows: {m.Rows}, Vector dimension: {v.Dim}"
+        );
+
+      int    r  = m.Rows, c1 = m.Cols, c = c1 + 1, d = r * c, k = 0, k1 = 0;
+      TNum[] nv = new TNum[d];
+
+      for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c1; j++, k++, k1++) {
+          nv[k] = m._m[k1];
+        }
+        nv[k] = v[i]; // m.Rows == v.Dim
+        k++;
+      }
+
+      return new Matrix(r, c, nv, false);
+    }
 
     /// <summary>
     /// Vertical concatenation of two matrices (with equal number of columns).
@@ -507,7 +539,7 @@ public partial class Geometry<TNum, TConv>
         k++;
       }
 
-      return new Matrix(m1.Rows + m2.Rows, m1.Cols, nv);
+      return new Matrix(m1.Rows + m2.Rows, m1.Cols, nv, false);
     }
 #endregion
 
@@ -531,7 +563,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(r, c, res);
+      return new Matrix(r, c, res, false);
     }
 
     /// <summary>
@@ -553,7 +585,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(r, c, res);
+      return new Matrix(r, c, res, false);
     }
 
     /// <summary>
@@ -595,7 +627,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(r, c, res);
+      return new Matrix(r, c, res, false);
     }
 
     public Vector TakeVector(int col) {
@@ -609,7 +641,10 @@ public partial class Geometry<TNum, TConv>
       return new Vector(res, false);
     }
 
-
+    /// <summary>
+    /// Transposes the matrix, swapping its rows with columns.
+    /// </summary>
+    /// <returns>A new matrix that is the transpose of the current matrix.</returns>
     public Matrix Transpose() {
       TNum[] transposedElements = new TNum[Cols * Rows];
       for (int i = 0; i < Rows; i++) {
@@ -618,7 +653,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(Cols, Rows, transposedElements);
+      return new Matrix(Cols, Rows, transposedElements, false);
     }
 #endregion
 
@@ -671,7 +706,7 @@ public partial class Geometry<TNum, TConv>
         nv[i] = Tools.One;
       }
 
-      return new Matrix(n, m, nv);
+      return new Matrix(n, m, nv, false);
     }
 
     /// <summary>
@@ -709,7 +744,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new Matrix(n, m, nv);
+      return new Matrix(n, m, nv, false);
     }
 
     /// <summary>
@@ -727,14 +762,17 @@ public partial class Geometry<TNum, TConv>
 
       GRandomLC rnd = random ?? Tools.Random;
 
-      TNum[,] m = new TNum[dimRow, dimCol];
-      for (int r = 0; r < dimRow; r++) {
-        for (int l = 0; l < dimCol; l++) {
-          m[r, l] = rnd.NextPrecise(a, b);
+      TNum[] nv = new TNum[dimRow * dimCol];
+      int    k  = 0;
+
+      for (int row = 0; row < dimRow; row++) {
+        for (int col = 0; col < dimCol; col++) {
+          nv[k] = rnd.NextPrecise(a, b);
+          k++;
         }
       }
 
-      return new Matrix(m);
+      return new Matrix(dimRow, dimCol, nv, false);
     }
 
     /// <summary>
@@ -780,12 +818,7 @@ public partial class Geometry<TNum, TConv>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null) {
       Debug.Assert(dim > 0, $"Matrix.GenONMatrix: Size of a square matrix should be positive. Found {dim}");
 
-      LinearBasis basis = new LinearBasis(new[] { Vector.GenVector(dim) });
-      while (!basis.IsFullDim) {
-        basis.AddVector(Vector.GenVector(dim, random));
-      }
-
-      return basis.Basis!;
+      return LinearBasis.GenLinearBasis(dim, random).Basis!;
     }
 
     /// <summary>
@@ -809,7 +842,7 @@ public partial class Geometry<TNum, TConv>
 
   public class MutableMatrix : Matrix {
 
-    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar) { }
+    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
 
     public MutableMatrix(Matrix m) : base(m) { }
 

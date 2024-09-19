@@ -4,7 +4,7 @@ namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-  IFloatingPoint<TNum>, IFormattable  // TODO: Определить свой интерфейс IGeometryNumber, который все это объединит. Наверное, в Tools определить
+  IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
@@ -109,8 +109,11 @@ public partial class Geometry<TNum, TConv>
       if (IsFullDim) { return true; }
 
       // TODO: А точно проверка на принадлежность подпространству - это проверка совпадение спроектированного вектора и исходного? Проще нет пути?
-
+      // Можно Гауссом Bx = v, где B - базис, v проверяемый вектор.
       // TODO: А не умножение ли это матрицы на вектор?! И вообще - это проектирование вектора в пространство базиса! Оно написано ниже!
+      // Да, но там он выражен в координатах подпространства. А мне нужен в "большом" пространстве.
+
+      //  proj += (v * bvec) * bvec;
       TNum[] proj = new TNum[SpaceDim];
       for (int j = 0; j < SubSpaceDim; j++) {
         TNum dotProduct = Tools.Zero;
@@ -219,10 +222,11 @@ public partial class Geometry<TNum, TConv>
        , "LinearBasis.ProjectVectorToSubSpace: The dimension of the basis vectors should be equal to the dimension of the given vector."
         );
 
-      // TODO: Тоже ведь матричное умножение!
+      // TODO: Тоже ведь матричное умножение!  <>  Да, но у меня векторы-столбцы
+
       TNum[] np = new TNum[SubSpaceDim];
       for (int i = 0; i < SubSpaceDim; i++) {
-        np[i] = this[i] * v;
+        np[i] = this[i] * v; // bvec * v
       }
 
       return new Vector(np, false);
@@ -351,11 +355,12 @@ public partial class Geometry<TNum, TConv>
     /// Generates a full-dimensional linear basis for the specified dimension.
     /// </summary>
     /// <param name="spaceDim">The dimension of the basis.</param>
+    /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>A linear basis with the given dimension.</returns>
-    public static LinearBasis GenLinearBasis(int spaceDim) {
+    public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null) {
       LinearBasis lb = new LinearBasis(spaceDim, 0);
       do {
-        lb.AddVector(Vector.GenVector(spaceDim));
+        lb.AddVector(Vector.GenVector(spaceDim, random));
         // TODO: Опять *ПОДУМАТЬ* об оптимальности
       } while (!lb.IsFullDim);
 

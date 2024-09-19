@@ -26,7 +26,21 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-    // Vector v = Vector.Ones(4);
+
+    // Vector v1 = Vector.GenVectorInt(4,-20,20);
+    // Vector v2 = Vector.GenVectorInt(4,-20,20);
+
+
+    // LinearBasis lb = new LinearBasis(4,2);
+    // Vector      v  = Vector.Ones(4);
+    // Vector      u1  = new Vector(new ddouble[] { 1, 1, 0, 0 });
+    // Vector      u2  = new Vector(new ddouble[] { 4, 7, 0, 0 });
+    // Vector      u3  = new Vector(new ddouble[] { 4, 7, 1, 2 });
+    //
+    // Console.WriteLine($"{lb.Contains(v)}");
+    // Console.WriteLine($"{lb.Contains(u1)}");
+    // Console.WriteLine($"{lb.Contains(u2)}");
+    // Console.WriteLine($"{lb.Contains(u3)}");
     // Console.WriteLine(v.ToStringBraceAndDelim('[', '}', ';'));
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
