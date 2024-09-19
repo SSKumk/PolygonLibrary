@@ -24,7 +24,7 @@ public partial class Geometry<TNum, TConv>
         return new FaceLattice(BuiltPolytop.OriginalVertices.First());
       }
 
-      int d = BuiltPolytop.PolytopDim;
+      int                        d       = BuiltPolytop.PolytopDim;
       List<SortedSet<BaseSubCP>> lattice = new List<SortedSet<BaseSubCP>>();
       for (int i = 0; i <= BuiltPolytop.PolytopDim; i++) {
         lattice.Add(new SortedSet<BaseSubCP>());
@@ -37,7 +37,7 @@ public partial class Geometry<TNum, TConv>
       SortedSet<BaseSubCP> prevCP = BuiltPolytop.Faces!.ToSortedSet();
       for (int i = d - 1; i >= 0; i--) {
         lattice[i] = prevCP;
-        prevCP = prevCP.SelectMany(node => node.Faces is null ? new List<BaseSubCP>() : node.Faces!).ToSortedSet();
+        prevCP     = prevCP.SelectMany(node => node.Faces is null ? new List<BaseSubCP>() : node.Faces!).ToSortedSet();
       }
 
       return FaceLattice.ConstructFromBaseSubCP(lattice);
@@ -113,7 +113,7 @@ public partial class Geometry<TNum, TConv>
         default: {
           // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
           IEnumerable<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null));
-          AffineBasis         AffineS = new AffineBasis(S);
+          AffineBasis           AffineS = new AffineBasis(S);
           if (AffineS.SubSpaceDim < AffineS.SpaceDim) {
             // Если рой точек образует подпространство размерности меньшей чем размерность самих точек, то
             // уходим в подпространство и там овыпукляем.
@@ -183,7 +183,11 @@ public partial class Geometry<TNum, TConv>
         spaceDim      = S.First().Dim;
         this.initFace = initFace;
 
-        Debug.Assert(new AffineBasis(Swarm).SubSpaceDim == spaceDim, $"GiftWrappingMain: span(Swarm) does not form a d-polytop in d-space!");
+        Debug.Assert
+          (
+           new AffineBasis(Swarm).SubSpaceDim == spaceDim
+         , $"GiftWrappingMain: span(Swarm) does not form a d-polytop in d-space!"
+          );
 
         BuiltPolytop = GW();
       }
@@ -339,11 +343,13 @@ public partial class Geometry<TNum, TConv>
           n = n.Normalize();
 
           OrientNormal(ref n, origin);
+
 #if DEBUG
-          if (S.All(s => new HyperPlane(n, origin).Contains(s))) {
+          HyperPlane hpDebug = new HyperPlane(n, origin);
+          if (S.All(s => hpDebug.Contains(s))) {
             throw new ArgumentException
               (
-               $"BuildInitialPlaneSwart (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
+               $"GiftWrapping.BuildInitialPlane: (dim = {spaceDim}): All points from S lies in initial plane! There are no convex hull of full dimension."
               );
           }
 #endif

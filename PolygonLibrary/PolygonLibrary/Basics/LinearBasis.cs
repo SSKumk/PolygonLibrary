@@ -190,6 +190,7 @@ public partial class Geometry<TNum, TConv>
       CheckCorrectness(this);
 #endif
 
+
       return isAdded;
     }
 

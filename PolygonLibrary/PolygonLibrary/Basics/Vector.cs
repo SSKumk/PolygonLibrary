@@ -42,11 +42,8 @@ public partial class Geometry<TNum, TConv>
     public TNum this[int i] {
       get
         {
-#if DEBUG
-          if (i < 0 || i >= Dim) {
-            throw new IndexOutOfRangeException();
-          }
-#endif
+          Debug.Assert(i >= 0 && i < Dim, $"Vector.Indexer: Index out of range. Found index: {i}, dimension: {Dim}");
+
           return _v[i];
         }
     }
@@ -115,15 +112,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="other">The vector to be compared with</param>
     /// <returns>+1, if this object greater than other; 0, if they are equal; -1, otherwise</returns>
     public int CompareTo(Vector? other) {
-      int d = Dim, res;
-#if DEBUG
-      Debug.Assert(other is not null, $"Vector.CompareTo: second vector is null!");
+      if (other is null) { return 1; } // null < this (always)
 
-      if (d != other.Dim) {
-        throw new ArgumentException
-          ($"Vector.CompareTo: Cannot compare vectors of different dimensions. This = {this} and other = {other}");
-      }
-#endif
+      int d = Dim, res;
+
+      Debug.Assert
+        (
+         d == other.Dim
+       , $"Vector.CompareTo: Can not compare vectors of different dimensions. Dimensions: this = {d}, other = {other.Dim}"
+        );
+
       for (int i = 0; i < d; i++) {
         res = Tools.CMP(this[i], other![i]);
 
@@ -264,7 +262,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="u2">The second basis vector of the plane.</param>
     /// <returns>The projected vector.</returns>
     public Vector ProjectToPlane(Vector u1, Vector u2) {
-      Debug.Assert(u1.Dim == Dim && u2.Dim == Dim, $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.Dim} and {u2.Dim}.");
+      Debug.Assert
+        (
+         u1.Dim == Dim && u2.Dim == Dim
+       , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.Dim} and {u2.Dim}."
+        );
 
       TNum fst = Tools.Zero;
       TNum snd = Tools.Zero;
@@ -468,6 +470,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="random">If null then default one be used.</param>
     /// <returns>A random vector.</returns>
     public static Vector GenVector(int dim, GRandomLC? random = null) {
+      Debug.Assert(dim > 0, $"Vector.GenVector: Number of coordinates of a vector should be positive. Found {dim}");
+
       Vector res;
       do {
         res = GenVector(dim, -Tools.HalfOne, Tools.HalfOne, random);
@@ -484,7 +488,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="b">The maximum value of each coordinate.</param>
     /// <param name="random">If null, then default one be used.</param>
     /// <returns>A random vector.</returns>
-    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null) => new Vector(GenArray(dim, a, b, random), false);
+    public static Vector GenVector(int dim, TNum a, TNum b, GRandomLC? random = null)
+      => new Vector(GenArray(dim, a, b, random), false);
 
     /// <summary>
     /// Generates an arbitrary vector of integers of the specified dimension. Each coordinate: [a, b).
@@ -522,9 +527,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector summand.</param>
     /// <returns>The sum</returns>
     public static Vector operator +(Vector v1, Vector v2) {
-      Debug.Assert(v1.Dim == v2.Dim,$"Vector.+: Can not add two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Can not add two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
-      int d = v1.Dim, i;
+      int    d  = v1.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -541,9 +546,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The vector subtrahend</param>
     /// <returns>The difference</returns>
     public static Vector operator -(Vector v1, Vector v2) {
-      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+      Debug.Assert
+        (v1.Dim == v2.Dim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
-      int d = v1.Dim, i;
+      int    d  = v1.Dim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -604,11 +610,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector factor.</param>
     /// <returns>The product</returns>
     public static TNum operator *(Vector v1, Vector v2) {
-      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+      Debug.Assert
+        (
+         v1.Dim == v2.Dim
+       , $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}."
+        );
 
       //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
 
-      int d = v1.Dim, i;
+      int  d   = v1.Dim, i;
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
@@ -676,7 +686,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="w2">The weight of the second vector</param>
     /// <returns>The resultant vector</returns>
     public static Vector LinearCombination(Vector v1, TNum w1, Vector v2, TNum w2) {
-      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+      Debug.Assert
+        (v1.Dim == v2.Dim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
 
       TNum[] coords = new TNum[v1.Dim];
 
@@ -688,45 +699,28 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Linear combination of a collection of vectors
+    /// Linear combination of a collection of vectors with weights
     /// </summary>
-    /// <param name="ps">Collection of the vector</param>
-    /// <param name="ws">Collection of the weights (has at least, the same number of elements as the collection of vectors)</param>
+    /// <param name="Vs">Collection of the vectors</param>
+    /// <param name="Ws">Collection of the weights (has at least the same number of elements as the collection of vectors)</param>
     /// <returns>The resultant vector</returns>
-    public static Vector LinearCombination(IEnumerable<Vector> ps, IEnumerable<TNum> ws) {
-      using IEnumerator<Vector> enPoint  = ps.GetEnumerator();
-      using IEnumerator<TNum>   enWeight = ws.GetEnumerator();
+    public static Vector LinearCombination(IReadOnlyList<Vector> Vs, IReadOnlyList<TNum> Ws) {
+      Debug.Assert(Vs.Count > 0, "Vector collection must contain at least one element. Found 0");
+      Debug.Assert
+        (
+         Vs.Count == Ws.Count
+       , $"The number of vectors must match the number of weights. Found {Vs.Count} vectors and {Ws.Count} weights"
+        );
 
-#if DEBUG
-      if (!enPoint.MoveNext()) {
-        throw new ArgumentException("No points in the collection to combine");
+      Vector result = Vs[0] * Ws[0];
+
+      for (int i = 0; i < Vs.Count; i++) {
+        result += Vs[i] * Ws[i];
       }
 
-      if (!enWeight.MoveNext()) {
-        throw new ArgumentException("No weights in the collection to combine");
-      }
-#else
-      enPoint.MoveNext();
-      enWeight.MoveNext();
-#endif
-
-
-      int    dim    = enPoint.Current.Dim;
-      TNum[] coords = new TNum[dim];
-
-      do {
-#if DEBUG
-        if (enPoint.Current.Dim != dim) {
-          throw new ArgumentException("Dimension of a point in the collection differs from the dimension of the point");
-        }
-#endif
-        for (int i = 0; i < dim; i++) {
-          coords[i] += enPoint.Current[i] * enWeight.Current;
-        }
-      } while (enPoint.MoveNext() && enWeight.MoveNext());
-
-      return new Vector(coords, false);
+      return result;
     }
+
 
   }
 

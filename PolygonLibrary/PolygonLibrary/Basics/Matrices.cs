@@ -37,15 +37,9 @@ public partial class Geometry<TNum, TConv>
     public TNum this[int i, int j] {
       get
         {
-#if DEBUG
-          if (i < 0 || i >= Rows) {
-            throw new IndexOutOfRangeException("The first index is out of range");
-          }
+          Debug.Assert(i >= 0 && i < Rows, "Matrix.Indexer: The first index is out of range");
+          Debug.Assert(j >= 0 && j < Cols, "Matrix.Indexer: The second index is out of range");
 
-          if (j < 0 || j >= Cols) {
-            throw new IndexOutOfRangeException("The second index is out of range");
-          }
-#endif
           return _m[i * Cols + j];
         }
     }
@@ -88,11 +82,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     public Matrix(int n, int m) {
-#if DEBUG
-      if (n <= 0 || m <= 0) {
-        throw new ArgumentException("Dimension of a matrix cannot be non-positive");
-      }
-#endif
+      Debug.Assert(n > 0 && m > 0, "Matrix.Ctor: Dimension of a matrix cannot be non-positive");
+
       _m   = new TNum[n * m];
       Rows = n;
       Cols = m;
@@ -106,23 +97,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">Number of columns</param>
     /// <param name="ar">The array</param>
     public Matrix(int n, int m, TNum[] ar, bool needCopy = true) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Number of rows should be positive");
-      }
+      Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows should be positive. Found {n}");
+      Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns should be positive. Found {m}");
+      Debug.Assert
+        (
+         n * m == ar.Length
+       , $"Matrix.Ctor: Product of sizes does not equal to number of elements in the array. Expected {n * m}, found {ar.Length}"
+        );
+      Debug.Assert(ar.Rank == 1, $"Matrix.Ctor: The array is not one-dimensional. Found rank {ar.Rank}");
 
-      if (m <= 0) {
-        throw new ArgumentException("Number of columns should be positive");
-      }
 
-      if (n * m != ar.Length) {
-        throw new ArgumentException("Product of sizes does not equal to number of elements in the array");
-      }
-
-      if (ar.Rank != 1) {
-        throw new ArgumentException("The array is not one-dimensional");
-      }
-#endif
       Rows = n;
       Cols = m;
 
@@ -140,26 +124,15 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="nm">The new array</param>
     public Matrix(TNum[,] nm) {
-#if DEBUG
-      if (nm.Length <= 0) {
-        throw new ArgumentException("Number of matrix elements should be positive");
-      }
+      Debug.Assert(nm.Length > 0, $"Number of matrix elements should be positive. Found {nm.Length}");
+      Debug.Assert(nm.Rank == 2, $"Cannot initialize a matrix by an array that is not two-dimensional. Found rank {nm.Rank}");
 
-      if (nm.Rank != 2) {
-        throw new ArgumentException("Cannot initialize a matrix by a array that is not two-dimensional");
-      }
-#endif
       Rows = nm.GetLength(0);
       Cols = nm.GetLength(1);
-#if DEBUG
-      if (Rows <= 0) {
-        throw new ArgumentException("Matrix cannot have a non-positive number of rows");
-      }
 
-      if (Cols <= 0) {
-        throw new ArgumentException("Matrix cannot have a non-positive number of columns");
-      }
-#endif
+      Debug.Assert(Rows > 0, $"Matrix cannot have a non-positive number of rows. Found {Rows}");
+      Debug.Assert(Cols > 0, $"Matrix cannot have a non-positive number of columns. Found {Cols}");
+
       _m = new TNum[Rows * Cols];
       int k = 0;
 
@@ -193,32 +166,6 @@ public partial class Geometry<TNum, TConv>
       Rows = v.Dim;
       Cols = 1;
       _m   = v.GetAsArray();
-    }
-
-    public Matrix(IEnumerable<Vector> Vs) {
-      Cols = Vs.Count();
-      Rows = Vs.First().Dim;
-
-#if DEBUG
-      if (Cols <= 0) {
-        throw new ArgumentException("Matrix cannot have a non-positive number of columns");
-      }
-
-      foreach (Vector v in Vs) {
-        if (v.Dim != Rows) {
-          throw new ArgumentException("Matrix cannot have a different length of columns");
-        }
-      }
-#endif
-      _m = new TNum[Rows * Cols];
-
-      int k = 0;
-      foreach (Vector v in Vs) {
-        for (int i = 0; i < Rows; i++) {
-          _m[i * Cols + k] = v[i];
-        }
-        k++;
-      }
     }
 #endregion
 
@@ -324,11 +271,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m2">The second matrix summand</param>
     /// <returns>The sum</returns>
     public static Matrix operator +(Matrix m1, Matrix m2) {
-#if DEBUG
-      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols) {
-        throw new ArgumentException("Cannot add two matrices of different sizes");
-      }
-#endif
+      Debug.Assert
+        (
+         m1.Rows == m2.Rows && m1.Cols == m2.Cols
+       , $"Matrix.+: Cannot add two matrices of different sizes. Found m1: {m1.Rows}x{m1.Cols}, m2: {m2.Rows}x{m2.Cols}"
+        );
+
       int    d  = m1.Rows * m1.Cols, i;
       TNum[] nv = new TNum[d];
 
@@ -346,11 +294,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m2">The matrix subtrahend</param>
     /// <returns>The difference</returns>
     public static Matrix operator -(Matrix m1, Matrix m2) {
-#if DEBUG
-      if (m1.Rows != m2.Rows || m1.Cols != m2.Cols) {
-        throw new ArgumentException("Cannot subtract two matrices of different sizes");
-      }
-#endif
+      Debug.Assert
+        (
+         m1.Rows == m2.Rows && m1.Cols == m2.Cols
+       , $"Matrix.-: Cannot subtract two matrices of different sizes. Found m1: {m1.Rows}x{m1.Cols}, m2: {m2.Rows}x{m2.Cols}"
+        );
       int    d  = m1.Rows * m1.Cols, i;
       TNum[] nv = new TNum[d];
 
@@ -393,11 +341,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
     public static Matrix operator /(Matrix m, TNum a) {
-      // #if DEBUG
-      //       if (Tools.EQ(a)) {
-      //         throw new DivideByZeroException();
-      //       }
-      // #endif
+      Debug.Assert(Tools.NE(a), $"Division by zero detected. Found {a}");
+
       int    d  = m.Rows * m.Cols, i;
       TNum[] nv = new TNum[d];
 
@@ -416,11 +361,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector (second) factor</param>
     /// <returns>The resultant vector</returns>
     public static Vector operator *(Matrix m, Vector v) {
-#if DEBUG
-      if (m.Cols != v.Dim) {
-        throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
-      }
-#endif
+      Debug.Assert
+        (
+         m.Cols == v.Dim
+       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.Dim}"
+        );
+
       TNum[] res = new TNum[m.Rows];
       int    r   = m.Rows, c = m.Cols, i, j, k = 0;
 
@@ -441,11 +387,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">The matrix (second) factor</param>
     /// <returns>The resultant vector</returns>
     public static Vector operator *(Vector v, Matrix m) {
-#if DEBUG
-      if (m.Rows != v.Dim) {
-        throw new ArgumentException("Cannot multiply a matrix and a vector of improper dimensions");
-      }
-#endif
+      Debug.Assert
+        (
+         m.Rows == v.Dim
+       , $"Matrix.*: Cannot multiply a vector and a matrix of improper dimensions. Matrix rows: {m.Rows}, vector dimensions: {v.Dim}"
+        );
+
       TNum[] res = new TNum[m.Cols];
       int    r   = m.Rows, c = m.Cols, i, j, k;
 
@@ -465,12 +412,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m2">The second matrix factor</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix operator *(Matrix m1, Matrix m2) {
-#if DEBUG
-      if (m1.Cols != m2.Rows) {
-        throw new ArgumentException("Cannot multiply two matrices of improper dimensions");
-      }
-#endif
-      int    r   = m1.Rows, c = m2.Cols, d = r * c, temp = m1.Cols, i, j, k, m1Ind, m1Start, m2Ind, resInd = 0;
+      Debug.Assert
+        (
+         m1.Cols == m2.Rows
+       , $"Matrix.*: Cannot multiply two matrices of improper dimensions. Matrix m1 columns: {m1.Cols}, Matrix m2 rows: {m2.Rows}"
+        );
+
+      int r = m1.Rows, c = m2.Cols, d = r * c, temp = m1.Cols, i, j, k, m1Ind, m1Start, m2Ind, resInd = 0;
+
       TNum[] res = new TNum[d];
 
       for (i = 0, m1Start = 0; i < r; i++, m1Start += temp) {
@@ -500,11 +449,13 @@ public partial class Geometry<TNum, TConv>
       if (m1 is not null && m2 is null) {
         return m2;
       }
-#if DEBUG
-      if (m1!.Rows != m2!.Rows) {
-        throw new ArgumentException("Cannot concatenate horizontally matrices with different number of rows");
-      }
-#endif
+
+      Debug.Assert
+        (
+         m1!.Rows == m2!.Rows
+       , $"Matrix.hcat: Cannot concatenate horizontally matrices with different number of rows. Matrix m1 rows: {m1.Rows}, Matrix m2 rows: {m2.Rows}"
+        );
+
       int    r  = m1!.Rows, c1 = m1.Cols, c2 = m2!.Cols, c = c1 + c2, d = r * c, i, j, k = 0, k1 = 0, k2 = 0;
       TNum[] nv = new TNum[d];
 
@@ -537,11 +488,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m2">The lower concatenated matrix.</param>
     /// <returns>The resultant matrix.</returns>
     public static Matrix vcat(Matrix m1, Matrix m2) {
-#if DEBUG
-      if (m1.Cols != m2.Cols) {
-        throw new ArgumentException("Cannot concatenate vertically matrices with different number of columns");
-      }
-#endif
+      Debug.Assert
+        (
+         m1.Cols == m2.Cols
+       , $"Matrix.vcat: Cannot concatenate vertically matrices with different number of columns. Matrix m1 columns: {m1.Cols}, Matrix m2 columns: {m2.Cols}"
+        );
+
       int    d  = (m1.Rows + m2.Rows) * m1.Cols, k = 0;
       TNum[] nv = new TNum[d];
 
@@ -567,11 +519,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant matrix</returns>
     public Matrix TakeRows(int[] rows) {
       int r = rows.Length;
-#if DEBUG
-      if (r <= 0) {
-        throw new ArgumentException("Wrong number of rows to be taken");
-      }
-#endif
+
+      Debug.Assert(r > 0, $"Matrix.TakeRows: Wrong number of rows to be taken. Found {r}");
+
       int    c   = Cols, d = r * c, k = 0, ind, i, j;
       TNum[] res = new TNum[d];
 
@@ -591,11 +541,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant matrix</returns>
     public Matrix TakeCols(int[] cols) {
       int c = cols.Length;
-#if DEBUG
-      if (c <= 0) {
-        throw new ArgumentException("Wrong number of columns to be taken");
-      }
-#endif
+
+      Debug.Assert(c > 0, $"Matrix.TakeCols: Wrong number of columns to be taken. Found {c}");
+
       int    r   = Rows, d = r * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
 
@@ -633,15 +581,9 @@ public partial class Geometry<TNum, TConv>
         c = cols.Length;
       }
 
-#if DEBUG
-      if (r <= 0) {
-        throw new ArgumentException("Wrong number of rows to be taken");
-      }
+      Debug.Assert(r > 0, $"Matrix.TakeSubMatrix: Wrong number of rows to be taken. Found {r}");
+      Debug.Assert(c > 0, $"Matrix.TakeSubMatrix: Wrong number of columns to be taken. Found {c}");
 
-      if (c <= 0) {
-        throw new ArgumentException("Wrong number of columns to be taken");
-      }
-#endif
       int    d   = r * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
 
@@ -657,7 +599,8 @@ public partial class Geometry<TNum, TConv>
     }
 
     public Vector TakeVector(int col) {
-      Debug.Assert(col >= 0 && col < Cols, "Matrices.TakeVector: Column index must lie in [0, Cols).");
+      Debug.Assert(col >= 0 && col < Cols, "Matrix.TakeVector: Column index must lie in [0, Cols).");
+
       TNum[] res = new TNum[Rows];
       for (int i = 0; i < Rows; i++) {
         res[i] = this[i, col];
@@ -694,15 +637,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix Zero(int n, int m) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Number of rows of a matrix should be positive");
-      }
+      Debug.Assert(n > 0, $"Matrix.Zero: Number of rows of a matrix should be positive. Found {n}");
+      Debug.Assert(m > 0, $"Matrix.Zero: Number of columns of a matrix should be positive. Found {m}");
 
-      if (m <= 0) {
-        throw new ArgumentException("Number of columns of a matrix should be positive");
-      }
-#endif
       return new Matrix(n, m);
     }
 
@@ -712,11 +649,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix One(int n) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Size of a square matrix should be positive");
-      }
-#endif
+      Debug.Assert(n > 0, $"Matrix.One: Size of a square matrix should be positive. Found {n}");
+
       return One(n, n);
     }
 
@@ -727,15 +661,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix One(int n, int m) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Number of rows of a matrix should be positive");
-      }
+      Debug.Assert(n > 0, $"Matrix.One: Number of rows of a matrix should be positive. Found {n}");
+      Debug.Assert(m > 0, $"Matrix.One: Number of columns of a matrix should be positive. Found {m}");
 
-      if (m <= 0) {
-        throw new ArgumentException("Number of columns of a matrix should be positive");
-      }
-#endif
       int    d  = n * m, i;
       TNum[] nv = new TNum[d];
 
@@ -752,11 +680,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">Size of the matrix</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix Eye(int n) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Size of a square matrix should be positive");
-      }
-#endif
+      Debug.Assert(n > 0, $"Matrix.Eye: Size of a square matrix should be positive. Found {n}");
+
       return Eye(n, n);
     }
 
@@ -767,15 +692,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m">Number of columns</param>
     /// <returns>The resultant matrix</returns>
     public static Matrix Eye(int n, int m) {
-#if DEBUG
-      if (n <= 0) {
-        throw new ArgumentException("Number of rows of a matrix should be positive");
-      }
+      Debug.Assert(n > 0, $"Matrix.Eye: Number of rows of a matrix should be positive. Found {n}");
+      Debug.Assert(m > 0, $"Matrix.Eye: Number of columns of a matrix should be positive. Found {m}");
 
-      if (m <= 0) {
-        throw new ArgumentException("Number of columns of a matrix should be positive");
-      }
-#endif
       int    d  = n * m, i, j, k = 0;
       TNum[] nv = new TNum[d];
 
@@ -803,6 +722,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="random">An optional instance of GRandomLC to use for generating random numbers. If null default one be used.</param>
     /// <returns>A Matrix with randomly generated elements between a and b.</returns>
     public static Matrix GenMatrix(int dimRow, int dimCol, TNum a, TNum b, GRandomLC? random = null) {
+      Debug.Assert(dimRow > 0, $"Matrix.GenMatrix: Number of rows of a matrix should be positive. Found {dimRow}");
+      Debug.Assert(dimCol > 0, $"Matrix.GenMatrix: Number of columns of a matrix should be positive. Found {dimCol}");
+
       GRandomLC rnd = random ?? Tools.Random;
 
       TNum[,] m = new TNum[dimRow, dimCol];
@@ -824,6 +746,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="random">Optional instance of GRandomLC to use for generating random numbers. If null default one be used.</param>
     /// <returns>A non-singular Matrix with randomly generated elements between a and b.</returns>
     public static Matrix GenNonSingular(int dim, TNum a, TNum b, GRandomLC? random = null) {
+      Debug.Assert(dim > 0, $"Matrix.GenNonSingular: Size of a square matrix should be positive. Found {dim}");
+
       TNum[,]     m       = new TNum[dim, dim];
       LinearBasis toCheck = new LinearBasis(dim, 0);
       for (int r = 0; r < dim; r++) {
@@ -854,6 +778,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>The orthonormal matrix d x d.</returns>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null) {
+      Debug.Assert(dim > 0, $"Matrix.GenONMatrix: Size of a square matrix should be positive. Found {dim}");
+
       LinearBasis basis = new LinearBasis(new[] { Vector.GenVector(dim) });
       while (!basis.IsFullDim) {
         basis.AddVector(Vector.GenVector(dim, random));
@@ -890,29 +816,17 @@ public partial class Geometry<TNum, TConv>
     public new TNum this[int i, int j] {
       get
         {
-#if DEBUG
-          if (i < 0 || i >= Rows) {
-            throw new IndexOutOfRangeException("The first index is out of range");
-          }
+          Debug.Assert(i >= 0 && i < Rows, "MutableMatrix.Indexer: The first index is out of range");
+          Debug.Assert(j >= 0 && j < Cols, "MutableMatrix.Indexer: The second index is out of range");
 
-          if (j < 0 || j >= Cols) {
-            throw new IndexOutOfRangeException("The second index is out of range");
-          }
-#endif
           return _m[i * Cols + j];
         }
 
       set
         {
-#if DEBUG
-          if (i < 0 || i >= Rows) {
-            throw new IndexOutOfRangeException("The first index is out of range");
-          }
+          Debug.Assert(i >= 0 && i < Rows, "MutableMatrix.Indexer: The first index is out of range");
+          Debug.Assert(j >= 0 && j < Cols, "MutableMatrix.Indexer: The second index is out of range");
 
-          if (j < 0 || j >= Cols) {
-            throw new IndexOutOfRangeException("The second index is out of range");
-          }
-#endif
           _m[i * Cols + j] = value;
         }
     }
@@ -936,9 +850,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     public void SetSubMatrix(int startRow, int startCol, int numRows, int numCols, Matrix subMatrix) {
-      if (numRows != subMatrix.Rows || numCols != subMatrix.Cols) {
-        throw new ArgumentException("Submatrix dimensions must match the specified region dimensions.");
-      }
+      Debug.Assert
+        (
+         numRows == subMatrix.Rows && numCols == subMatrix.Cols
+       , $"MutableMatrix.SetSubMatrix: Submatrix dimensions must match the specified region dimensions. Expected dimensions: {numRows}x{numCols}, found: {subMatrix.Rows}x{subMatrix.Cols}"
+        );
+
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
           _m[(startRow + i) * Cols + (startCol + j)] = subMatrix[i, j];

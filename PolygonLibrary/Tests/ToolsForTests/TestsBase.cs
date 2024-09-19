@@ -38,7 +38,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="points">The list of point to lin-combine.</param>
   /// <param name="random">The random to be used. If null, the _random be used.</param>
   /// <returns>A linear combination of the given points.</returns>
-  public static Vector GenConvexCombination(IReadOnlyCollection<Vector> points, GRandomLC? random = null) {
+  public static Vector GenConvexCombination(IReadOnlyList<Vector> points, GRandomLC? random = null) {
     GRandomLC  rnd = random ?? _random;
     List<TNum> ws  = new List<TNum>();
 

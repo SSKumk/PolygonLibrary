@@ -50,6 +50,26 @@ public interface INumConvertor<TNum> where TNum : INumber<TNum> {
 
 }
 
+// Фиг вам. Типы double / ddouble не реализуют интерфейс IGeometryNumber. Обёртка -- дорого. Исходники у double -- нет.
+// /// <summary>
+// /// Represents a number type used in geometric computations that supports
+// /// various mathematical operations such as trigonometric, power, and root functions.
+// /// </summary>
+// /// <typeparam name="T">
+// /// The specific type that implements this interface. It must implement all required
+// /// mathematical operations, including trigonometric, power, root functions, and
+// /// support floating-point arithmetic.
+// /// </typeparam>
+// public interface IGeometryNumber<T> : INumber<T>
+//                                     , ITrigonometricFunctions<T>
+//                                     , IPowerFunctions<T>
+//                                     , IRootFunctions<T>
+//                                     , IFloatingPoint<T>
+//                                     , IFormattable where T : IGeometryNumber<T>;
+//
+//
+// public partial class Geometry<TNum, TConv> where TNum : struct, IGeometryNumber<TNum> where TConv : INumConvertor<TNum>
+
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
@@ -130,18 +150,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
     public static TNum Eps {
-      get { return _eps; }
+      get => _eps;
       set
         {
-#if DEBUG
-        if (value <= TNum.AdditiveIdentity)
-        {
-          throw new ArgumentOutOfRangeException("Tools Eps: Non-positive precision parameter");
-        }
-#endif
+          Debug.Assert(value > TNum.AdditiveIdentity, $"Tools.Eps: Non-positive precision parameter. Found {value}");
           _eps = value;
         }
     }
+
 
     /// <summary>
     /// Compares given number with the Zero with precision.
@@ -334,38 +350,6 @@ public partial class Geometry<TNum, TConv>
       }
 
       return -x;
-    }
-
-    /// <summary>
-    /// Projecting a set of n-dimensional points to the plane by means of a matrix 2 x n
-    /// </summary>
-    /// <param name="m">The projection matrix</param>
-    /// <param name="ps">The set of multidimensional points</param>
-    /// <returns>List of two-dimensional projections</returns>
-    public static List<Vector2D> Project2D(Matrix m, IEnumerable<Vector> ps) {
-#if DEBUG
-      if (m.Rows != 2)
-      {
-        throw new ArgumentException("For a projection to the plane a matrix is given with " + m.Rows + " rows!");
-      }
-#endif
-      List<Vector2D> res = ps
-                          .Select
-                             (
-                              p => {
-#if DEBUG
-                                if (p.Dim != m.Cols)
-                                {
-                                  throw new ArgumentException
-                                    ("During projection to the plane a point with wrong dimension has been found!");
-                                }
-#endif
-                                return (Vector2D)(m * p);
-                              }
-                             )
-                          .ToList();
-
-      return res;
     }
 
 

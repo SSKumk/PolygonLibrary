@@ -121,11 +121,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     protected virtual void ComputeVertices() {
       if (_vertices == null) {
-#if DEBUG
-        if (_contours == null) {
-          throw new Exception("Cannot compute vertices - contours have not been initialized");
-        }
-#endif
+        Debug.Assert(_contours is not null, "BasicPolygon.ComputeVertices: Cannot compute vertices --- contours have not been initialized.");
+
         Vertices = new List<Vector2D>();
         foreach (Polyline p in _contours!) {
           Vertices.AddRange(p.Vertices);
@@ -141,11 +138,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     protected virtual void ComputeEdges() {
       if (_edges == null) {
-#if DEBUG
-        if (_contours == null) {
-          throw new Exception("Cannot compute edges - contours have not been initialized");
-        }
-#endif
+        Debug.Assert(_contours is not null, "BasicPolygon.ComputeEdges: Cannot compute edges - contours have not been initialized");
+
         Edges = new List<Segment>();
         foreach (Polyline p in _contours!) {
           Edges.AddRange(p.Edges);
@@ -161,11 +155,8 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// </summary>
     protected virtual void ComputeContours() {
       if (_contours == null) {
-#if DEBUG
-        if (_vertices == null) {
-          throw new Exception("Cannot compute contour - vertices have not been initialized");
-        }
-#endif
+        Debug.Assert(_vertices is not null, "BasicPolygon.ComputeContours: Cannot compute contour - vertices have not been initialized");
+
         _contours = new List<Polyline>
           {
             new Polyline(Convexification.ArcHull2D(_vertices!), PolylineOrientation.Counterclockwise, false, false)
