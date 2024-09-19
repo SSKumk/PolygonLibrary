@@ -311,14 +311,18 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to compute the outer product with.</param>
     /// <returns>A matrix representing the outer product of the two vectors.</returns>
     public Matrix OuterProduct(Vector v) {
-      TNum[,] result = new TNum[Dim, v.Dim];
-      for (int i = 0; i < Dim; i++) {
-        for (int j = 0; j < v.Dim; j++) {
-          result[i, j] = this[i] * v[j];
+      int rows = Dim, cols = v.Dim;
+
+      TNum[] result = new TNum[rows * cols];
+      int k = 0;
+      for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+          result[k] = this[i] * v[j];
+          k++;
         }
       }
 
-      return new Matrix(result);
+      return new Matrix(rows, cols, result, false);
     }
 
     /// <summary>
@@ -386,6 +390,7 @@ public partial class Geometry<TNum, TConv>
     /// Constructor on the basis of a one-dimensional array
     /// </summary>
     /// <param name="nv">The array</param>
+    /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made; otherwise, the original array is used directly.</param>
     public Vector(TNum[] nv, bool needCopy = true) {
       Debug.Assert(nv.Length > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {nv.Length}.");
       Debug.Assert(nv.Rank == 1, $"Vector.Ctor: Cannot initialize a vector by a multidimensional array. Found {nv.Rank}.");
