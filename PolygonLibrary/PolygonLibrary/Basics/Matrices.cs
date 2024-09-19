@@ -105,7 +105,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">Number of rows</param>
     /// <param name="m">Number of columns</param>
     /// <param name="ar">The array</param>
-    public Matrix(int n, int m, TNum[] ar) {
+    public Matrix(int n, int m, TNum[] ar, bool needCopy = true) {
 #if DEBUG
       if (n <= 0) {
         throw new ArgumentException("Number of rows should be positive");
@@ -125,7 +125,14 @@ public partial class Geometry<TNum, TConv>
 #endif
       Rows = n;
       Cols = m;
-      _m   = ar;
+
+      if (needCopy) {
+        _m = new TNum[n * m];
+        ar.CopyTo(_m, 0);
+      }
+      else {
+        _m = ar;
+      }
     }
 
     /// <summary>
