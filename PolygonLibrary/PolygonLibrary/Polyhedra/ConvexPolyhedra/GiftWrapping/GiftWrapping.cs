@@ -378,6 +378,7 @@ public partial class Geometry<TNum, TConv>
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
+        // TODO: дважды проектируем те точки, которые лежат в плоскости - в Contains, а потом в ProjectTo; может, все решается предпросчетом матрицы проектирования
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 

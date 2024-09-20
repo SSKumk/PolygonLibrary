@@ -317,7 +317,7 @@ public partial class Geometry<TNum, TConv>
       int k = 0;
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-          result[k] = this[i] * v[j];
+          result[k] = _v[i] * v._v[j];
           k++;
         }
       }

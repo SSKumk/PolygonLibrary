@@ -98,10 +98,10 @@ public partial class Geometry<TNum, TConv>
 
       Vector np = new Vector(Origin);
       for (int i = 0; i < SubSpaceDim; i++) {
-        np += point[i] * this[i];
+        np += point[i] * this[i];    // TODO: А может переписать на явное вычисление? А то опять тратимся на создание промежуточных векторов
       }
 
-      return new Vector(np);
+      return np;
     }
 
     /// <summary>
@@ -199,6 +199,8 @@ public partial class Geometry<TNum, TConv>
     public static AffineBasis AsVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
       return new AffineBasis(o, new LinearBasis(Vs, orthogonalize));
     }
+
+    // TODO: AsPoints -> FromPoints,  AsVectors -> FromVectors
 
     /// <summary>
     /// Produce the new affine basis which is the span of {o, Ps}.
