@@ -108,9 +108,6 @@ public partial class Geometry<TNum, TConv>
 
       if (IsFullDim) { return true; }
 
-      // TODO: А точно проверка на принадлежность подпространству - это проверка совпадение спроектированного вектора и исходного? Проще нет пути?
-      // Можно Гауссом Bx = v, где B - базис, v проверяемый вектор.
-
       // Basis * Basis.Transpose() * v; Где BB^t матрица проекции
       TNum[] proj = new TNum[SpaceDim];
       for (int j = 0; j < SubSpaceDim; j++) {
@@ -358,21 +355,32 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Generates a full-dimensional linear basis for the specified dimension.
     /// </summary>
-    /// <param name="spaceDim">The dimension of the basis.</param>
+    /// <param name="spaceDim">The dimension of the space and the basis.</param>
     /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>A linear basis with the given dimension.</returns>
-    public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null) {
+    public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null)
+      => GenLinearBasis(spaceDim, spaceDim, random);
+
+    /// <summary>
+    /// Generates a k-dimensional linear basis in the specified dimension.
+    /// </summary>
+    /// <param name="spaceDim">The dimension of the space.</param>
+    /// <param name="subSpaceDim">The dimension of the basis.</param>
+    /// <param name="random">The random to be used. If null, the Random be used.</param>
+    /// <returns>A linear basis with the given dimension.</returns>
+    public static LinearBasis GenLinearBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null) {
       LinearBasis lb = new LinearBasis(spaceDim, 0);
       do {
         lb.AddVector(Vector.GenVector(spaceDim, random));
         // TODO: Опять *ПОДУМАТЬ* об оптимальности
-      } while (!lb.IsFullDim);
+      } while (lb.SubSpaceDim != subSpaceDim);
 
 #if DEBUG
       CheckCorrectness(lb);
 #endif
       return lb;
     }
+
 #endregion
 
 
