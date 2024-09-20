@@ -110,10 +110,8 @@ public partial class Geometry<TNum, TConv>
 
       // TODO: А точно проверка на принадлежность подпространству - это проверка совпадение спроектированного вектора и исходного? Проще нет пути?
       // Можно Гауссом Bx = v, где B - базис, v проверяемый вектор.
-      // TODO: А не умножение ли это матрицы на вектор?! И вообще - это проектирование вектора в пространство базиса! Оно написано ниже!
-      // Да, но там он выражен в координатах подпространства. А мне нужен в "большом" пространстве.
 
-      //  proj += (v * bvec) * bvec;
+      // Basis * Basis.Transpose() * v; Где BB^t матрица проекции
       TNum[] proj = new TNum[SpaceDim];
       for (int j = 0; j < SubSpaceDim; j++) {
         TNum dotProduct = Tools.Zero;
@@ -125,6 +123,12 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
+      // todo Сравнить Следующие процедуры по производительности
+      // не надо Basis * Basis.Transpose() * v --> Vector x; x.Equal(v)
+      // 1. BBtrV [1 процедура] --> Vector x; x.Equal(v)
+      // 2. Прописать действия процедуры BBtrV так чтобы вычислять в каждой итерации внешнего цикла очередную компоненту проекции и сравнивая её с очередной компонентой вектора v
+
+      //todo исключить массив proj, вычисляя в каждой итерации внешнего цикла очередную компоненту проекции и сравнивая её с очередной компонентой вектора v
       return new Vector(proj, false).Equals(v);
     }
 
@@ -226,7 +230,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum[] np = new TNum[SubSpaceDim];
       for (int i = 0; i < SubSpaceDim; i++) {
-        np[i] = this[i] * v; // bvec * v
+        np[i] = this[i] * v; // bvec * v todo TranspMul(Matrix, Vector)
       }
 
       return new Vector(np, false);
