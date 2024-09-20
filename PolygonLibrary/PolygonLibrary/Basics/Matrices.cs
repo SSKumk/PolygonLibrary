@@ -646,14 +646,18 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>A new matrix that is the transpose of the current matrix.</returns>
     public Matrix Transpose() {
-      TNum[] transposedElements = new TNum[Cols * Rows];
-      for (int i = 0; i < Rows; i++) {
-        for (int j = 0; j < Cols; j++) {
-          transposedElements[j * Rows + i] = _m[i * Cols + j];
+      TNum[] tm = new TNum[Cols * Rows];
+      int    kt = 0;
+      for (int col = 0; col < Cols; col++) {
+        int k = col;
+        for (int row = 0; row < Rows; row++) {
+          tm[kt] =  _m[k];
+          k      += Cols;
+          kt++;
         }
       }
 
-      return new Matrix(Cols, Rows, transposedElements, false);
+      return new Matrix(Cols, Rows, tm, false);
     }
 #endregion
 
@@ -776,6 +780,35 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Generates a matrix with specified dimensions and integer values in range of [a,b).
+    /// </summary>
+    /// <param name="dimRow">The number of rows in the matrix.</param>
+    /// <param name="dimCol">The number of columns in the matrix.</param>
+    /// <param name="a">The lower bound of the range of values.</param>
+    /// <param name="b">The upper bound of the range of values.</param>
+    /// <param name="random">An optional instance of GRandomLC to use for generating random numbers. If null default one be used.</param>
+    /// <returns>A Matrix with randomly generated elements between a and b.</returns>
+    public static Matrix GenMatrixInt(int dimRow, int dimCol, int a, int b, GRandomLC? random = null) {
+      Debug.Assert(dimRow > 0, $"Matrix.GenMatrix: Number of rows of a matrix should be positive. Found {dimRow}");
+      Debug.Assert(dimCol > 0, $"Matrix.GenMatrix: Number of columns of a matrix should be positive. Found {dimCol}");
+
+      GRandomLC rnd = random ?? Tools.Random;
+
+      TNum[] nv = new TNum[dimRow * dimCol];
+      int    k  = 0;
+
+      for (int row = 0; row < dimRow; row++) {
+        for (int col = 0; col < dimCol; col++) {
+          nv[k] = TConv.FromInt(rnd.NextInt(a, b));
+          k++;
+        }
+      }
+
+      return new Matrix(dimRow, dimCol, nv, false);
+    }
+
+
+    /// <summary>
     /// Generates a non-singular square matrix with the specified dimension and values in range of [a,b).
     /// </summary>
     /// <param name="dim">The dimension of the square matrix.</param>
@@ -835,6 +868,33 @@ public partial class Geometry<TNum, TConv>
       }
 
       return new Matrix(m);
+    }
+#endregion
+
+#region Functions
+    /// <summary>
+    /// Projects the given vector onto the subspace defined by the columns of the current matrix.
+    /// </summary>
+    /// <param name="v">The vector to project.</param>
+    /// <returns>A new vector representing the projection of given vector onto the subspace.</returns>
+      public Vector ProjectOntoSubspace(Vector v) {
+      TNum[] proj = new TNum[Rows];
+
+      for (int j = 0; j < Cols; j++) {
+        TNum dotProduct = Tools.Zero;
+        int  colIndex   = j;
+        for (int i = 0; i < Rows; i++) {
+          dotProduct += v[i] * _m[colIndex];
+          colIndex   += Cols;
+        }
+        colIndex = j;
+        for (int i = 0; i < Rows; i++) {
+          proj[i]  += dotProduct * _m[colIndex];
+          colIndex += Cols;
+        }
+      }
+
+      return new Vector(proj, false);
     }
 #endregion
 
