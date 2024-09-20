@@ -13,55 +13,58 @@ class Program {
   private static readonly string pathData =
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
 
-
-  static void Main(string[] args) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    // Tools.Eps = 1e-8;
-    // string eps = "1e-008";
-    // string ftype = "double";
-
-    Tools.Eps = 1e-16;
-    string eps = "1e-016";
-    string ftype = "ddouble";
-
-    bool isDouble = ftype == "double";
-
-
-    // Vector v1 = Vector.GenVectorInt(4,-20,20);
-    // Vector v2 = Vector.GenVectorInt(4,-20,20);
-
-
-    // LinearBasis lb = new LinearBasis(4,2);
-    // Vector      v  = Vector.Ones(4);
-    // Vector      u1  = new Vector(new ddouble[] { 1, 1, 0, 0 });
-    // Vector      u2  = new Vector(new ddouble[] { 4, 7, 0, 0 });
-    // Vector      u3  = new Vector(new ddouble[] { 4, 7, 1, 2 });
-    //
-    // Console.WriteLine($"{lb.Contains(v)}");
-    // Console.WriteLine($"{lb.Contains(u1)}");
-    // Console.WriteLine($"{lb.Contains(u2)}");
-    // Console.WriteLine($"{lb.Contains(u3)}");
-    // Console.WriteLine(v.ToStringBraceAndDelim('[', '}', ';'));
-
-    // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
-    // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
-    SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
-
-    solverLdg.Solve(false, false, isDouble);
-
-    // string      t   = "3.10";
-    // ParamReader prP = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) P {solverLdg.fileName}.cpolytop");
-    // ParamReader prQ = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) Q {solverLdg.fileName}.cpolytop");
-    // ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
-    //
-    // ConvexPolytop P = ConvexPolytop.CreateFromReader(prP);
-    // ConvexPolytop Q = ConvexPolytop.CreateFromReader(prQ);
-    // ConvexPolytop W = ConvexPolytop.CreateFromReader(prW);
-    //
-    // var         x  = solverLdg.DoNextSection(W, P, Q);
-    // string tNext = "3.00)";
-    // ParamWriter pr = new ParamWriter($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/1e-016/{tNext}{solverLdg.fileName}.cpolytop");
-    // x.WriteIn(pr);
-  }
+  //
+  // static void Main(string[] args) {
+  //   CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+  //   // Tools.Eps = 1e-8;
+  //   // string eps = "1e-008";
+  //   // string ftype = "double";
+  //
+  //   Tools.Eps = 1e-16;
+  //   string eps = "1e-016";
+  //   string ftype = "ddouble";
+  //
+  //   bool isDouble = ftype == "double";
+  //
+  //
+  //   // Vector v1 = Vector.GenVectorInt(4,-20,20);
+  //   // Vector v2 = Vector.GenVectorInt(4,-20,20);
+  //
+  //   Matrix a = Matrix.GenONMatrix(3);
+  //   Console.WriteLine($"{a}");
+  //   Console.WriteLine($"{a.Transpose().Equals(a.TransposeLin())}");
+  //
+  //   // LinearBasis lb = new LinearBasis(4,2);
+  //   // Vector      v  = Vector.Ones(4);
+  //   // Vector      u1  = new Vector(new ddouble[] { 1, 1, 0, 0 });
+  //   // Vector      u2  = new Vector(new ddouble[] { 4, 7, 0, 0 });
+  //   // Vector      u3  = new Vector(new ddouble[] { 4, 7, 1, 2 });
+  //   //
+  //   // Console.WriteLine($"{lb.Contains(v)}");
+  //   // Console.WriteLine($"{lb.Contains(u1)}");
+  //   // Console.WriteLine($"{lb.Contains(u2)}");
+  //   // Console.WriteLine($"{lb.Contains(u3)}");
+  //   // Console.WriteLine(v.ToStringBraceAndDelim('[', '}', ';'));
+  //
+  //   // SolverLDG solverLdg = new SolverLDG(pathData, "materialDot");
+  //   // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
+  //   // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
+  //
+  //   // solverLdg.Solve(false, false, isDouble);
+  //
+  //   // string      t   = "3.10";
+  //   // ParamReader prP = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) P {solverLdg.fileName}.cpolytop");
+  //   // ParamReader prQ = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) Q {solverLdg.fileName}.cpolytop");
+  //   // ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+  //   //
+  //   // ConvexPolytop P = ConvexPolytop.CreateFromReader(prP);
+  //   // ConvexPolytop Q = ConvexPolytop.CreateFromReader(prQ);
+  //   // ConvexPolytop W = ConvexPolytop.CreateFromReader(prW);
+  //   //
+  //   // var         x  = solverLdg.DoNextSection(W, P, Q);
+  //   // string tNext = "3.00)";
+  //   // ParamWriter pr = new ParamWriter($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/1e-016/{tNext}{solverLdg.fileName}.cpolytop");
+  //   // x.WriteIn(pr);
+  // }
 
 }
