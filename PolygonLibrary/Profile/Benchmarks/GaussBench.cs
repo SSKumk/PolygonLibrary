@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Running;
 
 namespace Profile.Benchmarks;
 
