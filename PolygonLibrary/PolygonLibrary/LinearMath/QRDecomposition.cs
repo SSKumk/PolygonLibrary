@@ -13,14 +13,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="A">The matrix A to be decomposed.</param>
     /// <returns>A = Q*R. m x m Q - orthonormal matrix (Q^-1 = Q^T). m x n R - upper triangle matrix.</returns>
     public static (Matrix Q, Matrix R) ByReflection(Matrix A) {
-      int    m = A.Rows;
-      int    n = A.Cols;
+      int    n = A.Rows;
+      int    m = A.Cols;
 
-      Debug.Assert(m >= n, "QRDecomposition.ByReflection: Can't decompose the system which n > m.");
-      Matrix Q = Matrix.Eye(m);
+      Debug.Assert(n >= m, "QRDecomposition.ByReflection: Can't decompose the system which n > m.");
+      Matrix Q = Matrix.Eye(n);
       Matrix R = A;
 
-      int t = Math.Min(m - 1, n);
+      int t = Math.Min(n - 1, m);
       for (int k = 0; k < t; k++) {
         Vector x = R.TakeVector(k).SubVector(k, R.Rows - 1);
         if (!x.IsZero) {
@@ -32,9 +32,11 @@ public partial class Geometry<TNum, TConv>
 
           Vector u = new Vector(v, false);
 
-          Matrix        Householder = Matrix.Eye(m - k) - Tools.Two * u.OuterProduct(u) / (u * u);
-          MutableMatrix Hk          = MutableMatrix.Eye(m);
-          Hk.SetSubMatrix(k, k, m - k, m - k, Householder);
+
+          // todo А не переписать ли это всё на массивы?
+          Matrix        Householder = Matrix.Eye(n - k) - Tools.Two * u.OuterProduct(u) / (u * u);
+          MutableMatrix Hk          = MutableMatrix.Eye(n);
+          Hk.SetSubMatrix(k, k, Householder);
 
           R = Hk * R;
           Q = Q * Hk;
