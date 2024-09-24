@@ -1,0 +1,21 @@
+m1 = Matrix.GenMatrix(dimRow, dimCol, -1,1);
+m2 = Matrix.GenMatrix(dimRow, dimCol, -1,1);
+
+[Benchmark]
+public void Multiply() => _ = m1 * m2;
+
+[Benchmark]
+public void Create() => _ = new Matrix(3, 3);
+
+| Method   | Mean        | Error      | StdDev    |
+|--------- |------------:|-----------:|----------:|
+| Multiply | 8,567.07 ns | 169.298 ns | 207.91 ns |  Matr 10x5 * Matr 5x10
+| Create   |    96.77 ns |   4.807 ns |  13.95 ns |  Matr 10x10 (empty)
+
+| Method   | Mean      | Error    | StdDev   |
+|--------- |----------:|---------:|---------:|
+| Multiply | 346.51 ns | 4.923 ns | 4.365 ns |       Matr 3x2 * Matr 2x3
+| Create   |  15.88 ns | 0.636 ns | 1.875 ns |       Matr 3x3 (empty)
+
+
+Создавать линейные массивы -- копейки

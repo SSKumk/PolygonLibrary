@@ -1,0 +1,81 @@
+Копируем вектор столбец из матрицы и создаём новый вектор на каждом шаге цикла. 
+private static Vector PrjWiki_iterator(Vector v, LinearBasis lb) {
+  Vector res = Vector.Zero(lb.SpaceDim);
+  foreach (Vector bvec in lb) {
+    res += bvec * (bvec * v);
+  }
+
+  return res;
+}
+  
+
+Массив задаём только один раз
+private static Vector PrjCol_indexer(Vector v, LinearBasis lb) {
+ddouble[] proj = new ddouble[lb.SpaceDim];
+for (int j = 0; j < lb.SubSpaceDim; j++) {
+  ddouble dotProduct = 0;
+  for (int i = 0; i < lb.SpaceDim; i++) { 
+    dotProduct += v[i] * lb.Basis![i, j];
+  }
+  for (int i = 0; i < lb.SpaceDim; i++) { 
+    proj[i] += dotProduct * lb.Basis![i, j];
+  }
+}
+
+return new Vector(proj, false);
+}
+
+
+Создаём промежуточную матрицу
+public void PrjNaive() { _ = lb.Basis * (lb.Basis.Transpose() * v); }
+
+
+
+Массив только один раз, пользуемся линейным индексером
+public Vector PrjCol_lin(Vector v) {
+TNum[] proj = new TNum[Rows];
+
+for (int j = 0; j < Cols; j++) {
+  TNum dotProduct = Tools.Zero;
+  int  colIndex   = j;
+  for (int i = 0; i < Rows; i++) {
+    dotProduct += v[i] * _m[colIndex];
+    colIndex   += Cols;
+  }
+  colIndex = j;
+  for (int i = 0; i < Rows; i++) {
+    proj[i]  += dotProduct * _m[colIndex];
+    colIndex += Cols;
+  }
+}
+
+return new Vector(proj, false);
+}
+
+
+| Method           | spaceDim | subSpaceDim | Mean       | Error     | StdDev   |
+|----------------- |--------- |------------ |-----------:|----------:|---------:|
+| PrjCol_indexer   | 4        | 1           |   155.9 ns |  59.48 ns |  3.26 ns |
+| PrjNaive         | 4        | 1           |   197.6 ns | 104.62 ns |  5.73 ns |
+| PrjWiki_iterator | 4        | 1           |   244.1 ns |  47.77 ns |  2.62 ns |
+| PrjCol_indexer   | 4        | 2           |   291.1 ns |  21.15 ns |  1.16 ns |
+| PrjNaive         | 4        | 2           |   330.8 ns |  18.52 ns |  1.01 ns |
+| PrjWiki_iterator | 4        | 2           |   427.2 ns |  85.75 ns |  4.70 ns |
+| PrjCol_indexer   | 4        | 3           |   429.6 ns |  40.48 ns |  2.22 ns |
+| PrjNaive         | 4        | 3           |   469.3 ns |  88.47 ns |  4.85 ns |
+| PrjCol_indexer   | 4        | 4           |   560.8 ns |  48.29 ns |  2.65 ns |
+| PrjNaive         | 4        | 4           |   619.6 ns | 370.71 ns | 20.32 ns |
+| PrjWiki_iterator | 4        | 3           |   654.6 ns | 857.32 ns | 46.99 ns |
+| PrjWiki_iterator | 4        | 4           |   811.9 ns | 131.60 ns |  7.21 ns |
+
+
+| Method  | spaceDim | subSpaceDim | Mean     | Error     | StdDev   |
+|-------- |--------- |------------ |---------:|----------:|---------:|
+| PrjCol_indexer     | 4        | 1           | 169.8 ns |  62.75 ns |  3.44 ns |
+| PrjCol_lin         | 4        | 1           | 158.6 ns |  66.97 ns |  3.67 ns |
+| PrjCol_indexer     | 4        | 2           | 300.5 ns |  48.97 ns |  2.68 ns |
+| PrjCol_lin         | 4        | 2           | 289.5 ns | 139.87 ns |  7.67 ns |
+| PrjCol_indexer     | 4        | 3           | 448.6 ns | 217.93 ns | 11.95 ns |
+| PrjCol_lin         | 4        | 3           | 423.5 ns |  64.20 ns |  3.52 ns |
+| PrjCol_indexer     | 4        | 4           | 579.3 ns | 219.18 ns | 12.01 ns |
+| PrjCol_lin         | 4        | 4           | 560.5 ns |  61.89 ns |  3.39 ns |
