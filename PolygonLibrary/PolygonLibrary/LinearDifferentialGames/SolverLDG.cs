@@ -144,7 +144,9 @@ public partial class Geometry<TNum, TConv>
           }
           else {
             Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}. Vrep.Count = {WNext.Vrep.Count}");
-            W[t] = WNext;
+            // Console.WriteLine($"LinBasis.ProjVector count = {LinearBasis.projCount}"); todo clear
+            // LinearBasis.projCount = 0;
+            W[t]                  = WNext;
           }
         }
       }
