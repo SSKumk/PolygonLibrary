@@ -8,39 +8,69 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Class of a matrix. Indices are assumed to be zero-based
+  /// Represents an immutable matrix.
+  /// The matrix is stored in a one-dimensional array.
   /// </summary>
+  /// <remarks>
+  /// All indexes assumed to be zero-based.
+  /// </remarks>
   public class Matrix : IEquatable<Matrix> {
 
 #region Internal storage, access properties, and convertors
     /// <summary>
-    /// The internal linear storage of the matrix as a one-dimensional array
+    /// The internal linear storage of the matrix as a one-dimensional array.
     /// </summary>
     protected readonly TNum[] _m;
 
     /// <summary>
-    /// Number of rows of the matrix
+    /// Number of rows of the matrix.
     /// </summary>
     public readonly int Rows;
 
     /// <summary>
-    /// Number of columns of the matrix
+    /// Number of columns of the matrix.
     /// </summary>
     public readonly int Cols;
 
     /// <summary>
-    /// Indexer access
+    /// Gets the value at the specified row and column in the matrix.
     /// </summary>
-    /// <param name="i">The row counted from zero</param>
-    /// <param name="j">The column counted from zero</param>
-    /// <returns>The value of the corresponding component</returns>
+    /// <param name="i">The row index (zero-based).</param>
+    /// <param name="j">The column index (zero-based).</param>
+    /// <returns>The value of the corresponding component in the matrix.</returns>
     public TNum this[int i, int j] {
       get
         {
-          Debug.Assert(i >= 0 && i < Rows, "Matrix.Indexer: The first index is out of range");
-          Debug.Assert(j >= 0 && j < Cols, "Matrix.Indexer: The second index is out of range");
+          Debug.Assert
+            (
+             i >= 0 && i < Rows
+           , $"Matrix.Indexer: The row index must be within valid range. Found row index {i}, expected range [0, {Rows - 1}]."
+            );
+          Debug.Assert
+            (
+             j >= 0 && j < Cols
+           , $"Matrix.Indexer: The column index must be within valid range. Found column index {j}, expected range [0, {Cols - 1}]."
+            );
 
           return _m[i * Cols + j];
+        }
+    }
+
+    /// <summary>
+    /// Gets the value at the specified index in the matrix as a one-dimensional array.
+    /// </summary>
+    /// <param name="i">The index (zero-based).</param>
+    /// <returns>The value at the specified index in the matrix.</returns>
+    public TNum this[int i] {
+      get
+        {
+          Debug.Assert
+            (
+             i >= 0 && i < _m.Length
+           , $"Matrix.Indexer: The index must be within valid range. Found index {i}, expected range [0, {_m.Length - 1}]."
+            );
+
+          return _m[i];
         }
     }
 
@@ -63,26 +93,27 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Converting a two-dimensional array to a matrix
+    /// Converts a two-dimensional array into a matrix.
     /// </summary>
-    /// <param name="m">Array to be converted</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="m">The two-dimensional array to be converted.</param>
+    /// <returns>The resulting matrix.</returns>
     public static explicit operator Matrix(TNum[,] m) => new Matrix(m);
 #endregion
 
 #region Constructors
     /// <summary>
-    /// Default constructor; creates a 1x1 zero matrix
+    /// Default constructor; creates a 1x1 zero matrix.
     /// </summary>
     public Matrix() : this(1, 1) { }
 
     /// <summary>
-    /// The default construct producing a zero matrix of given size
+    /// Constructs a zero matrix of the specified size.
     /// </summary>
-    /// <param name="n">Number of rows</param>
-    /// <param name="m">Number of columns</param>
+    /// <param name="n">Number of rows.</param>
+    /// <param name="m">Number of columns.</param>
     public Matrix(int n, int m) {
-      Debug.Assert(n > 0 && m > 0, "Matrix.Ctor: Dimension of a matrix cannot be non-positive");
+      Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows must be positive. Found {n}");
+      Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns must be positive. Found {m}");
 
       _m   = new TNum[n * m];
       Rows = n;
@@ -96,8 +127,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">The number of rows in the matrix.</param>
     /// <param name="m">The number of columns in the matrix.</param>
     /// <param name="ar">The one-dimensional array containing matrix elements in row-wise order.</param>
-    /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made; otherwise, the original array is used directly.</param>
-    public Matrix(int n, int m, TNum[] ar, bool needCopy) {
+    /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made;
+    /// otherwise, the original array is used directly.
+    /// </param>
+    public Matrix(int n, int m, TNum[] ar, bool needCopy = true) {
       Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows should be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns should be positive. Found {m}");
       Debug.Assert
@@ -121,9 +154,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructor on the basis of a two-dimensional array
+    /// Constructs a matrix from a two-dimensional array.
     /// </summary>
-    /// <param name="nm">The new array</param>
+    /// <param name="nm">The two-dimensional array used to construct the matrix.</param>
     public Matrix(TNum[,] nm) {
       Debug.Assert(nm.Length > 0, $"Number of matrix elements should be positive. Found {nm.Length}");
       Debug.Assert(nm.Rank == 2, $"Cannot initialize a matrix by an array that is not two-dimensional. Found rank {nm.Rank}");
@@ -144,7 +177,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Copying constructor
+    /// Copy constructor that creates a matrix from another matrix.
     /// </summary>
     /// <param name="m">The matrix to be copied</param>
     public Matrix(Matrix m) {
@@ -160,30 +193,42 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Construct the matrix based on a given vector.
+    /// Constructs a matrix from a vector.
     /// </summary>
-    /// <param name="v">The vector used to construct the matrix.</param>
+    /// <param name="v">The vector used to create a matrix with one column.</param>
     public Matrix(Vector v) {
-      Rows = v.Dim;
+      Rows = v.SpaceDim;
       Cols = 1;
       _m   = v.GetAsArray();
     }
 #endregion
 
 #region Overrides
+    /// <summary>
+    /// Throws an <see cref="InvalidOperationException"/> because hash code generation is not supported for matrices.
+    /// </summary>
     public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Rows, Cols);
 
+    /// <summary>
+    /// Compares this matrix to another object for equality.
+    /// </summary>
+    /// <param name="obj">The object to compare with this matrix.</param>
+    /// <returns><c>true</c> if the object is a matrix and is equal to this matrix; otherwise, <c>false</c>.</returns>
+    /// <exception cref="ArgumentException">Thrown if the object is not a matrix.</exception>
     public override bool Equals(object? obj) {
-#if DEBUG
-      if (obj is not Matrix matrix) {
-        throw new ArgumentException($"{obj} is not a Matrix.");
-      }
-#endif
-      return Equals((Matrix)obj!);
+      Debug.Assert(obj is not null, "Matrix.Equals: The object being compared cannot be null.");
+      Debug.Assert(obj is Matrix, $"Matrix.Equals: The object must be a Matrix, found {obj.GetType()}.");
+
+      return Equals((Matrix)obj);
     }
 
+    /// <summary>
+    /// Compares this matrix to another matrix for equality.
+    /// </summary>
+    /// <param name="m">The matrix to compare with this matrix.</param>
+    /// <returns><c>true</c> if the matrices are equal; otherwise, <c>false</c>.</returns>
     public bool Equals(Matrix? m) {
-      Debug.Assert(m != null, nameof(m) + " != null");
+      Debug.Assert(m is not null, "The matrix to compare must not be null.");
 
       if (Rows != m.Rows || Cols != m.Cols) {
         return false;
@@ -200,40 +245,17 @@ public partial class Geometry<TNum, TConv>
       return true;
     }
 
-
-    // public override string ToString() {
-    //   string res = "{";
-    //   int    k   = 0, i, j;
-    //
-    //   for (i = 0; i < Rows; i++) {
-    //     res += $"{{{_m[k].ToString(null, CultureInfo.InvariantCulture)}";
-    //     k++;
-    //
-    //     for (j = 1; j < Cols; j++) {
-    //       res += $", {_m[k].ToString(null, CultureInfo.InvariantCulture)}";
-    //       k++;
-    //     }
-    //
-    //     res += "}";
-    //     if (i < Rows - 1) {
-    //       res += ",";
-    //     }
-    //   }
-    //
-    //   res += "}";
-    //
-    //   return res;
-    // }
-
+    /// <summary>
+    /// Converts the matrix to its string representation.
+    /// </summary>
+    /// <returns>A string that represents the matrix.</returns>
     public override string ToString() {
-      // Вычисляем максимальную длину числа в каждом столбце
-      var maxLengths = new int[Cols];
+      int[] maxLengths = new int[Cols];
       for (int i = 0; i < _m.Length; i++) {
         int colIndex = i % Cols;
         maxLengths[colIndex] = Math.Max(maxLengths[colIndex], _m[i].ToString()!.Length);
       }
 
-      // Формируем строку вывода
       StringBuilder sb = new StringBuilder();
       for (int row = 0; row < Rows; row++) {
         for (int col = 0; col < Cols; col++) {
@@ -250,10 +272,10 @@ public partial class Geometry<TNum, TConv>
 
 #region Operators
     /// <summary>
-    /// Unary minus - the opposite matrix
+    /// Unary minus - returns the opposite matrix.
     /// </summary>
-    /// <param name="m">The matrix to be reversed</param>
-    /// <returns>The opposite vector</returns>
+    /// <param name="m">The matrix to be reversed.</param>
+    /// <returns>The opposite matrix.</returns>
     public static Matrix operator -(Matrix m) {
       int    d  = m.Rows * m.Cols, i;
       TNum[] nv = new TNum[d];
@@ -266,11 +288,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Sum of two matrices
+    /// Sum of two matrices.
     /// </summary>
-    /// <param name="m1">The first matrix summand</param>
-    /// <param name="m2">The second matrix summand</param>
-    /// <returns>The sum</returns>
+    /// <param name="m1">The first matrix summand.</param>
+    /// <param name="m2">The second matrix summand.</param>
+    /// <returns>The sum of the two matrices.</returns>
     public static Matrix operator +(Matrix m1, Matrix m2) {
       Debug.Assert
         (
@@ -289,11 +311,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Difference of two vectors
+    /// Difference of two vectors.
     /// </summary>
-    /// <param name="m1">The matrix minuend</param>
-    /// <param name="m2">The matrix subtrahend</param>
-    /// <returns>The difference</returns>
+    /// <param name="m1">The matrix minuend.</param>
+    /// <param name="m2">The matrix subtrahend.</param>
+    /// <returns>The difference of two matrices.</returns>
     public static Matrix operator -(Matrix m1, Matrix m2) {
       Debug.Assert
         (
@@ -311,11 +333,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Left multiplication of a matrix by a number
+    /// Left multiplication of a matrix by a number.
     /// </summary>
-    /// <param name="a">The numeric factor</param>
-    /// <param name="m">The matrix factor</param>
-    /// <returns>The product</returns>
+    /// <param name="a">The numeric factor.</param>
+    /// <param name="m">The matrix factor.</param>
+    /// <returns>The product of the matrix and the number.</returns>
     public static Matrix operator *(TNum a, Matrix m) {
       int    d  = m.Rows * m.Cols, i;
       TNum[] nv = new TNum[d];
@@ -328,19 +350,19 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Right multiplication of a matrix by a number
+    /// Right multiplication of a matrix by a number.
     /// </summary>
-    /// <param name="m">The matrix factor</param>
-    /// <param name="a">The numeric factor</param>
-    /// <returns>The product</returns>
+    /// <param name="m">The matrix factor.</param>
+    /// <param name="a">The numeric factor.</param>
+    /// <returns>The product of the matrix and the number.</returns>
     public static Matrix operator *(Matrix m, TNum a) => a * m;
 
     /// <summary>
-    /// Division of a matrix by a number
+    /// Division of a matrix by a number.
     /// </summary>
-    /// <param name="m">The matrix dividend</param>
-    /// <param name="a">The numeric divisor</param>
-    /// <returns>The product</returns>
+    /// <param name="m">The matrix dividend.</param>
+    /// <param name="a">The numeric divisor.</param>
+    /// <returns>The result of the division.</returns>
     public static Matrix operator /(Matrix m, TNum a) {
       Debug.Assert(Tools.NE(a), $"Division by zero detected. Found {a}");
 
@@ -356,22 +378,23 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Multiplication of a matrix by a vector at right. The vector factor and the result
-    /// are considered as a column vectors
+    /// are considered as a column vectors.
     /// </summary>
-    /// <param name="m">The matrix (first) factor</param>
-    /// <param name="v">The vector (second) factor</param>
-    /// <returns>The resultant vector</returns>
+    /// <param name="m">The matrix (first) factor.</param>
+    /// <param name="v">The vector (second) factor.</param>
+    /// <returns>The resultant vector.</returns>
     public static Vector operator *(Matrix m, Vector v) {
       Debug.Assert
         (
-         m.Cols == v.Dim
-       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.Dim}"
+         m.Cols == v.SpaceDim
+       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.SpaceDim}"
         );
 
       TNum[] res = new TNum[m.Rows];
       int    r   = m.Rows, c = m.Cols, i, j, k = 0;
 
       for (i = 0; i < r; i++) {
+        res[i] = Tools.Zero;
         for (j = 0; j < c; j++, k++) {
           res[i] += m._m[k] * v[j];
         }
@@ -382,22 +405,23 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Multiplication of a matrix by a vector at left. The vector factor and the result
-    /// are considered as row vectors
+    /// are considered as row vectors.
     /// </summary>
-    /// <param name="v">The vector (first) factor</param>
-    /// <param name="m">The matrix (second) factor</param>
-    /// <returns>The resultant vector</returns>
+    /// <param name="v">The vector (first) factor.</param>
+    /// <param name="m">The matrix (second) factor.</param>
+    /// <returns>The resultant vector.</returns>
     public static Vector operator *(Vector v, Matrix m) {
       Debug.Assert
         (
-         m.Rows == v.Dim
-       , $"Matrix.*: Cannot multiply a vector and a matrix of improper dimensions. Matrix rows: {m.Rows}, vector dimensions: {v.Dim}"
+         m.Rows == v.SpaceDim
+       , $"Matrix.*: Cannot multiply a vector and a matrix of improper dimensions. Matrix rows: {m.Rows}, vector dimensions: {v.SpaceDim}"
         );
 
       TNum[] res = new TNum[m.Cols];
       int    r   = m.Rows, c = m.Cols, i, j, k;
 
       for (i = 0; i < c; i++) {
+        res[i] = Tools.Zero;
         for (j = 0, k = i; j < r; j++, k += c) {
           res[i] += m._m[k] * v[j];
         }
@@ -407,11 +431,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Multiplication of two matrices
+    /// Multiplication of two matrices.
     /// </summary>
-    /// <param name="m1">The first matrix factor</param>
-    /// <param name="m2">The second matrix factor</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="m1">The first matrix factor.</param>
+    /// <param name="m2">The second matrix factor.</param>
+    /// <returns>The resultant matrix.</returns>
     public static Matrix operator *(Matrix m1, Matrix m2) {
       Debug.Assert
         (
@@ -425,6 +449,7 @@ public partial class Geometry<TNum, TConv>
 
       for (i = 0, m1Start = 0; i < r; i++, m1Start += temp) {
         for (j = 0; j < c; j++, resInd++) {
+          res[resInd] = Tools.Zero;
           for (k = 0, m1Ind = m1Start, m2Ind = j; k < temp; k++, m1Ind++, m2Ind += c) {
             res[resInd] += m1._m[m1Ind] * m2._m[m2Ind];
           }
@@ -433,6 +458,9 @@ public partial class Geometry<TNum, TConv>
 
       return new Matrix(r, c, res, false);
     }
+
+
+    //todo Пробежаться по всем TNum[] и подумать об инициализации соответствующих массивов
 
     /// <summary>
     /// Horizontal concatenation of two matrices (with equal number of rows).
@@ -473,30 +501,17 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(r, c, nv, false);
     }
 
-    // /// <summary>
-    // /// Horizontal concatenation of matrix and a vector (with equal number of rows).
-    // /// </summary>
-    // /// <param name="m">The left concatenated matrix.</param>
-    // /// <param name="v">The right concatenated vector.</param>
-    // /// <returns>The resultant matrix.</returns>
-    // public static Matrix hcat(Matrix? m, Vector v) => m is null ? new Matrix(v) : hcat(m, new Matrix(v))!;
-    // // TODO: Сделать без вспомогательного создания промежуточной матрицы!
-
     /// <summary>
     /// Horizontal concatenation of matrix and a vector (with equal number of rows).
     /// </summary>
     /// <param name="m">The left concatenated matrix.</param>
     /// <param name="v">The right concatenated vector.</param>
     /// <returns>The resultant matrix.</returns>
-    public static Matrix hcat(Matrix? m, Vector v) {
-      if (m is null) {
-        return new Matrix(v);
-      }
-
+    public static Matrix hcat(Matrix m, Vector v) {
       Debug.Assert
         (
-         m.Rows == v.Dim
-       , $"Matrix.hcat: Cannot concatenate matrix and vector with different number of rows. Matrix rows: {m.Rows}, Vector dimension: {v.Dim}"
+         m.Rows == v.SpaceDim
+       , $"Matrix.hcat: Cannot concatenate matrix and vector with different number of rows. Matrix rows: {m.Rows}, Vector dimension: {v.SpaceDim}"
         );
 
       int    r  = m.Rows, c1 = m.Cols, c = c1 + 1, d = r * c, k = 0, k1 = 0;
@@ -506,7 +521,7 @@ public partial class Geometry<TNum, TConv>
         for (int j = 0; j < c1; j++, k++, k1++) {
           nv[k] = m._m[k1];
         }
-        nv[k] = v[i]; // m.Rows == v.Dim
+        nv[k] = v[i]; // m.Rows == v.SpaceDim
         k++;
       }
 
@@ -545,55 +560,55 @@ public partial class Geometry<TNum, TConv>
 
 #region Taking submatrices
     /// <summary>
-    /// Construct a submatrix consisting of given rows of the original matrix
+    /// Construct a submatrix consisting of given rows of the original matrix.
     /// </summary>
-    /// <param name="rows">List of row indices to be taken</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="rows">List of row indices to be taken.</param>
+    /// <returns>The resultant matrix.</returns>
     public Matrix TakeRows(int[] rows) {
       int r = rows.Length;
 
       Debug.Assert(r > 0, $"Matrix.TakeRows: Wrong number of rows to be taken. Found {r}");
 
-      int    c   = Cols, d = r * c, k = 0, ind, i, j;
+      int    d   = r * Cols, k = 0, ind, i, j;
       TNum[] res = new TNum[d];
 
       for (i = 0; i < rows.Length; i++) {
-        for (j = 0, ind = rows[i] * c; j < c; j++, ind++, k++) {
+        for (j = 0, ind = rows[i] * Cols; j < Cols; j++, ind++, k++) {
           res[k] = _m[ind];
         }
       }
 
-      return new Matrix(r, c, res, false);
+      return new Matrix(r, Cols, res, false);
     }
 
     /// <summary>
-    /// Construct a submatrix consisting of given columns of the original matrix
+    /// Construct a submatrix consisting of given columns of the original matrix.
     /// </summary>
-    /// <param name="cols">List of column indices to be taken</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="cols">List of column indices to be taken.</param>
+    /// <returns>The resultant matrix.</returns>
     public Matrix TakeCols(int[] cols) {
       int c = cols.Length;
 
       Debug.Assert(c > 0, $"Matrix.TakeCols: Wrong number of columns to be taken. Found {c}");
 
-      int    r   = Rows, d = r * c, k = 0, start, i, j;
+      int    d   = Rows * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
 
-      for (i = 0, start = 0; i < r; i++, start += Cols) {
+      for (i = 0, start = 0; i < Rows; i++, start += Cols) {
         for (j = 0; j < c; j++, k++) {
           res[k] = _m[start + cols[j]];
         }
       }
 
-      return new Matrix(r, c, res, false);
+      return new Matrix(Rows, c, res, false);
     }
 
     /// <summary>
-    /// Construct a submatrix consisting of elements at crossing of given rows and columns of the original matrix
+    /// Construct a submatrix consisting of elements at crossing of given rows and columns of the original matrix.
     /// </summary>
     /// <param name="rows">List of row indices to be taken. If null, all row indices be taken.</param>
     /// <param name="cols">List of column indices to be taken. If null, all column indices be taken.</param>
-    /// <returns>The resultant matrix</returns>
+    /// <returns>The resultant matrix.</returns>
     public Matrix TakeSubMatrix(int[]? rows, int[]? cols) {
       int r, c;
       if (rows is null) {
@@ -630,12 +645,17 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(r, c, res, false);
     }
 
-    public Vector TakeVector(int col) {
-      Debug.Assert(col >= 0 && col < Cols, "Matrix.TakeVector: Column index must lie in [0, Cols).");
+    /// <summary>
+    /// Retrieves a vector corresponding to the specified column in the matrix.
+    /// </summary>
+    /// <param name="colInd">The column index (zero-based) from which to take the vector.</param>
+    /// <returns>A vector containing the elements of the specified column.</returns>
+    public Vector TakeVector(int colInd) {
+      Debug.Assert(colInd >= 0 && colInd < Cols, "Matrix.TakeVector: Column index must lie in [0, Cols).");
 
       TNum[] res = new TNum[Rows];
-      for (int i = 0; i < Rows; i++) {
-        res[i] = this[i, col];
+      for (int row = 0, k = colInd; row < Rows; row++, k += Cols) {
+        res[row] = _m[k];
       }
 
       return new Vector(res, false);
@@ -649,10 +669,8 @@ public partial class Geometry<TNum, TConv>
       TNum[] tm = new TNum[Cols * Rows];
       int    kt = 0;
       for (int col = 0; col < Cols; col++) {
-        int k = col;
-        for (int row = 0; row < Rows; row++) {
-          tm[kt] =  _m[k];
-          k      += Cols;
+        for (int row = 0, k = col; row < Rows; row++, k += Cols) {
+          tm[kt] = _m[k];
           kt++;
         }
       }
@@ -663,18 +681,18 @@ public partial class Geometry<TNum, TConv>
 
 #region Matrix factories
     /// <summary>
-    /// Return zero square matrix n-by-n
+    /// Return zero square matrix n-by-n.
     /// </summary>
-    /// <param name="n">Size of the matrix</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Size of the matrix.</param>
+    /// <returns>The resultant square zero matrix.</returns>
     public static Matrix Zero(int n) => new Matrix(n, n);
 
     /// <summary>
-    /// Return zero rectangular matrix n-by-m
+    /// Return zero rectangular matrix n-by-m.
     /// </summary>
-    /// <param name="n">Number of rows</param>
-    /// <param name="m">Number of columns</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Number of rows.</param>
+    /// <param name="m">Number of columns.</param>
+    /// <returns>The resultant rectangle zero matrix.</returns>
     public static Matrix Zero(int n, int m) {
       Debug.Assert(n > 0, $"Matrix.Zero: Number of rows of a matrix should be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.Zero: Number of columns of a matrix should be positive. Found {m}");
@@ -683,10 +701,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Return zero matrix n-by-n containing units
+    /// Return zero matrix of size n-by-n containing units (ones).
     /// </summary>
-    /// <param name="n">Size of the matrix</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Size of the matrix.</param>
+    /// <returns>The resultant rectangular matrix filled with ones.</returns>
     public static Matrix One(int n) {
       Debug.Assert(n > 0, $"Matrix.One: Size of a square matrix should be positive. Found {n}");
 
@@ -694,11 +712,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Return rectangular matrix n-by-m containing units
+    /// Returns a rectangular matrix of size n-by-m filled with units (ones).
     /// </summary>
-    /// <param name="n">Number of rows</param>
-    /// <param name="m">Number of columns</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Number of rows.</param>
+    /// <param name="m">Number of columns.</param>
+    /// <returns>The resultant rectangular matrix filled with ones.</returns>
     public static Matrix One(int n, int m) {
       Debug.Assert(n > 0, $"Matrix.One: Number of rows of a matrix should be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.One: Number of columns of a matrix should be positive. Found {m}");
@@ -714,10 +732,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Return unit square matrix n-by-n
+    /// Return unit square matrix of size n-by-n.
     /// </summary>
-    /// <param name="n">Size of the matrix</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Size of the matrix.</param>
+    /// <returns>The resultant square unit matrix.</returns>
     public static Matrix Eye(int n) {
       Debug.Assert(n > 0, $"Matrix.Eye: Size of a square matrix should be positive. Found {n}");
 
@@ -725,11 +743,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Return rectangular unite matrix n-by-m
+    /// Return rectangular unite matrix of size n-by-m.
     /// </summary>
-    /// <param name="n">Number of rows</param>
-    /// <param name="m">Number of columns</param>
-    /// <returns>The resultant matrix</returns>
+    /// <param name="n">Number of rows.</param>
+    /// <param name="m">Number of columns.</param>
+    /// <returns>The resultant rectangle unit matrix.</returns>
     public static Matrix Eye(int n, int m) {
       Debug.Assert(n > 0, $"Matrix.Eye: Number of rows of a matrix should be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.Eye: Number of columns of a matrix should be positive. Found {m}");
@@ -845,13 +863,13 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Generate orthonormal matrix.
     /// </summary>
-    /// <param name="dim">The dimension d of the space.</param>
+    /// <param name="dim">The dimension n of the space.</param>
     /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>The orthonormal matrix d x d.</returns>
     public static Matrix GenONMatrix(int dim, GRandomLC? random = null) {
       Debug.Assert(dim > 0, $"Matrix.GenONMatrix: Size of a square matrix should be positive. Found {dim}");
 
-      return LinearBasis.GenLinearBasis(dim, random).Basis!;
+      return LinearBasis.GenLinearBasis(dim, random).Basis;
     }
 
     /// <summary>
@@ -873,89 +891,179 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
-    /// Projects the given vector onto the subspace defined by the columns of the current matrix.
+    /// Multiplies a specified rowInd of the matrix by the given vector and returns the resulting scalar value.
     /// </summary>
-    /// <param name="v">The vector to project.</param>
-    /// <returns>A new vector representing the projection of given vector onto the subspace.</returns>
-      public Vector ProjectOntoSubspace(Vector v) {
-      TNum[] proj = new TNum[Rows];
+    /// <param name="rowInd">The number of the rowInd to be multiplied.</param>
+    /// <param name="vector">The vector to multiply with the matrix rowInd.</param>
+    /// <returns>The resulting scalar value.</returns>
+    public TNum MultRowIndByVector(int rowInd, Vector vector) {
+      Debug.Assert
+        (
+         Cols == vector.SpaceDim
+       , $"Matrix.MultiplyRowByVector: The column count of the matrix and the number of the coordinates of a vector should be the same. Found column count {Cols}, number of coordinates {vector.SpaceDim}."
+        );
 
-      for (int j = 0; j < Cols; j++) {
-        TNum dotProduct = Tools.Zero;
-        int  colIndex   = j;
-        for (int i = 0; i < Rows; i++) {
-          dotProduct += v[i] * _m[colIndex];
-          colIndex   += Cols;
-        }
-        colIndex = j;
-        for (int i = 0; i < Rows; i++) {
-          proj[i]  += dotProduct * _m[colIndex];
-          colIndex += Cols;
+      TNum result = Tools.Zero;
+      for (int colIndex = 0, k = rowInd * Cols; colIndex < Cols; colIndex++, k++) {
+        result += _m[k] * vector[colIndex];
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Multiplies a specified column of the matrix by the given vector and returns the resulting scalar value.
+    /// </summary>
+    /// <param name="colInd">The index of the column to be multiplied.</param>
+    /// <param name="vector">The vector to multiply with the matrix column.</param>
+    /// <returns>The resulting scalar value.</returns>
+    public TNum MultiplyColumnByVector(int colInd, Vector vector) {
+      Debug.Assert
+        (
+         Rows == vector.SpaceDim
+       , $"Matrix.MultiplyColumnByVector: The row count of the matrix and the number of the coordinates of a vector should be the same. Found row count {Rows}, number of coordinates {vector.SpaceDim}."
+        );
+
+      TNum result = Tools.Zero;
+      for (int row = 0, k = colInd; row < Rows; row++, k += Cols) {
+        result += _m[k] * vector[row];
+      }
+
+      return result;
+    }
+
+
+    /// <summary>
+    /// Multiplies the matrix by its transpose.
+    /// </summary>
+    /// <returns>A new matrix representing the product of the matrix and its transpose.</returns>
+    public Matrix MultiplyBySelfTranspose() {
+      TNum[] res = new TNum[Rows * Rows];
+
+      int resInd  = 0; // заполняет верхний треугольник матрицы результата
+      int resInd2 = 0; // заполняет нижний треугольник матрицы результата
+      int s       = 0; // идёт в исходной матрице по строкам
+      int t       = 0; // идёт в транспонированной матрице по столбцам (реально по строкам исходной)
+      for (int row = 0; row < Rows; row++, resInd += row, resInd2 = resInd, s += Cols, t = s) {
+        for (int col = row; col < Rows; col++, resInd++, resInd2 += Rows, s -= Cols) {
+          TNum sum = Tools.Zero;
+          for (int k = 0; k < Cols; k++) {
+            sum += _m[s] * _m[t];
+            s++;
+            t++;
+          }
+          res[resInd]  = sum;
+          res[resInd2] = sum;
         }
       }
 
-      return new Vector(proj, false);
+      return new Matrix(Rows, Rows, res, false);
     }
 #endregion
 
   }
 
+  /// <summary>
+  /// Represents a mutable matrix that allows modification of its elements.
+  /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
+  /// for modifying matrix elements, including setting submatrices.
+  /// </summary>
   public class MutableMatrix : Matrix {
 
+    /// <summary>
+    /// Constructs a mutable matrix from the given dimensions and an array of elements.
+    /// </summary>
+    /// <param name="n">Number of rows in the matrix.</param>
+    /// <param name="m">Number of columns in the matrix.</param>
+    /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
     public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
 
+    /// <summary>
+    /// Constructs a mutable matrix by copying the elements from an existing matrix.
+    /// </summary>
+    /// <param name="m">The matrix to copy.</param>
     public MutableMatrix(Matrix m) : base(m) { }
 
+    /// <summary>
+    /// Indexer to get or set the matrix element at the specified row and column.
+    /// </summary>
+    /// <param name="i">The row index (zero-based).</param>
+    /// <param name="j">The column index (zero-based).</param>
+    /// <returns>The value of the matrix element at the specified row and column.</returns>
     public new TNum this[int i, int j] {
       get
         {
-          Debug.Assert(i >= 0 && i < Rows, "MutableMatrix.Indexer: The first index is out of range");
-          Debug.Assert(j >= 0 && j < Cols, "MutableMatrix.Indexer: The second index is out of range");
+          Debug.Assert
+            (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert
+            (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
 
           return _m[i * Cols + j];
         }
-
       set
         {
-          Debug.Assert(i >= 0 && i < Rows, "MutableMatrix.Indexer: The first index is out of range");
-          Debug.Assert(j >= 0 && j < Cols, "MutableMatrix.Indexer: The second index is out of range");
+          Debug.Assert
+            (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert
+            (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
 
           _m[i * Cols + j] = value;
         }
     }
 
+    /// <summary>
+    /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
+    /// </summary>
+    /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
+    /// <returns>A new identity matrix.</returns>
     public new static MutableMatrix Eye(int d) {
-      int    i, j, k = 0;
-      TNum[] nv      = new TNum[d * d];
+      int    k  = 0;
+      TNum[] nv = new TNum[d * d];
 
-      for (i = 0; i < d; i++) {
-        for (j = 0; j < d; j++, k++) {
-          if (i == j) {
-            nv[k] = Tools.One;
-          }
-          else {
-            nv[k] = Tools.Zero;
-          }
+      for (int i = 0; i < d; i++) {
+        for (int j = 0; j < d; j++, k++) {
+          nv[k] = (i == j) ? Tools.One : Tools.Zero;
         }
       }
 
       return new MutableMatrix(d, d, nv);
     }
 
-    public void SetSubMatrix(int startRow, int startCol, int numRows, int numCols, Matrix subMatrix) {
+    /// <summary>
+    /// Sets a submatrix within the current matrix at the specified starting row and column.
+    /// </summary>
+    /// <param name="startRow">The starting row index for the submatrix.</param>
+    /// <param name="startCol">The starting column index for the submatrix.</param>
+    /// <param name="subMatrix">The submatrix to be inserted.</param>
+    /// <remarks>The size of the submatrix must fit within the bounds of the main matrix.</remarks>
+    public void SetSubMatrix(int startRow, int startCol, Matrix subMatrix) {
       Debug.Assert
         (
-         numRows == subMatrix.Rows && numCols == subMatrix.Cols
-       , $"MutableMatrix.SetSubMatrix: Submatrix dimensions must match the specified region dimensions. Expected dimensions: {numRows}x{numCols}, found: {subMatrix.Rows}x{subMatrix.Cols}"
+         startRow >= 0 && startRow + subMatrix.Rows <= Rows
+       , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
+        );
+      Debug.Assert
+        (
+         startCol >= 0 && startCol + subMatrix.Cols <= Cols
+       , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
         );
 
-      for (int i = 0; i < numRows; i++) {
-        for (int j = 0; j < numCols; j++) {
-          _m[(startRow + i) * Cols + (startCol + j)] = subMatrix[i, j];
+      int k     = startRow * Cols + startCol;
+      int s     = 0;
+      int shift = Cols - subMatrix.Cols;
+      for (int row = 0; row < subMatrix.Rows; row++, k += shift) {
+        for (int col = 0; col < subMatrix.Cols; col++, s++, k++) {
+          _m[k] = subMatrix[s];
         }
       }
     }
 
+    /// <summary>
+    /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
+    /// </summary>
+    /// <param name="m1">The first matrix.</param>
+    /// <param name="m2">The second matrix.</param>
+    /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
     public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
 
   }
