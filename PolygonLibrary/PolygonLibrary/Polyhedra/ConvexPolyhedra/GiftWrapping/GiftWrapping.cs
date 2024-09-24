@@ -180,7 +180,7 @@ public partial class Geometry<TNum, TConv>
       /// <param name="initFace">The initial facet to start the gift wrapping algorithm. If null, the algorithm constructs it.</param>
       public GiftWrappingMain(SortedSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
         S             = Swarm;
-        spaceDim      = S.First().Dim;
+        spaceDim      = S.First().SpaceDim;
         this.initFace = initFace;
 
         Debug.Assert
@@ -206,7 +206,7 @@ public partial class Geometry<TNum, TConv>
           return new SubTwoDimensional(S);
         }
         // if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
-        //  // todo А что делать в случае симплекса? 1. Что с нормалями к гипер-граням?
+        //  // todo А что делать в случае симплекса? Что с нормалями к гипер-граням?
         // }
 
         // Создаём начальную грань. (Либо берём, если она передана).
@@ -307,14 +307,18 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector();
+          Vector e  = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo norm?
 
-          Vector?   r      = null; // нужен для процедуры Сварта (ниже)
-          TNum      minCos = Tools.Two;
-          SubPoint? sExtr  = null;
+          Vector?     r      = null; // нужен для процедуры Сварта (ниже)
+          TNum        minCos = Tools.Two;
+          SubPoint?   sExtr  = null;
+          LinearBasis lb     = new LinearBasis(new Vector[] { e, n }, false);
+
+
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
-            Vector u = (s - origin).ProjectToPlane(e, n);
+            // Vector u = (s - origin).ProjectToPlane(e, n);
+            Vector u = lb.GetProjectionToSubSpace(s - origin);
 
             if (!u.IsZero) {
               TNum cos = e * u / u.Length;
@@ -378,7 +382,6 @@ public partial class Geometry<TNum, TConv>
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
-        // TODO: дважды проектируем те точки, которые лежат в плоскости - в Contains, а потом в ProjectTo; может, все решается предпросчетом матрицы проектирования
 
         Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
@@ -435,10 +438,12 @@ public partial class Geometry<TNum, TConv>
         SubPoint? sStar  = null;
         TNum      minCos = Tools.Two;
 
+        LinearBasis lb = new LinearBasis(new Vector[] { v, face.Normal }, false);
 
         // ищем вектор r такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
         foreach (SubPoint s in S) {
-          Vector u = (s - edgeAffBasis.Origin).ProjectToPlane(v, face.Normal);
+          Vector u = lb.GetProjectionToSubSpace(s - edgeAffBasis.Origin);
+          // Vector u = (s - edgeAffBasis.Origin).ProjectToPlane(v, face.Normal);
           if (!u.IsZero) {
             TNum cos = v * u / u.Length;
 
