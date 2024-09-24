@@ -51,7 +51,7 @@ public partial class Geometry<TNum, TConv>
   // }
 
 
-  // todo Если появится быстрый Vrep -> Hrep, то стоит переделать эту конвертацию. Сейчас так: Vrep -> FLrep -(легко)-> Hrep
+  // todo Если появится быстрый Vrep -> Hrep, то стоит переделать эту конвертацию. Сейчас так: Vrep -(сложно)-> FLrep -(легко)-> Hrep
   /// <summary>
   /// Represents a full-dimensional convex polytop in a d-dimensional space.
   /// </summary>
@@ -263,7 +263,7 @@ public partial class Geometry<TNum, TConv>
         case "Vrep":        return CreateFromVRep(pr, action == PolytopAction.Convexify);
         case "Hrep":        return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
         case "FLrep":       return CreateFromFLrep(pr);
-        case "FaceLattice": return CreateFromFLrep(pr); // todo потом можно будет убрать, когда данные в новом формате нагенерятся
+        // case "FaceLattice": return CreateFromFLrep(pr); // todo потом можно будет убрать, когда данные в новом формате нагенерятся
         default:            throw new ArgumentException($"Unsupported representation type: {nameRep}");
       }
     }

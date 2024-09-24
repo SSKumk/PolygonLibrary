@@ -17,7 +17,6 @@ public partial class Geometry<TNum, TConv>
 
     public static ulong useContains = 0;
 
-    // todo Contains счётчик статический. Считаем сколько создали, сколько Contains. В конце программы выводим одно делённое на другое.
 #region Data and Properties
     /// <summary>
     /// Gets the origin point of the affine basis.

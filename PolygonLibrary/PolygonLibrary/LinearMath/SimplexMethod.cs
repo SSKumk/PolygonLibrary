@@ -95,7 +95,7 @@ public partial class Geometry<TNum, TConv>
         e = _d;
         l = -1;
         foreach (int i in B) {
-          if (Tools.LT(_b[id[i]]) && (l == -1 || _b[id[l]] > _b[id[i]])) { //todo тут по точности?
+          if (Tools.LT(_b[id[i]]) && (l == -1 || _b[id[l]] > _b[id[i]])) {
             l = i;
           }
         }
@@ -130,7 +130,6 @@ public partial class Geometry<TNum, TConv>
           l = -1;
           foreach (int i in B) {
             if (Tools.GT(_A[id[i], e]) && (l == -1 || _b[id[l]] / _A[id[l], e] > _b[id[i]] / _A[id[i], e])) {
-              //todo тут по точности?
               l = i;
             }
           }
