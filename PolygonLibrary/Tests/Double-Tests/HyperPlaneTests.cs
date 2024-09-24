@@ -20,7 +20,7 @@ public class HyperPlaneTests {
       , new Vector(new double[] { 0, 1, 0 })
       };
 
-    AffineBasis affineBasis = AffineBasis.AsVectors(new Vector(new double[] { 1, 1, 1 }), vectors);
+    AffineBasis affineBasis = AffineBasis.FromVectors(new Vector(new double[] { 1, 1, 1 }), vectors);
     HyperPlane  hyperplane  = new HyperPlane(affineBasis);
   }
 
@@ -31,7 +31,7 @@ public class HyperPlaneTests {
     Vector v2     = new Vector(new double[] { 1, -1, 1 });
     Vector v3     = new Vector(new double[] { 0, 0, 1 });
 
-    AffineBasis aBasis = AffineBasis.AsVectors
+    AffineBasis aBasis = AffineBasis.FromVectors
       (
        origin
      , new List<Vector>()
@@ -64,7 +64,7 @@ public class HyperPlaneTests {
     Vector e2     = new Vector(new double[] { 0, 1, 0 });
     Vector e3     = new Vector(new double[] { 0, 0, 1 });
 
-    AffineBasis aBasis = AffineBasis.AsVectors(origin, new Vector[] { e1, e2 });
+    AffineBasis aBasis = AffineBasis.FromVectors(origin, new Vector[] { e1, e2 });
 
     HyperPlane hp = new HyperPlane(aBasis);
 

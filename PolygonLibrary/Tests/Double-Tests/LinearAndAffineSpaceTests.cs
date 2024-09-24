@@ -45,7 +45,7 @@ public class LinearSpaceTests
   public void AddVectorTest()
   {
     LinearBasis basis = new LinearBasis(2, 0);
-    Assert.That(basis.IsEmpty, Is.True, "Initial basis should be empty.");
+    Assert.That(basis.Empty, Is.True, "Initial basis should be empty.");
 
     bool added1 = basis.AddVector(new Vector(new double[] { 1, 0 }));
 
@@ -62,7 +62,7 @@ public class LinearSpaceTests
     Assert.That(added4, Is.False, "The addition of the zero vector should not be successful.");
 
     Assert.That(basis.SubSpaceDim, Is.EqualTo(2), "The count of vectors in the basis should be equal to 2.");
-    Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty after adding vectors.");
+    Assert.That(basis.Empty, Is.False, "The basis should not be empty after adding vectors.");
 
     Assert.That(basis.IsFullDim, Is.True, "The basis should have full dimension after adding two linearly independent vectors.");
 
@@ -101,7 +101,7 @@ public class LinearSpaceTests
      , "The basis should have full dimension if subset of the input vectors (d-dim) are forming d-basis."
       );
 
-    Assert.That(basis.IsEmpty, Is.False, "The basis should not be empty if at least one input vector are provided.");
+    Assert.That(basis.Empty, Is.False, "The basis should not be empty if at least one input vector are provided.");
   }
 
 }
@@ -133,7 +133,7 @@ public class AffineSpaceTests
     AffineBasis basis = new AffineBasis(origin);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
-    Assert.That(basis.LinBasis.IsEmpty, "The linear basis associated with the affine basis should be initially empty.");
+    Assert.That(basis.LinBasis.Empty, "The linear basis associated with the affine basis should be initially empty.");
     Assert.That(basis.IsFullDim, Is.False, "The affine basis should not be full dimension if no vectors are added.");
     Assert.That(basis.IsEmpty, Is.True, "The affine basis should be empty if no vectors are added.");
   }
@@ -155,7 +155,7 @@ public class AffineSpaceTests
       };
 
 
-    AffineBasis basis = AffineBasis.AsVectors(origin, vectors);
+    AffineBasis basis = AffineBasis.FromVectors(origin, vectors);
 
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
@@ -198,7 +198,7 @@ public class AffineSpaceTests
       , new Vector(new double[] { double.Pi / 2, 5, 5 })
       };
 
-    AffineBasis basis = AffineBasis.AsPoints(origin, points);
+    AffineBasis basis = AffineBasis.FromPoints(origin, points);
 
     Assert.That(basis.Origin.CompareTo(origin), Is.EqualTo(0), "The origin point of the affine basis should be set correctly.");
 
@@ -225,7 +225,7 @@ public class AffineSpaceTests
 
     List<Vector> vectors = new List<Vector>() { new Vector(new double[] { 1, 0, 0 }), new Vector(new double[] { 0, 1, 0 }) };
 
-    AffineBasis basis = AffineBasis.AsVectors(origin, vectors);
+    AffineBasis basis = AffineBasis.FromVectors(origin, vectors);
     Vector newVector = new Vector(new double[] { 1, 1, 1 });
 
     bool result = basis.AddVector(newVector);
@@ -263,7 +263,7 @@ public class AffineSpaceTests
 
     SortedSet<Vector> expected = swarm;
 
-    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis, false);
+    AffineBasis aBasis = AffineBasis.FromVectors(origin, basis, false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -291,7 +291,7 @@ public class AffineSpaceTests
         new Vector(new double[] { -1, -1 }), new Vector(new double[] { -2, -3 }), new Vector(new double[] { 1, -4 })
       };
 
-    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis, false);
+    AffineBasis aBasis = AffineBasis.FromVectors(origin, basis, false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -319,7 +319,7 @@ public class AffineSpaceTests
         new Vector(new double[] { 1, 1 }), new Vector(new double[] { 0, -2 }), new Vector(new double[] { 6, -2 })
       };
 
-    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis, false);
+    AffineBasis aBasis = AffineBasis.FromVectors(origin, basis, false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -352,7 +352,7 @@ public class AffineSpaceTests
       , new Vector(new double[] { 1, 1 })
       };
 
-    AffineBasis aBasis = AffineBasis.AsVectors(origin, basis, false);
+    AffineBasis aBasis = AffineBasis.FromVectors(origin, basis, false);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
