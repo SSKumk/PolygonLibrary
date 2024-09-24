@@ -23,7 +23,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The array of vector coordinates.</returns>
     public TNum[] GetAsArray() {
-      TNum[] v = new TNum[Dim];
+      TNum[] v = new TNum[SpaceDim];
       _v.CopyTo(v, 0);
 
       return v;
@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Dimension of the vector
     /// </summary>
-    public int Dim => _v.Length;
+    public int SpaceDim => _v.Length;
 
     /// <summary>
     /// Indexer access
@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv>
     public TNum this[int i] {
       get
         {
-          Debug.Assert(i >= 0 && i < Dim, $"Vector.Indexer: Index out of range. Found index: {i}, dimension: {Dim}");
+          Debug.Assert(i >= 0 && i < SpaceDim, $"Vector.Indexer: Index out of range. Found index: {i}, dimension: {SpaceDim}");
 
           return _v[i];
         }
@@ -81,7 +81,7 @@ public partial class Geometry<TNum, TConv>
           if (length2 is null) {
             TNum res = Tools.Zero;
 
-            for (int i = 0; i < Dim; i++) {
+            for (int i = 0; i < SpaceDim; i++) {
               res += _v[i] * _v[i];
             }
 
@@ -114,12 +114,12 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(Vector? other) {
       if (other is null) { return 1; } // null < this (always)
 
-      int d = Dim, res;
+      int d = SpaceDim, res;
 
       Debug.Assert
         (
-         d == other.Dim
-       , $"Vector.CompareTo: Can not compare vectors of different dimensions. Dimensions: this = {d}, other = {other.Dim}"
+         d == other.SpaceDim
+       , $"Vector.CompareTo: Can not compare vectors of different dimensions. Dimensions: this = {d}, other = {other.SpaceDim}"
         );
 
       for (int i = 0; i < d; i++) {
@@ -184,44 +184,28 @@ public partial class Geometry<TNum, TConv>
 
 #region Miscellaneous procedures
     /// <summary>
-    /// Normalization of the vector
+    /// Normalizes the vector.
     /// </summary>
-    /// <returns>
-    /// The normalized vector.
-    /// </returns>
-    /// <exception cref="DivideByZeroException">
-    /// Is thrown if the vector is zero
-    /// </exception>
+    /// <returns>The normalized vector.</returns>
     public Vector Normalize() {
-#if DEBUG
-      if (IsZero) {
-        throw new DivideByZeroException();
-      }
-#endif
-      Vector res = new Vector(Dim);
+      Debug.Assert(!IsZero, "Vector.Normalize: Cannot normalize a zero vector.");
 
-      for (int i = 0; i < Dim; i++) {
-        res._v[i] = _v[i] / Length;
+      TNum[] res = new TNum[SpaceDim];
+      for (int i = 0; i < SpaceDim; i++) {
+        res[i] = _v[i] / Length;
       }
 
-      res._length = TNum.MultiplicativeIdentity;
-
-      return res;
+      return new Vector(res, TNum.MultiplicativeIdentity, false);
     }
 
     /// <summary>
-    /// Normalization of the vector with the zero vector check
+    /// Normalizes the vector with a check for the zero vector.
     /// </summary>
     /// <returns>
-    /// The normalized vector. If the vector is zero, then zero is returned.
+    /// The normalized vector. If the length of the vector is zero, then the zero vector of the corresponding dimension is returned.
     /// </returns>
-    public Vector NormalizeZero() {
-      if (IsZero) {
-        return Zero(Dim);
-      }
+    public Vector NormalizeZero() => IsZero ? Zero(SpaceDim) : Normalize();
 
-      return Normalize();
-    }
 
     /// <summary>
     /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
@@ -254,34 +238,34 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    /// <summary>
-    /// Perform the projection to the plane with basis (u1,u2) by the formula:
-    /// res = (this * u1) * u1 + (this * u2) * u2
-    /// </summary>
-    /// <param name="u1">The first basis vector of the plane.</param>
-    /// <param name="u2">The second basis vector of the plane.</param>
-    /// <returns>The projected vector.</returns>
-    public Vector ProjectToPlane(Vector u1, Vector u2) {
-      Debug.Assert
-        (
-         u1.Dim == Dim && u2.Dim == Dim
-       , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.Dim} and {u2.Dim}."
-        );
-
-      TNum fst = Tools.Zero;
-      TNum snd = Tools.Zero;
-      for (int i = 0; i < Dim; i++) {
-        fst += _v[i] * u1[i];
-        snd += _v[i] * u2[i];
-      }
-
-      TNum[] res = new TNum[Dim];
-      for (int i = 0; i < Dim; i++) {
-        res[i] = fst * u1[i] + snd * u2[i];
-      }
-
-      return new Vector(res, false);
-    }
+    // /// <summary>
+    // /// Perform the projection to the plane with basis (u1,u2) by the formula:
+    // /// res = (this * u1) * u1 + (this * u2) * u2
+    // /// </summary>
+    // /// <param name="u1">The first basis vector of the plane.</param>
+    // /// <param name="u2">The second basis vector of the plane.</param>
+    // /// <returns>The projected vector.</returns>
+    // public Vector ProjectToPlane(Vector u1, Vector u2) {
+    //   Debug.Assert
+    //     (
+    //      u1.SpaceDim == SpaceDim && u2.SpaceDim == SpaceDim
+    //    , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.SpaceDim} and {u2.SpaceDim}."
+    //     );
+    //
+    //   TNum fst = Tools.Zero;
+    //   TNum snd = Tools.Zero;
+    //   for (int i = 0; i < SpaceDim; i++) {
+    //     fst += _v[i] * u1[i];
+    //     snd += _v[i] * u2[i];
+    //   }
+    //
+    //   TNum[] res = new TNum[SpaceDim];
+    //   for (int i = 0; i < SpaceDim; i++) {
+    //     res[i] = fst * u1[i] + snd * u2[i];
+    //   }
+    //
+    //   return new Vector(res, false);
+    // }
 
     /// <summary>
     /// Expands the vector to a higher dimension.
@@ -290,13 +274,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="val">The value to expand with.</param>
     /// <returns>A new vector in the target dimension, with the last coordinates sets to val.</returns>
     public Vector LiftUp(int d, TNum val) {
-      Debug.Assert(d > Dim, "Vector.LiftUp: Can't lift to lower dimension!");
+      Debug.Assert(d > SpaceDim, "Vector.LiftUp: Can't lift to lower dimension!");
 
       TNum[] np = new TNum[d];
-      for (int i = 0; i < Dim; i++) {
+      for (int i = 0; i < SpaceDim; i++) {
         np[i] = _v[i];
       }
-      for (int i = Dim; i < d; i++) {
+      for (int i = SpaceDim; i < d; i++) {
         np[i] = val;
       }
 
@@ -311,7 +295,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to compute the outer product with.</param>
     /// <returns>A matrix representing the outer product of the two vectors.</returns>
     public Matrix OuterProduct(Vector v) {
-      int rows = Dim, cols = v.Dim;
+      int rows = SpaceDim, cols = v.SpaceDim;
 
       TNum[] result = new TNum[rows * cols];
       int k = 0;
@@ -334,7 +318,7 @@ public partial class Geometry<TNum, TConv>
     public Vector SubVector(int startIndex, int endIndex) {
       Debug.Assert(startIndex <= endIndex, "Vector.SubVector: start index must be less or equal than end index!");
       Debug.Assert(startIndex >= 0, "Vector.SubVector: start index must be non negative.");
-      Debug.Assert(endIndex < Dim, "Vector.SubVector: end index must be lesser than dimension of the vector.");
+      Debug.Assert(endIndex < SpaceDim, "Vector.SubVector: end index must be lesser than dimension of the vector.");
 
       int    length      = endIndex - startIndex + 1;
       TNum[] subElements = new TNum[length];
@@ -387,10 +371,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructor on the basis of a one-dimensional array
+    /// Constructs a new vector using the specified one-dimensional array of components.
     /// </summary>
-    /// <param name="nv">The array</param>
-    /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made; otherwise, the original array is used directly.</param>
+    /// <param name="nv">An array of vector components.</param>
+    /// <param name="needCopy">
+    /// Indicates whether a copy of the array should be made.
+    /// If <c>true</c>, a copy of the array is created; otherwise, the original array is used directly.
+    /// </param>
     public Vector(TNum[] nv, bool needCopy = true) {
       Debug.Assert(nv.Length > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {nv.Length}.");
       Debug.Assert(nv.Rank == 1, $"Vector.Ctor: Cannot initialize a vector by a multidimensional array. Found {nv.Rank}.");
@@ -405,6 +392,19 @@ public partial class Geometry<TNum, TConv>
       else {
         _v = nv;
       }
+    }
+
+    /// <summary>
+    /// Construct a new vector with the specified components and length.
+    /// </summary>
+    /// <param name="nv">An array of vector components.</param>
+    /// <param name="vlen">The length of the vector.</param>
+    /// <param name="needCopy">
+    /// Indicates whether a copy of the array should be made.
+    /// If <c>true</c>, a copy of the array is created; otherwise, the original array is used directly.
+    /// </param>
+    internal Vector(TNum[] nv, TNum vlen, bool needCopy = true) : this(nv, needCopy) {
+      _length = vlen;
     }
 
     /// <summary>
@@ -515,7 +515,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to be reversed</param>
     /// <returns>The opposite vector</returns>
     public static Vector operator -(Vector v) {
-      int    d  = v.Dim, i;
+      int    d  = v.SpaceDim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -532,9 +532,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector summand.</param>
     /// <returns>The sum</returns>
     public static Vector operator +(Vector v1, Vector v2) {
-      Debug.Assert(v1.Dim == v2.Dim, $"Vector.+: Can not add two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+      Debug.Assert(v1.SpaceDim == v2.SpaceDim, $"Vector.+: Can not add two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
 
-      int    d  = v1.Dim, i;
+      int    d  = v1.SpaceDim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -552,9 +552,9 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The difference</returns>
     public static Vector operator -(Vector v1, Vector v2) {
       Debug.Assert
-        (v1.Dim == v2.Dim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+        (v1.SpaceDim == v2.SpaceDim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
 
-      int    d  = v1.Dim, i;
+      int    d  = v1.SpaceDim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -571,7 +571,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector factor</param>
     /// <returns>The product</returns>
     public static Vector operator *(TNum a, Vector v) {
-      int    d  = v.Dim, i;
+      int    d  = v.SpaceDim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -598,7 +598,7 @@ public partial class Geometry<TNum, TConv>
     public static Vector operator /(Vector v, TNum a) {
       Debug.Assert(Tools.EQ(a), $"Vector./: Can not divide by zero.");
 
-      int    d  = v.Dim, i;
+      int    d  = v.SpaceDim, i;
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
@@ -617,13 +617,13 @@ public partial class Geometry<TNum, TConv>
     public static TNum operator *(Vector v1, Vector v2) {
       Debug.Assert
         (
-         v1.Dim == v2.Dim
-       , $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}."
+         v1.SpaceDim == v2.SpaceDim
+       , $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
         );
 
       //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
 
-      int  d   = v1.Dim, i;
+      int  d   = v1.SpaceDim, i;
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
@@ -692,11 +692,11 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant vector</returns>
     public static Vector LinearCombination(Vector v1, TNum w1, Vector v2, TNum w2) {
       Debug.Assert
-        (v1.Dim == v2.Dim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.Dim} and {v2.Dim}.");
+        (v1.SpaceDim == v2.SpaceDim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
 
-      TNum[] coords = new TNum[v1.Dim];
+      TNum[] coords = new TNum[v1.SpaceDim];
 
-      for (int i = 0; i < v1.Dim; i++) {
+      for (int i = 0; i < v1.SpaceDim; i++) {
         coords[i] = w1 * v1[i] + w2 * v2[i];
       }
 
