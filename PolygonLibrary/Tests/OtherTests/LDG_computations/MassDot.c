@@ -23,7 +23,7 @@ qDim = 1;
 C = {{1}, {0}};
 
 // The initial instant
-t0 = 0;
+t0 = 5.0;
 
 // The final instant
 T = 7;
