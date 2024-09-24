@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv>
     private readonly int     _m;
 
     public SimplexMethod(List<HyperPlane> HPs, Func<int, TNum> fc) : this
-      ((i, j) => HPs[i].Normal[j], HPs.Count, HPs.First().Normal.Dim, i => HPs[i].ConstantTerm, fc) { }
+      ((i, j) => HPs[i].Normal[j], HPs.Count, HPs.First().Normal.SpaceDim, i => HPs[i].ConstantTerm, fc) { }
 
     public SimplexMethod(Func<int, int, TNum> fA, int m, int d, Func<int, TNum> fb, Func<int, TNum> fc) {
       _m = m;

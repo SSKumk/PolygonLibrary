@@ -292,7 +292,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant vector</returns>
     public static explicit operator Vector2D(Vector v) {
 #if DEBUG
-      if (v.Dim != 2) {
+      if (v.SpaceDim != 2) {
         throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional vector!");
       }
 #endif

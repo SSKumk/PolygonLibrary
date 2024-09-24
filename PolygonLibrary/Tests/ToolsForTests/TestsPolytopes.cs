@@ -308,7 +308,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
 
     if (facesDim is not null) {
       foreach (int dim in facesDim) {
-        Debug.Assert(dim <= simplex[0].Dim);
+        Debug.Assert(dim <= simplex[0].SpaceDim);
 
         List<List<Vector>> faces = simplex.Subsets(dim + 1);
 

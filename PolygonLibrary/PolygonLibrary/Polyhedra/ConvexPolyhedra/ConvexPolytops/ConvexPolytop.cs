@@ -185,7 +185,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="VP">The set of vertices defining the polytop.</param>
     /// <param name="toConvexify">If true, convexifies the polytop and constructs the face lattice.</param>
     private ConvexPolytop(SortedSet<Vector> VP, bool toConvexify) {
-      SpaceDim = VP.First().Dim;
+      SpaceDim = VP.First().SpaceDim;
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
         GiftWrapping GW = new GiftWrapping(VP);
         _FLrep = GW.ConstructFL();
@@ -203,7 +203,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="HPs">The list of hyperplanes defining the polytop.</param>
     /// <param name="doHRedundancy">If true, performs redundancy reduction on the hyperplanes (not yet implemented).</param>
     private ConvexPolytop(List<HyperPlane> HPs, bool doHRedundancy) {
-      SpaceDim = HPs.First().Normal.Dim;
+      SpaceDim = HPs.First().Normal.SpaceDim;
       if (doHRedundancy) {
         throw new NotImplementedException("Надо сделать! Нужен симлекс-метод и алгоритм Фукуды.");
       }
@@ -279,7 +279,7 @@ public partial class Geometry<TNum, TConv>
 
       Debug.Assert
         (
-         S.All(v => v.Dim == S.First().Dim)
+         S.All(v => v.SpaceDim == S.First().SpaceDim)
        , $"ConvexPolytop.FromReader: The dimension of all points must be the same at the path = {pr.filePath}"
         );
 
@@ -365,11 +365,11 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop RectParallel(Vector left, Vector right) {
       Debug.Assert
         (
-         left.Dim == right.Dim
+         left.SpaceDim == right.SpaceDim
        , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left = {left}, right = {right}"
         );
 
-      if (left.Dim == 1) {
+      if (left.SpaceDim == 1) {
         return CreateFromPoints(new SortedSet<Vector>() { left, right });
       }
 
@@ -378,7 +378,7 @@ public partial class Geometry<TNum, TConv>
       rect_prev.Add(new List<TNum>() { left[0] });
       rect_prev.Add(new List<TNum>() { right[0] });
 
-      for (int i = 1; i < left.Dim; i++) {
+      for (int i = 1; i < left.SpaceDim; i++) {
         rect.Clear();
 
         foreach (List<TNum> coords in rect_prev) {
@@ -476,13 +476,13 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(dim > 1, $"ConvexPolytop.Ellipsoid: The dimension of an ellipsoid must be 2 or greater. Found dim = {dim}.");
       Debug.Assert
         (
-         center.Dim == dim
-       , $"ConvexPolytop.Ellipsoid: the dimension of the center of an ellipsoid must be equal to dim = {dim}. Found center.Dim = {center.Dim}"
+         center.SpaceDim == dim
+       , $"ConvexPolytop.Ellipsoid: the dimension of the center of an ellipsoid must be equal to dim = {dim}. Found center.SpaceDim = {center.SpaceDim}"
         );
       Debug.Assert
         (
-         semiAxis.Dim == dim
-       , $"ConvexPolytop.Ellipsoid: the dimension of the semiAxis-vector of an ellipsoid must be equal to dim = {dim}. Found semiAxis.Dim = {center.Dim}"
+         semiAxis.SpaceDim == dim
+       , $"ConvexPolytop.Ellipsoid: the dimension of the semiAxis-vector of an ellipsoid must be equal to dim = {dim}. Found semiAxis.SpaceDim = {center.SpaceDim}"
         );
 #if DEBUG
       for (int i = 0; i < dim; i++) {
@@ -757,7 +757,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="val">The value used in expansion.</param>
     /// <returns>The polytop in higher dimension.</returns>
     private static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
-      => CreateFromPoints(P.Vrep.Select(v => v.LiftUp(v.Dim + 1, val)).ToSortedSet());
+      => CreateFromPoints(P.Vrep.Select(v => v.LiftUp(v.SpaceDim + 1, val)).ToSortedSet());
 
     /// <summary>
     /// Creates a new convex polytope in d-dimensional space by intersecting the given d-dimensional convex polytope P with a specified hyperplane.
@@ -890,7 +890,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The Vrep of the convex polytop.</returns>
     public static SortedSet<Vector> HrepToVrep_Naive(List<HyperPlane> HPs) {
       int m = HPs.Count;
-      int d = HPs.First().Normal.Dim;
+      int d = HPs.First().Normal.SpaceDim;
 
       SortedSet<Vector>    Vs          = new SortedSet<Vector>();
       Combination          combination = new Combination(m, d);
@@ -928,7 +928,7 @@ public partial class Geometry<TNum, TConv>
     public static SortedSet<Vector> HrepToVrep_Geometric(List<HyperPlane> HPs) {
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               m  = HPs.Count;
-      int               d  = HPs.First().Normal.Dim;
+      int               d  = HPs.First().Normal.SpaceDim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
       // Vs.Add(FindInitialVertex_Simplex(HPs));
 

@@ -58,7 +58,7 @@ public partial class Geometry<TNum, TConv>
         if (onlyHrep) {
           List<HyperPlane> HPs = new List<HyperPlane>();
 
-          int vecDim = affinePQ.Origin.Dim;
+          int vecDim = affinePQ.Origin.SpaceDim;
           for (int i = 0; i < vecDim; i++) {
             Vector makeOrth = Vector.MakeOrth(vecDim, i + 1);
             HPs.Add(new HyperPlane(makeOrth, affinePQ.Origin[i]));
@@ -230,7 +230,7 @@ public partial class Geometry<TNum, TConv>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
     Vector      newO  = to.ProjectVectorToSubSpace(from.Origin);
-    LinearBasis newLB = new LinearBasis(newO.Dim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
+    LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
 
     return new AffineBasis(newO, newLB);
   }

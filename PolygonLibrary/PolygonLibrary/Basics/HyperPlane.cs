@@ -20,7 +20,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The dimension of the vectors.
     /// </summary>
-    public int SpaceDim => Origin.Dim;
+    public int SpaceDim => Origin.SpaceDim;
 
     /// <summary>
     /// The dimension of the hyperplane affine basis.
@@ -40,7 +40,7 @@ public partial class Geometry<TNum, TConv>
             (Matrix Q, _) = QRDecomposition.ByReflection
               (normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
 
-            LinearBasis lb = new LinearBasis(Normal.Dim, 0);
+            LinearBasis lb = new LinearBasis(Normal.SpaceDim, 0);
             for (int i = 1; i < SpaceDim; i++) {
               lb.AddVector(Q.TakeVector(i), false);
             }
@@ -107,7 +107,7 @@ public partial class Geometry<TNum, TConv>
     public HyperPlane(Vector normal, Vector origin) {
       Origin      = origin;
       _normal     = normal.Normalize();
-      SubSpaceDim = Origin.Dim - 1;
+      SubSpaceDim = Origin.SpaceDim - 1;
 
 
 #if DEBUG
@@ -122,7 +122,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="constant">The constant term in right part.</param>
     public HyperPlane(Vector normal, TNum constant) {
       Origin      = new Vector(normal * constant);
-      SubSpaceDim = normal.Dim - 1;
+      SubSpaceDim = normal.SpaceDim - 1;
       TNum lengthN = normal.Length;
       _normal       = normal / lengthN;
       _constantTerm = constant / lengthN;
@@ -143,13 +143,13 @@ public partial class Geometry<TNum, TConv>
     public HyperPlane(AffineBasis affBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
-         affBasis.SubSpaceDim == affBasis.Origin.Dim - 1
-       , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.Dim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
+         affBasis.SubSpaceDim == affBasis.Origin.SpaceDim - 1
+       , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.SpaceDim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
         );
 
       Origin      = affBasis.Origin;
       _affBasis   = affBasis;
-      SubSpaceDim = Origin.Dim - 1;
+      SubSpaceDim = Origin.SpaceDim - 1;
 
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);

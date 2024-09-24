@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the dimension of the space in which the polytop is treated.
     /// </summary>
-    public int SpaceDim => Vertices.First().Dim;
+    public int SpaceDim => Vertices.First().SpaceDim;
 
     /// <summary>
     /// Gets the dimension of the polytop.

@@ -30,7 +30,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// <param name="rnd">The random engine to be used. If null, the _random be used.</param>
   /// <returns>A rotated swarm.</returns>
   public static List<Vector> RotateRND(List<Vector> S, GRandomLC? rnd = null)
-    => Rotate(S, Matrix.GenONMatrix(S.First().Dim, rnd));
+    => Rotate(S, Matrix.GenONMatrix(S.First().SpaceDim, rnd));
 
   /// <summary>
   /// Generates a linear combination of the given points.
@@ -94,7 +94,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   public static List<Vector> Rotate(IEnumerable<Vector> S, Matrix rotation) {
     Debug.Assert
       (
-       S.First().Dim == rotation.Rows
+       S.First().SpaceDim == rotation.Rows
      , "ToolsForTests.Rotate: the dimension of points must be equal to the count of rotation rows."
       );
 

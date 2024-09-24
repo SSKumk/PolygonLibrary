@@ -52,7 +52,7 @@ public partial class Geometry<TNum, TConv>
        , HPs.Select
            (
             hp => {
-              int    dim = hp.Normal.Dim;
+              int    dim = hp.Normal.SpaceDim;
               TNum[] ar  = new TNum[dim + 1];
               for (int i = 0; i < dim; i++) {
                 ar[i] = hp.Normal[i];

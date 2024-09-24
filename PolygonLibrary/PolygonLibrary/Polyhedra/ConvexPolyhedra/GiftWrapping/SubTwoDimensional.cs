@@ -38,7 +38,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (Vs.Count > 2, $"SubTwoDimensional: At least three points must be used to construct a TwoDimensional! Found {Vs.Count}");
 
-      Debug.Assert(Vs.First().Dim == 2, $"SubTwoDimensional: The dimension of the points must be equal to 2!");
+      Debug.Assert(Vs.First().SpaceDim == 2, $"SubTwoDimensional: The dimension of the points must be equal to 2!");
 
       // наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
       List<Vector2D>       convexPolygon2D = Convexification.GrahamHull(Vs.Select(s => new SubPoint2D(s)));
