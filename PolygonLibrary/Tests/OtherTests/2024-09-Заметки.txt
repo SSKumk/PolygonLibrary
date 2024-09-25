@@ -1,0 +1,92 @@
+Double simplemotion 8-14 IEnumerable<FLNode> xiSuper
+6.90) = 369.2968. Vrep.Count = 136
+6.80) = 5629.3486. Vrep.Count = 136
+6.70) = 5601.9049. Vrep.Count = 136
+6.60) = 5896.5806. Vrep.Count = 136
+6.50) = 5638.2787. Vrep.Count = 136
+
+Double simplemotion 8-14 SortedSet<FLNode>   xiSuper_clone
+6.90) = 513.0417. Vrep.Count = 136
+6.80) = 12375.7486. Vrep.Count = 136
+6.70) = 12339.949. Vrep.Count = 136
+
+
+Double materialdot 1-0.9 SortedSet<FLNode>   xiSuper_clone
+5.50) = 3486.1319. Vrep.Count = 1308
+5.40) = 5720.4135. Vrep.Count = 1666
+5.30) = 9016.3314. Vrep.Count = 2058
+
+Double materialdot 1-0.9 IEnumerable<FLNode> xiSuper
+5.50) = 3298.2368. Vrep.Count = 1308
+5.40) = 4996.8932. Vrep.Count = 1666
+5.30) = 7697.2481. Vrep.Count = 2058
+
+
+------------------------------------------
+DDouble MassDot; Contains-ultraMegaNaive; BB^T каждый раз как матрицы
+
+5.20) = 13993.3288. Vrep.Count = 2454
+5.10) = 20299.1058. Vrep.Count = 2890
+5.00) = 26262.2456. Vrep.Count = 3314
+
+
+------------------------------------------
+DDouble MassDot; Contains-megaNaive; Явно считаем в цикле BB^T каждый раз (но без пересоздания матриц)
+
+5.20) = 11889.15.   Vrep.Count = 2454
+5.10) = 16743.3757. Vrep.Count = 2890
+5.00) = 22692.6111. Vrep.Count = 3314
+
+------------------------------------------
+DDouble MassDot; Contains-naive; Запоминаем ProjMatr: (ProjMatr * v).Equals(v)
+
+5.60) = 1786.4191. Vrep.Count = 992
+5.50) = 3145.1496. Vrep.Count = 1308
+5.40) = 5132.1839. Vrep.Count = 1666
+5.30) = 7953.1701. Vrep.Count = 2058
+Average Contains in AffBasis = 79
+
+5.20) = 11579.3853. Vrep.Count = 2454
+5.10) = 16279.8124. Vrep.Count = 2890
+5.00) = 21851.5173. Vrep.Count = 3314
+Average Contains in AffBasis = 135
+
+------------------------------------------
+DDouble MassDot Contains-optimized; Сравниваем на ходу
+
+5.20) = 10950.1498. Vrep.Count = 2454
+5.10) = 15377.7986. Vrep.Count = 2890
+5.00) = 20806.9806. Vrep.Count = 3314
+
+
+
+
+==============================================
+DDouble MassDot Contains-optimized; 
+ProjectVectorToSubSpace__MultiplyColumnByVector проецируем через умножение матрицы на вектор
+5.30) = 7509.0926. Vrep.Count = 2058
+LinBasis.ProjVector count = 36984
+5.20) = 10940.6038. Vrep.Count = 2454
+LinBasis.ProjVector count = 45927
+5.10) = 15387.398. Vrep.Count = 2890
+LinBasis.ProjVector count = 55252
+5.00) = 20889.5435. Vrep.Count = 3314
+LinBasis.ProjVector count = 65332
+------------------------------------------
+DDouble MassDot Contains-optimized; 
+ProjectVectorToSubSpace__lb проецируем через умножение вектора из базиса на вектор
+5.10) = 15464.3436. Vrep.Count = 2890
+5.00) = 20802.9867. Vrep.Count = 3314
+
+
+-------------------------------------------
+DDouble MassDot Contains-optimized; 
+Basis.MultiplyBySelfTranspose
+5.20) = 10803.253. Vrep.Count = 2454
+5.10) = 15192.1069. Vrep.Count = 2890
+5.00) = 20604.1812. Vrep.Count = 3314
+
+Double ....
+5.30) = 7489.684. Vrep.Count = 2058
+5.20) = 9832.4985. Vrep.Count = 2243
+
