@@ -208,6 +208,22 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
+    /// The cosine of angle from the first vector to the another one. 
+    /// It uses the TNum.Acos to calculate the angle
+    /// </summary>
+    /// <param name="v1">The first vector</param>
+    /// <param name="v2">The second vector</param>
+    /// <returns>The cosine</returns>
+    public static TNum CosAngle(Vector v1, Vector v2)
+    {
+      if (v1.IsZero || v2.IsZero) {
+        return Tools.One;
+      } else {
+        return (v1 * v2) / v1.Length / v2.Length;
+      }
+    }
+
+    /// <summary>
     /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
     /// It uses the TNum.Acos to calculate the angle.
     /// </summary>
@@ -215,57 +231,53 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector</param>
     /// <returns>The angle.</returns>
     public static TNum Angle(Vector v1, Vector v2) {
-      if (v1.IsZero || v2.IsZero) {
-        return Tools.Zero;
-      }
-      else {
-        TNum dot = (v1 * v2) / v1.Length / v2.Length;
+      TNum dot = Vector.CosAngle(v1, v2);
 #if DEBUG
-        if (Tools.LT(dot, Tools.MinusOne) || Tools.GT(dot, Tools.One)) { // dot < -1 || dot > 1)
-          throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
-        }
-#endif
-        // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
-        if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
-          return TNum.Pi;
-        }
-        if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
-          return TNum.Zero;
-        }
-
-        // Consider regular case (-1,1)
-        return TNum.Acos(dot);
+      if (Tools.LT(dot, Tools.MinusOne) || Tools.GT(dot, Tools.One)) { // dot < -1 || dot > 1)
+        throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
       }
+#endif
+      // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
+      if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
+        return TNum.Pi;
+      }
+      if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+        return TNum.Zero;
+      }
+
+      // Consider regular case (-1,1)
+      return TNum.Acos(dot);
     }
 
-    // /// <summary>
-    // /// Perform the projection to the plane with basis (u1,u2) by the formula:
-    // /// res = (this * u1) * u1 + (this * u2) * u2
-    // /// </summary>
-    // /// <param name="u1">The first basis vector of the plane.</param>
-    // /// <param name="u2">The second basis vector of the plane.</param>
-    // /// <returns>The projected vector.</returns>
-    // public Vector ProjectToPlane(Vector u1, Vector u2) {
-    //   Debug.Assert
-    //     (
-    //      u1.SpaceDim == SpaceDim && u2.SpaceDim == SpaceDim
-    //    , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.SpaceDim} and {u2.SpaceDim}."
-    //     );
-    //
-    //   TNum fst = Tools.Zero;
-    //   TNum snd = Tools.Zero;
-    //   for (int i = 0; i < SpaceDim; i++) {
-    //     fst += _v[i] * u1[i];
-    //     snd += _v[i] * u2[i];
-    //   }
-    //
-    //   TNum[] res = new TNum[SpaceDim];
-    //   for (int i = 0; i < SpaceDim; i++) {
-    //     res[i] = fst * u1[i] + snd * u2[i];
-    //   }
-    //
-    //   return new Vector(res, false);
-    // }
+    /// <summary>
+    /// Perform the projection to a 2D affine space with the origin o and basis (u1,u2) by the formula:
+    /// res = (this * u1) * u1 + (this * u2) * u2
+    /// </summary>
+    /// <param name="u1">The first basis vector of the plane.</param>
+    /// <param name="u2">The second basis vector of the plane.</param>
+    /// <returns>The projected vector.</returns>
+    public Vector ProjectTo2DAffineSpace(Vector o, Vector u1, Vector u2) {
+      Debug.Assert
+        (
+         u1.SpaceDim == SpaceDim && u2.SpaceDim == SpaceDim
+       , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.SpaceDim} and {u2.SpaceDim}."
+        );
+    
+      TNum fst = Tools.Zero;
+      TNum snd = Tools.Zero;
+      for (int i = 0; i < SpaceDim; i++) {
+        TNum vi = _v[i] - o[i];
+        fst += vi * u1[i];
+        snd += vi * u2[i];
+      }
+    
+      TNum[] res = new TNum[SpaceDim];
+      for (int i = 0; i < SpaceDim; i++) {
+        res[i] = fst * u1[i] + snd * u2[i];
+      }
+    
+      return new Vector(res, false);
+    }
 
     /// <summary>
     /// Expands the vector to a higher dimension.
@@ -421,7 +433,7 @@ public partial class Geometry<TNum, TConv>
     public Vector(Vector2D v) : this(new TNum[] { v[0], v[1] }, false) { }
 #endregion
 
-#region Fabrics
+#region Factories
     /// <summary>
     /// Makes the zero vector of given dimension.
     /// </summary>
@@ -634,6 +646,7 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
+#region Static methods
     /// <summary>
     /// Parallelity of vectors
     /// </summary>
@@ -725,8 +738,7 @@ public partial class Geometry<TNum, TConv>
 
       return result;
     }
-
-
   }
+#endregion
 
 }

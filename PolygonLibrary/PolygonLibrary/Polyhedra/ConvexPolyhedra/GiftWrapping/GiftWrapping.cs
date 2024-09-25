@@ -438,14 +438,11 @@ public partial class Geometry<TNum, TConv>
         SubPoint? sStar  = null;
         TNum      minCos = Tools.Two;
 
-        LinearBasis lb = new LinearBasis(new Vector[] { v, face.Normal }, false);
-
-        // ищем вектор r такой, что в плоскости (v,N) угол между ним и v наибольший, где N нормаль к текущей плоскости
+        // ищем точку s, не лежащую в ребре, такую, что ее проекция на плоскость (v,N) дает угол, наибольший в сравнении с другими точками (дает наименьший косинус)
         foreach (SubPoint s in S) {
-          Vector u = lb.GetProjectionToSubSpace(s - edgeAffBasis.Origin);
-          // Vector u = (s - edgeAffBasis.Origin).ProjectToPlane(v, face.Normal);
-          if (!u.IsZero) {
-            TNum cos = v * u / u.Length;
+          if (!edgeAffBasis.Contains(s)) {
+            Vector u = s.ProjectTo2DAffineSpace(edgeAffBasis.Origin, v, face.Normal);
+            TNum cos = Vector.CosAngle(v, u);
 
             if (cos < minCos) {
               minCos = cos;
