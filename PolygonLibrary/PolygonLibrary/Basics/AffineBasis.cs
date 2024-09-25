@@ -65,9 +65,7 @@ public partial class Geometry<TNum, TConv>
     public bool AddVector(Vector v, bool orthogonalize = true) {
       Debug.Assert(Origin.SpaceDim == v.SpaceDim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
 
-      bool isAdded = LinBasis.AddVector(v, orthogonalize);
-
-      return isAdded;
+      return LinBasis.AddVector(v, orthogonalize);
     }
 
     /// <summary>
@@ -88,36 +86,31 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    // /// <summary>
-    // /// Translates given point from the current coordinate system to the original one.
-    // /// </summary>
-    // /// <param name="point">The point should be written in terms of this affine basis.</param>
-    // /// <returns>The point expressed in terms of the original affine system.</returns>
-    // public Vector TranslateToOriginal(Vector point) {
-    //   Debug.Assert
-    //     (
-    //      SubSpaceDim == point.SpaceDim
-    //    , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
-    //     );
-    //
-    //   Vector np = new Vector(Origin);
-    //   for (int i = 0; i < SubSpaceDim; i++) {
-    //     np += point[i] * this[i];    // А может переписать на явное вычисление? А то опять тратимся на создание промежуточных векторов
-    //   }
-    //
-    //   return np;
-    // }
-    //
-    // /// <summary>
-    // /// Translates given set of points from the current coordinate system to the original one.
-    // /// </summary>
-    // /// <param name="Ps">Points should be written in terms of this affine basis.</param>
-    // /// <returns>Points expressed in terms of the original affine system.</returns>
-    // public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps) {
-    //   foreach (Vector point in Ps) {
-    //     yield return TranslateToOriginal(point);
-    //   }
-    // }
+    /// <summary>
+    /// Translates given point from the current coordinate system to the original one.
+    /// </summary>
+    /// <param name="point">The point should be written in terms of this affine basis.</param>
+    /// <returns>The point expressed in terms of the original affine system.</returns>
+    public Vector TranslateToOriginal(Vector point) {
+      Debug.Assert
+        (
+         SubSpaceDim == point.SpaceDim
+       , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
+        );
+    
+      return LinBasis.Basis * point + Origin; // !!! Создается промежуточный вектор
+    }
+    
+    /// <summary>
+    /// Translates given set of points from the current coordinate system to the original one.
+    /// </summary>
+    /// <param name="Ps">Points should be written in terms of this affine basis.</param>
+    /// <returns>Points expressed in terms of the original affine system.</returns>
+    public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps) {
+      foreach (Vector point in Ps) {
+        yield return TranslateToOriginal(point);
+      }
+    }
 
     /// <summary>
     /// Checks if a point belongs to the affine subspace defined by the basis.
@@ -125,7 +118,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
     public bool Contains(Vector p) {
-      useContains++;
+      useContains++; // TODO: удалить, ибо только для статистики
 
       return LinBasis.Contains(p - Origin);
     }
@@ -140,7 +133,7 @@ public partial class Geometry<TNum, TConv>
       Origin   = new Vector(vecDim);
       LinBasis = new LinearBasis(vecDim, vecDim);
 
-      createAff++;
+      createAff++; // TODO: удалить, ибо только для статистики
     }
 
     /// <summary>
@@ -159,10 +152,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis) {
+    public AffineBasis(Vector o, LinearBasis lBasis) { // TODO: флаг копирования?
       Origin   = o;
       LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
-
 
 #if DEBUG
       CheckCorrectness(this);
@@ -180,7 +172,6 @@ public partial class Geometry<TNum, TConv>
 
       Origin   = Ps.First();
       LinBasis = new LinearBasis(Ps.Select(v => v - Origin));
-
 
 #if DEBUG
       CheckCorrectness(this);
@@ -203,7 +194,7 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Fabrics
+#region Factories
     /// <summary>
     /// Produce the new affine basis with the specified origin point and specified vectors.
     /// </summary>

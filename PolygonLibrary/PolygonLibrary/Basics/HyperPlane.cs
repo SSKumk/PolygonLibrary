@@ -34,8 +34,9 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_affBasis is null) {
-            Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Affine basis is null. Can't construct the Normal.");
+            Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Normal is null. Can't construct an affine basis of a hyperplane.");
 
+            // TODO: посмотреть и написать что-то более разумное без промежуточных объектов - брать подматрицу Q как базис пространства
             LinearBasis normalBasis = new LinearBasis(Normal);
             (Matrix Q, _) = QRDecomposition.ByReflection
               (normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
@@ -89,7 +90,7 @@ public partial class Geometry<TNum, TConv>
     public TNum ConstantTerm {
       get
         {
-          _constantTerm ??= Normal * new Vector(Origin);
+          _constantTerm ??= Normal * Origin;
 
           return _constantTerm.Value;
         }
@@ -104,11 +105,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="origin">The point through which the hyperplane passes.</param>
-    public HyperPlane(Vector normal, Vector origin) {
+    public HyperPlane(Vector normal, Vector origin) {  // TODO: Флаг, копировать ли?
       Origin      = origin;
       _normal     = normal.Normalize();
       SubSpaceDim = Origin.SpaceDim - 1;
-
 
 #if DEBUG
       CheckCorrectness(this);
@@ -121,12 +121,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="normal">The normal vector to the hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
     public HyperPlane(Vector normal, TNum constant) {
-      Origin      = new Vector(normal * constant);
+      Origin      = normal * constant;
       SubSpaceDim = normal.SpaceDim - 1;
       TNum lengthN = normal.Length;
       _normal       = normal / lengthN;
       _constantTerm = constant / lengthN;
-
 
 #if DEBUG
       CheckCorrectness(this);
@@ -281,7 +280,7 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Fabrics
+#region Factories
     /// <summary>
     /// Makes the hyper plane which xy parallel and goes throw point (0,0,z).
     /// </summary>

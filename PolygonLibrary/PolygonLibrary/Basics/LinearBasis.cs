@@ -63,7 +63,15 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The matrix that stores the basis vectors in its columns.
     /// </summary>
-    public Matrix Basis => _Basis ?? new Matrix(SpaceDim, 1);
+    public Matrix Basis {
+      get {
+        if (_Basis is null) { 
+          throw new ArgumentException("Accessing empty basis!"); 
+        } else { 
+          return _Basis; 
+        }
+      }
+    }
 
     /// <summary>
     /// The projection matrix calculated as the product of the basis matrix and its transpose.
@@ -231,6 +239,7 @@ public partial class Geometry<TNum, TConv>
        , "LinearBasis.ProjectVectorToSubSpace: The dimension of the basis vectors should be equal to the dimension of the given vector."
         );
 
+      // TODO: сделать метод в классе матрицы умножения транспонированной матрицы на вектор
       TNum[] proj = new TNum[SubSpaceDim];
       for (int col = 0; col < SubSpaceDim; col++) {
         proj[col] = Basis.MultiplyColumnByVector(col, v);
