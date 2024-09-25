@@ -120,6 +120,7 @@ public partial class Geometry<TNum, TConv>
     public bool Contains(Vector p) {
       useContains++; // TODO: удалить, ибо только для статистики
 
+      // TODO: Написать матричный метод MultiplyRowByDifferenceOf2Vectors ? Насколько ускорит? 
       return LinBasis.Contains(p - Origin);
     }
 #endregion

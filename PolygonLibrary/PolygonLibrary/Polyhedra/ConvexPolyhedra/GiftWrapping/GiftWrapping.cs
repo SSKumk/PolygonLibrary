@@ -454,6 +454,7 @@ public partial class Geometry<TNum, TConv>
 
         Debug.Assert(r is not null, "GiftWrapping.RollOverEdge: A new vector 'r' is null!");
 
+        // TODO: А точно нужен новый базис?
         AffineBasis newF_aBasis = new AffineBasis(edgeAffBasis);
         newF_aBasis.AddVector(r);
 
