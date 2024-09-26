@@ -7,7 +7,7 @@ public partial class Geometry<TNum, TConv>
 
   /// <summary>
   /// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.
-  /// N * x = C, N - outward normal vector, C - constant term.
+  /// N * x = C, N - the outward normal vector and C is the constant term.
   /// </summary>
   public class HyperPlane {
 
@@ -34,21 +34,14 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_affBasis is null) {
-            Debug.Assert(_normal is not null, "HyperPlane.AffBasis: Normal is null. Can't construct an affine basis of a hyperplane.");
+            Debug.Assert
+              (_normal is not null, "HyperPlane.AffBasis: Normal is null. Can't construct an affine basis of a hyperplane.");
 
-            // TODO: посмотреть и написать что-то более разумное без промежуточных объектов - брать подматрицу Q как базис пространства
-            LinearBasis normalBasis = new LinearBasis(Normal);
-            (Matrix Q, _) = QRDecomposition.ByReflection
-              (normalBasis.Basis!); // span([1, SpaceDim - 1]) orthogonal to [0] = Normal
+            _affBasis = new AffineBasis(Origin, new LinearBasis(Normal).FindOrthogonalComplement()!, false);
 
-            LinearBasis lb = new LinearBasis(Normal.SpaceDim, 0);
-            for (int i = 1; i < SpaceDim; i++) {
-              lb.AddVector(Q.TakeVector(i), false);
-            }
-
-            _affBasis = new AffineBasis(Origin, lb);
-
+#if DEBUG
             CheckCorrectness(this);
+#endif
           }
 
           return _affBasis;
@@ -58,7 +51,7 @@ public partial class Geometry<TNum, TConv>
     private AffineBasis? _affBasis = null;
 
     /// <summary>
-    /// The normal vector to the hyperplane.
+    /// The outward normal vector to the hyperplane.
     /// </summary>
     public Vector Normal {
       get
@@ -68,11 +61,6 @@ public partial class Geometry<TNum, TConv>
 
             _normal = AffBasis.LinBasis.FindOrthonormalVector();
 
-            Debug.Assert
-              (
-               _normal is not null
-             , "HyperPlane: Computation of the normal on the basis of the affine basis of the plane gives null vector reference!"
-              );
 #if DEBUG
             CheckCorrectness(this);
 #endif
@@ -81,8 +69,6 @@ public partial class Geometry<TNum, TConv>
           return _normal;
         }
     }
-
-    private Vector? _normal = null;
 
     /// <summary>
     /// The constant term in the equation of the hyperplane.
@@ -96,18 +82,20 @@ public partial class Geometry<TNum, TConv>
         }
     }
 
-    private TNum? _constantTerm = null;
+    private Vector? _normal       = null;
+    private TNum?   _constantTerm = null;
 #endregion
 
 #region Constructors
     /// <summary>
-    /// Constructs a hyperplane from a normal vector and a given point.
+    /// Constructs a hyperplane from the normal vector and the given point.
     /// </summary>
-    /// <param name="normal">The normal vector to the hyperplane.</param>
-    /// <param name="origin">The point through which the hyperplane passes.</param>
-    public HyperPlane(Vector normal, Vector origin) {  // TODO: Флаг, копировать ли?
+    /// <param name="normal">The normal vector to a hyperplane.</param>
+    /// <param name="origin">The point through which a hyperplane passes.</param>
+    /// <param name="needNormalize">Whether the normal vector should be normalized.</param>
+    public HyperPlane(Vector normal, Vector origin, bool needNormalize) {
+      _normal     = needNormalize ? normal.Normalize() : normal;
       Origin      = origin;
-      _normal     = normal.Normalize();
       SubSpaceDim = Origin.SpaceDim - 1;
 
 #if DEBUG
@@ -116,9 +104,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a hyperplane from a normal vector and a constant term.
+    /// Constructs a hyperplane from the normal vector and the constant term.
     /// </summary>
-    /// <param name="normal">The normal vector to the hyperplane.</param>
+    /// <param name="normal">The normal vector to a hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
     public HyperPlane(Vector normal, TNum constant) {
       Origin      = normal * constant;
@@ -133,21 +121,22 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a hyperplane from a given affine basis.
+    /// Constructs a hyperplane from the given affine basis.
     /// </summary>
-    /// <param name="affBasis">The affine basis that defines the hyperplane.</param>
-    /// <param name="toOrient">A pair to orient the HyperPlane explicitly.
+    /// <param name="affBasis">The affine basis that defines a hyperplane.</param>
+    /// <param name="needCopy">Whether the affine basis should be copied.</param>
+    /// <param name="toOrient">The pair to orient a hyperplane explicitly.
     /// If not null, the point part of the pair should belong to the positive semi-space
-    /// if the bool part of the pair is true, and to the negative semi-space otherwise.</param>
-    public HyperPlane(AffineBasis affBasis, (Vector point, bool isPositive)? toOrient = null) {
+    /// if the bool part of the pair is <c>true</c>, and to the negative semi-space otherwise.</param>
+    public HyperPlane(AffineBasis affBasis, bool needCopy, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
          affBasis.SubSpaceDim == affBasis.Origin.SpaceDim - 1
        , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.SpaceDim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
         );
 
+      _affBasis   = needCopy ? new AffineBasis(affBasis) : affBasis;
       Origin      = affBasis.Origin;
-      _affBasis   = affBasis;
       SubSpaceDim = Origin.SpaceDim - 1;
 
       if (toOrient is not null) {
@@ -170,12 +159,12 @@ public partial class Geometry<TNum, TConv>
     /// if the bool part of the pair is true, and to the negative semi-space otherwise.
     /// </param>
     public HyperPlane(IEnumerable<Vector> inPlane, (Vector point, bool isPositive)? toOrient = null) : this
-      (new AffineBasis(inPlane), toOrient) { }
+      (new AffineBasis(inPlane), false, toOrient) { }
 #endregion
 
 #region Functions
     /// <summary>
-    /// Method to orient normal of the plane.
+    /// Method to orient normal.
     /// </summary>
     /// <param name="point">Vector should belong to the semi-space.</param>
     /// <param name="isPositive">If the bool is <c>true</c> than point is in positive semi-space, in the negative semi-space otherwise.</param>
@@ -261,11 +250,8 @@ public partial class Geometry<TNum, TConv>
     /// 0 if all points lie in the plane
     /// -1 if all points lie in the opposite direction of the normal vector
     /// int.MaxValue if bool equals to False</returns>
-    /// <remarks>If there are no points in the swarm then (true, int.MaxValue) returns.</remarks>
     public (bool atOneSide, int where) AllAtOneSide(IEnumerable<Vector> Swarm) {
-      if (!Swarm.Any()) {
-        return (true, int.MaxValue);
-      }
+      Debug.Assert(Swarm.Any(), "HyperPlane.AllAtOneSide: The 'Swarm' is empty. The method requires a non-empty collection.");
 
       IEnumerable<int> temp = Swarm.Select(p => Tools.CMP(Eval(p))).Where(k => k != 0);
 
@@ -286,7 +272,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="z">The z coordinate of the oz axis at which the plane crosses it.</param>
     /// <returns>The hyper plane which xy parallel and goes throw point (0,0,z).</returns>
-    public static HyperPlane Make3D_xyParallel(TNum z) => new(Vector.MakeOrth(3, 3), z * Vector.MakeOrth(3, 3));
+    public static HyperPlane Make3D_xyParallel(TNum z) => new(Vector.MakeOrth(3, 3), z * Vector.MakeOrth(3, 3), false);
 #endregion
 
 #region Overrides
@@ -304,8 +290,10 @@ public partial class Geometry<TNum, TConv>
       return Tools.EQ(this.ConstantTerm, other.ConstantTerm) && this.Normal == other.Normal;
     }
 
-
-    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(SubSpaceDim, SpaceDim);
+    /// <summary>
+    /// Throws an <see cref="InvalidOperationException"/> because hash code generation is not supported for hyperplanes.
+    /// </summary>
+    public override int GetHashCode() => throw new InvalidOperationException();
 #endregion
 
 

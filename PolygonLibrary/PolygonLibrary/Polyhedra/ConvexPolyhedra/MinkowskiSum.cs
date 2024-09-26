@@ -51,7 +51,7 @@ public partial class Geometry<TNum, TConv>
       // Начало координат складываю как точки. А вектора поочерёдно добавляем в базис (если можем).
 
       LinearBasis linBasisPQ = new LinearBasis(P.FLrep.Top.AffBasis.LinBasis, Q.FLrep.Top.AffBasis.LinBasis);
-      AffineBasis affinePQ   = new AffineBasis(P.FLrep.Top.AffBasis.Origin + Q.FLrep.Top.AffBasis.Origin, linBasisPQ);
+      AffineBasis affinePQ   = new AffineBasis(P.FLrep.Top.AffBasis.Origin + Q.FLrep.Top.AffBasis.Origin, linBasisPQ, false);
       int         dim        = affinePQ.SubSpaceDim;
 
       if (dim == 0) { // Случай точки обработаем отдельно
@@ -84,7 +84,7 @@ public partial class Geometry<TNum, TConv>
 
       // Заполняем максимальный элемент
       // Нас пока не волнует, что вершины не те, что нам нужны (потом это исправим)
-      Vector innerPQ = P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint;
+      Vector    innerPQ = P.FLrep.Top.InnerPoint + Q.FLrep.Top.InnerPoint;
       FLNodeSum PQ      = new FLNodeSum(innerPQ, affinePQ);
       zTo_xy.Add(PQ, (P.FLrep.Top, Q.FLrep.Top));
       xyToz.Add((P.FLrep.Top, Q.FLrep.Top), PQ);
@@ -113,7 +113,7 @@ public partial class Geometry<TNum, TConv>
 
               // Берём очередного кандидата.
               LinearBasis candLinBasis = new LinearBasis(xi.AffBasis.LinBasis, yj.AffBasis.LinBasis);
-              AffineBasis candAffBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin, candLinBasis);
+              AffineBasis candAffBasis = new AffineBasis(xi.AffBasis.Origin + yj.AffBasis.Origin, candLinBasis, false);
 
               // 0) dim(xi (+) yj) == dim(z) - 1
               if (candAffBasis.SubSpaceDim != d) { continue; }
@@ -133,7 +133,7 @@ public partial class Geometry<TNum, TConv>
               // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
 
               // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
-              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candAffBasis, zSpace));
+              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candAffBasis, zSpace), false);
 
               // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость.
               if (A.Contains(innerInAffine_z)) { continue; }
@@ -144,9 +144,9 @@ public partial class Geometry<TNum, TConv>
               A.OrientNormal(innerInAffine_z, false);
 
               // Согласно лемме 3 берём надграни xi и yj, которые лежат в подрешётках x и y соответственно
-              SortedSet<FLNode>   xiSuper_clone = new SortedSet<FLNode>(xi.Super);
+              SortedSet<FLNode> xiSuper_clone = new SortedSet<FLNode>(xi.Super);
               xiSuper_clone.IntersectWith(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
-              SortedSet<FLNode>   yjSuper_clone = new SortedSet<FLNode>(yj.Super);
+              SortedSet<FLNode> yjSuper_clone = new SortedSet<FLNode>(yj.Super);
               yjSuper_clone.IntersectWith(y.GetLevelBelowNonStrict(yj.AffBasis.SubSpaceDim + 1));
 
               // IEnumerable<FLNode> xiSuper = xi.Super.Intersect(x.GetLevelBelowNonStrict(xi.AffBasis.SubSpaceDim + 1));
@@ -181,8 +181,8 @@ public partial class Geometry<TNum, TConv>
               // И условие Леммы 3 выполнилось, значит, xi+yj есть валидная d-грань z.
               // Если такого узла ещё не было создано, то создаём его.
 
-              Vector newInner = xi.InnerPoint + yj.InnerPoint;
-              FLNodeSum node = new FLNodeSum(newInner, candAffBasis);
+              Vector    newInner = xi.InnerPoint + yj.InnerPoint;
+              FLNodeSum node     = new FLNodeSum(newInner, candAffBasis);
               FL[d].Add(node); // Добавляем узел в решётку
               // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
               zTo_xy.Add(node, (xi, yj));
@@ -201,7 +201,7 @@ public partial class Geometry<TNum, TConv>
 
       if (onlyHrep) {
         return ConvexPolytop.CreateFromHalfSpaces
-          (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
+          (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, false, (PQ.InnerPoint, false))).ToList());
       }
 
       Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
@@ -230,9 +230,9 @@ public partial class Geometry<TNum, TConv>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
     Vector      newO  = to.ProjectVectorToSubSpace(from.Origin);
-    LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis.ToList()), false);
+    LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis), false);
 
-    return new AffineBasis(newO, newLB);
+    return new AffineBasis(newO, newLB, false);
   }
 
 }

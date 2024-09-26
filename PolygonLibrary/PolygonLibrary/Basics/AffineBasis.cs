@@ -13,10 +13,6 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class AffineBasis : IEnumerable {
 
-    public static ulong createAff = 0;
-
-    public static ulong useContains = 0;
-
 #region Data and Properties
     /// <summary>
     /// Gets the origin point of the affine basis.
@@ -118,9 +114,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="p">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
     public bool Contains(Vector p) {
-      useContains++; // TODO: удалить, ибо только для статистики
-
-      // TODO: Написать матричный метод MultiplyRowByDifferenceOf2Vectors ? Насколько ускорит? 
+      // TODO: Написать матричный метод MultiplyRowByDifferenceOf2Vectors ? Насколько ускорит?
       return LinBasis.Contains(p - Origin);
     }
 #endregion
@@ -133,8 +127,6 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis(int vecDim) {
       Origin   = new Vector(vecDim);
       LinBasis = new LinearBasis(vecDim, vecDim);
-
-      createAff++; // TODO: удалить, ибо только для статистики
     }
 
     /// <summary>
@@ -144,8 +136,6 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis(Vector o) {
       Origin   = o;
       LinBasis = new LinearBasis(o.SpaceDim, 0);
-
-      createAff++;
     }
 
     /// <summary>
@@ -153,14 +143,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis) { // TODO: флаг копирования?
+    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy) { // TODO: флаг копирования?
       Origin   = o;
-      LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
+      if (needCopy) {
+        LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
+      }
+      LinBasis = lBasis;
 
 #if DEBUG
       CheckCorrectness(this);
 #endif
-      createAff++;
     }
 
     /// <summary>
@@ -177,7 +169,6 @@ public partial class Geometry<TNum, TConv>
 #if DEBUG
       CheckCorrectness(this);
 #endif
-      createAff++;
     }
 
     /// <summary>
@@ -191,7 +182,6 @@ public partial class Geometry<TNum, TConv>
 #if DEBUG
       CheckCorrectness(this);
 #endif
-      createAff++;
     }
 #endregion
 
@@ -204,7 +194,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
     /// <returns>The affine basis.</returns>
     public static AffineBasis FromVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      return new AffineBasis(o, new LinearBasis(Vs, orthogonalize));
+      return new AffineBasis(o, new LinearBasis(Vs, orthogonalize), false);
     }
 
     /// <summary>
@@ -214,7 +204,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Ps">The points that lie in affine space.</param>
     /// <returns>The affine basis.</returns>
     public static AffineBasis FromPoints(Vector o, IEnumerable<Vector> Ps) {
-      return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)));
+      return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)), false);
     }
 #endregion
 

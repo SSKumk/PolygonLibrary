@@ -106,7 +106,12 @@ public partial class Geometry<TNum, TConv>
     public Vector FindOrthonormalVector() {
       LinearBasis? oc = FindOrthogonalComplement();
 
-      return oc is null ? Vector.Zero(SpaceDim) : oc[0];
+      if (oc is null) {
+        throw new ArgumentException($"LinearBasis.FindOrthonormalVector: Can not find an orthonormal vector to the linear basis. Found SpaceDim == SubSpaceDim");
+      }
+
+      return oc[0];
+
     }
 
     /// <summary>

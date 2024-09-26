@@ -307,7 +307,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e  = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo norm?
+          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo norm?
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
@@ -349,7 +349,7 @@ public partial class Geometry<TNum, TConv>
           OrientNormal(ref n, origin);
 
 #if DEBUG
-          HyperPlane hpDebug = new HyperPlane(n, origin);
+          HyperPlane hpDebug = new HyperPlane(n, origin, false);
           if (S.All(s => hpDebug.Contains(s))) {
             throw new ArgumentException
               (
@@ -441,8 +441,8 @@ public partial class Geometry<TNum, TConv>
         // ищем точку s, не лежащую в ребре, такую, что ее проекция на плоскость (v,N) дает угол, наибольший в сравнении с другими точками (дает наименьший косинус)
         foreach (SubPoint s in S) {
           if (!edgeAffBasis.Contains(s)) {
-            Vector u = s.ProjectTo2DAffineSpace(edgeAffBasis.Origin, v, face.Normal);
-            TNum cos = Vector.CosAngle(v, u);
+            Vector u   = s.ProjectTo2DAffineSpace(edgeAffBasis.Origin, v, face.Normal);
+            TNum   cos = Vector.CosAngle(v, u);
 
             if (cos < minCos) {
               minCos = cos;
@@ -487,16 +487,14 @@ public partial class Geometry<TNum, TConv>
       /// <param name="planeBasis">The basis of the plane.</param>
       /// <returns>The outer normal vector.</returns>
       private Vector CalcOuterNormal(AffineBasis planeBasis) {
-        HyperPlane hp = new HyperPlane(planeBasis);
-        Vector     n  = hp.Normal;
+        Vector n = planeBasis.LinBasis.FindOrthonormalVector();
         OrientNormal(ref n, planeBasis.Origin);
 
 #if DEBUG
+        HyperPlane hp = new HyperPlane(planeBasis, false);
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
-            (
-             "GiftWrappingMain.CalcOuterNormal: All points from S lies in face! There are no convex hull of full dimension."
-            );
+            ("GiftWrappingMain.CalcOuterNormal: All points from S lies in face! There are no convex hull of full dimension.");
         }
 #endif
 
@@ -512,7 +510,7 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(Tools.EQ(normal.Length, Tools.One), "OrientNormal: normal is not unite!");
 
         foreach (SubPoint s in S) {
-          TNum dot = (s - origin) * normal;
+          TNum dot = Vector.AffMul(origin, s, normal); // (s - origin) * normal;
 
           if (Tools.LT(dot)) {
             break;
@@ -525,12 +523,12 @@ public partial class Geometry<TNum, TConv>
           }
         }
 
-// #if DEBUG
-        HyperPlane hp = new HyperPlane(normal, origin);
+#if DEBUG //todo !важная проверка!
+        HyperPlane hp = new HyperPlane(normal, origin, false);
         if (!S.All(s => hp.ContainsNegativeNonStrict(s))) {
           throw new ArgumentException("GiftWrapping.OrientNormal: The normal does not form a facet!");
         }
-// #endif
+#endif
       }
 #endregion
 
