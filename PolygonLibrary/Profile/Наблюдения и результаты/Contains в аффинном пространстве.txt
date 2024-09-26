@@ -1,0 +1,31 @@
+| Method            | spaceDim | subSpaceDim | Mean     | Error   | StdDev  | Ratio | RatioSD |
+|------------------ |--------- |------------ |---------:|--------:|--------:|------:|--------:|
+| ContainsAff_naive | 3        | 2           | 116.3 ns | 2.26 ns | 2.12 ns |  1.00 |    0.00 |
+| ContainsAff_opt   | 3        | 2           | 102.2 ns | 0.23 ns | 0.21 ns |  0.88 |    0.02 |
+
+
+
+  [Benchmark(Baseline = true)]
+  public void ContainsAff_naive() => _ = ab.LinBasis.Contains(v - ab.Origin);
+
+  [Benchmark]
+  public void ContainsAff_opt() => _ = ab.Contains(v);
+  
+  
+    public bool Contains(Vector v) {
+      Debug.Assert
+        (
+         SpaceDim == v.SpaceDim
+       , $"AffineBasis.Contains: The dimension of the vector must be equal to the dimension of the basis vectors! Found: {v.SpaceDim}"
+        );
+
+      if (IsFullDim) { return true; }
+
+      for (int row = 0; row < SpaceDim; row++) {
+        if (Tools.NE(LinBasis.ProjMatrix.MultiplyRowByDiffOfVectors(row, v, Origin), v[row])) {
+          return false;
+        }
+      }
+
+      return true;
+    }
