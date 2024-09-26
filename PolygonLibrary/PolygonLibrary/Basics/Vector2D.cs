@@ -406,7 +406,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
     public static Vector2D operator /(Vector2D v, TNum a) {
-      Debug.Assert(Tools.EQ(a), $"Vector2D./: Can not divide by zero.");
+      Debug.Assert(Tools.NE(a), $"Vector2D./: Can't divide by zero.");
 
       return new Vector2D(v.x / a, v.y / a);
     }
