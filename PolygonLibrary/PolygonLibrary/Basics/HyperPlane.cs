@@ -93,7 +93,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="normal">The normal vector to a hyperplane.</param>
     /// <param name="origin">The point through which a hyperplane passes.</param>
     /// <param name="needNormalize">Whether the normal vector should be normalized.</param>
-    public HyperPlane(Vector normal, Vector origin, bool needNormalize) {
+    public HyperPlane(Vector normal, Vector origin, bool needNormalize = true) {
       _normal     = needNormalize ? normal.Normalize() : normal;
       Origin      = origin;
       SubSpaceDim = Origin.SpaceDim - 1;

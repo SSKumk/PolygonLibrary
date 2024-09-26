@@ -16,11 +16,11 @@ public class Sandbox {
   [Params(4)]
   public int subSpaceDim;
 
-  public LinearBasis lb;
+  public LinearBasis lb = null!;
 
-  public Vector v;
+  public Vector v = null!;
 
-  public Matrix m;
+  public Matrix m = null!;
 
   [GlobalSetup]
   public void SetUp() {

@@ -17,13 +17,13 @@ class Program {
 
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-    Tools.Eps = 1e-8;
-    string eps = "1e-008";
-    string ftype = "double";
+    // Tools.Eps = 1e-8;
+    // string eps = "1e-008";
+    // string ftype = "double";
 
-    // Tools.Eps = 1e-16;
-    // string eps   = "1e-016";
-    // string ftype = "ddouble";
+    Tools.Eps = 1e-16;
+    string eps   = "1e-016";
+    string ftype = "ddouble";
 
     bool isDouble = ftype == "double";
 

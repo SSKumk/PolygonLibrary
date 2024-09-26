@@ -249,7 +249,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
     } while (!new AffineBasis(simplex).IsFullDim);
     List<Vector> aux = new List<Vector>(simplex);
     aux.RemoveAt(0);
-    Debug.Assert(new HyperPlane(new AffineBasis(aux)).FilterIn(simplex).Count() != simplex.Count);
+    Debug.Assert(new HyperPlane(new AffineBasis(aux), false).FilterIn(simplex).Count() != simplex.Count);
 
     pureSimplex = new List<Vector>(simplex);
 

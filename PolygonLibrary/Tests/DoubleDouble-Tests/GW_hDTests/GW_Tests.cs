@@ -763,6 +763,7 @@ public class GW_Tests {
             , S[4]
             }
          )
+     , false
       );
     var distABDX = S.Select(s => hpABDX.Eval(s));
 

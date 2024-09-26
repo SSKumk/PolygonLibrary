@@ -21,7 +21,7 @@ public class HyperPlaneTests {
     List<Vector> vectors = new List<Vector>() { new Vector(new ddouble[] { 1, 0, 0 }), new Vector(new ddouble[] { 0, 1, 0 }) };
 
     AffineBasis affineBasis = AffineBasis.FromVectors(new Vector(new ddouble[] { 1, 1, 1 }), vectors);
-    HyperPlane  hyperplane  = new HyperPlane(affineBasis);
+    HyperPlane  hyperplane  = new HyperPlane(affineBasis,false);
 
     Assert.That
       (
@@ -40,7 +40,7 @@ public class HyperPlaneTests {
 
     AffineBasis aBasis = AffineBasis.FromVectors(origin, new List<Vector>() { v1, v2 });
 
-    HyperPlane hp = new HyperPlane(aBasis);
+    HyperPlane hp = new HyperPlane(aBasis, false);
 
     Vector p1 = Vector.LinearCombination(v1, 3, v2, 5);
     Vector p2 = Vector.LinearCombination(v1, -3, v2, 5);
@@ -65,7 +65,7 @@ public class HyperPlaneTests {
 
     AffineBasis aBasis = AffineBasis.FromVectors(origin, new Vector[] { e1, e2 });
 
-    HyperPlane hp = new HyperPlane(aBasis);
+    HyperPlane hp = new HyperPlane(aBasis, false);
 
     List<Vector> Swarm = new List<Vector>()
       {

@@ -128,7 +128,7 @@ public partial class Geometry<TNum, TConv>
       get
         {
           _Hrep ??= new List<HyperPlane>
-            (FLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), (FLrep.Top.InnerPoint, false))).ToList());
+            (FLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false))).ToList());
           Debug.Assert(_Hrep is not null, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
 
           return _Hrep;
