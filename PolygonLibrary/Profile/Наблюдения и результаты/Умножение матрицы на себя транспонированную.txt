@@ -1,0 +1,81 @@
+public Matrix MultiplyByTranspose_OptInd(Matrix m) {
+    ddouble[] res = new ddouble[m.Rows * m.Rows];
+    for (int row = 0; row < m.Rows; row++) {
+      int s = row * m.Cols;
+      int t = row * m.Cols;
+      for (int j = row; j < m.Rows; j++) {
+        ddouble sum = Tools.Zero;
+        for (int k = 0; k < m.Cols; k++) {
+          sum += m[s] * m[t];
+          s++;
+          t++;
+        }
+        res[row * m.Rows + j] = sum;
+        if (row != j) { res[j * m.Rows + row] = sum; }
+        s -= m.Cols;
+      }
+    }
+
+    return new Matrix(m.Rows, m.Rows, res, false);
+  }
+
+
+  public Matrix MultiplyByTranspose_OptLin(Matrix m) {
+    ddouble[] res = new ddouble[m.Rows * m.Rows];
+
+    int resInd  = 0; // заполняет верхний треугольник матрицы результата
+    int resInd2 = 0; // заполняет нижний треугольник матрицы результата
+    int s       = 0; // идёт в исходной матрице по строкам
+    int t       = 0; // идёт в транспонированной матрице по столбцам (реально по строкам исходной)
+    for (int row = 0; row < m.Rows; row++, resInd += row, resInd2 = resInd, s += m.Cols, t = s) {
+      for (int col = row; col < m.Rows; col++, resInd++, resInd2 += m.Rows, s -= m.Cols) {
+        ddouble sum = Tools.Zero;
+        for (int k = 0; k < m.Cols; k++) {
+          sum += m[s] * m[t];
+          s++;
+          t++;
+        }
+        res[resInd]  = sum;
+        res[resInd2] = sum;
+      }
+    }
+
+    return new Matrix(m.Rows, m.Rows, res, false);
+  }
+
+      [Benchmark]
+  public void MultiplyByTranspose() => _ = m * m.Transpose();
+
+  [Benchmark]
+  public void MultiplyByTranspose_OptInd() => MultiplyByTranspose_OptInd(m);
+
+  [Benchmark]
+  public void MultiplyByTranspose_OptLin() => MultiplyByTranspose_OptLin(m);
+
+
+
+| Method                     | spaceDim | subSpaceDim | Mean     | Error    | StdDev   |
+|--------------------------- |--------- |------------ |---------:|---------:|---------:|
+| MultiplyByTranspose        | 3        | 1           | 237.7 ns |  3.23 ns |  2.86 ns |
+| MultiplyByTranspose_OptInd | 3        | 1           | 127.9 ns |  1.17 ns |  0.98 ns |
+| MultiplyByTranspose_OptLin | 3        | 1           | 122.5 ns |  1.15 ns |  0.96 ns |
+| MultiplyByTranspose        | 3        | 2           | 372.0 ns |  5.78 ns |  5.40 ns |
+| MultiplyByTranspose_OptInd | 3        | 2           | 212.6 ns |  2.05 ns |  1.82 ns |
+| MultiplyByTranspose_OptLin | 3        | 2           | 208.2 ns |  0.75 ns |  0.58 ns |
+| MultiplyByTranspose        | 3        | 3           | 529.5 ns | 10.56 ns | 15.14 ns |
+| MultiplyByTranspose_OptInd | 3        | 3           | 300.1 ns |  2.98 ns |  2.64 ns |
+| MultiplyByTranspose_OptLin | 3        | 3           | 302.5 ns |  5.87 ns |  7.21 ns |
+| MultiplyByTranspose        | 4        | 1           | 384.3 ns |  1.47 ns |  1.30 ns |
+| MultiplyByTranspose_OptInd | 4        | 1           | 201.0 ns |  2.47 ns |  2.19 ns |
+| MultiplyByTranspose_OptLin | 4        | 1           | 199.3 ns |  2.46 ns |  2.30 ns |
+| MultiplyByTranspose        | 4        | 2           | 627.1 ns |  2.91 ns |  2.43 ns |
+| MultiplyByTranspose_OptInd | 4        | 2           | 348.2 ns |  3.51 ns |  2.93 ns |
+| MultiplyByTranspose_OptLin | 4        | 2           | 342.1 ns |  4.78 ns |  3.99 ns |
+| MultiplyByTranspose        | 4        | 3           | 899.9 ns |  6.18 ns |  4.83 ns |
+| MultiplyByTranspose_OptInd | 4        | 3           | 492.1 ns |  1.39 ns |  1.23 ns |
+| MultiplyByTranspose_OptLin | 4        | 3           | 485.8 ns |  2.82 ns |  2.50 ns |
+
+| Method                     | spaceDim | subSpaceDim | Mean     | Error     | StdDev    |
+|--------------------------- |--------- |------------ |---------:|----------:|----------:|
+| MultiplyByTranspose_OptInd | 10       | 4           | 3.529 us | 0.0666 us | 0.0713 us |
+| MultiplyByTranspose_OptLin | 10       | 4           | 3.407 us | 0.0156 us | 0.0138 us |
