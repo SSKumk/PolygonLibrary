@@ -206,54 +206,11 @@ public partial class Geometry<TNum, TConv>
     /// </returns>
     public Vector NormalizeZero() => IsZero ? Zero(SpaceDim) : Normalize();
 
-
-    /// <summary>
-    /// The cosine of angle from the first vector to the another one. 
-    /// It uses the TNum.Acos to calculate the angle
-    /// </summary>
-    /// <param name="v1">The first vector</param>
-    /// <param name="v2">The second vector</param>
-    /// <returns>The cosine</returns>
-    public static TNum CosAngle(Vector v1, Vector v2) {
-      if (v1.IsZero || v2.IsZero) {
-        return Tools.One;
-      }
-      else {
-        return (v1 * v2) / v1.Length / v2.Length;
-      }
-    }
-
-    /// <summary>
-    /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
-    /// It uses the TNum.Acos to calculate the angle.
-    /// </summary>
-    /// <param name="v1">The first vector</param>
-    /// <param name="v2">The second vector</param>
-    /// <returns>The angle.</returns>
-    public static TNum Angle(Vector v1, Vector v2) {
-      TNum dot = Vector.CosAngle(v1, v2);
-      Debug.Assert
-        (
-         Tools.GE(dot, Tools.MinusOne) && !Tools.LE(dot, Tools.One)
-       , $"Vector.Angle: The dot product of v1 = {v1} and v2 = {v2} is beyond [-1-{Tools.Eps}, 1+{Tools.Eps}]! Found value: {dot}"
-        );
-
-      // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
-      if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
-        return TNum.Pi;
-      }
-      if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
-        return TNum.Zero;
-      }
-
-      // Consider regular case (-1,1)
-      return TNum.Acos(dot);
-    }
-
     /// <summary>
     /// Perform the projection to a 2D affine space with the origin o and basis (u1,u2) by the formula:
-    /// res = (this * u1) * u1 + (this * u2) * u2
+    ///<c>res = (this * u1) * u1 + (this * u2) * u2</c>
     /// </summary>
+    /// <param name="o">The origin of the affine space.</param>
     /// <param name="u1">The first basis vector of the plane.</param>
     /// <param name="u2">The second basis vector of the plane.</param>
     /// <returns>The projected vector.</returns>
@@ -303,6 +260,49 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions related to Vectors
     /// <summary>
+    /// The cosine of angle from the first vector to the another one.
+    /// It uses the TNum.Acos to calculate the angle
+    /// </summary>
+    /// <param name="v1">The first vector</param>
+    /// <param name="v2">The second vector</param>
+    /// <returns>The cosine</returns>
+    public static TNum CosAngle(Vector v1, Vector v2) {
+      if (v1.IsZero || v2.IsZero) {
+        return Tools.One;
+      }
+      else {
+        return (v1 * v2) / v1.Length / v2.Length;
+      }
+    }
+
+    /// <summary>
+    /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
+    /// It uses the TNum.Acos to calculate the angle.
+    /// </summary>
+    /// <param name="v1">The first vector</param>
+    /// <param name="v2">The second vector</param>
+    /// <returns>The angle.</returns>
+    public static TNum Angle(Vector v1, Vector v2) {
+      TNum dot = Vector.CosAngle(v1, v2);
+      Debug.Assert
+        (
+         Tools.GE(dot, Tools.MinusOne) && !Tools.LE(dot, Tools.One)
+       , $"Vector.Angle: The dot product of v1 = {v1} and v2 = {v2} is beyond [-1-{Tools.Eps}, 1+{Tools.Eps}]! Found value: {dot}"
+        );
+
+      // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
+      if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
+        return TNum.Pi;
+      }
+      if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+        return TNum.Zero;
+      }
+
+      // Consider regular case (-1,1)
+      return TNum.Acos(dot);
+    }
+
+    /// <summary>
     /// Computes the outer product of the current vector and the given vector.
     /// </summary>
     /// <param name="v">The vector to compute the outer product with.</param>
@@ -348,7 +348,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector factor.</param>
     /// <param name="v2">The second vector factor.</param>
     /// <returns>The product</returns>
-    public static TNum AffMul(Vector origin, Vector v1, Vector v2) {
+    public static TNum AffMul(Vector v1, Vector origin, Vector v2) {
       Debug.Assert
         (
          v1.SpaceDim == v2.SpaceDim
@@ -359,10 +359,27 @@ public partial class Geometry<TNum, TConv>
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
-        res += (origin._v[i] - v1._v[i]) * v2._v[i];
+        res += (v1._v[i] - origin._v[i]) * v2._v[i];
       }
 
       return res;
+    }
+
+    /// <summary>
+    /// Multiplies the first vector by a scalar and adds the second vector.
+    /// </summary>
+    /// <param name="v1">The vector to be multiplied by the scalar.</param>
+    /// <param name="a">The scalar to multiply the first vector.</param>
+    /// <param name="v2">The vector to be added.</param>
+    /// <returns>A new vector as the result of the multiplication and addition.</returns>
+    public static Vector MulByNumAndAdd(Vector v1, TNum a, Vector v2) {
+      TNum[] res = new TNum[v1.SpaceDim];
+
+      for (int i = 0; i < res.Length; i++) {
+        res[i] = v1._v[i] * a + v2._v[i];
+      }
+
+      return new Vector(res, false);
     }
 #endregion
 
@@ -645,7 +662,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
     public static Vector operator /(Vector v, TNum a) {
-      Debug.Assert(Tools.EQ(a), $"Vector./: Can not divide by zero.");
+      Debug.Assert(Tools.NE(a), $"Vector./: Can't divide by zero.");
 
       int    d  = v.SpaceDim, i;
       TNum[] nv = new TNum[d];
