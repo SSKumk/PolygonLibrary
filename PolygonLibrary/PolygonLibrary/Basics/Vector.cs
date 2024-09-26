@@ -214,11 +214,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
     /// <returns>The cosine</returns>
-    public static TNum CosAngle(Vector v1, Vector v2)
-    {
+    public static TNum CosAngle(Vector v1, Vector v2) {
       if (v1.IsZero || v2.IsZero) {
         return Tools.One;
-      } else {
+      }
+      else {
         return (v1 * v2) / v1.Length / v2.Length;
       }
     }
@@ -262,7 +262,7 @@ public partial class Geometry<TNum, TConv>
          u1.SpaceDim == SpaceDim && u2.SpaceDim == SpaceDim
        , $"Vector.ProjectToPlane: Cannot compute a dot production of two vectors of different dimensions. Found {u1.SpaceDim} and {u2.SpaceDim}."
         );
-    
+
       TNum fst = Tools.Zero;
       TNum snd = Tools.Zero;
       for (int i = 0; i < SpaceDim; i++) {
@@ -270,12 +270,12 @@ public partial class Geometry<TNum, TConv>
         fst += vi * u1[i];
         snd += vi * u2[i];
       }
-    
+
       TNum[] res = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
         res[i] = fst * u1[i] + snd * u2[i];
       }
-    
+
       return new Vector(res, false);
     }
 
@@ -310,7 +310,7 @@ public partial class Geometry<TNum, TConv>
       int rows = SpaceDim, cols = v.SpaceDim;
 
       TNum[] result = new TNum[rows * cols];
-      int k = 0;
+      int    k      = 0;
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
           result[k] = _v[i] * v._v[j];
@@ -337,6 +337,31 @@ public partial class Geometry<TNum, TConv>
       Array.Copy(_v, startIndex, subElements, 0, length);
 
       return new Vector(subElements, false);
+    }
+
+
+    /// <summary>
+    /// Affine dot product. (v1 - origin) * v2.
+    /// </summary>
+    /// <param name="origin">The origin of the affine space.</param>
+    /// <param name="v1">The first vector factor.</param>
+    /// <param name="v2">The second vector factor.</param>
+    /// <returns>The product</returns>
+    public static TNum AffMul(Vector origin, Vector v1, Vector v2) {
+      Debug.Assert
+        (
+         v1.SpaceDim == v2.SpaceDim
+       , $"Vector.AffMul: Cannot compute a dot production of two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
+        );
+
+      int  d   = v1.SpaceDim, i;
+      TNum res = Tools.Zero;
+
+      for (i = 0; i < d; i++) {
+        res += (origin._v[i] - v1._v[i]) * v2._v[i];
+      }
+
+      return res;
     }
 #endregion
 
@@ -415,9 +440,7 @@ public partial class Geometry<TNum, TConv>
     /// Indicates whether a copy of the array should be made.
     /// If <c>true</c>, a copy of the array is created; otherwise, the original array is used directly.
     /// </param>
-    internal Vector(TNum[] nv, TNum vlen, bool needCopy = true) : this(nv, needCopy) {
-      _length = vlen;
-    }
+    internal Vector(TNum[] nv, TNum vlen, bool needCopy = true) : this(nv, needCopy) { _length = vlen; }
 
     /// <summary>
     /// Copying constructor.
@@ -544,7 +567,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v2">The second vector summand.</param>
     /// <returns>The sum</returns>
     public static Vector operator +(Vector v1, Vector v2) {
-      Debug.Assert(v1.SpaceDim == v2.SpaceDim, $"Vector.+: Can not add two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
+      Debug.Assert
+        (
+         v1.SpaceDim == v2.SpaceDim
+       , $"Vector.+: Can not add two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
+        );
 
       int    d  = v1.SpaceDim, i;
       TNum[] nv = new TNum[d];
@@ -564,7 +591,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The difference</returns>
     public static Vector operator -(Vector v1, Vector v2) {
       Debug.Assert
-        (v1.SpaceDim == v2.SpaceDim, $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
+        (
+         v1.SpaceDim == v2.SpaceDim
+       , $"Vector.+: Cannot subtract two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
+        );
 
       int    d  = v1.SpaceDim, i;
       TNum[] nv = new TNum[d];
@@ -633,8 +663,6 @@ public partial class Geometry<TNum, TConv>
        , $"Vector.+: Cannot compute a dot production of two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
         );
 
-      //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
-
       int  d   = v1.SpaceDim, i;
       TNum res = Tools.Zero;
 
@@ -645,6 +673,8 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 #endregion
+
+    //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
 
 #region Static methods
     /// <summary>
@@ -705,7 +735,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The resultant vector</returns>
     public static Vector LinearCombination(Vector v1, TNum w1, Vector v2, TNum w2) {
       Debug.Assert
-        (v1.SpaceDim == v2.SpaceDim, $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}.");
+        (
+         v1.SpaceDim == v2.SpaceDim
+       , $"Vector.+: Cannot combine two vectors of different dimensions. Found {v1.SpaceDim} and {v2.SpaceDim}."
+        );
 
       TNum[] coords = new TNum[v1.SpaceDim];
 
@@ -738,6 +771,7 @@ public partial class Geometry<TNum, TConv>
 
       return result;
     }
+
   }
 #endregion
 
