@@ -1,0 +1,33 @@
+| Method                           | spaceDim | subSpaceDim | Mean     | Error   | StdDev  |
+|--------------------------------- |--------- |------------ |---------:|--------:|--------:|
+| MultiplyTransposedByVector       | 3        | 2           | 125.8 ns | 1.36 ns | 1.21 ns |
+| MultiplyTransposedByVector_naive | 3        | 2           | 159.5 ns | 3.14 ns | 3.74 ns |
+
+
+
+  [Benchmark]
+  public void MultiplyTransposedByVector() => _ = m.MultiplyTransposedByVector(v);
+
+  [Benchmark]
+  public void MultiplyTransposedByVector_naive() => _ = m.Transpose() * v;
+  
+  
+  
+   public Vector MultiplyTransposedByVector(Vector vector) {
+      Debug.Assert
+        (
+         vector.SpaceDim == Rows
+       , $"MultiplyTransposedByVector: The vector dimension must match the number of rows in the matrix. Found vector.SpaceDim = {vector.SpaceDim}, Rows = {Rows}."
+        );
+
+      TNum[] resultArray = new TNum[Cols];
+      int    t           = 0;
+      for (int col = 0; col < Cols; col++, t = col) {
+        resultArray[col] = Tools.Zero;
+        for (int row = 0; row < Rows; row++, t+=Cols) {
+          resultArray[col] += _m[t] * vector[row];
+        }
+      }
+
+      return new Vector(resultArray, false);
+    }
