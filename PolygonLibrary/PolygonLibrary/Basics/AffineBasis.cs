@@ -59,7 +59,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
     public bool AddVector(Vector v, bool orthogonalize = true) {
-      Debug.Assert(Origin.SpaceDim == v.SpaceDim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
+      Debug.Assert
+        (Origin.SpaceDim == v.SpaceDim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
 
       return LinBasis.AddVector(v, orthogonalize);
     }
@@ -93,10 +94,10 @@ public partial class Geometry<TNum, TConv>
          SubSpaceDim == point.SpaceDim
        , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
         );
-    
+
       return LinBasis.Basis * point + Origin; // !!! Создается промежуточный вектор
     }
-    
+
     /// <summary>
     /// Translates given set of points from the current coordinate system to the original one.
     /// </summary>
@@ -111,11 +112,24 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Checks if a point belongs to the affine subspace defined by the basis.
     /// </summary>
-    /// <param name="p">Vector to be checked.</param>
+    /// <param name="v">Vector to be checked.</param>
     /// <returns><c>true</c> if the point belongs to the subspace, <c>false</c> otherwise.</returns>
-    public bool Contains(Vector p) {
-      // TODO: Написать матричный метод MultiplyRowByDifferenceOf2Vectors ? Насколько ускорит?
-      return LinBasis.Contains(p - Origin);
+    public bool Contains(Vector v) {
+      Debug.Assert
+        (
+         SpaceDim == v.SpaceDim
+       , $"AffineBasis.Contains: The dimension of the vector must be equal to the dimension of the basis vectors! Found: {v.SpaceDim}"
+        );
+
+      if (IsFullDim) { return true; }
+
+      // LinBasis.Contains(v - Origin);
+      for (int row = 0; row < SpaceDim; row++) {
+        if (!LinBasis.ProjMatrix.MultiplyRowByDiffOfVectorsAndCompare(row, v, Origin)) {
+          return false;
+        }
+      }
+      return true;
     }
 #endregion
 
@@ -143,8 +157,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy) { // TODO: флаг копирования?
-      Origin   = o;
+    /// <param name="needCopy">Whether the affine basis should be copied.</param>
+    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy = true) {
+      Origin = o;
       if (needCopy) {
         LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
       }
@@ -206,6 +221,16 @@ public partial class Geometry<TNum, TConv>
     public static AffineBasis FromPoints(Vector o, IEnumerable<Vector> Ps) {
       return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)), false);
     }
+
+    /// <summary>
+    /// Generates an affine basis in the given space dimension and subspace dimension.
+    /// </summary>
+    /// <param name="spaceDim">The dimension of the ambient space.</param>
+    /// <param name="subSpaceDim">The dimension of the linear basis subspace.</param>
+    /// <param name="random">The random to be used. If null, the Random be used.</param>
+    /// <returns>An affine basis composed of a random vector and a linear basis.</returns>
+    public static AffineBasis GenAffineBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null)
+      => new(Vector.GenVector(spaceDim, random), LinearBasis.GenLinearBasis(spaceDim, subSpaceDim, random), false);
 #endregion
 
     /// <summary>
