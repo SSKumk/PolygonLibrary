@@ -510,7 +510,7 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(Tools.EQ(normal.Length, Tools.One), "OrientNormal: normal is not unite!");
 
         foreach (SubPoint s in S) {
-          TNum dot = Vector.AffMul(origin, s, normal); // (s - origin) * normal;
+          TNum dot = Vector.AffMul(s, origin, normal); // (s - origin) * normal;
 
           if (Tools.LT(dot)) {
             break;
