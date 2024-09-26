@@ -188,7 +188,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The normalized vector.</returns>
     public Vector Normalize() {
-      Debug.Assert(!IsZero, "Vector.Normalize: Cannot normalize a zero vector.");
+      Debug.Assert(!IsZero, "Vector.Normalize: Can't normalize a zero vector.");
 
       TNum[] res = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
@@ -232,11 +232,12 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The angle.</returns>
     public static TNum Angle(Vector v1, Vector v2) {
       TNum dot = Vector.CosAngle(v1, v2);
-#if DEBUG
-      if (Tools.LT(dot, Tools.MinusOne) || Tools.GT(dot, Tools.One)) { // dot < -1 || dot > 1)
-        throw new ArgumentException($"Vector.Angle: The dot production of v1 = {v1} and v2 = {v2} is beyond [-1-eps, 1+eps]!");
-      }
-#endif
+      Debug.Assert
+        (
+         Tools.GE(dot, Tools.MinusOne) && !Tools.LE(dot, Tools.One)
+       , $"Vector.Angle: The dot product of v1 = {v1} and v2 = {v2} is beyond [-1-{Tools.Eps}, 1+{Tools.Eps}]! Found value: {dot}"
+        );
+
       // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
       if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
         return TNum.Pi;
@@ -309,16 +310,16 @@ public partial class Geometry<TNum, TConv>
     public Matrix OuterProduct(Vector v) {
       int rows = SpaceDim, cols = v.SpaceDim;
 
-      TNum[] result = new TNum[rows * cols];
+      TNum[] res = new TNum[rows * cols];
       int    k      = 0;
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-          result[k] = _v[i] * v._v[j];
+          res[k] = _v[i] * v._v[j];
           k++;
         }
       }
 
-      return new Matrix(rows, cols, result, false);
+      return new Matrix(rows, cols, res, false);
     }
 
     /// <summary>
@@ -405,6 +406,9 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(n > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {n}.");
 
       _v = new TNum[n];
+      for (int i = 0; i < _v.Length; i++) {
+        _v[i] = Tools.Zero;
+      }
     }
 
     /// <summary>
@@ -465,7 +469,7 @@ public partial class Geometry<TNum, TConv>
     public static Vector Zero(int dim) {
       Debug.Assert(dim > 0, $"Vector.Zero: The dimension of the vector must be greater than 0! Found dim = {dim}");
 
-      return new Vector(new TNum[dim], false);
+      return new Vector(dim);
     }
 
     /// <summary>
@@ -482,6 +486,9 @@ public partial class Geometry<TNum, TConv>
         );
 
       TNum[] orth = new TNum[dim];
+      for (int i = 0; i < orth.Length; i++) {
+        orth[i] = Tools.Zero;
+      }
       orth[pos - 1] = TNum.MultiplicativeIdentity;
 
       return new Vector(orth, false);
@@ -673,8 +680,6 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 #endregion
-
-    //TODO: Все if #DEBUG ~~~> Debug.Assert  по всей библиотеке
 
 #region Static methods
     /// <summary>

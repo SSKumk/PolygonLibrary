@@ -111,11 +111,13 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="n">Number of rows.</param>
     /// <param name="m">Number of columns.</param>
-    public Matrix(int n, int m) {
+    private Matrix(int n, int m) {
       Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows must be positive. Found {n}");
       Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns must be positive. Found {m}");
 
-      _m   = new TNum[n * m];
+      int d = n * m;
+      _m   = new TNum[d];
+      for (int i = 0; i < d; i++) { _m[i] = Tools.Zero; }
       Rows = n;
       Cols = m;
     }
@@ -458,9 +460,6 @@ public partial class Geometry<TNum, TConv>
 
       return new Matrix(r, c, res, false);
     }
-
-
-    //todo Пробежаться по всем TNum[] и подумать об инициализации соответствующих массивов
 
     /// <summary>
     /// Horizontal concatenation of two matrices (with equal number of rows).

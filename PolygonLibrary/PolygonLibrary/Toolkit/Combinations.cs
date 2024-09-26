@@ -26,11 +26,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="n">The total number of elements.</param>
     /// <param name="k">The number of elements in each combination.</param>
     public Combination(int n, int k) {
-#if DEBUG
-      ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(n, 0);
-      ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(k, 0);
-      ArgumentOutOfRangeException.ThrowIfLessThan(n, k);
-#endif
+      Debug.Assert(n > 0, $"Combination: n must be greater than 0. Found {n}.");
+      Debug.Assert(k > 0, $"Combination: k must be greater than 0. Found {k}.");
+      Debug.Assert(n >= k, $"Combination: n must be greater than or equal to k. Found n = {n}, k = {k}.");
+
       _n     = n;
       _k     = k;
       _state = new int[k];

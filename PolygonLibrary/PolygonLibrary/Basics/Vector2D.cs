@@ -196,11 +196,8 @@ public partial class Geometry<TNum, TConv>
     /// Is thrown if the vector is zero
     /// </exception>
     public Vector2D Normalize() {
-#if DEBUG
-      if (IsZero) {
-        throw new DivideByZeroException();
-      }
-#endif
+      Debug.Assert(!IsZero, "Vector2D.Normalize: Can't normalize a zero vector.");
+
       return new Vector2D(x / Length, y / Length);
     }
 
@@ -291,27 +288,36 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant vector</returns>
     public static explicit operator Vector2D(Vector v) {
-#if DEBUG
-      if (v.SpaceDim != 2) {
-        throw new ArgumentException("A multidimensional vector is tried to be converted to a two-dimensional vector!");
-      }
-#endif
+      Debug.Assert
+        (
+         v.SpaceDim == 2
+       , $"Vector: A multidimensional vector (SpaceDim = {v.SpaceDim}) is being converted to a two-dimensional vector!"
+        );
+
       return new Vector2D(v[0], v[1]);
     }
 #endregion
 
 #region Overrides
-    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(IsZero);
+    /// <summary>
+    /// Throws an exception because hash code computation is not supported.
+    /// </summary>
+    public override int GetHashCode() => throw new InvalidOperationException();
 
+    /// <summary>
+    /// Determines whether the specified object is equal to the current instance.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object? obj) {
-#if DEBUG
-      if (obj is not Vector2D v) {
-        throw new ArgumentException($"{obj} is not a Vector2D!");
-      }
-#endif
-      return CompareTo((Vector2D)obj!) == 0;
+      Debug.Assert(obj is Vector2D, $"{obj} is not a Vector2D!");
+      return CompareTo((Vector2D)obj) == 0;
     }
 
+    /// <summary>
+    /// Returns a string that represents the current vector.
+    /// </summary>
+    /// <returns>A string in the format "(x;y)", where x and y are the coordinates of the vector.</returns>
     public override string ToString()
       => $"({x.ToString(null, CultureInfo.InvariantCulture)};{y.ToString(null, CultureInfo.InvariantCulture)})";
 #endregion
@@ -400,11 +406,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="a">The numeric divisor</param>
     /// <returns>The product</returns>
     public static Vector2D operator /(Vector2D v, TNum a) {
-#if DEBUG
-      if (Tools.EQ(a)) {
-        throw new DivideByZeroException();
-      }
-#endif
+      Debug.Assert(Tools.EQ(a), $"Vector2D./: Can not divide by zero.");
+
       return new Vector2D(v.x / a, v.y / a);
     }
 

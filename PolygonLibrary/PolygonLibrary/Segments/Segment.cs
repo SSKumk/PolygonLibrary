@@ -308,18 +308,28 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
-    public override int GetHashCode() => throw new InvalidOperationException(); // HashCode.Combine(IsVertical);
+    /// <summary>
+    /// Throws an <see cref="InvalidOperationException"/> because hash code generation is not supported for segments.
+    /// </summary>
+    public override int GetHashCode() => throw new InvalidOperationException();
 
+    /// <summary>
+    /// Returns a string that represents the segment in form of [p1;p2].
+    /// </summary>
+    /// <returns>A string representation of the segment.</returns>
     public override string ToString() => $"[{p1};{p2}]";
 
+    /// <summary>
+    /// Determines whether the specified object is equal to the segment.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current object.</param>
+    /// <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object? obj) {
-#if DEBUG
-      if (obj is not Segment segment) {
-        throw new ArgumentException($"{obj} is ot a Segment!");
-      }
-#endif
-      return p1 == ((Segment)obj!).p1 && p2 == ((Segment)obj).p2;
+      Debug.Assert(obj is Segment, $"Segment.Equals: {obj} is not a Segment!");
+
+      return p1 == ((Segment)obj).p1 && p2 == ((Segment)obj).p2;
     }
+
 #endregion
 
 #region Constructors
@@ -332,50 +342,43 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Coordinate constructor
+    /// Constructs a segment using coordinates of its two ends.
     /// </summary>
-    /// <param name="x1">The abscissa of the first end</param>
-    /// <param name="y1">The ordinate of the first end</param>
-    /// <param name="x2">The abscissa of the second end</param>
-    /// <param name="y2">The ordinate of the second end</param>
+    /// <param name="x1">The abscissa of the first end.</param>
+    /// <param name="y1">The ordinate of the first end.</param>
+    /// <param name="x2">The abscissa of the second end.</param>
+    /// <param name="y2">The ordinate of the second end.</param>
     public Segment(TNum x1, TNum y1, TNum x2, TNum y2) {
-#if DEBUG
-      if (Tools.EQ(x1, x2) && Tools.EQ(y1, y2)) {
-        throw new ArgumentException("The ends of a segment cannot coincide");
-      }
-#endif
+      Debug.Assert(Tools.NE(x1, x2) || Tools.NE(y1, y2), "Segment.Ctor: The ends of a segment cannot coincide.");
+
       p1 = new Vector2D(x1, y1);
       p2 = new Vector2D(x2, y2);
     }
 
     /// <summary>
-    /// Two vectors constructor
+    /// Constructs a segment from two vectors representing its ends.
     /// </summary>
-    /// <param name="np1">The new first end</param>
-    /// <param name="np2">The new second end</param>
+    /// <param name="np1">The new first end.</param>
+    /// <param name="np2">The new second end.</param>
     public Segment(Vector2D np1, Vector2D np2) {
-#if DEBUG
-      if (np1 == np2) {
-        throw new ArgumentException("The ends of a segment cannot coincide");
-      }
-#endif
+      Debug.Assert(np1 != np2, "Segment.Ctor: The ends of a segment cannot coincide.");
+
       p1 = np1;
       p2 = np2;
     }
 
+
     /// <summary>
-    /// Copying constructor
+    /// Constructs a segment by copying another segment.
     /// </summary>
-    /// <param name="s">The segment to be copied</param>
+    /// <param name="s">The segment to be copied.</param>
     public Segment(Segment s) {
-#if DEBUG
-      if (s.p1 == s.p2) {
-        throw new ArgumentException("The ends of a segment cannot coincide");
-      }
-#endif
+      Debug.Assert(s.p1 != s.p2, "Segment.Ctor: The ends of a segment cannot coincide.");
+
       p1 = s.p1;
       p2 = s.p2;
     }
+
 #endregion
 
 #region Common procedures
@@ -401,17 +404,13 @@ public partial class Geometry<TNum, TConv>
     public bool ContainsPoint(Vector2D p) => Vector2D.AreCounterdirected(p1 - p, p2 - p);
 
     /// <summary>
-    /// Compute the ordinate of the line passing through the segment at the given abscissa;
-    /// For vertical segments an exception is raised
+    /// Computes the ordinate of the line passing through the segment at the given abscissa.
+    /// Throws an exception for vertical segments.
     /// </summary>
-    /// <param name="x">The abscissa where to compute</param>
-    /// <returns>The corresponding ordinate</returns>
+    /// <param name="x">The abscissa at which to compute the ordinate.</param>
+    /// <returns>The corresponding ordinate.</returns>
     public TNum ComputeAtPoint(TNum x) {
-#if DEBUG
-      if (IsVertical) {
-        throw new InvalidOperationException("Cannot compute ordinate for a vertical segment!");
-      }
-#endif
+      Debug.Assert(!IsVertical, "Segment.ComputeAtPoint: Cannot compute ordinate for a vertical segment!");
 
       return p1.y + (x - p1.x) * (p2.y - p1.y) / (p2.x - p1.x);
     }

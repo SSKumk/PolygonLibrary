@@ -103,11 +103,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="i">Index of the clockwise boundary of the cone</param>
     /// <param name="j">Index of the counterclockwise boundary of the cone</param>
     public void FindCone(Vector2D v, out int i, out int j) {
-#if DEBUG
-      if (Count < 2) {
-        throw new Exception("The function is defined by too few directions");
-      }
-#endif
+      Debug.Assert(Count >= 2, "SupportFunction.FindCone: The function is defined by too few directions.");
 
       // If the vector belongs to the cone between the last and the first normals
       // or coincides with the last vector, then the cone is between the last and the first vectors
@@ -138,19 +134,10 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="a">The first resultant coordinate</param>
     /// <param name="b">The second resultant coordinate</param>
     public void ConicCombination(Vector2D v, int i, int j, out TNum a, out TNum b) {
-#if DEBUG
-      if (i < 0 || i >= Count) {
-        throw new IndexOutOfRangeException("ConicCombination: bad index i");
-      }
+      Debug.Assert(i >= 0 && i < Count, $"SupportFunction.ConicCombination: bad index i = {i}. Expected range [0, {Count - 1}].");
+      Debug.Assert(j >= 0 && j < Count, $"SupportFunction.ConicCombination: bad index j = {j}. Expected range [0, {Count - 1}].");
+      Debug.Assert(i != j, "SupportFunction.ConicCombination: indices i and j coincide.");
 
-      if (j < 0 || j >= Count) {
-        throw new IndexOutOfRangeException("ConicCombination: bad index j");
-      }
-
-      if (i == j) {
-        throw new ArgumentException("ConicCombination: indices i and j coincide");
-      }
-#endif
 
       // Computing coefficients of the conic combinations
       TNum
@@ -174,11 +161,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// if -1, then the appropriate cone will be found</param>
     /// <returns>The support function</returns>
     public TNum FuncVal(Vector2D v, int i = -1, int j = -1) {
-#if DEBUG
-      if (Count <= 2) {
-        throw new Exception("The function is defined by too few directions");
-      }
-#endif
+      Debug.Assert(Count > 2, "SupportFunction.FuncVal: The function is defined by too few directions.");
 
       // Seeking the vector from the set, which is first equal or greater in the counterclockwise order
       if (i == -1 || j == -1) {
@@ -186,8 +169,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       }
 
       // Computing coefficients of the conic combinations
-      TNum alpha, beta;
-      ConicCombination(v, i, j, out alpha, out beta);
+      ConicCombination(v, i, j, out TNum alpha, out TNum beta);
 
       return alpha * this[i].Value + beta * this[j].Value;
     }

@@ -13,25 +13,18 @@ public partial class Geometry<TNum, TConv>
   public class GammaPair : IEquatable<GammaPair>, IComparable<GammaPair> {
 
     /// <summary>
-    /// The equality comparator
+    /// The equality comparator.
     /// </summary>
-    /// <param name="other">The pair to be compared with</param>
-    /// <returns>true, if equal; false, otherwise</returns>
+    /// <param name="other">The pair to be compared with.</param>
+    /// <returns><c>true</c> if equal; <c>false</c> otherwise.</returns>
     public bool Equals(GammaPair? other) {
-      Debug.Assert(other is not null, "GammaPair Equals: 'other' is null!");
+      Debug.Assert(other is not null, "GammaPair.Equals: 'other' is null!");
       bool res = Tools.EQ(this.Normal.PolarAngle, other.Normal.PolarAngle);
       if (res) {
         TNum l1 = this.Normal.Length, l2 = other.Normal.Length;
 
-#if DEBUG
-        if (Tools.EQ(l1)) {
-          throw new ArgumentException("Equality of two gamma pairs: the first argument has zero normal");
-        }
-
-        if (Tools.EQ(l2)) {
-          throw new ArgumentException("Equality of two gamma pairs: the second argument has zero normal");
-        }
-#endif
+        Debug.Assert(Tools.NE(l1), "GammaPair.Equality: the first argument has zero normal.");
+        Debug.Assert(Tools.NE(l2), "GammaPair.Equality: the second argument has zero normal.");
 
         res = Tools.EQ(this.Value / l1, other.Value / l2);
       }
@@ -39,6 +32,7 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
+    // todo Debug.Assert(other != null, nameof(other) + " != null"); убрать такую дичь
     /// <summary>
     /// The less-greater comparator:
     ///   a) compares normals counterclockwise in the sense of the polar angle
@@ -58,15 +52,8 @@ public partial class Geometry<TNum, TConv>
 
       TNum l1 = this.Normal.Length, l2 = other.Normal.Length;
 
-#if DEBUG
-      if (Tools.EQ(l1)) {
-        throw new ArgumentException("Comparison of two gamma pairs: the first argument has zero normal");
-      }
-
-      if (Tools.EQ(l2)) {
-        throw new ArgumentException("Comparison of two gamma pairs: the second argument has zero normal");
-      }
-#endif
+      Debug.Assert(Tools.NE(l1), "GammaPair.CompareTo: the first argument has zero normal.");
+      Debug.Assert(Tools.NE(l2), "GammaPair.CompareTo: the second argument has zero normal.");
 
       return Tools.CMP(this.Value / l1, other.Value / l2);
     }
@@ -97,17 +84,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="ng">The value of the pair</param>
     /// <param name="ToNormalize">Flag showing necessity to normalize the vector before storing into the pair</param>
     public GammaPair(Vector2D nv, TNum ng, bool ToNormalize = false) {
-#if DEBUG
-      TNum ll = nv.Length;
-      if (Tools.EQ(ll)) {
-        throw new ArgumentException("Cannot construct a GammaPair with zero normal");
-      }
-#endif
+      Debug.Assert(Tools.NE(nv.Length), "GammaPair.Ctor: Can't construct a GammaPair with zero normal.");
+
       if (ToNormalize) {
         TNum l = nv.Length;
         Normal = nv / l;
         Value  = ng / l;
-      } else {
+      }
+      else {
         Normal = nv;
         Value  = ng;
       }
@@ -129,18 +113,14 @@ public partial class Geometry<TNum, TConv>
     public override string ToString() => $"[{Normal};{Value.ToString(null, CultureInfo.InvariantCulture)}]";
 
     /// <summary>
-    /// Computing the point, which is intersection of lines defined by two pairs.
-    /// If the lines are parallel, an exception is thrown
+    /// Computing the point, which is the intersection of lines defined by two pairs.
+    /// If the lines are parallel, an exception is thrown.
     /// </summary>
-    /// <param name="g1">The first pair</param>
-    /// <param name="g2">The second pair</param>
-    /// <returns>The corresponding point</returns>
+    /// <param name="g1">The first pair.</param>
+    /// <param name="g2">The second pair.</param>
+    /// <returns>The corresponding point.</returns>
     public static Vector2D CrossPairs(GammaPair g1, GammaPair g2) {
-#if DEBUG
-      if (Vector2D.AreParallel(g1.Normal, g2.Normal)) {
-        throw new ArgumentException("Cannot cross lines defined by pairs with parallel normals");
-      }
-#endif
+      Debug.Assert(!Vector2D.AreParallel(g1.Normal, g2.Normal), "Cannot cross lines defined by pairs with parallel normals.");
       // g1.g = g1.v * r = g1.v.x * x + g1.v.y * y,  g2.g = g2.v * r = g2.v.x * x + g2.v.y * y
       TNum d  = g1.Normal.x * g2.Normal.y - g2.Normal.x * g1.Normal.y
          , d1 = g1.Value * g2.Normal.y - g2.Value * g1.Normal.y
