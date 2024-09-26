@@ -64,13 +64,15 @@ public partial class Geometry<TNum, TConv>
     /// The matrix that stores the basis vectors in its columns.
     /// </summary>
     public Matrix Basis {
-      get {
-        if (_Basis is null) { 
-          throw new ArgumentException("Accessing empty basis!"); 
-        } else { 
-          return _Basis; 
+      get
+        {
+          if (_Basis is null) {
+            throw new ArgumentException("Accessing empty basis!");
+          }
+          else {
+            return _Basis;
+          }
         }
-      }
     }
 
     /// <summary>
@@ -78,9 +80,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public Matrix ProjMatrix => _projMatrix ??= Basis.MultiplyBySelfTranspose();
 
-    private Matrix? _Basis    = null;
+    private Matrix? _Basis      = null;
     private Matrix? _projMatrix = null;
-
 #endregion
 
 #region Functions
@@ -107,11 +108,13 @@ public partial class Geometry<TNum, TConv>
       LinearBasis? oc = FindOrthogonalComplement();
 
       if (oc is null) {
-        throw new ArgumentException($"LinearBasis.FindOrthonormalVector: Can not find an orthonormal vector to the linear basis. Found SpaceDim == SubSpaceDim");
+        throw new ArgumentException
+          (
+           $"LinearBasis.FindOrthonormalVector: Can not find an orthonormal vector to the linear basis. Found SpaceDim == SubSpaceDim"
+          );
       }
 
       return oc[0];
-
     }
 
     /// <summary>
@@ -125,7 +128,7 @@ public partial class Geometry<TNum, TConv>
     /// Checks if the given vector belongs to the linear basis.
     /// </summary>
     /// <param name="v">The vector to check.</param>
-    /// <returns>True if the vector is contained in the basis; otherwise, false.</returns>
+    /// <returns><c>True</c> if the vector is contained in the basis; otherwise, <c>false</c>.</returns>
     public bool Contains(Vector v) {
       Debug.Assert
         (
@@ -136,7 +139,7 @@ public partial class Geometry<TNum, TConv>
       if (IsFullDim) { return true; }
 
       for (int row = 0; row < SpaceDim; row++) {
-        if (Tools.NE(ProjMatrix.MultRowIndByVector(row, v), v[row])) {
+        if (Tools.NE(ProjMatrix.MultiplyRowByVector(row, v), v[row])) {
           return false;
         }
       }
@@ -228,32 +231,12 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-//todo потом убрать
-
-    public static uint projCount;
-
     /// <summary>
     /// Projects a given vector onto the linear basis in its coordinates.
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v) {
-      Debug.Assert
-        (
-         SpaceDim == v.SpaceDim
-       , "LinearBasis.ProjectVectorToSubSpace: The dimension of the basis vectors should be equal to the dimension of the given vector."
-        );
-
-      // TODO: сделать метод в классе матрицы умножения транспонированной матрицы на вектор
-      TNum[] proj = new TNum[SubSpaceDim];
-      for (int col = 0; col < SubSpaceDim; col++) {
-        proj[col] = Basis.MultiplyColumnByVector(col, v);
-      }
-
-      // projCount++; todo projCount
-
-      return new Vector(proj, false);
-    }
+    public Vector ProjectVectorToSubSpace(Vector v) => Basis.MultiplyTransposedByVector(v);
 
     /// <summary>
     /// Projects a given collection of vectors onto the linear basis.
