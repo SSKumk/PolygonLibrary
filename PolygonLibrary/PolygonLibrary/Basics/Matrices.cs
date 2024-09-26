@@ -116,7 +116,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns must be positive. Found {m}");
 
       int d = n * m;
-      _m   = new TNum[d];
+      _m = new TNum[d];
       for (int i = 0; i < d; i++) { _m[i] = Tools.Zero; }
       Rows = n;
       Cols = m;
@@ -893,21 +893,44 @@ public partial class Geometry<TNum, TConv>
     /// Multiplies a specified rowInd of the matrix by the given vector and returns the resulting scalar value.
     /// </summary>
     /// <param name="rowInd">The number of the rowInd to be multiplied.</param>
-    /// <param name="vector">The vector to multiply with the matrix rowInd.</param>
+    /// <param name="v">The vector to multiply with the matrix rowInd.</param>
     /// <returns>The resulting scalar value.</returns>
-    public TNum MultRowIndByVector(int rowInd, Vector vector) {
+    public TNum MultiplyRowByVector(int rowInd, Vector v) {
       Debug.Assert
         (
-         Cols == vector.SpaceDim
-       , $"Matrix.MultiplyRowByVector: The column count of the matrix and the number of the coordinates of a vector should be the same. Found column count {Cols}, number of coordinates {vector.SpaceDim}."
+         Cols == v.SpaceDim
+       , $"Matrix.MultiplyRowByVector: The column count of the matrix and the number of the coordinates of a vector should be the same. Found column count {Cols}, number of coordinates {v.SpaceDim}."
+        );
+
+      TNum res = Tools.Zero;
+      for (int col = 0, k = rowInd * Cols; col < Cols; col++, k++) {
+        res += _m[k] * v[col];
+      }
+
+      return res;
+    }
+
+    /// <summary>
+    /// Multiplies a specified row of the matrix by the difference of two vectors (v1 - v2)
+    /// and returns the resulting scalar value.
+    /// </summary>
+    /// <param name="rowInd">The index of the matrix row to be multiplied.</param>
+    /// <param name="v1">The first vector in the difference (v1 - v2).</param>
+    /// <param name="v2">The second vector in the difference (v1 - v2).</param>
+    /// <returns><c>true</c> if the result is equal to the corresponding element in the vector difference; otherwise, <c>false</c>.</returns>
+    public bool MultiplyRowByDiffOfVectorsAndCompare(int rowInd, Vector v1, Vector v2) {
+      Debug.Assert
+        (
+         Cols == v1.SpaceDim
+       , $"Matrix.MultiplyRowByVector: The column count of the matrix and the number of the coordinates of a vector should be the same. Found column count {Cols}, number of coordinates {v1.SpaceDim}."
         );
 
       TNum result = Tools.Zero;
-      for (int colIndex = 0, k = rowInd * Cols; colIndex < Cols; colIndex++, k++) {
-        result += _m[k] * vector[colIndex];
+      for (int col = 0, k = rowInd * Cols; col < Cols; col++, k++) {
+        result += _m[k] * (v1[col] - v2[col]);
       }
 
-      return result;
+      return Tools.EQ(result, v1[rowInd] - v2[rowInd]);
     }
 
     /// <summary>
@@ -957,6 +980,30 @@ public partial class Geometry<TNum, TConv>
       }
 
       return new Matrix(Rows, Rows, res, false);
+    }
+
+    /// <summary>
+    /// Multiplies the transposed matrix by a given vector.
+    /// </summary>
+    /// <param name="vector">The vector to multiply by the transposed matrix.</param>
+    /// <returns>The result of multiplying the transposed matrix by the vector.</returns>
+    public Vector MultiplyTransposedByVector(Vector vector) {
+      Debug.Assert
+        (
+         vector.SpaceDim == Rows
+       , $"MultiplyTransposedByVector: The vector dimension must match the number of rows in the matrix. Found vector.SpaceDim = {vector.SpaceDim}, Rows = {Rows}."
+        );
+
+      TNum[] res = new TNum[Cols];
+      int    t           = 0;
+      for (int col = 0; col < Cols; col++, t = col) {
+        res[col] = Tools.Zero;
+        for (int row = 0; row < Rows; row++, t+=Cols) {
+          res[col] += _m[t] * vector[row];
+        }
+      }
+
+      return new Vector(res, false);
     }
 #endregion
 
