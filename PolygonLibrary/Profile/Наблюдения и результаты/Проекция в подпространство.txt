@@ -79,3 +79,32 @@ return new Vector(proj, false);
 | PrjCol_lin         | 4        | 3           | 423.5 ns |  64.20 ns |  3.52 ns |
 | PrjCol_indexer     | 4        | 4           | 579.3 ns | 219.18 ns | 12.01 ns |
 | PrjCol_lin         | 4        | 4           | 560.5 ns |  61.89 ns |  3.39 ns |
+
+
+=================================================
+В терминах подпространства
+
+| Method                                          | spaceDim | subSpaceDim | Mean      | Error    | StdDev   |
+|------------------------------------------------ |--------- |------------ |----------:|---------:|---------:|
+| ProjectVectorToSubSpace__MultiplyColumnByVector | 3        | 1           |  72.47 ns | 0.176 ns | 0.147 ns |
+| ProjectVectorToSubSpace__lb                     | 3        | 1           |  93.26 ns | 0.378 ns | 0.295 ns |
+| ProjectVectorToSubSpace__MultiplyColumnByVector | 3        | 2           | 126.66 ns | 1.207 ns | 1.070 ns |
+| ProjectVectorToSubSpace__lb                     | 3        | 2           | 174.91 ns | 0.605 ns | 0.472 ns |
+| ProjectVectorToSubSpace__MultiplyColumnByVector | 3        | 3           | 182.65 ns | 2.159 ns | 2.020 ns |
+| ProjectVectorToSubSpace__lb                     | 3        | 3           | 266.02 ns | 1.124 ns | 0.877 ns |
+
+
+  public Vector ProjectVectorToSubSpace__MultiplyColumnByVector(LinearBasis lb, Vector v) {
+    ddouble[] proj = new ddouble[lb.SubSpaceDim];
+    for (int col = 0; col < lb.SubSpaceDim; col++) {
+      proj[col] = lb.Basis.MultiplyColumnByVector(col, v);
+    }
+
+    return new Vector(proj, false);
+  }
+
+  public Vector ProjectVectorToSubSpace__lb(LinearBasis lb, Vector v) {
+    ddouble[] proj = new ddouble[lb.SubSpaceDim];
+    for (int i = 0; i < lb.SubSpaceDim; i++) {
+      proj[i] = lb[i] * v; // bvec * v
+    }
