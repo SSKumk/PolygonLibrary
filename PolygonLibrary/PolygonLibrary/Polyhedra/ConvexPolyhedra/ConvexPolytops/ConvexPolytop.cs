@@ -128,7 +128,12 @@ public partial class Geometry<TNum, TConv>
       get
         {
           _Hrep ??= new List<HyperPlane>
-            (FLrep.Lattice[^2].Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false))).ToList());
+            (
+             FLrep
+              .Lattice[^2]
+              .Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false)))
+              .ToList()
+            );
           Debug.Assert(_Hrep is not null, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
 
           return _Hrep;
@@ -260,11 +265,11 @@ public partial class Geometry<TNum, TConv>
       string nameRep = pr.ReadString("Rep");
 
       switch (nameRep) {
-        case "Vrep":        return CreateFromVRep(pr, action == PolytopAction.Convexify);
-        case "Hrep":        return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
-        case "FLrep":       return CreateFromFLrep(pr);
+        case "Vrep":  return CreateFromVRep(pr, action == PolytopAction.Convexify);
+        case "Hrep":  return CreateFromHRep(pr, action == PolytopAction.HRedundancy);
+        case "FLrep": return CreateFromFLrep(pr);
         // case "FaceLattice": return CreateFromFLrep(pr); // todo потом можно будет убрать, когда данные в новом формате нагенерятся
-        default:            throw new ArgumentException($"Unsupported representation type: {nameRep}");
+        default: throw new ArgumentException($"Unsupported representation type: {nameRep}");
       }
     }
 
@@ -776,7 +781,6 @@ public partial class Geometry<TNum, TConv>
       SortedSet<Vector> y = HrepToVrep_Geometric(yList);
 
 
-
       // return CreateFromPoints(HrepToVrep_Geometric(hrep).ToSortedSet(), false);
 
       x.IntersectWith(y);
@@ -866,7 +870,6 @@ public partial class Geometry<TNum, TConv>
 
       return Equals((ConvexPolytop)obj);
     }
-
 #endregion
 
 
@@ -1013,7 +1016,7 @@ public partial class Geometry<TNum, TConv>
                     tMin = ti;
                     zNewHPs.Clear();
                     zNewHPs.Add(hp);
-                    zNew = z + tMin * v;
+                    zNew = Vector.MulByNumAndAdd(v, tMin, z); // z + tMin * v; // v*tMin + z
                     if (Vs.Contains(zNew)) {
                       foundPrev = true;
 
@@ -1027,7 +1030,6 @@ public partial class Geometry<TNum, TConv>
               Vs.Add(zNew);
               orthToEdgeHPs.AddRange(zNewHPs);
               process.Enqueue((zNew, orthToEdgeHPs));
-              // process.Enqueue((zNew, orthToEdgeHPs.Union(zNewHPs).ToList()));
             }
           }
         } while (J.Next());
