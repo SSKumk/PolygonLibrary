@@ -772,11 +772,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Linear combination of a collection of vectors with weights
+    /// Linear combination of a collection of vectors with weights.
     /// </summary>
-    /// <param name="Vs">Collection of the vectors</param>
-    /// <param name="Ws">Collection of the weights (has at least the same number of elements as the collection of vectors)</param>
-    /// <returns>The resultant vector</returns>
+    /// <param name="Vs">Collection of the vectors.</param>
+    /// <param name="Ws">Collection of the weights (has at least the same number of elements as the collection of vectors).</param>
+    /// <returns>The resultant vector.</returns>
     public static Vector LinearCombination(IReadOnlyList<Vector> Vs, IReadOnlyList<TNum> Ws) {
       Debug.Assert(Vs.Count > 0, "Vector collection must contain at least one element. Found 0");
       Debug.Assert
@@ -785,7 +785,7 @@ public partial class Geometry<TNum, TConv>
        , $"The number of vectors must match the number of weights. Found {Vs.Count} vectors and {Ws.Count} weights"
         );
 
-      Vector result = Vs[0] * Ws[0];
+      Vector result = Zero(Vs[0].SpaceDim);
 
       for (int i = 0; i < Vs.Count; i++) {
         result += Vs[i] * Ws[i];
