@@ -44,11 +44,11 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       return new SubPolytop(faces);
     }
 
-    public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+    public override BaseSubCP ProjectTo(AffineBasis affBasis) {
       Debug.Assert(Faces is not null, $"SubPolytop.ProjectTo: Faces are null");
 
-      IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(aBasis));
-      List<BaseSubCP> faces = new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis)));
+      IEnumerable<SubPoint> Vs = Vertices.Select(s => s.ProjectTo(affBasis));
+      List<BaseSubCP> faces = new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(affBasis)));
 
       return new SubPolytop(faces, new SortedSet<SubPoint>(Vs));
     }

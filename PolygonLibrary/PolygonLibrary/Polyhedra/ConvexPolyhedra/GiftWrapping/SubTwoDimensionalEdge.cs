@@ -57,10 +57,10 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projects the edge to the specified affine basis.
     /// </summary>
-    /// <param name="aBasis">The affine basis to project to.</param>
+    /// <param name="affBasis">The affine basis to project to.</param>
     /// <returns>The projected edge.</returns>
-    public override BaseSubCP ProjectTo(AffineBasis aBasis)
-      => new SubTwoDimensionalEdge(first.ProjectTo(aBasis).Vertices.First(), second.ProjectTo(aBasis).Vertices.Last());
+    public override BaseSubCP ProjectTo(AffineBasis affBasis)
+      => new SubTwoDimensionalEdge(first.ProjectTo(affBasis).Vertices.First(), second.ProjectTo(affBasis).Vertices.Last());
 
   }
 

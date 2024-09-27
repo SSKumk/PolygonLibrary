@@ -50,9 +50,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projects the vertex to the specified affine basis.
     /// </summary>
-    /// <param name="aBasis">The affine basis to project to.</param>
+    /// <param name="affBasis">The affine basis to project to.</param>
     /// <returns>The projected vertex.</returns>
-    public override BaseSubCP ProjectTo(AffineBasis aBasis) => new SubZeroDimensional(vertex.ProjectTo(aBasis));
+    public override BaseSubCP ProjectTo(AffineBasis affBasis) => new SubZeroDimensional(vertex.ProjectTo(affBasis));
 
   }
 

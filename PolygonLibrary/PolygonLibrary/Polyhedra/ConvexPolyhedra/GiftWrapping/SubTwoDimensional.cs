@@ -80,12 +80,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projects the polygon to the specified affine basis.
     /// </summary>
-    /// <param name="aBasis">The affine basis to project to.</param>
+    /// <param name="affBasis">The affine basis to project to.</param>
     /// <returns>The projected polygon.</returns>
-    public override BaseSubCP ProjectTo(AffineBasis aBasis) {
+    public override BaseSubCP ProjectTo(AffineBasis affBasis) {
       Debug.Assert(Faces is not null, $"SubTwoDimensional.ProjectTo: Faces are null");
 
-      return new SubTwoDimensional(new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(aBasis))));
+      return new SubTwoDimensional(new List<BaseSubCP>(Faces.Select(F => F.ProjectTo(affBasis))));
     }
 
   }
