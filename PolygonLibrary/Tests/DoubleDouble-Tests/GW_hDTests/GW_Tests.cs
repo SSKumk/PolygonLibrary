@@ -510,7 +510,7 @@ public class GW_Tests {
 #region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
   [Test]
   public void AllSimplices3D_TestRND() {
-    const int nPoints = 1;
+    const int nPoints = 2000;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
