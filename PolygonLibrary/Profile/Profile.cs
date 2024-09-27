@@ -27,12 +27,11 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-
-    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
     // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
-    solverLdg.Solve(false, false, isDouble);
+    // solverLdg.Solve(false, false, isDouble);
 
     // Console.WriteLine($"LinBasis.ProjVector count = {LinearBasis.projCount}");
 
