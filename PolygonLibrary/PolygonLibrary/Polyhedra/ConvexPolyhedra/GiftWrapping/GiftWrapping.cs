@@ -207,6 +207,7 @@ public partial class Geometry<TNum, TConv>
         }
         // if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
         //  // todo А что делать в случае симплекса? Что с нормалями к гипер-граням?
+        // Если берём 2D грань симплекса, то надо возвращать не SubSimplex, а SubTwoDimensional
         // }
 
         // Создаём начальную грань. (Либо берём, если она передана).
@@ -397,7 +398,7 @@ public partial class Geometry<TNum, TConv>
         builtFace.Normal = n;
 
         // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
-        SortedSet<SubPoint> toRemove = new SortedSet<SubPoint>(inPlane.Select(s => s.Parent).ToSortedSet()!);
+        SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
         toRemove.ExceptWith(builtFace.Vertices);
         S.ExceptWith(toRemove);
 
