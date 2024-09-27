@@ -30,7 +30,6 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(Cube_list(4));
   public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(Simplex(3, out _));
   public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(Simplex(4, out _));
-  public static readonly ConvexPolytop Octahedron3D = ConvexPolytop.CreateFromPoints(Octahedron3D_list.ToHashSet());
 
 
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
