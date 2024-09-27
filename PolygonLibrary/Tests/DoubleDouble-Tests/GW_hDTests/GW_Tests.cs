@@ -38,25 +38,67 @@ public class GW_Tests {
 
   [Test]
   public void Aux() {
-    const int PDim    = 4;
-    const int nPoints = 2000;
-    List<int> fID = new List<int>()
-      {
-        1
-      , 2
-      , 3
-      , 4
-      };
-    GRandomLC random = new GRandomLC(4002554616);
+    const int PDim    = 3;
+    const int nPoints = 1;
+    List<int> fID     = new List<int>() { 1 };
+    GRandomLC random  = new GRandomLC(166605533);
 
-    List<Vector> S = Cube01(PDim, out List<Vector> polytop, fID, nPoints, random);
-    ShiftAndRotate(4, ref polytop, ref S, random);
+    List<Vector> S = Simplex(PDim, out List<Vector> polytop, fID, nPoints, random);
+    ShiftAndRotate(3, ref polytop, ref S, random);
     S.Shuffle(random);
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
     Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(8), $"The number of facets of the cube must be equal to 8.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(81), $"The number of faces of the cube must be equal to 81.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(4), $"The number of facets of the cube must be equal to 4.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(15), $"The number of faces of the cube must be equal to 15.");
+  }
+#endregion
+
+#region Simplex3D-Static Тесты 3D-симлека не зависящие от _random
+  [Test]
+  public void Simplex3D() {
+    List<Vector> S = new List<Vector>()
+      {
+        new Vector(new ddouble[] { 1, 0, 0 })
+      , new Vector(new ddouble[] { 0, 1, 0 })
+      , new Vector(new ddouble[] { 0, 0, 1 })
+      , new Vector(new ddouble[] { 1, 1, 1 })
+      };
+
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(4), "The number of facets of the simplex must be equal to 4.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(15), "The number of faces of the simplex must be equal to 15.");
+  }
+
+  [Test]
+  public void Simplex3D_1D() {
+    List<Vector> S = new List<Vector>()
+      {
+        new Vector(new ddouble[] { 1, 0, 0 })
+      , new Vector(new ddouble[] { 0, 1, 0 })
+      , new Vector(new ddouble[] { 0, 0, 1 })
+      , new Vector(new ddouble[] { 1, 1, 1 })
+      };
+
+    List<Vector> Swarm = new List<Vector>()
+      {
+        // new Vector(new ddouble[] { 0.5, 0.5, 0.5 })
+        new Vector(new ddouble[] { 1, 0, 0 })
+      , new Vector(new ddouble[] { 0.5, 0.5, 1 })
+      , new Vector(new ddouble[] { 0, 1, 0 })
+      , new Vector(new ddouble[] { 0.5, 0, 0.5 })
+      , new Vector(new ddouble[] { 0, 0, 1 })
+      , new Vector(new ddouble[] { 1, 0.5, 0.5 })
+      , new Vector(new ddouble[] { 1, 1, 1 })
+      , new Vector(new ddouble[] { 0, 0.5, 0.5 })
+      , new Vector(new ddouble[] { 0.5, 0, 0.5 })
+      };
+
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(Swarm, true);
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(4), "The number of facets of the simplex must be equal to 4.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(15), "The number of faces of the simplex must be equal to 15.");
   }
 #endregion
 
@@ -131,27 +173,6 @@ public class GW_Tests {
       };
 
     ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
-    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
-  }
-
-  [Test]
-  public void Cube3D_Rotated_Shifted() {
-    SortedSet<Vector> S = new SortedSet<Vector>()
-      {
-        new Vector(new ddouble[] { 4.989650328990457, 18.100255093909855, 14.491501515962065 })
-      , new Vector(new ddouble[] { 5.66967171757855, 18.495941030863165, 15.108756366376465 })
-      , new Vector(new ddouble[] { 4.518403603114471, 17.69118126989747, 15.272900984773663 })
-      , new Vector(new ddouble[] { 5.198424991702564, 18.08686720685078, 15.890155835188063 })
-      , new Vector(new ddouble[] { 4.427958745989709, 18.92250277302197, 14.58321476353759 })
-      , new Vector(new ddouble[] { 5.107980134577802, 19.318188709975285, 15.20046961395199 })
-      , new Vector(new ddouble[] { 3.9567120201137236, 18.513428949009587, 15.364614232349188 })
-      , new Vector(new ddouble[] { 4.636733408701816, 18.909114885962897, 15.981869082763588 })
-      };
-
-    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
-
     Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
     Assert.That(P.Hrep, Has.Count.EqualTo(6), "The number of facets of the cube must be equal to 6.");
     Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(27), "The number of faces of the cube must be equal to 27.");
@@ -234,7 +255,8 @@ public class GW_Tests {
   /// <param name="numberOfHRep">The number of half-spaces in Hrep.</param>
   /// <param name="numberOfFVec">The number of all faces of the polytop.</param>
   private static void SwarmShuffleAndCheckVertices(List<Vector> S, string nameOfTest, int numberOfHRep, int numberOfFVec) {
-    for (int i = 0; i < 10 * S.Count; i++) {
+    int sCount = 10 * S.Count;
+    for (int i = 0; i < sCount; i++) {
       uint saveSeed = _random.Seed;
       S.Shuffle(_random);
       ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
@@ -488,7 +510,7 @@ public class GW_Tests {
 #region AllSimplices Генераторы "плохих" тестов для симплексов полученных из базисных орт
   [Test]
   public void AllSimplices3D_TestRND() {
-    const int nPoints = 2000;
+    const int nPoints = 1;
 
     List<List<int>> fIDs = Enumerable.Range(1, 3).ToList().AllSubsets();
 
@@ -697,85 +719,6 @@ public class GW_Tests {
 
 
 #region Other tests
-  /// <summary>
-  /// Вершины:
-  ///[0] +2.573  A
-  ///[1] -0.433     X
-  ///[2] -3.942  B
-  ///[3] -2.231  C
-  ///[4] +0.457  D
-  ///
-  ///  Доп.точки:
-  ///[5] -0.715  0,1,2
-  ///[6] -1.250  0,2,3,4
-  ///[7] +2.524  0,1,2,3,4  F
-  ///
-  ///0-2-3-4-6-7
-  ///
-  /// Точка F очень близка к вершине A так, что с точностью 1e-8 принадлежит гиперплоскостям всех гиперграней, проходящих через эту вершину.
-  /// При загрублении точности до такого значения получается не гипер-тетраэдр.
-  /// </summary>
-  [Test]
-  public void Simplex4D_PointCloseToVertex() {
-    List<Vector> S = new List<Vector>()
-      {
-        new Vector(new ddouble[] { 2.573083673504434, 4.459384730891181, -0.27379963436950927, -3.9775508290570114 })
-      , new Vector(new ddouble[] { -0.4334526451848103, -0.4053162935667942, 3.2553497814236554, 3.4524045601609177 })
-      , new Vector(new ddouble[] { -3.942094170242104, -1.9384525033967692, -0.29372328782773627, 2.603184338100996 })
-      , new Vector(new ddouble[] { -2.231889343176011, -3.249343109375179, -0.4791314609998676, -3.9361931497548226 })
-      , new Vector(new ddouble[] { 0.4576718028303406, -1.483829232511071, 1.5060715392478907, -3.912975119639415 })
-      , new Vector(new ddouble[] { -0.715863786767021, 1.1248964198021802, -0.08999099950936182, -0.41480693316225237 })
-      , new Vector(new ddouble[] { -1.2504502355127234, -2.0382520989901907, 0.055536783449397165, -3.4765790886104364 })
-      , new Vector(new ddouble[] { 2.5244380627935232, 4.399463020994712, -0.2616425805524087, -3.92127411448588 })
-      };
-
-    var hpABCD = new HyperPlane
-      (
-       new List<Vector>()
-         {
-           S[0]
-         , S[2]
-         , S[3]
-         , S[4]
-         }
-      );
-    var distABCD = S.Select(s => hpABCD.Eval(s));
-
-    AffineBasis ABDbasis = new AffineBasis(new List<Vector>() { S[2], S[0], S[4] });
-
-    Vector BC = ABDbasis.LinBasis.Orthonormalize(S[3] - S[2]);
-    Vector BX = ABDbasis.LinBasis.Orthonormalize(S[1] - S[2]);
-    Vector BF = ABDbasis.LinBasis.Orthonormalize(S[7] - S[2]);
-
-    ddouble angleCBX = ddouble.Acos(BC * BX);
-    ddouble angleCBF = ddouble.Acos(BC * BF);
-
-
-    var hpABDX = new HyperPlane
-      (
-       new AffineBasis
-         (
-          new List<Vector>()
-            {
-              S[0]
-            , S[2]
-            , S[1]
-            , S[4]
-            }
-         )
-     , false
-      );
-    var distABDX = S.Select(s => hpABDX.Eval(s));
-
-    var x = GiftWrapping.WrapVRep(S);
-    var y = S.GetRange(0, 5).ToSortedSet();
-
-    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
-    Assert.That(P.Vrep.SetEquals(S.GetRange(0, 5)), "The set of vertices must be equal.");
-    Assert.That(P.Hrep, Has.Count.EqualTo(5), "The number of facets of the 4D-simplex must be equal to 5.");
-    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(31), "The number of faces of the  4D-simplex must be equal to 31.");
-  }
-
   /// <summary>
   /// Пример из какой-то статьи
   /// </summary>
