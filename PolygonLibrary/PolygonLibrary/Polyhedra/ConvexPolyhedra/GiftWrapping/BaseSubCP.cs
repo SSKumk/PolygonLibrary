@@ -26,8 +26,8 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public enum SubCPType {
 
-    // Simplex,
-     SubPolytop
+    SubSimplex
+  , SubPolytop
   , TwoDimensional
   , OneDimensional
   , ZeroDimensional
@@ -84,7 +84,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The outward normal of the (d-1)-dimensional polytop (face).
     /// </summary>
-    public Vector? Normal { get; set; }
+    public Vector Normal { get; set; }
 
 
     /// <summary>
@@ -95,7 +95,7 @@ public partial class Geometry<TNum, TConv>
     public abstract BaseSubCP ToPreviousSpace();
 
 
-    public abstract BaseSubCP ProjectTo(AffineBasis aBasis);
+    public abstract BaseSubCP ProjectTo(AffineBasis affBasis);
 
 
     /// <summary>
@@ -151,7 +151,6 @@ public partial class Geometry<TNum, TConv>
     /// <param name="obj">The object to compare with convex polytop.</param>
     /// <returns>True if the specified object is equal to convex polytop, False otherwise</returns>
     public override bool Equals(object? obj) {
-
       throw new InvalidOperationException($"BaseSubCP: Equals method is not supported for BaseSubCP");
 
       // if (obj == null || this.GetType() != obj.GetType()) {

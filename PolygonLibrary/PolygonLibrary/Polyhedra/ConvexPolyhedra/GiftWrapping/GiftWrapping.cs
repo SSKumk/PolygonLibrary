@@ -23,8 +23,8 @@ public partial class Geometry<TNum, TConv>
       if (BuiltPolytop.PolytopDim == 0) {
         return new FaceLattice(BuiltPolytop.OriginalVertices.First());
       }
+      int d = BuiltPolytop.PolytopDim;
 
-      int                        d       = BuiltPolytop.PolytopDim;
       List<SortedSet<BaseSubCP>> lattice = new List<SortedSet<BaseSubCP>>();
       for (int i = 0; i <= BuiltPolytop.PolytopDim; i++) {
         lattice.Add(new SortedSet<BaseSubCP>());
@@ -205,13 +205,15 @@ public partial class Geometry<TNum, TConv>
         if (spaceDim == 2) {
           return new SubTwoDimensional(S);
         }
-        // if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
-        //  // todo А что делать в случае симплекса? Что с нормалями к гипер-граням?
-        // Если берём 2D грань симплекса, то надо возвращать не SubSimplex, а SubTwoDimensional
-        // }
+        if (S.Count == spaceDim + 1) { // Отдельно обработали случай симплекса.
+          return new SubSimplex(S);
+        }
 
         // Создаём начальную грань. (Либо берём, если она передана).
-        initFace ??= BuildFace(BuildInitialPlane(out Vector normal), normal);
+        if (initFace is null) {
+          initFace        = BuildFace(BuildInitialPlane(out Vector normal));
+          initFace.Normal = normal;
+        }
         Debug.Assert(initFace.Vertices.Count >= spaceDim);
         buildFaces.Add(initFace);
         buildPoints.UnionWith(initFace.Vertices);
@@ -254,8 +256,7 @@ public partial class Geometry<TNum, TConv>
 
           // С каждого ребра, с которого можно перекатываться -- мы перекатываемся.
           foreach (BaseSubCP edge in face.Faces!.Where(edge => buildIncidence[edge].F2 is null)) {
-            BaseSubCP nextFace = RollOverEdge(face, edge, out Vector n);
-            nextFace.Normal = n;
+            BaseSubCP nextFace = RollOverEdge(face, edge);
 
             Debug.Assert(nextFace.Vertices.Count >= spaceDim);
             buildFaces.Add(nextFace);
@@ -369,40 +370,48 @@ public partial class Geometry<TNum, TConv>
       /// Builds the next facet of the polytop based on the given basis and normal.
       /// </summary>
       /// <param name="FaceBasis">The basis of the (d-1)-dimensional subspace in terms of d-space.</param>
-      /// <param name="n">The outward normal of the building face.</param>
       /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space, used as the initial facet in the subspace.</param>
       /// <returns>
       /// The BaseSubCP: (d-1)-dimensional polytop complex expressed in terms of d-dimensional points.
       /// </returns>
-      private BaseSubCP BuildFace(AffineBasis FaceBasis, Vector n, BaseSubCP? initEdge = null) {
+      private BaseSubCP BuildFace(AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
         Debug.Assert
           (
            FaceBasis.SubSpaceDim == spaceDim - 1
          , $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!"
           );
 
+        BaseSubCP newFace;
+
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
-        SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
+        // SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
+        IEnumerable<SubPoint> inPlane = S.Where(FaceBasis.Contains);
+        Debug.Assert(inPlane.Count() >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
-        Debug.Assert(inPlane.Count >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
+        if (inPlane.Count() == spaceDim) { // Случай симплекса обрабатываем без ухода в подпространство
+          newFace = new SubSimplex(inPlane);
+        }
+        else {
+          inPlane = inPlane.Select(s => s.ProjectTo(FaceBasis));
+          // Если нам передали ребро, то в подпространстве оно будет начальной гранью.
+          // Его нормаль будет (0,0,...,1)
+          BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
+          if (prj_initFace is not null) {
+            prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SubSpaceDim, FaceBasis.SubSpaceDim);
+          }
 
-        // Если нам передали ребро, то в подпространстве оно будет начальной гранью.
-        // Его нормаль будет (0,0,...,1)
-        BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
-        if (prj_initFace is not null) {
-          prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SubSpaceDim, FaceBasis.SubSpaceDim);
+          // Овыпукляем в подпространстве
+          newFace = new GiftWrappingMain(inPlane.ToSortedSet(), prj_initFace).BuiltPolytop.ToPreviousSpace();
+
+          // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
+          SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
+          toRemove.ExceptWith(newFace.Vertices);
+          S.ExceptWith(toRemove);
+
+          // todo Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
         }
 
-        // Овыпукляем в подпространстве
-        BaseSubCP builtFace = new GiftWrappingMain(inPlane, prj_initFace).BuiltPolytop.ToPreviousSpace();
-        builtFace.Normal = n;
-
-        // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
-        SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
-        toRemove.ExceptWith(builtFace.Vertices);
-        S.ExceptWith(toRemove);
-
-        return builtFace;
+        return newFace;
       }
 
       /// <summary>
@@ -410,9 +419,8 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       /// <param name="face">(d-1)-dimensional face in d-dimensional space.</param>
       /// <param name="edge">(d-2)-dimensional edge in d-dimensional space.</param>
-      /// <param name="n">The outward normal of the next face.</param>
       /// <returns>(d-1)-dimensional face in d-dimensional space which incident to the face by the edge.</returns>
-      private BaseSubCP RollOverEdge(BaseSubCP face, BaseSubCP edge, out Vector n) {
+      private BaseSubCP RollOverEdge(BaseSubCP face, BaseSubCP edge) {
         Debug.Assert(face.SpaceDim == spaceDim, $"RollOverEdge (dim = {spaceDim}): The face must lie in d-dimensional space!");
         Debug.Assert
           (
@@ -456,28 +464,28 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(r is not null, "GiftWrapping.RollOverEdge: A new vector 'r' is null!");
 
         // TODO: А точно нужен новый базис?
-        AffineBasis newF_aBasis = new AffineBasis(edgeAffBasis);
-        newF_aBasis.AddVector(r);
+        // AffineBasis newF_aBasis = new AffineBasis(edgeAffBasis);
+        // newF_aBasis.AddVector(r);
+
+        edgeAffBasis.AddVector(r); // newF_aBasis.AddVector(r)
 
         Debug.Assert
           (
-           newF_aBasis.SubSpaceDim == face.PolytopDim
+           edgeAffBasis.SubSpaceDim == face.PolytopDim
          , $"RollOverEdge (dim = {spaceDim}): The dimension of the basis of new F' must equals to F dimension!"
           );
 
-
-        List<SubPoint> newPlane = new List<SubPoint>(edge.Vertices) { sStar! };
-        newF_aBasis = new AffineBasis(newPlane);
-
         //ПЕРЕКАТ точно. ЛУЧШЕ точно но в DOUBLE
-        n = CalcOuterNormal(newF_aBasis);
+        // n = CalcOuterNormal(newF_aBasis);
 
         //ПЕРЕКАТ Сварт. ЧЕМ "быстро" но в DDOUBLE!!!
         // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
         // Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
 
+        BaseSubCP newFace = BuildFace(edgeAffBasis, edge);
+        newFace.Normal = CalcOuterNormal(edgeAffBasis);
 
-        return BuildFace(newF_aBasis, n, edge);
+        return newFace;
       }
 #endregion
 
