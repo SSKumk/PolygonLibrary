@@ -917,8 +917,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="rowInd">The index of the matrix row to be multiplied.</param>
     /// <param name="v1">The first vector in the difference (v1 - v2).</param>
     /// <param name="v2">The second vector in the difference (v1 - v2).</param>
-    /// <returns><c>true</c> if the result is equal to the corresponding element in the vector difference; otherwise, <c>false</c>.</returns>
-    public bool MultiplyRowByDiffOfVectorsAndCompare(int rowInd, Vector v1, Vector v2) {
+    /// <returns>Returns the resulting scalar value.</returns>
+    public TNum MultiplyRowByDiffOfVectors(int rowInd, Vector v1, Vector v2) {
       Debug.Assert
         (
          Cols == v1.SpaceDim
@@ -930,7 +930,7 @@ public partial class Geometry<TNum, TConv>
         result += _m[k] * (v1[col] - v2[col]);
       }
 
-      return Tools.EQ(result, v1[rowInd] - v2[rowInd]);
+      return result;
     }
 
     /// <summary>
