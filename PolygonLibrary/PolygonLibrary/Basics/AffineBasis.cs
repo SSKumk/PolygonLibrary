@@ -125,7 +125,7 @@ public partial class Geometry<TNum, TConv>
 
       // LinBasis.Contains(v - Origin);
       for (int row = 0; row < SpaceDim; row++) {
-        if (!LinBasis.ProjMatrix.MultiplyRowByDiffOfVectorsAndCompare(row, v, Origin)) {
+        if (Tools.NE(LinBasis.ProjMatrix.MultiplyRowByDiffOfVectors(row, v, Origin), v[row] - Origin[row])) {
           return false;
         }
       }
