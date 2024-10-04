@@ -32,24 +32,23 @@ class Program {
     ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
 
 
-    // ConvexPolytop res = ConvexPolytop.Cube01_VRep(3);
-    // ConvexPolytop res = ConvexPolytop.SimplexRND(3);
-    ConvexPolytop res = ConvexPolytop.CreateFromReader(prW);
-    // Console.WriteLine($"res f-vector = {string.Join(' ', res.fVector)}");
+    ConvexPolytop res = ConvexPolytop.Cube01_VRep(5);
+    // ConvexPolytop res = ConvexPolytop.SimplexRND(4);
+    // ConvexPolytop res = ConvexPolytop.DistanceToOriginBall_2(3, 4,3, 2);
+    // ConvexPolytop res = ConvexPolytop.CreateFromReader(prW);
 
     ConvexPolytop a   = res;
     FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(a.Hrep, res.PolytopDim);
-    Console.WriteLine($"lvl = 0: {aFL.Lattice[0].SetEquals(res.FLrep.Lattice[0])}");
-    Console.WriteLine($"lvl = 1: {aFL.Lattice[1].SetEquals(res.FLrep.Lattice[1])}");
-    Console.WriteLine($"lvl = 2: {aFL.Lattice[2].SetEquals(res.FLrep.Lattice[2])}");
-    Console.WriteLine($"Are equal: {aFL.Equals(res.FLrep)}");
+    // Console.WriteLine($"lvl = 0:\t{aFL.Lattice[0].SetEquals(res.FLrep.Lattice[0])}");
+    // Console.WriteLine($"lvl = 1:\t{aFL.Lattice[1].SetEquals(res.FLrep.Lattice[1])}");
+    // Console.WriteLine($"lvl = 2:\t{aFL.Lattice[2].SetEquals(res.FLrep.Lattice[2])}");
+    Console.WriteLine($"Are equal:\t{aFL.Equals(res.FLrep)}");
 
+    Console.WriteLine($"lvl 0 vert: aFL = {aFL.Lattice[0].Count}\tres = {res.FLrep.Lattice[0].Count}");
+    Console.WriteLine($"lvl 1 vert: aFL = {aFL.Lattice[1].Count}\tres = {res.FLrep.Lattice[1].Count}");
+    Console.WriteLine($"lvl 2 vert: aFL = {aFL.Lattice[2].Count}\tres = {res.FLrep.Lattice[2].Count}");
+    Console.WriteLine($"lvl 3 vert: aFL = {aFL.Lattice[3].Count}\tres = {res.FLrep.Lattice[3].Count}");
 
-    Console.WriteLine($"aFl lvl 3 vert = {aFL.Top.Vertices.Count}");
-    Console.WriteLine($"res lvl 3 vert = {res.FLrep.Top.Vertices.Count}");
-
-    // Console.WriteLine($"{aFL.Lattice[0].Count}");
-    // Console.WriteLine($"{aFL.Lattice[1].Count}");
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
