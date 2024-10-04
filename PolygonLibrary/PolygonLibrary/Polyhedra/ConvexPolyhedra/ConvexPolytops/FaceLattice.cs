@@ -180,29 +180,55 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
+      this.Top.CleanVerticesDown();
+      other.Top.CleanVerticesDown();
+
       bool isEqual = true;
-      for (int i = this.Top.PolytopDim; isEqual && i > -1; i--) {
-        foreach (var thisNode in this.Lattice[i]) {
-          if (!other.Lattice[i].TryGetValue(thisNode, out FLNode? otherNode)) {
-            isEqual = false;
-          }
-          else {
-            isEqual = isEqual && thisNode.Sub.SetEquals(otherNode.Sub);
-            isEqual = isEqual && thisNode.Super.SetEquals(otherNode.Super);
-          }
+
+      for (int i = 0; i < Top.PolytopDim; i++) {
+        if (Lattice[i].Count != other.Lattice[i].Count) {
+          return false;
         }
-        if (isEqual) {
-          foreach (var otherNode in other.Lattice[i]) {
-            if (!this.Lattice[i].TryGetValue(otherNode, out FLNode? thisNode)) {
-              isEqual = false;
-            }
-            else {
-              isEqual = isEqual && otherNode.Sub.SetEquals(thisNode.Sub);
-              isEqual = isEqual && otherNode.Super.SetEquals(thisNode.Super);
-            }
-          }
+
+        List<FLNode> mine   = this.Lattice[i].ToList();
+        List<FLNode> theirs = other.Lattice[i].ToList();
+
+        mine.Sort();
+        theirs.Sort();
+
+        for (int j = 0; j <= Lattice.Count; j++) {
+          isEqual = isEqual && mine[j].InnerPoint.Equals(theirs[j].InnerPoint);
+        }
+
+        if (!isEqual) {
+          return false;
         }
       }
+
+      return true;
+
+      // for (int i = this.Top.PolytopDim; isEqual && i > -1; i--) {
+      //   foreach (var thisNode in this.Lattice[i]) {
+      //     if (!other.Lattice[i].TryGetValue(thisNode, out FLNode? otherNode)) {
+      //       isEqual = false;
+      //     }
+      //     else {
+      //       isEqual = isEqual && thisNode.Sub.SetEquals(otherNode.Sub);
+      //       isEqual = isEqual && thisNode.Super.SetEquals(otherNode.Super);
+      //     }
+      //   }
+      //   if (isEqual) {
+      //     foreach (var otherNode in other.Lattice[i]) {
+      //       if (!this.Lattice[i].TryGetValue(otherNode, out FLNode? thisNode)) {
+      //         isEqual = false;
+      //       }
+      //       else {
+      //         isEqual = isEqual && otherNode.Sub.SetEquals(thisNode.Sub);
+      //         isEqual = isEqual && otherNode.Super.SetEquals(thisNode.Super);
+      //       }
+      //     }
+      //   }
+      // }
 
       return isEqual;
     }
@@ -220,7 +246,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
-    public Vector InnerPoint { get; }
+    public Vector InnerPoint { get; private set; }
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to this polytop.
@@ -264,6 +290,7 @@ public partial class Geometry<TNum, TConv>
           _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
           foreach (FLNode subNode in Sub) {
             subNode.CleanVerticesDown();
+            InnerPoint = (Sub.First().InnerPoint + Sub.Last().InnerPoint) / Tools.Two;
           }
         }
       // }
@@ -462,9 +489,6 @@ public partial class Geometry<TNum, TConv>
     /// </returns>
     public int CompareTo(FLNode? other) {
       if (other is null) { return 1; } // null < this (always)
-
-      // return this.InnerPoint.CompareTo(other.InnerPoint); // todo ГОДИТСЯ ли такой CompareTo для FLNode ?!
-
 
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
         return -1;
