@@ -342,13 +342,13 @@ public partial class Geometry<TNum, TConv>
     internal IEnumerable<FLNode> GetLevelBelowNonStrict(int dim) => dim > PolytopDim ? new SortedSet<FLNode>() : GetLevel(dim);
 
     /// <summary>
-    /// Adds a given node to the set of super nodes for this node.
+    /// Adds a given node to the set of sub nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
     internal void AddSub(FLNode node) => Sub.Add(node);
 
     /// <summary>
-    /// Adds a given node to the set of sub nodes for this node.
+    /// Adds a given node to the set of super nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
     internal void AddSuper(FLNode node) => Super.Add(node);
@@ -401,6 +401,12 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The collection that contains all non-strict sub-faces of the node.</returns>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
+
+    // todo xml
+    public static void Connect(FLNode sub, FLNode supper) {
+      sub.AddSuper(supper);
+      supper.AddSub(sub);
+    }
 #endregion
 
 #region Overrides
@@ -437,6 +443,9 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(FLNode? other) {
       if (other is null) { return 1; } // null < this (always)
 
+      // return this.InnerPoint.CompareTo(other.InnerPoint); // todo ГОДИТСЯ ли такой CompareTo для FLNode ?!
+      
+      
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
         return -1;
       }
