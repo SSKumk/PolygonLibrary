@@ -47,6 +47,7 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPoint.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubTwoDimensional.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubZeroDimensional.cs" />
+        <Compile Include="Polyhedra\ConvexPolyhedra\HrepToFLrep.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiSum.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs" />
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytop.cs" />
