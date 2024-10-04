@@ -27,19 +27,33 @@ class Program {
 
     bool isDouble = ftype == "double";
 
+    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    string      t   = "5.10";
+    ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+
+
+    // ConvexPolytop res = ConvexPolytop.Cube01_VRep(3);
+    ConvexPolytop res = ConvexPolytop.CreateFromReader(prW);
+    Console.WriteLine($"res f-vector = {string.Join(' ', res.fVector)}");
+
+    ConvexPolytop a   = res;
+    FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(a.Hrep);
+    Console.WriteLine($"{aFL.Lattice[0].SetEquals(res.FLrep.Lattice[0])}");
+    Console.WriteLine($"{aFL.Lattice[1].SetEquals(res.FLrep.Lattice[1])}");
+
+
+    // Console.WriteLine($"{aFL.Lattice[0].Count}");
+    // Console.WriteLine($"{aFL.Lattice[1].Count}");
+
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
     // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
-    // solverLdg.Solve(false, false, isDouble);
+    // solverLdg.Solve(false, true, isDouble);
 
-    // Console.WriteLine($"LinBasis.ProjVector count = {LinearBasis.projCount}");
-
-    // Console.WriteLine($"Average Contains in AffBasis = {AffineBasis.useContains / AffineBasis.createAff}");
   }
 
 }
-
 
 
 // string      t   = "3.10";
