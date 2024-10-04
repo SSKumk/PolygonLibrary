@@ -17,8 +17,7 @@ public partial class Geometry<TNum, TConv>
     private readonly int _n;
     private readonly int _k;
 
-    // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    private int[] _state;
+    private readonly int[] _state;
 
     /// <summary>
     /// Initializes a combination with init state 0..k-1.
