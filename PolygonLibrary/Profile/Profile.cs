@@ -33,14 +33,20 @@ class Program {
 
 
     // ConvexPolytop res = ConvexPolytop.Cube01_VRep(3);
+    // ConvexPolytop res = ConvexPolytop.SimplexRND(3);
     ConvexPolytop res = ConvexPolytop.CreateFromReader(prW);
-    Console.WriteLine($"res f-vector = {string.Join(' ', res.fVector)}");
+    // Console.WriteLine($"res f-vector = {string.Join(' ', res.fVector)}");
 
     ConvexPolytop a   = res;
-    FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(a.Hrep);
-    Console.WriteLine($"{aFL.Lattice[0].SetEquals(res.FLrep.Lattice[0])}");
-    Console.WriteLine($"{aFL.Lattice[1].SetEquals(res.FLrep.Lattice[1])}");
+    FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(a.Hrep, res.PolytopDim);
+    Console.WriteLine($"lvl = 0: {aFL.Lattice[0].SetEquals(res.FLrep.Lattice[0])}");
+    Console.WriteLine($"lvl = 1: {aFL.Lattice[1].SetEquals(res.FLrep.Lattice[1])}");
+    Console.WriteLine($"lvl = 2: {aFL.Lattice[2].SetEquals(res.FLrep.Lattice[2])}");
+    Console.WriteLine($"Are equal: {aFL.Equals(res.FLrep)}");
 
+
+    Console.WriteLine($"aFl lvl 3 vert = {aFL.Top.Vertices.Count}");
+    Console.WriteLine($"res lvl 3 vert = {res.FLrep.Top.Vertices.Count}");
 
     // Console.WriteLine($"{aFL.Lattice[0].Count}");
     // Console.WriteLine($"{aFL.Lattice[1].Count}");
