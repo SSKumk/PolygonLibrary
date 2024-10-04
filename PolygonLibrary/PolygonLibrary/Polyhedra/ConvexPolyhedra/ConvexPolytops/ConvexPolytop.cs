@@ -324,11 +324,11 @@ public partial class Geometry<TNum, TConv>
         List<List<int>> fk    = pr.Read2DJaggedArray<int>($"f{i}");
         lattice.Add(new List<FLNode>(fk.Count));
         foreach (List<int> fPred in fk) {
-          lattice[i].Add(new FLNode(fPred.Select(fPredInd => lattice[predI][fPredInd]).ToList()));
+          lattice[i].Add(new FLNode(fPred.Select(fPredInd => lattice[predI][fPredInd])));
         }
       }
 
-      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList()));
+      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList(), false));
     }
 #endregion
 
