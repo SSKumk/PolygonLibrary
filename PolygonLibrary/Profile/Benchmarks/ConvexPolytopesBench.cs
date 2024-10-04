@@ -169,7 +169,7 @@ public class ConvexPolytopesBench {
   // public class Program {
   //
   //   public static void Main(string[] args) {
-  //     int[] fVector = ConvexPolytop.Sphere(4, 18, 16, Vector.Zero(4), 1).FVector;
+  //     int[] fVector = ConvexPolytop.Sphere(4, 18, 16, Vector.Zero(4), 1).fVector;
   //     Console.WriteLine($"4 18 16 fvec = {string.Join(' ', fVector)}");
   //   }
   //

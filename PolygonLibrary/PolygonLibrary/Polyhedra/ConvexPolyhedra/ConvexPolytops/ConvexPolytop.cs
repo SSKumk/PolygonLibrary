@@ -160,7 +160,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets the number of faces at each dimension level of the face lattice.
     /// The f-vector represents the count of elements at each dimension level of the face lattice of the polytop.
     /// </summary>
-    public int[] FVector => FLrep.Lattice.Select(lvl => lvl.Count).ToArray();
+    public int[] fVector => FLrep.Lattice.Select(lvl => lvl.Count).ToArray();
 
     /// <summary>
     /// Computes the minimum distance between any pair of vertices in the Vrep.
