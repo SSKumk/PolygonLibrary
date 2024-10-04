@@ -9,13 +9,13 @@ public partial class Geometry<TNum, TConv>
 
     public static FaceLattice HrepToFLrep_Geometric(List<HyperPlane> HPs, int PolytopDim) {
       SortedDictionary<FLNode, List<HyperPlane>> vToHPs = new SortedDictionary<FLNode, List<HyperPlane>>();
-      List<SortedDictionary<Vector, FLNode>>     FL     = new List<SortedDictionary<Vector, FLNode>>(); // 0 and 1 lvls
-      for (int i = 0; i < PolytopDim; i++) {
-        FL.Add(new SortedDictionary<Vector, FLNode>());
+      List<SortedSet<FLNode>>                    FL     = new List<SortedSet<FLNode>>(); // 0 and 1 lvls
+      for (int i = 0; i <= PolytopDim; i++) {
+        FL.Add(new SortedSet<FLNode>());
       }
-      
-      int                                        m      = HPs.Count;
-      int                                        d      = HPs.First().Normal.SpaceDim;
+
+      int m = HPs.Count;
+      int d = HPs.First().Normal.SpaceDim;
 
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
       // Наивная реализация
@@ -23,11 +23,11 @@ public partial class Geometry<TNum, TConv>
       if (firstPoint is null) {
         throw new ArgumentException($"This is not a polytope!");
       }
-      FL[0].Add(firstPoint, new FLNode(firstPoint));
+      FL[0].Add(new FLNode(firstPoint));
 
       // Этап 2. Поиск всех остальных вершин
       Queue<(FLNode, List<HyperPlane>)> process = new Queue<(FLNode, List<HyperPlane>)>();
-      process.Enqueue((FL[0].First().Value, HPs.Where(hp => hp.Contains(FL[0].First().Key)).ToList()));
+      process.Enqueue((FL[0].First(), HPs.Where(hp => hp.Contains(FL[0].First().InnerPoint)).ToList()));
 
       // Обход в ширину
       while (process.TryDequeue(out (FLNode, List<HyperPlane>) elem)) {
@@ -59,7 +59,8 @@ public partial class Geometry<TNum, TConv>
               if (firstNonZeroProduct) {
                 if (Tools.GT(dotProduct)) { v = -v; }
                 firstNonZeroProduct = false;
-              } else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+              }
+              else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
                 if (Tools.GT(dotProduct)) {
                   isEdge = false;
 
@@ -92,12 +93,9 @@ public partial class Geometry<TNum, TConv>
               }
             }
             FLNode zNew_node = new FLNode(zNew);
-            FL[1].Add((z.InnerPoint+zNew_node.InnerPoint)/Tools.Two,new FLNode(new List<FLNode>()
-              {
-                z, zNew_node
-              }));
-            if (!FL[0].TryGetValue(zNew, out FLNode? _)) {
-              FL[0].Add(zNew, zNew_node);
+            FL[1].Add(new FLNode(new List<FLNode>() { z, zNew_node }));
+            if (!FL[0].Contains(zNew_node)) {
+              FL[0].Add(zNew_node);
               edgeLine.AddRange(zNewHPs);
               process.Enqueue((zNew_node, edgeLine));
             }
@@ -106,37 +104,43 @@ public partial class Geometry<TNum, TConv>
       }
 
       // Теперь собираем всю оставшуюся решётку
-      foreach (FLNode vertex in FL[0].Values) {
+      foreach (FLNode vertex in FL[0]) {
         List<HyperPlane> vHP = vToHPs[vertex];
         foreach (HyperPlane hp in vHP) {             // Цикл по гиперплоскостям, на которых строим k-грани
           for (int i = 1; i < PolytopDim - 1; i++) { // Цикл по размерности узлов, по которым будем строить решётку
             // строим узел размерности i+1
-            var set = FL[i].Where(node => hp.Contains(node.Value.InnerPoint)).ToList();
+            var set = FL[i].Where(node => hp.Contains(node.InnerPoint)).ToList();
             // перебираем по две штуки
             for (int fst = 0; fst < set.Count - 1; fst++) {
               for (int snd = fst + 1; snd < set.Count; snd++) {
-                Vector innerPoint = (set[fst].Value.InnerPoint + set[snd].Value.InnerPoint) / Tools.Two;
+                Vector innerPoint = (set[fst].InnerPoint + set[snd].InnerPoint) / Tools.Two;
 
                 int iP_belong = vHP.Count(vhp => vhp.Contains(innerPoint));
                 if (iP_belong + i + 1 == PolytopDim) { // Кажется, что это поможет отфильтровать лишние грани
-                  if (FL[i+1].TryGetValue(innerPoint, out FLNode? supper)) { // если узел уже есть, то устанавливаем связи
-                    FLNode.Connect(set[fst].Value, supper);
-                    FLNode.Connect(set[snd].Value, supper);
-                  } else {
-                    // todo
-                  }
-                  var x = new FLNode([set[fst], set[snd]]);
 
+                  bool found = false;
+                  foreach (FLNode supper in FL[i + 1]) {
+                    if (supper.AffBasis.Contains(innerPoint)) { // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
+                      FLNode.Connect(set[fst], supper, false);
+                      FLNode.Connect(set[snd], supper, false);
+                      found = true;
+
+                      break;
+                    }
+                  }
+                  if (!found) { // иначе создаём узел и устанавливаем связи
+                    FL[i + 1].Add(new FLNode(new List<FLNode>() { set[fst], set[snd] }));
+                  }
                 }
               }
             }
           }
-          // FL[PolytopDim] = ...
         }
       }
+      FL[PolytopDim].Add(new FLNode(FL[^2]));
 
 
-      return new FaceLattice(FL);
+      return new FaceLattice(FL, true);
     }
 
     /// <summary>
