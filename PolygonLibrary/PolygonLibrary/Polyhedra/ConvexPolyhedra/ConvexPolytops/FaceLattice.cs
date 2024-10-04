@@ -56,19 +56,24 @@ public partial class Geometry<TNum, TConv>
     /// Construct a face lattice based on given lattice.
     /// </summary>
     /// <param name="lattice">The lattice.</param>
-    public FaceLattice(List<SortedSet<FLNode>> lattice) {
-      Top     = lattice[^1].First();
+    /// <param name="updateVertices">todo xml </param>
+    public FaceLattice(List<SortedSet<FLNode>> lattice, bool updateVertices) {
       Lattice = lattice;
+      Top     = Lattice[^1].First();
+
+      if (updateVertices) {
+        Top.CleanVerticesDown();
+      }
     }
 
-    /// <summary>
-    /// Construct a face lattice based on a maximum element.
-    /// </summary>
-    /// <param name="Maximum">The maximum node.</param>
-    public FaceLattice(FLNode Maximum) {
-      Top     = Maximum;
-      Lattice = Maximum.GetAllLevels();
-    }
+    // /// <summary>
+    // /// Construct a face lattice based on a maximum element.
+    // /// </summary>
+    // /// <param name="Maximum">The maximum node.</param>
+    // public FaceLattice(FLNode Maximum) {
+    //   Top     = Maximum;
+    //   Lattice = Maximum.GetAllLevels();
+    // }
 
     internal static FaceLattice ConstructFromFLNodeSum(List<SortedSet<FLNodeSum>> FLS) {
       List<SortedSet<FLNode>> newFL = new List<SortedSet<FLNode>>();
@@ -95,7 +100,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new FaceLattice(newFL);
+      return new FaceLattice(newFL, false);
     }
 
     internal static FaceLattice ConstructFromBaseSubCP(List<SortedSet<BaseSubCP>> FLS) {
@@ -123,7 +128,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new FaceLattice(newFL);
+      return new FaceLattice(newFL, false);
     }
 #endregion
 
@@ -150,20 +155,19 @@ public partial class Geometry<TNum, TConv>
 
       for (int i = 1; i < newFL.Count; i++) {
         foreach (FLNode node in Lattice[i]) {
-          List<FLNode> newSub = node.Sub.Select(n => oldToNew[n]).ToList();
-
-          FLNode newNode = new FLNode(newSub);
+          FLNode newNode = new FLNode(node.Sub.Select(n => oldToNew[n]));
           oldToNew.Add(node, newNode);
           newFL[i].Add(newNode);
         }
       }
 
-      return new FaceLattice(newFL);
+      return new FaceLattice(newFL, false);
     }
 #endregion
 
 #region Overrides
-    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Vertices.Count, NumberOfNonZeroKFaces);
+    public override int GetHashCode()
+      => throw new InvalidOperationException(); //HashCode.Combine(Vertices.Count, NumberOfNonZeroKFaces);
 
     public override bool Equals(object? obj) {
       if (obj == null || GetType() != obj.GetType()) {
@@ -237,7 +241,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Maps the dimension to the set of nodes within this dimension.
     /// </summary>
-    private readonly Dictionary<int, SortedSet<FLNode>> _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
+    private Dictionary<int, SortedSet<FLNode>> _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
 
     private Dictionary<int, SortedSet<FLNode>> LevelNodes {
       get
@@ -252,6 +256,19 @@ public partial class Geometry<TNum, TConv>
 
     private SortedSet<Vector>? _vertices = null;
 
+    // todo xml
+    public void CleanVerticesDown() {
+      // if (_vertices is not null) { // мб как-то можно оптимизировать, но это не работает.
+        if (PolytopDim != 0) {
+          _vertices   = null;
+          _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
+          foreach (FLNode subNode in Sub) {
+            subNode.CleanVerticesDown();
+          }
+        }
+      // }
+    }
+
     /// <summary>
     /// The vertices of the node, i.e. the polytop associated with this node.
     /// </summary>
@@ -259,7 +276,7 @@ public partial class Geometry<TNum, TConv>
       get
         {
           if (_vertices is null) {
-            if (AffBasis.SubSpaceDim == 0) { // если это точка, то тогда её и возвращаем
+            if (PolytopDim == 0) { // если это точка, то тогда её и возвращаем
               _vertices = new SortedSet<Vector>() { AffBasis.Origin };
             }
             else {
@@ -291,7 +308,7 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    public FLNode(List<FLNode> sub) {
+    public FLNode(IEnumerable<FLNode> sub) {
       Sub        = new SortedSet<FLNode>(sub); // todo убрать, когда Sub станет List<...>
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
@@ -403,8 +420,11 @@ public partial class Geometry<TNum, TConv>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
 
     // todo xml
-    public static void Connect(FLNode sub, FLNode supper) {
+    public static void Connect(FLNode sub, FLNode supper, bool clean) {
       sub.AddSuper(supper);
+      if (clean) {
+        supper._vertices = null;
+      }
       supper.AddSub(sub);
     }
 #endregion
@@ -444,8 +464,8 @@ public partial class Geometry<TNum, TConv>
       if (other is null) { return 1; } // null < this (always)
 
       // return this.InnerPoint.CompareTo(other.InnerPoint); // todo ГОДИТСЯ ли такой CompareTo для FLNode ?!
-      
-      
+
+
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
         return -1;
       }
