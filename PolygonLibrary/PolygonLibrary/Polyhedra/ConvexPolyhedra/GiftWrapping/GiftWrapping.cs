@@ -11,7 +11,7 @@ public partial class Geometry<TNum, TConv>
   public class GiftWrapping {
 
     /// <summary>
-    /// The convex polytop obtained as a result of gift wrapping algorithm.
+    /// The convex polytope obtained as a result of gift wrapping algorithm.
     /// </summary>
     private readonly BaseSubCP BuiltPolytop;
 
@@ -85,7 +85,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Wraps the convex polytop of the given swarm and produce its face lattice.
+    /// Wraps the convex polytope of the given swarm and produce its face lattice.
     /// </summary>
     /// <param name="S">The swarm of points to construct the face lattice from.</param>
     /// <returns>The constructed face lattice.</returns>
@@ -166,7 +166,7 @@ public partial class Geometry<TNum, TConv>
         buildIncidence = new TempIncidenceInfo(); // ребро --> (F1, F2) которые соседствуют через это ребро
 
       /// <summary>
-      /// The resulted d-polytop in d-space. It holds information about face incidence, vertex-to-face incidence,
+      /// The resulted d-polytope in d-space. It holds information about face incidence, vertex-to-face incidence,
       /// (d-1)-faces, vertices, and all k-faces, where 0 &lt; k &lt; d - 1.
       /// </summary>
       public readonly BaseSubCP BuiltPolytop;
@@ -174,7 +174,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
       /// <summary>
-      /// Performs the gift wrapping algorithm to construct a convex polytop from the given swarm of points.
+      /// Performs the gift wrapping algorithm to construct a convex polytope from the given swarm of points.
       /// </summary>
       /// <param name="Swarm">The set of points used for constructing the convex polytop.</param>
       /// <param name="initFace">The initial facet to start the gift wrapping algorithm. If null, the algorithm constructs it.</param>
@@ -186,7 +186,7 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert
           (
            new AffineBasis(Swarm).SubSpaceDim == spaceDim
-         , $"GiftWrappingMain: span(Swarm) does not form a d-polytop in d-space!"
+         , $"GiftWrappingMain: span(Swarm) does not form a d-polytope in d-space!"
           );
 
         BuiltPolytop = GW();
@@ -367,12 +367,12 @@ public partial class Geometry<TNum, TConv>
       }
 
       /// <summary>
-      /// Builds the next facet of the polytop based on the given basis and normal.
+      /// Builds the next facet of the polytope based on the given basis and normal.
       /// </summary>
       /// <param name="FaceBasis">The basis of the (d-1)-dimensional subspace in terms of d-space.</param>
       /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space, used as the initial facet in the subspace.</param>
       /// <returns>
-      /// The BaseSubCP: (d-1)-dimensional polytop complex expressed in terms of d-dimensional points.
+      /// The BaseSubCP: (d-1)-dimensional polytope complex expressed in terms of d-dimensional points.
       /// </returns>
       private BaseSubCP BuildFace(AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
         Debug.Assert

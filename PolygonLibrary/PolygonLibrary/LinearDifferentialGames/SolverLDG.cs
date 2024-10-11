@@ -81,11 +81,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Computes the next section of a convex polytop by the second Pontryagin's method.
+    /// Computes the next section of a convex polytope by the second Pontryagin's method.
     /// </summary>
     /// <param name="predSec">The previous section of the bridge.</param>
-    /// <param name="predP">The first convex polytop (P) used in the Minkowski sum.</param>
-    /// <param name="predQ">The second convex polytop (Q) used in the Minkowski difference.</param>
+    /// <param name="predP">The first convex polytope (P) used in the Minkowski sum.</param>
+    /// <param name="predQ">The second convex polytope (Q) used in the Minkowski difference.</param>
     /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
       ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP, true);

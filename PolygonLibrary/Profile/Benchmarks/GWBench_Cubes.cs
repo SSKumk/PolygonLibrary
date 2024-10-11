@@ -20,7 +20,7 @@ public class GWBenchCubes {
 
   [GlobalSetup]
   public void SetUp() {
-    polytop = ConvexPolytop.CreateFromPoints(Cube01(dim, out _, new int[]{dim}, amount).ToHashSet());
+    polytope = ConvexPolytop.CreateFromPoints(Cube01(dim, out _, new int[]{dim}, amount).ToHashSet());
 
   }
 

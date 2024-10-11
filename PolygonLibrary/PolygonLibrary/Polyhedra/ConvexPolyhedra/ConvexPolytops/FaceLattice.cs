@@ -7,8 +7,8 @@ public partial class Geometry<TNum, TConv>
 
   /// <summary>
   /// Representation of a Convex Polytop as a Face Lattice:
-  /// A face lattice is a lattice where the maximum is the polytop itself.
-  /// The nodes of the lattice correspond to the faces of the polytop in their respective dimensions.
+  /// A face lattice is a lattice where the maximum is the polytope itself.
+  /// The nodes of the lattice correspond to the faces of the polytope in their respective dimensions.
   /// </summary>
   public class FaceLattice {
 
@@ -138,7 +138,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="transformFunc">The function to be applied to each vertex. This function takes a vertex of the lattice and returns a new point.</param>
     /// <returns>A new FaceLattice where each vertex has been transformed by the given function.</returns>
-    public FaceLattice LinearVertexTransform(Func<Vector, Vector> transformFunc) {
+    public FaceLattice VertexTransform(Func<Vector, Vector> transformFunc) {
       List<SortedSet<FLNode>> newFL = new List<SortedSet<FLNode>>();
       for (int i = 0; i <= Top.PolytopDim; i++) {
         newFL.Add(new SortedSet<FLNode>());
@@ -196,7 +196,7 @@ public partial class Geometry<TNum, TConv>
         mine.Sort();
         theirs.Sort();
 
-        for (int j = 0; j <= Lattice.Count; j++) {
+        for (int j = 0; j < Lattice[i].Count; j++) {
           isEqual = isEqual && mine[j].InnerPoint.Equals(theirs[j].InnerPoint);
         }
 
@@ -297,7 +297,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The vertices of the node, i.e. the polytop associated with this node.
+    /// The vertices of the node, i.e. the polytope associated with this node.
     /// </summary>
     public SortedSet<Vector> Vertices {
       get

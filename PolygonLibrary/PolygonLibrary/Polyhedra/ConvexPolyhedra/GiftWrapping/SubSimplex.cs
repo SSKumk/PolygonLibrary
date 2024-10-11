@@ -6,7 +6,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// The polytop that is a simplex in d-dimensional space (3 and higher dimension).
+  /// The polytope that is a simplex in d-dimensional space (3 and higher dimension).
   /// The faces of the simplex are calculated on demand.
   /// </summary>
   internal sealed class SubSimplex : BaseSubCP {

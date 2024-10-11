@@ -7,6 +7,7 @@ public partial class Geometry<TNum, TConv>
 
   public class HrepToFLrep {
 
+    // todo Вроде бы работает только в 3Д, в 4Д уже не работает!
     public static FaceLattice HrepToFLrep_Geometric(List<HyperPlane> HPs, int PolytopDim) {
       SortedDictionary<FLNode, List<HyperPlane>> vToHPs = new SortedDictionary<FLNode, List<HyperPlane>>();
       List<SortedSet<FLNode>>                    FL     = new List<SortedSet<FLNode>>(); // 0 and 1 lvls
@@ -144,7 +145,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Finds an initial vertex of the convex polytop using a naive approach by checking combinations of hyperplanes.
+    /// Finds an initial vertex of the convex polytope using a naive approach by checking combinations of hyperplanes.
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <param name="m">Total number of hyperplanes.</param>

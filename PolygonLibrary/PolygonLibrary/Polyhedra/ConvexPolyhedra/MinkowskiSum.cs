@@ -44,7 +44,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Q">The second polytope represented as a face lattice.</param>
     /// <param name="onlyHrep">If the flag is set then only affine basis of facets will be computed and Hrep be produced.</param>
     /// <returns>
-    /// Returns a convex polytop defined by face lattice or Hrep.
+    /// Returns a convex polytope defined by face lattice or Hrep.
     /// </returns>
     public static ConvexPolytop BySandipDas(ConvexPolytop P, ConvexPolytop Q, bool onlyHrep = false) {
       // Вычисляю аффинное пространство суммы P и Q

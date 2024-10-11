@@ -256,7 +256,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   }
 
   /// <summary>
-  /// Makes the cyclic polytop in specified dimension with specified amount of points.
+  /// Makes the cyclic polytope in specified dimension with specified amount of points.
   /// </summary>
   /// <param name="pDim">The dimension of the cyclic polytop.</param>
   /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>

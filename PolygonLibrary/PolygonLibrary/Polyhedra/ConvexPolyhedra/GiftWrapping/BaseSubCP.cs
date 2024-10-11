@@ -18,11 +18,11 @@ public partial class Geometry<TNum, TConv>
   // /// </summary>
   // internal class SubIncidenceInfo : SortedDictionary<BaseSubCP, (BaseSubCP F1, BaseSubCP F2)> { }
 
-  // /// <para><b>Simplex</b> - the polytop is a simplex.</para>
+  // /// <para><b>Simplex</b> - the polytope is a simplex.</para>
   /// <summary>
-  /// <b>SubPolytop</b> - the polytop is a complex structure.
-  /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
-  /// <b>OneDimensional</b> - the polytop is a 1D-segment.
+  /// <b>SubPolytop</b> - the polytope is a complex structure.
+  /// <para><b>TwoDimensional</b> - the polytope is a 2D-plane polygon.</para>
+  /// <b>OneDimensional</b> - the polytope is a 1D-segment.
   /// </summary>
   public enum SubCPType {
 
@@ -40,7 +40,7 @@ public partial class Geometry<TNum, TConv>
   internal abstract class BaseSubCP : IComparable<BaseSubCP> {
 
     /// <summary>
-    /// Gets the dimension of the space in which the polytop is treated.
+    /// Gets the dimension of the space in which the polytope is treated.
     /// </summary>
     public int SpaceDim => Vertices.First().SpaceDim;
 
@@ -50,10 +50,10 @@ public partial class Geometry<TNum, TConv>
     public abstract int PolytopDim { get; }
 
     /// <summary>
-    /// <para><b>Simplex</b> - the polytop is a simplex.</para>
-    /// <b>SubPolytop</b> - the polytop is a complex structure.
-    /// <para><b>TwoDimensional</b> - the polytop is a 2D-plane polygon.</para>
-    /// <b>OneDimensional</b> - the polytop is a 1D-segment.
+    /// <para><b>Simplex</b> - the polytope is a simplex.</para>
+    /// <b>SubPolytop</b> - the polytope is a complex structure.
+    /// <para><b>TwoDimensional</b> - the polytope is a 2D-plane polygon.</para>
+    /// <b>OneDimensional</b> - the polytope is a 1D-segment.
     /// </summary>
     public abstract SubCPType Type { get; }
 
@@ -82,16 +82,16 @@ public partial class Geometry<TNum, TConv>
     public virtual List<BaseSubCP> SuperFaces { get; } = new List<BaseSubCP>();
 
     /// <summary>
-    /// The outward normal of the (d-1)-dimensional polytop (face).
+    /// The outward normal of the (d-1)-dimensional polytope (face).
     /// </summary>
     public Vector Normal { get; set; }
 
 
     /// <summary>
-    /// Converts current d-dimensional polytop in d-dimensional space to d-dimensional polytop in (d+1)-dimensional space.
+    /// Converts current d-dimensional polytope in d-dimensional space to d-dimensional polytope in (d+1)-dimensional space.
     /// Assumed that the corresponding parents of vertices are exist.
     /// </summary>
-    /// <returns>The d-dimensional polytop in (d+1)-dimensional space.</returns>
+    /// <returns>The d-dimensional polytope in (d+1)-dimensional space.</returns>
     public abstract BaseSubCP ToPreviousSpace();
 
 

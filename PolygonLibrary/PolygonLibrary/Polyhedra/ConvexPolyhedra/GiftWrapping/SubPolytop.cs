@@ -5,7 +5,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// The polytop that is not a simplex in d-dimensional space (3 and higher dimension).
+  /// The polytope that is not a simplex in d-dimensional space (3 and higher dimension).
   /// </summary>
   internal sealed class SubPolytop : BaseSubCP {
 

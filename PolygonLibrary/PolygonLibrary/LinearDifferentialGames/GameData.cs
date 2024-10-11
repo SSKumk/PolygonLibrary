@@ -310,7 +310,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Reads the data of the terminal set from file.
     /// </summary>
-    /// <returns>The polytop that describes terminal set.</returns>
+    /// <returns>The polytope that describes terminal set.</returns>
     private ConvexPolytop ReadTerminalSet(out string describeM) {
       describeM = "";
       switch (goalType) {
