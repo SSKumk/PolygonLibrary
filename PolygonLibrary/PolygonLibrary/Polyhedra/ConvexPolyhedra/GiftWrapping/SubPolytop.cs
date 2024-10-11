@@ -56,7 +56,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Construct a new instance of the <see cref="SubPolytop"/> class based on its faces.
     /// </summary>
-    /// <param name="faces">Faces to construct the convex polytop</param>
+    /// <param name="faces">Faces to construct the convex polytope.</param>
     /// <param name="Vs">Vertices of this convex polytop. If null then its construct base on faces.</param>
     public SubPolytop(List<BaseSubCP> faces, SortedSet<SubPoint>? Vs = null) {
       PolytopDim = faces.First().PolytopDim + 1;
