@@ -34,27 +34,25 @@ class Program {
 
 
     // ConvexPolytop res = ConvexPolytop.Cube01_VRep(4);
-    // ConvexPolytop res = ConvexPolytop.SimplexRND(4);
+    ConvexPolytop res = ConvexPolytop.SimplexRND(4);
     // ConvexPolytop res = ConvexPolytop.DistanceToOriginBall_2(3, 4,3, 2);
-    ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
+    // ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
 
     Vector v   = Vector.Ones(res.PolytopDim);
-    Matrix rot = rotate3D_45XY;
-    Console.WriteLine($"{res.Rotate(rot).Equals(ConvexPolytop.CreateFromFaceLattice(res.FLrep).Rotate(rot))}");
-    Console.WriteLine($"{res.Rotate(rot).Equals(ConvexPolytop.CreateFromHalfSpaces(res.Hrep).Rotate(rot))}");
 
-    string      name = "Orig";
+    string      name = "OrigMoved";
     ParamWriter prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
-    res.WriteIn(prW);
-    name = "RotFromVrep";
-    prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
-    res.Rotate(rot).WriteIn(prW);
-    name = "RotFromFLrep";
-    prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
-    ConvexPolytop.CreateFromFaceLattice(res.FLrep).Rotate(rot).WriteIn(prW);
-    name = "RotFromHrep";
-    prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
-    ConvexPolytop.CreateFromHalfSpaces(res.Hrep).Rotate(rot).WriteIn(prW);
+    Console.WriteLine($"{res.ShiftToOrigin().Hrep.All(hp => hp.ContainsNegative(Vector.Zero(4)))}");
+    // res.ShiftToOrigin().WriteIn(prW);
+    // name = "RotFromVrep";
+    // prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytochp");
+    // res.Rotate(rot).WriteIn(prW);
+    // name = "RotFromFLrep";
+    // prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
+    // ConvexPolytop.CreateFromFaceLattice(res.FLrep).Rotate(rot).WriteIn(prW);
+    // name = "RotFromHrep";
+    // prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
+    // ConvexPolytop.CreateFromHalfSpaces(res.Hrep).Rotate(rot).WriteIn(prW);
 
     // ConvexPolytop a   = res;
     // FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(a.Hrep, res.PolytopDim);
