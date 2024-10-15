@@ -220,9 +220,8 @@ public partial class Geometry<TNum, TConv>
     private ConvexPolytop(SortedSet<Vector> VP, bool toConvexify) {
       SpaceDim = VP.First().SpaceDim;
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
-        GiftWrapping GW = new GiftWrapping(VP);
-        _FLrep = GW.ConstructFL();
-        _Vrep  = Vrep;
+        _FLrep = new GiftWrapping(VP).ConstructFL();
+        var _ = Vrep; //Сразу инициировали
       }
       else {
         _Vrep = new SortedSet<Vector>(VP);
@@ -240,8 +239,10 @@ public partial class Geometry<TNum, TConv>
       if (doHRedundancy) {
         throw new NotImplementedException
           (
-           "Надо сделать! Нужен симлекс-метод и алгоритм Фукуды. Либо, временно, задуалить, (где найти точку внутри? решить LP) там GW, вернуть обратно."
+           "Надо сделать! Нужен симлекс-метод и алгоритм Фукуды." +
+           " Либо осталось найти строго внутреннюю точку H^*rep. Фукуда пишет, что это LP. Опять нужен симплекс..."
           );
+        // _Hrep = HRedundancyByGW(HPs, innerPoint);
       }
       else {
         _Hrep = new List<HyperPlane>(HPs);
@@ -264,6 +265,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The convex polytope in FLrep.</returns>
     public ConvexPolytop GetInFLrep() => CreateFromFaceLattice(FLrep);
+    /// <summary>
+    /// Gets or constructs the Vrep of the polytope, and based on it creates new polytope.
+    /// </summary>
+    /// <returns>The convex polytope in FLrep.</returns>
+    public ConvexPolytop GetInVrep() => CreateFromPoints(Vrep);
 
     /// <summary>
     /// Constructs a convex polytope from a set of points.
@@ -746,13 +752,15 @@ public partial class Geometry<TNum, TConv>
 
 
 #region Functions
-    public ConvexPolytop Polar(Vector? innerPoint = null) { // Начало координат внутри многогранника, важно!
-
-
+    /// <summary>
+    /// Makes a dual polytope to this.
+    /// </summary>
+    /// <returns>The dual polytope.</returns>
+    public ConvexPolytop Polar(bool doUnRedundancy = false) { // Начало координат внутри многогранника, важно!
       if (IsVrep) {
         List<HyperPlane> hrepDual = new List<HyperPlane>();
         foreach (Vector v in Vrep) {
-          hrepDual.Add(new HyperPlane(v,Tools.One));
+          hrepDual.Add(new HyperPlane(v, Tools.One));
         }
 
         return CreateFromHalfSpaces(hrepDual);
@@ -764,11 +772,11 @@ public partial class Geometry<TNum, TConv>
           vrepDual.Add(hp.Normal / hp.ConstantTerm);
         }
 
-        return CreateFromPoints(vrepDual);
+        return CreateFromPoints(vrepDual, doUnRedundancy);
       }
 
       if (IsFLrep) {
-        throw new NotImplementedException("Тут надо перевернуть решётку. Но как это сделать правильно надо думать");
+        throw new NotImplementedException("Тут надо перевернуть решётку. Но как это сделать правильно надо думать! После чего поставить этот случай вперёд!");
       }
 
       throw new NotImplementedException("Всё, закончились представления.");
@@ -1184,6 +1192,17 @@ public partial class Geometry<TNum, TConv>
       } while (goNext && combination.Next());
 
       return firstPoint.Count != 0 ? firstPoint.First() : null;
+    }
+
+    /// <summary>
+    /// Eliminates all redundant inequalities from a linear system.
+    /// </summary>
+    /// <param name="HPs">The given system of inequalities.</param>
+    /// <param name="innerPoint">The strict interior point of the system.</param>
+    /// <returns>The not redundant system.</returns>
+    public static List<HyperPlane> HRedundancyByGW(List<HyperPlane> HPs, Vector innerPoint) {
+      ConvexPolytop init = CreateFromHalfSpaces(HPs);
+      return init.ShiftToOrigin(innerPoint).Polar(true).Polar().Shift(innerPoint).Hrep;
     }
 
   }
