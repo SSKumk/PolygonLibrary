@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
@@ -276,6 +278,9 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
+    public override string ToString()
+      => Normal.ToStringBraceAndDelim(' ', ' ', ',') + ConstantTerm.ToString(null, CultureInfo.InvariantCulture);
+
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
