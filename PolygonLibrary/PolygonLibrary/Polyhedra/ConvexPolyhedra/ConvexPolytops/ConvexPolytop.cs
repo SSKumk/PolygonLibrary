@@ -1032,11 +1032,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Converts the Hrep of a convex polytope to Vrep using a geometric-inspired algorithm.
+    /// Converts the Hrep of a convex polytope to Vrep using a geometric-inspired algorithm. Full-dimensional only!
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    /// todo ОНА НЕ РАБОТАЕТ если в Hrep есть две гиперплоскости с противоположными нормалями и свободными членами! (думать!)
     public static SortedSet<Vector> HrepToVrep_Geometric(List<HyperPlane> HPs) {
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               m  = HPs.Count;
@@ -1047,7 +1046,7 @@ public partial class Geometry<TNum, TConv>
       // Наивная реализация
       Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
       if (firstPoint is null) {
-        return new SortedSet<Vector>();
+        throw new ArgumentException("ConvexPolytop.HrepToVrep_Geometric: Can't find any solution of a given system!");
       }
       Vs.Add(firstPoint);
 
@@ -1134,6 +1133,9 @@ public partial class Geometry<TNum, TConv>
                   }
                 }
               }
+            }
+            if (tMin == Tools.PositiveInfinity) {
+              throw new ArgumentException("The set of inequalities is unbounded!");
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
