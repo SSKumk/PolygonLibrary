@@ -27,31 +27,52 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-
-    List<HyperPlane> hps = new List<HyperPlane>() // пример из статьи 2020г Accelerating Fourier–Motzkin elimination using bit pattern trees
+    List<HyperPlane> hps = new List<HyperPlane>()
       {
-        new HyperPlane(new Vector(new ddouble[]{0,0,0,-1,0}), 0),
-        new HyperPlane(new Vector(new ddouble[]{0,-3,0,4,1}), 0),
-        new HyperPlane(new Vector(new ddouble[]{-1,0,1,0,-1}), 0),
-        new HyperPlane(new Vector(new ddouble[]{-1,4,-4,0,3}), 0),
-        new HyperPlane(new Vector(new ddouble[]{-2,0,0,-1,0}), 0),
-        new HyperPlane(new Vector(new ddouble[]{1,0,-3,0,-2}), 0),
-        new HyperPlane(new Vector(new ddouble[]{3,0,0,0,2}), 0),
+        new HyperPlane(new Vector(new ddouble[] { 1, 0 }), 1)
+      , new HyperPlane(new Vector(new ddouble[] { 0, 1 }), 1)
+      , new HyperPlane(new Vector(new ddouble[] { -1, 0 }), 1)
+      , new HyperPlane(new Vector(new ddouble[] { 0, -1 }), 1)
+      , new HyperPlane(new Vector(new ddouble[] { 1, 1 }), new Vector(new ddouble[] { 1, 1 }))
+      , new HyperPlane(new Vector(new ddouble[] { 0, 1 }), 5)
       };
-    foreach (var hyperPlane in hps) {
-      Console.WriteLine($"{hyperPlane}");
-    }
+    ConvexPolytop    cube = ConvexPolytop.CreateFromHalfSpaces(hps);
+    // ConvexPolytop cube = ConvexPolytop.Cube01_HRep(2);
+    // var           x    = cube.ShiftToOrigin().Polar();
+    var           x    = cube.Polar();
+    Console.WriteLine($"{string.Join('\n', x.Vrep)}");
     Console.WriteLine();
     Console.WriteLine();
+    Console.WriteLine($"{string.Join('\n', x.Polar().Vrep)}");
+
+
+
+
+
+    // List<HyperPlane> hps = new List<HyperPlane>() // пример из статьи 2020г Accelerating Fourier–Motzkin elimination using bit pattern trees
+    //   {
+    //     new HyperPlane(new Vector(new ddouble[]{0,0,0,-1,0}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{0,-3,0,4,1}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{-1,0,1,0,-1}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{-1,4,-4,0,3}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{-2,0,0,-1,0}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{1,0,-3,0,-2}), 0),
+    //     new HyperPlane(new Vector(new ddouble[]{3,0,0,0,2}), 0),
+    //   };
+    // foreach (var hyperPlane in hps) {
+    //   Console.WriteLine($"{hyperPlane}");
+    // }
+    // Console.WriteLine();
+    // Console.WriteLine();
     // var            hps = ConvexPolytop.Cube01_HRep(3).Hrep;
     // hps.Add(new HyperPlane(Vector.Ones(3), Vector.Ones(3)));
-    FourierMotzkin fm   = new FourierMotzkin(hps);
-    var            x    = fm.EliminateVariableNaive(1);
-    x    = x.EliminateVariableNaive(2);
-    x    = x.EliminateVariableNaive(3);
-    foreach (var hyperPlane in x.HPs) {
-      Console.WriteLine($"{hyperPlane}");
-    }
+    // FourierMotzkin fm   = new FourierMotzkin(hps);
+    // var            x    = fm.EliminateVariableNaive(1);
+    // x    = x.EliminateVariableNaive(2);
+    // x    = x.EliminateVariableNaive(3);
+    // foreach (var hyperPlane in x.HPs) {
+    //   Console.WriteLine($"{hyperPlane}");
+    // }
 
 
 
