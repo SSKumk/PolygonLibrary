@@ -168,7 +168,7 @@ public partial class Geometry<TNum, TConv>
             } // Если очередной элемент на диагонали ноль, то решения нет
 
             break;
-          } // Всё выставленно куда надо.
+          } // Всё выставлено куда надо.
 
           case GaussChoice.RowWise: {
             lcol = rcol = k;
