@@ -6,6 +6,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   // Ax <= b, A \in R^m x R^d; x \in R; b \in R^m
+  /// todo НЕ работает, если нет ограничений, что x_i >= 0
   public class SimplexMethod {
 
     private          TNum[,] _A;
