@@ -72,7 +72,7 @@ class Program {
 
     Console.WriteLine();
     Console.WriteLine();
-    foreach (var hyperPlane in x.HPs) {
+    foreach (var hyperPlane in ConvexPolytop.HRedundancyByGW(x.HPs, 0.1*Vector.Ones(5))) {
       Console.WriteLine($"{hyperPlane}");
     }
     var _ = doRed.Vrep;
@@ -84,6 +84,7 @@ class Program {
     foreach (var hyperPlane in afterRed.Hrep) {
       Console.WriteLine($"{hyperPlane}");
     }
+
 
 
 
