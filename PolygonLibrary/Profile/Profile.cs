@@ -28,21 +28,52 @@ class Program {
     bool isDouble = ftype == "double";
 
 
-    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
-    string      t   = "6.10";
-    ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+    List<HyperPlane> hps = new List<HyperPlane>() // пример из статьи 2020г Accelerating Fourier–Motzkin elimination using bit pattern trees
+      {
+        new HyperPlane(new Vector(new ddouble[]{0,0,0,-1,0}), 0),
+        new HyperPlane(new Vector(new ddouble[]{0,-3,0,4,1}), 0),
+        new HyperPlane(new Vector(new ddouble[]{-1,0,1,0,-1}), 0),
+        new HyperPlane(new Vector(new ddouble[]{-1,4,-4,0,3}), 0),
+        new HyperPlane(new Vector(new ddouble[]{-2,0,0,-1,0}), 0),
+        new HyperPlane(new Vector(new ddouble[]{1,0,-3,0,-2}), 0),
+        new HyperPlane(new Vector(new ddouble[]{3,0,0,0,2}), 0),
+      };
+    foreach (var hyperPlane in hps) {
+      Console.WriteLine($"{hyperPlane}");
+    }
+    Console.WriteLine();
+    Console.WriteLine();
+    // var            hps = ConvexPolytop.Cube01_HRep(3).Hrep;
+    // hps.Add(new HyperPlane(Vector.Ones(3), Vector.Ones(3)));
+    FourierMotzkin fm   = new FourierMotzkin(hps);
+    var            x    = fm.EliminateVariableNaive(1);
+    x    = x.EliminateVariableNaive(2);
+    x    = x.EliminateVariableNaive(3);
+    foreach (var hyperPlane in x.HPs) {
+      Console.WriteLine($"{hyperPlane}");
+    }
+
+
+
+
+
+
+
+    // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    // string      t   = "6.10";
+    // ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
 
 
     // ConvexPolytop res = ConvexPolytop.Cube01_VRep(4);
-    ConvexPolytop res = ConvexPolytop.SimplexRND(4);
+    // ConvexPolytop res = ConvexPolytop.SimplexRND(4);
     // ConvexPolytop res = ConvexPolytop.DistanceToOriginBall_2(3, 4,3, 2);
     // ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
-
-    Vector v   = Vector.Ones(res.PolytopDim);
-
-    string      name = "OrigMoved";
-    ParamWriter prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
-    Console.WriteLine($"{res.ShiftToOrigin().Hrep.All(hp => hp.ContainsNegative(Vector.Zero(4)))}");
+    //
+    // Vector v   = Vector.Ones(res.PolytopDim);
+    //
+    // string      name = "OrigMoved";
+    // ParamWriter prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
+    // Console.WriteLine($"{res.ShiftToOrigin().Hrep.All(hp => hp.ContainsNegative(Vector.Zero(4)))}");
     // res.ShiftToOrigin().WriteIn(prW);
     // name = "RotFromVrep";
     // prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytochp");
