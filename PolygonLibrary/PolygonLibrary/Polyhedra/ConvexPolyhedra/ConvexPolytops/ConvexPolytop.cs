@@ -94,6 +94,34 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public int PolytopDim => FLrep.Top.PolytopDim;
 
+    private Vector? _innerPoint = null;
+
+    /// <summary>
+    /// Strictly interior point of the polytope.
+    /// </summary>
+    public Vector InnerPoint {
+      get
+        {
+          if (_innerPoint is not null) {
+            return _innerPoint;
+          }
+
+          if (IsFLrep) {
+            _innerPoint = FLrep.Top.InnerPoint;
+          }
+          if (IsVrep) {
+            _innerPoint = Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt
+                            (Vrep.Count); // todo стоит явно написать через TNum[]. Много лишних векторов создаётся
+          }
+          if (IsHrep) {
+            throw new NotImplementedException
+              ("FromHrep.NoInnerPointGiven: Тут надо решить задачу LP, чтобы найти точку, которая лежит внутри многогранника");
+          }
+
+          return _innerPoint!;
+        }
+    }
+
 
     /// <summary>
     /// <c>true</c> if the polytope has constructed Vrep, <c>false</c> otherwise.
@@ -212,7 +240,7 @@ public partial class Geometry<TNum, TConv>
       if (doHRedundancy) {
         throw new NotImplementedException
           (
-           "Надо сделать! Нужен симлекс-метод и алгоритм Фукуды. Либо, временно, задуалить, (где найти точку внутри?) там GW, вернуть обратно."
+           "Надо сделать! Нужен симлекс-метод и алгоритм Фукуды. Либо, временно, задуалить, (где найти точку внутри? решить LP) там GW, вернуть обратно."
           );
       }
       else {
@@ -718,6 +746,34 @@ public partial class Geometry<TNum, TConv>
 
 
 #region Functions
+    public ConvexPolytop Polar(Vector? innerPoint = null) { // Начало координат внутри многогранника, важно!
+
+
+      if (IsVrep) {
+        List<HyperPlane> hrepDual = new List<HyperPlane>();
+        foreach (Vector v in Vrep) {
+          hrepDual.Add(new HyperPlane(v,Tools.One));
+        }
+
+        return CreateFromHalfSpaces(hrepDual);
+      }
+
+      if (IsHrep) {
+        List<Vector> vrepDual = new List<Vector>();
+        foreach (HyperPlane hp in Hrep) {
+          vrepDual.Add(hp.Normal / hp.ConstantTerm);
+        }
+
+        return CreateFromPoints(vrepDual);
+      }
+
+      if (IsFLrep) {
+        throw new NotImplementedException("Тут надо перевернуть решётку. Но как это сделать правильно надо думать");
+      }
+
+      throw new NotImplementedException("Всё, закончились представления.");
+    }
+
     /// <summary>
     /// Writes the convex polytope representation to the specified <see cref="ParamWriter"/> in the chosen format.
     /// </summary>
@@ -832,10 +888,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new convex polytop with the selected point at the origin.</returns>
     public ConvexPolytop ShiftToOrigin(Vector? innerPoint = null) {
       if (IsFLrep) {
-        return CreateFromFaceLattice(Shift(-FLrep.Top.InnerPoint).FLrep);
+        return CreateFromFaceLattice(Shift(-InnerPoint).FLrep);
       }
       if (IsVrep) {
-        innerPoint ??= Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(Vrep.Count);
+        innerPoint ??= InnerPoint;
 
         return CreateFromPoints(Shift(-innerPoint).Vrep);
       }
@@ -843,9 +899,6 @@ public partial class Geometry<TNum, TConv>
         if (innerPoint is not null) {
           return CreateFromHalfSpaces(Shift(-innerPoint).Hrep);
         }
-
-        throw new NotImplementedException
-          ("FromHrep.NoInnerPointGiven: Тут надо решить задачу LP, чтобы найти точку, которая лежит внутри многогранника");
       }
 
       throw new NotImplementedException
