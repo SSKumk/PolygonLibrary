@@ -199,6 +199,7 @@ public partial class Geometry<TNum, TConv>
           _FLrep ??= new GiftWrapping(Vrep).ConstructFL();
           Debug.Assert(IsFLrep, $"ConvexPolytop.FLrep: _FLrep is null after constructing. Something went wrong!");
 
+          _Vrep = null;
           return _FLrep;
         }
     }
@@ -253,8 +254,12 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a ConvexPolytop using a face lattice (FLrep).
     /// </summary>
     /// <param name="fLrep">The face lattice defining the polytop.</param>
-    private ConvexPolytop(FaceLattice fLrep) {
+    /// <param name="reCalcInnerPoints">If <c>true</c>, inner points and affine bases will be recalculated; otherwise, no recalculation is performed. </param>
+    private ConvexPolytop(FaceLattice fLrep, bool reCalcInnerPoints) {
       SpaceDim = fLrep.Top.AffBasis.SpaceDim;
+      if (reCalcInnerPoints) {
+        fLrep.Top.RecalcAddInfo();
+      }
       _FLrep   = fLrep;
     }
 #endregion
@@ -298,7 +303,9 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a convex polytope from a face lattice.
     /// </summary>
     /// <param name="faceLattice">The face lattice representing the polytop.</param>
-    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice) => new ConvexPolytop(faceLattice);
+    /// <param name="reCalcInnerPoints">If <c>true</c>, inner points and affine bases will be recalculated; otherwise, no recalculation is performed. </param>
+    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice, bool reCalcInnerPoints = false)
+      => new ConvexPolytop(faceLattice, reCalcInnerPoints);
 
     /// <summary>
     /// Represents the actions that can be performed on a built polytop.
@@ -318,8 +325,7 @@ public partial class Geometry<TNum, TConv>
         case "Vrep":  return CreateFromVRep_Reader(pr, action == PolytopAction.Convexify);
         case "Hrep":  return CreateFromHRep_Reader(pr, action == PolytopAction.HRedundancy);
         case "FLrep": return CreateFromFLrep_Reader(pr);
-        // case "FaceLattice": return CreateFromFLrep_Reader(pr); // todo потом можно будет убрать, когда данные в новом формате нагенерятся
-        default: throw new ArgumentException($"Unsupported representation type: {nameRep}");
+        default:      throw new ArgumentException($"Unsupported representation type: {nameRep}");
       }
     }
 
@@ -383,13 +389,6 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Special polytopes
-    /// <summary>
-    /// The point-polytope of dim size.
-    /// </summary>
-    /// <param name="dim">The dimension of the point.</param>
-    /// <returns>The one point polytop.</returns>
-    public static ConvexPolytop Point(int dim) => CreateFromPoints(new SortedSet<Vector> { Vector.Ones(dim) });
-
     /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of Vrep.
     /// </summary>
@@ -785,7 +784,7 @@ public partial class Geometry<TNum, TConv>
             oldToNew.Add(oldNode, reverseNode);
           }
         }
-        newFL.Add(new SortedSet<FLNode>(){new FLNode(newFL.Last())});
+        newFL.Add(new SortedSet<FLNode>() { new FLNode(newFL.Last()) });
 
         return CreateFromFaceLattice(new FaceLattice(newFL, false));
       }
