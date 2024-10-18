@@ -6,7 +6,6 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   // Ax <= b, A \in R^m x R^d; x \in R; b \in R^m
-  /// todo НЕ работает, если нет ограничений, что x_i >= 0
   public class SimplexMethod {
 
     private          TNum[,] _A;
@@ -20,10 +19,10 @@ public partial class Geometry<TNum, TConv>
       ((i, j) => HPs[i].Normal[j], HPs.Count, HPs.First().Normal.SpaceDim, i => HPs[i].ConstantTerm, fc) { }
 
     public SimplexMethod(Func<int, int, TNum> fA, int m, int d, Func<int, TNum> fb, Func<int, TNum> fc) {
-      _m = m;
+      _m     = m;
       _dOrig = d;
-      _d = 2 * d + _m;
-      _b = new TNum[_m];
+      _d     = 2 * d + _m;
+      _b     = new TNum[_m];
       for (int i = 0; i < _m; i++) {
         _b[i] = fb(i);
       }
@@ -41,9 +40,9 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
-    public SimplexMethodResult Solve(bool isOnlyInitialSolution = false) {
-      (SimplexMethodResultStatus status, TNum value, TNum[]? x) = SimplexInAugmentForm(isOnlyInitialSolution);
-      if (status is not (SimplexMethodResultStatus.Ok or SimplexMethodResultStatus.InitialSolution)) {
+    public SimplexMethodResult Solve() {
+      (SimplexMethodResultStatus status, TNum value, TNum[]? x) = SimplexInAugmentForm();
+      if (status is not (SimplexMethodResultStatus.Ok)) {
         return new SimplexMethodResult(status);
       }
 
@@ -57,7 +56,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     // Ax = b, x >= 0
-    private SimplexMethodResult SimplexInAugmentForm(bool isOnlyInitialSolution = false) {
+    private SimplexMethodResult SimplexInAugmentForm() {
       HashSet<int> N = new HashSet<int>();
       for (int i = 0; i < _d - _m; i++) {
         N.Add(i);
@@ -210,12 +209,6 @@ public partial class Geometry<TNum, TConv>
         _A = ANew;
       }
 
-      if (isOnlyInitialSolution) {
-        TNum[] initX = CalcPoint(_b, _d, _m, B, id);
-
-        return new SimplexMethodResult(SimplexMethodResultStatus.InitialSolution, v, initX);
-      }
-
 
       // Phase 2 of Simplex method
 
@@ -354,14 +347,7 @@ public partial class Geometry<TNum, TConv>
 
     }
 
-    public enum SimplexMethodResultStatus {
-
-      Ok
-    , NoSolution
-    , Unlimited
-    , InitialSolution
-
-    }
+    public enum SimplexMethodResultStatus { Ok, NoSolution, Unlimited }
 
   }
 
