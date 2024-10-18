@@ -22,7 +22,14 @@ public partial class Geometry<TNum, TConv>
     /// The lattice is represented level by level.
     /// At each level, there is a set that contains all nodes (faces of polytop) of that level's dimension.
     /// </summary>
-    public List<SortedSet<FLNode>> Lattice { get; init; }
+    public List<SortedSet<FLNode>> Lattice { get; }
+
+    /// <summary>
+    /// Indexer access
+    /// </summary>
+    /// <param name="i">The index of the level of the lattice.</param>
+    /// <returns>The set of corresponding nodes.</returns>
+    public SortedSet<FLNode> this[Index i] => Lattice[i];
 
     /// <summary>
     /// Set of vertices that form convex polytop.
@@ -59,6 +66,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="updateVertices">todo xml </param>
     public FaceLattice(List<SortedSet<FLNode>> lattice, bool updateVertices) {
       Lattice = lattice;
+
+      Debug.Assert(lattice[^1].Count == 1, $"FaceLattice.Ctor: There should be only one d-face: the polytop itself. Found {lattice[^1].Count}");
+
       Top     = Lattice[^1].First();
 
       if (updateVertices) {
