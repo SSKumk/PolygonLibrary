@@ -265,11 +265,18 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The convex polytope in FLrep.</returns>
     public ConvexPolytop GetInFLrep() => CreateFromFaceLattice(FLrep);
+
     /// <summary>
     /// Gets or constructs the Vrep of the polytope, and based on it creates new polytope.
     /// </summary>
     /// <returns>The convex polytope in FLrep.</returns>
     public ConvexPolytop GetInVrep() => CreateFromPoints(Vrep);
+
+    /// <summary>
+    /// Gets or constructs the Hrep of the polytope, and based on it creates new polytope.
+    /// </summary>
+    /// <returns>The convex polytope in Hrep.</returns>
+    public ConvexPolytop GetInHrep() => CreateFromHalfSpaces(Hrep);
 
     /// <summary>
     /// Constructs a convex polytope from a set of points.
@@ -757,6 +764,32 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>The dual polytope.</returns>
     public ConvexPolytop Polar(bool doUnRedundancy = false) { // Начало координат внутри многогранника, важно!
+      if (IsFLrep) {
+        List<SortedSet<FLNode>>          newFL    = new List<SortedSet<FLNode>>() { new SortedSet<FLNode>() };
+        SortedDictionary<FLNode, FLNode> oldToNew = new SortedDictionary<FLNode, FLNode>();
+
+        //Уровень вершин создаём отдельно
+        foreach (FLNode oldNode in FLrep[^2]) {
+          HyperPlane hp        = new HyperPlane(oldNode.AffBasis, true, (InnerPoint, false));
+          FLNode     newVertex = new FLNode(hp.Normal / hp.ConstantTerm);
+          newFL[0].Add(newVertex);
+          oldToNew.Add(oldNode, newVertex);
+        }
+        int dOld = PolytopDim - 2;
+        int dNew = 1;
+        for (; dOld >= 0; dOld--, dNew++) {
+          newFL.Add(new SortedSet<FLNode>());
+          foreach (FLNode oldNode in FLrep[dOld]) {
+            FLNode reverseNode = new FLNode(oldNode.Super.Select(n => oldToNew[n]));
+            newFL[dNew].Add(reverseNode);
+            oldToNew.Add(oldNode, reverseNode);
+          }
+        }
+        newFL.Add(new SortedSet<FLNode>(){new FLNode(newFL.Last())});
+
+        return CreateFromFaceLattice(new FaceLattice(newFL, false));
+      }
+
       if (IsVrep) {
         List<HyperPlane> hrepDual = new List<HyperPlane>();
         foreach (Vector v in Vrep) {
@@ -766,20 +799,13 @@ public partial class Geometry<TNum, TConv>
         return CreateFromHalfSpaces(hrepDual);
       }
 
-      if (IsHrep) {
-        List<Vector> vrepDual = new List<Vector>();
-        foreach (HyperPlane hp in Hrep) {
-          vrepDual.Add(hp.Normal / hp.ConstantTerm);
-        }
-
-        return CreateFromPoints(vrepDual, doUnRedundancy);
+      // if IsHrep
+      List<Vector> vrepDual = new List<Vector>();
+      foreach (HyperPlane hp in Hrep) {
+        vrepDual.Add(hp.Normal / hp.ConstantTerm);
       }
 
-      if (IsFLrep) {
-        throw new NotImplementedException("Тут надо перевернуть решётку. Но как это сделать правильно надо думать! После чего поставить этот случай вперёд!");
-      }
-
-      throw new NotImplementedException("Всё, закончились представления.");
+      return CreateFromPoints(vrepDual, doUnRedundancy);
     }
 
     /// <summary>
@@ -975,7 +1001,7 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(SpaceDim);
 
     //!!! Вообще говоря, сравнивать многогранники тяжело!!! Тут "какая-то наивная" реализация сравнения
-    private bool Equals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
+    private bool FLEquals(ConvexPolytop other) => this.FLrep.Equals(other.FLrep);
 
     public override bool Equals(object? obj) {
       if (ReferenceEquals(null, obj))
@@ -985,7 +1011,7 @@ public partial class Geometry<TNum, TConv>
       if (obj.GetType() != this.GetType())
         return false;
 
-      return Equals((ConvexPolytop)obj);
+      return FLEquals((ConvexPolytop)obj);
     }
 #endregion
 
@@ -1202,6 +1228,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The not redundant system.</returns>
     public static List<HyperPlane> HRedundancyByGW(List<HyperPlane> HPs, Vector innerPoint) {
       ConvexPolytop init = CreateFromHalfSpaces(HPs);
+
       return init.ShiftToOrigin(innerPoint).Polar(true).Polar().Shift(innerPoint).Hrep;
     }
 
