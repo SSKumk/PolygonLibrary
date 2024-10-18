@@ -72,7 +72,7 @@ public partial class Geometry<TNum, TConv>
       Top     = Lattice[^1].First();
 
       if (updateVertices) {
-        Top.CleanVerticesDown();
+        Top.RecalcAddInfo();
       }
     }
 
@@ -190,8 +190,8 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      this.Top.CleanVerticesDown();
-      other.Top.CleanVerticesDown();
+      this.Top.RecalcAddInfo();
+      other.Top.RecalcAddInfo();
 
       bool isEqual = true;
 
@@ -293,13 +293,13 @@ public partial class Geometry<TNum, TConv>
     private SortedSet<Vector>? _vertices = null;
 
     // todo xml
-    public void CleanVerticesDown() {
+    public void RecalcAddInfo() {
       // if (_vertices is not null) { // мб как-то можно оптимизировать, но это не работает.
         if (PolytopDim != 0) {
           _vertices   = null;
           _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
           foreach (FLNode subNode in Sub) {
-            subNode.CleanVerticesDown();
+            subNode.RecalcAddInfo();
             InnerPoint = (Sub.First().InnerPoint + Sub.Last().InnerPoint) / Tools.Two;
           }
         }
