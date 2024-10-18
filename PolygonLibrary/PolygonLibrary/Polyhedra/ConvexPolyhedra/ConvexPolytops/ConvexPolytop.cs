@@ -254,12 +254,8 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a ConvexPolytop using a face lattice (FLrep).
     /// </summary>
     /// <param name="fLrep">The face lattice defining the polytop.</param>
-    /// <param name="reCalcInnerPoints">If <c>true</c>, inner points and affine bases will be recalculated; otherwise, no recalculation is performed. </param>
-    private ConvexPolytop(FaceLattice fLrep, bool reCalcInnerPoints) {
+    private ConvexPolytop(FaceLattice fLrep) {
       SpaceDim = fLrep.Top.AffBasis.SpaceDim;
-      if (reCalcInnerPoints) {
-        fLrep.Top.RecalcAddInfo();
-      }
       _FLrep   = fLrep;
     }
 #endregion
@@ -303,9 +299,8 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a convex polytope from a face lattice.
     /// </summary>
     /// <param name="faceLattice">The face lattice representing the polytop.</param>
-    /// <param name="reCalcInnerPoints">If <c>true</c>, inner points and affine bases will be recalculated; otherwise, no recalculation is performed. </param>
-    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice, bool reCalcInnerPoints = false)
-      => new ConvexPolytop(faceLattice, reCalcInnerPoints);
+    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice)
+      => new ConvexPolytop(faceLattice);
 
     /// <summary>
     /// Represents the actions that can be performed on a built polytop.
@@ -756,8 +751,25 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
+#region Get it specific forms
+#endregion
 
 #region Functions
+
+    /// <summary>
+    /// Checks whether the given vector is contained within the polytope.
+    /// </summary>
+    /// <param name="v">The vector to check.</param>
+    /// <returns><c>true</c> if the vector is contained within the polytope; otherwise, <c>false</c>.</returns>
+    public bool Contains(Vector v) {
+      if (IsFLrep || IsHrep) {
+        return Hrep.All(hp => hp.ContainsNegativeNonStrict(v));
+      }
+
+      throw new NotImplementedException("Тут надо решить несколько LP задач. Смотри Фукуду.");
+
+    }
+
     /// <summary>
     /// Makes a dual polytope to this.
     /// </summary>
