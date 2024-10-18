@@ -72,7 +72,7 @@ public partial class Geometry<TNum, TConv>
       Top     = Lattice[^1].First();
 
       if (updateVertices) {
-        Top.RecalcAddInfo();
+        Top.ReCalcAddInfo();
       }
     }
 
@@ -190,8 +190,8 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      this.Top.RecalcAddInfo();
-      other.Top.RecalcAddInfo();
+      this.Top.ReCalcAddInfo();
+      other.Top.ReCalcAddInfo();
 
       bool isEqual = true;
 
@@ -292,18 +292,18 @@ public partial class Geometry<TNum, TConv>
 
     private SortedSet<Vector>? _vertices = null;
 
-    // todo xml
-    public void RecalcAddInfo() {
-      // if (_vertices is not null) { // мб как-то можно оптимизировать, но это не работает.
+    /// <summary>
+    /// Recalculates additional information for the current node, such as inner points.
+    /// </summary>
+    public void ReCalcAddInfo() {
         if (PolytopDim != 0) {
           _vertices   = null;
           _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
           foreach (FLNode subNode in Sub) {
-            subNode.RecalcAddInfo();
+            subNode.ReCalcAddInfo();
             InnerPoint = (Sub.First().InnerPoint + Sub.Last().InnerPoint) / Tools.Two;
           }
         }
-      // }
     }
 
     /// <summary>
@@ -456,7 +456,14 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The collection that contains all non-strict sub-faces of the node.</returns>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
 
-    // todo xml
+
+    /// <summary>
+    /// Connects a sub-node to a super-node in the face lattice hierarchy.
+    /// Optionally clears the vertices of the super-node.
+    /// </summary>
+    /// <param name="sub">The sub-node to be connected.</param>
+    /// <param name="supper">The super-node to connect to.</param>
+    /// <param name="clean">If <c>true</c>, the vertices of the super-node will be cleared.</param>
     public static void Connect(FLNode sub, FLNode supper, bool clean) {
       sub.AddSuper(supper);
       if (clean) {
