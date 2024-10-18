@@ -27,10 +27,29 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-    int           dim        = 3;
-    ConvexPolytop cube       = ConvexPolytop.SimplexRND(5).ShiftToOrigin().GetInFLrep();
-    ConvexPolytop cubePolar = cube.Polar();
-    Console.WriteLine($"{cubePolar.Polar().Equals(cube)}");
+    int           dim     = 3;
+
+    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    string      t   = "5.10";
+    ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+    ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
+
+    // ConvexPolytop polytop = ConvexPolytop.Sphere(dim,10,100,Vector.Zero(dim), 1);
+
+
+    var           x       = polytop.Hrep;
+    SimplexMethod sm   = new SimplexMethod(x, n => {
+                                                switch (n) {
+                                                  case 0:  return 1;
+                                                  case 1:  return 2;
+                                                  case 2:  return 3;
+                                                  default: return  0;
+                                                }
+                                              } );
+    var    y   = sm.Solve();
+    Vector res = new Vector(y.Solution);
+    Console.WriteLine($"{polytop.Contains(res)}");
+    Console.WriteLine($"Res = {res}\tVal = {y.Value}");
 
 
 
