@@ -119,8 +119,6 @@ public partial class Geometry<TNum, TConv>
       )
     {
 
-      // Stopwatch timer = new Stopwatch();
-      // timer.Restart();
       List<HyperPlane> gamma = new List<HyperPlane>();
       foreach (HyperPlane hpF in F)
       {
@@ -141,10 +139,6 @@ public partial class Geometry<TNum, TConv>
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
       SortedSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
-      // timer.Stop();
-      // Console.WriteLine($"Diff_HtoV = {timer.Elapsed.TotalMilliseconds}");
-
-      // timer.Restart();
 
       // 5) Построить fLrep роя V(F-G)
       if (VRepFminusG.Count < 3)
@@ -156,8 +150,6 @@ public partial class Geometry<TNum, TConv>
 
       diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG));
 
-      // timer.Stop();
-      // Console.WriteLine($"Diff_VtoFL = {timer.Elapsed.TotalMilliseconds}");
       return true;
     }
 
