@@ -27,6 +27,16 @@ class Program {
 
     bool isDouble = ftype == "double";
 
+    int           dim        = 3;
+    ConvexPolytop cube       = ConvexPolytop.SimplexRND(5).ShiftToOrigin().GetInFLrep();
+    ConvexPolytop cubePolar = cube.Polar();
+    Console.WriteLine($"{cubePolar.Polar().Equals(cube)}");
+
+
+
+
+
+
     // List<HyperPlane> hps = new List<HyperPlane>()
     //   {
     //     new HyperPlane(new Vector(new ddouble[] { 1, 0 }), 1)
@@ -45,45 +55,45 @@ class Program {
     // Console.WriteLine();
     // Console.WriteLine($"{string.Join('\n', x.Polar().Vrep)}");
 
-
-    int constant = 1;
-    List<HyperPlane> hps = new List<HyperPlane>() // пример из статьи 2020г Accelerating Fourier–Motzkin elimination using bit pattern trees
-      {
-        new HyperPlane(new Vector(new ddouble[]{0,0,0,-1,0}), constant),
-        new HyperPlane(new Vector(new ddouble[]{0,-3,0,4,1}), constant),
-        new HyperPlane(new Vector(new ddouble[]{-1,0,1,0,-1}), constant),
-        new HyperPlane(new Vector(new ddouble[]{-1,4,-4,0,3}), constant),
-        new HyperPlane(new Vector(new ddouble[]{-2,0,0,-1,0}), constant),
-        new HyperPlane(new Vector(new ddouble[]{1,0,-3,0,-2}), constant),
-        new HyperPlane(new Vector(new ddouble[]{3,0,0,0,2}), constant),
-      };
-
-    ConvexPolytop p = ConvexPolytop.CreateFromHalfSpaces(hps);
-    Console.WriteLine($"{string.Join('\n',p.Vrep)}");
-
-    // var            hps = ConvexPolytop.Cube01_HRep(3).Hrep;
-    // hps.Add(new HyperPlane(Vector.Ones(3), Vector.Ones(3)));
-    FourierMotzkin fm   = new FourierMotzkin(hps);
-    var            x    = fm.EliminateVariableNaive(1);
-    x    = x.EliminateVariableNaive(2);
-    x    = x.EliminateVariableNaive(3);
-    Console.WriteLine($"Eq after 3 steps of elimination: {x.HPs.Count}");
-    ConvexPolytop doRed = ConvexPolytop.CreateFromHalfSpaces(x.HPs).Polar().GetInFLrep();
-
-    Console.WriteLine();
-    Console.WriteLine();
-    foreach (var hyperPlane in ConvexPolytop.HRedundancyByGW(x.HPs, 0.1*Vector.Ones(5))) {
-      Console.WriteLine($"{hyperPlane}");
-    }
-    var _ = doRed.Vrep;
-    ConvexPolytop afterRed = doRed.Polar();
-
-
-    Console.WriteLine();
-    Console.WriteLine();
-    foreach (var hyperPlane in afterRed.Hrep) {
-      Console.WriteLine($"{hyperPlane}");
-    }
+    //
+    // int constant = 1;
+    // List<HyperPlane> hps = new List<HyperPlane>() // пример из статьи 2020г Accelerating Fourier–Motzkin elimination using bit pattern trees
+    //   {
+    //     new HyperPlane(new Vector(new ddouble[]{0,0,0,-1,0}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{0,-3,0,4,1}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{-1,0,1,0,-1}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{-1,4,-4,0,3}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{-2,0,0,-1,0}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{1,0,-3,0,-2}), constant),
+    //     new HyperPlane(new Vector(new ddouble[]{3,0,0,0,2}), constant),
+    //   };
+    //
+    // ConvexPolytop p = ConvexPolytop.CreateFromHalfSpaces(hps);
+    // Console.WriteLine($"{string.Join('\n',p.Vrep)}");
+    //
+    // // var            hps = ConvexPolytop.Cube01_HRep(3).Hrep;
+    // // hps.Add(new HyperPlane(Vector.Ones(3), Vector.Ones(3)));
+    // FourierMotzkin fm   = new FourierMotzkin(hps);
+    // var            x    = fm.EliminateVariableNaive(1);
+    // x    = x.EliminateVariableNaive(2);
+    // x    = x.EliminateVariableNaive(3);
+    // Console.WriteLine($"Eq after 3 steps of elimination: {x.HPs.Count}");
+    // ConvexPolytop doRed = ConvexPolytop.CreateFromHalfSpaces(x.HPs).Polar().GetInFLrep();
+    //
+    // Console.WriteLine();
+    // Console.WriteLine();
+    // foreach (var hyperPlane in ConvexPolytop.HRedundancyByGW(x.HPs, 0.1*Vector.Ones(5))) {
+    //   Console.WriteLine($"{hyperPlane}");
+    // }
+    // var _ = doRed.Vrep;
+    // ConvexPolytop afterRed = doRed.Polar();
+    //
+    //
+    // Console.WriteLine();
+    // Console.WriteLine();
+    // foreach (var hyperPlane in afterRed.Hrep) {
+    //   Console.WriteLine($"{hyperPlane}");
+    // }
 
 
 
