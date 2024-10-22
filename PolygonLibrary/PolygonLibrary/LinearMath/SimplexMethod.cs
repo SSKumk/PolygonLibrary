@@ -5,7 +5,7 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // Ax <= b, A \in R^m x R^d; x \in R; b \in R^m
+  // Ax <= b, A \in R^m x R^d; x \in R^d; b \in R^m
   public class SimplexMethod {
 
     private          TNum[,] _A;
@@ -41,8 +41,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     public SimplexMethodResult Solve() {
-      (SimplexMethodResultStatus status, TNum value, TNum[]? x) = SimplexInAugmentForm();
-      if (status is not (SimplexMethodResultStatus.Ok)) {
+      //todo А как правильно активные неравенства находить?! Сейчас activeInequalities работает неверно!
+      (SimplexMethodResultStatus status, TNum value, TNum[]? x, IEnumerable<int> activeInequalities) = SimplexInAugmentForm();
+      if (status is not SimplexMethodResultStatus.Ok) {
         return new SimplexMethodResult(status);
       }
 
@@ -52,27 +53,28 @@ public partial class Geometry<TNum, TConv>
         res[i] = x![l] - x[l + 1];
       }
 
-      return new SimplexMethodResult(status, value, res);
+      return new SimplexMethodResult(status, value, res, activeInequalities);
     }
 
     // Ax = b, x >= 0
     private SimplexMethodResult SimplexInAugmentForm() {
       HashSet<int> N = new HashSet<int>();
-      for (int i = 0; i < _d - _m; i++) {
+      int          d = _d - _m;
+      for (int i = 0; i < d; i++) {
         N.Add(i);
       }
       HashSet<int> B  = new HashSet<int>();
       int[]        id = new int[_d + 1];
-      for (int i = _d - _m; i < _d; i++) {
+      for (int i = d; i < _d; i++) {
         B.Add(i);
-        id[i] = i - (_d - _m);
+        id[i] = i - d;
       }
 
       int     l;
       int     e;
       TNum    v = Tools.Zero;
-      TNum[,] ANew; // размерности разные при поиске какого-нибудь допустимого решения и оптимального решения.
-      TNum[]  cCur; // размерности разные при поиске какого-нибудь допустимого решения и оптимального решения.
+      TNum[,] ANew;
+      TNum[]  cCur;
       TNum[]  bNew = new TNum[_m];
       if (!_b.All(Tools.GE)) {
         ANew = new TNum[_m, _d + 1];
@@ -210,8 +212,6 @@ public partial class Geometry<TNum, TConv>
       }
 
 
-      // Phase 2 of Simplex method
-
       ANew = new TNum[_m, _d];
       cCur = new TNum[_d];
       while (N.Any(i => Tools.GT(_c[i]))) {
@@ -251,20 +251,32 @@ public partial class Geometry<TNum, TConv>
           );
       }
 
-      TNum[] x = CalcPoint(_b, _d, _m, B, id);
+      TNum[] x = CalcPoint(_b, _d - _m, B, id);
+      IEnumerable<int> activeInq = CalcActiveInequalities(_d - _m, B, id);
 
-      return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x);
+      return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x, activeInq);
     }
 
-    private static TNum[] CalcPoint(TNum[] b, int d, int m, HashSet<int> B, int[] id) {
-      TNum[] x = new TNum[d - m];
-      for (int i = 0; i < d - m; i++) {
+    private static TNum[] CalcPoint(TNum[] b, int k, HashSet<int> B, int[] id) {
+      TNum[] x = new TNum[k];
+      for (int i = 0; i < k; i++) {
         if (B.Contains(i)) {
           x[i] = b[id[i]];
         }
       }
 
       return x;
+    }
+
+    private static IEnumerable<int> CalcActiveInequalities(int k, HashSet<int> B, int[] id) {
+      List<int> activeInq = new List<int>();
+      for (int i = 0; i < k; i++) {
+        if (B.Contains(i)) {
+          activeInq.Add(id[i]);
+        }
+      }
+
+      return activeInq;
     }
 
     private static void Pivot(
@@ -329,20 +341,26 @@ public partial class Geometry<TNum, TConv>
 
       public TNum Value { get; }
 
-      public TNum[]? Solution { get; }
+      public TNum[]? Solution { get; } = null;
 
-      public SimplexMethodResult(SimplexMethodResultStatus status, TNum value, TNum[]? solution) {
-        Status   = status;
-        Value    = value;
-        Solution = solution;
+      public IEnumerable<int> ActiveInequalitiesID { get; }
+
+      public SimplexMethodResult(SimplexMethodResultStatus status, TNum value, TNum[]? solution, IEnumerable<int> activeInequalitiesId) {
+        Status             = status;
+        Value              = value;
+        Solution           = solution;
+        ActiveInequalitiesID = activeInequalitiesId;
       }
 
       public SimplexMethodResult(SimplexMethodResultStatus status) { Status = status; }
 
-      public void Deconstruct(out SimplexMethodResultStatus status, out TNum value, out TNum[]? solution) {
-        status   = Status;
-        value    = Value;
-        solution = Solution;
+      public void Deconstruct(out SimplexMethodResultStatus status, out TNum value, out TNum[]? solution, out IEnumerable<int>
+                                activeInequalities
+        ) {
+        status             = Status;
+        value              = Value;
+        solution           = Solution;
+        activeInequalities = ActiveInequalitiesID;
       }
 
     }
