@@ -3,7 +3,6 @@ using Tests.ToolsTests;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 // using static CGLibrary.Geometry<double, Tests.DConvertor>;
-
 using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
@@ -27,33 +26,29 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-    int           dim     = 3;
+    int dim = 3;
 
     SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
-    string      t   = "5.10";
-    ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
-    ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
+    string    t         = "5.10";
+    ParamReader prR = new ParamReader
+      ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+    // ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
+    // ConvexPolytop polytop = ConvexPolytop.SimplexRND(3);
 
-    // ConvexPolytop polytop = ConvexPolytop.Sphere(dim,10,100,Vector.Zero(dim), 1);
-
-
-    var           x       = polytop.Hrep;
-    SimplexMethod sm   = new SimplexMethod(x, n => {
-                                                switch (n) {
-                                                  case 0:  return 1;
-                                                  case 1:  return 2;
-                                                  case 2:  return 3;
-                                                  default: return  0;
-                                                }
-                                              } );
-    var    y   = sm.Solve();
-    Vector res = new Vector(y.Solution);
-    Console.WriteLine($"{polytop.Contains(res)}");
-    Console.WriteLine($"Res = {res}\tVal = {y.Value}");
+    ConvexPolytop polytop = ConvexPolytop.CreateFromPoints
+      (
+       new List<Vector>()
+         {
+           new Vector(new ddouble[] { 1, 0, 0 })
+         , new Vector(new ddouble[] { 0, 1, 0 })
+         , new Vector(new ddouble[] { 0, 0, 1 })
+         , new Vector(new ddouble[] { 0, 0, 0 })
+          ,
+         }
+      );
 
 
-
-
+    Console.WriteLine($"{polytop.GetInHrep().InnerPoint}");
 
 
     // List<HyperPlane> hps = new List<HyperPlane>()
@@ -115,12 +110,6 @@ class Program {
     // }
 
 
-
-
-
-
-
-
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // string      t   = "6.10";
     // ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
@@ -165,7 +154,6 @@ class Program {
     // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
     // solverLdg.Solve(false, true, isDouble);
-
   }
 
 }
