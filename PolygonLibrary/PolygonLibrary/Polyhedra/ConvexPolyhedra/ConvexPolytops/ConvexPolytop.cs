@@ -942,6 +942,7 @@ public partial class Geometry<TNum, TConv>
       }
       if (IsHrep) {
         if (innerPoint is not null) {
+          Debug.Assert(Hrep.All(hp => hp.ContainsNegative(innerPoint)));
           return CreateFromHalfSpaces(Shift(-innerPoint).Hrep);
         }
       }
@@ -1076,6 +1077,7 @@ public partial class Geometry<TNum, TConv>
       return new SortedSet<Vector>(Vs);
     }
 
+    // todo научиться работать не с полноразмернымми многогранниками
     /// <summary>
     /// Converts the Hrep of a convex polytope to Vrep using a geometric-inspired algorithm. Full-dimensional only!
     /// </summary>
@@ -1240,6 +1242,9 @@ public partial class Geometry<TNum, TConv>
     public static List<HyperPlane> HRedundancyByGW(List<HyperPlane> HPs, Vector innerPoint) {
       ConvexPolytop init = CreateFromHalfSpaces(HPs);
 
+      // var x = init.ShiftToOrigin(innerPoint).Polar(true);
+      // var y =  x.Polar();
+      //   return y.Shift(innerPoint).Hrep;
       return init.ShiftToOrigin(innerPoint).Polar(true).Polar().Shift(innerPoint).Hrep;
     }
 
