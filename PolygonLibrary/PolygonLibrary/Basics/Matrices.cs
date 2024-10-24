@@ -1009,109 +1009,125 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  /// <summary>
-  /// Represents a mutable matrix that allows modification of its elements.
-  /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
-  /// for modifying matrix elements, including setting submatrices.
-  /// </summary>
-  public class MutableMatrix : Matrix {
-
-    /// <summary>
-    /// Constructs a mutable matrix from the given dimensions and an array of elements.
-    /// </summary>
-    /// <param name="n">Number of rows in the matrix.</param>
-    /// <param name="m">Number of columns in the matrix.</param>
-    /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
-    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
-
-    /// <summary>
-    /// Constructs a mutable matrix by copying the elements from an existing matrix.
-    /// </summary>
-    /// <param name="m">The matrix to copy.</param>
-    public MutableMatrix(Matrix m) : base(m) { }
-
-    /// <summary>
-    /// Indexer to get or set the matrix element at the specified row and column.
-    /// </summary>
-    /// <param name="i">The row index (zero-based).</param>
-    /// <param name="j">The column index (zero-based).</param>
-    /// <returns>The value of the matrix element at the specified row and column.</returns>
-    public new TNum this[int i, int j] {
-      get
-        {
-          Debug.Assert
-            (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-          Debug.Assert
-            (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
-
-          return _m[i * Cols + j];
-        }
-      set
-        {
-          Debug.Assert
-            (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-          Debug.Assert
-            (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
-
-          _m[i * Cols + j] = value;
-        }
-    }
-
-    /// <summary>
-    /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
-    /// </summary>
-    /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
-    /// <returns>A new identity matrix.</returns>
-    public new static MutableMatrix Eye(int d) {
-      int    k  = 0;
-      TNum[] nv = new TNum[d * d];
-
-      for (int i = 0; i < d; i++) {
-        for (int j = 0; j < d; j++, k++) {
-          nv[k] = (i == j) ? Tools.One : Tools.Zero;
-        }
-      }
-
-      return new MutableMatrix(d, d, nv);
-    }
-
-    /// <summary>
-    /// Sets a submatrix within the current matrix at the specified starting row and column.
-    /// </summary>
-    /// <param name="startRow">The starting row index for the submatrix.</param>
-    /// <param name="startCol">The starting column index for the submatrix.</param>
-    /// <param name="subMatrix">The submatrix to be inserted.</param>
-    /// <remarks>The size of the submatrix must fit within the bounds of the main matrix.</remarks>
-    public void SetSubMatrix(int startRow, int startCol, Matrix subMatrix) {
-      Debug.Assert
-        (
-         startRow >= 0 && startRow + subMatrix.Rows <= Rows
-       , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
-        );
-      Debug.Assert
-        (
-         startCol >= 0 && startCol + subMatrix.Cols <= Cols
-       , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
-        );
-
-      int k     = startRow * Cols + startCol;
-      int s     = 0;
-      int shift = Cols - subMatrix.Cols;
-      for (int row = 0; row < subMatrix.Rows; row++, k += shift) {
-        for (int col = 0; col < subMatrix.Cols; col++, s++, k++) {
-          _m[k] = subMatrix[s];
-        }
-      }
-    }
-
-    /// <summary>
-    /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
-    /// </summary>
-    /// <param name="m1">The first matrix.</param>
-    /// <param name="m2">The second matrix.</param>
-    /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
-    public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
-
-  }
+  // /// <summary>
+  // /// Represents a mutable matrix that allows modification of its elements.
+  // /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
+  // /// for modifying matrix elements, including setting submatrices.
+  // /// </summary>
+  // public class MutableMatrix : Matrix {
+  //
+  //   /// <summary>
+  //   /// Constructs a mutable matrix from the given dimensions and an array of elements.
+  //   /// </summary>
+  //   /// <param name="n">Number of rows in the matrix.</param>
+  //   /// <param name="m">Number of columns in the matrix.</param>
+  //   /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
+  //   public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
+  //
+  //   /// <summary>
+  //   /// Constructs a mutable matrix by copying the elements from an existing matrix.
+  //   /// </summary>
+  //   /// <param name="m">The matrix to copy.</param>
+  //   public MutableMatrix(Matrix m) : base(m) { }
+  //
+  //   /// <summary>
+  //   /// Indexer to get or set the matrix element at the specified row and column.
+  //   /// </summary>
+  //   /// <param name="i">The row index (zero-based).</param>
+  //   /// <param name="j">The column index (zero-based).</param>
+  //   /// <returns>The value of the matrix element at the specified row and column.</returns>
+  //   public new TNum this[int i, int j] {
+  //     get
+  //       {
+  //         Debug.Assert
+  //           (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+  //         Debug.Assert
+  //           (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+  //
+  //         return _m[i * Cols + j];
+  //       }
+  //     set
+  //       {
+  //         Debug.Assert
+  //           (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+  //         Debug.Assert
+  //           (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+  //
+  //         _m[i * Cols + j] = value;
+  //       }
+  //   }
+  //
+  //   /// <summary>
+  //   /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
+  //   /// </summary>
+  //   /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
+  //   /// <returns>A new identity matrix.</returns>
+  //   public new static MutableMatrix Eye(int d) {
+  //     int    k  = 0;
+  //     TNum[] nv = new TNum[d * d];
+  //
+  //     for (int i = 0; i < d; i++) {
+  //       for (int j = 0; j < d; j++, k++) {
+  //         nv[k] = (i == j) ? Tools.One : Tools.Zero;
+  //       }
+  //     }
+  //
+  //     return new MutableMatrix(d, d, nv);
+  //   }
+  //
+  //   /// <summary>
+  //   /// Sets a submatrix within the current matrix at the specified starting row and column.
+  //   /// </summary>
+  //   /// <param name="startRow">The starting row index for the submatrix.</param>
+  //   /// <param name="startCol">The starting column index for the submatrix.</param>
+  //   /// <param name="subMatrix">The submatrix to be inserted.</param>
+  //   /// <remarks>The size of the submatrix must fit within the bounds of the main matrix.</remarks>
+  //   public void SetSubMatrix(int startRow, int startCol, Matrix subMatrix) {
+  //     Debug.Assert
+  //       (
+  //        startRow >= 0 && startRow + subMatrix.Rows <= Rows
+  //      , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
+  //       );
+  //     Debug.Assert
+  //       (
+  //        startCol >= 0 && startCol + subMatrix.Cols <= Cols
+  //      , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
+  //       );
+  //
+  //     int k     = startRow * Cols + startCol;
+  //     int s     = 0;
+  //     int shift = Cols - subMatrix.Cols;
+  //     for (int row = 0; row < subMatrix.Rows; row++, k += shift) {
+  //       for (int col = 0; col < subMatrix.Cols; col++, s++, k++) {
+  //         _m[k] = subMatrix[s];
+  //       }
+  //     }
+  //   }
+  //
+  //   /// <summary>
+  //   /// Sets a subvector in the matrix starting from the specified startRow and column.
+  //   /// </summary>
+  //   /// <param name="startRow">The starting startRow index.</param>
+  //   /// <param name="startCol">The column where the vector will be inserted.</param>
+  //   /// <param name="vector">The vector to insert into the matrix.</param>
+  //   public void SetSubVector(int startRow, int startCol, Vector vector) {
+  //     Debug.Assert(startRow + vector.SpaceDim <= Rows, "SetSubVector: The vector does not fit into the matrix vertically.");
+  //     Debug.Assert(startCol < Cols, "SetSubVector: The column index is out of bounds.");
+  //
+  //     int k = startRow * Cols + startCol;
+  //     for (int i = 0; i < vector.SpaceDim; i++, k+=Cols) {
+  //       _m[k] = vector[i];
+  //     }
+  //   }
+  //
+  //   /// <summary>
+  //   /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
+  //   /// </summary>
+  //   /// <param name="m1">The first matrix.</param>
+  //   /// <param name="m2">The second matrix.</param>
+  //   /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
+  //   public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
+  //
+  // }
 
 }
