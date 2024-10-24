@@ -1,0 +1,146 @@
+| Method               | spaceDim | subSpaceDim | Mean      | Error     | StdDev    | Ratio | RatioSD |
+|--------------------- |--------- |------------ |----------:|----------:|----------:|------:|--------:|
+| QRByReflection       | 2        | 2           |  1.345 us | 0.0160 us | 0.0214 us |  1.00 |    0.00 |
+| QRByReflectionArrays | 2        | 2           |  1.354 us | 0.0125 us | 0.0180 us |  1.01 |    0.02 |
+|                      |          |             |           |           |           |       |         |
+| QRByReflection       | 3        | 2           |  4.063 us | 0.0858 us | 0.1285 us |  1.00 |    0.00 |
+| QRByReflectionArrays | 3        | 2           |  3.018 us | 0.0393 us | 0.0564 us |  0.74 |    0.03 |
+|                      |          |             |           |           |           |       |         |
+| QRByReflection       | 4        | 2           |  6.434 us | 0.0567 us | 0.0849 us |  1.00 |    0.00 |
+| QRByReflectionArrays | 4        | 2           |  4.092 us | 0.0389 us | 0.0558 us |  0.63 |    0.01 |
+|                      |          |             |           |           |           |       |         |
+| QRByReflection       | 7        | 2           | 19.949 us | 0.0780 us | 0.1119 us |  1.00 |    0.00 |
+| QRByReflectionArrays | 7        | 2           |  8.674 us | 0.0389 us | 0.0520 us |  0.43 |    0.00 |
+
+| Method               | spaceDim | subSpaceDim | Mean      | Error     | StdDev    | Ratio |
+|--------------------- |--------- |------------ |----------:|----------:|----------:|------:|
+| QRByReflection       | 3        | 3           |  4.223 us | 0.0161 us | 0.0236 us |  1.00 |
+| QRByReflectionArrays | 3        | 3           |  3.316 us | 0.0078 us | 0.0107 us |  0.79 |
+|                      |          |             |           |           |           |       |
+| QRByReflection       | 3        | 7           |  5.322 us | 0.0441 us | 0.0603 us |  1.00 |
+| QRByReflectionArrays | 3        | 7           |  4.735 us | 0.0160 us | 0.0239 us |  0.89 |
+|                      |          |             |           |           |           |       |
+| QRByReflection       | 7        | 3           | 30.869 us | 0.2704 us | 0.3878 us |  1.00 |
+| QRByReflectionArrays | 7        | 3           | 12.494 us | 0.0212 us | 0.0284 us |  0.40 |
+|                      |          |             |           |           |           |       |
+| QRByReflection       | 7        | 7           | 66.601 us | 0.2502 us | 0.3339 us |  1.00 |
+| QRByReflectionArrays | 7        | 7           | 24.842 us | 0.0883 us | 0.1266 us |  0.37 |
+
+
+===========================
+ public static (Matrix Q, Matrix R) ByReflection(Matrix A) {
+   int    n = A.Rows;
+   int    m = A.Cols;
+
+   Debug.Assert(n >= m, "QRDecomposition.ByReflection: Can't decompose the system which n > m.");
+   Matrix Q = Matrix.Eye(n);
+   Matrix R = A;
+
+   int t = Math.Min(n - 1, m);
+   for (int k = 0; k < t; k++) {
+     Vector x = R.TakeVector(k).SubVector(k, R.Rows - 1);
+     if (!x.IsZero) {
+       TNum[] v = x.GetAsArray();
+       // v = x + sign(x_1)*||x||*e1.   (x1,x2,x3) + (p,0,0)
+       int sx0    = Tools.Sign(x[0]);
+       int sign = sx0 == 0 ? 1 : sx0;
+       v[0] = x[0] + TConv.FromInt(sign) * x.Length;
+
+       Vector u = new Vector(v, false);
+
+
+       Matrix        Householder = Matrix.Eye(n - k) - Tools.Two * u.OuterProduct(u) / (u * u);
+       MutableMatrix Hk          = MutableMatrix.Eye(n);
+       Hk.SetSubMatrix(k, k, Householder);
+
+       R = Hk * R;
+       Q = Q * Hk;
+     }
+   }
+
+   Debug.Assert((Q * R).Equals(A),$"Q*R != A");
+
+   return (Q, R);
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+public static (Matrix Q, Matrix R) ByReflectionArrays(Matrix A) {
+      int n = A.Rows;
+      int m = A.Cols;
+
+      Debug.Assert(n >= m, "QRDecomposition.ByReflection: Can't decompose the system which n > m.");
+
+      TNum[,] R = A;
+      TNum[,] Q = new TNum[n, n]; // Q = Eye
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          Q[i, j] = Tools.Zero;
+        }
+      }
+      for (int i = 0; i < n; i++) {
+        Q[i, i] = Tools.One;
+      }
+
+      int t = Math.Min(n - 1, m);
+      for (int k = 0; k < t; k++) {
+        TNum[] v     = new TNum[n - k]; // Вектор Хаусхолдера
+        TNum   normX = Tools.Zero;
+        for (int i = 0; i < n - k; i++) {
+          v[i]  =  R[k + i, k];
+          normX += v[i] * v[i];
+        }
+        normX = TNum.Sqrt(normX);
+
+        if (Tools.NE(normX)) {
+          int sign = TNum.Sign(v[0]) == 0 ? 1 : TNum.Sign(v[0]);
+          v[0] += TConv.FromInt(sign) * normX; //v = x + sign(x_1)*||x||*e1.
+
+          // Вычисляем beta = 2/(v^T * v) (нормировка)
+          TNum vTv = Tools.Zero;
+          foreach (TNum s in v) { vTv += s * s; }
+          TNum beta = Tools.Two / vTv;
+
+          // Основное свойство матриц Хаусхолдера
+          // P = I - beta*v*v^T, A - matrix
+          // PA = A - (beta*v)(v^T*A)
+          // AP = A - (Av)(beta*v)^T
+
+          // Меняем R. Столбцы до k-го уже посчитаны. Их менять не нужно. Ко всем остальным надо применить преобразование P*R_k
+          for (int j = k; j < m; j++) { //
+            TNum vTr = Tools.Zero;
+            for (int i = 0; i < n - k; i++) { // v^T*R
+              vTr += v[i] * R[k + i, j];
+            }
+
+            for (int i = 0; i < n - k; i++) {
+              R[k + i, j] -= beta * v[i] * vTr; // R - (beta*v)(v^T*R)
+            }
+          }
+
+          // Меняем Q.
+          for (int j = 0; j < n; j++) {
+            TNum vTq = Tools.Zero;
+            for (int i = 0; i < n - k; i++) { // v^T*Q
+              vTq += v[i] * Q[j, k + i];
+            }
+
+            for (int i = 0; i < n - k; i++) {
+              Q[j, k + i] -= beta * v[i] * vTq; // R - (beta*v)(v^T*Q)
+            }
+          }
+        }
+      }
+
+      Matrix q = new Matrix(Q);
+      Matrix r = new Matrix(R);
+
+      Debug.Assert((q * r).Equals(A), $"QRDecomposition.ByReflection: Q*R != A");
+
+
+      return (q, r);
+    }
