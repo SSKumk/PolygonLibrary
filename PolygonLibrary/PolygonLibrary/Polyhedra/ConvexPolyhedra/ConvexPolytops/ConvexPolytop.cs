@@ -113,59 +113,76 @@ public partial class Geometry<TNum, TConv>
             _innerPoint = Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(Vrep.Count);
           }
           if (IsHrep) {
-            SimplexMethod                     sm  = new SimplexMethod(Hrep, _ => Tools.One);
-            SimplexMethod.SimplexMethodResult res = sm.Solve();
-            Debug.Assert
-              (res.Solution is not null, $"ConvexPolytop.InnerPoint_Hrep: The set of half-spaces does not form a polytope!");
-            // List<HyperPlane> activeHPs = new List<HyperPlane>();
-            // foreach (int i in res.ActiveInequalitiesID) {
-            //   activeHPs.Add(Hrep[i]);
-            // }
-
-            Vector vertex = new Vector(res.Solution);
-
+            Vector           vertex    = FindInitialVertex_Simplex(Hrep, out _);
             List<HyperPlane> activeHPs = Hrep.Where(hp => hp.Contains(vertex)).ToList();
 
-            Vector sumNormals = Vector.Zero(SpaceDim);
+            // ищём вектор, направленный строго внутрь многогранника
+            Combination  J          = new Combination(activeHPs.Count, SpaceDim - 1);
+            List<Vector> directions = new List<Vector>();
+            do // перебираем кандидатов в "рёбра"
+            {
+              List<HyperPlane> edge = new List<HyperPlane>(SpaceDim - 1);
+              for (int j = 0; j < SpaceDim - 1; j++) {
+                edge.Add(activeHPs[J[j]]);
+              }
+              LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
+              bool        isEdge         = true;
 
-            throw new NotImplementedException
-              (
-               "sumNormals надо считать как-то по-другому. Например из данной точки построить все выходящие из неё лучи, сложить их."
-              );
+              Vector v = coEdgeLinSpace.FindOrthonormalVector(); // ищем направляющий вектор ребра
 
-            Vector innerPoint = vertex - sumNormals; // на 1 в обратном направлении сдвинулись.
+              // проверяем, что вектор v действительно определяет ребро
+              bool firstNonZeroProduct = true;
+              foreach (HyperPlane hp in activeHPs) {
+                TNum dotProduct = v * hp.Normal;
+
+                // Если скалярное произведение равно нулю, игнорируем
+                if (!Tools.EQ(dotProduct)) {
+                  // Первое ненулевое скалярное произведение определяет ориентацию вектора v
+                  if (firstNonZeroProduct) {
+                    if (Tools.GT(dotProduct)) { v = -v; }
+                    firstNonZeroProduct = false;
+                  }
+                  else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+                    if (Tools.GT(dotProduct)) {
+                      isEdge = false;
+
+                      break;
+                    }
+                  }
+                }
+              }
+              if (isEdge) {
+                directions.Add(v);
+              }
+            } while (J.Next());
 
 
-            List<HyperPlane> unsatisfied = new List<HyperPlane>();
-            foreach (HyperPlane t in Hrep) {
-              if (!t.ContainsNegative(innerPoint)) { // Если точка лежит на или снаружи этой гиперплоскости
-                unsatisfied.Add(t);
+            Vector directionIn = directions.Aggregate((acc, v) => acc + v).Normalize();
+
+            TNum tMin = Tools.PositiveInfinity;
+            foreach (HyperPlane hp in Hrep) {
+              TNum denominator = hp.Normal * directionIn;
+
+              if (!hp.Contains(vertex)) {
+                //todo мы так-то знаем, каким гиперплоскостям принадлежит точка, это можно как-то учесть?
+                TNum ti = (hp.ConstantTerm - hp.Normal * vertex) / denominator;
+
+                // Если ti > 0 или ti <= tMin, то такая точка годится
+                if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
+                  tMin = ti;
+                }
               }
             }
 
-            if (unsatisfied.Count != 0) {
-              TNum eps = Tools.One;
-#if DEBUG
-              int k = 0;
-#endif
-              do {
-#if DEBUG
-                k++;
-                if (k > 16) {
-                  throw new ArgumentException("Cycled!");
-                }
-#endif
-
-                eps        /= TConv.FromInt(10);
-                innerPoint =  vertex - eps * sumNormals;
-              } while (!unsatisfied.All(hp => hp.ContainsNegative(innerPoint)));
-            }
+            Debug.Assert(tMin != Tools.PositiveInfinity, $"ConvexPolytop.InnerPoint: The set of inequalities is unbounded!");
 
 
-            _innerPoint = innerPoint;
+            _innerPoint = Vector.MulByNumAndAdd(directionIn, tMin / Tools.Two, vertex);
           }
+          Debug.Assert(_innerPoint is not null, $"ConvexPolytop.InnerPoint: The inner point should not be null!");
 
-          return _innerPoint!;
+          Debug.Assert(Hrep.All(hp => hp.ContainsNegative(_innerPoint)), $"ConvexPolytop.InnerPoint: This is not an inner point!");
+          return _innerPoint;
         }
     }
 
@@ -286,12 +303,7 @@ public partial class Geometry<TNum, TConv>
     private ConvexPolytop(IEnumerable<HyperPlane> HPs, bool doHRedundancy) {
       SpaceDim = HPs.First().Normal.SpaceDim;
       if (doHRedundancy) {
-        throw new NotImplementedException
-          (
-           "Надо сделать! Нужен симлекс-метод и алгоритм Фукуды." +
-           " Либо осталось найти строго внутреннюю точку H^*rep. Фукуда пишет, что это LP. Опять нужен симплекс..."
-          );
-        // _Hrep = HRedundancyByGW(HPs, innerPoint);
+       _Hrep = HRedundancyByGW(HPs);
       }
       else {
         _Hrep = new List<HyperPlane>(HPs);
@@ -967,34 +979,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Shifts the convex polytop to the origin. If an inner point is provided, the polytop is shifted by that point.
+    /// Shifts the convex polytop to the origin.
     /// </summary>
-    /// <param name="innerPoint">
-    /// The point to shift to the origin. If <c>null</c>:
-    /// for FLrep, the inner point is taken from it;
-    /// for Vrep, the inner point is computed as the centroid of all vertices;
-    /// for Hrep inner point requires solving a linear programming (LP) problem. (NOT DONE YET).
-    /// </param>
     /// <returns>A new convex polytop with the selected point at the origin.</returns>
-    public ConvexPolytop ShiftToOrigin(Vector? innerPoint = null) {
-      if (IsFLrep) {
-        return CreateFromFaceLattice(Shift(-InnerPoint).FLrep);
-      }
-      if (IsVrep) {
-        innerPoint ??= InnerPoint;
+    public ConvexPolytop ShiftToOrigin(out Vector innerPoint) {
+      innerPoint = InnerPoint;
 
-        return CreateFromPoints(Shift(-innerPoint).Vrep);
-      }
-      if (IsHrep) {
-        if (innerPoint is not null) {
-          Debug.Assert(Hrep.All(hp => hp.ContainsNegative(innerPoint)));
-
-          return CreateFromHalfSpaces(Shift(-innerPoint).Hrep);
-        }
-      }
-
-      throw new NotImplementedException
-        ("FromHrep.NoInnerPointGiven: Тут надо решить задачу LP, чтобы найти точку, которая лежит внутри многогранника");
+      return Shift(-InnerPoint);
     }
 
     /// <summary>
@@ -1135,10 +1126,7 @@ public partial class Geometry<TNum, TConv>
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
 
       // Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
-      Vector? firstPoint = FindInitialVertex_Simplex(HPs);
-      if (firstPoint is null) {
-        throw new ArgumentException("ConvexPolytop.HrepToVrep_Geometric: Can't find any solution of a given system!");
-      }
+      Vector firstPoint = FindInitialVertex_Simplex(HPs, out _);
       Vs.Add(firstPoint);
       Debug.Assert
         (
@@ -1156,18 +1144,18 @@ public partial class Geometry<TNum, TConv>
         (Vector z, List<HyperPlane> Hz) = elem;
         Combination J = new Combination(Hz.Count, d - 1);
 
-        do // перебираем "рёбра"
+        do // перебираем кандидатов в "рёбра"
         {
           List<HyperPlane> edge = new List<HyperPlane>(d - 1);
           for (int j = 0; j < d - 1; j++) {
             edge.Add(Hz[J[j]]);
           }
-          LinearBasis edgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
-          bool        isEdge       = true;
+          LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
+          bool        isEdge         = true;
 
 
-          // ищем направляющий вектор прямой, перпендикулярный линейному пространству edge
-          Vector v = edgeLinSpace.FindOrthonormalVector();
+          // ищем направляющий вектор ребра
+          Vector v = coEdgeLinSpace.FindOrthonormalVector();
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;
@@ -1228,8 +1216,11 @@ public partial class Geometry<TNum, TConv>
                 }
               }
             }
+            Debug.Assert
+              (tMin != Tools.PositiveInfinity, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
+
             if (tMin == Tools.PositiveInfinity) {
-              throw new ArgumentException("The set of inequalities is unbounded!");
+              throw new ArgumentException("");
             }
             if (!foundPrev) { // если точку ранее нашли, то
               Vs.Add(zNew);
@@ -1279,26 +1270,31 @@ public partial class Geometry<TNum, TConv>
       return firstPoint.Count != 0 ? firstPoint.First() : null;
     }
 
-    public static Vector? FindInitialVertex_Simplex(List<HyperPlane> HPs) {
-      SimplexMethod                     sm = new SimplexMethod(HPs, _ => Tools.One);
-      SimplexMethod.SimplexMethodResult x  = sm.Solve();
+    /// <summary>
+    /// Finds the initial vertex of a convex polytope using the simplex method.
+    /// </summary>
+    /// <param name="HPs">The list of hyperplanes that defines the system of inequalities.</param>
+    /// <param name="activeHPs">The indices of the hyperplanes whose intersection forms the vertex.</param> //todo -- !!!
+    /// <returns>The initial vertex.</returns>
+    public static Vector FindInitialVertex_Simplex(List<HyperPlane> HPs, out List<int> activeHPs) {
+      SimplexMethod.SimplexMethodResult x = SimplexMethod.Solve(HPs, _ => Tools.One);
 
-      return x.Solution is null ? null : new Vector(x.Solution);
+      Debug.Assert(x.Solution is not null, $"ConvexPolytop.FindInitialVertex_Simplex: Can't find a solution of a given system!");
+
+      activeHPs = new List<int>();
+
+      return new Vector(x.Solution);
     }
 
     /// <summary>
     /// Eliminates all redundant inequalities from a linear system.
     /// </summary>
     /// <param name="HPs">The given system of inequalities.</param>
-    /// <param name="innerPoint">The strict interior point of the system.</param>
     /// <returns>The not redundant system.</returns>
-    public static List<HyperPlane> HRedundancyByGW(List<HyperPlane> HPs, Vector innerPoint) {
+    public static List<HyperPlane> HRedundancyByGW(IEnumerable<HyperPlane> HPs) {
       ConvexPolytop init = CreateFromHalfSpaces(HPs);
 
-      // var x = init.ShiftToOrigin(innerPoint).Polar(true);
-      // var y =  x.Polar();
-      //   return y.Shift(innerPoint).Hrep;
-      return init.ShiftToOrigin(innerPoint).Polar(true).Polar().Shift(innerPoint).Hrep;
+      return init.ShiftToOrigin(out Vector innerPoint).Polar(true).Polar().Shift(innerPoint).Hrep;
     }
 
   }
