@@ -48,7 +48,7 @@ public class Sandbox {
   public void FindInitialVertex_Naive_MassPoint_5dot1() => ConvexPolytop.FindInitialVertex_Naive(HPs, 3);
 
   [Benchmark]
-  public void FindInitialVertex_Simplex_MassPoint_5dot1() => ConvexPolytop.FindInitialVertex_Simplex(HPs);
+  public void FindInitialVertex_Simplex_MassPoint_5dot1() => ConvexPolytop.FindInitialVertex_Simplex(HPs, out _);
 
 
   // public class Program {
