@@ -15,6 +15,10 @@ public partial class Geometry<TNum, TConv>
     private readonly int     _dOrig;
     private readonly int     _m;
 
+    public static SimplexMethodResult Solve(List<HyperPlane> HPs, Func<int, TNum> fc) {
+      return new SimplexMethod(HPs, fc).Solve();
+    }
+
     public SimplexMethod(List<HyperPlane> HPs, Func<int, TNum> fc) : this
       ((i, j) => HPs[i].Normal[j], HPs.Count, HPs.First().Normal.SpaceDim, i => HPs[i].ConstantTerm, fc) { }
 
