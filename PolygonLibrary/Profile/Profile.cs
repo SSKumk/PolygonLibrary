@@ -33,22 +33,36 @@ class Program {
     ParamReader prR = new ParamReader
       ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
     // ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
-    // ConvexPolytop polytop = ConvexPolytop.SimplexRND(3);
+    // ConvexPolytop polytop = ConvexPolytop.Cube01_HRep(5).RotateRND();
+    // ConvexPolytop polytop = MinkowskiSum.BySandipDas
+      // (ConvexPolytop.Cube01_VRep(5).RotateRND(), ConvexPolytop.Cube01_HRep(5).RotateRND());
 
-    ConvexPolytop polytop = ConvexPolytop.CreateFromPoints
-      (
-       new List<Vector>()
-         {
-           new Vector(new ddouble[] { 1, 0, 0 })
-         , new Vector(new ddouble[] { 0, 1, 0 })
-         , new Vector(new ddouble[] { 0, 0, 1 })
-         , new Vector(new ddouble[] { 0, 0, 0 })
-          ,
-         }
-      );
+    // ConvexPolytop polytop = ConvexPolytop.CreateFromPoints
+    //   (
+    //    new List<Vector>()
+    //      {
+    //        new Vector(new ddouble[] { 1, 0, 0 })
+    //      , new Vector(new ddouble[] { 0, 1, 0 })
+    //      , new Vector(new ddouble[] { 0, 0, 1 })
+    //      , new Vector(new ddouble[] { 0, 0, 0 })
+    //       ,
+    //      }
+    //   );
+
+    List<HyperPlane> hps = new List<HyperPlane>()
+      {
+        new HyperPlane(new Vector(new ddouble[] { 1, 0 }), 0),
+        new HyperPlane(new Vector(new ddouble[] { 0, 1 }), 2),
+        new HyperPlane(new Vector(new ddouble[] { 0, -1 }), 3),
+        new HyperPlane(new Vector(new ddouble[] { -1, 0 }), 0),
+        new HyperPlane(new Vector(new ddouble[] { -1, 1 }), -5),
+
+      };
+
+    Console.WriteLine($"{ConvexPolytop.FindInitialVertex_Simplex(hps, out _)}");
 
 
-    Console.WriteLine($"{polytop.GetInHrep().InnerPoint}");
+    // Console.WriteLine($"{polytop.GetInHrep().InnerPoint}");
 
 
     // List<HyperPlane> hps = new List<HyperPlane>()
