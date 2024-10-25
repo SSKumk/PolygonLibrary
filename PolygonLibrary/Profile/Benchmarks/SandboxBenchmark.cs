@@ -52,22 +52,22 @@ public class Sandbox {
   [Benchmark]
   public void FindInitialVertex_Simplex_SimplexRNDx2() => ConvexPolytop.FindInitialVertex_Simplex(HPs, out _);
 
-  public class Program {
-
-    public static void Main(string[] args) {
-      var summary = BenchmarkRunner.Run<Sandbox>();
-
-      // int           dim = 5;
-      // ConvexPolytop s   = ConvexPolytop.SimplexRND(dim);
-      // for (int i = 0; i < 4; i++) {
-      //   Console.WriteLine($"i = {i}. |V| = {s.Vrep.Count}. |H| = {s.Hrep.Count}");
-      //   ConvexPolytop n = ConvexPolytop.SimplexRND(dim);
-      //   s = MinkowskiSum.BySandipDas(s, n);
-      // }
-
-    }
-
-  }
+  // public class Program {
+  //
+  //   public static void Main(string[] args) {
+  //     var summary = BenchmarkRunner.Run<Sandbox>();
+  //
+  //     // int           dim = 5;
+  //     // ConvexPolytop s   = ConvexPolytop.SimplexRND(dim);
+  //     // for (int i = 0; i < 4; i++) {
+  //     //   Console.WriteLine($"i = {i}. |V| = {s.Vrep.Count}. |H| = {s.Hrep.Count}");
+  //     //   ConvexPolytop n = ConvexPolytop.SimplexRND(dim);
+  //     //   s = MinkowskiSum.BySandipDas(s, n);
+  //     // }
+  //
+  //   }
+  //
+  // }
 
 }
 
