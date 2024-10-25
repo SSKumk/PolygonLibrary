@@ -148,7 +148,7 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG));
+      diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG), true);
 
       return true;
     }

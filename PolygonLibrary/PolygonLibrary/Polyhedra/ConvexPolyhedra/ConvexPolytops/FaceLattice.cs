@@ -63,15 +63,15 @@ public partial class Geometry<TNum, TConv>
     /// Construct a face lattice based on given lattice.
     /// </summary>
     /// <param name="lattice">The lattice.</param>
-    /// <param name="updateVertices">todo xml </param>
-    public FaceLattice(List<SortedSet<FLNode>> lattice, bool updateVertices) {
+    /// <param name="updateIP"></param>
+    public FaceLattice(List<SortedSet<FLNode>> lattice, bool updateIP) {
       Lattice = lattice;
 
       Debug.Assert(lattice[^1].Count == 1, $"FaceLattice.Ctor: There should be only one d-face: the polytop itself. Found {lattice[^1].Count}");
 
       Top     = Lattice[^1].First();
 
-      if (updateVertices) {
+      if (updateIP) {
         Top.ReCalcAddInfo();
       }
     }
@@ -102,9 +102,7 @@ public partial class Geometry<TNum, TConv>
 
       for (int i = 1; i < newFL.Count; i++) {
         foreach (FLNodeSum node in FLS[i]) {
-          List<FLNode> newSub = node.Sub.Select(n => oldToNew[n]).ToList();
-
-          FLNode newNode = new FLNode(newSub);
+          FLNode newNode = new FLNode(node.Sub.Select(n => oldToNew[n]).ToList());
           oldToNew.Add(node, newNode);
           newFL[i].Add(newNode);
         }
@@ -138,7 +136,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return new FaceLattice(newFL, false);
+      return new FaceLattice(newFL, true);
     }
 #endregion
 
@@ -346,7 +344,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     public FLNode(IEnumerable<FLNode> sub) {
-      Sub        = new SortedSet<FLNode>(sub); // todo убрать, когда Sub станет List<...>
+      Sub        = new SortedSet<FLNode>(sub);
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
       AffineBasis affine = new AffineBasis(Sub.First().AffBasis);
@@ -507,29 +505,38 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(FLNode? other) {
       if (other is null) { return 1; } // null < this (always)
 
-      if (this.Vertices.Count < other.Vertices.Count) { // this < other
+      if (this.AffBasis.SubSpaceDim < other.AffBasis.SubSpaceDim) { // this < other
         return -1;
       }
 
-      if (this.Vertices.Count > other.Vertices.Count) { // this > other
+      if (this.AffBasis.SubSpaceDim > other.AffBasis.SubSpaceDim) { // this > other
         return 1;
       }
 
-      SortedSet<Vector>.Enumerator e1       = this.Vertices.GetEnumerator();
-      SortedSet<Vector>.Enumerator e2       = other.Vertices.GetEnumerator();
-      Comparer<Vector>             comparer = Comparer<Vector>.Default;
-
-      while (e1.MoveNext() && e2.MoveNext()) {
-        int compare = comparer.Compare(e1.Current, e2.Current);
-        switch (compare) {
-          case < 0: // this < other
-            return -1;
-          case > 0: // this > other
-            return 1;
-        }
-      }
-
-      return 0;
+      return this.InnerPoint.CompareTo(other.InnerPoint);
+      // if (this.Vertices.Count < other.Vertices.Count) { // this < other
+      //   return -1;
+      // }
+      //
+      // if (this.Vertices.Count > other.Vertices.Count) { // this > other
+      //   return 1;
+      // }
+      //
+      // SortedSet<Vector>.Enumerator e1       = this.Vertices.GetEnumerator();
+      // SortedSet<Vector>.Enumerator e2       = other.Vertices.GetEnumerator();
+      // Comparer<Vector>             comparer = Comparer<Vector>.Default;
+      //
+      // while (e1.MoveNext() && e2.MoveNext()) {
+      //   int compare = comparer.Compare(e1.Current, e2.Current);
+      //   switch (compare) {
+      //     case < 0: // this < other
+      //       return -1;
+      //     case > 0: // this > other
+      //       return 1;
+      //   }
+      // }
+      //
+      // return 0;
     }
 #endregion
 

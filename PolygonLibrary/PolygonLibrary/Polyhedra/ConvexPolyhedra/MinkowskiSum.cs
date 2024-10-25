@@ -208,7 +208,7 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(FL[0].Count != 0, "There are NO vertices in face lattice!");
 
       // Наполняем все k-грани точками снизу-вверх.
-      return ConvexPolytop.CreateFromFaceLattice(FaceLattice.ConstructFromFLNodeSum(FL));
+      return ConvexPolytop.CreateFromFaceLattice(FaceLattice.ConstructFromFLNodeSum(FL), false);
     }
 
   }

@@ -51,7 +51,6 @@ public partial class Geometry<TNum, TConv>
   // }
 
 
-  // todo Если появится быстрый Vrep -> Hrep, то стоит переделать эту конвертацию. Сейчас так: Vrep -(сложно)-> FLrep -(легко)-> Hrep
   /// <summary>
   /// Represents a full-dimensional convex polytope in a d-dimensional space.
   /// </summary>
@@ -181,7 +180,9 @@ public partial class Geometry<TNum, TConv>
           }
           Debug.Assert(_innerPoint is not null, $"ConvexPolytop.InnerPoint: The inner point should not be null!");
 
-          Debug.Assert(Hrep.All(hp => hp.ContainsNegative(_innerPoint)), $"ConvexPolytop.InnerPoint: This is not an inner point!");
+          Debug.Assert
+            (Hrep.All(hp => hp.ContainsNegative(_innerPoint)), $"ConvexPolytop.InnerPoint: This is not an inner point!");
+
           return _innerPoint;
         }
     }
@@ -299,11 +300,11 @@ public partial class Geometry<TNum, TConv>
     /// Optionally reduces redundant hyperplanes.
     /// </summary>
     /// <param name="HPs">The list of hyperplanes defining the polytop.</param>
-    /// <param name="doHRedundancy">If true, performs redundancy reduction on the hyperplanes (not yet implemented).</param>
+    /// <param name="doHRedundancy">If true, performs redundancy reduction on the hyperplanes.</param>
     private ConvexPolytop(IEnumerable<HyperPlane> HPs, bool doHRedundancy) {
       SpaceDim = HPs.First().Normal.SpaceDim;
       if (doHRedundancy) {
-       _Hrep = HRedundancyByGW(HPs);
+        _Hrep = HRedundancyByGW(HPs);
       }
       else {
         _Hrep = new List<HyperPlane>(HPs);
@@ -314,9 +315,14 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a ConvexPolytop using a face lattice (FLrep).
     /// </summary>
     /// <param name="fLrep">The face lattice defining the polytop.</param>
-    private ConvexPolytop(FaceLattice fLrep) {
+    /// <param name="updateIP">If true, updates inner points of a face lattice.</param>
+    private ConvexPolytop(FaceLattice fLrep, bool updateIP) {
       SpaceDim = fLrep.Top.AffBasis.SpaceDim;
       _FLrep   = fLrep;
+
+      if (updateIP) {
+        _FLrep.Top.ReCalcAddInfo();
+      }
     }
 #endregion
 
@@ -325,7 +331,7 @@ public partial class Geometry<TNum, TConv>
     /// Gets or constructs the FLrep of the polytope, and based on it creates new polytope.
     /// </summary>
     /// <returns>The convex polytope in FLrep.</returns>
-    public ConvexPolytop GetInFLrep() => CreateFromFaceLattice(FLrep);
+    public ConvexPolytop GetInFLrep() => CreateFromFaceLattice(FLrep, false);
 
     /// <summary>
     /// Gets or constructs the Vrep of the polytope, and based on it creates new polytope.
@@ -359,7 +365,9 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a convex polytope from a face lattice.
     /// </summary>
     /// <param name="faceLattice">The face lattice representing the polytop.</param>
-    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice) => new ConvexPolytop(faceLattice);
+    /// <param name="updateIP">If true, updates inner points of a face lattice.</param>
+    public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice, bool updateIP = false)
+      => new ConvexPolytop(faceLattice, updateIP);
 
     /// <summary>
     /// Represents the actions that can be performed on a built polytop.
@@ -438,7 +446,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList(), false));
+      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList(), false), true);
     }
 #endregion
 
@@ -855,7 +863,7 @@ public partial class Geometry<TNum, TConv>
         }
         newFL.Add(new SortedSet<FLNode>() { new FLNode(newFL.Last()) });
 
-        return CreateFromFaceLattice(new FaceLattice(newFL, false));
+        return CreateFromFaceLattice(new FaceLattice(newFL, false), false);
       }
 
       if (IsVrep) {
@@ -940,7 +948,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new convex polytop shifted by the given vector.</returns>
     public ConvexPolytop Shift(Vector s) {
       if (IsFLrep) {
-        return CreateFromFaceLattice(FLrep.VertexTransform(v => v + s));
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => v + s), false);
       }
       if (IsVrep) {
         return CreateFromPoints(Vrep.Select(v => v + s));
@@ -956,7 +964,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new convex polytop rotated by the given matrix.</returns>
     public ConvexPolytop Rotate(Matrix rotate) {
       if (IsFLrep) {
-        return CreateFromFaceLattice(FLrep.VertexTransform(v => v * rotate));
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => v * rotate), false);
       }
       if (_Vrep is not null) {
         return CreateFromPoints(Vrep.Select(v => v * rotate));
@@ -1125,14 +1133,8 @@ public partial class Geometry<TNum, TConv>
       int               d  = HPs.First().Normal.SpaceDim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
 
-      // Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
       Vector firstPoint = FindInitialVertex_Simplex(HPs, out _);
       Vs.Add(firstPoint);
-      Debug.Assert
-        (
-         HPs.All(hp => hp.ContainsNegativeNonStrict(firstPoint))
-       , $"ConvexPolytop.HrepToVrep_Geometric: The first point should satisfy all inequalities."
-        );
 
 
       // Этап 2. Поиск всех остальных вершин
@@ -1142,8 +1144,8 @@ public partial class Geometry<TNum, TConv>
       // Обход в ширину
       while (process.TryDequeue(out (Vector, List<HyperPlane>) elem)) {
         (Vector z, List<HyperPlane> Hz) = elem;
-        Combination J = new Combination(Hz.Count, d - 1);
 
+        Combination J = new Combination(Hz.Count, d - 1);
         do // перебираем кандидатов в "рёбра"
         {
           List<HyperPlane> edge = new List<HyperPlane>(d - 1);
@@ -1151,13 +1153,16 @@ public partial class Geometry<TNum, TConv>
             edge.Add(Hz[J[j]]);
           }
           LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
-          bool        isEdge         = true;
+          if (coEdgeLinSpace.SubSpaceDim != d - 1) {
+            continue;
+          } // Несколько гиперплоскостей "наложились", ребро не получим
 
 
           // ищем направляющий вектор ребра
           Vector v = coEdgeLinSpace.FindOrthonormalVector();
 
           // проверяем вектор v
+          bool isEdge              = true;
           bool firstNonZeroProduct = true;
           foreach (HyperPlane hp in Hz) {
             TNum dotProduct = v * hp.Normal;
@@ -1188,8 +1193,7 @@ public partial class Geometry<TNum, TConv>
             foreach (HyperPlane hp in HPs) {
               TNum denominator = hp.Normal * v;
 
-              // если ноль, то мы сейчас находимся на пересечении этих плоскостей
-              if (Tools.EQ(denominator)) {
+              if (Tools.EQ(denominator)) { // если ноль, то мы сейчас находимся на пересечении этих плоскостей
                 if (hp.Contains(z)) {
                   orthToEdgeHPs.Add(hp);
                 }
@@ -1197,8 +1201,8 @@ public partial class Geometry<TNum, TConv>
               else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
 
-                // Если ti <= 0 или ti > tMin, то такая точка не годится
-                if (!(Tools.LE(ti) || Tools.GT(ti, tMin))) {
+                // Если ti > 0 или ti <= tMin, то такая точка годится
+                if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
                   if (Tools.EQ(ti, tMin)) {
                     zNewHPs.Add(hp);
                   }
@@ -1206,7 +1210,7 @@ public partial class Geometry<TNum, TConv>
                     tMin = ti;
                     zNewHPs.Clear();
                     zNewHPs.Add(hp);
-                    zNew = Vector.MulByNumAndAdd(v, tMin, z); // z + tMin * v; // v*tMin + z
+                    zNew = Vector.MulByNumAndAdd(v, tMin, z); //v*tMin + z
                     if (Vs.Contains(zNew)) {
                       foundPrev = true;
 
@@ -1219,10 +1223,7 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert
               (tMin != Tools.PositiveInfinity, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
 
-            if (tMin == Tools.PositiveInfinity) {
-              throw new ArgumentException("");
-            }
-            if (!foundPrev) { // если точку ранее нашли, то
+            if (!foundPrev) { // если точку ранее не нашли
               Vs.Add(zNew);
               orthToEdgeHPs.AddRange(zNewHPs);
               process.Enqueue((zNew, orthToEdgeHPs));
@@ -1234,20 +1235,21 @@ public partial class Geometry<TNum, TConv>
       return Vs;
     }
 
+
     /// <summary>
     /// Finds an initial vertex of the convex polytope using a naive approach by checking combinations of hyperplanes.
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <param name="d">Dimension of the polytop.</param>
     /// <returns>A vertex of the polytop, or null if no vertex is found.</returns>
-    public static Vector? FindInitialVertex_Naive(List<HyperPlane> HPs, int d) {
+    public static Vector FindInitialVertex_Naive(List<HyperPlane> HPs, int d) {
       Combination          combination = new Combination(HPs.Count, d);
       Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
       GaussSLE             gaussSLE    = new GaussSLE(d, d);
       bool                 belongs;
       bool                 goNext     = true;
-      List<Vector>         firstPoint = new List<Vector>();
+      Vector?              firstPoint = null;
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей в поиске любой вершины.
         gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.All);
         gaussSLE.Solve();
@@ -1261,13 +1263,16 @@ public partial class Geometry<TNum, TConv>
             }
           }
           if (belongs) {
-            firstPoint.Add(point);
-            goNext = false;
+            firstPoint = point;
+            goNext     = false;
           }
         }
       } while (goNext && combination.Next());
 
-      return firstPoint.Count != 0 ? firstPoint.First() : null;
+      Debug.Assert(firstPoint is not null, $"ConvexPolytop.FindInitialVertex_Naive: Can't find a solution of a given system!");
+
+
+      return firstPoint;
     }
 
     /// <summary>
