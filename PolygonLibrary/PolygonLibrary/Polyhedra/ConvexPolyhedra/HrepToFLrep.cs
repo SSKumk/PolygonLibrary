@@ -7,7 +7,6 @@ public partial class Geometry<TNum, TConv>
 
   public class HrepToFLrep {
 
-    // todo Вроде бы работает только в 3Д, в 4Д уже не работает!
     public static FaceLattice HrepToFLrep_Geometric(List<HyperPlane> HPs, int PolytopDim) {
       SortedDictionary<FLNode, List<HyperPlane>> vToHPs = new SortedDictionary<FLNode, List<HyperPlane>>();
       List<SortedSet<FLNode>>                    FL     = new List<SortedSet<FLNode>>(); // 0 and 1 lvls
@@ -15,42 +14,36 @@ public partial class Geometry<TNum, TConv>
         FL.Add(new SortedSet<FLNode>());
       }
 
-      int m = HPs.Count;
       int d = HPs.First().Normal.SpaceDim;
 
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
       // Наивная реализация
-      Vector? firstPoint = FindInitialVertex_Naive(HPs, m, d);
-      if (firstPoint is null) {
-        throw new ArgumentException($"This is not a polytope!");
-      }
+      Vector firstPoint = ConvexPolytop.FindInitialVertex_Simplex(HPs, out _);
       FL[0].Add(new FLNode(firstPoint));
 
-      // Этап 2. Поиск всех остальных вершин
       Queue<(FLNode, List<HyperPlane>)> process = new Queue<(FLNode, List<HyperPlane>)>();
       process.Enqueue((FL[0].First(), HPs.Where(hp => hp.Contains(FL[0].First().InnerPoint)).ToList()));
-
+      vToHPs.Add(process.Peek().Item1, process.Peek().Item2);
       // Обход в ширину
       while (process.TryDequeue(out (FLNode, List<HyperPlane>) elem)) {
         (FLNode z, List<HyperPlane> Hz) = elem;
-        vToHPs.Add(z, Hz);
 
         Combination J = new Combination(Hz.Count, d - 1);
-        do // перебираем все 1-грани, то есть рёбра.
-        {
-          List<HyperPlane> edgeLine = new List<HyperPlane>(d - 1);
+        do {
+          List<HyperPlane> edge = new List<HyperPlane>(d - 1);
           for (int j = 0; j < d - 1; j++) {
-            edgeLine.Add(Hz[J[j]]);
+            edge.Add(Hz[J[j]]);
           }
-          LinearBasis edge_coSpace = new LinearBasis(edgeLine.Select(hp => hp.Normal));
-          bool        isEdge       = true;
+          LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
+          if (coEdgeLinSpace.SubSpaceDim != d - 1) {
+            continue;
+          } // Несколько гиперплоскостей "наложились", ребро не получим
 
-
-          // ищем направляющий вектор прямой, перпендикулярный линейному пространству edge
-          Vector v = edge_coSpace.FindOrthonormalVector();
+          Vector v = coEdgeLinSpace.FindOrthonormalVector();
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;
+          bool isEdge              = true;
           foreach (HyperPlane hp in Hz) {
             TNum dotProduct = v * hp.Normal;
 
@@ -72,36 +65,56 @@ public partial class Geometry<TNum, TConv>
           }
           if (isEdge) {
             // Теперь v определяет луч, на котором лежит ребро
-            List<HyperPlane> zNewHPs = new List<HyperPlane>();
-            TNum             tMin    = Tools.PositiveInfinity;
-            Vector           zNew    = Vector.Zero(d);
+            List<HyperPlane> zNewHPs       = new List<HyperPlane>();
+            List<HyperPlane> orthToEdgeHPs = new List<HyperPlane>();
+            TNum             tMin          = Tools.PositiveInfinity;
+            Vector           zNew;
+            bool             foundPrev = false;
+            FLNode?          zNew_node = null;
             foreach (HyperPlane hp in HPs) {
               TNum denominator = hp.Normal * v;
 
-              // если ноль, то эта гиперплоскость формирует ребро, вдоль которого мы движемся
-              if (Tools.NE(denominator)) {
+              if (Tools.EQ(denominator)) {
+                if (hp.Contains(z.InnerPoint)) {
+                  orthToEdgeHPs.Add(hp);
+                }
+              }
+              else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z.InnerPoint) / denominator;
 
-                if (Tools.EQ(ti, tMin)) {
-                  zNewHPs.Add(hp);
-                }
-                if (Tools.GT(ti) && Tools.LT(ti, tMin)) {
-                  tMin = ti;
-                  zNewHPs.Clear();
-                  zNewHPs.Add(hp);
-                  zNew = Vector.MulByNumAndAdd(v, tMin, z.InnerPoint); // z + tMin * v; // v*tMin + z
+                // Если ti > 0 или ti <= tMin, то такая точка годится
+                if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
+                  if (Tools.EQ(ti, tMin)) {
+                    zNewHPs.Add(hp);
+                  }
+                  else if (Tools.LT(ti, tMin)) {
+                    tMin = ti;
+                    zNewHPs.Clear();
+                    zNewHPs.Add(hp);
+                    zNew      = Vector.MulByNumAndAdd(v, tMin, z.InnerPoint); //v*tMin + z
+                    zNew_node = new FLNode(zNew);
+                    if (FL[0].Contains(zNew_node)) {
+                      foundPrev = true;
+
+                      break;
+                    }
+                  }
                 }
               }
             }
-            FLNode zNew_node = new FLNode(zNew);
+            Debug.Assert
+              (tMin != Tools.PositiveInfinity, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
+            Debug.Assert(zNew_node is not null, "ConvexPolytop.HrepToFLrep: new node is null!");
             FL[1].Add(new FLNode(new List<FLNode>() { z, zNew_node }));
-            if (!FL[0].Contains(zNew_node)) {
+            if (!foundPrev) {
               FL[0].Add(zNew_node);
-              edgeLine.AddRange(zNewHPs);
-              process.Enqueue((zNew_node, edgeLine));
+              orthToEdgeHPs.AddRange(zNewHPs);
+              process.Enqueue((zNew_node, orthToEdgeHPs));
+              vToHPs.Add(zNew_node, orthToEdgeHPs);
             }
           }
         } while (J.Next());
+        // Console.WriteLine($"QSize = {process.Count}");
       }
 
       // Теперь собираем всю оставшуюся решётку
@@ -121,7 +134,8 @@ public partial class Geometry<TNum, TConv>
 
                   bool found = false;
                   foreach (FLNode supper in FL[i + 1]) {
-                    if (supper.AffBasis.Contains(innerPoint)) { // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
+                    if (supper.AffBasis.Contains
+                          (innerPoint)) { // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
                       FLNode.Connect(set[fst], supper, false);
                       FLNode.Connect(set[snd], supper, false);
                       found = true;
