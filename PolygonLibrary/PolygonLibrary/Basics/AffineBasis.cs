@@ -66,11 +66,18 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Projects a given point onto the affine basis.
+    /// Projects a point onto the subspace with coordinates in the original space.
+    /// </summary>
+    /// <param name="v">The vector to project.</param>
+    /// <returns>The projected vector.</returns>
+    public Vector ProjectPointToSubSpace_in_OrigSpace(Vector v) => LinBasis.ProjectPointToSubSpace_in_OrigSpace(v - Origin) + Origin;
+
+    /// <summary>
+    /// Projects a given point onto the affine basis in its coordinates.
     /// </summary>
     /// <param name="v">The point to project.</param>
     /// <returns>The projected point.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v) => LinBasis.ProjectVectorToSubSpace(v - Origin);
+    public Vector ProjectPointToSubSpace(Vector v) => LinBasis.ProjectVectorToSubSpace(v - Origin);
 
     /// <summary>
     /// Projects a given set of points onto the affine basis.
@@ -79,7 +86,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The projected points.</returns>
     public IEnumerable<Vector> ProjectPoints(IEnumerable<Vector> Swarm) {
       foreach (Vector point in Swarm) {
-        yield return ProjectVectorToSubSpace(point);
+        yield return ProjectPointToSubSpace(point);
       }
     }
 
