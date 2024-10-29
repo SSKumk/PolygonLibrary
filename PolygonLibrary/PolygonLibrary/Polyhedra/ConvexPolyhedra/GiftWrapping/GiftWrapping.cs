@@ -320,7 +320,7 @@ public partial class Geometry<TNum, TConv>
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
             // Vector u = (s - origin).ProjectToPlane(e, n);
-            Vector u = lb.GetProjectionToSubSpace(s - origin);
+            Vector u = lb.ProjectPointToSubSpace_in_OrigSpace(s - origin);
 
             if (!u.IsZero) {
               TNum cos = e * u / u.Length;
