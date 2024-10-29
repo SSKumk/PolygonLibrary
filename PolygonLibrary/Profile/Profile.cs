@@ -27,25 +27,23 @@ class Program {
 
     bool isDouble = ftype == "double";
 
-    // int dim = 5;
+    int dim = 4;
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // string    t         = "5.10";
     // ParamReader prR = new ParamReader
     // ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
     // ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
-    // ConvexPolytop polytop = ConvexPolytop.Cube01_VRep(5);
-    // ConvexPolytop polytop = ConvexPolytop.Cube01_VRep(5);
+    ConvexPolytop polytop = ConvexPolytop.Cube01_VRep(dim).GetInFLrep();
     // ConvexPolytop polytop = MinkowskiSum.BySandipDas
-    // (ConvexPolytop.Cube01_VRep(dim).RotateRND(), ConvexPolytop.SimplexRND(dim));
+    // (ConvexPolytop.SimplexRND(dim), ConvexPolytop.SimplexRND(dim));
 
-    // var x = polytop.GetInHrep();
-    // var y = ConvexPolytop.HrepToVrep_Geometric(x.Hrep);
-    // var z = HrepToFLrep.HrepToFLrep_Geometric(x.Hrep,dim);
-    // Console.WriteLine($"{polytop.Vrep.SetEquals(y)}");
-    // Console.WriteLine($"P: {polytop.Vrep.Count}");
-    // Console.WriteLine($"y: {y.Count}");
-    // Console.WriteLine($"z: {z.Vertices.Count}");
+    // HyperPlane hp = HyperPlane.Make3D_xyParallel(3);
+    // Vector v = Vector.MakeOrth(dim, 1);
+    // Console.WriteLine($"{hp.AffBasis.ProjectPointToSubSpace_in_OrigSpace(v)}");
+
+    Console.WriteLine($"{polytop.NearestPoint( new Vector(new ddouble[]{ 0.5, 0.5,0.5, 0.5 }))}");
+
 
     // ConvexPolytop polytop = ConvexPolytop.CreateFromPoints
     //   (
@@ -140,15 +138,15 @@ class Program {
     // ParamReader prR = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
 
 
-    int dim = 5;
+    // int dim = 4;
     string      name = "Cube5D_RND+SimplexRND5D";
     // ConvexPolytop res = ConvexPolytop.Cube01_VRep(4);
     // ConvexPolytop res = ConvexPolytop.SimplexRND(4);
     // ConvexPolytop res = ConvexPolytop.DistanceToOriginBall_2(3, 4,3, 2);
     // ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
-    ConvexPolytop res = MinkowskiSum.BySandipDas(ConvexPolytop.SimplexRND(dim), ConvexPolytop.SimplexRND(dim));
-    // ParamReader prR = new ParamReader($"{pathData}/Other/{name}.cpolytop");
-    // ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
+    // ConvexPolytop res = MinkowskiSum.BySandipDas(ConvexPolytop.SimplexRND(dim), ConvexPolytop.SimplexRND(dim));
+    ParamReader prR = new ParamReader($"{pathData}/Other/{name}.cpolytop");
+    ConvexPolytop res = ConvexPolytop.CreateFromReader(prR);
 
     // ParamWriter prW  = new ParamWriter($"{pathData}/Other/{name}.cpolytop");
     // res.WriteIn(prW, ConvexPolytop.Rep.FLrep);
@@ -168,10 +166,10 @@ class Program {
     // Console.WriteLine($"{x.Count}");
 
 
-    FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(res.Hrep, res.PolytopDim);
-    ConvexPolytop x   = ConvexPolytop.CreateFromFaceLattice(aFL);
+    // FaceLattice   aFL = HrepToFLrep.HrepToFLrep_Geometric(res.Hrep, res.PolytopDim);
+    // ConvexPolytop x   = ConvexPolytop.CreateFromFaceLattice(aFL);
 
-    Console.WriteLine($"{x.Equals(res)}");
+    // Console.WriteLine($"{x.Equals(res)}");
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
