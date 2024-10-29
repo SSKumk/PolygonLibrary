@@ -98,7 +98,7 @@ public partial class Geometry<TNum, TConv>
 
           // Аффинное пространство грани z (F(+)G в терминах Лемм)
           AffineBasis zSpace          = z.AffBasis;
-          Vector      innerInAffine_z = zSpace.ProjectVectorToSubSpace(z.InnerPoint);
+          Vector      innerInAffine_z = zSpace.ProjectPointToSubSpace(z.InnerPoint);
 
           // Собираем все подграни в соответствующих решётках,
           // сортируя по убыванию размерности для удобства перебора.
@@ -156,7 +156,7 @@ public partial class Geometry<TNum, TConv>
               // InnerPoint(f') + InnerPoint(g) \in A^-
               bool xCheck = true;
               foreach (Vector? x_InnerPoint in xiSuper_clone.Select(n => n.InnerPoint)) {
-                if (!A.ContainsNegative(zSpace.ProjectVectorToSubSpace(x_InnerPoint + yj.InnerPoint))) {
+                if (!A.ContainsNegative(zSpace.ProjectPointToSubSpace(x_InnerPoint + yj.InnerPoint))) {
                   xCheck = false;
 
                   break;
@@ -167,7 +167,7 @@ public partial class Geometry<TNum, TConv>
                 // G = y >= g' > g = yj
                 // InnerPoint(g') + InnerPoint(f) \in A^-
                 foreach (Vector? y_InnerPoint in yjSuper_clone.Select(n => n.InnerPoint)) {
-                  if (!A.ContainsNegative(zSpace.ProjectVectorToSubSpace(y_InnerPoint + xi.InnerPoint))) {
+                  if (!A.ContainsNegative(zSpace.ProjectPointToSubSpace(y_InnerPoint + xi.InnerPoint))) {
                     yCheck = false;
 
                     break;
@@ -229,7 +229,7 @@ public partial class Geometry<TNum, TConv>
   /// <param name="to">Basis to which 'from' should be recalculated.</param>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
-    Vector      newO  = to.ProjectVectorToSubSpace(from.Origin);
+    Vector      newO  = to.ProjectPointToSubSpace(from.Origin);
     LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis), false);
 
     return new AffineBasis(newO, newLB, false);
