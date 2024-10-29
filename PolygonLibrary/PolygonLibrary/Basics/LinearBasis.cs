@@ -118,11 +118,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Projects a given vector onto the subspace of the linear basis expressed in d-space coordinates.
+    /// Projects a point onto the subspace with coordinates in the original space.
     /// </summary>
     /// <param name="v">The vector to be projected.</param>
     /// <returns>The projected vector in the subspace.</returns>
-    public Vector GetProjectionToSubSpace(Vector v) => ProjMatrix * v;
+    public Vector ProjectPointToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
 
     /// <summary>
     /// Checks if the given vector belongs to the linear basis.
