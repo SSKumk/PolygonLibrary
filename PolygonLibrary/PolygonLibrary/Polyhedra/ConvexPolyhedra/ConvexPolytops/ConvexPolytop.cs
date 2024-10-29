@@ -823,6 +823,37 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
+    /// Finds the nearest point on the surface of the convex polytope to the given point.
+    /// </summary>
+    /// <param name="point">The point to find the nearest surface point to.</param>
+    /// <returns>The nearest point on the polytope.</returns>
+    /// <exception cref="NotImplementedException">
+    /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
+    /// </exception>
+    public Vector NearestPoint(Vector point) {
+      if (Contains(point)) { return point; }
+
+      if (IsFLrep) {
+        Vector              nearestVertex = Vrep.OrderBy(v => (point - v).Length).First();
+        IEnumerable<Vector> nearestProjs  = Enumerable.Empty<Vector>();
+        for (int d = PolytopDim - 1; d >= 1; d--) {
+          IEnumerable<Vector> currentProjections = FLrep[d]
+                                                  .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+                                                  .Where(Contains);
+          nearestProjs = nearestProjs.Concat(currentProjections); // Добавляем новые проекции
+        }
+        nearestProjs = nearestProjs.OrderBy(v => (point - v).Length);
+        if (nearestProjs.Any()) {
+          return (point - nearestVertex).Length < (point - nearestProjs.First()).Length ? nearestVertex : nearestProjs.First();
+        }
+
+        return nearestVertex;
+      }
+
+      throw new NotImplementedException("Из Vrep и Hrep пока не умею.");
+    }
+
+    /// <summary>
     /// Checks whether the given vector is contained within the polytope.
     /// </summary>
     /// <param name="v">The vector to check.</param>
@@ -833,6 +864,19 @@ public partial class Geometry<TNum, TConv>
       }
 
       throw new NotImplementedException("Тут надо решить несколько LP задач. Смотри Фукуду.");
+    }
+
+
+    /// <summary>
+    /// Shifts an origin into a polytope and makes a dual polytope to this.
+    /// </summary>
+    /// <returns>The dual polytope.</returns>
+    public ConvexPolytop Polar(out Vector shiftToOrigin, bool doUnRedundancy = false) {
+      ConvexPolytop atOrigin = ShiftToOrigin(out Vector toOrigin);
+
+      shiftToOrigin = toOrigin;
+
+      return atOrigin.Polar(doUnRedundancy);
     }
 
     /// <summary>
@@ -1141,6 +1185,7 @@ public partial class Geometry<TNum, TConv>
       Queue<(Vector, List<HyperPlane>)> process = new Queue<(Vector, List<HyperPlane>)>();
       process.Enqueue((Vs.First(), HPs.Where(hp => hp.Contains(Vs.First())).ToList()));
 
+      HyperPlane[] edge = new HyperPlane[d - 1];
       // Обход в ширину
       while (process.TryDequeue(out (Vector, List<HyperPlane>) elem)) {
         (Vector z, List<HyperPlane> Hz) = elem;
@@ -1148,9 +1193,8 @@ public partial class Geometry<TNum, TConv>
         Combination J = new Combination(Hz.Count, d - 1);
         do // перебираем кандидатов в "рёбра"
         {
-          List<HyperPlane> edge = new List<HyperPlane>(d - 1);
           for (int j = 0; j < d - 1; j++) {
-            edge.Add(Hz[J[j]]);
+            edge[j] = Hz[J[j]];
           }
           LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
           if (coEdgeLinSpace.SubSpaceDim != d - 1) {
