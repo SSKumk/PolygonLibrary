@@ -70,7 +70,12 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>
-    public Vector ProjectPointToSubSpace_in_OrigSpace(Vector v) => LinBasis.ProjectPointToSubSpace_in_OrigSpace(v - Origin) + Origin;
+    public Vector ProjectPointToSubSpace_in_OrigSpace(Vector v) {
+      if (SubSpaceDim == 0) {
+        return Origin;
+      }
+      return LinBasis.ProjectPointToSubSpace_in_OrigSpace(v - Origin) + Origin;
+    }
 
     /// <summary>
     /// Projects a given point onto the affine basis in its coordinates.
