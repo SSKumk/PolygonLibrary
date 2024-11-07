@@ -67,9 +67,13 @@ public partial class Geometry<TNum, TConv>
     public FaceLattice(List<SortedSet<FLNode>> lattice, bool updateIP) {
       Lattice = lattice;
 
-      Debug.Assert(lattice[^1].Count == 1, $"FaceLattice.Ctor: There should be only one d-face: the polytop itself. Found {lattice[^1].Count}");
+      Debug.Assert
+        (
+         lattice[^1].Count == 1
+       , $"FaceLattice.Ctor: There should be only one d-face: the polytop itself. Found {lattice[^1].Count}"
+        );
 
-      Top     = Lattice[^1].First();
+      Top = Lattice[^1].First();
 
       if (updateIP) {
         Top.ReCalcAddInfo();
@@ -294,14 +298,14 @@ public partial class Geometry<TNum, TConv>
     /// Recalculates additional information for the current node, such as inner points.
     /// </summary>
     public void ReCalcAddInfo() {
-        if (PolytopDim != 0) {
-          _vertices   = null;
-          _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
-          foreach (FLNode subNode in Sub) {
-            subNode.ReCalcAddInfo();
-            InnerPoint = (Sub.First().InnerPoint + Sub.Last().InnerPoint) / Tools.Two;
-          }
+      if (PolytopDim != 0) {
+        _vertices   = null;
+        _levelNodes = new Dictionary<int, SortedSet<FLNode>>();
+        foreach (FLNode subNode in Sub) {
+          subNode.ReCalcAddInfo();
+          InnerPoint = (Sub.First().InnerPoint + Sub.Last().InnerPoint) / Tools.Two;
         }
+      }
     }
 
     /// <summary>
@@ -449,7 +453,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Retrieves all sub-faces of the node, including the node itself.
+    /// Retrieves all sub-nodes of the node, including the node itself.
     /// </summary>
     /// <returns>The collection that contains all non-strict sub-faces of the node.</returns>
     public IEnumerable<FLNode> AllNonStrictSub => LevelNodes.Where(ln => ln.Key <= PolytopDim).SelectMany(ln => ln.Value);
@@ -513,30 +517,36 @@ public partial class Geometry<TNum, TConv>
         return 1;
       }
 
-      return this.InnerPoint.CompareTo(other.InnerPoint);
-      // if (this.Vertices.Count < other.Vertices.Count) { // this < other
-      //   return -1;
-      // }
-      //
-      // if (this.Vertices.Count > other.Vertices.Count) { // this > other
-      //   return 1;
-      // }
-      //
-      // SortedSet<Vector>.Enumerator e1       = this.Vertices.GetEnumerator();
-      // SortedSet<Vector>.Enumerator e2       = other.Vertices.GetEnumerator();
-      // Comparer<Vector>             comparer = Comparer<Vector>.Default;
-      //
-      // while (e1.MoveNext() && e2.MoveNext()) {
-      //   int compare = comparer.Compare(e1.Current, e2.Current);
-      //   switch (compare) {
-      //     case < 0: // this < other
-      //       return -1;
-      //     case > 0: // this > other
-      //       return 1;
-      //   }
-      // }
-      //
-      // return 0;
+
+      // return this.InnerPoint.CompareTo(other.InnerPoint); todo мб это и может работать, но надо думать!
+
+
+      if (this.Vertices.Count < other.Vertices.Count) { // this < other
+        return -1;
+      }
+
+      if (this.Vertices.Count > other.Vertices.Count) { // this > other
+        return 1;
+      }
+
+      SortedSet<Vector>.Enumerator e1       = this.Vertices.GetEnumerator();
+      SortedSet<Vector>.Enumerator e2       = other.Vertices.GetEnumerator();
+      bool                         e1Ended  = !e1.MoveNext();
+      bool                         e2Ended  = !e2.MoveNext();
+      Comparer<Vector>             comparer = Comparer<Vector>.Default;
+      while (!e1Ended && !e2Ended) {
+        int compare = comparer.Compare(e1.Current, e2.Current);
+        switch (compare) {
+          case < 0: // this < other
+            return -1;
+          case > 0: // this > other
+            return 1;
+        }
+        e1Ended = !e1.MoveNext();
+        e2Ended = !e2.MoveNext();
+      }
+
+      return 0;
     }
 #endregion
 
