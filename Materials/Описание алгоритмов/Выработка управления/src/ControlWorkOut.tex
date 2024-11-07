@@ -1,0 +1,79 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{cmap}                   % поиск в PDF
+\usepackage[T2A]{fontenc}           % кодировка
+\usepackage[utf8]{inputenc}         % кодировка исходного текста
+\usepackage[english,russian]{babel} % локализация и переносы
+\usepackage[a4paper, margin=20mm]{geometry}
+\usepackage{hyperref}               % активные сслыки
+
+% Packages
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} % AMS
+\usepackage{mathrsfs} % \mathscr{} ажурный шрифт
+
+\usepackage{indentfirst} %абзацный отступ
+\usepackage{ifthen}      %поддержка \ifthanelse{}{}{}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage[shortcuts]{extdash}
+
+
+
+
+\newcommand{\R}[1]{% R - евклидово пространство
+  \ifthenelse{\equal{#1}{}}%
+  {\mathbb{R}}%
+  {\mathbb{R}^{#1}}}
+
+
+\newcommand{\scalprod}[3][]{#1\langle #2, #3 #1\rangle} % скалярное происзведение
+
+
+\DeclareMathOperator{\proj}{\texttt{proj}} % проекция
+
+
+\begin{document}
+
+  \textbf{Алгоритм выработки управления на очередной шаг}
+
+
+  \begin{equation}
+    \label{eq:OrigGame}
+    \begin{aligned}
+      & \dot z = A(t)z + B(t)u + C(t)v,\\
+      & t \in [t_0, T], \quad \quad z \in \R{n},\\
+      & u \in \mathbf P \subset \R{p}, \quad v \in \mathbf Q \subset \R{q}, \\
+      & z(T) \in \mathbf M + \mathbf M^\bot.
+    \end{aligned}
+  \end{equation}
+
+\begin{equation}
+  \label{eq:EqGame}
+  \begin{aligned}
+    & \dot x = D(t)u + E(t)v, \\
+    & t \in [t_0, T], \  x \in \R{d}, \  u \in \mathbf P, \  v \in \mathbf Q, \\
+    & D(t) = X_{s_1,s_2,\ldots,s_d}(T,t)B(t),  \\
+    & E(t) = X_{s_1,s_2,\ldots,s_d}(T,t)C(t),   \\
+    & x(T) \in \mathbf M.
+  \end{aligned}
+\end{equation}
+
+
+$\mathcal{P}_i = (-\Delta)D(t_i)P$, $\mathcal{Q}_i = -\Delta E(t_i)Q$
+
+
+  Исходная фазовая переменная $z \in \R{n}$, эквивалентная $x \in \R{d}$, $1 \leqslant \dim x \leqslant \dim z$.
+
+  Сечения максимального стабильного моста в моменты времени $t_i$: $W_i \subset \R{d}$.
+
+  \bigskip
+
+  Дано: $x \in \R{n}$
+
+  Найти: $u \in P$
+  \begin{enumerate}
+    \item Найти ближайшую точку $h \in W_i$ к $x$;
+    \item В $\mathcal{P}_i$ найти точку $p$, такую, что $\scalprod{h-x}{p}$ максимальное;
+    \item Найти любую точку $u \in P$, такую что $\proj(u, \mathcal{P}_i) = p$;
+  \end{enumerate}
+\end{document}
