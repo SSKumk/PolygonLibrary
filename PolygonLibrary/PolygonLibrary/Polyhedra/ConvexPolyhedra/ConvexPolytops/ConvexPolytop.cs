@@ -854,6 +854,33 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Finds the nearest point on the surface of the convex polytope to the given point.
+    /// </summary>
+    /// <param name="point">The point to find the nearest surface point to.</param>
+    /// <returns>The nearest point on the polytope.</returns>
+    /// <exception cref="NotImplementedException">
+    /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
+    /// </exception>
+    public Vector NearestPointOpt(Vector point) {
+      if (Contains(point)) { return point; }
+
+      if (IsFLrep) {
+        IEnumerable<FLNode> visible = FLrep[^2]
+         .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
+        // SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
+        IEnumerable<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub);
+        IOrderedEnumerable<Vector> minPs = allKfaces
+                                          .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+                                          .Where(Contains)
+                                          .OrderBy(v => (point - v).Length);
+
+        return minPs.First();
+      }
+
+      throw new NotImplementedException("Из Vrep и Hrep пока не умею.");
+    }
+
+    /// <summary>
     /// Checks whether the given vector is contained within the polytope.
     /// </summary>
     /// <param name="v">The vector to check.</param>
