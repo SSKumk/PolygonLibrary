@@ -14,11 +14,11 @@ public class Sandbox {
     // "E:\\Work\\PolygonLibrary\\PolygonLibrary\\Tests\\OtherTests\\LDG_Computations\\";
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
 
-  [Params(3,7)]
-  public int spaceDim;
+  // [Params(3, 7)]
+  // public int spaceDim;
 
-  [Params(3,7)]
-  public int subSpaceDim;
+  // [Params(3, 7)]
+  // public int subSpaceDim;
 
   public LinearBasis? lb = null;
 
@@ -30,9 +30,22 @@ public class Sandbox {
 
   public List<HyperPlane> HPs;
 
+  public ConvexPolytop? p = null;
+
+  [Params("5.10")]
+  public string t;
+
 
   [GlobalSetup]
   public void SetUp() {
+    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    // string    t         = "5.10";
+    string eps   = "1e-016";
+    ParamReader prR = new ParamReader
+      ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+    p = ConvexPolytop.CreateFromReader(prR);
+    var _  = p.Hrep;
+    var __ = p.Vrep;
 
     // m = Matrix.GenMatrix(spaceDim, subSpaceDim,-100,100);
     // string    t         = "5.10";
@@ -47,27 +60,27 @@ public class Sandbox {
 
 
   [Benchmark(Baseline = true)]
-  public void FindInitialVertex_Naive_SimplexRNDx2() => ConvexPolytop.FindInitialVertex_Naive(HPs, 3);
+  public void NearestPoint() => p.NearestPoint(Vector.Ones(3));
 
   [Benchmark]
-  public void FindInitialVertex_Simplex_SimplexRNDx2() => ConvexPolytop.FindInitialVertex_Simplex(HPs, out _);
+  public void NearestPointOpt() => p.NearestPointOpt(Vector.Ones(3));
 
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<Sandbox>();
-  //
-  //     // int           dim = 5;
-  //     // ConvexPolytop s   = ConvexPolytop.SimplexRND(dim);
-  //     // for (int i = 0; i < 4; i++) {
-  //     //   Console.WriteLine($"i = {i}. |V| = {s.Vrep.Count}. |H| = {s.Hrep.Count}");
-  //     //   ConvexPolytop n = ConvexPolytop.SimplexRND(dim);
-  //     //   s = MinkowskiSum.BySandipDas(s, n);
-  //     // }
-  //
-  //   }
-  //
-  // }
+  public class Program {
+
+    public static void Main(string[] args) {
+      var summary = BenchmarkRunner.Run<Sandbox>();
+
+      // int           dim = 5;
+      // ConvexPolytop s   = ConvexPolytop.SimplexRND(dim);
+      // for (int i = 0; i < 4; i++) {
+      //   Console.WriteLine($"i = {i}. |V| = {s.Vrep.Count}. |H| = {s.Hrep.Count}");
+      //   ConvexPolytop n = ConvexPolytop.SimplexRND(dim);
+      //   s = MinkowskiSum.BySandipDas(s, n);
+      // }
+
+    }
+
+  }
 
 }
 
@@ -75,5 +88,10 @@ public class Sandbox {
 /*
 
 
+MassDot, eps = 1e-16
+| Method          | t    | Mean      | Error    | StdDev   | Ratio |
+|---------------- |----- |----------:|---------:|---------:|------:|
+| NearestPoint    | 5.10 | 821.34 ms | 3.256 ms | 4.773 ms |  1.00 |
+| NearestPointOpt | 5.10 |  64.21 ms | 0.193 ms | 0.283 ms |  0.08 |
 
 */
