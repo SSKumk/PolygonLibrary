@@ -349,9 +349,9 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a convex polytope from a set of points.
     /// </summary>
     /// <param name="S">The set of points.</param>
-    /// <param name="toDoGW">Specifies whether to apply the Gift Wrapping algorithm to convexify the set of points.</param>
-    public static ConvexPolytop CreateFromPoints(IEnumerable<Vector> S, bool toDoGW = false)
-      => new ConvexPolytop(S.ToSortedSet(), toDoGW);
+    /// <param name="doGW">Specifies whether to apply the Gift Wrapping algorithm to convexify the set of points.</param>
+    public static ConvexPolytop CreateFromPoints(IEnumerable<Vector> S, bool doGW = false)
+      => new ConvexPolytop(S.ToSortedSet(), doGW);
 
     /// <summary>
     /// Constructs a convex polytope from a set of half-spaces.
@@ -710,15 +710,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="dim">The dimension of the sphere-ball. It is greater than 1.</param>
     /// <param name="thetaPartition">The number of partitions at a zenith angle. Theta in [0, Pi].</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
-    /// <param name="radius0">The radius of a initial sphere.</param>
+    /// <param name="radius0">The radius of an initial sphere.</param>
     /// <param name="CMax">The value of the last coordinate of a final sphere in dim+1 space.</param>
     /// <returns>The convex polytope which represents the distance to the ball in dim-space. </returns>
     public static ConvexPolytop DistanceToBall_2(int dim, int thetaPartition, int phiPartition, TNum radius0, TNum CMax) {
       ConvexPolytop ball0        = Sphere(dim, thetaPartition, phiPartition, Vector.Zero(dim), radius0);
       TNum          radiusF      = radius0 + CMax;
       ConvexPolytop ballF        = CreateFromPoints(ball0.Vrep.Select(v => v * radiusF).ToSortedSet());
-      ConvexPolytop ball0_lifted = LiftUp(ball0, Tools.Zero);
-      ConvexPolytop ballF_lifted = LiftUp(ballF, CMax);
+      ConvexPolytop ball0_lifted = ball0.LiftUp(dim + 1, Tools.Zero);
+      ConvexPolytop ballF_lifted = ballF.LiftUp(dim + 1, CMax);
       ball0_lifted.Vrep.UnionWith(ballF_lifted.Vrep); // Теперь тут лежат все точки
 
       return CreateFromPoints(ball0_lifted.Vrep, true);
@@ -740,8 +740,8 @@ public partial class Geometry<TNum, TConv>
       ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(P.SpaceDim, Vector.Zero(P.SpaceDim), CMax), P);
 
       //{(R,0), (R (+) Ball(0, CMax),CMax)}
-      ConvexPolytop toConv = LiftUp(bigP, CMax);
-      toConv.Vrep.UnionWith(LiftUp(P, Tools.Zero).Vrep);
+      ConvexPolytop toConv = bigP.LiftUp(P.SpaceDim + 1, CMax);
+      toConv.Vrep.UnionWith(P.LiftUp(P.SpaceDim + 1, Tools.Zero).Vrep);
 
       //conv{...}
       return CreateFromPoints(toConv.Vrep, true);
@@ -810,11 +810,11 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A polytope representing the distance to the origin.</returns>
     private static ConvexPolytop DistanceToOrigin(int pointDim, TNum CMax, Func<int, Vector, TNum, ConvexPolytop> ballCreator) {
       ConvexPolytop ball   = ballCreator(pointDim, Vector.Zero(pointDim), CMax);
-      ConvexPolytop toConv = LiftUp(ball, CMax);
+      ConvexPolytop toConv = ball.LiftUp(pointDim + 1, CMax);
       toConv.Vrep.Add(Vector.Zero(pointDim + 1));
 
       //conv{...}
-      return CreateFromPoints(toConv.Vrep);
+      return CreateFromPoints(toConv.Vrep, true);
     }
 #endregion
 
@@ -823,31 +823,33 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
-    /// Finds the nearest point on the surface of the convex polytope to the given point.
+    /// Finds the nearest point on the surface of the convex polytope to the given point and reports inside or outside it is.
     /// </summary>
     /// <param name="point">The point to find the nearest surface point to.</param>
+    /// <param name="isInside">The indicator whenever the point lies outside the polytope or not.</param>
     /// <returns>The nearest point on the polytope.</returns>
     /// <exception cref="NotImplementedException">
     /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
     /// </exception>
-    public Vector NearestPoint(Vector point) {
-      if (Contains(point)) { return point; }
+    public Vector NearestPoint(Vector point, out bool isInside) {
+      if (Contains(point)) {
+        isInside = true;
 
-      if (IsFLrep) {
-        Vector              nearestVertex = Vrep.OrderBy(v => (point - v).Length).First();
-        IEnumerable<Vector> nearestProjs  = Enumerable.Empty<Vector>();
-        for (int d = PolytopDim - 1; d >= 1; d--) {
-          IEnumerable<Vector> currentProjections = FLrep[d]
-                                                  .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-                                                  .Where(Contains);
-          nearestProjs = nearestProjs.Concat(currentProjections); // Добавляем новые проекции
-        }
-        nearestProjs = nearestProjs.OrderBy(v => (point - v).Length);
-        if (nearestProjs.Any()) {
-          return (point - nearestVertex).Length < (point - nearestProjs.First()).Length ? nearestVertex : nearestProjs.First();
-        }
+        return point;
+      }
 
-        return nearestVertex;
+      if (IsFLrep) { // todo Сделать связь Hrep <--> FLrep[^2]
+        IEnumerable<FLNode> visible = FLrep[^2]
+         .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
+        SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
+        IOrderedEnumerable<Vector> minPs = allKfaces
+                                          .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+                                          .Where(Contains)
+                                          .OrderBy(v => (point - v).Length);
+
+        isInside = false;
+
+        return minPs.First();
       }
 
       throw new NotImplementedException("Из Vrep и Hrep пока не умею.");
@@ -861,24 +863,8 @@ public partial class Geometry<TNum, TConv>
     /// <exception cref="NotImplementedException">
     /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
     /// </exception>
-    public Vector NearestPointOpt(Vector point) {
-      if (Contains(point)) { return point; }
+    public Vector NearestPoint(Vector point) => NearestPoint(point, isInside: out _);
 
-      if (IsFLrep) {
-        IEnumerable<FLNode> visible = FLrep[^2]
-         .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
-        // SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
-        IEnumerable<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub);
-        IOrderedEnumerable<Vector> minPs = allKfaces
-                                          .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-                                          .Where(Contains)
-                                          .OrderBy(v => (point - v).Length);
-
-        return minPs.First();
-      }
-
-      throw new NotImplementedException("Из Vrep и Hrep пока не умею.");
-    }
 
     /// <summary>
     /// Checks whether the given vector is contained within the polytope.
@@ -964,7 +950,7 @@ public partial class Geometry<TNum, TConv>
     /// This determines whether the polytope will be written as a Vrep, Hrep, or FLrep.
     /// Defaults to <see cref="Rep.FLrep"/>.
     /// </param>
-    public void WriteIn(ParamWriter pr, Rep rep = Rep.FLrep) {
+    public void WriteIn(ParamWriter pr, Rep rep) {
       switch (rep) {
         case Rep.Vrep:
           WriteAsVRep(pr, this);
@@ -983,14 +969,12 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Lifts the given convex polytope to a higher dimension
-    /// by extending all its vertices with the specified value as the last coordinate.
+    /// Lifts the given convex polytope to a higher dimension by extending all its vertices with the specified value.
     /// </summary>
-    /// <param name="P">The polytope to be lifted.</param>
+    /// <param name="d">The target dimension to expand to. Must be greater than the current dimension of the vector.</param>
     /// <param name="val">The value used in expansion.</param>
     /// <returns>The polytope in higher dimension.</returns>
-    private static ConvexPolytop LiftUp(ConvexPolytop P, TNum val)
-      => CreateFromPoints(P.Vrep.Select(v => v.LiftUp(v.SpaceDim + 1, val)).ToSortedSet());
+    public ConvexPolytop LiftUp(int d, TNum val) => CreateFromPoints(Vrep.Select(v => v.LiftUp(d, val)).ToSortedSet());
 
     /// <summary>
     /// Creates a new convex polytope in d-dimensional space by intersecting the given d-dimensional convex polytope P with a specified hyperplane.
@@ -1199,12 +1183,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    public static SortedSet<Vector> HrepToVrep_Geometric(List<HyperPlane> HPs) {
+    public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs) {
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               d  = HPs.First().Normal.SpaceDim;
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
 
-      Vector firstPoint = FindInitialVertex_Simplex(HPs, out _);
+      Vector? firstPoint = FindInitialVertex_Simplex(HPs, out _);
+      if (firstPoint is null) { return null; }
+
       Vs.Add(firstPoint);
 
 
@@ -1352,14 +1338,15 @@ public partial class Geometry<TNum, TConv>
     /// <param name="HPs">The list of hyperplanes that defines the system of inequalities.</param>
     /// <param name="activeHPs">The indices of the hyperplanes whose intersection forms the vertex.</param> //todo -- !!!
     /// <returns>The initial vertex.</returns>
-    public static Vector FindInitialVertex_Simplex(List<HyperPlane> HPs, out List<int> activeHPs) {
+    public static Vector? FindInitialVertex_Simplex(List<HyperPlane> HPs, out List<int> activeHPs) {
       SimplexMethod.SimplexMethodResult x = SimplexMethod.Solve(HPs, _ => Tools.One);
 
-      Debug.Assert(x.Solution is not null, $"ConvexPolytop.FindInitialVertex_Simplex: Can't find a solution of a given system!");
+
+      // Debug.Assert(x.Solution is not null, $"ConvexPolytop.FindInitialVertex_Simplex: Can't find a solution of a given system!");
 
       activeHPs = new List<int>();
 
-      return new Vector(x.Solution);
+      return x.Solution is null ? null : new Vector(x.Solution);
     }
 
     /// <summary>
