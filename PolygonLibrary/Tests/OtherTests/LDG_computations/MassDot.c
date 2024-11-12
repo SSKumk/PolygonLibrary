@@ -23,7 +23,7 @@ qDim = 1;
 C = {{1}, {0}};
 
 // The initial instant
-t0 = 5;
+t0 = 3;
 
 // The final instant
 T = 7;
@@ -53,7 +53,7 @@ MType = "DistToOrigin";
 
 MBallType = "Ball_2";
 MTheta = 4;
-MPhi = 100;
+MPhi = 30;
 MCMax = 2;
 
 // ==================================================
