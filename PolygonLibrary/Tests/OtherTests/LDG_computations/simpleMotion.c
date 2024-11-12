@@ -27,7 +27,7 @@ C = {{1, 0, 0},{0, 1, 0},{0, 0, 1}};
 t0 = 0;
 
 // The final instant
-T = 7;
+T = 1;
 
 // The time step
 dt = 0.1;
@@ -39,11 +39,15 @@ d = 3;
 projJ = {0, 1, 2};
 
 // ==================================================
-PSetType = "Sphere";
-PTheta = 7;
-PPhi = 12;
-PCenter = {0,0,0};
-PRadius = 1;
+// PSetType = "Sphere";
+// PTheta = 7;
+// PPhi = 12;
+// PCenter = {0,0,0};
+// PRadius = 1;
+
+PSetType = "RectParallel";
+PRectPLeft = {-1,-1,-1};
+PRectPRight = {1,1,1};
 
 // ==================================================
 QSetType = "Sphere";
