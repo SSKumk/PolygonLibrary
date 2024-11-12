@@ -22,17 +22,29 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The name of source file
     /// </summary>
-    public readonly string fileName;
+    public readonly string FileName;
+
+    public readonly string ProblemPath;
+
+    public readonly string NumericalType;
+
+    public readonly string Eps;
+
+    public readonly string BridgePath;
+
+    public readonly string PsPath;
+
+    public readonly string QsPath;
 
     /// <summary>
-    /// Holds internal information about task
+    /// Holds internal information about the task
     /// </summary>
     public readonly GameData gd;
 
     /// <summary>
     /// Game-whole bridge
     /// </summary>
-    private readonly StableBridge W;
+    public readonly StableBridge W;
 
     /// <summary>
     /// Gets the section of the bridge at given time.
@@ -48,37 +60,90 @@ public partial class Geometry<TNum, TConv>
     /// <param name="workDir">The directory where source file and result folder are placed</param>
     /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
     /// <exception cref="ArgumentException">If there is no path to working directory, this exception is thrown</exception>
-    public SolverLDG(string workDir, string fileName, bool writePandQ = false) {
+    public SolverLDG(string workDir, string fileName, bool clean = false) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      this.WorkDir = workDir;
-      if (workDir[^1] == '/') {
-        StringBuilder sb = new StringBuilder(workDir);
-        sb[^1]  = '/';
-        workDir = sb.ToString();
-      }
-      else if (workDir[^1] != '/') {
-        workDir += '/';
+      NumericalType = typeof(TNum).ToString();
+      Eps           = $"{TConv.ToDouble(Tools.Eps):e0}";
+      WorkDir       = workDir;
+      FileName      = fileName;
+
+      gd = new GameData($"{Path.Combine(WorkDir, FileName)}.c");
+
+      ProblemPath = Path.Combine(WorkDir, gd.ProblemName);
+
+      string filesPath = Path.Combine(ProblemPath, NumericalType, Eps);
+      if (clean && Directory.Exists(filesPath)) {
+        Directory.Delete(filesPath, true);
       }
 
-      this.fileName = fileName;
-      gd            = new GameData(this.WorkDir + fileName + ".c");
-      Directory.CreateDirectory(workDir + gd.ProblemName);
+      BridgePath = Path.Combine(filesPath, "Bridge");
+      PsPath     = Path.Combine(filesPath, "Ps");
+      QsPath     = Path.Combine(filesPath, "Qs");
+
 
       W = new StableBridge(new CauchyMatrix.TimeComparer());
-      if (writePandQ) {
-        foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
-          using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(P.Key):F2}) P {fileName}.cpolytop");
-          // pr.WriteNumber("t", TConv.ToDouble(P.Key), "F3");
-          P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-        }
-        foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
-          using ParamWriter pr = new ParamWriter($"{workDir + gd.ProblemName}/{TConv.ToDouble(Q.Key):F2}) Q {fileName}.cpolytop");
-          // pr.WriteNumber("t", TConv.ToDouble(Q.Key), "F3");
-          Q.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-        }
+    }
+
+    // Метод для получения пути к секции (Bridge, Ps, Qs)
+    private string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
+      return Path.Combine(basePath, $"{TConv.ToDouble(t):F2}){sectionPrefix}_{FileName}.cpolytop");
+    }
+
+    private void ReadSection(SortedDictionary<TNum, ConvexPolytop> sectionDict, string sectionPrefix, string basePath, TNum t) {
+      string filePath = GetSectionPath(sectionPrefix, basePath, t);
+      Debug.Assert
+        (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
+
+      ParamReader prR = new ParamReader(filePath);
+      sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
+    }
+
+    private void WriteSection(
+        SortedDictionary<TNum, ConvexPolytop> sectionDict
+      , string                                sectionPrefix
+      , string                                basePath
+      , TNum                                  t
+      , ConvexPolytop.Rep                     repType
+      ) {
+      ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      sectionDict[t].WriteIn(prW, repType);
+    }
+
+// Методы для работы с Bridge, Ps, Qs секциями
+    public void ReadBridgeSection(TNum  t) => ReadSection(W, "W", BridgePath, t);
+    public void WriteBridgeSection(TNum t) => WriteSection(W, "W", BridgePath, t, ConvexPolytop.Rep.FLrep);
+
+    public void ReadPsSection(TNum  t) => ReadSection(gd.Ps, "P", PsPath, t);
+    public void WritePsSection(TNum t) => WriteSection(gd.Ps, "P", PsPath, t, ConvexPolytop.Rep.FLrep);
+
+    public void ReadQsSection(TNum  t) => ReadSection(gd.Qs, "Q", QsPath, t);
+    public void WriteQsSection(TNum t) => WriteSection(gd.Qs, "Q", QsPath, t, ConvexPolytop.Rep.Vrep);
+
+    public void WritePs() {
+      foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
+        using ParamWriter pr = new ParamWriter($"{PsPath}/{TConv.ToDouble(P.Key):F2}) P {FileName}.cpolytop");
+        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
       }
     }
+
+    public void WriteQs() {
+      foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
+        using ParamWriter pr = new ParamWriter($"{QsPath}/{TConv.ToDouble(Q.Key):F2}) Q {FileName}.cpolytop");
+        Q.Value.WriteIn(pr, ConvexPolytop.Rep.Vrep);
+      }
+    }
+
+    public bool BridgeSectionFileExist(TNum t) => File.Exists(GetSectionPath("W", BridgePath, t));
+
+    public void CleanAll() {
+      Console.WriteLine($"Warning! This function will erase all files and folders at the path: {ProblemPath}/");
+      Console.WriteLine($"Do you want to continue? 'y'[es]");
+      if (Console.ReadKey().KeyChar == 'y') {
+        Directory.Delete($"{ProblemPath}", true);
+      }
+    }
+
 
     /// <summary>
     /// Computes the next section of a convex polytope by the second Pontryagin's method.
@@ -97,58 +162,179 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
-    public void Solve(bool isNaive, bool isNeedWrite, bool isDouble) {
-      Stopwatch timer    = new Stopwatch();
-      string    filesDir = WorkDir + gd.ProblemName;
-      double    eps      = TConv.ToDouble(Tools.Eps);
-
-      string valType = isDouble ? "double" : "ddouble";
-      string algType = isNaive ? "Naive" : "Geometric";
+    public void Solve(bool isNeedWrite) {
+      Stopwatch timer = new Stopwatch();
 
       if (isNeedWrite) {
-        Directory.CreateDirectory($"{filesDir}/{valType}/{algType}/{eps:e0}/");
+        Directory.CreateDirectory(BridgePath);
       }
 
       TNum t = gd.T;
       TNum tPred;
+      if (BridgeSectionFileExist(t)) {
+        ReadBridgeSection(t);
+        //todo Разобраться с Ps и Qs
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.D[t] = Xstar * gd.B;
+        gd.E[t] = Xstar * gd.C;
+      }
+      else {
+        W[t] = gd.M;
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.D[t] = Xstar * gd.B;
+        gd.E[t] = Xstar * gd.C;
 
-      W[t] = gd.M; // в финальный момент стабильный мост совпадает с целевым множеством
+        //todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
+        // gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
+
+      }
+      if (isNeedWrite && !BridgeSectionFileExist(t)) { WriteBridgeSection(t); }
 
       bool bridgeIsNotDegenerate = true;
-      while (Tools.GT(t, gd.t0)) {
-        if (isNeedWrite) {
-          using ParamWriter pr = new ParamWriter
-            ($"{filesDir}/{valType}/{algType}/{eps:e0}/{TConv.ToDouble(t):F2}){fileName}.cpolytop");
-          W[t].WriteIn(pr, ConvexPolytop.Rep.FLrep);
-        }
-
+      while (Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
         tPred =  t;
         t     -= gd.dt;
-        if (bridgeIsNotDegenerate) { // Формула Пшеничного
-          timer.Restart();
-          ConvexPolytop Sum = MinkowskiSum.BySandipDas(W[tPred], gd.Ps[tPred], true);
 
-          ConvexPolytop? WNext;
-          if (isNaive) {
-            WNext = MinkowskiDiff.Naive(Sum, gd.Qs[tPred]);
+        timer.Restart();
+        if (BridgeSectionFileExist(t)) {
+          if (!BridgeSectionFileExist(t - gd.dt)) {
+            Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+            gd.D[t] = Xstar * gd.B;
+            gd.E[t] = Xstar * gd.C;
+            // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+            TNum t1 = t;
+            ReadBridgeSection(t);
+            // W[t] = ConvexPolytop.CreateFromReader(new ParamReader(PathToBridgeSection(t)));
+            // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
+            gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
+            gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
           }
-          else {
-            WNext = MinkowskiDiff.Geometric(Sum, gd.Qs[tPred]);
-          }
-
-          timer.Stop();
+        }
+        else {
+          // Формула Пшеничного
+          ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[tPred], gd.Qs[tPred]);
 
           if (WNext is null) {
-            bridgeIsNotDegenerate = false;
             Console.WriteLine($"The bridge become degenerate at t = {t}.");
+            bridgeIsNotDegenerate = false;
           }
           else {
-            Console.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalMilliseconds}. Vrep.Count = {WNext.Vrep.Count}");
-            W[t]                  = WNext;
+            W[t] = WNext;
+          }
+        }
+        timer.Stop();
+        if (W.TryGetValue(t, out ConvexPolytop? br)) {
+          Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
+        }
+
+        if (isNeedWrite && !BridgeSectionFileExist(t)) {
+          timer.Restart();
+          WriteBridgeSection(t);
+          timer.Stop();
+          Console.WriteLine($"\tWrite = {timer.Elapsed.TotalSeconds:F4} sec.");
+        }
+      }
+    }
+
+    public void LoadBridge(TNum t0, TNum T) {
+      Debug.Assert(Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
+
+      TNum t = t0;
+      do {
+        ReadBridgeSection(t);
+        t += gd.dt;
+      } while (Tools.LT(t, T));
+    }
+
+    /// <summary>
+    /// Computes the controls for the first and second players in a linear differential game.
+    /// </summary>
+    /// <param name="x">Current state vector.</param>
+    /// <param name="t">Current time.</param>
+    /// <param name="u">
+    /// Output control vector for the first player.
+    /// If the state is inside the bridge section, the first vertex of <c>P</c> is selected.
+    /// Otherwise, the vertex that maximizes the (h-x, pVert) is chosen.
+    /// </param>
+    /// <param name="v">
+    /// Output control vector for the second player.
+    /// If the state is outside the bridge section, the first vertex of <c>Q</c> is selected.
+    /// Otherwise, the vertex that maximizes the (x-h, qVert) is chosen.
+    /// </param>
+    public void workOutControl(Vector x, TNum t, out Vector u, out Vector v) {
+      Debug.Assert(gd.D.ContainsKey(t), $"Matrix D must be defined for time t = {t}, but not found.");
+      Debug.Assert(gd.E.ContainsKey(t), $"Matrix E must be defined for time t = {t}, but not found.");
+      Debug.Assert(W.ContainsKey(t), $"Bridge W must be defined for time t = {t}, but not found.");
+
+
+      u = Vector.Zero(1); // Чтобы компилятор не ругался, что не присвоено значение
+      v = Vector.Zero(1); // Чтобы компилятор не ругался, что не присвоено значение
+
+      Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
+
+      if (isInside) { // Внутри моста выбираем любой из P, но лучший из Q
+        u = gd.P.Vrep.First();
+
+        Vector l       = x - h;
+        TNum   extrVal = Tools.NegativeInfinity;
+        foreach (Vector qVert in gd.Q.Vrep) {
+          TNum val = gd.dt * gd.E[t] * qVert * l;
+          if (val > extrVal) {
+            extrVal = val;
+            v       = qVert;
+          }
+        }
+      }
+      else { // Снаружи моста выбираем любой из Q, но лучший из P
+        v = gd.P.Vrep.First();
+
+        Vector l       = h - x;
+        TNum   extrVal = Tools.NegativeInfinity;
+        foreach (Vector pVert in gd.P.Vrep) {
+          TNum val = -gd.dt * gd.D[t] * pVert * l;
+          if (val > extrVal) {
+            extrVal = val;
+            u       = pVert;
           }
         }
       }
     }
+
+    /// <summary>
+    /// Performs a single Euler integration step for the state vector in a linear differential game.
+    /// </summary>
+    /// <param name="x">Current state vector.</param>
+    /// <param name="u">Control of the first player.</param>
+    /// <param name="v">Control of the second player.</param>
+    /// <returns>Updated state vector after one Euler step.</returns>
+    public Vector EulerStep(Vector x, Vector u, Vector v) => x + gd.dt * (gd.A * x + gd.B * u + gd.C * v);
+
+    /// <summary>
+    /// Computes the trajectory of the system using the explicit Euler method
+    /// from the initial time t0 to the final time T.
+    /// </summary>
+    /// <param name="x0">Initial state vector.</param>
+    /// <param name="t0">Initial time.</param>
+    /// <param name="T">Final time.</param>
+    /// <returns>List of state vectors representing the trajectory of the system from t0 to T.</returns>
+    public List<Vector> Euler(Vector x0, TNum t0, TNum T) {
+      List<Vector> trajectory = new List<Vector> { x0 }; // Начальное состояние
+
+      Vector x = x0;
+      for (TNum t = t0; t < T; t += gd.dt) {
+        // Вычисляем управления
+        workOutControl(x, t, out Vector u, out Vector v);
+
+        // Выполняем шаг Эйлера
+        x = EulerStep(x, u, v);
+        trajectory.Add(x);
+      }
+
+      return trajectory;
+    }
+
+    // --------------------------------------------------------------------------------------------------------------------------
 
     public static void WriteSimplestTask_TerminalSet_GameItself(int dim, string folderPath) {
       Vector vP = Vector.Ones(dim);
