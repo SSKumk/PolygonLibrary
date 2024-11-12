@@ -5,7 +5,7 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo Продумать систему пространства имён
+  // todo Продумать систему пространства имён; в смысле?
   // todo Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён.
   // todo Закинуть в Toolkit всё, что не геометрия
 
@@ -132,7 +132,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the first player
     /// </summary>
-    private ConvexPolytop P;
+    public ConvexPolytop P;
 
     /// <summary>
     /// Precomputed vectograms of the first player
@@ -142,7 +142,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the second player
     /// </summary>
-    private ConvexPolytop Q;
+    public ConvexPolytop Q;
 
     /// <summary>
     /// Precomputed vectograms of the second player
@@ -175,22 +175,22 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The fundamental Cauchy matrix of the corresponding system
     /// </summary>
-    private readonly CauchyMatrix cauchyMatrix;
+    public readonly CauchyMatrix cauchyMatrix;
 
     /// <summary>
     /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
     /// </summary>
-    private readonly Matrix ProjMatr;
+    public readonly Matrix ProjMatr;
 
     /// <summary>
     /// Collection of matrices D for the instants from the time grid
     /// </summary>
-    private readonly SortedDictionary<TNum, Matrix> D;
+    public readonly SortedDictionary<TNum, Matrix> D;
 
     /// <summary>
     /// Collection of matrices E for the instants from the time grid
     /// </summary>
-    private readonly SortedDictionary<TNum, Matrix> E;
+    public readonly SortedDictionary<TNum, Matrix> E;
 #endregion
 
 #region Constructor
@@ -230,7 +230,7 @@ public partial class Geometry<TNum, TConv>
                    {
                      "Itself"   => GoalType.Itself
                    , "Epigraph" => GoalType.PayoffEpigraph
-                   , _          => throw new ArgumentException("GameData: goalType must be \"Itself\" or \"Epigraph\".")
+                   , _          => throw new ArgumentException("GameData.Ctor: GoalType must be \"Itself\" or \"Epigraph\".")
                    };
 
       // Game type
@@ -239,7 +239,8 @@ public partial class Geometry<TNum, TConv>
                    "TerminalSet"   => MType.TerminalSet
                  , "DistToOrigin"  => MType.Payoff_DistToOrigin
                  , "DistToPolytop" => MType.Payoff_distToPolytop
-                 , _               => throw new ArgumentException("GameData: goalType must be \"Itself\" or \"Epigraph\".")
+                 , _ => throw new ArgumentException
+                          ("GameData.Ctor: MType should be \"TerminalSet\", \"DistToOrigin\" or \"DistToPolytop\".")
                  };
 
 
@@ -247,7 +248,8 @@ public partial class Geometry<TNum, TConv>
       M = ReadTerminalSet(out string describeM);
 
       string gType = goalType == GoalType.Itself ? "It" : "Ep";
-      ProblemName = $"{gType}_{problemName}_T[{t0},{T}]_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
+      ProblemName =
+        $"{gType}_{problemName}_T#[__,{T}]_dt#{TConv.ToDouble(dt):F2}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
 
       // Расширяем систему, если решаем задачу с надграфиком функции цены
       if (goalType == GoalType.PayoffEpigraph) {
@@ -271,27 +273,32 @@ public partial class Geometry<TNum, TConv>
       }
       ProjMatr = new Matrix(ProjMatrixArr);
 
+
       // The matrices D and E
-      D = new SortedDictionary<TNum, Matrix>();
-      E = new SortedDictionary<TNum, Matrix>();
-      TNum t = T;
-      while (Tools.GE(t, t0)) {
-        Matrix Xstar = ProjMatr * cauchyMatrix[t];
-        D[t] = Xstar * B;
-        E[t] = Xstar * C;
+      Tools.TNumComparer numComparer = new Tools.TNumComparer(Tools.Eps);
+      D = new SortedDictionary<TNum, Matrix>(numComparer);
+      E = new SortedDictionary<TNum, Matrix>(numComparer);
 
-        t -= dt;
-      }
+      Ps = new SortedDictionary<TNum, ConvexPolytop>(numComparer);
+      Qs = new SortedDictionary<TNum, ConvexPolytop>(numComparer);
 
-      Ps = new SortedDictionary<TNum, ConvexPolytop>();
-      Qs = new SortedDictionary<TNum, ConvexPolytop>();
+      // TNum t = T;
+      // while (Tools.GE(t, t0)) {
+      //   Matrix Xstar = ProjMatr * cauchyMatrix[t];
+      //   D[t] = Xstar * B;
+      //   E[t] = Xstar * C;
+      //
+      //   t -= dt;
+      // }
+
 
       // Вычисляем вдоль всего моста выражения:  -dt*X(T,t_i)*B*P  и  dt*X(T,t_i)*C*Q
-      for (t = T; Tools.GE(t, t0); t -= dt) {
-        TNum t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        Ps[t] = ConvexPolytop.CreateFromPoints(P.Vrep.Select(pPoint => -dt * D[t1] * pPoint).ToSortedSet(), true);
-        Qs[t] = ConvexPolytop.CreateFromPoints(Q.Vrep.Select(qPoint => dt * E[t1] * qPoint).ToSortedSet(), false);
-      }
+      // for (t = T; Tools.GE(t, t0); t -= dt) {
+      //   TNum
+      //     t1 = t; // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+      //   Ps[t] = ConvexPolytop.CreateFromPoints(P.Vrep.Select(pPoint => -dt * D[t1] * pPoint), true);
+      //   Qs[t] = ConvexPolytop.CreateFromPoints(Q.Vrep.Select(qPoint => dt * E[t1] * qPoint), false);
+      // }
     }
 #endregion
 
@@ -308,7 +315,7 @@ public partial class Geometry<TNum, TConv>
      */
 
     /// <summary>
-    /// Reads the data of the terminal set from file.
+    /// Reads the data of the terminal set from the file.
     /// </summary>
     /// <returns>The polytope that describes terminal set.</returns>
     private ConvexPolytop ReadTerminalSet(out string describeM) {
@@ -433,11 +440,14 @@ public partial class Geometry<TNum, TConv>
           break;
         }
         case SetType.RectParallel: {
-          TNum[] left  = _pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
-          TNum[] right = _pr.Read1DArray<TNum>($"{player}RectPRight", dim);
-          res = ConvexPolytop.RectParallel(new Vector(left, false), new Vector(right, false)).Vrep;
+          TNum[] left   = _pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
+          TNum[] right  = _pr.Read1DArray<TNum>($"{player}RectPRight", dim);
+          Vector vLeft  = new Vector(left, false);
+          Vector vRight = new Vector(right, false);
+          res = ConvexPolytop.RectParallel(vLeft, vRight).Vrep;
 
-          // setTypeStr += $"-{Qnt}"; ???? А что сюда можно написать?
+          setTypeInfo += $"-{vLeft}-{vRight}";
+
           break;
         }
         case SetType.Sphere: {
