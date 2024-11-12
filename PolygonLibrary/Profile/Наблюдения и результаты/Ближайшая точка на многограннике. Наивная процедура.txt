@@ -1,0 +1,43 @@
+SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    string    t         = "5.10";
+    string eps   = "1e-016";
+    ParamReader prR = new ParamReader
+    ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/{eps}/{t}){solverLdg.fileName}.cpolytop");
+    p = ConvexPolytop.CreateFromReader(prR);
+
+
+| Method          | t    | Mean      | Error    | StdDev   | Ratio |
+|---------------- |----- |----------:|---------:|---------:|------:|
+| NearestPoint    | 5.10 | 821.34 ms | 3.256 ms | 4.773 ms |  1.00 |
+| NearestPointOpt | 5.10 |  64.21 ms | 0.193 ms | 0.283 ms |  0.08 |
+| Method                    | spaceDim | Mean      | Error     | StdDev    | Ratio |
+|-------------------------- |--------- |----------:|----------:|----------:|------:|
+| NearestPoint              | 3        | 954.23 ms | 63.705 ms | 95.350 ms |  1.00 |
+| NearestPointOpt_SortedSet | 3        |  72.94 ms |  2.351 ms |  3.372 ms |  0.08 |
+
+
+
+MinkowskiSum.BySandipDas(ConvexPolytop.Cube01_VRep(spaceDim).RotateRND(), ConvexPolytop.SimplexRND(spaceDim));
+MassDot, eps = 1e-16
+| Method          | spaceDim | Mean        | Error     | StdDev      | Ratio | RatioSD |
+|---------------- |--------- |------------:|----------:|------------:|------:|--------:|
+| NearestPoint    | 3        |    218.0 us |   2.42 us |     3.40 us |  1.00 |    0.00 |
+| NearestPointOpt | 3        |    174.4 us |   2.39 us |     3.58 us |  0.80 |    0.02 |
+|                 |          |             |           |             |       |         |
+| NearestPoint    | 4        |  1,827.5 us |  40.55 us |    56.85 us |  1.00 |    0.00 |
+| NearestPointOpt | 4        |  2,166.4 us |  25.30 us |    37.87 us |  1.19 |    0.04 |
+|                 |          |             |           |             |       |         |
+| NearestPoint    | 5        | 27,374.8 us | 694.51 us | 1,039.51 us |  1.00 |    0.00 |
+| NearestPointOpt | 5        | 38,433.7 us | 289.69 us |   415.47 us |  1.40 |    0.05 |
+
+
+| Method                    | spaceDim | Mean        | Error     | StdDev    | Ratio | RatioSD |
+|-------------------------- |--------- |------------:|----------:|----------:|------:|--------:|
+| NearestPoint              | 3        |    234.8 us |   6.22 us |   8.92 us |  1.00 |    0.00 |
+| NearestPointOpt_SortedSet | 3        |    175.9 us |   1.76 us |   2.29 us |  0.75 |    0.03 |
+|                           |          |             |           |           |       |         |
+| NearestPoint              | 4        |  2,768.5 us |  56.29 us |  82.51 us |  1.00 |    0.00 |
+| NearestPointOpt_SortedSet | 4        |  1,425.4 us |  19.04 us |  26.06 us |  0.52 |    0.02 |
+|                           |          |             |           |           |       |         |
+| NearestPoint              | 5        | 31,473.0 us | 652.93 us | 957.06 us |  1.00 |    0.00 |
+| NearestPointOpt_SortedSet | 5        | 18,578.0 us | 274.00 us | 401.63 us |  0.59 |    0.02 |
