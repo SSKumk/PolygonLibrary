@@ -244,7 +244,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="val">The value to expand with.</param>
     /// <returns>A new vector in the target dimension, with the last coordinates sets to val.</returns>
     public Vector LiftUp(int d, TNum val) {
-      Debug.Assert(d > SpaceDim, "Vector.LiftUp: Can't lift to lower dimension!");
+      Debug.Assert(d > SpaceDim, "Vector.LiftUp: Can't lift up to the lower dimension!");
 
       TNum[] np = new TNum[d];
       for (int i = 0; i < SpaceDim; i++) {
@@ -311,7 +311,7 @@ public partial class Geometry<TNum, TConv>
       int rows = SpaceDim, cols = v.SpaceDim;
 
       TNum[] res = new TNum[rows * cols];
-      int    k      = 0;
+      int    k   = 0;
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
           res[k] = _v[i] * v._v[j];
@@ -409,9 +409,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="braceClose">The closing brace character.</param>
     /// <param name="delim">The delimiter character.</param>
     /// <returns>A string representing the vector with the given braces and delimiter.</returns>
-    public string ToStringBraceAndDelim(char braceOpen, char braceClose, char delim)
-      => braceOpen + string.Join
-           (delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) + braceClose;
+    public string ToStringBraceAndDelim(char? braceOpen, char? braceClose, char delim)
+      => (braceOpen is null ? "" : braceOpen) + string.Join
+           (delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) +
+         (braceClose is null ? "" : braceClose);
 #endregion
 
 #region Constructors
