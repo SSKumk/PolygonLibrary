@@ -99,6 +99,11 @@ public partial class Geometry<TNum, TConv>
     public static readonly TNum PositiveInfinity = TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
 
     /// <summary>
+    /// Represents the negative infinity number.
+    /// </summary>
+    public static readonly TNum NegativeInfinity = (-TNum.MultiplicativeIdentity) / TNum.AdditiveIdentity;
+
+    /// <summary>
     /// Represents the Zero-value of TNum ('0').
     /// </summary>
     public static readonly TNum Zero = TNum.AdditiveIdentity;
@@ -278,11 +283,11 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Type of a comparer of numbers with the respect to given precision
     /// </summary>
-    public class DoubleComparer : IComparer<TNum> {
+    public class TNumComparer : IComparer<TNum> {
 
       private readonly TNum _epsLocal;
 
-      public DoubleComparer(TNum eps) => _epsLocal = eps;
+      public TNumComparer(TNum eps) => _epsLocal = eps;
 
       public int Compare(TNum a, TNum b) {
         TNum oldEPS = Tools.Eps;
