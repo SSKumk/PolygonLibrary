@@ -3,19 +3,16 @@ namespace CGLibrary;
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
-  where TConv : INumConvertor<TNum>
-{
+  where TConv : INumConvertor<TNum> {
 
-  public class MinkowskiDiff
-  {
+  public class MinkowskiDiff {
 
-    public static ConvexPolytop? Naive(ConvexPolytop F, ConvexPolytop G)
-    {
+    public static ConvexPolytop? Naive(ConvexPolytop F, ConvexPolytop G) {
       return MinkDiff
                (
                 F.Hrep
               , G.Vrep
-              , out ConvexPolytop diffFG
+              , out ConvexPolytop? diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
               , ConvexPolytop.HrepToVrep_Naive
@@ -25,13 +22,12 @@ public partial class Geometry<TNum, TConv>
                : null;
     }
 
-    public static ConvexPolytop? Geometric(ConvexPolytop F, ConvexPolytop G)
-    {
+    public static ConvexPolytop? Geometric(ConvexPolytop F, ConvexPolytop G) {
       return MinkDiff
                (
                 F.Hrep
               , G.Vrep
-              , out ConvexPolytop diffFG
+              , out ConvexPolytop? diffFG
               , FindExtrInCPOnVector_Naive
               , doSubtract
               , ConvexPolytop.HrepToVrep_Geometric
@@ -57,19 +53,15 @@ public partial class Geometry<TNum, TConv>
      * Но в среднем мы будем проигрывать, так как симплекс-метод не идёт по всем вершинам и множитель |V(G)| - грубая оценка сверху.
      */
 
-    public static Vector FindExtrInCPOnVector_Naive(SortedSet<Vector> P, Vector l)
-    {
-      Vector extr = new Vector(P.First());
-      TNum extrVal = l * extr;
+    public static Vector FindExtrInCPOnVector_Naive(SortedSet<Vector> P, Vector l) {
+      Vector extr    = P.First();
+      TNum   extrVal = l * extr;
 
-      foreach (Vector vertex in P)
-      {
-        Vector vec = new Vector(vertex);
-        TNum val = l * vec;
-        if (val > extrVal)
-        {
+      foreach (Vector vertex in P) {
+        TNum   val = l * vertex;
+        if (val > extrVal) {
           extrVal = val;
-          extr = vec;
+          extr    = vertex;
         }
       }
 
@@ -81,8 +73,7 @@ public partial class Geometry<TNum, TConv>
      * Вроде ничего другого тут и нет
      */
 
-    public static HyperPlane doSubtract(HyperPlane minuend, Vector subtrahend)
-    {
+    public static HyperPlane doSubtract(HyperPlane minuend, Vector subtrahend) {
       return new HyperPlane(minuend.Normal, minuend.ConstantTerm - minuend.Normal * subtrahend);
     }
 
@@ -108,20 +99,17 @@ public partial class Geometry<TNum, TConv>
 
 
     private static bool MinkDiff(
-        List<HyperPlane> F
-      , SortedSet<Vector> G
-      , out ConvexPolytop diffFG
-      , Func<SortedSet<Vector>, Vector, Vector> findExtrInG_on_lFromNF
-      , Func<HyperPlane, Vector, HyperPlane> doSubtract // <-- todo Как назвать?
-      , Func<List<HyperPlane>, SortedSet<Vector>> HRepToVRep
-      , Func<SortedSet<Vector>, FaceLattice> produceFL
-      , Func<List<HyperPlane>, List<HyperPlane>>? doHRedundancy = null
-      )
-    {
-
+        List<HyperPlane>                           F
+      , SortedSet<Vector>                          G
+      , out ConvexPolytop?                         diffFG
+      , Func<SortedSet<Vector>, Vector, Vector>    findExtrInG_on_lFromNF
+      , Func<HyperPlane, Vector, HyperPlane>       doSubtract // <-- todo Как назвать?
+      , Func<List<HyperPlane>, SortedSet<Vector>?> HRepToVRep
+      , Func<SortedSet<Vector>, FaceLattice>       produceFL
+      , Func<List<HyperPlane>, List<HyperPlane>>?  doHRedundancy = null
+      ) {
       List<HyperPlane> gamma = new List<HyperPlane>();
-      foreach (HyperPlane hpF in F)
-      {
+      foreach (HyperPlane hpF in F) {
         // 1) Для каждого l \in N(F) найти v(l) \in V(G), экстремальную на l.
         Vector extrOn_l = findExtrInG_on_lFromNF(G, hpF.Normal);
 
@@ -138,16 +126,14 @@ public partial class Geometry<TNum, TConv>
       // timer.Restart();
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
-      SortedSet<Vector> VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
-
-      // 5) Построить fLrep роя V(F-G)
-      if (VRepFminusG.Count < 3)
-      {
-        diffFG = ConvexPolytop.CreateFromPoints(new Vector[] { Vector.Zero(1) });
+      SortedSet<Vector>? VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
+      if (VRepFminusG is null || VRepFminusG.Count < 3) { // разность пуста
+        diffFG = null;
 
         return false;
       }
 
+      // 5) Построить fLrep роя V(F-G)
       diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG), true);
 
       return true;
