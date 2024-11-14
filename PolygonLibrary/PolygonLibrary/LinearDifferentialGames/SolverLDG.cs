@@ -120,25 +120,15 @@ public partial class Geometry<TNum, TConv>
     public void ReadQsSection(TNum  t) => ReadSection(gd.Qs, "Q", QsPath, t);
     public void WriteQsSection(TNum t) => WriteSection(gd.Qs, "Q", QsPath, t, ConvexPolytop.Rep.Vrep);
 
-    public void WritePs() {
-      foreach (KeyValuePair<TNum, ConvexPolytop> P in gd.Ps) {
-        using ParamWriter pr = new ParamWriter($"{PsPath}/{TConv.ToDouble(P.Key):F2}) P {FileName}.cpolytop");
-        P.Value.WriteIn(pr, ConvexPolytop.Rep.FLrep);
-      }
-    }
-
-    public void WriteQs() {
-      foreach (KeyValuePair<TNum, ConvexPolytop> Q in gd.Qs) {
-        using ParamWriter pr = new ParamWriter($"{QsPath}/{TConv.ToDouble(Q.Key):F2}) Q {FileName}.cpolytop");
-        Q.Value.WriteIn(pr, ConvexPolytop.Rep.Vrep);
-      }
-    }
 
     public bool BridgeSectionFileExist(TNum t) => File.Exists(GetSectionPath("W", BridgePath, t));
+    public bool PsSectionFileExist(TNum     t) => File.Exists(GetSectionPath("P", PsPath, t));
+    public bool QsSectionFileExist(TNum     t) => File.Exists(GetSectionPath("Q", QsPath, t));
+
 
     public void CleanAll() {
       Console.WriteLine($"Warning! This function will erase all files and folders at the path: {ProblemPath}/");
-      Console.WriteLine($"Do you want to continue? 'y'[es]");
+      Console.WriteLine($"Do you want to continue? [y]es");
       if (Console.ReadKey().KeyChar == 'y') {
         Directory.Delete($"{ProblemPath}", true);
       }
@@ -162,53 +152,73 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
-    public void Solve(bool isNeedWrite) {
+    public void Solve(bool needWrite) {
       Stopwatch timer = new Stopwatch();
 
-      if (isNeedWrite) {
+      if (needWrite) {
         Directory.CreateDirectory(BridgePath);
+        Directory.CreateDirectory(PsPath);
+        Directory.CreateDirectory(QsPath);
       }
 
       TNum t = gd.T;
       TNum tPred;
+      // Обрабатываем терминальный момент времени
       if (BridgeSectionFileExist(t)) {
-        ReadBridgeSection(t);
-        //todo Разобраться с Ps и Qs
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.D[t] = Xstar * gd.B;
-        gd.E[t] = Xstar * gd.C;
+        if (!BridgeSectionFileExist(t - gd.dt)) {
+          ReadBridgeSection(t);
+        }
       }
       else {
-        W[t] = gd.M;
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.D[t] = Xstar * gd.B;
-        gd.E[t] = Xstar * gd.C;
-
-        //todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
-        // gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
-
+        W[t] = gd.M.GetInFLrep();
+        if (needWrite) {
+          WriteBridgeSection(t);
+        }
       }
-      if (isNeedWrite && !BridgeSectionFileExist(t)) { WriteBridgeSection(t); }
+
 
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
+        if (PsSectionFileExist(t)) {
+          if (!PsSectionFileExist(t - gd.dt)) {
+            ReadPsSection(t);
+          }
+        }
+        else {
+          Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+          gd.D[t] = Xstar * gd.B;
+          TNum t1 = t;
+          // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+          gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
+          if (needWrite) {
+            WritePsSection(t);
+          }
+        }
+        // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
+        if (QsSectionFileExist(t)) {
+          if (!QsSectionFileExist(t - gd.dt)) {
+            ReadQsSection(t);
+          }
+        }
+        else {
+          Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+          gd.E[t] = Xstar * gd.C;
+          TNum t1 = t;
+          // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+          gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
+          if (needWrite) {
+            WriteQsSection(t);
+          }
+        }
+
+
         tPred =  t;
         t     -= gd.dt;
 
         timer.Restart();
         if (BridgeSectionFileExist(t)) {
           if (!BridgeSectionFileExist(t - gd.dt)) {
-            Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-            gd.D[t] = Xstar * gd.B;
-            gd.E[t] = Xstar * gd.C;
-            // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-            TNum t1 = t;
             ReadBridgeSection(t);
-            // W[t] = ConvexPolytop.CreateFromReader(new ParamReader(PathToBridgeSection(t)));
-            // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
-            gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
-            gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
           }
         }
         else {
@@ -228,7 +238,7 @@ public partial class Geometry<TNum, TConv>
           Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
         }
 
-        if (isNeedWrite && !BridgeSectionFileExist(t)) {
+        if (needWrite && !BridgeSectionFileExist(t)) {
           timer.Restart();
           WriteBridgeSection(t);
           timer.Stop();
@@ -243,6 +253,41 @@ public partial class Geometry<TNum, TConv>
       TNum t = t0;
       do {
         ReadBridgeSection(t);
+        t += gd.dt;
+      } while (Tools.LT(t, T));
+    }
+
+    public void LoadPs(TNum t0, TNum T) {
+      Debug.Assert(Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
+
+      TNum t = t0;
+      do {
+        ReadPsSection(t);
+        t += gd.dt;
+      } while (Tools.LT(t, T));
+    }
+
+    public void LoadQs(TNum t0, TNum T) {
+      Debug.Assert(Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
+
+      TNum t = t0;
+      do {
+        ReadQsSection(t);
+        t += gd.dt;
+      } while (Tools.LT(t, T));
+    }
+
+    public void LoadGame(TNum t0, TNum T) {
+      LoadQs(t0, T);
+      LoadPs(t0, T);
+      LoadBridge(t0, T);
+
+      TNum t = t0;
+      do {
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.D[t] = Xstar * gd.B;
+        gd.E[t] = Xstar * gd.C;
+
         t += gd.dt;
       } while (Tools.LT(t, T));
     }
