@@ -45,10 +45,10 @@ class Program {
     // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
     // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
 
-    solverLdg.Solve(true);
-    solverLdg.LoadBridge(6,7);
-    // var x = solverLdg.Euler(2 * Vector.Ones(3), 6, 7);
-    // Console.WriteLine($"{x}");
+    // solverLdg.Solve(true);
+    solverLdg.LoadGame(6,7);
+    var x = solverLdg.Euler(new Vector(new ddouble[]{4,0,2}), 6, 7);
+    Console.WriteLine($"{string.Join('\n', x)}");
 
     // solverLdg.workOutControl(1*Vector.MakeOrth(3,1), 0, out Vector p, out Vector q);
     // Console.WriteLine($"Управление P = {p}");
