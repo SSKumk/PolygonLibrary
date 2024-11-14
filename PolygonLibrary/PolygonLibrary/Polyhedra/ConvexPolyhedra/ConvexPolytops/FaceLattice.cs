@@ -146,6 +146,19 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
+    /// Returns a list of all k-faces except the top element (the polytope itself).
+    /// </summary>
+    /// <returns>A list containing all k-faces except the top element.</returns>
+    public List<FLNode> AllKfaces_ExceptTop() {
+      List<FLNode> all = new List<FLNode>(NumberOfKFaces);
+      for (int i = 0; i < Top.PolytopDim; i++) {
+        all.AddRange(Lattice[i]);
+      }
+
+      return all;
+    }
+
+    /// <summary>
     /// Transforms the lattice by applying a given function to each vertex of the lattice.
     /// </summary>
     /// <param name="transformFunc">The function to be applied to each vertex. This function takes a vertex of the lattice and returns a new point.</param>

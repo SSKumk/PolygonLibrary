@@ -27,7 +27,7 @@ C = {{1, 0, 0},{0, 1, 0},{0, 0, 1}};
 t0 = 0;
 
 // The final instant
-T = 1;
+T = 10;
 
 // The time step
 dt = 0.1;
@@ -50,11 +50,15 @@ PRectPLeft = {-1,-1,-1};
 PRectPRight = {1,1,1};
 
 // ==================================================
-QSetType = "Sphere";
-QTheta = 7;
-QPhi = 12;
-QCenter = {0,0,0};
-QRadius = 0.9;
+// QSetType = "Sphere";
+// QTheta = 7;
+// QPhi = 12;
+// QCenter = {0,0,0};
+// QRadius = 0.9;
+
+QSetType = "RectParallel";
+QRectPLeft = {-0.5,-0.5,-0.5};
+QRectPRight = {0.5,0.5,0.5};
 
 // ==================================================
 // The goal type of the game

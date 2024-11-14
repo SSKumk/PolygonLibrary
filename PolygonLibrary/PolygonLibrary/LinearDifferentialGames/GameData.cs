@@ -248,8 +248,9 @@ public partial class Geometry<TNum, TConv>
       M = ReadTerminalSet(out string describeM);
 
       string gType = goalType == GoalType.Itself ? "It" : "Ep";
-      ProblemName =
-        $"{gType}_{problemName}_T#[__,{T}]_dt#{TConv.ToDouble(dt):F2}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
+      // ProblemName =
+        // $"{gType}_{problemName}_T#[__,{T}]_dt#{TConv.ToDouble(dt):F2}_P#{PSetTypeInfo}_Q#{QSetTypeInfo}_M#{describeM}";
+        ProblemName = $"{gType}_{problemName}_T#[__,{T}]";
 
       // Расширяем систему, если решаем задачу с надграфиком функции цены
       if (goalType == GoalType.PayoffEpigraph) {

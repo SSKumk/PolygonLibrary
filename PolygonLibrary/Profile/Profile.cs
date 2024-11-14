@@ -50,7 +50,7 @@ class Program {
     var x = solverLdg.Euler(new Vector(new ddouble[]{4,0,2}), 6, 7);
     Console.WriteLine($"{string.Join('\n', x)}");
 
-    // solverLdg.workOutControl(1*Vector.MakeOrth(3,1), 0, out Vector p, out Vector q);
+    // solverLdg.WorkOutControl(1*Vector.MakeOrth(3,1), 0, out Vector p, out Vector q);
     // Console.WriteLine($"Управление P = {p}");
     // Console.WriteLine($"Управление Q = {q}");
 

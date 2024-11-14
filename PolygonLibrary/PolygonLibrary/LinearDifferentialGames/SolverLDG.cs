@@ -26,6 +26,8 @@ public partial class Geometry<TNum, TConv>
 
     public readonly string ProblemPath;
 
+    public readonly string PicturesPath;
+
     public readonly string NumericalType;
 
     public readonly string Eps;
@@ -77,9 +79,10 @@ public partial class Geometry<TNum, TConv>
         Directory.Delete(filesPath, true);
       }
 
-      BridgePath = Path.Combine(filesPath, "Bridge");
-      PsPath     = Path.Combine(filesPath, "Ps");
-      QsPath     = Path.Combine(filesPath, "Qs");
+      BridgePath   = Path.Combine(filesPath, "Bridge");
+      PsPath       = Path.Combine(filesPath, "Ps");
+      QsPath       = Path.Combine(filesPath, "Qs");
+      PicturesPath = Path.Combine(filesPath, "Pic");
 
 
       W = new StableBridge(new CauchyMatrix.TimeComparer());
@@ -106,7 +109,7 @@ public partial class Geometry<TNum, TConv>
       , TNum                                  t
       , ConvexPolytop.Rep                     repType
       ) {
-      ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
       sectionDict[t].WriteIn(prW, repType);
     }
 
@@ -139,12 +142,12 @@ public partial class Geometry<TNum, TConv>
     /// Computes the next section of a convex polytope by the second Pontryagin's method.
     /// </summary>
     /// <param name="predSec">The previous section of the bridge.</param>
-    /// <param name="predP">The first convex polytope (P) used in the Minkowski sum.</param>
-    /// <param name="predQ">The second convex polytope (Q) used in the Minkowski difference.</param>
+    /// <param name="currP">The first convex polytope (P) used in the Minkowski sum.</param>
+    /// <param name="currQ">The second convex polytope (Q) used in the Minkowski difference.</param>
     /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
-    public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop predP, ConvexPolytop predQ) {
-      ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, predP, true);
-      ConvexPolytop? next = MinkowskiDiff.Geometric(sum, predQ);
+    public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop currP, ConvexPolytop currQ) {
+      ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, currP, true);
+      ConvexPolytop? next = MinkowskiDiff.Geometric(sum, currQ);
 
       return next;
     }
@@ -175,10 +178,44 @@ public partial class Geometry<TNum, TConv>
           WriteBridgeSection(t);
         }
       }
-
+      if (PsSectionFileExist(t)) {
+        if (!PsSectionFileExist(t - gd.dt)) {
+          ReadPsSection(t);
+        }
+      }
+      else {
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.D[t] = Xstar * gd.B;
+        TNum t1 = t;
+        // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+        gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
+        if (needWrite) {
+          WritePsSection(t);
+        }
+      }
+      // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
+      if (QsSectionFileExist(t)) {
+        if (!QsSectionFileExist(t - gd.dt)) {
+          ReadQsSection(t);
+        }
+      }
+      else {
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.E[t] = Xstar * gd.C;
+        TNum t1 = t;
+        // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
+        gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
+        if (needWrite) {
+          WriteQsSection(t);
+        }
+      }
 
       bool bridgeIsNotDegenerate = true;
       while (Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
+        tPred =  t;
+        t     -= gd.dt;
+
+        timer.Restart();
         if (PsSectionFileExist(t)) {
           if (!PsSectionFileExist(t - gd.dt)) {
             ReadPsSection(t);
@@ -210,12 +247,6 @@ public partial class Geometry<TNum, TConv>
             WriteQsSection(t);
           }
         }
-
-
-        tPred =  t;
-        t     -= gd.dt;
-
-        timer.Restart();
         if (BridgeSectionFileExist(t)) {
           if (!BridgeSectionFileExist(t - gd.dt)) {
             ReadBridgeSection(t);
@@ -223,7 +254,7 @@ public partial class Geometry<TNum, TConv>
         }
         else {
           // Формула Пшеничного
-          ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[tPred], gd.Qs[tPred]);
+          ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[t], gd.Qs[t]);
 
           if (WNext is null) {
             Console.WriteLine($"The bridge become degenerate at t = {t}.");
@@ -252,9 +283,11 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        ReadBridgeSection(t);
+        if (!W.ContainsKey(t)) {
+          ReadBridgeSection(t);
+        }
         t += gd.dt;
-      } while (Tools.LT(t, T));
+      } while (Tools.LE(t, T));
     }
 
     public void LoadPs(TNum t0, TNum T) {
@@ -262,9 +295,11 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        ReadPsSection(t);
+        if (!gd.Ps.ContainsKey(t)) {
+          ReadPsSection(t);
+        }
         t += gd.dt;
-      } while (Tools.LT(t, T));
+      } while (Tools.LE(t, T));
     }
 
     public void LoadQs(TNum t0, TNum T) {
@@ -272,9 +307,11 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        ReadQsSection(t);
+        if (!gd.Qs.ContainsKey(t)) {
+          ReadQsSection(t);
+        }
         t += gd.dt;
-      } while (Tools.LT(t, T));
+      } while (Tools.LE(t, T));
     }
 
     public void LoadGame(TNum t0, TNum T) {
@@ -289,7 +326,7 @@ public partial class Geometry<TNum, TConv>
         gd.E[t] = Xstar * gd.C;
 
         t += gd.dt;
-      } while (Tools.LT(t, T));
+      } while (Tools.LE(t, T));
     }
 
     /// <summary>
@@ -307,7 +344,7 @@ public partial class Geometry<TNum, TConv>
     /// If the state is outside the bridge section, the first vertex of <c>Q</c> is selected.
     /// Otherwise, the vertex that maximizes the (x-h, qVert) is chosen.
     /// </param>
-    public void workOutControl(Vector x, TNum t, out Vector u, out Vector v) {
+    public void WorkOutControl(Vector x, TNum t, out Vector u, out Vector v) {
       Debug.Assert(gd.D.ContainsKey(t), $"Matrix D must be defined for time t = {t}, but not found.");
       Debug.Assert(gd.E.ContainsKey(t), $"Matrix E must be defined for time t = {t}, but not found.");
       Debug.Assert(W.ContainsKey(t), $"Bridge W must be defined for time t = {t}, but not found.");
@@ -321,7 +358,7 @@ public partial class Geometry<TNum, TConv>
       if (isInside) { // Внутри моста выбираем любой из P, но лучший из Q
         u = gd.P.Vrep.First();
 
-        Vector l       = x - h;
+        Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector qVert in gd.Q.Vrep) {
           TNum val = gd.dt * gd.E[t] * qVert * l;
@@ -332,9 +369,9 @@ public partial class Geometry<TNum, TConv>
         }
       }
       else { // Снаружи моста выбираем любой из Q, но лучший из P
-        v = gd.P.Vrep.First();
+        v = gd.Q.Vrep.First();
 
-        Vector l       = h - x;
+        Vector l       = x - h;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector pVert in gd.P.Vrep) {
           TNum val = -gd.dt * gd.D[t] * pVert * l;
@@ -347,15 +384,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Performs a single Euler integration step for the state vector in a linear differential game.
-    /// </summary>
-    /// <param name="x">Current state vector.</param>
-    /// <param name="u">Control of the first player.</param>
-    /// <param name="v">Control of the second player.</param>
-    /// <returns>Updated state vector after one Euler step.</returns>
-    public Vector EulerStep(Vector x, Vector u, Vector v) => x + gd.dt * (gd.A * x + gd.B * u + gd.C * v);
-
-    /// <summary>
     /// Computes the trajectory of the system using the explicit Euler method
     /// from the initial time t0 to the final time T.
     /// </summary>
@@ -365,14 +393,15 @@ public partial class Geometry<TNum, TConv>
     /// <returns>List of state vectors representing the trajectory of the system from t0 to T.</returns>
     public List<Vector> Euler(Vector x0, TNum t0, TNum T) {
       List<Vector> trajectory = new List<Vector> { x0 }; // Начальное состояние
+      LoadGame(t0, T);                                   // Загружаем информацию об игре на заданном промежутке
 
       Vector x = x0;
-      for (TNum t = t0; t < T; t += gd.dt) {
+      for (TNum t = t0; Tools.LT(t, T); t += gd.dt) {
         // Вычисляем управления
-        workOutControl(x, t, out Vector u, out Vector v);
+        WorkOutControl(x, t, out Vector u, out Vector v);
 
         // Выполняем шаг Эйлера
-        x = EulerStep(x, u, v);
+        x = x + gd.dt * (gd.A * x + gd.B * u + gd.C * v);
         trajectory.Add(x);
       }
 

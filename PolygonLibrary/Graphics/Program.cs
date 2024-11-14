@@ -55,13 +55,6 @@ public class Visualization {
 
   }
 
-  // todo  наверное надо передавать целиком SolverLDG
-  public ConvexPolytop Polytop;
-
-  public Visualization(ConvexPolytop polytop) { Polytop = polytop; }
-
-  public Visualization(ParamReader prR) { Polytop = ConvexPolytop.CreateFromReader(prR); }
-
   public static void WritePLY(ConvexPolytop P, ParamWriter prW) {
     P = Validate(P);
 
@@ -149,10 +142,18 @@ public class Program {
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations";
 
   public static void Main() {
-    ConvexPolytop p = ConvexPolytop.DistanceToOriginBall_oo(2, 2);
-//todo написать тест
-    using ParamWriter prW = new ParamWriter(Path.Combine(pathData, "Other", "some.ply"));
-    Visualization.WritePLY(p, 3 * Vector.Ones(3), prW);
+    int       dim    = 3;
+    SolverLDG solver = new SolverLDG(pathData, "SimpleMotion", false);
+    solver.Solve(true);
+    var traj = solver.Euler(12*Vector.MakeOrth(dim,2), solver.gd.t0, solver.gd.T);
+
+    Directory.CreateDirectory(solver.PicturesPath);
+    int i = 0;
+    for (double t = solver.gd.t0; Tools.LT(t, solver.gd.T); t += solver.gd.dt, i++) {
+      using ParamWriter prW = new ParamWriter(Path.Combine(solver.PicturesPath, $"{DConvertor.ToDouble(t):F2}).ply"));
+
+      Visualization.WritePLY(solver.W[t], traj[i], prW);
+    }
   }
 
 }

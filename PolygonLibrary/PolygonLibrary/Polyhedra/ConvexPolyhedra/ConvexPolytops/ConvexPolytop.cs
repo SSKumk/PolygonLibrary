@@ -835,22 +835,34 @@ public partial class Geometry<TNum, TConv>
       if (Contains(point)) {
         isInside = true;
 
-        return point;
+        if (IsFLrep) {
+          IOrderedEnumerable<Vector> minPs = FLrep
+                                            .AllKfaces_ExceptTop()
+                                            .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+                                            .Where(Contains)
+                                            .OrderBy(v => (point - v).Length);
+
+          return minPs.First();
+        }
       }
-
-      if (IsFLrep) { // todo Сделать связь Hrep <--> FLrep[^2]
-        IEnumerable<FLNode> visible = FLrep[^2]
-         .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
-        SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
-        IOrderedEnumerable<Vector> minPs = allKfaces
-                                          .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-                                          .Where(Contains)
-                                          .OrderBy(v => (point - v).Length);
-
+      else {
         isInside = false;
 
-        return minPs.First();
+        if (IsFLrep) { // todo Сделать связь Hrep <--> FLrep[^2]
+          IEnumerable<FLNode> visible = FLrep[^2]
+           .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
+          SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
+          IOrderedEnumerable<Vector> minPs = allKfaces
+                                            .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+                                            .Where(Contains)
+                                            .OrderBy(v => (point - v).Length);
+
+          isInside = false;
+
+          return minPs.First();
+        }
       }
+
 
       throw new NotImplementedException("Из Vrep и Hrep пока не умею.");
     }
@@ -952,18 +964,9 @@ public partial class Geometry<TNum, TConv>
     /// </param>
     public void WriteIn(ParamWriter pr, Rep rep) {
       switch (rep) {
-        case Rep.Vrep:
-          WriteAsVRep(pr, this);
-
-          break;
-        case Rep.Hrep:
-          WriteAsHRep(pr, this);
-
-          break;
-        case Rep.FLrep:
-          WriteAsFLRep(pr, this);
-
-          break;
+        case Rep.Vrep:  WriteAsVRep(pr, this); break;
+        case Rep.Hrep:  WriteAsHRep(pr, this); break;
+        case Rep.FLrep: WriteAsFLRep(pr, this); break;
       }
       pr.Flush();
     }
