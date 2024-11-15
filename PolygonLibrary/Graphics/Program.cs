@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
-using static CGLibrary.Geometry<double, Graphics.DConvertor>;
+using DoubleDouble;
+// using static CGLibrary.Geometry<double, Graphics.DConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Graphics.DDConvertor>;
 
 namespace Graphics;
 
@@ -22,7 +24,7 @@ public class Visualization {
     /// <param name="u">The second vector.</param>
     /// <returns>The outward normal to the plane of v and u.</returns>
     public static Vector CrossProduct3D(Vector v, Vector u) {
-      double[] crossProduct = new double[3];
+      ddouble[] crossProduct = new ddouble[3];
       crossProduct[0] = v[1] * u[2] - v[2] * u[1];
       crossProduct[1] = v[2] * u[0] - v[0] * u[2];
       crossProduct[2] = v[0] * u[1] - v[1] * u[0];
@@ -142,15 +144,19 @@ public class Program {
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations";
 
   public static void Main() {
+    Tools.Eps = 1e-16;
+
     int       dim    = 3;
-    SolverLDG solver = new SolverLDG(pathData, "SimpleMotion", false);
-    solver.Solve(true);
-    var traj = solver.Euler(12*Vector.MakeOrth(dim,2), solver.gd.t0, solver.gd.T);
+    SolverLDG solver = new SolverLDG(pathData, "SimpleMotion", true);
+     var tMin = solver.Solve(true);
+    var traj = solver.Euler(new Vector(new ddouble[]{0,1,2}), tMin, solver.gd.T);
+    // var traj = solver.Euler(0.5 * Vector.Ones(dim), tMin, solver.gd.T);
+    // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
 
     Directory.CreateDirectory(solver.PicturesPath);
     int i = 0;
-    for (double t = solver.gd.t0; Tools.LT(t, solver.gd.T); t += solver.gd.dt, i++) {
-      using ParamWriter prW = new ParamWriter(Path.Combine(solver.PicturesPath, $"{DConvertor.ToDouble(t):F2}).ply"));
+    for (ddouble t = tMin; Tools.LT(t, solver.gd.T); t += solver.gd.dt, i++) {
+      using ParamWriter prW = new ParamWriter(Path.Combine(solver.PicturesPath, $"{DDConvertor.ToDouble(t):0.00}).ply"));
 
       Visualization.WritePLY(solver.W[t], traj[i], prW);
     }
