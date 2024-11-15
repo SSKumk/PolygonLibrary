@@ -50,15 +50,15 @@ PRectPLeft = {-1,-1,-1};
 PRectPRight = {1,1,1};
 
 // ==================================================
-// QSetType = "Sphere";
-// QTheta = 7;
-// QPhi = 12;
-// QCenter = {0,0,0};
-// QRadius = 0.9;
+QSetType = "Sphere";
+QTheta = 7;
+QPhi = 12;
+QCenter = {0,0,0};
+QRadius = 0.9;
 
-QSetType = "RectParallel";
-QRectPLeft = {-0.5,-0.5,-0.5};
-QRectPRight = {0.5,0.5,0.5};
+// QSetType = "RectParallel";
+// QRectPLeft = {-1.5,-1.5,-1.5};
+// QRectPRight = {1.5,1.5,1.5};
 
 // ==================================================
 // The goal type of the game
