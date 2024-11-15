@@ -109,6 +109,7 @@ public partial class Geometry<TNum, TConv>
       , TNum                                  t
       , ConvexPolytop.Rep                     repType
       ) {
+      Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
       using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
       sectionDict[t].WriteIn(prW, repType);
     }
@@ -155,7 +156,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
-    public void Solve(bool needWrite) {
+    public TNum Solve(bool needWrite) {
       Stopwatch timer = new Stopwatch();
 
       if (needWrite) {
@@ -164,7 +165,8 @@ public partial class Geometry<TNum, TConv>
         Directory.CreateDirectory(QsPath);
       }
 
-      TNum t = gd.T;
+      TNum t    = gd.T;
+      TNum tMin = gd.T;
       TNum tPred;
       // Обрабатываем терминальный момент времени
       if (BridgeSectionFileExist(t)) {
@@ -262,6 +264,7 @@ public partial class Geometry<TNum, TConv>
           }
           else {
             W[t] = WNext;
+            tMin = t;
           }
         }
         timer.Stop();
@@ -269,13 +272,15 @@ public partial class Geometry<TNum, TConv>
           Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
         }
 
-        if (needWrite && !BridgeSectionFileExist(t)) {
+        if (needWrite && !BridgeSectionFileExist(t) && W.ContainsKey(t)) {
           timer.Restart();
           WriteBridgeSection(t);
           timer.Stop();
           Console.WriteLine($"\tWrite = {timer.Elapsed.TotalSeconds:F4} sec.");
         }
       }
+
+      return tMin;
     }
 
     public void LoadBridge(TNum t0, TNum T) {
