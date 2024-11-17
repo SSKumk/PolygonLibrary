@@ -8,7 +8,7 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo Написать метод SkipObject() (чтобы переходить к следующему)
+  // todo: Написать метод SkipObject() (чтобы переходить к следующему)
   /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>

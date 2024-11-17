@@ -265,7 +265,7 @@ public partial class Geometry<TNum, TConv>
   /// The node of the face lattice. It stores references to the supernodes and sub-nodes.
   /// In addition, it maintains a set of vertices representing the face.
   /// </summary>
-  public class FLNode : IComparable<FLNode> {
+  public class FLNode : IComparable<FLNode> { // todo: вместо сравнения по внутренним точкам сделать просто по ID
 
 #region Data and properties
     /// <summary>

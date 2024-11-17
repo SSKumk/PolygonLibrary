@@ -233,7 +233,7 @@ public partial class Geometry<TNum, TConv>
     public List<HyperPlane> Hrep {
       get
         {
-          // todo Возможно стоит реализовать Double Description Method  и/или  Reverse Search Fukud-ы
+          // todo: Возможно стоит реализовать Double Description Method  и/или  Reverse Search Fukud-ы
           _Hrep ??= new List<HyperPlane>
             (
              FLrep
@@ -848,7 +848,7 @@ public partial class Geometry<TNum, TConv>
       else {
         isInside = false;
 
-        if (IsFLrep) { // todo Сделать связь Hrep <--> FLrep[^2]
+        if (IsFLrep) { // todo: Сделать связь Hrep <--> FLrep[^2]
           IEnumerable<FLNode> visible = FLrep[^2]
            .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
           SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
@@ -1180,7 +1180,7 @@ public partial class Geometry<TNum, TConv>
       return new SortedSet<Vector>(Vs);
     }
 
-    // todo научиться работать не с полноразмернымми многогранниками
+    // todo: научиться работать не с полноразмернымми многогранниками
     /// <summary>
     /// Converts the Hrep of a convex polytope to Vrep using a geometric-inspired algorithm. Full-dimensional only!
     /// </summary>

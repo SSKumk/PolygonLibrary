@@ -5,9 +5,9 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo Продумать систему пространства имён; в смысле?
-  // todo Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён.
-  // todo Закинуть в Toolkit всё, что не геометрия
+  // todo: Продумать систему пространства имён; в смысле?
+  // todo: Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён.
+  // todo: Закинуть в Toolkit всё, что не геометрия
 
   /// <summary>
   /// Class for keeping game parameter data

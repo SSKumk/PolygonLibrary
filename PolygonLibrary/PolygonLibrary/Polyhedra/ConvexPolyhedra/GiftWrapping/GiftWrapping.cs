@@ -408,7 +408,7 @@ public partial class Geometry<TNum, TConv>
           toRemove.ExceptWith(newFace.Vertices);
           S.ExceptWith(toRemove);
 
-          // todo Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
+          // todo: Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
         }
 
         return newFace;

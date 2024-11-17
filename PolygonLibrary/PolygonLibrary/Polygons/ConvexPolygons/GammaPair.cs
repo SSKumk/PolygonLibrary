@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv>
       return res;
     }
 
-    // todo Debug.Assert(other != null, nameof(other) + " != null"); убрать такую дичь
+    // todo: Debug.Assert(other != null, nameof(other) + " != null"); убрать такую дичь
     /// <summary>
     /// The less-greater comparator:
     ///   a) compares normals counterclockwise in the sense of the polar angle
