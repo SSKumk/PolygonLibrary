@@ -148,11 +148,12 @@ public class Program {
 
     int       dim    = 3;
     SolverLDG solver = new SolverLDG(pathData, "SimpleMotion", true);
-     var tMin = solver.Solve(true);
-    var traj = solver.Euler(new Vector(new ddouble[]{0,1,2}), tMin, solver.gd.T);
+    var       tMin   = solver.Solve(true); //todo: хэш входного файла проверять при счёте моста
+    var       traj   = solver.Euler(new Vector(new ddouble[] { 0, 1, 3 }), tMin, solver.gd.T);
     // var traj = solver.Euler(0.5 * Vector.Ones(dim), tMin, solver.gd.T);
     // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
 
+    // tMin = solver.gd.t0;
     Directory.CreateDirectory(solver.PicturesPath);
     int i = 0;
     for (ddouble t = tMin; Tools.LT(t, solver.gd.T); t += solver.gd.dt, i++) {
