@@ -361,7 +361,7 @@ public partial class Geometry<TNum, TConv>
       Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
 
       if (isInside) { // Внутри моста выбираем любой из P, но лучший из Q
-        u = gd.P.Vrep.First();
+        u = gd.P.Vrep.First(); //todo: прицеливается на капец внутреннюю точку моста
 
         Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
@@ -373,16 +373,22 @@ public partial class Geometry<TNum, TConv>
           }
         }
       }
-      else { // Снаружи моста выбираем любой из Q, но лучший из P
-        v = gd.Q.Vrep.First();
-
-        Vector l       = x - h;
+      else { // лучший из P
+        Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector pVert in gd.P.Vrep) {
-          TNum val = -gd.dt * gd.D[t] * pVert * l;
+          TNum val = gd.dt * gd.D[t] * pVert * l;
           if (val > extrVal) {
             extrVal = val;
             u       = pVert;
+          }
+        }
+        extrVal = Tools.NegativeInfinity;
+        foreach (Vector qVert in gd.Q.Vrep) {
+          TNum val = -gd.dt * gd.E[t] * qVert * l;
+          if (val > extrVal) {
+            extrVal = val;
+            v       = qVert;
           }
         }
       }
