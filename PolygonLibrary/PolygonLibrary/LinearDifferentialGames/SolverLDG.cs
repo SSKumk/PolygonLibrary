@@ -55,6 +55,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The section of the bridge.</returns>
     public ConvexPolytop GetSection(TNum t) => W[t];
 
+    public TNum tMin;
+
 
     /// <summary>
     /// Constructor which creates GameData and init three StableBridges
@@ -62,7 +64,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="workDir">The directory where source file and result folder are placed</param>
     /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
     /// <exception cref="ArgumentException">If there is no path to working directory, this exception is thrown</exception>
-    public SolverLDG(string workDir, string fileName, bool clean = false) {
+    public SolverLDG(string workDir, string fileName) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
       NumericalType = typeof(TNum).ToString();
@@ -75,9 +77,6 @@ public partial class Geometry<TNum, TConv>
       ProblemPath = Path.Combine(WorkDir, gd.ProblemName);
 
       string filesPath = Path.Combine(ProblemPath, NumericalType, Eps);
-      if (clean && Directory.Exists(filesPath)) {
-        Directory.Delete(filesPath, true);
-      }
 
       BridgePath   = Path.Combine(filesPath, "Bridge");
       PsPath       = Path.Combine(filesPath, "Ps");
@@ -88,46 +87,112 @@ public partial class Geometry<TNum, TConv>
       W = new StableBridge(new CauchyMatrix.TimeComparer());
     }
 
-    // Метод для получения пути к секции (Bridge, Ps, Qs)
-    private string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
-      return Path.Combine(basePath, $"{TConv.ToDouble(t):F2}){sectionPrefix}_{FileName}.cpolytop");
+    private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
+      string extension = sectionPrefix switch
+                           {
+                             "W" => "wsection"
+                           , "P" => "psection"
+                           , "Q" => "qsection"
+                           , _ => throw new ArgumentException
+                                    ($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
+                           };
+
+      return Path.Combine(basePath, $"{TConv.ToDouble(t):F2}){sectionPrefix}.{extension}");
     }
+
 
     private void ReadSection(SortedDictionary<TNum, ConvexPolytop> sectionDict, string sectionPrefix, string basePath, TNum t) {
       string filePath = GetSectionPath(sectionPrefix, basePath, t);
       Debug.Assert
         (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
 
-      ParamReader prR = new ParamReader(filePath);
+      ParamReader prR      = new ParamReader(filePath);
+      string      taskHash = prR.ReadString("md5");
+
+      bool hashIsCorrect = sectionPrefix switch
+                             {
+                               "W" => taskHash == gd.GameHash
+                             , "P" => taskHash == gd.PsHash
+                             , "Q" => taskHash == gd.QsHash
+                             , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
+                             };
+      Debug.Assert
+        (
+         hashIsCorrect
+       , $"SolverLDG.ReadSection: The hash in the file ({taskHash}) does not match the expected hash ({sectionPrefix}Hash)."
+        );
+
       sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
     }
 
-    private void WriteSection(
-        SortedDictionary<TNum, ConvexPolytop> sectionDict
-      , string                                sectionPrefix
+    private static void WriteSection(
+        string                                sectionPrefix
+      , SortedDictionary<TNum, ConvexPolytop> sectionDict
       , string                                basePath
       , TNum                                  t
+      , string                                hash
       , ConvexPolytop.Rep                     repType
       ) {
       Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
       using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      prW.WriteString("md5", hash);
       sectionDict[t].WriteIn(prW, repType);
     }
 
-// Методы для работы с Bridge, Ps, Qs секциями
-    public void ReadBridgeSection(TNum  t) => ReadSection(W, "W", BridgePath, t);
-    public void WriteBridgeSection(TNum t) => WriteSection(W, "W", BridgePath, t, ConvexPolytop.Rep.FLrep);
+    public void ReadBridgeSection(TNum t) => ReadSection(W, "W", BridgePath, t);
+    public void ReadPsSection(TNum     t) => ReadSection(gd.Ps, "P", PsPath, t);
+    public void ReadQsSection(TNum     t) => ReadSection(gd.Qs, "Q", QsPath, t);
 
-    public void ReadPsSection(TNum  t) => ReadSection(gd.Ps, "P", PsPath, t);
-    public void WritePsSection(TNum t) => WriteSection(gd.Ps, "P", PsPath, t, ConvexPolytop.Rep.FLrep);
+    public void WriteBridgeSection(TNum t)
+      => WriteSection
+        (
+         "W"
+       , W
+       , BridgePath
+       , t
+       , gd.GameHash
+       , ConvexPolytop.Rep.FLrep
+        );
 
-    public void ReadQsSection(TNum  t) => ReadSection(gd.Qs, "Q", QsPath, t);
-    public void WriteQsSection(TNum t) => WriteSection(gd.Qs, "Q", QsPath, t, ConvexPolytop.Rep.Vrep);
+    public void WritePsSection(TNum t)
+      => WriteSection
+        (
+         "P"
+       , gd.Ps
+       , PsPath
+       , t
+       , gd.PsHash
+       , ConvexPolytop.Rep.FLrep
+        );
+
+    public void WriteQsSection(TNum t)
+      => WriteSection
+        (
+         "Q"
+       , gd.Qs
+       , QsPath
+       , t
+       , gd.QsHash
+       , ConvexPolytop.Rep.Vrep
+        );
 
 
-    public bool BridgeSectionFileExist(TNum t) => File.Exists(GetSectionPath("W", BridgePath, t));
-    public bool PsSectionFileExist(TNum     t) => File.Exists(GetSectionPath("P", PsPath, t));
-    public bool QsSectionFileExist(TNum     t) => File.Exists(GetSectionPath("Q", QsPath, t));
+    private bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t, string expectedHash) {
+      string filePath = GetSectionPath(sectionPrefix, basePath, t);
+      if (!File.Exists(filePath)) {
+        return false;
+      }
+
+      ParamReader prR = new ParamReader(filePath);
+
+      string fileHash = prR.ReadString("md5");
+
+      return fileHash == expectedHash;
+    }
+
+    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BridgePath, t, gd.GameHash);
+    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsPath, t, gd.PsHash);
+    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsPath, t, gd.QsHash);
 
 
     public void CleanAll() {
@@ -153,6 +218,72 @@ public partial class Geometry<TNum, TConv>
       return next;
     }
 
+    private void ProcessPsSection(TNum t, bool needWrite) {
+      if (!PsSectionFileCorrect(t)) {
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.D[t] = Xstar * gd.B;
+        TNum t1 = t;
+        gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
+        if (needWrite) {
+          WritePsSection(t);
+        }
+      }
+    }
+
+    private void ProcessQsSection(TNum t, bool needWrite) {
+      if (!QsSectionFileCorrect(t)) {
+        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
+        gd.E[t] = Xstar * gd.C;
+        TNum t1 = t;
+        gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
+        if (needWrite) {
+          WriteQsSection(t);
+        }
+      }
+    }
+
+    private void ProcessBridgeSection(TNum t, TNum tPred, bool needWrite, ref bool bridgeIsNotDegenerate) {
+      if (BridgeSectionFileCorrect(t)) {
+        if (!BridgeSectionFileCorrect(t - gd.dt)) {
+          ReadBridgeSection(t);
+        }
+      }
+      else {
+        if (!gd.Ps.ContainsKey(t)) {
+          ReadPsSection(t);
+        }
+        if (!gd.Qs.ContainsKey(t)) {
+          ReadQsSection(t);
+        }
+        ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[t], gd.Qs[t]);
+        if (WNext is null) {
+          Console.WriteLine($"The bridge become degenerate at t = {t}.");
+          bridgeIsNotDegenerate = false;
+        }
+        else {
+          W[t] = WNext;
+          if (needWrite) {
+            WriteBridgeSection(t);
+          }
+        }
+      }
+    }
+
+    private void ProcessTerminalBridgeSection(TNum t, bool needWrite) {
+      if (BridgeSectionFileCorrect(t)) {
+        if (!BridgeSectionFileCorrect(t - gd.dt)) {
+          ReadBridgeSection(t);
+        }
+      }
+      else {
+        W[t] = gd.M.GetInFLrep();
+        if (needWrite) {
+          WriteBridgeSection(t);
+        }
+      }
+    }
+
+
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
@@ -165,123 +296,36 @@ public partial class Geometry<TNum, TConv>
         Directory.CreateDirectory(QsPath);
       }
 
-      TNum t    = gd.T;
-      TNum tMin = gd.T;
+      TNum t = gd.T;
+      tMin = gd.T;
       TNum tPred;
-      // Обрабатываем терминальный момент времени
-      if (BridgeSectionFileExist(t)) {
-        if (!BridgeSectionFileExist(t - gd.dt)) {
-          ReadBridgeSection(t);
-        }
-      }
-      else {
-        W[t] = gd.M.GetInFLrep();
-        if (needWrite) {
-          WriteBridgeSection(t);
-        }
-      }
-      if (PsSectionFileExist(t)) {
-        if (!PsSectionFileExist(t - gd.dt)) {
-          ReadPsSection(t);
-        }
-      }
-      else {
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.D[t] = Xstar * gd.B;
-        TNum t1 = t;
-        // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
-        if (needWrite) {
-          WritePsSection(t);
-        }
-      }
-      // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
-      if (QsSectionFileExist(t)) {
-        if (!QsSectionFileExist(t - gd.dt)) {
-          ReadQsSection(t);
-        }
-      }
-      else {
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.E[t] = Xstar * gd.C;
-        TNum t1 = t;
-        // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-        gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
-        if (needWrite) {
-          WriteQsSection(t);
-        }
-      }
-
       bool bridgeIsNotDegenerate = true;
+
+      // Обрабатываем терминальный момент времени
+      ProcessPsSection(t, needWrite);
+      ProcessQsSection(t, needWrite);
+      ProcessTerminalBridgeSection(t, needWrite);
+
+      // Основной цикл
       while (Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
         tPred =  t;
+        tMin  =  t;
         t     -= gd.dt;
 
         timer.Restart();
-        if (PsSectionFileExist(t)) {
-          if (!PsSectionFileExist(t - gd.dt)) {
-            ReadPsSection(t);
-          }
-        }
-        else {
-          Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-          gd.D[t] = Xstar * gd.B;
-          TNum t1 = t;
-          // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-          gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
-          if (needWrite) {
-            WritePsSection(t);
-          }
-        }
-        // -dt * X(T, t_i) * B * P и dt * X(T, t_i) * C * Q
-        if (QsSectionFileExist(t)) {
-          if (!QsSectionFileExist(t - gd.dt)) {
-            ReadQsSection(t);
-          }
-        }
-        else {
-          Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-          gd.E[t] = Xstar * gd.C;
-          TNum t1 = t;
-          // Для борьбы с "Captured variable is modified in the outer scope" (Code Inspection: Access to modified captured variable)
-          gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
-          if (needWrite) {
-            WriteQsSection(t);
-          }
-        }
-        if (BridgeSectionFileExist(t)) {
-          if (!BridgeSectionFileExist(t - gd.dt)) {
-            ReadBridgeSection(t);
-          }
-        }
-        else {
-          // Формула Пшеничного
-          ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[t], gd.Qs[t]);
-
-          if (WNext is null) {
-            Console.WriteLine($"The bridge become degenerate at t = {t}.");
-            bridgeIsNotDegenerate = false;
-          }
-          else {
-            W[t] = WNext;
-            tMin = t;
-          }
-        }
+        ProcessPsSection(t, needWrite);
+        ProcessQsSection(t, needWrite);
+        ProcessBridgeSection(t, tPred, needWrite, ref bridgeIsNotDegenerate);
         timer.Stop();
+
         if (W.TryGetValue(t, out ConvexPolytop? br)) {
           Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
-        }
-
-        if (needWrite && !BridgeSectionFileExist(t) && W.ContainsKey(t)) {
-          timer.Restart();
-          WriteBridgeSection(t);
-          timer.Stop();
-          Console.WriteLine($"\tWrite = {timer.Elapsed.TotalSeconds:F4} sec.");
         }
       }
 
       return tMin;
     }
+
 
     public void LoadBridge(TNum t0, TNum T) {
       Debug.Assert(Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
@@ -360,7 +404,7 @@ public partial class Geometry<TNum, TConv>
 
       Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
 
-      if (isInside) { // Внутри моста выбираем любой из P, но лучший из Q
+      if (isInside) {          // Внутри моста выбираем любой из P, но лучший из Q
         u = gd.P.Vrep.First(); //todo: прицеливается на капец внутреннюю точку моста
 
         Vector l       = h - x;
