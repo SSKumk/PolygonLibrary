@@ -21,6 +21,7 @@ class Program {
     // Tools.Eps = 1e-8;
     Tools.Eps = 1e-16;
 
+    Console.WriteLine($"{0.GetHashCode()}");
 
      int dim = 5;
 
@@ -41,14 +42,14 @@ class Program {
     // Console.WriteLine($"{Vector.Ones(6).ToStringBraceAndDelim(null, null, ' ')}");
 
     // SolverLDG solverLdg = new SolverLDG(pathData, "SomeRND", false);
-    SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
-    // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
-    // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
-
-    // solverLdg.Solve(true);
-    solverLdg.LoadGame(6,7);
-    var x = solverLdg.Euler(new Vector(new ddouble[]{4,0,2}), 6, 7);
-    Console.WriteLine($"{string.Join('\n', x)}");
+    // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
+    // // SolverLDG solverLdg = new SolverLDG(pathData, "oscillator");
+    // // SolverLDG solverLdg = new SolverLDG(pathData, "simpleMotion");
+    //
+    // // solverLdg.Solve(true);
+    // solverLdg.LoadGame(6,7);
+    // var x = solverLdg.Euler(new Vector(new ddouble[]{4,0,2}), 6, 7);
+    // Console.WriteLine($"{string.Join('\n', x)}");
 
     // solverLdg.WorkOutControl(1*Vector.MakeOrth(3,1), 0, out Vector p, out Vector q);
     // Console.WriteLine($"Управление P = {p}");
