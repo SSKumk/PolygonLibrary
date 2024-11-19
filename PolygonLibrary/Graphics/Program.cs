@@ -137,6 +137,30 @@ public class Visualization {
 
 }
 
+/*
+ * todo:
+ *
+ * Сделать три проекта.
+ *    1. Счёт мостов. Файл настроек Игры, файл настроек набора Мостов
+ *        (задано одно терминальное множество, задана функция платы и набор С, надграфик выпуклой функции)
+ *    2. Счёт траекторий. Файл настроек Игры, файл настроек набора Мостов, файлы настроек траекторий
+ *        (t0, T, x0, как выбираются управления игроков)
+ *    3. Визуализация. Настройки: рисовать только мосты, только траектории, и мосты и траектории.
+ *        Проверка хэшей, что мосты и траектории соответствуют, либо опция, что такая проверка не нужна
+ *
+ * 0. Развести счёт и построение картинки. Записывать в файл точки прицеливания (для P и Q) и точки траектории.
+ *      Если вне моста, то точка для Q фиктивная.
+ *      Отдельный файл настроек, работаем с одним за раз.
+ *      Подумать об именовании фалов траектории, чтобы в одной папке могло лежать несколько траекторий.
+ *
+ * 1. Точка траектории своего цвета (кубик поболее) [цвет и размер кубика это параметры]
+ *
+ * 2. Для программы счёта траектории сделать возможности выбора стратегий игроков:
+ *      оптимальная, константная, случайная (?)
+ *
+ */
+
+
 public class Program {
 
   private static readonly string pathData =
@@ -154,6 +178,10 @@ public class Program {
     // var traj = solver.Euler(0.5 * Vector.Ones(dim), tMin, solver.gd.T);
     // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
 
+    Console.WriteLine($"game {solver.gd.GameHash}");
+    Console.WriteLine($"Ps {solver.gd.PsHash}");
+    Console.WriteLine($"Qs {solver.gd.QsHash}");
+
     Directory.CreateDirectory(solver.PicturesPath);
     Directory.Delete(solver.PicturesPath,true);
     Directory.CreateDirectory(solver.PicturesPath);
@@ -165,5 +193,4 @@ public class Program {
       Visualization.WritePLY(solver.W[t], traj[i], prW);
     }
   }
-
 }
