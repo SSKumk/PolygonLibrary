@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profile", "Profile\Profile.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics\Graphics.csproj", "{06F1E8AF-9C1E-46BA-8AAC-BF86BE04E580}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCreator", "BridgeCreator\BridgeCreator.csproj", "{F8721569-A786-4A73-91A7-D5A379DF9ECF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrajectoryCalculator", "TrajectoryCalculator\TrajectoryCalculator.csproj", "{82869151-EFE8-467E-B71C-77026E394D89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +35,13 @@ Global
 		{06F1E8AF-9C1E-46BA-8AAC-BF86BE04E580}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F1E8AF-9C1E-46BA-8AAC-BF86BE04E580}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F1E8AF-9C1E-46BA-8AAC-BF86BE04E580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8721569-A786-4A73-91A7-D5A379DF9ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8721569-A786-4A73-91A7-D5A379DF9ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8721569-A786-4A73-91A7-D5A379DF9ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8721569-A786-4A73-91A7-D5A379DF9ECF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82869151-EFE8-467E-B71C-77026E394D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82869151-EFE8-467E-B71C-77026E394D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82869151-EFE8-467E-B71C-77026E394D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82869151-EFE8-467E-B71C-77026E394D89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
