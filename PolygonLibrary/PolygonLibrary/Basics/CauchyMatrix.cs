@@ -15,15 +15,15 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class CauchyMatrix {
 
-    /// <summary>
-    /// Comparer based on epsilon comparison.
-    /// Necessary for the internal storage
-    /// </summary>
-    internal class TimeComparer : IComparer<TNum> {
-
-      public int Compare(TNum a, TNum b) => Tools.CMP(a, b);
-
-    }
+    // /// <summary>
+    // /// Comparer based on epsilon comparison.
+    // /// Necessary for the internal storage
+    // /// </summary>
+    // internal class TimeComparer : IComparer<TNum> {
+    //
+    //   public int Compare(TNum a, TNum b) => Tools.CMP(a, b);
+    //
+    // }
 
 #region Internal data
     /// <summary>
@@ -62,7 +62,7 @@ public partial class Geometry<TNum, TConv>
       A      = nA;
       T      = nT;
       dt     = ndt;
-      _ms    = new AVLDictionary<TNum, Matrix>(new TimeComparer());
+      _ms    = new AVLDictionary<TNum, Matrix>(Tools.TComp);
       _ms[T] = Matrix.Eye(A.Rows);
     }
 #endregion

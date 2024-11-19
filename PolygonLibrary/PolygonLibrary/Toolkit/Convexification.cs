@@ -218,7 +218,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
       Vector2D l      = new Vector2D(Tools.Zero, Tools.MinusOne);
       Debug.Assert(origin is not null, "GrahamHull: swarmOrig.Min() is null!");
 
-      Tools.TNumComparer            numComparer = new Tools.TNumComparer(Tools.Eps);
+      Tools.TNumComparer            numComparer = Tools.TComp;
       SortedDictionary<TNum, Vector2D> swarmDict = new SortedDictionary<TNum, Vector2D>(numComparer) { { Tools.MinusOne, origin } };
 
       foreach (Vector2D p in swarmOrig) {

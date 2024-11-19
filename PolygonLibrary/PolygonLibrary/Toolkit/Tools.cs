@@ -281,24 +281,16 @@ public partial class Geometry<TNum, TConv>
     public static bool LE(TNum a, TNum b) => LE(a - b);
 
     /// <summary>
-    /// Type of a comparer of numbers with the respect to given precision
+    /// Implements a comparer for TNum values.
     /// </summary>
     public class TNumComparer : IComparer<TNum> {
-
-      private readonly TNum _epsLocal;
-
-      public TNumComparer(TNum eps) => _epsLocal = eps;
-
-      public int Compare(TNum a, TNum b) {
-        TNum oldEPS = Tools.Eps;
-        Tools.Eps = _epsLocal;
-        int res = Tools.CMP(a, b);
-        Tools.Eps = oldEPS;
-
-        return res;
-      }
-
+      public int Compare(TNum a, TNum b) => CMP(a, b);
     }
+
+    /// <summary>
+    /// Global comparator for TNum that uses the current value of Tools.Eps for comparison.
+    /// </summary>
+    public static TNumComparer TComp = new TNumComparer();
 #endregion
 
 #region Common procedures

@@ -286,7 +286,7 @@ public partial class Geometry<TNum, TConv>
 
 
       // The matrices D and E
-      Tools.TNumComparer numComparer = new Tools.TNumComparer(Tools.Eps);
+      Tools.TNumComparer numComparer = Tools.TComp;
       D = new SortedDictionary<TNum, Matrix>(numComparer);
       E = new SortedDictionary<TNum, Matrix>(numComparer);
 

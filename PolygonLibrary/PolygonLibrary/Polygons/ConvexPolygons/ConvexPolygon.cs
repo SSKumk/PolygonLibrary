@@ -267,7 +267,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
         (triangleWeights is not null, "ConvexPolygon.GenerateDataForRandomPoint: triangleWeights of given polygon is null!");
 
       TNum s = rnd.NextPrecise() * _square.Value;
-      trInd = triangleWeights.BinarySearch(s, new Tools.TNumComparer(Tools.Eps));
+      trInd = triangleWeights.BinarySearch(s, Tools.TComp);
       if (trInd < 0) {
         trInd = ~trInd;
       }
