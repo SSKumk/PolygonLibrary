@@ -63,11 +63,11 @@ QRadius = 0.9;
 // ==================================================
 // The goal type of the game
 // "Itself" - the game itself
-// "Epigraph" - the game with epigraphic of the payoff function
+// "Epigraph" - the game with epigraph of the payoff function
 GoalType = "Itself";
 
 // The type of the M
-// "TerminalSet" - the explicit terminal set assigment. In Rd if goal type is "Itself", in R{d+1} if goal type is "Epigraph"
+// "TerminalSet" - the explicit terminal set assignment. In Rd if goal type is "Itself", in R{d+1} if goal type is "Epigraph"
 // "DistToOrigin" - the game with epigraph of the payoff function as distance to the origin.
 // "DistToPolytop" - the game with epigraph of the payoff function as distance to the given polytop.
 MType = "TerminalSet";
