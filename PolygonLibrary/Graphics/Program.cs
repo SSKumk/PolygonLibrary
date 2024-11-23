@@ -179,8 +179,8 @@ public class Program {
   //   // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
   //
   //   Console.WriteLine($"game {solver.gd.GameHash}");
-  //   Console.WriteLine($"Ps {solver.gd.PsHash}");
-  //   Console.WriteLine($"Qs {solver.gd.QsHash}");
+  //   Console.WriteLine($"Ps {solver.gd.PHash}");
+  //   Console.WriteLine($"Qs {solver.gd.QHash}");
   //
   //   Directory.CreateDirectory(solver.PicturesPath);
   //   Directory.Delete(solver.PicturesPath,true);
