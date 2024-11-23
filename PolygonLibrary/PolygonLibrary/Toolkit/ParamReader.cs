@@ -10,6 +10,7 @@ public partial class Geometry<TNum, TConv>
 
   // todo: Написать метод SkipObject(string name) (чтобы переходить к следующему)
   // todo: Написать метод CheckObject(string name) (проверить, есть ли вообще такое следующее поле)
+  // todo: Написать метод ReadNextObject() (Прочитать следующий объект, есть ли вообще такое следующее поле)
   /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>
@@ -72,10 +73,10 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The only constructor connecting the object to the given file
     /// </summary>
-    /// <param name="fileName">The name of the file to be read</param>
-    public ParamReader(string fileName) {
-      filePath = fileName;
-      StreamReader sr = new StreamReader(fileName);
+    /// <param name="filePath">The name of the file to be read</param>
+    public ParamReader(string filePath) {
+      this.filePath = filePath;
+      StreamReader sr = new StreamReader(filePath);
       data = sr.ReadToEnd();
       sr.Close();
     }
@@ -110,6 +111,21 @@ public partial class Geometry<TNum, TConv>
       state = State.ReadingString;
       string readData = ReadStringToken(name);
       ReadTerminator(name, ";");
+
+      return readData;
+    }
+
+    /// <summary>
+    /// Read the next object and treat it as a string. But don't move to the next object.
+    /// </summary>
+    /// <param name="name">Name of the object.</param>
+    /// <returns>The read string value.</returns>
+    public string PeakString(string name) {
+      State  saveState = state;
+      int    saveInd   = ind;
+      string readData  = ReadString(name);
+      state = saveState;
+      ind   = saveInd;
 
       return readData;
     }
