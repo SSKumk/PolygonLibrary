@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using PolygonLibrary.Toolkit;
 
 namespace CGLibrary;
 
@@ -9,95 +11,95 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  /// <summary>
-  /// This class holds information about LDG-problem and can solve it.
-  /// </summary>
+  // солвер будет ответственен за решение ОДНОЙ задачи.
+  // Под решением понимается вычисление мостов, векторграмм и запись их в файл
+  //  в файле хранится хеш задачи, которую решал солвер
   public class SolverLDG {
 
-    /// <summary>
-    /// The directory where source file and result folder are placed
-    /// </summary>
-    public readonly string WorkDir;
+    public readonly string WorkDir; // Эта папка, в которую пишутся файлы
 
-    /// <summary>
-    /// The name of source file
-    /// </summary>
-    public readonly string FileName;
 
-    public readonly string ProblemPath;
-
-    public readonly string PicturesPath;
-
-    public readonly string NumericalType;
-
-    public readonly string Eps;
-
-    public readonly string BridgePath;
-
-    public readonly string PsPath;
-
-    public readonly string QsPath;
-
-    /// <summary>
-    /// Holds internal information about the task
-    /// </summary>
     public readonly GameData gd;
 
-    /// <summary>
-    /// Game-whole bridge
-    /// </summary>
-    public readonly StableBridge W;
 
     /// <summary>
-    /// Gets the section of the bridge at given time.
+    /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
     /// </summary>
-    /// <param name="t">The time instant.</param>
-    /// <returns>The section of the bridge.</returns>
-    public ConvexPolytop GetSection(TNum t) => W[t];
+    public readonly Matrix ProjMatrix;
+
+    /// <summary>
+    /// Collection of matrices D for the instants from the time grid
+    /// </summary>
+    public readonly SortedDictionary<TNum, Matrix> D = new SortedDictionary<TNum, Matrix>(Tools.TComp);
+
+    /// <summary>
+    /// Collection of matrices E for the instants from the time grid
+    /// </summary>
+    public readonly SortedDictionary<TNum, Matrix> E = new SortedDictionary<TNum, Matrix>(Tools.TComp);
+
+    /// <summary>
+    /// The bridge of the game
+    /// </summary>
+    public readonly SortedDictionary<TNum, ConvexPolytop> W;
+
+    /// <summary>
+    /// Vectograms of the first player
+    /// </summary>
+    public readonly SortedDictionary<TNum, ConvexPolytop> Ps = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
+
+    /// <summary>
+    /// Vectograms of the second player
+    /// </summary>
+    public readonly SortedDictionary<TNum, ConvexPolytop> Qs = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
+
+    public readonly string GameHash;
+    public readonly string PHash;
+    public readonly string QHash;
 
     public TNum tMin;
 
 
-    /// <summary>
-    /// Constructor which creates GameData and init three StableBridges
-    /// </summary>
-    /// <param name="workDir">The directory where source file and result folder are placed</param>
-    /// <param name="fileName">The name of source file without extension. It is '.c'.</param>
-    /// <exception cref="ArgumentException">If there is no path to working directory, this exception is thrown</exception>
-    public SolverLDG(string workDir, string fileName) {
+    public SolverLDG(
+        string        workDir
+      , GameData      gameData
+      , int           projDim
+      , int[]         projInd
+      , ConvexPolytop M
+      , string        gameInfo
+      , string        PsInfo
+      , string        QsInfo
+      ) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      NumericalType = typeof(TNum).ToString();
-      Eps           = $"{TConv.ToDouble(Tools.Eps):e0}";
-      WorkDir       = workDir;
-      FileName      = fileName;
+      WorkDir = workDir;
+      gd      = gameData;
 
-      gd = new GameData($"{Path.Combine(WorkDir, FileName)}.c");
+      TNum[,] ProjMatrixArr = new TNum[projDim, gd.n];
+      for (int i = 0; i < projDim; i++) {
+        ProjMatrixArr[i, projInd[i]] = Tools.One;
+      }
 
-      ProblemPath = Path.Combine(WorkDir, gd.ProblemName);
+      GameHash = Hashes.GetMD5Hash(gameInfo);
+      PHash    = Hashes.GetMD5Hash(PsInfo);
+      QHash    = Hashes.GetMD5Hash(QsInfo);
 
-      string filesPath = Path.Combine(ProblemPath, NumericalType, Eps);
-
-      BridgePath   = Path.Combine(filesPath, "Bridge");
-      PsPath       = Path.Combine(filesPath, "Ps");
-      QsPath       = Path.Combine(filesPath, "Qs");
-      PicturesPath = Path.Combine(filesPath, "Pic");
-
-
-      W = new StableBridge(new CauchyMatrix.TimeComparer());
+      ProjMatrix = new Matrix(ProjMatrixArr);
+      W          = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
+      W[gd.T]    = M;
     }
 
-    private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
-      string extension = sectionPrefix switch
-                           {
-                             "W" => "wsection"
-                           , "P" => "psection"
-                           , "Q" => "qsection"
-                           , _ => throw new ArgumentException
-                                    ($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
-                           };
 
-      return Path.Combine(basePath, $"{TConv.ToDouble(t):F2}){sectionPrefix}.{extension}");
+    private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
+      string prefix = sectionPrefix switch
+                        {
+                          "W" => "w"
+                        , "P" => "p"
+                        , "Q" => "q"
+                        , _ => throw new ArgumentException
+                                 ($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
+                        };
+
+      return Path.Combine(basePath, $"{TConv.ToDouble(t):F3}){sectionPrefix}.{prefix}section");
     }
 
 
@@ -111,9 +113,9 @@ public partial class Geometry<TNum, TConv>
 
       bool hashIsCorrect = sectionPrefix switch
                              {
-                               "W" => taskHash == gd.GameHash
-                             , "P" => taskHash == gd.PsHash
-                             , "Q" => taskHash == gd.QsHash
+                               "W" => taskHash == GameHash
+                             , "P" => taskHash == PHash
+                             , "Q" => taskHash == QHash
                              , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
                              };
       Debug.Assert
@@ -139,18 +141,18 @@ public partial class Geometry<TNum, TConv>
       sectionDict[t].WriteIn(prW, repType);
     }
 
-    public void ReadBridgeSection(TNum t) => ReadSection(W, "W", BridgePath, t);
-    public void ReadPsSection(TNum     t) => ReadSection(gd.Ps, "P", PsPath, t);
-    public void ReadQsSection(TNum     t) => ReadSection(gd.Qs, "Q", QsPath, t);
+    public void ReadBridgeSection(TNum t) => ReadSection(W, "W", WorkDir, t);
+    public void ReadPsSection(TNum     t) => ReadSection(Ps, "P", WorkDir, t);
+    public void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", WorkDir, t);
 
     public void WriteBridgeSection(TNum t)
       => WriteSection
         (
          "W"
        , W
-       , BridgePath
+       , WorkDir
        , t
-       , gd.GameHash
+       , GameHash
        , ConvexPolytop.Rep.FLrep
         );
 
@@ -158,10 +160,10 @@ public partial class Geometry<TNum, TConv>
       => WriteSection
         (
          "P"
-       , gd.Ps
-       , PsPath
+       , Ps
+       , WorkDir
        , t
-       , gd.PsHash
+       , PHash
        , ConvexPolytop.Rep.FLrep
         );
 
@@ -169,10 +171,10 @@ public partial class Geometry<TNum, TConv>
       => WriteSection
         (
          "Q"
-       , gd.Qs
-       , QsPath
+       , Qs
+       , WorkDir
        , t
-       , gd.QsHash
+       , QHash
        , ConvexPolytop.Rep.Vrep
         );
 
@@ -190,18 +192,9 @@ public partial class Geometry<TNum, TConv>
       return fileHash == expectedHash;
     }
 
-    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BridgePath, t, gd.GameHash);
-    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsPath, t, gd.PsHash);
-    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsPath, t, gd.QsHash);
-
-
-    public void CleanAll() {
-      Console.WriteLine($"Warning! This function will erase all files and folders at the path: {ProblemPath}/");
-      Console.WriteLine($"Do you want to continue? [y]es");
-      if (Console.ReadKey().KeyChar == 'y') {
-        Directory.Delete($"{ProblemPath}", true);
-      }
-    }
+    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, GameHash);
+    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, PHash);
+    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, QHash);
 
 
     /// <summary>
@@ -218,83 +211,58 @@ public partial class Geometry<TNum, TConv>
       return next;
     }
 
-    private void ProcessPsSection(TNum t, bool needWrite) {
+    private void ProcessPsSection(TNum t) {
       if (!PsSectionFileCorrect(t)) {
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.D[t] = Xstar * gd.B;
+        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        D[t] = Xstar * gd.B;
         TNum t1 = t;
-        gd.Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
-        if (needWrite) {
-          WritePsSection(t);
-        }
+        Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * D[t1] * pPoint), true);
+        WritePsSection(t);
       }
     }
 
-    private void ProcessQsSection(TNum t, bool needWrite) {
+    private void ProcessQsSection(TNum t) {
       if (!QsSectionFileCorrect(t)) {
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.E[t] = Xstar * gd.C;
+        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        E[t] = Xstar * gd.C;
         TNum t1 = t;
-        gd.Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
-        if (needWrite) {
-          WriteQsSection(t);
-        }
+        Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * E[t1] * qPoint), false);
+        WriteQsSection(t);
       }
     }
 
-    private void ProcessBridgeSection(TNum t, TNum tPred, bool needWrite, ref bool bridgeIsNotDegenerate) {
+    private void ProcessBridgeSection(TNum t, TNum tPred, ref bool bridgeIsNotDegenerate) {
       if (BridgeSectionFileCorrect(t)) {
         if (!BridgeSectionFileCorrect(t - gd.dt)) {
           ReadBridgeSection(t);
         }
       }
       else {
-        if (!gd.Ps.ContainsKey(t)) {
+        if (!Ps.ContainsKey(t)) {
           ReadPsSection(t);
         }
-        if (!gd.Qs.ContainsKey(t)) {
+        if (!Qs.ContainsKey(t)) {
           ReadQsSection(t);
         }
-        ConvexPolytop? WNext = DoNextSection(W[tPred], gd.Ps[t], gd.Qs[t]);
+        ConvexPolytop? WNext = DoNextSection(W[tPred], Ps[t], Qs[t]);
         if (WNext is null) {
           Console.WriteLine($"The bridge become degenerate at t = {t}.");
           bridgeIsNotDegenerate = false;
         }
         else {
           W[t] = WNext;
-          if (needWrite) {
-            WriteBridgeSection(t);
-          }
-        }
-      }
-    }
-
-    private void ProcessTerminalBridgeSection(TNum t, bool needWrite) {
-      if (BridgeSectionFileCorrect(t)) {
-        if (!BridgeSectionFileCorrect(t - gd.dt)) {
-          ReadBridgeSection(t);
-        }
-      }
-      else {
-        W[t] = gd.M.GetInFLrep();
-        if (needWrite) {
           WriteBridgeSection(t);
         }
       }
     }
 
-
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
-    public TNum Solve(bool needWrite) {
+    public TNum Solve() {
       Stopwatch timer = new Stopwatch();
 
-      if (needWrite) {
-        Directory.CreateDirectory(BridgePath);
-        Directory.CreateDirectory(PsPath);
-        Directory.CreateDirectory(QsPath);
-      }
+      Directory.CreateDirectory(WorkDir);
 
       TNum t = gd.T;
       tMin = gd.T;
@@ -302,25 +270,33 @@ public partial class Geometry<TNum, TConv>
       bool bridgeIsNotDegenerate = true;
 
       // Обрабатываем терминальный момент времени
-      ProcessPsSection(t, needWrite);
-      ProcessQsSection(t, needWrite);
-      ProcessTerminalBridgeSection(t, needWrite);
+      ProcessPsSection(t);
+      ProcessQsSection(t);
 
       // Основной цикл
       while (Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
         tPred =  t;
         tMin  =  t;
         t     -= gd.dt;
+        using ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
+        prW.WriteNumber("tMin", tMin);
 
         timer.Restart();
-        ProcessPsSection(t, needWrite);
-        ProcessQsSection(t, needWrite);
-        ProcessBridgeSection(t, tPred, needWrite, ref bridgeIsNotDegenerate);
+        ProcessPsSection(t);
+        ProcessQsSection(t);
+        ProcessBridgeSection(t, tPred, ref bridgeIsNotDegenerate);
         timer.Stop();
 
         if (W.TryGetValue(t, out ConvexPolytop? br)) {
           Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
         }
+      }
+
+      tMin -= gd.dt;
+
+      {
+        using ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
+        prW.WriteNumber("tMin", tMin);
       }
 
       return tMin;
@@ -344,7 +320,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        if (!gd.Ps.ContainsKey(t)) {
+        if (!Ps.ContainsKey(t)) {
           ReadPsSection(t);
         }
         t += gd.dt;
@@ -356,7 +332,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        if (!gd.Qs.ContainsKey(t)) {
+        if (!Qs.ContainsKey(t)) {
           ReadQsSection(t);
         }
         t += gd.dt;
@@ -370,9 +346,9 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        Matrix Xstar = gd.ProjMatr * gd.cauchyMatrix[t];
-        gd.D[t] = Xstar * gd.B;
-        gd.E[t] = Xstar * gd.C;
+        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        D[t] = Xstar * gd.B;
+        E[t] = Xstar * gd.C;
 
         t += gd.dt;
       } while (Tools.LE(t, T));
@@ -394,8 +370,8 @@ public partial class Geometry<TNum, TConv>
     /// Otherwise, the vertex that maximizes the (x-h, qVert) is chosen.
     /// </param>
     public void WorkOutControl(Vector x, TNum t, out Vector u, out Vector v) {
-      Debug.Assert(gd.D.ContainsKey(t), $"Matrix D must be defined for time t = {t}, but not found.");
-      Debug.Assert(gd.E.ContainsKey(t), $"Matrix E must be defined for time t = {t}, but not found.");
+      Debug.Assert(D.ContainsKey(t), $"Matrix D must be defined for time t = {t}, but not found.");
+      Debug.Assert(E.ContainsKey(t), $"Matrix E must be defined for time t = {t}, but not found.");
       Debug.Assert(W.ContainsKey(t), $"Bridge W must be defined for time t = {t}, but not found.");
 
 
@@ -404,13 +380,14 @@ public partial class Geometry<TNum, TConv>
 
       Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
 
-      if (isInside) {          // Внутри моста выбираем любой из P, но лучший из Q
+      if (isInside) { // Внутри моста выбираем u так, чтобы тянул систему к "центру" моста
+        // Vector strongInner = W[t].Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(W[t].Vrep.Count);
         u = gd.P.Vrep.First(); //todo: прицеливается на капец внутреннюю точку моста
 
         Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector qVert in gd.Q.Vrep) {
-          TNum val = gd.dt * gd.E[t] * qVert * l;
+          TNum val = gd.dt * E[t] * qVert * l;
           if (val > extrVal) {
             extrVal = val;
             v       = qVert;
@@ -421,7 +398,7 @@ public partial class Geometry<TNum, TConv>
         Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector pVert in gd.P.Vrep) {
-          TNum val = gd.dt * gd.D[t] * pVert * l;
+          TNum val = gd.dt * D[t] * pVert * l;
           if (val > extrVal) {
             extrVal = val;
             u       = pVert;
@@ -429,7 +406,7 @@ public partial class Geometry<TNum, TConv>
         }
         extrVal = Tools.NegativeInfinity;
         foreach (Vector qVert in gd.Q.Vrep) {
-          TNum val = -gd.dt * gd.E[t] * qVert * l;
+          TNum val = -gd.dt * E[t] * qVert * l;
           if (val > extrVal) {
             extrVal = val;
             v       = qVert;
@@ -465,134 +442,134 @@ public partial class Geometry<TNum, TConv>
 
     // --------------------------------------------------------------------------------------------------------------------------
 
-    public static void WriteSimplestTask_TerminalSet_GameItself(int dim, string folderPath) {
-      Vector vP = Vector.Ones(dim);
-      Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(dim);
-      Vector vM = Tools.Two * Vector.Ones(dim);
-      // Matrix
-      using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame_" + dim + "D.c")) {
-        writer.WriteLine("// Name of the problem");
-        writer.WriteLine($"ProblemName = \"Cubes{dim}D\";");
-        writer.WriteLine();
-        writer.WriteLine();
-        writer.WriteLine("// ==================================================");
-
-        WriteSimplestDynamics(dim, writer);
-
-        WriteConstraintBlock(writer, "P", vP, vP);
-        WriteConstraintBlock(writer, "Q", vQ, vQ);
-
-        writer.WriteLine("// The goal type of the game");
-        writer.WriteLine("// \"Itself\" - the game itself");
-        writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
-        writer.WriteLine("GoalType = \"Itself\";");
-        writer.WriteLine();
-
-        writer.WriteLine("// The type of the M");
-        writer.WriteLine
-          (
-           "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
-          );
-        writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
-        writer.WriteLine
-          ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
-        writer.WriteLine("MType = \"TerminalSet\";");
-        writer.WriteLine();
-
-        WriteConstraintBlock(writer, "M", vM, vM);
-      }
-    }
-
-    public static void WriteSimplestTask_Payoff_Supergraphic_2D(string folderPath) {
-      Vector vP = Vector.Ones(2);
-      Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(2);
-      using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
-        writer.WriteLine("// Name of the problem");
-        writer.WriteLine($"ProblemName = \"Cubes2D\";");
-        writer.WriteLine();
-        writer.WriteLine();
-        writer.WriteLine("// ==================================================");
-
-        WriteSimplestDynamics(2, writer);
-
-        WriteConstraintBlock(writer, "P", vP, vP);
-        WriteConstraintBlock(writer, "Q", vQ, vQ);
-
-        writer.WriteLine("// The goal type of the game");
-        writer.WriteLine("// \"Itself\" - the game itself");
-        writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
-        writer.WriteLine("GoalType = \"Epigraph\";");
-        writer.WriteLine();
-
-        writer.WriteLine("// The type of the M");
-        writer.WriteLine
-          (
-           "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
-          );
-        writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
-        writer.WriteLine
-          ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
-        writer.WriteLine("MType = \"DistToOrigin\";");
-        writer.WriteLine();
-
-        writer.WriteLine("MBallType = \"Ball_1\";");
-        writer.WriteLine("MCMax = 5;");
-        writer.WriteLine();
-        writer.WriteLine("// ==================================================");
-      }
-    }
-
-    private static void WriteConstraintBlock(TextWriter writer, string setType, Vector left, Vector right) {
-      writer.WriteLine($"{setType}SetType = \"RectParallel\";");
-      writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringBraceAndDelim('{', '}', ',')};");
-      writer.WriteLine($"{setType}RectPRight = {right.ToStringBraceAndDelim('{', '}', ',')};");
-      writer.WriteLine();
-      writer.WriteLine("// ==================================================");
-    }
-
-    private static void WriteSimplestDynamics(int dim, TextWriter writer) {
-      writer.WriteLine();
-      writer.WriteLine("// Block of data defining the dynamics of the game");
-      writer.WriteLine("// Dimension of the phase vector");
-      writer.WriteLine($"n = {dim};");
-      writer.WriteLine();
-      writer.WriteLine("// The main matrix");
-      writer.WriteLine($"A = {Matrix.Zero(dim)};");
-      writer.WriteLine();
-      writer.WriteLine("// Dimension of the useful control");
-      writer.WriteLine($"pDim = {dim};");
-      writer.WriteLine();
-      writer.WriteLine("// The useful control matrix");
-      writer.WriteLine($"B = {Matrix.Eye(dim)};");
-      writer.WriteLine();
-      writer.WriteLine("// Dimension of the disturbance");
-      writer.WriteLine($"qDim = {dim};");
-      writer.WriteLine();
-      writer.WriteLine("// The disturbance matrix");
-      writer.WriteLine($"C = {Matrix.Eye(dim)};");
-      writer.WriteLine();
-      writer.WriteLine("// The initial instant");
-      writer.WriteLine("t0 = 0;");
-      writer.WriteLine();
-      writer.WriteLine("// The final instant");
-      writer.WriteLine("T = 1;");
-      writer.WriteLine();
-      writer.WriteLine("// The time step");
-      writer.WriteLine("dt = 0.2;");
-      writer.WriteLine();
-      writer.WriteLine("// The dimension of projected space");
-      writer.WriteLine($"d = {dim};");
-      writer.WriteLine();
-      writer.WriteLine("// The indices to project onto");
-      writer.Write("projJ = {");
-      for (int i = 0; i < dim - 1; i++) {
-        writer.Write($"{i}, ");
-      }
-      writer.Write($"{dim - 1}}};\n");
-      writer.WriteLine();
-
-      writer.WriteLine("// ==================================================");
-    }
+    // public static void WriteSimplestTask_TerminalSet_GameItself(int dim, string folderPath) {
+    //   Vector vP = Vector.Ones(dim);
+    //   Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(dim);
+    //   Vector vM = Tools.Two * Vector.Ones(dim);
+    //   // Matrix
+    //   using (StreamWriter writer = new StreamWriter(folderPath + "simplestGame_" + dim + "D.c")) {
+    //     writer.WriteLine("// Name of the problem");
+    //     writer.WriteLine($"ProblemName = \"Cubes{dim}D\";");
+    //     writer.WriteLine();
+    //     writer.WriteLine();
+    //     writer.WriteLine("// ==================================================");
+    //
+    //     WriteSimplestDynamics(dim, writer);
+    //
+    //     WriteConstraintBlock(writer, "P", vP, vP);
+    //     WriteConstraintBlock(writer, "Q", vQ, vQ);
+    //
+    //     writer.WriteLine("// The goal type of the game");
+    //     writer.WriteLine("// \"Itself\" - the game itself");
+    //     writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
+    //     writer.WriteLine("GoalType = \"Itself\";");
+    //     writer.WriteLine();
+    //
+    //     writer.WriteLine("// The type of the M");
+    //     writer.WriteLine
+    //       (
+    //        "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
+    //       );
+    //     writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
+    //     writer.WriteLine
+    //       ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
+    //     writer.WriteLine("MType = \"TerminalSet\";");
+    //     writer.WriteLine();
+    //
+    //     WriteConstraintBlock(writer, "M", vM, vM);
+    //   }
+    // }
+    //
+    // public static void WriteSimplestTask_Payoff_Supergraphic_2D(string folderPath) {
+    //   Vector vP = Vector.Ones(2);
+    //   Vector vQ = TConv.FromDouble(0.5) * Vector.Ones(2);
+    //   using (StreamWriter writer = new StreamWriter(folderPath + "simplestSupergraphic.c")) {
+    //     writer.WriteLine("// Name of the problem");
+    //     writer.WriteLine($"ProblemName = \"Cubes2D\";");
+    //     writer.WriteLine();
+    //     writer.WriteLine();
+    //     writer.WriteLine("// ==================================================");
+    //
+    //     WriteSimplestDynamics(2, writer);
+    //
+    //     WriteConstraintBlock(writer, "P", vP, vP);
+    //     WriteConstraintBlock(writer, "Q", vQ, vQ);
+    //
+    //     writer.WriteLine("// The goal type of the game");
+    //     writer.WriteLine("// \"Itself\" - the game itself");
+    //     writer.WriteLine("// \"Epigraph\" - the game with epigraphic of the payoff function");
+    //     writer.WriteLine("GoalType = \"Epigraph\";");
+    //     writer.WriteLine();
+    //
+    //     writer.WriteLine("// The type of the M");
+    //     writer.WriteLine
+    //       (
+    //        "// \"TerminalSet\" - the explicit terminal set assigment. In Rd if goal type is \"Itself\", in R{d+1} if goal type is \"Epigraph\""
+    //       );
+    //     writer.WriteLine("// \"DistToOrigin\" - the game with epigraph of the payoff function as distance to the origin.");
+    //     writer.WriteLine
+    //       ("// \"DistToPolytop\" - the game with epigraph of the payoff function as distance to the given polytop.");
+    //     writer.WriteLine("MType = \"DistToOrigin\";");
+    //     writer.WriteLine();
+    //
+    //     writer.WriteLine("MBallType = \"Ball_1\";");
+    //     writer.WriteLine("MCMax = 5;");
+    //     writer.WriteLine();
+    //     writer.WriteLine("// ==================================================");
+    //   }
+    // }
+    //
+    // private static void WriteConstraintBlock(TextWriter writer, string setType, Vector left, Vector right) {
+    //   writer.WriteLine($"{setType}SetType = \"RectParallel\";");
+    //   writer.WriteLine($"{setType}RectPLeft = {(-left).ToStringBraceAndDelim('{', '}', ',')};");
+    //   writer.WriteLine($"{setType}RectPRight = {right.ToStringBraceAndDelim('{', '}', ',')};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// ==================================================");
+    // }
+    //
+    // private static void WriteSimplestDynamics(int dim, TextWriter writer) {
+    //   writer.WriteLine();
+    //   writer.WriteLine("// Block of data defining the dynamics of the game");
+    //   writer.WriteLine("// Dimension of the phase vector");
+    //   writer.WriteLine($"n = {dim};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The main matrix");
+    //   writer.WriteLine($"A = {Matrix.Zero(dim)};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// Dimension of the useful control");
+    //   writer.WriteLine($"pDim = {dim};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The useful control matrix");
+    //   writer.WriteLine($"B = {Matrix.Eye(dim)};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// Dimension of the disturbance");
+    //   writer.WriteLine($"qDim = {dim};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The disturbance matrix");
+    //   writer.WriteLine($"C = {Matrix.Eye(dim)};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The initial instant");
+    //   writer.WriteLine("t0 = 0;");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The final instant");
+    //   writer.WriteLine("T = 1;");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The time step");
+    //   writer.WriteLine("dt = 0.2;");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The dimension of projected space");
+    //   writer.WriteLine($"d = {dim};");
+    //   writer.WriteLine();
+    //   writer.WriteLine("// The indices to project onto");
+    //   writer.Write("projJ = {");
+    //   for (int i = 0; i < dim - 1; i++) {
+    //     writer.Write($"{i}, ");
+    //   }
+    //   writer.Write($"{dim - 1}}};\n");
+    //   writer.WriteLine();
+    //
+    //   writer.WriteLine("// ==================================================");
+    // }
 
   }
 
