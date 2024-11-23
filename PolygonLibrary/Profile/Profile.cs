@@ -28,7 +28,7 @@ class Program {
     // SolverLDG solverLdg = new SolverLDG(pathData, "MassDot");
     // string    t         = "5.10";
     // ParamReader prR = new ParamReader
-    // ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
+    // ($"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/{ftype}/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
     // ConvexPolytop polytop = ConvexPolytop.CreateFromReader(prR);
     // ConvexPolytop polytop = ConvexPolytop.Cube01_VRep(dim).GetInFLrep();
     // var           _       = polytop.Hrep;
@@ -61,9 +61,9 @@ class Program {
 
 
 // string      t   = "3.10";
-// ParamReader prP = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) P {solverLdg.FileName}.cpolytop");
-// ParamReader prQ = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{t}) Q {solverLdg.FileName}.cpolytop");
-// ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/{ftype}/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
+// ParamReader prP = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/{t}) P {solverLdg.FileName}.cpolytop");
+// ParamReader prQ = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/{t}) Q {solverLdg.FileName}.cpolytop");
+// ParamReader prW = new ParamReader( $"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/{ftype}/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
 //
 // ConvexPolytop P = ConvexPolytop.CreateFromReader(prP);
 // ConvexPolytop Q = ConvexPolytop.CreateFromReader(prQ);
@@ -71,5 +71,5 @@ class Program {
 //
 // var         x  = solverLdg.DoNextSection(W, P, Q);
 // string tNext = "3.00)";
-// ParamWriter pr = new ParamWriter($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/1e-016/{tNext}{solverLdg.FileName}.cpolytop");
+// ParamWriter pr = new ParamWriter($"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/ddouble/Geometric/1e-016/{tNext}{solverLdg.FileName}.cpolytop");
 // x.WriteIn(pr);
