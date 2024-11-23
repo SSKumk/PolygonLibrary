@@ -42,7 +42,7 @@ public class Sandbox {
     // string    t         = "5.10";
     // string eps   = "1e-016";
     // ParamReader prR = new ParamReader
-    // ($"{solverLdg.WorkDir}{solverLdg.gd.ProblemName}/ddouble/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
+    // ($"{solverLdg.WorkDir}{solverLdg.gd.TaskDirToWriteInto}/ddouble/Geometric/{eps}/{t}){solverLdg.FileName}.cpolytop");
     // p = ConvexPolytop.CreateFromReader(prR);
 
     // p = MinkowskiSum.BySandipDas(ConvexPolytop.Cube01_VRep(spaceDim).RotateRND(), ConvexPolytop.SimplexRND(spaceDim));
