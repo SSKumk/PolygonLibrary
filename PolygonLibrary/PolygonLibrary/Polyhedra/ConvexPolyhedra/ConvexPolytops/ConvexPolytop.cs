@@ -93,6 +93,28 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public int PolytopDim => FLrep.Top.PolytopDim;
 
+    /// <summary>
+    /// Returns the most informative representation of the polytope.
+    /// If multiple representations are available, the priority is as follows:
+    /// <list type="bullet">
+    /// <item><description><c>FLrep</c>: Face lattice representation.</description></item>
+    /// <item><description><c>Vrep</c>: Vertex representation.</description></item>
+    /// <item><description><c>Hrep</c>: Half-space representation.</description></item>
+    /// </list>
+    /// </summary>
+    public Rep WhichRep {
+      get
+        {
+          if (IsFLrep) { return Rep.FLrep; }
+          if (IsVrep) { return Rep.Vrep; }
+
+          return Rep.Hrep;
+
+        }
+
+    }
+
+
     private Vector? _innerPoint = null;
 
     /// <summary>
@@ -1072,6 +1094,28 @@ public partial class Geometry<TNum, TConv>
 
       return minDist;
     }
+
+    /// <summary>
+    /// Converts the most informative representation of the polytope to its string equivalent.
+    /// </summary>
+    /// <returns>
+    /// A string representing the polytope's current representation:
+    /// <list type="bullet">
+    /// <item><description><c>Vrep</c> for vertex representation.</description></item>
+    /// <item><description><c>Hrep</c> for half-space representation.</description></item>
+    /// <item><description><c>FLrep</c> for face lattice representation.</description></item>
+    /// </list>
+    /// </returns>
+    public string WhichRepToString() {
+      switch (WhichRep) {
+        case Rep.Vrep:  return "Vrep";
+        case Rep.Hrep:  return "Hrep";
+        case Rep.FLrep: return "FLrep";
+      }
+
+      throw new ArgumentException("ConvexPolytop.WhichRepToString: Unexpected representation type.");
+    }
+
 #endregion
 
 #region Write out
