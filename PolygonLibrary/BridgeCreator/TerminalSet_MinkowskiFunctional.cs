@@ -10,17 +10,17 @@ public class TerminalSet_MinkowskiFunctional<TNum, TConv> : TerminalSetBase<TNum
 
   public readonly string terminalSetInfo;
 
-  public readonly TNum[] cs;
-
-
+  public readonly TNum[]                                    cs; // коэффициенты в преобразовании Минковского
   public readonly List<Geometry<TNum, TConv>.ConvexPolytop> minkFuncSets = new List<Geometry<TNum, TConv>.ConvexPolytop>();
 
-  public TerminalSet_MinkowskiFunctional(Geometry<TNum, TConv>.ParamReader pr, int projDim) : base(pr){
-    Geometry<TNum, TConv>.ConvexPolytop basePolytop =
-      Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', projDim, out terminalSetInfo).GetInFLrep();
-
+  public TerminalSet_MinkowskiFunctional(Geometry<TNum, TConv>.ParamReader pr, int projDim) : base(pr) {
     int cQnt = pr.ReadNumber<int>("CQnt");
     cs = pr.Read1DArray<TNum>("Constants", cQnt);
+
+    Geometry<TNum, TConv>.ConvexPolytop basePolytop =
+      Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', projDim, out terminalSetInfo).GetInFLrep();
+    terminalSetInfo += "_MinkowskiFunctional_";
+
 
     if (!basePolytop.ContainsStrict(Geometry<TNum, TConv>.Vector.Zero(projDim))) {
       throw new ArgumentException("TerminalSet_MinkowskiFunctional.Ctor: The origin should lie within the polytope!");

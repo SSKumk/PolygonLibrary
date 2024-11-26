@@ -20,12 +20,6 @@ public partial class Geometry<TNum, TConv>
 
 #region Enums
     /// <summary>
-    /// The type of the game
-    /// </summary>
-    public enum GoalType { Itself, PayoffEpigraph }
-
-
-    /// <summary>
     /// The type of the set.
     /// ConvexPolytop - The polytope in the format of the library
     /// RectParallel - Rectangle-parallel: dim X Y -> dimension opposite_vertices
@@ -60,36 +54,30 @@ public partial class Geometry<TNum, TConv>
       /// </summary>
       Ellipsoid
 
+     ,
+
       /// <summary>
       /// The convex hull of a set of hD-points
       /// </summary>
-    , ConvexHull
+      ConvexHull
 
     }
 #endregion
 
 #region Input data
-    /// <summary>
-    /// The reader from file.
-    /// </summary>
-    private readonly ParamReader _pr;
-
     //todo: xml
     public string ProblemName;
-
-    public GoalType goalType;
-    public string   gType;
 
 #region Data defining the dynamics of the game
     /// <summary>
     /// Dimension of the phase vector
     /// </summary>
-    public readonly int n;
+    public int n;
 
     /// <summary>
     /// The main matrix
     /// </summary>
-    public readonly Matrix A;
+    public Matrix A;
 
     /// <summary>
     /// Dimension of the useful control
@@ -99,7 +87,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The useful control matrix
     /// </summary>
-    public readonly Matrix B;
+    public Matrix B;
 
     /// <summary>
     /// Dimension of the disturbance
@@ -109,7 +97,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The disturbance matrix
     /// </summary>
-    public readonly Matrix C;
+    public Matrix C;
 
     /// <summary>
     /// The initial instant
@@ -149,60 +137,37 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The fundamental Cauchy matrix of the corresponding system
     /// </summary>
-    public readonly CauchyMatrix cauchyMatrix;
+    public CauchyMatrix cauchyMatrix;
 #endregion
 
 #region Constructor
     /// <summary>
     /// Reading and initializing data. Order is important!!!
     /// </summary>
-    /// <param name="paramReader">The reader with the data.</param>
-    public GameData(ParamReader paramReader) {
-      _pr = paramReader;
-
-      ProblemName = _pr.ReadString("ProblemName");
-
-      // Game type
-      goalType = _pr.ReadString("GoalType") switch
-                   {
-                     "Itself"   => GoalType.Itself
-                   , "Epigraph" => GoalType.PayoffEpigraph
-                   , _          => throw new ArgumentException("GameData.Ctor: GoalType must be \"Itself\" or \"Epigraph\".")
-                   };
-
-      gType = goalType == GoalType.Itself ? "It_" : "Ep_";
-
+    /// <param name="pr">The reader with the data.</param>
+    public GameData(ParamReader pr) {
+      ProblemName = pr.ReadString("ProblemName");
 
       // Dynamics
-      n    = _pr.ReadNumber<int>("n");
-      A    = new Matrix(_pr.Read2DArray<TNum>("A", n, n));
-      pDim = _pr.ReadNumber<int>("pDim");
-      B    = new Matrix(_pr.Read2DArray<TNum>("B", n, pDim));
-      qDim = _pr.ReadNumber<int>("qDim");
-      C    = new Matrix(_pr.Read2DArray<TNum>("C", n, qDim));
+      n    = pr.ReadNumber<int>("n");
+      A    = new Matrix(pr.Read2DArray<TNum>("A", n, n));
+      pDim = pr.ReadNumber<int>("pDim");
+      B    = new Matrix(pr.Read2DArray<TNum>("B", n, pDim));
+      qDim = pr.ReadNumber<int>("qDim");
+      C    = new Matrix(pr.Read2DArray<TNum>("C", n, qDim));
 
-      t0 = _pr.ReadNumber<TNum>("t0");
-      T  = _pr.ReadNumber<TNum>("T");
-      dt = _pr.ReadNumber<TNum>("dt");
+      t0 = pr.ReadNumber<TNum>("t0");
+      T  = pr.ReadNumber<TNum>("T");
+      dt = pr.ReadNumber<TNum>("dt");
 
       // Reading data of the first player's control
-      P = ReadExplicitSet(_pr, 'P', pDim, out PSetInfo);
+      P = ReadExplicitSet(pr, 'P', pDim, out PSetInfo);
 
       // Reading data of the second player's control
-      Q = ReadExplicitSet(_pr, 'Q', qDim, out QSetInfo);
+      Q = ReadExplicitSet(pr, 'Q', qDim, out QSetInfo);
 
       // The Cauchy matrix
       cauchyMatrix = new CauchyMatrix(A, T, dt);
-
-      // Расширяем систему, если решаем задачу с надграфиком функции цены
-      if (goalType == GoalType.PayoffEpigraph) {
-        n++; // размерность стала на 1 больше
-        A = Matrix.vcat(A, Matrix.Zero(1, n - 1));
-        A = Matrix.hcat(A, Matrix.Zero(n, 1))!;
-        B = Matrix.vcat(B, Matrix.Zero(1, pDim));
-        C = Matrix.vcat(C, Matrix.Zero(1, qDim));
-      }
-
 
       // calc hashes
       string Astr = A.ToString();
@@ -225,16 +190,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="setTypeInfo">The auxiliary information to write into task folder name.</param>
     public static ConvexPolytop ReadExplicitSet(ParamReader pr, char player, int dim, out string setTypeInfo) {
       setTypeInfo = pr.ReadString($"{player}SetType");
-      SetType setType = setTypeInfo switch
-                          {
-                            "ConvexPolytope" => SetType.ConvexPolytop
-                          , "RectParallel"   => SetType.RectParallel
-                          , "Sphere"         => SetType.Sphere
-                          , "Ellipsoid"      => SetType.Ellipsoid
-                          , "ConvexHull"     => SetType.ConvexHull
-                          , _ => throw new ArgumentOutOfRangeException
-                                   ($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
-                          };
+      SetType setType =
+        setTypeInfo switch
+          {
+            "ConvexPolytope" => SetType.ConvexPolytop
+          , "RectParallel" => SetType.RectParallel
+          , "Sphere" => SetType.Sphere
+          , "Ellipsoid" => SetType.Ellipsoid
+          , "ConvexHull" => SetType.ConvexHull
+          , _ => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
+          };
 
       // Array for coordinates of the next point
       ConvexPolytop? res = null;

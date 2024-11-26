@@ -12,7 +12,8 @@ public class TerminalSet_Explicit<TNum, TConv> : TerminalSetBase<TNum, TConv>
   public readonly string                              terminalSetInfo;
 
   public TerminalSet_Explicit(Geometry<TNum, TConv>.ParamReader pr, int projDim) : base(pr) {
-    terminalSet     = Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', projDim, out terminalSetInfo);
+    terminalSet     =  Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', projDim, out terminalSetInfo);
+    terminalSetInfo += "_Explicit_";
   }
 
   public override void Solve(

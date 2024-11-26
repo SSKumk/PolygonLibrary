@@ -65,18 +65,20 @@ class BridgeCreator<TNum, TConv>
 
     // в цикле перебираем все терминальные множества из файла
     for (int i = 0; i < numTSet; i++) {
-      string pref = $"T{i + 1:00}";
+      string num = $"{i + 1:00}";
       TerminalSetBase<TNum, TConv> terminalSetBase =
         definitionTerminalSetType switch
           {
             "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, projDim)
           , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, projDim)
+          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, projDim)
+          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr)
           , _                      => throw new ArgumentOutOfRangeException()
           };
 
       terminalSetBase.Solve
         (
-         Path.Combine(OutputDir, $"{pref}_{terminalSetBase.TerminalSetName}")
+         Path.Combine(OutputDir, $"{terminalSetBase.TerminalSetName}_{num}")
        , gd
        , projDim
        , projInd
@@ -108,8 +110,10 @@ class Program {
 
     BridgeCreator<double, DConvertor> bridgeCreator =
       new BridgeCreator<double, DConvertor>(mainDir, problemDir, "SimpleMotion", problemDir);
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
+    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
   }
 
 }

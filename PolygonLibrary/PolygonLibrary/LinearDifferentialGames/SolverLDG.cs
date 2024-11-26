@@ -90,14 +90,14 @@ public partial class Geometry<TNum, TConv>
 
 
     private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
-      string prefix = sectionPrefix switch
-                        {
-                          "W" => "w"
-                        , "P" => "p"
-                        , "Q" => "q"
-                        , _ => throw new ArgumentException
-                                 ($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
-                        };
+      string prefix =
+        sectionPrefix switch
+          {
+            "W" => "w"
+          , "P" => "p"
+          , "Q" => "q"
+          , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
+          };
 
       return Path.Combine(basePath, $"{TConv.ToDouble(t):F3}){sectionPrefix}.{prefix}section");
     }
@@ -111,13 +111,14 @@ public partial class Geometry<TNum, TConv>
       ParamReader prR      = new ParamReader(filePath);
       string      taskHash = prR.ReadString("md5");
 
-      bool hashIsCorrect = sectionPrefix switch
-                             {
-                               "W" => taskHash == GameHash
-                             , "P" => taskHash == PHash
-                             , "Q" => taskHash == QHash
-                             , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
-                             };
+      bool hashIsCorrect =
+        sectionPrefix switch
+          {
+            "W" => taskHash == GameHash
+          , "P" => taskHash == PHash
+          , "Q" => taskHash == QHash
+          , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
+          };
       Debug.Assert
         (
          hashIsCorrect
@@ -205,6 +206,16 @@ public partial class Geometry<TNum, TConv>
     /// <param name="currQ">The second convex polytope (Q) used in the Minkowski difference.</param>
     /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
     public ConvexPolytop? DoNextSection(ConvexPolytop predSec, ConvexPolytop currP, ConvexPolytop currQ) {
+      Debug.Assert
+        (
+         predSec.SpaceDim == currP.SpaceDim
+       , $"SolverLDG.DoNextSection: The dimensions of spaces of polytopes should be the same! Found predSec = {predSec.SpaceDim}, currP = {currP.SpaceDim}!"
+        );
+      Debug.Assert
+        (
+         predSec.SpaceDim == currQ.SpaceDim
+       , $"SolverLDG.DoNextSection: The dimensions of spaces of the polytopes should be the same! Found predSec = {predSec.SpaceDim}, currQ = {currQ.SpaceDim}!"
+        );
       ConvexPolytop  sum  = MinkowskiSum.BySandipDas(predSec, currP, true);
       ConvexPolytop? next = MinkowskiDiff.Geometric(sum, currQ);
 
@@ -278,8 +289,9 @@ public partial class Geometry<TNum, TConv>
         tPred =  t;
         tMin  =  t;
         t     -= gd.dt;
-        using ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
+        ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
         prW.WriteNumber("tMin", tMin);
+        prW.Close();
 
         timer.Restart();
         ProcessPsSection(t);
