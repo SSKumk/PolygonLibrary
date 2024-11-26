@@ -441,7 +441,11 @@ public partial class Geometry<TNum, TConv>
         SubPoint    f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
         Vector      v            = edgeAffBasis.LinBasis.Orthonormalize(f - edgeAffBasis.Origin);
 
-        Debug.Assert(Tools.GT((f - edgeAffBasis.Origin) * v));
+        Debug.Assert
+          (
+           Tools.GT((f - edgeAffBasis.Origin) * v)
+         , $"Expected the vector 'v' to be perpendicular to the edge and in the current plane, but found a different dot product: {(f - edgeAffBasis.Origin) * v}"
+          );
 
         Vector?   r      = null;
         SubPoint? sStar  = null;
