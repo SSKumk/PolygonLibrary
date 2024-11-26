@@ -901,18 +901,35 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
-    /// Checks whether the given vector is contained within the polytope.
+    /// Checks whether the given vector is contained within the polytope, including its boundary.
     /// </summary>
     /// <param name="v">The vector to check.</param>
-    /// <returns><c>true</c> if the vector is contained within the polytope; otherwise, <c>false</c>.</returns>
+    /// <returns>
+    /// <c>true</c> if the vector is contained within the polytope (including the boundary); otherwise, <c>false</c>.
+    /// </returns>
     public bool Contains(Vector v) {
       if (IsFLrep || IsHrep) {
         return Hrep.All(hp => hp.ContainsNegativeNonStrict(v));
       }
 
-      throw new NotImplementedException("Тут надо решить несколько LP задач. Смотри Фукуду.");
+      throw new NotImplementedException("ConvexPolytop.Contains: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
     }
 
+
+    /// <summary>
+    /// Checks whether the given vector is strictly contained within the polytope, excluding its boundary.
+    /// </summary>
+    /// <param name="v">The vector to check.</param>
+    /// <returns>
+    /// <c>true</c> if the vector is strictly contained within the polytope (excluding the boundary); otherwise, <c>false</c>.
+    /// </returns>
+    public bool ContainsStrict(Vector v) {
+      if (IsFLrep || IsHrep) {
+        return Hrep.All(hp => hp.ContainsNegative(v));
+      }
+
+      throw new NotImplementedException("ConvexPolytop.ContainsStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
+    }
 
     /// <summary>
     /// Shifts an origin into a polytope and makes a dual polytope to this.
@@ -1074,6 +1091,33 @@ public partial class Geometry<TNum, TConv>
       innerPoint = InnerPoint;
 
       return Shift(-InnerPoint);
+    }
+
+
+    /// <summary>
+    /// Creates a homothetic transformation of the current polytope with respect to the origin.
+    /// The transformation is scaled by the given coefficient <paramref name="k"/>.
+    /// </summary>
+    /// <param name="k">The scaling coefficient. Must be non-negative.</param>
+    /// <returns>
+    /// A new <see cref="ConvexPolytop"/> that is the homothetic transformation of the current polytope.
+    /// </returns>
+    /// <exception cref="NotImplementedException">
+    /// Thrown when the scaling coefficient <paramref name="k"/> is negative, as this case is not supported.
+    /// </exception>
+    public ConvexPolytop Homothety(TNum k) {
+      if (Tools.LT(k)) {
+        throw new NotImplementedException("ConvexPolytop.Homothety: Пока не умеем с отрицательным 'k'");
+      }
+
+      if (IsFLrep) {
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => v * k), true);
+      }
+      if (IsVrep) {
+        return CreateFromPoints(Vrep.Select(v => v * k));
+      }
+
+      return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(hp.Normal, hp.ConstantTerm * k)));
     }
 
     /// <summary>
