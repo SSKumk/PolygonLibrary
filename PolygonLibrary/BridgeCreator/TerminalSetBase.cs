@@ -29,50 +29,13 @@ public abstract class TerminalSetBase<TNum, TConv>
     , string                         QsInfo
     );
 
-  public Geometry<TNum, TConv>.ConvexPolytop Process_DistToPolytope(
-      Geometry<TNum, TConv>.ParamReader pr
-    , BallType                          ballType
-    , TNum                              cMax
-    ) {
-    Geometry<TNum, TConv>.ConvexPolytop polytop = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);
 
-    int theta = 10, phi = 10;
-    if (ballType == BallType.Ball_2) {
-      theta = pr.ReadNumber<int>("MTheta");
-      phi   = pr.ReadNumber<int>("MPhi");
-    }
+  protected (int theta, int phi) ReadBall2Params(Geometry<TNum, TConv>.ParamReader pr, ref string tsInfo) {
+    int theta = pr.ReadNumber<int>("MTheta");
+    int phi   = pr.ReadNumber<int>("MPhi");
+    tsInfo += $"-T{theta}-P{phi}_";
 
-    return ballType switch
-             {
-               BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_1(polytop, cMax)
-             , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_2(polytop, theta, phi, cMax)
-             , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_oo(polytop, cMax)
-             , _                => throw new ArgumentException($"Wrong type of the ball! Found {ballType}")
-             };
-  }
-
-  public Geometry<TNum, TConv>.ConvexPolytop Process_DistToOrigin(
-      Geometry<TNum, TConv>.ParamReader pr
-    , int                               projDim
-    , BallType                          ballType
-    , TNum                              cMax
-    , ref string                        tsInfo
-    ) {
-    int theta = 10, phi = 10;
-    if (ballType == BallType.Ball_2) {
-      theta = pr.ReadNumber<int>("MTheta");
-      phi   = pr.ReadNumber<int>("MPhi");
-
-      tsInfo += $"-T{theta}-P{phi}_";
-    }
-
-    return ballType switch
-             {
-               BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(projDim, cMax)
-             , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(projDim, theta, phi, cMax)
-             , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(projDim, cMax)
-             , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")
-             };
+    return (theta, phi);
   }
 
 }

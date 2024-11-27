@@ -109,9 +109,7 @@ public partial class Geometry<TNum, TConv>
           if (IsVrep) { return Rep.Vrep; }
 
           return Rep.Hrep;
-
         }
-
     }
 
 
@@ -256,13 +254,14 @@ public partial class Geometry<TNum, TConv>
       get
         {
           // todo: Возможно стоит реализовать Double Description Method  и/или  Reverse Search Fukud-ы
-          _Hrep ??= new List<HyperPlane>
-            (
-             FLrep
-              .Lattice[^2]
-              .Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false)))
-              .ToList()
-            );
+          _Hrep ??=
+            new List<HyperPlane>
+              (
+               FLrep
+                .Lattice[^2]
+                .Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false)))
+                .ToList()
+              );
           Debug.Assert(IsHrep, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
 
           return _Hrep;
@@ -611,7 +610,6 @@ public partial class Geometry<TNum, TConv>
     /// <param name="semiAxis">The vector where each coordinate represents the length of the corresponding semi-axis.</param>
     /// <returns>A convex polytope as Vrep representing the ellipsoid in hD.</returns>
     public static ConvexPolytop Ellipsoid(int dim, int thetaPartition, int phiPartition, Vector center, Vector semiAxis) {
-      Debug.Assert(dim > 1, $"ConvexPolytop.Ellipsoid: The dimension of an ellipsoid must be 2 or greater. Found dim = {dim}.");
       Debug.Assert
         (
          center.SpaceDim == dim
@@ -631,6 +629,11 @@ public partial class Geometry<TNum, TConv>
           );
       }
 #endif
+
+      if (dim == 1) {
+        return CreateFromPoints(new[] { center - semiAxis, center + semiAxis });
+      }
+
 
       // Phi in [0, 2*Pi)
       // Theta in [0, Pi]
@@ -858,11 +861,12 @@ public partial class Geometry<TNum, TConv>
         isInside = true;
 
         if (IsFLrep) {
-          IOrderedEnumerable<Vector> minPs = FLrep
-                                            .AllKfaces_ExceptTop()
-                                            .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-                                            .Where(Contains)
-                                            .OrderBy(v => (point - v).Length);
+          IOrderedEnumerable<Vector> minPs =
+            FLrep
+             .AllKfaces_ExceptTop()
+             .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+             .Where(Contains)
+             .OrderBy(v => (point - v).Length);
 
           return minPs.First();
         }
@@ -871,13 +875,14 @@ public partial class Geometry<TNum, TConv>
         isInside = false;
 
         if (IsFLrep) { // todo: Сделать связь Hrep <--> FLrep[^2]
-          IEnumerable<FLNode> visible = FLrep[^2]
-           .Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
+          IEnumerable<FLNode> visible =
+            FLrep[^2].Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
           SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
-          IOrderedEnumerable<Vector> minPs = allKfaces
-                                            .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-                                            .Where(Contains)
-                                            .OrderBy(v => (point - v).Length);
+          IOrderedEnumerable<Vector> minPs =
+            allKfaces
+             .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+             .Where(Contains)
+             .OrderBy(v => (point - v).Length);
 
           isInside = false;
 
@@ -912,7 +917,8 @@ public partial class Geometry<TNum, TConv>
         return Hrep.All(hp => hp.ContainsNegativeNonStrict(v));
       }
 
-      throw new NotImplementedException("ConvexPolytop.Contains: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
+      throw new NotImplementedException
+        ("ConvexPolytop.Contains: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
     }
 
 
@@ -928,7 +934,8 @@ public partial class Geometry<TNum, TConv>
         return Hrep.All(hp => hp.ContainsNegative(v));
       }
 
-      throw new NotImplementedException("ConvexPolytop.ContainsStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
+      throw new NotImplementedException
+        ("ConvexPolytop.ContainsStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
     }
 
     /// <summary>
@@ -1159,7 +1166,6 @@ public partial class Geometry<TNum, TConv>
 
       throw new ArgumentException("ConvexPolytop.WhichRepToString: Unexpected representation type.");
     }
-
 #endregion
 
 #region Write out

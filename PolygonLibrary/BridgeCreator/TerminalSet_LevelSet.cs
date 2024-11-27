@@ -10,7 +10,8 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
 
   public enum LevelSetType { DistToOrigin, DistToPolytope }
 
-  public readonly string terminalSetInfo = "_LevelSet_";
+  public          Geometry<TNum, TConv>.ConvexPolytop terminalSet;
+  public readonly string                              terminalSetInfo = "_LevelSet_";
 
   public readonly TNum[] cs; // коэффициенты
 
@@ -18,7 +19,10 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
   public readonly LevelSetType levelSetType;
   public readonly BallType     ballType;
 
-  private Geometry<TNum, TConv>.ParamReader _pr;
+
+  private readonly int                                 _theta = 0;
+  private readonly int                                 _phi   = 0;
+  private readonly Geometry<TNum, TConv>.ConvexPolytop _polytop;
 
   public TerminalSet_LevelSet(Geometry<TNum, TConv>.ParamReader pr) : base(pr) {
     int qnt = pr.ReadNumber<int>("CQnt");
@@ -43,7 +47,13 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
         };
     terminalSetInfo += ballType;
 
-    _pr = pr;
+    if (ballType == BallType.Ball_2) {
+      (_theta, _phi) = ReadBall2Params(pr, ref terminalSetInfo);
+    }
+
+    if (levelSetType == LevelSetType.DistToPolytope) {
+      _polytop = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);
+    }
   }
 
   public override void Solve(
@@ -56,24 +66,45 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
     , string                         QsInfo
     ) {
     foreach (TNum num in cs) {
-      Geometry<TNum, TConv>.ConvexPolytop terminalSet;
-
       string tsInfo = $"_{cs}_";
+
       switch (levelSetType) {
+        // Множество в виде расстояния до начала координат
         case LevelSetType.DistToOrigin: {
-          terminalSet = Process_DistToOrigin(_pr, projDim - 1, ballType, num, ref tsInfo);
+          terminalSet =
+            ballType switch
+              {
+                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(projDim - 1, num)
+              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(projDim - 1, _theta, _phi, num)
+              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(projDim - 1, num)
+              , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")
+              };
+
           break;
         }
+
+        // Множество в виде расстояния до заданного выпуклого многогранника в Rd
         case LevelSetType.DistToPolytope: {
-          terminalSet = Process_DistToPolytope(_pr, ballType, num);
+          terminalSet =
+            ballType switch
+              {
+                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_1(_polytop, num)
+              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_2(_polytop, _theta, _phi, num)
+              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_oo(_polytop, num)
+              , _                => throw new ArgumentException($"Wrong type of the ball! Found {ballType}")
+              };
 
           break;
         }
-        default:
-          throw new ArgumentException("TerminalSet_LevelSet: Другие варианты непредусмотрены!");
 
-          tsInfo += $""; //todo: какую инфу по многограннику выдавать-то? М.б. он сам должен это делать?
+
+        // Другие варианты функции платы
+        // case :
+
+        default: throw new ArgumentException("TerminalSet_Epigraph: Другие варианты непредусмотрены!");
       }
+      tsInfo += $""; //todo: какую инфу по многограннику выдавать-то? М.б. он сам должен это делать?
+
 
       Geometry<TNum, TConv>.SolverLDG sl =
         new Geometry<TNum, TConv>.SolverLDG

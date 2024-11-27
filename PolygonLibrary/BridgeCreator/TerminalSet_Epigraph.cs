@@ -24,6 +24,9 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
         };
     terminalSetInfo += epiType;
 
+    TNum cMax = pr.ReadNumber<TNum>("MCMax");
+    terminalSetInfo += $"-CMax{cMax}";
+
     BallType ballType =
       pr.ReadString("MBallType") switch
         {
@@ -34,20 +37,37 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
         };
     terminalSetInfo += ballType;
 
-    TNum cMax = pr.ReadNumber<TNum>("MCMax");
-    terminalSetInfo += $"-CMax{cMax}";
+    int theta = 0, phi = 0;
+    if (ballType == BallType.Ball_2) {
+      (theta, phi) = ReadBall2Params(pr, ref terminalSetInfo);
+    }
 
     switch (epiType) {
       // Множество в виде расстояния до начала координат
       case EpigraphType.DistToOrigin: {
-        terminalSet = Process_DistToOrigin(pr, projDim, ballType, cMax, ref terminalSetInfo);
+        terminalSet =
+          ballType switch
+            {
+              BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(projDim, cMax)
+            , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(projDim, theta, phi, cMax)
+            , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(projDim, cMax)
+            , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")
+            };
 
         break;
       }
 
       // Множество в виде расстояния до заданного выпуклого многогранника в Rd
       case EpigraphType.DistToPolytope: {
-        terminalSet = Process_DistToPolytope(pr, ballType, cMax);
+        Geometry<TNum, TConv>.ConvexPolytop polytop = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);
+        terminalSet =
+          ballType switch
+            {
+              BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_1(polytop, cMax)
+            , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_2(polytop, theta, phi, cMax)
+            , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_oo(polytop, cMax)
+            , _                => throw new ArgumentException($"Wrong type of the ball! Found {ballType}")
+            };
 
         break;
       }
@@ -60,8 +80,6 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
     }
     terminalSetInfo += $""; //todo: какую инфу по многограннику выдавать-то? М.б. он сам должен это делать?
   }
-
-
 
 
   public override void Solve(
