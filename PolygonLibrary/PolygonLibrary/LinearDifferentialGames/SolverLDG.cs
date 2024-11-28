@@ -19,8 +19,8 @@ public partial class Geometry<TNum, TConv>
     public readonly string WorkDir; // Эта папка, в которую пишутся файлы
 
 
-    public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
-    public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
+    public static readonly string NumericalType = typeof(TNum).ToString();           // текущий используемый числовой тип
+    public static readonly string Eps           = $"{TConv.ToDouble(Tools.Eps):e0}"; // текущая точность в библиотеке
 
     public readonly GameData gd;
 
@@ -64,12 +64,19 @@ public partial class Geometry<TNum, TConv>
 
       TerminalSetHash = Hashes.GetMD5Hash(terminalSetGameInfo);
 
-      Debug.Assert(gd.ProjMatrix.Rows == gd.CauchyMatrix[gd.T].Cols, $"SolverLDG.Ctor: The dimensions of ProjMatrix and CauchyMatrix should coincides.");
+      Debug.Assert
+        (
+         gd.ProjMatrix.Cols == gd.CauchyMatrix[gd.T].Rows
+       , $"SolverLDG.Ctor: The dimensions of ProjMatrix and CauchyMatrix should coincides."
+        );
 
       W       = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
       W[gd.T] = M;
+
+      WriteBridgeSection(gd.T);
     }
 
+    public static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F3}";
 
     private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
       string prefix =
@@ -81,7 +88,7 @@ public partial class Geometry<TNum, TConv>
           , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
           };
 
-      return Path.Combine(basePath, $"{TConv.ToDouble(t):F3}){sectionPrefix}.{prefix}section");
+      return Path.Combine(basePath, $"{ToPrintTNum(t)}){sectionPrefix}.{prefix}section");
     }
 
 
@@ -90,12 +97,15 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
 
-      ParamReader prR      = new ParamReader(filePath);
+      ParamReader prR             = new ParamReader(filePath);
       string      taskDynamicHash = prR.ReadString("md5-dynamic");
-      string      taskHash = prR.ReadString("md5");
+      string      taskHash        = prR.ReadString("md5");
 
-      Debug.Assert(taskDynamicHash == gd.DynamicHash, $"SolverLDG.ReadSection: The hash-dynamic in the file does not match the expected hash."
-                  );
+      Debug.Assert
+        (
+         taskDynamicHash == gd.DynamicHash
+       , $"SolverLDG.ReadSection: The hash-dynamic in the file does not match the expected hash."
+        );
 
       bool hashIsCorrect =
         sectionPrefix switch
@@ -106,10 +116,7 @@ public partial class Geometry<TNum, TConv>
           , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
           };
       Debug.Assert
-        (
-         hashIsCorrect
-       , $"SolverLDG.ReadSection: The hash in the file does not match the expected hash ({sectionPrefix}Hash)."
-        );
+        (hashIsCorrect, $"SolverLDG.ReadSection: The hash in the file does not match the expected hash ({sectionPrefix}Hash).");
 
       sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
     }
@@ -264,7 +271,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// It computes the time sections of the maximal stable bridge of  the game.
     /// </summary>
-    public TNum Solve() {
+    public void Solve() {
       Stopwatch timer = new Stopwatch();
 
       Directory.CreateDirectory(WorkDir);
@@ -304,8 +311,6 @@ public partial class Geometry<TNum, TConv>
         using ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
         prW.WriteNumber("tMin", tMin);
       }
-
-      return tMin;
     }
 
 

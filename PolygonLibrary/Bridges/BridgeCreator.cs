@@ -93,8 +93,8 @@ class Program {
     BridgeCreator<double, DConvertor> bridgeCreator =
       new BridgeCreator<double, DConvertor>(mainDir, configDir, "SimpleMotion", configDir);
     bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
     // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
   }
 
