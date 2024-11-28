@@ -12,10 +12,6 @@ class BridgeCreator<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
-  public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
-
-
   public readonly string MainOutputDir; // папка, в которой будут лежать все результаты. Необязательно этой конкретной игры.
 
   public readonly string ProblemDir;      // где лежит файл с конфигурацией игры
@@ -31,9 +27,6 @@ class BridgeCreator<TNum, TConv>
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
 
   public string definitionTerminalSetType; // тип терминальных множеств в файле
-  public int    projDim;                   // размерность выделенных m координат
-  public int[]  projInd;                   // индексы выделенных m координат
-  public string projInfo;                  // текстовая характеристика пространства выделенных координат
 
 
   public BridgeCreator(string outputDir, string problemDir, string problemFileName, string bridgeConfigDir) {
@@ -57,9 +50,7 @@ class BridgeCreator<TNum, TConv>
     string                            brConfigPath = Path.Combine(BrConfigDir, terminalBrConfigFileName + ".terminalsetconfig");
     Geometry<TNum, TConv>.ParamReader pr           = new Geometry<TNum, TConv>.ParamReader(brConfigPath);
     definitionTerminalSetType = pr.ReadString("DefinitionType");
-    projDim                   = pr.ReadNumber<int>("ProjDim");
-    projInd                   = pr.Read1DArray<int>("ProjInd", projDim);
-    projInfo                  = $"{projDim}{string.Join(';', projInd)}";
+
 
     int numTSet = pr.ReadNumber<int>("numberOfTerminalSets");
 
@@ -69,23 +60,14 @@ class BridgeCreator<TNum, TConv>
       TerminalSetBase<TNum, TConv> terminalSetBase =
         definitionTerminalSetType switch
           {
-            "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, projDim)
-          , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, projDim)
-          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, projDim)
-          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr)
+            "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, gd)
+          , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, gd)
+          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, gd)
+          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr, gd)
           , _                      => throw new ArgumentOutOfRangeException()
           };
 
-      terminalSetBase.Solve
-        (
-         Path.Combine(OutputDir, $"{terminalSetBase.TerminalSetName}_{num}")
-       , gd
-       , projDim
-       , projInd
-       , $"{gd.GameInfo}{NumericalType}{Eps}"
-       , $"{gd.PSetInfo}{NumericalType}{Eps}{projInfo}"
-       , $"{gd.QSetInfo}{NumericalType}{Eps}{projInfo}"
-        );
+      terminalSetBase.DoSolve(Path.Combine(OutputDir, $"{terminalSetBase.TerminalSetName}_{num}"));
     }
   }
 
@@ -105,15 +87,15 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    string mainDir    = "F:\\Works\\IMM\\Аспирантура\\LDG_bridges\\";
-    string problemDir = Path.Combine(mainDir, "Problems");
+    string mainDir   = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\";
+    string configDir = Path.Combine(mainDir, "Configs");
 
     BridgeCreator<double, DConvertor> bridgeCreator =
-      new BridgeCreator<double, DConvertor>(mainDir, problemDir, "SimpleMotion", problemDir);
+      new BridgeCreator<double, DConvertor>(mainDir, configDir, "SimpleMotion", configDir);
     bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
     bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
     bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
+    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
   }
 
 }

@@ -178,7 +178,7 @@ public class Program {
   //   // var traj = solver.Euler(0.5 * Vector.Ones(dim), tMin, solver.gd.T);
   //   // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
   //
-  //   Console.WriteLine($"game {solver.gd.GameHash}");
+  //   Console.WriteLine($"game {solver.gd.TerminalSetHash}");
   //   Console.WriteLine($"Ps {solver.gd.PHash}");
   //   Console.WriteLine($"Qs {solver.gd.QHash}");
   //

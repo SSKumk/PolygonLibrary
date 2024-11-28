@@ -13,16 +13,17 @@ public class TerminalSet_MinkowskiFunctional<TNum, TConv> : TerminalSetBase<TNum
   public readonly TNum[]                                    cs; // коэффициенты в преобразовании Минковского
   public readonly List<Geometry<TNum, TConv>.ConvexPolytop> minkFuncSets = new List<Geometry<TNum, TConv>.ConvexPolytop>();
 
-  public TerminalSet_MinkowskiFunctional(Geometry<TNum, TConv>.ParamReader pr, int projDim) : base(pr) {
+  public TerminalSet_MinkowskiFunctional(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
+    (pr, gameData) {
     int cQnt = pr.ReadNumber<int>("CQnt");
     cs = pr.Read1DArray<TNum>("Constants", cQnt);
 
     Geometry<TNum, TConv>.ConvexPolytop basePolytop =
-      Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', projDim, out terminalSetInfo).GetInFLrep();
+      Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', gd.projDim, out terminalSetInfo).GetInFLrep();
     terminalSetInfo += "_MinkowskiFunctional_";
 
 
-    if (!basePolytop.ContainsStrict(Geometry<TNum, TConv>.Vector.Zero(projDim))) {
+    if (!basePolytop.ContainsStrict(Geometry<TNum, TConv>.Vector.Zero(gd.projDim))) {
       throw new ArgumentException("TerminalSet_MinkowskiFunctional.Ctor: The origin should lie within the polytope!");
     }
 
@@ -31,27 +32,17 @@ public class TerminalSet_MinkowskiFunctional<TNum, TConv> : TerminalSetBase<TNum
     }
   }
 
-  public override void Solve(
+  public override void DoSolve(
       string                         baseWorkDir
-    , Geometry<TNum, TConv>.GameData gameData
-    , int                            projDim
-    , int[]                          projInd
-    , string                         gameInfoNoTerminalInfo
-    , string                         PsInfo
-    , string                         QsInfo
     ) {
     for (int i = 0; i < cs.Length; i++) {
       Geometry<TNum, TConv>.SolverLDG sl =
         new Geometry<TNum, TConv>.SolverLDG
           (
-           Path.Combine(baseWorkDir, TConv.ToDouble(cs[i]).ToString("G"), NumericalType, Eps)
-         , gameData
-         , projDim
-         , projInd
+           Path.Combine(baseWorkDir, TConv.ToDouble(cs[i]).ToString("G"))
+         , gd
          , minkFuncSets[i]
-         , $"{gameInfoNoTerminalInfo}{terminalSetInfo}"
-         , PsInfo
-         , QsInfo
+         , terminalSetInfo
           );
       sl.Solve();
     }

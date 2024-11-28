@@ -115,6 +115,11 @@ public partial class Geometry<TNum, TConv>
     public readonly TNum dt;
 #endregion
 
+    public int    projDim;  // размерность выделенных m координат
+    public int[]  projInd;  // индексы выделенных m координат
+    public string projInfo; // текстовая характеристика пространства выделенных координат
+
+
 #region Control constraints
     /// <summary>
     /// Collection of points, which convex hull defines the constraint for the control of the first player
@@ -127,9 +132,13 @@ public partial class Geometry<TNum, TConv>
     public ConvexPolytop Q;
 
     //todo: xml
-    public readonly string PSetInfo;
-    public readonly string QSetInfo;
-    public readonly string GameInfo;
+    public readonly string DynamicPQInfo;
+    public readonly string PInfo;
+    public readonly string QInfo;
+
+    public readonly string DynamicHash;
+    public readonly string PHash;
+    public readonly string QHash;
 #endregion
 #endregion
 
@@ -137,7 +146,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The fundamental Cauchy matrix of the corresponding system
     /// </summary>
-    public CauchyMatrix cauchyMatrix;
+    public CauchyMatrix CauchyMatrix;
+
+    /// <summary>
+    /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
+    /// </summary>
+    public readonly Matrix ProjMatrix;
 #endregion
 
 #region Constructor
@@ -160,23 +174,38 @@ public partial class Geometry<TNum, TConv>
       T  = pr.ReadNumber<TNum>("T");
       dt = pr.ReadNumber<TNum>("dt");
 
+
+      projDim  = pr.ReadNumber<int>("ProjDim");
+      projInd  = pr.Read1DArray<int>("ProjInd", projDim);
+      projInfo = string.Join(';', projInd);
+
       // Reading data of the first player's control
-      P = ReadExplicitSet(pr, 'P', pDim, out PSetInfo);
+      P = ReadExplicitSet(pr, 'P', pDim, out string PSetInfo);
 
       // Reading data of the second player's control
-      Q = ReadExplicitSet(pr, 'Q', qDim, out QSetInfo);
+      Q = ReadExplicitSet(pr, 'Q', qDim, out string QSetInfo);
 
       // The Cauchy matrix
-      cauchyMatrix = new CauchyMatrix(A, T, dt);
+      CauchyMatrix = new CauchyMatrix(A, T, dt);
+
+      TNum[,] ProjMatrixArr = new TNum[projDim, n];
+      for (int i = 0; i < projDim; i++) {
+        ProjMatrixArr[i, projInd[i]] = Tools.One;
+      }
+      ProjMatrix = new Matrix(ProjMatrixArr);
 
       // calc hashes
       string Astr = A.ToString();
       string Bstr = B.ToString();
       string Cstr = C.ToString();
 
-      GameInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}";
-      PSetInfo = $"{Astr}{Bstr}{T}{dt}{PSetInfo}";
-      QSetInfo = $"{Astr}{Cstr}{T}{dt}{QSetInfo}";
+      DynamicPQInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}{projInfo}";
+      PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
+      QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
+
+      DynamicHash = Hashes.GetMD5Hash(DynamicPQInfo);
+      PHash       = Hashes.GetMD5Hash(PInfo);
+      QHash       = Hashes.GetMD5Hash(QInfo);
     }
 #endregion
 

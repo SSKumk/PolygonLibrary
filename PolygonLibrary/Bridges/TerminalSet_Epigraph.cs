@@ -14,7 +14,8 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
   public string                              terminalSetInfo = "_Epigraph_";
 
 
-  public TerminalSet_Epigraph(Geometry<TNum, TConv>.ParamReader pr, int projDim) : base(pr) {
+  public TerminalSet_Epigraph(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
+    (pr, gameData) {
     EpigraphType epiType =
       pr.ReadString("MType") switch
         {
@@ -48,9 +49,9 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
         terminalSet =
           ballType switch
             {
-              BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(projDim, cMax)
-            , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(projDim, theta, phi, cMax)
-            , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(projDim, cMax)
+              BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(gd.projDim, cMax)
+            , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(gd.projDim, theta, phi, cMax)
+            , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(gd.projDim, cMax)
             , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")
             };
 
@@ -82,38 +83,19 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
   }
 
 
-  public override void Solve(
-      string                         baseWorkDir
-    , Geometry<TNum, TConv>.GameData gameData
-    , int                            projDim
-    , int[]                          projInd
-    , string                         gameInfoNoTerminalInfo
-    , string                         PsInfo
-    , string                         QsInfo
-    ) {
+  public override void DoSolve(string baseWorkDir) {
     // Расширяем систему, если решаем задачу с надграфиком функции цены
-    projDim++;
-    projInd = new List<int>(projInd) { gameData.n }.ToArray(); // новая координата всегда в ответе
-    gameData.n++;                                              // размерность стала на 1 больше
-    gameData.A            = Geometry<TNum, TConv>.Matrix.vcat(gameData.A, Geometry<TNum, TConv>.Matrix.Zero(1, gameData.n - 1));
-    gameData.A            = Geometry<TNum, TConv>.Matrix.hcat(gameData.A, Geometry<TNum, TConv>.Matrix.Zero(gameData.n, 1))!;
-    gameData.B            = Geometry<TNum, TConv>.Matrix.vcat(gameData.B, Geometry<TNum, TConv>.Matrix.Zero(1, gameData.pDim));
-    gameData.C            = Geometry<TNum, TConv>.Matrix.vcat(gameData.C, Geometry<TNum, TConv>.Matrix.Zero(1, gameData.qDim));
-    gameData.cauchyMatrix = new Geometry<TNum, TConv>.CauchyMatrix(gameData.A, gameData.T, gameData.dt);
+    gd.projDim++;
+    gd.projInd = new List<int>(gd.projInd) { gd.n }.ToArray(); // новая координата всегда в ответе
+    gd.n++;                                                    // размерность стала на 1 больше
+    gd.A            = Geometry<TNum, TConv>.Matrix.vcat(gd.A, Geometry<TNum, TConv>.Matrix.Zero(1, gd.n - 1));
+    gd.A            = Geometry<TNum, TConv>.Matrix.hcat(gd.A, Geometry<TNum, TConv>.Matrix.Zero(gd.n, 1))!;
+    gd.B            = Geometry<TNum, TConv>.Matrix.vcat(gd.B, Geometry<TNum, TConv>.Matrix.Zero(1, gd.pDim));
+    gd.C            = Geometry<TNum, TConv>.Matrix.vcat(gd.C, Geometry<TNum, TConv>.Matrix.Zero(1, gd.qDim));
+    gd.CauchyMatrix = new Geometry<TNum, TConv>.CauchyMatrix(gd.A, gd.T, gd.dt);
 
 
-    Geometry<TNum, TConv>.SolverLDG sl =
-      new Geometry<TNum, TConv>.SolverLDG
-      (
-       Path.Combine(baseWorkDir, NumericalType, Eps)
-     , gameData
-     , projDim
-     , projInd
-     , terminalSet
-     , $"{gameInfoNoTerminalInfo}{terminalSetInfo}Epigraph"
-     , PsInfo
-     , QsInfo
-      );
+    Geometry<TNum, TConv>.SolverLDG sl = new Geometry<TNum, TConv>.SolverLDG(baseWorkDir, gd, terminalSet, $"{terminalSetInfo}");
     sl.Solve();
   }
 

@@ -10,24 +10,17 @@ public abstract class TerminalSetBase<TNum, TConv>
 
   public enum BallType { Ball_1, Ball_2, Ball_oo }
 
-  public string TerminalSetName; // имя терминального множества в выходном файле
+  public string                         TerminalSetName; // имя терминального множества в выходном файле
+  public Geometry<TNum, TConv>.GameData gd;
 
 
-  protected TerminalSetBase(Geometry<TNum, TConv>.ParamReader pr) { TerminalSetName = pr.ReadString("Name"); }
+  protected TerminalSetBase(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gamedata) {
+    TerminalSetName = pr.ReadString("Name");
+    gd              = gamedata;
+  }
 
-  public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
-  public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
 
-
-  public abstract void Solve(
-      string                         baseWorkDir
-    , Geometry<TNum, TConv>.GameData gameData
-    , int                            projDim
-    , int[]                          projInd
-    , string                         gameInfoNoTerminalInfo
-    , string                         PsInfo
-    , string                         QsInfo
-    );
+  public abstract void DoSolve(string baseWorkDir);
 
 
   protected (int theta, int phi) ReadBall2Params(Geometry<TNum, TConv>.ParamReader pr, ref string tsInfo) {

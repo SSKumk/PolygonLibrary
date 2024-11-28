@@ -24,7 +24,8 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
   private readonly int                                 _phi   = 0;
   private readonly Geometry<TNum, TConv>.ConvexPolytop _polytop;
 
-  public TerminalSet_LevelSet(Geometry<TNum, TConv>.ParamReader pr) : base(pr) {
+  public TerminalSet_LevelSet(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
+    (pr, gameData) {
     int qnt = pr.ReadNumber<int>("CQnt");
     cs = pr.Read1DArray<TNum>("Constants", qnt);
 
@@ -56,15 +57,7 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
     }
   }
 
-  public override void Solve(
-      string                         baseWorkDir
-    , Geometry<TNum, TConv>.GameData gameData
-    , int                            projDim
-    , int[]                          projInd
-    , string                         gameInfoNoTerminalInfo
-    , string                         PsInfo
-    , string                         QsInfo
-    ) {
+  public override void DoSolve(string baseWorkDir) {
     foreach (TNum num in cs) {
       string tsInfo = $"_{cs}_";
 
@@ -74,9 +67,9 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
           terminalSet =
             ballType switch
               {
-                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(projDim - 1, num)
-              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(projDim - 1, _theta, _phi, num)
-              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(projDim - 1, num)
+                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(gd.projDim - 1, num)
+              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(gd.projDim - 1, _theta, _phi, num)
+              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(gd.projDim - 1, num)
               , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")
               };
 
@@ -109,14 +102,10 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
       Geometry<TNum, TConv>.SolverLDG sl =
         new Geometry<TNum, TConv>.SolverLDG
           (
-           Path.Combine(baseWorkDir, TConv.ToDouble(num).ToString("G"), NumericalType, Eps)
-         , gameData
-         , projDim
-         , projInd
+           Path.Combine(baseWorkDir, TConv.ToDouble(num).ToString("G"))
+         , gd
          , terminalSet
-         , $"{gameInfoNoTerminalInfo}{terminalSetInfo}{tsInfo}"
-         , PsInfo
-         , QsInfo
+         , $"{terminalSetInfo}{tsInfo}"
           );
       sl.Solve();
     }

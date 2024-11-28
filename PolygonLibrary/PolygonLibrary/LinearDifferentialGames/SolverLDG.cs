@@ -19,13 +19,11 @@ public partial class Geometry<TNum, TConv>
     public readonly string WorkDir; // Эта папка, в которую пишутся файлы
 
 
+    public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
+    public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
+
     public readonly GameData gd;
 
-
-    /// <summary>
-    /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
-    /// </summary>
-    public readonly Matrix ProjMatrix;
 
     /// <summary>
     /// Collection of matrices D for the instants from the time grid
@@ -52,40 +50,24 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public readonly SortedDictionary<TNum, ConvexPolytop> Qs = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
 
-    public readonly string GameHash;
-    public readonly string PHash;
-    public readonly string QHash;
+    public readonly string TerminalSetHash;
+
 
     public TNum tMin;
 
 
-    public SolverLDG(
-        string        workDir
-      , GameData      gameData
-      , int           projDim
-      , int[]         projInd
-      , ConvexPolytop M
-      , string        gameInfo
-      , string        PsInfo
-      , string        QsInfo
-      ) {
+    public SolverLDG(string workDir, GameData gameData, ConvexPolytop M, string terminalSetGameInfo) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      WorkDir = workDir;
+      WorkDir = Path.Combine(workDir, NumericalType, Eps);
       gd      = gameData;
 
-      TNum[,] ProjMatrixArr = new TNum[projDim, gd.n];
-      for (int i = 0; i < projDim; i++) {
-        ProjMatrixArr[i, projInd[i]] = Tools.One;
-      }
+      TerminalSetHash = Hashes.GetMD5Hash(terminalSetGameInfo);
 
-      GameHash = Hashes.GetMD5Hash(gameInfo);
-      PHash    = Hashes.GetMD5Hash(PsInfo);
-      QHash    = Hashes.GetMD5Hash(QsInfo);
+      Debug.Assert(gd.ProjMatrix.Rows == gd.CauchyMatrix[gd.T].Cols, $"SolverLDG.Ctor: The dimensions of ProjMatrix and CauchyMatrix should coincides.");
 
-      ProjMatrix = new Matrix(ProjMatrixArr);
-      W          = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
-      W[gd.T]    = M;
+      W       = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
+      W[gd.T] = M;
     }
 
 
@@ -109,26 +91,30 @@ public partial class Geometry<TNum, TConv>
         (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
 
       ParamReader prR      = new ParamReader(filePath);
+      string      taskDynamicHash = prR.ReadString("md5-dynamic");
       string      taskHash = prR.ReadString("md5");
+
+      Debug.Assert(taskDynamicHash == gd.DynamicHash, $"SolverLDG.ReadSection: The hash-dynamic in the file does not match the expected hash."
+                  );
 
       bool hashIsCorrect =
         sectionPrefix switch
           {
-            "W" => taskHash == GameHash
-          , "P" => taskHash == PHash
-          , "Q" => taskHash == QHash
+            "W" => taskHash == TerminalSetHash
+          , "P" => taskHash == gd.PHash
+          , "Q" => taskHash == gd.QHash
           , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
           };
       Debug.Assert
         (
          hashIsCorrect
-       , $"SolverLDG.ReadSection: The hash in the file ({taskHash}) does not match the expected hash ({sectionPrefix}Hash)."
+       , $"SolverLDG.ReadSection: The hash in the file does not match the expected hash ({sectionPrefix}Hash)."
         );
 
       sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
     }
 
-    private static void WriteSection(
+    private void WriteSection(
         string                                sectionPrefix
       , SortedDictionary<TNum, ConvexPolytop> sectionDict
       , string                                basePath
@@ -138,6 +124,7 @@ public partial class Geometry<TNum, TConv>
       ) {
       Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
       using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      prW.WriteString("md5-dynamic", gd.DynamicHash);
       prW.WriteString("md5", hash);
       sectionDict[t].WriteIn(prW, repType);
     }
@@ -153,7 +140,7 @@ public partial class Geometry<TNum, TConv>
        , W
        , WorkDir
        , t
-       , GameHash
+       , TerminalSetHash
        , ConvexPolytop.Rep.FLrep
         );
 
@@ -164,7 +151,7 @@ public partial class Geometry<TNum, TConv>
        , Ps
        , WorkDir
        , t
-       , PHash
+       , gd.PHash
        , ConvexPolytop.Rep.FLrep
         );
 
@@ -175,12 +162,18 @@ public partial class Geometry<TNum, TConv>
        , Qs
        , WorkDir
        , t
-       , QHash
+       , gd.QHash
        , ConvexPolytop.Rep.Vrep
         );
 
 
-    private bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t, string expectedHash) {
+    private bool SectionFileCorrect(
+        string sectionPrefix
+      , string basePath
+      , TNum   t
+      , string expectedDynamicHash
+      , string expectedHash
+      ) {
       string filePath = GetSectionPath(sectionPrefix, basePath, t);
       if (!File.Exists(filePath)) {
         return false;
@@ -188,14 +181,15 @@ public partial class Geometry<TNum, TConv>
 
       ParamReader prR = new ParamReader(filePath);
 
-      string fileHash = prR.ReadString("md5");
+      string fileHash1 = prR.ReadString("md5-dynamic");
+      string fileHash2 = prR.ReadString("md5");
 
-      return fileHash == expectedHash;
+      return fileHash1 == expectedDynamicHash && fileHash2 == expectedHash;
     }
 
-    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, GameHash);
-    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, PHash);
-    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, QHash);
+    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, gd.DynamicHash, TerminalSetHash);
+    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, gd.DynamicHash, gd.PHash);
+    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, gd.DynamicHash, gd.QHash);
 
 
     /// <summary>
@@ -224,7 +218,7 @@ public partial class Geometry<TNum, TConv>
 
     private void ProcessPsSection(TNum t) {
       if (!PsSectionFileCorrect(t)) {
-        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
         D[t] = Xstar * gd.B;
         TNum t1 = t;
         Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * D[t1] * pPoint), true);
@@ -234,7 +228,7 @@ public partial class Geometry<TNum, TConv>
 
     private void ProcessQsSection(TNum t) {
       if (!QsSectionFileCorrect(t)) {
-        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
         E[t] = Xstar * gd.C;
         TNum t1 = t;
         Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * E[t1] * qPoint), false);
@@ -358,7 +352,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        Matrix Xstar = ProjMatrix * gd.cauchyMatrix[t];
+        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
         D[t] = Xstar * gd.B;
         E[t] = Xstar * gd.C;
 
