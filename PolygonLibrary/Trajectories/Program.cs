@@ -1,4 +1,4 @@
-﻿namespace TrajectoryCalculator;
+﻿namespace Trajectories;
 
 class Program {
 

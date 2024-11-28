@@ -1,7 +1,7 @@
 using CGLibrary;
 using DoubleDouble;
 
-namespace BridgeCreator;
+namespace Bridges;
 
 /// <summary>
 /// Interface for double-conversions.

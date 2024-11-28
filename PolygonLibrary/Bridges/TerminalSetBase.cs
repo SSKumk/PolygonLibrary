@@ -1,7 +1,7 @@
 using System.Numerics;
 using CGLibrary;
 
-namespace BridgeCreator;
+namespace Bridges;
 
 public abstract class TerminalSetBase<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,

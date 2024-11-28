@@ -3,7 +3,7 @@ using System.Numerics;
 using CGLibrary;
 
 
-namespace BridgeCreator;
+namespace Bridges;
 // todo:  1. Счёт мостов. Файл настроек Игры, файл настроек набора Мостов
 //       (задано одно терминальное множество, задана функция платы и набор С, надграфик выпуклой функции)
 
@@ -110,10 +110,10 @@ class Program {
 
     BridgeCreator<double, DConvertor> bridgeCreator =
       new BridgeCreator<double, DConvertor>(mainDir, problemDir, "SimpleMotion", problemDir);
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
+    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
+    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
     bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
+    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
   }
 
 }

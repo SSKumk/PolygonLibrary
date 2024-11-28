@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profile", "Profile\Profile.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics\Graphics.csproj", "{06F1E8AF-9C1E-46BA-8AAC-BF86BE04E580}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCreator", "BridgeCreator\BridgeCreator.csproj", "{F8721569-A786-4A73-91A7-D5A379DF9ECF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bridges", "Bridges\Bridges.csproj", "{F8721569-A786-4A73-91A7-D5A379DF9ECF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrajectoryCalculator", "TrajectoryCalculator\TrajectoryCalculator.csproj", "{82869151-EFE8-467E-B71C-77026E394D89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trajectories", "Trajectories\Trajectories.csproj", "{82869151-EFE8-467E-B71C-77026E394D89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
