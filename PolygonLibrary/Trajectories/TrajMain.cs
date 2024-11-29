@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 using CGLibrary;
+using PolygonLibrary.Toolkit;
 
 namespace Trajectories;
 
@@ -75,9 +76,8 @@ public class TrajMain<TNum, TConv>
 
     t = gd.t0;
     do {
-      Geometry<TNum, TConv>.Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
-      D[t] = Xstar * gd.B;
-      E[t] = Xstar * gd.C;
+      D[t] = gd.Xstar(t) * gd.B;
+      E[t] = gd.Xstar(t) * gd.C;
 
       t += gd.dt;
     } while (Geometry<TNum, TConv>.Tools.LE(t, gd.T));
@@ -85,7 +85,7 @@ public class TrajMain<TNum, TConv>
 
 
   public void CalcTraj(string trajConfPath) {
-    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(trajConfPath);
+    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(trajConfPath+".controlconfig");
 
     int trajCount = pr.ReadNumber<int>("Count");
     for (int i = 0; i < trajCount; i++) {
@@ -101,9 +101,12 @@ public class TrajMain<TNum, TConv>
         throw new ArgumentException("The dimension of the x0-vector should be equal to n!");
       }
 
+      //todo: поднять класс сюда. передать туда E,D, gd.
+      // в нём читать
+      // а потом только для заданного 't' производить вычисления
       ControlType PStrj = ReadControlType(pr, 'P');
       ControlType QStrj = ReadControlType(pr, 'Q');
-      // if (PStrj == ControlType.Constant) { } todo: как быть с константным управлением?
+      if (PStrj == ControlType.Constant) { pr.ReadVector("PConstant"); }// todo: как быть с константным управлением?
 
 
       List<Geometry<TNum, TConv>.Vector> trajectory = new List<Geometry<TNum, TConv>.Vector>() { x0 };
@@ -120,7 +123,7 @@ public class TrajMain<TNum, TConv>
         FirstPlayerControl<TNum, TConv> fpControl =
           new FirstPlayerControl<TNum, TConv>
           (
-           x
+           gd.Xstar(t)*x
          , D[t]
          , E[t]
          , W[t]
@@ -130,7 +133,7 @@ public class TrajMain<TNum, TConv>
         SecondPlayerControl<TNum, TConv> spControl =
           new SecondPlayerControl<TNum, TConv>
           (
-           x
+           gd.Xstar(t)*x
          , D[t]
          , E[t]
          , W[t]
@@ -150,16 +153,18 @@ public class TrajMain<TNum, TConv>
       using Geometry<TNum, TConv>.ParamWriter pwP = new Geometry<TNum, TConv>.ParamWriter($"{OutputDir}{name}_aimP-{num}.aimp");
       using Geometry<TNum, TConv>.ParamWriter pwQ = new Geometry<TNum, TConv>.ParamWriter($"{OutputDir}{name}_aimQ-{num}.aimq");
 
+      //todo: 1) сохранять в папку с именем игры
+      
       pwT.WriteString("md5-dynamic", gd.DynamicHash);
-      pwT.WriteString("md5", $"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}"); //todo: детальное описание стратегии
+      pwT.WriteString("md5", Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}")); //todo: детальное описание стратегии
       pwT.WriteVectors("Trajectory", trajectory);
 
       pwP.WriteString("md5-dynamic", gd.DynamicHash);
-      pwP.WriteString("md5", $"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}"); //todo: детальное описание стратегии
+      pwP.WriteString("md5", Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}")); //todo: детальное описание стратегии
       pwP.WriteVectors("Trajectory", aimpointsP);
 
       pwQ.WriteString("md5-dynamic", gd.DynamicHash);
-      pwQ.WriteString("md5", $"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}"); //todo: детальное описание стратегии
+      pwQ.WriteString("md5", Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}")); //todo: детальное описание стратегии
       pwQ.WriteVectors("Trajectory", aimpointsQ);
     }
   }
@@ -167,7 +172,7 @@ public class TrajMain<TNum, TConv>
   public enum ControlType { Optimal, Constant }
 
   public ControlType ReadControlType(Geometry<TNum, TConv>.ParamReader pr, char player) {
-    return pr.ReadString($"{player}Strategy") switch
+    return pr.ReadString($"{player}Control") switch
              {
                "Optimal"  => ControlType.Optimal
              , "Constant" => ControlType.Constant
@@ -182,15 +187,23 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    string bridgeDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Simple Motion_T=10\\First TS_01\\System.Double\\1e-008\\";
-    string configDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\Configs\\";
-    string outputDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\";
-    string gameConfigDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Configs\\";
+    // string bridgeDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Simple Motion_T=10\\First TS_01\\System.Double\\1e-008\\";
+    // string configDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\Configs\\";
+    // string outputDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\";
+    // string gameConfigDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Configs\\";
+    
+    string bridgeDir     = "E:\\Work\\LDG\\Bridges\\Simple Motion_T=10\\Explicit_01\\System.Double\\1e-008\\";
+    string configDir     = "E:\\Work\\LDG\\Trajectories\\Configs\\";
+    string outputDir     = "E:\\Work\\LDG\\Trajectories\\";
+    string gameConfigDir = "E:\\Work\\LDG\\Bridges\\Configs\\";
 
+    
+    
+    
     TrajMain<double, DConvertor> trajCalc =
       new TrajMain<double, DConvertor>(gameConfigDir + "SimpleMotion.gameconfig", bridgeDir, configDir, outputDir);
 
-    trajCalc.CalcTraj(configDir + "SimpleMotion.controlconfig");
+    trajCalc.CalcTraj(configDir + "SimpleMotion");
   }
 
 }

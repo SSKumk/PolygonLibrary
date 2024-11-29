@@ -87,7 +87,8 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    string mainDir   = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\";
+    // string mainDir   = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\";
+    string mainDir   = "E:\\Work\\LDG\\Bridges\\";
     string configDir = Path.Combine(mainDir, "Configs");
 
     BridgeCreator<double, DConvertor> bridgeCreator =

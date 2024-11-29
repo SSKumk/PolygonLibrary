@@ -14,17 +14,7 @@ public partial class Geometry<TNum, TConv>
   /// with the fixed given time step
   /// </summary>
   public class CauchyMatrix {
-
-    // /// <summary>
-    // /// Comparer based on epsilon comparison.
-    // /// Necessary for the internal storage
-    // /// </summary>
-    // internal class TimeComparer : IComparer<TNum> {
-    //
-    //   public int Compare(TNum a, TNum b) => Tools.CMP(a, b);
-    //
-    // }
-
+    
 #region Internal data
     /// <summary>
     /// The main storage: Cauchy matrix values (the value in the dictionary)

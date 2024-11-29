@@ -115,8 +115,8 @@ public partial class Geometry<TNum, TConv>
     public readonly TNum dt;
 #endregion
 
-    public int    projDim;  // размерность выделенных m координат
-    public int[]  projInd;  // индексы выделенных m координат
+    public int projDim;     // размерность выделенных m координат
+    public int[] projInd;   // индексы выделенных m координат
     public string projInfo; // текстовая характеристика пространства выделенных координат
 
 
@@ -152,6 +152,18 @@ public partial class Geometry<TNum, TConv>
     /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
     /// </summary>
     public readonly Matrix ProjMatrix;
+
+    public Matrix Xstar(TNum t) {
+      if (_Xstar.TryGetValue(t, out Matrix? matrix)) {
+        return matrix;
+      }
+      
+      Matrix projMatrix = ProjMatrix * CauchyMatrix[t];
+      _Xstar.Add(t, projMatrix);
+      return projMatrix;
+    }
+
+    private SortedDictionary<TNum, Matrix> _Xstar = new SortedDictionary<TNum, Matrix>(Tools.TComp);
 #endregion
 
 #region Constructor
@@ -223,11 +235,11 @@ public partial class Geometry<TNum, TConv>
         setTypeInfo switch
           {
             "ConvexPolytope" => SetType.ConvexPolytop
-          , "RectParallel" => SetType.RectParallel
-          , "Sphere" => SetType.Sphere
-          , "Ellipsoid" => SetType.Ellipsoid
-          , "ConvexHull" => SetType.ConvexHull
-          , _ => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
+          , "RectParallel"   => SetType.RectParallel
+          , "Sphere"         => SetType.Sphere
+          , "Ellipsoid"      => SetType.Ellipsoid
+          , "ConvexHull"     => SetType.ConvexHull
+          , _                => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
           };
 
       // Array for coordinates of the next point

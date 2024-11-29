@@ -50,6 +50,7 @@ public class SecondPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   }
 
   public override Geometry<TNum, TConv>.Vector Constant() {
+    gd.Q = gd.Q.GetInFLrep(); //todo Убрать, когда по Фукуде сделается
     if (!gd.Q.Contains(constControl)) {
       throw new ArgumentException("The constant control should lie within polytope Q!");
     }

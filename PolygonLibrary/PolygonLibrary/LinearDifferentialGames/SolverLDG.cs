@@ -19,8 +19,8 @@ public partial class Geometry<TNum, TConv>
     public readonly string WorkDir; // Эта папка, в которую пишутся файлы
 
 
-    public static readonly string NumericalType = typeof(TNum).ToString();           // текущий используемый числовой тип
-    public static readonly string Eps           = $"{TConv.ToDouble(Tools.Eps):e0}"; // текущая точность в библиотеке
+    public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
+    public static readonly string Eps = $"{TConv.ToDouble(Tools.Eps):e0}"; // текущая точность в библиотеке
 
     public readonly GameData gd;
 
@@ -72,6 +72,8 @@ public partial class Geometry<TNum, TConv>
 
       W       = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
       W[gd.T] = M;
+      
+      Directory.CreateDirectory(WorkDir);
 
       WriteBridgeSection(gd.T);
     }
@@ -225,8 +227,7 @@ public partial class Geometry<TNum, TConv>
 
     private void ProcessPsSection(TNum t) {
       if (!PsSectionFileCorrect(t)) {
-        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
-        D[t] = Xstar * gd.B;
+        D[t] = gd.Xstar(t) * gd.B;
         TNum t1 = t;
         Ps[t] = ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * D[t1] * pPoint), true);
         WritePsSection(t);
@@ -235,8 +236,7 @@ public partial class Geometry<TNum, TConv>
 
     private void ProcessQsSection(TNum t) {
       if (!QsSectionFileCorrect(t)) {
-        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
-        E[t] = Xstar * gd.C;
+        E[t] = gd.Xstar(t) * gd.C;
         TNum t1 = t;
         Qs[t] = ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * E[t1] * qPoint), false);
         WriteQsSection(t);
@@ -248,8 +248,7 @@ public partial class Geometry<TNum, TConv>
         if (!BridgeSectionFileCorrect(t - gd.dt)) {
           ReadBridgeSection(t);
         }
-      }
-      else {
+      } else {
         if (!Ps.ContainsKey(t)) {
           ReadPsSection(t);
         }
@@ -260,8 +259,7 @@ public partial class Geometry<TNum, TConv>
         if (WNext is null) {
           Console.WriteLine($"The bridge become degenerate at t = {t}.");
           bridgeIsNotDegenerate = false;
-        }
-        else {
+        } else {
           W[t] = WNext;
           WriteBridgeSection(t);
         }
@@ -273,8 +271,6 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public void Solve() {
       Stopwatch timer = new Stopwatch();
-
-      Directory.CreateDirectory(WorkDir);
 
       TNum t = gd.T;
       tMin = gd.T;
@@ -357,9 +353,8 @@ public partial class Geometry<TNum, TConv>
 
       TNum t = t0;
       do {
-        Matrix Xstar = gd.ProjMatrix * gd.CauchyMatrix[t];
-        D[t] = Xstar * gd.B;
-        E[t] = Xstar * gd.C;
+        D[t] = gd.Xstar(t) * gd.B;
+        E[t] = gd.Xstar(t) * gd.C;
 
         t += gd.dt;
       } while (Tools.LE(t, T));
@@ -404,8 +399,7 @@ public partial class Geometry<TNum, TConv>
             v       = qVert;
           }
         }
-      }
-      else { // лучший из P
+      } else { // лучший из P
         Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector pVert in gd.P.Vrep) {
@@ -435,8 +429,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="T">Final time.</param>
     /// <returns>List of state vectors representing the trajectory of the system from t0 to T.</returns>
     public List<Vector> Euler(Vector x0, TNum t0, TNum T) {
-      List<Vector> trajectory = new List<Vector> { x0 }; // Начальное состояние
-      LoadGame(t0, T);                                   // Загружаем информацию об игре на заданном промежутке
+      List<Vector> trajectory = new List<Vector>
+        {
+          x0
+        };             // Начальное состояние
+      LoadGame(t0, T); // Загружаем информацию об игре на заданном промежутке
 
       Vector x = x0;
       for (TNum t = t0; Tools.LT(t, T); t += gd.dt) {
