@@ -11,7 +11,7 @@ namespace Tests.OtherTests;
 
 // public class LDG_Tests {
 //
-//   private static readonly string pathData = "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
+//   private static readonly string pathData = "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations/";
 //
 //   [Test]
 //   public void SimplestCube3D() {

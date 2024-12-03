@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PolygonLibrary.Toolkit;
+namespace CGLibrary.Toolkit;
 
 public class Hashes {
 

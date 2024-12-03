@@ -11,8 +11,8 @@ using static Geometry<ddouble, Tests.DDConvertor>;
 public class Sandbox {
 
   private static readonly string pathData =
-    // "E:\\Work\\PolygonLibrary\\PolygonLibrary\\Tests\\OtherTests\\LDG_Computations\\";
-    "F:/Works/IMM/Аспирантура/_PolygonLibrary/PolygonLibrary/Tests/OtherTests/LDG_computations/";
+    // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations\\";
+    "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations/";
 
   [Params(3)]
   public int spaceDim;

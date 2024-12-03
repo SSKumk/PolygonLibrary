@@ -1,7 +1,7 @@
 ﻿
 
 // TODO: Uncomment when segments are ready
-// using PolygonLibrary.Segments;
+// using CGLibrary.Segments;
 
 
 namespace CGLibrary;

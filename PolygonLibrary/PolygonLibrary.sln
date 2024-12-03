@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 #
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolygonLibrary", "PolygonLibrary\PolygonLibrary.csproj", "{48C800CB-56B5-4206-89AD-9231E1A5DF23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CGLibrary", "CGLibrary\CGLibrary.csproj", "{48C800CB-56B5-4206-89AD-9231E1A5DF23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{1B47E72D-234B-4283-989D-BD1221FE452E}"
 EndProject

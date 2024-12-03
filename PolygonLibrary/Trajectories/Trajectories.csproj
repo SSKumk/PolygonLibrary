@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj"/>
+        <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>

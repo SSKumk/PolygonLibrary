@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 using CGLibrary;
-using PolygonLibrary.Toolkit;
+using CGLibrary.Toolkit;
 
 namespace Trajectories;
 
@@ -92,22 +92,13 @@ public class TrajMain<TNum, TConv>
         throw new ArgumentException("The dimension of the x0-vector should be equal to n!");
       }
 
-      //todo: поднять класс сюда. передать туда E,D, gd.
-      // в нём читать
-      // а потом только для заданного 't' производить вычисления
-
       PlayerControl<TNum, TConv> game = new PlayerControl<TNum, TConv>(E, D, W, gd);
 
       FirstPlayerControl<TNum, TConv>  fpControl = new FirstPlayerControl<TNum, TConv>(pr, game);
       SecondPlayerControl<TNum, TConv> spControl = new SecondPlayerControl<TNum, TConv>(pr, game);
 
 
-      List<Geometry<TNum, TConv>.Vector> trajectory = new List<Geometry<TNum, TConv>.Vector>()
-        {
-          x0
-        };
-      List<Geometry<TNum, TConv>.Vector> aimpointsP = new List<Geometry<TNum, TConv>.Vector>();
-      List<Geometry<TNum, TConv>.Vector> aimpointsQ = new List<Geometry<TNum, TConv>.Vector>();
+      List<Geometry<TNum, TConv>.Vector> trajectory = new List<Geometry<TNum, TConv>.Vector>() { x0 };
 
 
       if (Geometry<TNum, TConv>.Tools.LT(t0, tMin)) {
@@ -116,7 +107,6 @@ public class TrajMain<TNum, TConv>
 
       Geometry<TNum, TConv>.Vector x = x0;
       for (TNum t = t0; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
-
         Geometry<TNum, TConv>.Vector proj_x = gd.Xstar(t) * x;
         // Выполняем шаг Эйлера
         x += gd.dt * (gd.A * x + gd.B * fpControl.Control(t, proj_x) + gd.C * spControl.Control(t, proj_x));
@@ -126,23 +116,28 @@ public class TrajMain<TNum, TConv>
       using Geometry<TNum, TConv>.ParamWriter pwT = new Geometry<TNum, TConv>.ParamWriter($"{OutputDir}{name}_tr-{num}.traj");
       using Geometry<TNum, TConv>.ParamWriter pwP = new Geometry<TNum, TConv>.ParamWriter($"{OutputDir}{name}_aimP-{num}.aimp");
       using Geometry<TNum, TConv>.ParamWriter pwQ = new Geometry<TNum, TConv>.ParamWriter($"{OutputDir}{name}_aimQ-{num}.aimq");
+      // todo: Реализации управлений первого и второго игроков
 
-      //todo: 1) сохранять в папку с именем игры
 
       string md5Hash = Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{fpControl.controlTypeInfo}{spControl.controlTypeInfo}");
-      
+
       WriteHashes(pwT, "Trajectory", gd.DynamicsHash, md5Hash, trajectory);
-      WriteHashes(pwP, "AimP", gd.DynamicsHash, md5Hash, aimpointsP);      
-      WriteHashes(pwQ, "AimQ", gd.DynamicsHash, md5Hash, aimpointsQ);      
+      WriteHashes(pwP, "AimP", gd.DynamicsHash, md5Hash, fpControl.AimPoints);
+      WriteHashes(pwQ, "AimQ", gd.DynamicsHash, md5Hash, spControl.AimPoints);
     }
   }
 
-  private void WriteHashes(Geometry<TNum,TConv>.ParamWriter pw, string trajType, string dynamicsHash, string trajConfigHash, List<Geometry<TNum, TConv>.Vector> traj) {
+  private void WriteHashes(
+      Geometry<TNum, TConv>.ParamWriter  pw
+    , string                             trajType
+    , string                             dynamicsHash
+    , string                             trajConfigHash
+    , List<Geometry<TNum, TConv>.Vector> traj
+    ) {
     pw.WriteString("md5-dynamic", dynamicsHash);
     pw.WriteString("md5", trajConfigHash);
     pw.WriteVectors(trajType, traj);
   }
-
 
 }
 
@@ -151,17 +146,15 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    // string bridgeDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Simple Motion_T=10\\First TS_01\\System.Double\\1e-008\\";
-    // string configDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\Configs\\";
-    // string outputDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\";
-    // string gameConfigDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Configs\\";
+    string bridgeDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Simple Motion_T=10\\First TS_01\\System.Double\\1e-008\\";
+    string configDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\Configs\\";
+    string outputDir     = "F:\\Works\\IMM\\Аспирантура\\LDG\\Trajectories\\";
+    string gameConfigDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\Configs\\";
 
-    string bridgeDir     = "E:\\Work\\LDG\\Bridges\\Simple Motion_T=10\\Explicit_01\\System.Double\\1e-008\\";
-    string configDir     = "E:\\Work\\LDG\\Trajectories\\Configs\\";
-    string outputDir     = "E:\\Work\\LDG\\Trajectories\\";
-    string gameConfigDir = "E:\\Work\\LDG\\Bridges\\Configs\\";
-
-
+    // string bridgeDir     = "E:\\Work\\LDG\\Bridges\\Simple Motion_T=10\\Explicit_01\\System.Double\\1e-008\\";
+    // string configDir     = "E:\\Work\\LDG\\Trajectories\\Configs\\";
+    // string outputDir     = "E:\\Work\\LDG\\Trajectories\\";
+    // string gameConfigDir = "E:\\Work\\LDG\\Bridges\\Configs\\";
 
 
     TrajMain<double, DConvertor> trajCalc =

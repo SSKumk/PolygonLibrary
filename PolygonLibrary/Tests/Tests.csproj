@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PolygonLibrary\PolygonLibrary.csproj" />
+        <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>
