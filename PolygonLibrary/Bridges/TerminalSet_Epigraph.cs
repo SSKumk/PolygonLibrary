@@ -11,11 +11,10 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
   enum EpigraphType { DistToOrigin, DistToPolytope }
 
   public Geometry<TNum, TConv>.ConvexPolytop terminalSet;
-  public string                              terminalSetInfo = "_Epigraph_";
 
 
-  public TerminalSet_Epigraph(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
-    (pr, gameData) {
+  public TerminalSet_Epigraph(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData, string tsInfo) : base
+    (pr, gameData, tsInfo) {
     EpigraphType epiType =
       pr.ReadString("MType") switch
         {
@@ -23,10 +22,10 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
         , "DistToPolytope" => EpigraphType.DistToPolytope
         , _                => throw new ArgumentOutOfRangeException()
         };
-    terminalSetInfo += epiType;
+    tsInfo += epiType;
 
     TNum cMax = pr.ReadNumber<TNum>("MCMax");
-    terminalSetInfo += $"-CMax{cMax}";
+    tsInfo += $"-CMax{cMax}";
 
     BallType ballType =
       pr.ReadString("MBallType") switch
@@ -36,11 +35,11 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
         , "Ball_oo" => BallType.Ball_oo
         , _         => throw new ArgumentOutOfRangeException()
         };
-    terminalSetInfo += ballType;
+    tsInfo += ballType;
 
     int theta = 0, phi = 0;
     if (ballType == BallType.Ball_2) {
-      (theta, phi) = ReadBall2Params(pr, ref terminalSetInfo);
+      (theta, phi) = ReadBall2Params(pr, ref tsInfo);
     }
 
     switch (epiType) {
@@ -70,6 +69,7 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
             , _                => throw new ArgumentException($"Wrong type of the ball! Found {ballType}")
             };
 
+        //todo: какую инфу по многограннику выдавать-то? М.б. он сам должен это делать?
         break;
       }
 
@@ -79,7 +79,7 @@ public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>
 
       default: throw new ArgumentException("TerminalSet_Epigraph: Другие варианты непредусмотрены!");
     }
-    terminalSetInfo += $""; //todo: какую инфу по многограннику выдавать-то? М.б. он сам должен это делать?
+    terminalSetInfo += tsInfo;
   }
 
 

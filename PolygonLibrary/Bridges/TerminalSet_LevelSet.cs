@@ -11,7 +11,6 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
   public enum LevelSetType { DistToOrigin, DistToPolytope }
 
   public          Geometry<TNum, TConv>.ConvexPolytop terminalSet;
-  public readonly string                              terminalSetInfo = "_LevelSet_";
 
   public readonly TNum[] cs; // коэффициенты
 
@@ -24,8 +23,8 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
   private readonly int                                 _phi   = 0;
   private readonly Geometry<TNum, TConv>.ConvexPolytop _polytop;
 
-  public TerminalSet_LevelSet(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
-    (pr, gameData) {
+  public TerminalSet_LevelSet(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData, string tsInfo) : base
+    (pr, gameData,tsInfo) {
     int qnt = pr.ReadNumber<int>("CQnt");
     cs = pr.Read1DArray<TNum>("Constants", qnt);
 
@@ -36,7 +35,7 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
         , "DistToPolytope" => LevelSetType.DistToPolytope
         , _                => throw new ArgumentOutOfRangeException()
         };
-    terminalSetInfo += levelSetType;
+    tsInfo += levelSetType;
 
     ballType =
       pr.ReadString("MBallType") switch
@@ -46,11 +45,13 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
         , "Ball_oo" => BallType.Ball_oo
         , _         => throw new ArgumentOutOfRangeException()
         };
-    terminalSetInfo += ballType;
+    tsInfo += ballType;
 
     if (ballType == BallType.Ball_2) {
-      (_theta, _phi) = ReadBall2Params(pr, ref terminalSetInfo);
+      (_theta, _phi) = ReadBall2Params(pr, ref tsInfo);
     }
+
+    terminalSetInfo += tsInfo;
 
     if (levelSetType == LevelSetType.DistToPolytope) {
       _polytop = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);

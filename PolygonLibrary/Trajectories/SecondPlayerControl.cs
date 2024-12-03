@@ -8,24 +8,12 @@ public class SecondPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public SecondPlayerControl(
-      Geometry<TNum, TConv>.Vector        x
-    , Geometry<TNum, TConv>.Matrix        Dt
-    , Geometry<TNum, TConv>.Matrix        Et
-    , Geometry<TNum, TConv>.ConvexPolytop Wt
-    , Geometry<TNum, TConv>.GameData      gameData
-    , TrajMain<TNum, TConv>.ControlType   controlType
-    ) : base
-    (
-     x
-   , Dt
-   , Et
-   , Wt
-   , gameData
-   , controlType
-    ) { }
+  public SecondPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base(game.D, game.E, game.W, game.gd) {
+    controlType = ReadControlType(pr, 'Q');
+    ReadControl(pr, 'Q');
+  }
 
-  public override Geometry<TNum, TConv>.Vector Optimal() {
+  public override Geometry<TNum, TConv>.Vector Optimal(TNum t) {
     Geometry<TNum, TConv>.Vector spControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
     Geometry<TNum, TConv>.Vector h = Wt.NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста

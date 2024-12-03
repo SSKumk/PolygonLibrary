@@ -9,12 +9,11 @@ public class TerminalSet_Explicit<TNum, TConv> : TerminalSetBase<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   public readonly Geometry<TNum, TConv>.ConvexPolytop terminalSet;
-  public readonly string                              terminalSetInfo;
 
-  public TerminalSet_Explicit(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData) : base
-    (pr, gameData) {
-    terminalSet     =  Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', gd.projDim, out terminalSetInfo);
-    terminalSetInfo += "_Explicit_";
+  public TerminalSet_Explicit(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData, string tsInfo) : base
+    (pr, gameData,tsInfo) {
+    terminalSet     =  Geometry<TNum, TConv>.GameData.ReadExplicitSet(pr, 'M', gd.projDim, out string tsInfo2);
+    terminalSetInfo += tsInfo2;
   }
 
   public override void DoSolve(string baseWorkDir) {

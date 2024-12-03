@@ -8,57 +8,80 @@ public class PlayerControl<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public TrajMain<TNum, TConv>.ControlType controlType;
+  public enum ControlType { Optimal, Constant }
 
-  public Geometry<TNum, TConv>.Vector AimPoint;
+  public readonly Geometry<TNum, TConv>.GameData gd;
 
-  public Geometry<TNum, TConv>.GameData gd;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        D;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        E;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W;
 
-  public Geometry<TNum, TConv>.Vector constControl; // для случая Constant
-
-  public Geometry<TNum, TConv>.Vector x;
-
-  /// <summary>
-  /// Collection of matrices D for the instants from the time grid
-  /// </summary>
-  public readonly Geometry<TNum, TConv>.Matrix Dt;
-
-  /// <summary>
-  /// Collection of matrices E for the instants from the time grid
-  /// </summary>
-  public readonly Geometry<TNum, TConv>.Matrix Et;
+  protected ControlType controlType;
+  public    string      controlTypeInfo = "";
 
 
-  /// <summary>
-  /// The bridge of the game
-  /// </summary>
-  public readonly Geometry<TNum, TConv>.ConvexPolytop Wt;
+  public List<Geometry<TNum, TConv>.Vector> AimPoints;
+
+#region Поля под разные виды управлений
+  public Geometry<TNum, TConv>.Vector constantControl;
+#endregion
+
 
   public PlayerControl(
-      Geometry<TNum, TConv>.Vector        x
-    , Geometry<TNum, TConv>.Matrix        Dt
-    , Geometry<TNum, TConv>.Matrix        Et
-    , Geometry<TNum, TConv>.ConvexPolytop Wt
-    , Geometry<TNum, TConv>.GameData      gameData
-    , TrajMain<TNum, TConv>.ControlType   controlType
+      SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        D
+    , SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        E
+    , SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W
+    , Geometry<TNum, TConv>.GameData                              gameData
     ) {
-    gd               = gameData;
-    this.Dt          = Dt;
-    this.Et          = Et;
-    this.Wt          = Wt;
-    this.x           = x;
-    this.controlType = controlType;
+    gd     = gameData;
+    this.D = D;
+    this.E = E;
+    this.W = W;
   }
 
-  public virtual Geometry<TNum, TConv>.Vector Constant() { return Geometry<TNum, TConv>.Vector.Zero(1); }
-  public virtual Geometry<TNum, TConv>.Vector Optimal()  { return Geometry<TNum, TConv>.Vector.Zero(1); }
+  public virtual Geometry<TNum, TConv>.Vector Constant(Geometry<TNum, TConv>.Vector x) {
+    return Geometry<TNum, TConv>.Vector.Zero(1);
+  }
 
-  public Geometry<TNum, TConv>.Vector Control() {
+  public virtual Geometry<TNum, TConv>.Vector Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
+    return Geometry<TNum, TConv>.Vector.Zero(1);
+  }
+
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x) {
     return controlType switch
              {
-               TrajMain<TNum, TConv>.ControlType.Optimal  => Optimal()
-             , TrajMain<TNum, TConv>.ControlType.Constant => Constant()
+               ControlType.Optimal  => Optimal(t)
+             , ControlType.Constant => Constant()
              };
+  }
+
+  //todo: char player переделать на enum Player и сделать метод string GetPlayerPrefix(Player) => "P" or "Q";
+  public ControlType ReadControlType(Geometry<TNum, TConv>.ParamReader pr, char player) {
+    ControlType typeInfo =
+      pr.ReadString($"{player}Control") switch
+        {
+          "Optimal"  => ControlType.Optimal
+        , "Constant" => ControlType.Constant
+        , _          => throw new ArgumentException("!!!")
+        };
+
+    controlTypeInfo += $"{player}";
+    controlTypeInfo += typeInfo;
+
+    return typeInfo;
+  }
+
+  public void ReadControl(Geometry<TNum, TConv>.ParamReader pr, char player) {
+    switch (controlType) {
+      case ControlType.Optimal: break;
+      case ControlType.Constant: {
+        constantControl =  pr.ReadVector("Value"); //todo: проверять корректность вх. данных (dim B, dim C)
+        controlTypeInfo += $"_{constantControl}_";
+
+        break;
+      }
+      default: throw new ArgumentOutOfRangeException();
+    }
   }
 
 }

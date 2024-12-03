@@ -10,13 +10,15 @@ public abstract class TerminalSetBase<TNum, TConv>
 
   public enum BallType { Ball_1, Ball_2, Ball_oo }
 
-  public string                         TerminalSetName; // имя терминального множества в выходном файле
-  public Geometry<TNum, TConv>.GameData gd;
+  public readonly string                         terminalSetName; // имя терминального множества в выходном файле
+  public          string                         terminalSetInfo;
+  public          Geometry<TNum, TConv>.GameData gd;
 
 
-  protected TerminalSetBase(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gamedata) {
-    TerminalSetName = pr.ReadString("Name");
-    gd              = gamedata;
+  protected TerminalSetBase(Geometry<TNum, TConv>.ParamReader pr, Geometry<TNum, TConv>.GameData gameData, string tsInfo) {
+    terminalSetName = pr.ReadString("Name");
+    gd              = gameData;
+    terminalSetInfo = tsInfo;
   }
 
 

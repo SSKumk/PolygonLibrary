@@ -52,7 +52,7 @@ class BridgeCreator<TNum, TConv>
     definitionTerminalSetType = pr.ReadString("DefinitionType");
 
 
-    int numTSet = pr.ReadNumber<int>("numberOfTerminalSets");
+    int numTSet = pr.ReadNumber<int>("Count");
 
     // в цикле перебираем все терминальные множества из файла
     for (int i = 0; i < numTSet; i++) {
@@ -60,26 +60,16 @@ class BridgeCreator<TNum, TConv>
       TerminalSetBase<TNum, TConv> terminalSetBase =
         definitionTerminalSetType switch
           {
-            "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, gd)
-          , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, gd)
-          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, gd)
-          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr, gd)
+            "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, gd, definitionTerminalSetType)
+          , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, gd, definitionTerminalSetType)
+          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, gd, definitionTerminalSetType)
+          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr, gd, definitionTerminalSetType)
           , _                      => throw new ArgumentOutOfRangeException()
           };
 
-      terminalSetBase.DoSolve(Path.Combine(OutputDir, $"{terminalSetBase.TerminalSetName}_{num}"));
+      terminalSetBase.DoSolve(Path.Combine(OutputDir, $"{terminalSetBase.terminalSetName}_{num}"));
     }
   }
-
-
-  // public void CleanAll() {
-  //   Console.WriteLine($"Warning! This function will erase all files and folders at the path: {ProblemPath}/");
-  //   Console.WriteLine($"Do you want to continue? [y]es");
-  //   if (Console.ReadKey().KeyChar == 'y') {
-  //     Directory.Delete($"{ProblemPath}", true);
-  //   }
-  // }
-
 }
 
 class Program {

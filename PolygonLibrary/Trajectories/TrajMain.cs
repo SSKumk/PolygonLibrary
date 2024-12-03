@@ -18,21 +18,12 @@ public class TrajMain<TNum, TConv>
 
   public Geometry<TNum, TConv>.GameData gd;
 
-  /// <summary>
-  /// Collection of matrices D for the instants from the time grid
-  /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
 
-  /// <summary>
-  /// Collection of matrices E for the instants from the time grid
-  /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
 
-  /// <summary>
-  /// The bridge of the game
-  /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
 
@@ -104,9 +95,11 @@ public class TrajMain<TNum, TConv>
       //todo: поднять класс сюда. передать туда E,D, gd.
       // в нём читать
       // а потом только для заданного 't' производить вычисления
-      ControlType PStrj = ReadControlType(pr, 'P');
-      ControlType QStrj = ReadControlType(pr, 'Q');
-      if (PStrj == ControlType.Constant) { pr.ReadVector("PConstant"); }// todo: как быть с константным управлением?
+
+      PlayerControl<TNum, TConv>      game         = new PlayerControl<TNum, TConv>(E,D,W, gd);
+
+      FirstPlayerControl<TNum, TConv> fpControl = new FirstPlayerControl<TNum, TConv>(pr, game);
+      SecondPlayerControl<TNum, TConv> spControl = new SecondPlayerControl<TNum, TConv>(pr, game);
 
 
       List<Geometry<TNum, TConv>.Vector> trajectory = new List<Geometry<TNum, TConv>.Vector>() { x0 };
@@ -120,30 +113,11 @@ public class TrajMain<TNum, TConv>
 
       Geometry<TNum, TConv>.Vector x = x0;
       for (TNum t = t0; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
-        FirstPlayerControl<TNum, TConv> fpControl =
-          new FirstPlayerControl<TNum, TConv>
-          (
-           gd.Xstar(t)*x
-         , D[t]
-         , E[t]
-         , W[t]
-         , gd
-         , PStrj
-          );
-        SecondPlayerControl<TNum, TConv> spControl =
-          new SecondPlayerControl<TNum, TConv>
-          (
-           gd.Xstar(t)*x
-         , D[t]
-         , E[t]
-         , W[t]
-         , gd
-         , QStrj
-          );
+
 
 
         // Выполняем шаг Эйлера
-        x += gd.dt * (gd.A * x + gd.B * fpControl.Control() + gd.C * spControl.Control());
+        x += gd.dt * (gd.A * x + gd.B * fpControl.Control(t) + gd.C * spControl.Control(t));
         trajectory.Add(x);
         aimpointsP.Add(fpControl.AimPoint);
         aimpointsQ.Add(spControl.AimPoint);
@@ -161,24 +135,16 @@ public class TrajMain<TNum, TConv>
 
       pwP.WriteString("md5-dynamic", gd.DynamicHash);
       pwP.WriteString("md5", Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}")); //todo: детальное описание стратегии
-      pwP.WriteVectors("Trajectory", aimpointsP);
+      pwP.WriteVectors("AimP", aimpointsP);
 
       pwQ.WriteString("md5-dynamic", gd.DynamicHash);
       pwQ.WriteString("md5", Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{PStrj}{QStrj}")); //todo: детальное описание стратегии
-      pwQ.WriteVectors("Trajectory", aimpointsQ);
+      pwQ.WriteVectors("AimQ", aimpointsQ);
     }
   }
 
-  public enum ControlType { Optimal, Constant }
 
-  public ControlType ReadControlType(Geometry<TNum, TConv>.ParamReader pr, char player) {
-    return pr.ReadString($"{player}Control") switch
-             {
-               "Optimal"  => ControlType.Optimal
-             , "Constant" => ControlType.Constant
-             , _          => throw new ArgumentException("!!!")
-             };
-  }
+
 
 }
 

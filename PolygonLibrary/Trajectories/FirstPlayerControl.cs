@@ -8,24 +8,12 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public FirstPlayerControl(
-      Geometry<TNum, TConv>.Vector        x
-    , Geometry<TNum, TConv>.Matrix        Dt
-    , Geometry<TNum, TConv>.Matrix        Et
-    , Geometry<TNum, TConv>.ConvexPolytop Wt
-    , Geometry<TNum, TConv>.GameData      gameData
-    , TrajMain<TNum, TConv>.ControlType   controlType
-    ) : base
-    (
-     x
-   , Dt
-   , Et
-   , Wt
-   , gameData
-   , controlType
-    ) { }
+  public FirstPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base(game.D, game.E, game.W, game.gd) {
+    controlType = ReadControlType(pr, 'P');
+    ReadControl(pr, 'P');
+  }
 
-  public override Geometry<TNum, TConv>.Vector Optimal() {
+  public override Geometry<TNum, TConv>.Vector Optimal(TNum t, Geometry<TNum,TConv>.Vector x) {
     Geometry<TNum, TConv>.Vector fpControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
     AimPoint = Wt.NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
@@ -46,13 +34,13 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
     return fpControl;
   }
 
-  public override Geometry<TNum, TConv>.Vector Constant() {
-    if (!gd.P.Contains(constControl)) {
+  public override Geometry<TNum, TConv>.Vector Constant(Geometry<TNum, TConv>.Vector x) {
+    if (!gd.P.Contains(constantControl)) {
       throw new ArgumentException("The constant control should lie within polytope P!");
     }
-    AimPoint = (x + constControl).Normalize();
+    AimPoints.Add((x + constantControl).Normalize());
 
-    return constControl;
+    return constantControl;
   }
 
 }
