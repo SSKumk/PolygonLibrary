@@ -4,8 +4,13 @@ using CGLibrary;
 
 
 namespace Bridges;
-// todo:  1. Счёт мостов. Файл настроек Игры, файл настроек набора Мостов
-//       (задано одно терминальное множество, задана функция платы и набор С, надграфик выпуклой функции)
+
+// todo: Описывать эти todo не в файле программы, а в отдельном файле. Как и идеи.
+
+
+
+
+// todo: Если есть файл описания объектов, то с ним работать надо АККУРАТНО! исправляя только то, что изменилось. Возможно стоит втянуть ВСЁ. !!!
 
 class BridgeCreator<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
@@ -70,6 +75,7 @@ class BridgeCreator<TNum, TConv>
       terminalSetBase.DoSolve(Path.Combine(OutputDir, $"{terminalSetBase.terminalSetName}_{num}"));
     }
   }
+
 }
 
 class Program {
@@ -77,8 +83,8 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    // string mainDir   = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\";
-    string mainDir   = "E:\\Work\\LDG\\Bridges\\";
+    string mainDir   = "F:\\Works\\IMM\\Аспирантура\\LDG\\Bridges\\";
+    // string mainDir   = "E:\\Work\\LDG\\Bridges\\";
     string configDir = Path.Combine(mainDir, "Configs");
 
     BridgeCreator<double, DConvertor> bridgeCreator =
