@@ -8,7 +8,8 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public FirstPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base(game.D, game.E, game.W, game.gd) {
+  public FirstPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base
+    (game.D, game.E, game.W, game.gd) {
     controlType = ReadControlType(pr, 'P');
     ReadControl(pr, 'P');
 
@@ -19,7 +20,10 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
     }
   }
 
-  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(
+      TNum                         t
+    , Geometry<TNum, TConv>.Vector x
+    ) {
     Geometry<TNum, TConv>.Vector fpControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
     Geometry<TNum, TConv>.Vector aimPoint = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
@@ -40,7 +44,10 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
     return (fpControl, aimPoint);
   }
 
-  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(Geometry<TNum, TConv>.Vector x)
-    => (constantControl, (x + constantControl).Normalize());
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(
+      TNum                         t
+    , Geometry<TNum, TConv>.Vector proj_x
+    )
+    => (constantControl, (proj_x + gd.Xstar(t) * constantControl).Normalize());
 
 }

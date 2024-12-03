@@ -3,6 +3,10 @@ using CGLibrary;
 
 namespace Trajectories;
 
+
+// todo: interface IController (Control()) <-- ConstantControl, OneDimHarmonicControl, FirstPlayerOptimalControl, SecondPlayerOptimalControl , ...
+// завести два поля в классе подсчёта траекторий FirstPlayerController и SecondPlayerController оба IController
+
 public class PlayerControl<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
@@ -12,12 +16,12 @@ public class PlayerControl<TNum, TConv>
 
   public readonly Geometry<TNum, TConv>.GameData gd;
 
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D;
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        D;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        E;
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W;
 
   protected ControlType controlType;
-  public string controlTypeInfo = "";
+  public    string      controlTypeInfo = "";
 
 
   public List<Geometry<TNum, TConv>.Vector> AimPoints = new List<Geometry<TNum, TConv>.Vector>();
@@ -39,11 +43,17 @@ public class PlayerControl<TNum, TConv>
     this.W = W;
   }
 
-  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(Geometry<TNum, TConv>.Vector x) {
+  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(
+      TNum                         t
+    , Geometry<TNum, TConv>.Vector proj_x
+    ) {
     return (Geometry<TNum, TConv>.Vector.Zero(1), Geometry<TNum, TConv>.Vector.Zero(1));
   }
 
-  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
+  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(
+      TNum                         t
+    , Geometry<TNum, TConv>.Vector x
+    ) {
     return (Geometry<TNum, TConv>.Vector.Zero(1), Geometry<TNum, TConv>.Vector.Zero(1));
   }
 
@@ -52,9 +62,10 @@ public class PlayerControl<TNum, TConv>
       controlType switch
         {
           ControlType.Optimal  => Optimal(t, x)
-        , ControlType.Constant => Constant(x)
+        , ControlType.Constant => Constant(t, x)
         };
     AimPoints.Add(aimPoint);
+
     return control;
   }
 
