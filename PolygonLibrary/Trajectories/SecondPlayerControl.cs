@@ -11,22 +11,29 @@ public class SecondPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   public SecondPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base(game.D, game.E, game.W, game.gd) {
     controlType = ReadControlType(pr, 'Q');
     ReadControl(pr, 'Q');
+
+    if (controlType == ControlType.Constant) {
+      gd.Q = gd.Q.GetInFLrep(); //todo Убрать, когда по Фукуде сделается
+      if (!gd.Q.Contains(constantControl)) {
+        throw new ArgumentException("The constant control should lie within polytope Q!");
+      }
+    }
   }
 
-  public override Geometry<TNum, TConv>.Vector Optimal(TNum t) {
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
     Geometry<TNum, TConv>.Vector spControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
-    Geometry<TNum, TConv>.Vector h = Wt.NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
+    Geometry<TNum, TConv>.Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
+    Geometry<TNum, TConv>.Vector aimPoint;
     if (isInside) {
-      AimPoint = h;
+      aimPoint = h;
+    } else {
+      aimPoint = (x - h).Normalize() + x;
     }
-    else {
-      AimPoint = (x - h).Normalize() + x;
-    }
-    Geometry<TNum, TConv>.Vector l       = AimPoint - x;
+    Geometry<TNum, TConv>.Vector l       = aimPoint - x;
     TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
     foreach (Geometry<TNum, TConv>.Vector qVert in gd.Q.Vrep) {
-      TNum val = gd.dt * Et * qVert * l;
+      TNum val = gd.dt * E[t] * qVert * l;
       if (val > extrVal) {
         extrVal   = val;
         spControl = qVert;
@@ -34,17 +41,10 @@ public class SecondPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
     }
 
 
-    return spControl;
+    return (spControl, aimPoint);
   }
 
-  public override Geometry<TNum, TConv>.Vector Constant() {
-    gd.Q = gd.Q.GetInFLrep(); //todo Убрать, когда по Фукуде сделается
-    if (!gd.Q.Contains(constControl)) {
-      throw new ArgumentException("The constant control should lie within polytope Q!");
-    }
-    AimPoint = (x + constControl).Normalize();
-
-    return constControl;
-  }
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(Geometry<TNum, TConv>.Vector x)
+    => (constantControl, (x + constantControl).Normalize());
 
 }

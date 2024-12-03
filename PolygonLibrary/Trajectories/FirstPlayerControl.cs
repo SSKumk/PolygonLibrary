@@ -11,36 +11,36 @@ public class FirstPlayerControl<TNum, TConv> : PlayerControl<TNum, TConv>
   public FirstPlayerControl(Geometry<TNum, TConv>.ParamReader pr, PlayerControl<TNum, TConv> game) : base(game.D, game.E, game.W, game.gd) {
     controlType = ReadControlType(pr, 'P');
     ReadControl(pr, 'P');
+
+    if (controlType == ControlType.Constant) {
+      if (!gd.P.Contains(constantControl)) {
+        throw new ArgumentException("The constant control should lie within polytope P!");
+      }
+    }
   }
 
-  public override Geometry<TNum, TConv>.Vector Optimal(TNum t, Geometry<TNum,TConv>.Vector x) {
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
     Geometry<TNum, TConv>.Vector fpControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
-    AimPoint = Wt.NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
+    Geometry<TNum, TConv>.Vector aimPoint = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
     if (isInside) {
-      AimPoint = Wt.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(Wt.Vrep.Count);
+      aimPoint = W[t].Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(W[t].Vrep.Count);
     }
 
-    Geometry<TNum, TConv>.Vector l       = AimPoint - x;
+    Geometry<TNum, TConv>.Vector l       = aimPoint - x;
     TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
     foreach (Geometry<TNum, TConv>.Vector pVert in gd.P.Vrep) {
-      TNum val = gd.dt * Dt * pVert * l;
+      TNum val = gd.dt * D[t] * pVert * l;
       if (val > extrVal) {
         extrVal   = val;
         fpControl = pVert;
       }
     }
 
-    return fpControl;
+    return (fpControl, aimPoint);
   }
 
-  public override Geometry<TNum, TConv>.Vector Constant(Geometry<TNum, TConv>.Vector x) {
-    if (!gd.P.Contains(constantControl)) {
-      throw new ArgumentException("The constant control should lie within polytope P!");
-    }
-    AimPoints.Add((x + constantControl).Normalize());
-
-    return constantControl;
-  }
+  public override (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(Geometry<TNum, TConv>.Vector x)
+    => (constantControl, (x + constantControl).Normalize());
 
 }

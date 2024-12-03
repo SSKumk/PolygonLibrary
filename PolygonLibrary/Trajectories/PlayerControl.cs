@@ -12,15 +12,15 @@ public class PlayerControl<TNum, TConv>
 
   public readonly Geometry<TNum, TConv>.GameData gd;
 
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        D;
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>        E;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D;
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E;
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W;
 
   protected ControlType controlType;
-  public    string      controlTypeInfo = "";
+  public string controlTypeInfo = "";
 
 
-  public List<Geometry<TNum, TConv>.Vector> AimPoints;
+  public List<Geometry<TNum, TConv>.Vector> AimPoints = new List<Geometry<TNum, TConv>.Vector>();
 
 #region Поля под разные виды управлений
   public Geometry<TNum, TConv>.Vector constantControl;
@@ -39,20 +39,23 @@ public class PlayerControl<TNum, TConv>
     this.W = W;
   }
 
-  public virtual Geometry<TNum, TConv>.Vector Constant(Geometry<TNum, TConv>.Vector x) {
-    return Geometry<TNum, TConv>.Vector.Zero(1);
+  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Constant(Geometry<TNum, TConv>.Vector x) {
+    return (Geometry<TNum, TConv>.Vector.Zero(1), Geometry<TNum, TConv>.Vector.Zero(1));
   }
 
-  public virtual Geometry<TNum, TConv>.Vector Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
-    return Geometry<TNum, TConv>.Vector.Zero(1);
+  public virtual (Geometry<TNum, TConv>.Vector Control, Geometry<TNum, TConv>.Vector AimPoint) Optimal(TNum t, Geometry<TNum, TConv>.Vector x) {
+    return (Geometry<TNum, TConv>.Vector.Zero(1), Geometry<TNum, TConv>.Vector.Zero(1));
   }
 
   public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x) {
-    return controlType switch
-             {
-               ControlType.Optimal  => Optimal(t)
-             , ControlType.Constant => Constant()
-             };
+    (Geometry<TNum, TConv>.Vector control, Geometry<TNum, TConv>.Vector aimPoint) =
+      controlType switch
+        {
+          ControlType.Optimal  => Optimal(t, x)
+        , ControlType.Constant => Constant(x)
+        };
+    AimPoints.Add(aimPoint);
+    return control;
   }
 
   //todo: char player переделать на enum Player и сделать метод string GetPlayerPrefix(Player) => "P" or "Q";

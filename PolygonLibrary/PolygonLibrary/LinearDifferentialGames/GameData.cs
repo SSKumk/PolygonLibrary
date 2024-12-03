@@ -136,7 +136,7 @@ public partial class Geometry<TNum, TConv>
     public readonly string PInfo;
     public readonly string QInfo;
 
-    public readonly string DynamicHash;
+    public readonly string DynamicsHash;
     public readonly string PHash;
     public readonly string QHash;
 #endregion
@@ -215,7 +215,7 @@ public partial class Geometry<TNum, TConv>
       PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
       QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
 
-      DynamicHash = Hashes.GetMD5Hash(DynamicPQInfo);
+      DynamicsHash = Hashes.GetMD5Hash(DynamicPQInfo);
       PHash       = Hashes.GetMD5Hash(PInfo);
       QHash       = Hashes.GetMD5Hash(QInfo);
     }

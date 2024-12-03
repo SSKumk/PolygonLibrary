@@ -105,7 +105,7 @@ public partial class Geometry<TNum, TConv>
 
       Debug.Assert
         (
-         taskDynamicHash == gd.DynamicHash
+         taskDynamicHash == gd.DynamicsHash
        , $"SolverLDG.ReadSection: The hash-dynamic in the file does not match the expected hash."
         );
 
@@ -133,7 +133,7 @@ public partial class Geometry<TNum, TConv>
       ) {
       Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
       using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
-      prW.WriteString("md5-dynamic", gd.DynamicHash);
+      prW.WriteString("md5-dynamic", gd.DynamicsHash);
       prW.WriteString("md5", hash);
       sectionDict[t].WriteIn(prW, repType);
     }
@@ -196,9 +196,9 @@ public partial class Geometry<TNum, TConv>
       return fileHash1 == expectedDynamicHash && fileHash2 == expectedHash;
     }
 
-    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, gd.DynamicHash, TerminalSetHash);
-    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, gd.DynamicHash, gd.PHash);
-    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, gd.DynamicHash, gd.QHash);
+    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, gd.DynamicsHash, TerminalSetHash);
+    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, gd.DynamicsHash, gd.PHash);
+    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, gd.DynamicsHash, gd.QHash);
 
 
     /// <summary>
