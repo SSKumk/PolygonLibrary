@@ -22,5 +22,6 @@ Type = значение типа (RectParallel, Sphere, Ellipsoid)
 
 # Markdown-файлы
 
-1. [ ] Описание файла [IO-многогранников](/LibPolytopeFormat.md)
+1. [x] Описание файла [IO-многогранников](./zTextFiles/LibPolytopeFormat.md)
 
+2. [ ] Как называть папку конкретного примера, куда складываются все решения задачи?

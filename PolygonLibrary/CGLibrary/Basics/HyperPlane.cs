@@ -73,7 +73,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The constant term in the equation of the hyperplane.
+    /// The constant term in the right-hand side jf the equation of the hyperplane.
     /// </summary>
     public TNum ConstantTerm {
       get
