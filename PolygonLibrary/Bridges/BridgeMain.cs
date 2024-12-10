@@ -4,6 +4,7 @@ using CGLibrary;
 
 
 namespace Bridges;
+// todo: ПОКА ЗАБИЛ НА ВСЯКИЕ ХЕШИ, ПРОВЕРКИ КОРРЕКТНОСТИ И ПРОЧЕЕ!!!
 
 // todo: Если есть файл описания объектов, то с ним работать надо АККУРАТНО! исправляя только то, что изменилось. Возможно стоит втянуть ВСЁ. !!!
 
@@ -69,9 +70,19 @@ class BridgeCreator<TNum, TConv>
     PathOutput = pr.ReadString("Problem Name");
 
 
+    // Считали динамику игры (без множеств ограничений игроков)
     string dynFileName = name2dyn[pr.ReadString("Dynamics Name")].dynFileName;
     gd = new Geometry<TNum, TConv>.GameData(new Geometry<TNum, TConv>.ParamReader(PathDynamics + dynFileName + ".gamedata"));
 
+    string fpPolFileName = name2pol[pr.ReadString("FP Name")].polFileName;
+    string spPolFileName = name2pol[pr.ReadString("SP Name")].polFileName;
+
+    Geometry<TNum, TConv>.PolytopeReaderFactory.ReadPolytope
+      (new Geometry<TNum, TConv>.ParamReader(PathPolytopes + fpPolFileName + ".polytope"), out string fpNamePol); //todo: проверить что имена совпадают (key, name)
+    Geometry<TNum, TConv>.PolytopeReaderFactory.ReadPolytope
+      (new Geometry<TNum, TConv>.ParamReader(PathPolytopes + spPolFileName + ".polytope"), out string spNamePol); //todo: проверить что имена совпадают (key, name)
+
+    string TSType = pr.ReadString("TS Type");
 
     // PathOutput = Path.Combine(MainOutputDir, $"{gd.ProblemName}_T={gd.T}");
   }
