@@ -13,7 +13,7 @@ public partial class Geometry<TNum, TConv>
       return GetReader(pr).ReadPolytope(pr);
     }
 
-    private static IPolytopeReader GetReader(ParamReader pr) {
+    public static IPolytopeReader GetReader(ParamReader pr) {
       string type = pr.ReadString("Type");
 
       return type switch
