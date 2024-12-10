@@ -9,10 +9,6 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo: Продумать систему пространства имён; в смысле?
-  // todo: Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён.
-  // todo: Закинуть в Toolkit всё, что не геометрия
-
   /// <summary>
   /// Class for keeping game parameter data
   /// </summary>
@@ -175,7 +171,7 @@ public partial class Geometry<TNum, TConv>
       ProblemName = pr.ReadString("ProblemName");
 
       // Dynamics
-      n    = pr.ReadNumber<int>("n");
+      n    = pr.ReadNumber<int>("Dim");
       A    = new Matrix(pr.Read2DArray<TNum>("A", n, n));
       pDim = pr.ReadNumber<int>("pDim");
       B    = new Matrix(pr.Read2DArray<TNum>("B", n, pDim));
@@ -192,10 +188,10 @@ public partial class Geometry<TNum, TConv>
       projInfo = string.Join(';', projInd);
 
       // Reading data of the first player's control
-      P = ReadExplicitSet(pr, 'P', pDim, out string PSetInfo);
+      // P = ReadExplicitSet(pr, 'P', pDim, out string PSetInfo);
 
       // Reading data of the second player's control
-      Q = ReadExplicitSet(pr, 'Q', qDim, out string QSetInfo);
+      // Q = ReadExplicitSet(pr, 'Q', qDim, out string QSetInfo);
 
       // The Cauchy matrix
       CauchyMatrix = new CauchyMatrix(A, T, dt);
@@ -207,17 +203,17 @@ public partial class Geometry<TNum, TConv>
       ProjMatrix = new Matrix(ProjMatrixArr);
 
       // calc hashes
-      string Astr = A.ToString();
-      string Bstr = B.ToString();
-      string Cstr = C.ToString();
+      // string Astr = A.ToString();
+      // string Bstr = B.ToString();
+      // string Cstr = C.ToString();
+      //
+      // DynamicPQInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}{projInfo}";
+      // PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
+      // QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
 
-      DynamicPQInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}{projInfo}";
-      PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
-      QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
-
-      DynamicsHash = Hashes.GetMD5Hash(DynamicPQInfo);
-      PHash       = Hashes.GetMD5Hash(PInfo);
-      QHash       = Hashes.GetMD5Hash(QInfo);
+      // DynamicsHash = Hashes.GetMD5Hash(DynamicPQInfo);
+      // PHash       = Hashes.GetMD5Hash(PInfo);
+      // QHash       = Hashes.GetMD5Hash(QInfo);
     }
 #endregion
 
