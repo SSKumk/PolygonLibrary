@@ -62,7 +62,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Input data
     //todo: xml
-    public string ProblemName;
+    public string Name;
 
 #region Data defining the dynamics of the game
     /// <summary>
@@ -111,8 +111,8 @@ public partial class Geometry<TNum, TConv>
     public readonly TNum dt;
 #endregion
 
-    public int projDim;     // размерность выделенных m координат
-    public int[] projInd;   // индексы выделенных m координат
+    public int    projDim;  // размерность выделенных m координат
+    public int[]  projInd;  // индексы выделенных m координат
     public string projInfo; // текстовая характеристика пространства выделенных координат
 
 
@@ -135,6 +135,19 @@ public partial class Geometry<TNum, TConv>
     public readonly string DynamicsHash;
     public readonly string PHash;
     public readonly string QHash;
+
+    // calc hashes
+    // string Astr = A.ToString();
+    // string Bstr = B.ToString();
+    // string Cstr = C.ToString();
+    //
+    // DynamicPQInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}{projInfo}";
+    // PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
+    // QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
+
+    // DynamicsHash = Hashes.GetMD5Hash(DynamicPQInfo);
+    // PHash       = Hashes.GetMD5Hash(PInfo);
+    // QHash       = Hashes.GetMD5Hash(QInfo);
 #endregion
 #endregion
 
@@ -153,68 +166,62 @@ public partial class Geometry<TNum, TConv>
       if (_Xstar.TryGetValue(t, out Matrix? matrix)) {
         return matrix;
       }
-      
+
       Matrix projMatrix = ProjMatrix * CauchyMatrix[t];
       _Xstar.Add(t, projMatrix);
+
       return projMatrix;
     }
 
-    private SortedDictionary<TNum, Matrix> _Xstar = new SortedDictionary<TNum, Matrix>(Tools.TComp);
+    private readonly SortedDictionary<TNum, Matrix> _Xstar = new SortedDictionary<TNum, Matrix>(Tools.TComp);
 #endregion
 
 #region Constructor
     /// <summary>
-    /// Reading and initializing data. Order is important!!!
+    /// Initializes a new instance of the <see cref="GameData"/> class by reading and setting all required parameters.
+    /// The order of reading is critical for correct initialization.
     /// </summary>
-    /// <param name="pr">The reader with the data.</param>
-    public GameData(ParamReader pr) {
-      ProblemName = pr.ReadString("ProblemName");
+    /// <param name="prDyn">The reader for dynamic parameters.</param>
+    /// <param name="prP">The reader for the first player's control parameters.</param>
+    /// <param name="prQ">The reader for the second player's control parameters.</param>
+    public GameData(ParamReader prDyn, ParamReader prP, ParamReader prQ) {
+      // Reading general information
+      Name = prDyn.ReadString("Name");
 
-      // Dynamics
-      n    = pr.ReadNumber<int>("Dim");
-      A    = new Matrix(pr.Read2DArray<TNum>("A", n, n));
-      pDim = pr.ReadNumber<int>("pDim");
-      B    = new Matrix(pr.Read2DArray<TNum>("B", n, pDim));
-      qDim = pr.ReadNumber<int>("qDim");
-      C    = new Matrix(pr.Read2DArray<TNum>("C", n, qDim));
+      // Reading dynamics
+      n    = prDyn.ReadNumber<int>("Dim");
+      A    = new Matrix(prDyn.Read2DArray<TNum>("A", n, n));
+      pDim = prDyn.ReadNumber<int>("pDim");
+      B    = new Matrix(prDyn.Read2DArray<TNum>("B", n, pDim));
+      qDim = prDyn.ReadNumber<int>("qDim");
+      C    = new Matrix(prDyn.Read2DArray<TNum>("C", n, qDim));
 
-      t0 = pr.ReadNumber<TNum>("t0");
-      T  = pr.ReadNumber<TNum>("T");
-      dt = pr.ReadNumber<TNum>("dt");
+      t0 = prDyn.ReadNumber<TNum>("t0");
+      T  = prDyn.ReadNumber<TNum>("T");
+      dt = prDyn.ReadNumber<TNum>("dt");
 
-
-      projDim  = pr.ReadNumber<int>("ProjDim");
-      projInd  = pr.Read1DArray<int>("ProjInd", projDim);
+      // Reading projection information
+      projDim  = prDyn.ReadNumber<int>("ProjDim");
+      projInd  = prDyn.Read1DArray<int>("ProjInd", projDim);
       projInfo = string.Join(';', projInd);
 
-      // Reading data of the first player's control
-      // P = ReadExplicitSet(pr, 'P', pDim, out string PSetInfo);
+      // Reading the first player's control data
+      P = PolytopeReader.Read(prP);
 
-      // Reading data of the second player's control
-      // Q = ReadExplicitSet(pr, 'Q', qDim, out string QSetInfo);
+      // Reading the second player's control data
+      Q = PolytopeReader.Read(prQ);
 
-      // The Cauchy matrix
+      // Computing the Cauchy matrix
       CauchyMatrix = new CauchyMatrix(A, T, dt);
 
+      // Setting up the projection matrix
       TNum[,] ProjMatrixArr = new TNum[projDim, n];
       for (int i = 0; i < projDim; i++) {
         ProjMatrixArr[i, projInd[i]] = Tools.One;
       }
       ProjMatrix = new Matrix(ProjMatrixArr);
-
-      // calc hashes
-      // string Astr = A.ToString();
-      // string Bstr = B.ToString();
-      // string Cstr = C.ToString();
-      //
-      // DynamicPQInfo = $"{Astr}{Bstr}{Cstr}{T}{dt}{PSetInfo}{QSetInfo}{projInfo}";
-      // PInfo         = $"{Astr}{Bstr}{T}{dt}{PSetInfo}{projInfo}";
-      // QInfo         = $"{Astr}{Cstr}{T}{dt}{QSetInfo}{projInfo}";
-
-      // DynamicsHash = Hashes.GetMD5Hash(DynamicPQInfo);
-      // PHash       = Hashes.GetMD5Hash(PInfo);
-      // QHash       = Hashes.GetMD5Hash(QInfo);
     }
+
 #endregion
 
 #region Aux procedures
@@ -231,11 +238,11 @@ public partial class Geometry<TNum, TConv>
         setTypeInfo switch
           {
             "ConvexPolytope" => SetType.ConvexPolytop
-          , "RectParallel"   => SetType.RectParallel
-          , "Sphere"         => SetType.Sphere
-          , "Ellipsoid"      => SetType.Ellipsoid
-          , "ConvexHull"     => SetType.ConvexHull
-          , _                => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
+          , "RectParallel" => SetType.RectParallel
+          , "Sphere" => SetType.Sphere
+          , "Ellipsoid" => SetType.Ellipsoid
+          , "ConvexHull" => SetType.ConvexHull
+          , _ => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
           };
 
       // Array for coordinates of the next point

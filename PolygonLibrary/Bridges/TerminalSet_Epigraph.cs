@@ -1,6 +1,3 @@
-using System.Numerics;
-using CGLibrary;
-
 namespace Bridges;
 
 public class TerminalSet_Epigraph<TNum, TConv> : TerminalSetBase<TNum, TConv>

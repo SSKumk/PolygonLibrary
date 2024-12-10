@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using System.Numerics;
-using CGLibrary;
 
 
 namespace Bridges;
@@ -8,37 +6,15 @@ namespace Bridges;
 
 // todo: Если есть файл описания объектов, то с ним работать надо АККУРАТНО! исправляя только то, что изменилось. Возможно стоит втянуть ВСЁ. !!!
 
-class BridgeCreator<TNum, TConv>
+public class LDGDirHolder<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // ---------------------------------------------
-  // public static string pathToDynamics(string  ldgDir) => Path.Combine(ldgDir, "Dynamics");
-  // public static string pathToPolytopes(string ldgDir) => Path.Combine(ldgDir, "Polytopes");
-  //
-  // public static string pathToDictDynamic(string   ldgDir) => Path.Combine(pathToDynamics(ldgDir), "!Dict_dynamics.txt");
-  // public static string pathToDictPolytopes(string ldgDir) => Path.Combine(pathToPolytopes(ldgDir), "!Dict_polytopes.txt");
-
-  public static void SetUpDirectories(string ldgDir) {
-    Directory.CreateDirectory(Path.Combine(ldgDir, "_Out"));
-
-    Directory.CreateDirectory(Path.Combine(ldgDir, "Dynamics"));
-    string dynPath = Path.Combine(ldgDir, "Dynamics", "!Dict_dynamics.txt");
-    if (!File.Exists(dynPath)) { File.Create(dynPath); }
-
-    Directory.CreateDirectory(Path.Combine(ldgDir, "Polytopes"));
-    string polPath = Path.Combine(ldgDir, "Polytopes", "!Dict_polytopes.txt");
-    if (!File.Exists(polPath)) { File.Create(polPath); }
-
-    Directory.CreateDirectory(Path.Combine(ldgDir, "Problems"));
-  }
-  // ---------------------------------------------
-
-  public readonly string PathLDG;       // корневая папка для всех данных
-  public readonly string PathOutput;    // где будут лежать результаты игры
-  public          string PathDynamics;  // Путь к папке с файлами динамик системы
-  public          string PathPolytopes; // Путь к папке с файлами многогранников
+  public readonly string PathLDG;          // корневая папка для всех данных
+  public readonly string PathDynamics;     // Путь к папке с файлами динамик системы
+  public readonly string PathPolytopes;    // Путь к папке с файлами многогранников
+  public readonly string PathTerminalSets; // Путь к папке с файлами терминальных множеств
 
   public readonly Dictionary<string, (string dynFileName, string comment)>
     name2dyn; // имя_динамики      --> внутреннее имя файла динамики
@@ -46,49 +22,22 @@ class BridgeCreator<TNum, TConv>
   public readonly Dictionary<string, (string polFileName, string comment)>
     name2pol; // имя_многогранника --> внутреннее имя файла многогранника
 
+  public readonly Dictionary<string, (string tmsFileName, string comment)>
+    name2tms; // имя_терминального_множества --> внутреннее имя файла терминального множества
 
-  public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-
-  public string definitionTerminalSetType; // тип терминальных множеств в файле
-
-
-  public BridgeCreator(string pathLdg, string ProblemFileName) {
-    // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
-    PathLDG       = pathLdg;
-    PathDynamics  = Path.Combine(PathLDG, "Dynamics");
-    PathPolytopes = Path.Combine(PathLDG, "Polytopes");
+  public LDGDirHolder(string pathLdg) {
+    PathLDG          = pathLdg;
+    PathDynamics     = Path.Combine(PathLDG, "Dynamics");
+    PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
+    PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathDynamics + "!Dict_dynamics.txt"));
     name2pol = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathPolytopes + "!Dict_polytopes.txt"));
-
-    // ------------------------
-
-    Geometry<TNum, TConv>.ParamReader pr =
-      new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathLDG, "Problems", ProblemFileName) + ".gameconfig");
-
-    PathOutput = pr.ReadString("Problem Name");
-
-
-    // Считали динамику игры (без множеств ограничений игроков)
-    string dynFileName = name2dyn[pr.ReadString("Dynamics Name")].dynFileName;
-    gd = new Geometry<TNum, TConv>.GameData(new Geometry<TNum, TConv>.ParamReader(PathDynamics + dynFileName + ".gamedata"));
-
-    string fpPolFileName = name2pol[pr.ReadString("FP Name")].polFileName;
-    string spPolFileName = name2pol[pr.ReadString("SP Name")].polFileName;
-
-    Geometry<TNum, TConv>.PolytopeReaderFactory.ReadPolytope
-      (new Geometry<TNum, TConv>.ParamReader(PathPolytopes + fpPolFileName + ".polytope"), out string fpNamePol); //todo: проверить что имена совпадают (key, name)
-    Geometry<TNum, TConv>.PolytopeReaderFactory.ReadPolytope
-      (new Geometry<TNum, TConv>.ParamReader(PathPolytopes + spPolFileName + ".polytope"), out string spNamePol); //todo: проверить что имена совпадают (key, name)
-
-    string TSType = pr.ReadString("TS Type");
-
-    // PathOutput = Path.Combine(MainOutputDir, $"{gd.ProblemName}_T={gd.T}");
+    name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathTerminalSets + "!Dict_terminalsets.txt"));
   }
 
-
-  public static Dictionary<string, (string fileName, string comment)> ReadDictionary(Geometry<TNum, TConv>.ParamReader pr) {
+  private static Dictionary<string, (string fileName, string comment)> ReadDictionary(Geometry<TNum, TConv>.ParamReader pr) {
     Dictionary<string, (string fileName, string comment)> dict = new Dictionary<string, (string fileName, string comment)>();
 
     int k = pr.ReadNumber<int>("Qnt");
@@ -102,32 +51,84 @@ class BridgeCreator<TNum, TConv>
     return dict;
   }
 
+  public Geometry<TNum, TConv>.ParamReader OpenDynamicsReader(string name)
+    => new(PathDynamics + name2dyn[name].dynFileName + ".gamedata");
 
-  public void ReadTerminalSetConfigAndSolve(string terminalBrConfigFileName) { // Тут будет обработка ошибок ещё
+  public Geometry<TNum, TConv>.ParamReader OpenPolytopeReader(string name)
+    => new(PathPolytopes + name2pol[name].polFileName + ".polytope");
 
-    string                            brConfigPath = Path.Combine(BrConfigDir, terminalBrConfigFileName + ".terminalsetconfig");
-    Geometry<TNum, TConv>.ParamReader pr           = new Geometry<TNum, TConv>.ParamReader(brConfigPath);
-    definitionTerminalSetType = pr.ReadString("DefinitionType");
+  public Geometry<TNum, TConv>.ParamReader OpenTerminalSetReader(string name)
+    => new(PathTerminalSets + name2tms[name].tmsFileName + ".terminalset");
 
+}
 
-    int numTSet = pr.ReadNumber<int>("Count");
+class BridgeCreator<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
+  where TConv : INumConvertor<TNum> {
 
-    // в цикле перебираем все терминальные множества из файла
-    for (int i = 0; i < numTSet; i++) {
-      string num = $"{i + 1:00}";
-      TerminalSetBase<TNum, TConv> terminalSetBase =
-        definitionTerminalSetType switch
-          {
-            "Explicit"             => new TerminalSet_Explicit<TNum, TConv>(pr, gd, definitionTerminalSetType)
-          , "Minkowski functional" => new TerminalSet_MinkowskiFunctional<TNum, TConv>(pr, gd, definitionTerminalSetType)
-          , "Epigraph"             => new TerminalSet_Epigraph<TNum, TConv>(pr, gd, definitionTerminalSetType)
-          , "Level set"            => new TerminalSet_LevelSet<TNum, TConv>(pr, gd, definitionTerminalSetType)
-          , _                      => throw new ArgumentOutOfRangeException()
-          };
+#region Data
+  public readonly LDGDirHolder<TNum, TConv>      dh; // пути к основным папкам и словари-связки
+  public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
+  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
 
-      terminalSetBase.DoSolve(Path.Combine(PathOutput, $"{terminalSetBase.terminalSetName}_{num}"));
+  public readonly string PathOutput; // где будут лежать результаты игры
+#endregion
+
+  public BridgeCreator(string pathLdg, string ProblemFileName) {
+    // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
+
+    dh = new LDGDirHolder<TNum, TConv>(pathLdg); // установили пути и прочитали словари-связки
+
+    // начинаем читать файл задачи
+
+    Geometry<TNum, TConv>.ParamReader pr =
+      new Geometry<TNum, TConv>.ParamReader(Path.Combine(dh.PathLDG, "Problems", ProblemFileName) + ".gameconfig");
+
+    // Имя выходной папки совпадает с полем Problem Name в файле задачи
+    PathOutput = pr.ReadString("Problem Name");
+
+    // Читаем имена динамики и многогранников ограничений на управления игроков
+    string dynName   = pr.ReadString("Dynamics Name");
+    string fpPolName = pr.ReadString("FP Name");
+    string spPolName = pr.ReadString("SP Name");
+    string tmsName   = pr.ReadString("TS Name");
+
+    // заполняем динамику и многогранники ограничений на управления игроков
+    gd =
+      new Geometry<TNum, TConv>.GameData
+        (dh.OpenDynamicsReader(dynName), dh.OpenPolytopeReader(fpPolName), dh.OpenPolytopeReader(spPolName));
+
+    ts = new TerminalSet<TNum,TConv>(tmsName, dh);
+  }
+
+  public void Solve() {
+    while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop tms)) {
+      // Geometry<TNum,TConv>.SolverLDG solver = new Geometry<TNum, TConv>.SolverLDG()
     }
   }
+  
+
+  // ---------------------------------------------
+
+  public static void SetUpDirectories(string ldgDir) {
+    Directory.CreateDirectory(Path.Combine(ldgDir, "_Out"));
+
+    Directory.CreateDirectory(Path.Combine(ldgDir, "Dynamics"));
+    string dynPath = Path.Combine(ldgDir, "Dynamics", "!Dict_dynamics.txt");
+    if (!File.Exists(dynPath)) { File.Create(dynPath); }
+
+    Directory.CreateDirectory(Path.Combine(ldgDir, "Polytopes"));
+    string polPath = Path.Combine(ldgDir, "Polytopes", "!Dict_polytopes.txt");
+    if (!File.Exists(polPath)) { File.Create(polPath); }
+
+    Directory.CreateDirectory(Path.Combine(ldgDir, "Problems"));
+
+    Directory.CreateDirectory(Path.Combine(ldgDir, "Terminal sets"));
+    string tmsPath = Path.Combine(ldgDir, "Terminal sets", "!Dict_terminalsets.txt");
+    if (!File.Exists(tmsPath)) { File.Create(tmsPath); }
+  }
+  // ---------------------------------------------
 
 }
 
@@ -138,12 +139,7 @@ class Program {
 
     string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
 
-    BridgeCreator<double, DConvertor> bridgeCreator =
-      new BridgeCreator<double, DConvertor>(ldgDir, configDir, "SimpleMotion", configDir);
-    bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion");
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_MinkFunc");
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_LevelSet");
-    // bridgeCreator.ReadTerminalSetConfigAndSolve("SimpleMotion_Epigraph");
+    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion");
   }
 
 }

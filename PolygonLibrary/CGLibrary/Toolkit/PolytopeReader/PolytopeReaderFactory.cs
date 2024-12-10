@@ -5,10 +5,10 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public class PolytopeReaderFactory {
+  public class PolytopeReader {
 
-    public static ConvexPolytop ReadPolytope(ParamReader pr, out string name) {
-      name = pr.ReadString("Name");
+    public static ConvexPolytop Read(ParamReader pr) {
+      _ = pr.ReadString("Name");
 
       return GetReader(pr).ReadPolytope(pr);
     }
@@ -22,7 +22,7 @@ public partial class Geometry<TNum, TConv>
                  // , "Convex Hull"  => new ConvexHullReader()
                  // , "Hyper Planes" => new HyperPlanesReader()
                  // , "Generator"    => new GeneratorReader()
-               , _ => throw new ArgumentException($"Toolkit.PolytopeReader.PolytopeReaderFactory.GetReader: Unknown Type: {type}")
+               , _ => throw new ArgumentException($"Toolkit.PolytopeReader.PolytopeReader.GetReader: Unknown Type: {type}")
                };
     }
 

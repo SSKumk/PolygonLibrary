@@ -1,4 +1,3 @@
-using CGLibrary;
 using DoubleDouble;
 
 namespace Bridges;
