@@ -5,7 +5,6 @@ public abstract class TerminalSetBase<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public enum BallType { Ball_1, Ball_2, Ball_oo }
 
   public readonly string                         terminalSetName; // имя терминального множества в выходном файле
   public          string                         terminalSetInfo;
@@ -22,10 +21,9 @@ public abstract class TerminalSetBase<TNum, TConv>
   public abstract void DoSolve(string baseWorkDir);
 
 
-  protected (int theta, int phi) ReadBall2Params(Geometry<TNum, TConv>.ParamReader pr, ref string tsInfo) {
+  protected (int theta, int phi) ReadBall2Params(Geometry<TNum, TConv>.ParamReader pr) {
     int theta = pr.ReadNumber<int>("MTheta");
     int phi   = pr.ReadNumber<int>("MPhi");
-    tsInfo += $"-T{theta}-P{phi}_";
 
     return (theta, phi);
   }

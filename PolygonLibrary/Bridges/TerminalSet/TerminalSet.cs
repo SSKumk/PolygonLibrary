@@ -5,12 +5,13 @@ public class TerminalSet<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> tmss;
+  public  IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> tmss;
+  private IEnumerator<Geometry<TNum, TConv>.ConvexPolytop> tmssEnumerator;
 
-  public TerminalSet(string tmsName, LDGPathHolder<TNum,TConv> dh, ref Geometry<TNum,TConv>.GameData gd) {
+  public TerminalSet(string tmsName, LDGPathHolder<TNum, TConv> dh, ref Geometry<TNum, TConv>.GameData gd) {
     // открыли ридер терминального множества
-    Geometry<TNum, TConv>.ParamReader    pr   = dh.OpenTerminalSetReader(tmsName);
-    string type = pr.ReadString("TS Type");
+    Geometry<TNum, TConv>.ParamReader pr   = dh.OpenTerminalSetReader(tmsName);
+    string                            type = pr.ReadString("TS Type");
 
     ITerminalSetReader<TNum, TConv> reader =
       type switch
@@ -18,14 +19,18 @@ public class TerminalSet<TNum, TConv>
           "Explicit" => new ExplicitTS<TNum, TConv>()
           // , "Epigraph" => new EpigraphTS<TNum,TConv>(ref gd)
           // "Minkowski" => new MinkowskiTS<TNum, TConv>()
-        , _          => throw new ArgumentException($"Bridges.TerminalSet.Ctor: Unknown Type: {type}")
+        , _ => throw new ArgumentException($"Bridges.TerminalSet.Ctor: Unknown Type: {type}")
         };
 
-    tmss = reader.ReadTerminalSets(pr, dh);
+    tmss           = reader.ReadTerminalSets(pr, dh, gd);
+    tmssEnumerator = tmss.GetEnumerator();
   }
 
-  public bool GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop tms) {
-    throw new NotImplementedException("TODO");
+  public bool GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms) {
+    bool hasNext = tmssEnumerator.MoveNext();
+    tms = hasNext ? tmssEnumerator.Current : null;
+
+    return hasNext;
   }
 
 }

@@ -65,7 +65,7 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
           terminalSet =
             ballType switch
               {
-                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_1(gd.projDim - 1, num)
+                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_1(TODO, num)
               , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_2(gd.projDim - 1, _theta, _phi, num)
               , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToOriginBall_oo(gd.projDim - 1, num)
               , _                => throw new ArgumentOutOfRangeException($"Wrong type of the ball! Found {ballType}")

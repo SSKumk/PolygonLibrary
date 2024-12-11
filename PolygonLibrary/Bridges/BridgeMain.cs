@@ -105,8 +105,8 @@ class BridgeCreator<TNum, TConv>
   }
 
   public void Solve() {
-    while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop tms)) {
-      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(dh.PathBr, dh.PathPs, dh.PathQs, gd, tms);
+    while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
+      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(dh.PathBr, dh.PathPs, dh.PathQs, gd, tms!);
     }
   }
 
