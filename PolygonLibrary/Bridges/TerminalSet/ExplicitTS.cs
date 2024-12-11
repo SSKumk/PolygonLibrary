@@ -7,7 +7,7 @@ public class ExplicitTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGDirHolder<TNum, TConv>         dh
+    , LDGPathHolder<TNum, TConv>         dh
     ) {
     int      k     = pr.ReadNumber<int>("Qnt");
     string[] names = pr.Read1DArray<string>("Polytopes", k);

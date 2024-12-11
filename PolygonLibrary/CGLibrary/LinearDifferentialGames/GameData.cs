@@ -127,14 +127,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public ConvexPolytop Q;
 
-    //todo: xml
-    public readonly string DynamicPQInfo;
-    public readonly string PInfo;
-    public readonly string QInfo;
 
-    public readonly string DynamicsHash;
-    public readonly string PHash;
-    public readonly string QHash;
+    // public readonly string DynamicPQInfo;
+    // public readonly string PInfo;
+    // public readonly string QInfo;
+    //
+    // public readonly string DynamicsHash;
+    // public readonly string PHash;
+    // public readonly string QHash;
 
     // calc hashes
     // string Astr = A.ToString();

@@ -7,7 +7,7 @@ public interface ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGDirHolder<TNum, TConv>         ldgDirHolder
+    , LDGPathHolder<TNum, TConv>         ldgPathHolder
     );
 
 }

@@ -6,7 +6,7 @@ namespace Bridges;
 
 // todo: Если есть файл описания объектов, то с ним работать надо АККУРАТНО! исправляя только то, что изменилось. Возможно стоит втянуть ВСЁ. !!!
 
-public class LDGDirHolder<TNum, TConv>
+public class LDGPathHolder<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
@@ -16,20 +16,29 @@ public class LDGDirHolder<TNum, TConv>
   public readonly string PathPolytopes;    // Путь к папке с файлами многогранников
   public readonly string PathTerminalSets; // Путь к папке с файлами терминальных множеств
 
-  public readonly Dictionary<string, (string dynFileName, string comment)>
-    name2dyn; // имя_динамики      --> внутреннее имя файла динамики
+  public readonly string PathBr; // Путь к папке, в которой лежат папки с мостами для разных терминальных множеств
+  public readonly string PathPs; // Путь к папке, в которой лежат вектограммы первого игрока
+  public readonly string PathQs; // Путь к папке, в которой лежат вектограммы второго игрока
 
-  public readonly Dictionary<string, (string polFileName, string comment)>
+  public readonly Dictionary<string, (int dynFileName, string comment)>
+    name2dyn; // имя_динамики --> внутреннее имя файла динамики
+
+  public readonly Dictionary<string, (int polFileName, string comment)>
     name2pol; // имя_многогранника --> внутреннее имя файла многогранника
 
-  public readonly Dictionary<string, (string tmsFileName, string comment)>
+  public readonly Dictionary<string, (int tmsFileName, string comment)>
     name2tms; // имя_терминального_множества --> внутреннее имя файла терминального множества
 
-  public LDGDirHolder(string pathLdg) {
+  public LDGPathHolder(string pathLdg, string outputFolderName) {
     PathLDG          = pathLdg;
     PathDynamics     = Path.Combine(PathLDG, "Dynamics");
     PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
     PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
+
+    string pathOut = Path.Combine(PathLDG, "_Out", outputFolderName);
+    PathBr = Path.Combine(pathOut, "Br");
+    PathPs = Path.Combine(pathOut, "Ps");
+    PathQs = Path.Combine(pathOut, "Qs");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathDynamics + "!Dict_dynamics.txt"));
@@ -37,13 +46,13 @@ public class LDGDirHolder<TNum, TConv>
     name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathTerminalSets + "!Dict_terminalsets.txt"));
   }
 
-  private static Dictionary<string, (string fileName, string comment)> ReadDictionary(Geometry<TNum, TConv>.ParamReader pr) {
-    Dictionary<string, (string fileName, string comment)> dict = new Dictionary<string, (string fileName, string comment)>();
+  private static Dictionary<string, (int fileName, string comment)> ReadDictionary(Geometry<TNum, TConv>.ParamReader pr) {
+    Dictionary<string, (int fileName, string comment)> dict = new Dictionary<string, (int fileName, string comment)>();
 
     int k = pr.ReadNumber<int>("Qnt");
     for (int i = 0; i < k; i++) {
       string key      = pr.ReadString("Key");
-      string fileName = pr.ReadString("Value");
+      int    fileName = pr.ReadNumber<int>("Value");
       string comment  = pr.ReadString("Comment");
       dict.Add(key, (fileName, comment));
     }
@@ -68,25 +77,18 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGDirHolder<TNum, TConv>      dh; // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv>     dh; // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
   public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
-
-  public readonly string PathOutput; // где будут лежать результаты игры
 #endregion
 
-  public BridgeCreator(string pathLdg, string ProblemFileName) {
+  public BridgeCreator(string pathLDG, string problemFileName) {
     // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
 
-    dh = new LDGDirHolder<TNum, TConv>(pathLdg); // установили пути и прочитали словари-связки
-
-    // начинаем читать файл задачи
-
-    Geometry<TNum, TConv>.ParamReader pr =
-      new Geometry<TNum, TConv>.ParamReader(Path.Combine(dh.PathLDG, "Problems", ProblemFileName) + ".gameconfig");
+    var pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(pathLDG, "Problems", problemFileName) + ".gameconfig");
 
     // Имя выходной папки совпадает с полем Problem Name в файле задачи
-    PathOutput = pr.ReadString("Problem Name");
+    dh = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("Problem Name")); // установили пути и прочитали словари-связки
 
     // Читаем имена динамики и многогранников ограничений на управления игроков
     string dynName   = pr.ReadString("Dynamics Name");
@@ -99,15 +101,15 @@ class BridgeCreator<TNum, TConv>
       new Geometry<TNum, TConv>.GameData
         (dh.OpenDynamicsReader(dynName), dh.OpenPolytopeReader(fpPolName), dh.OpenPolytopeReader(spPolName));
 
-    ts = new TerminalSet<TNum,TConv>(tmsName, dh);
+    ts = new TerminalSet<TNum, TConv>(tmsName, dh, ref gd);
   }
 
   public void Solve() {
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop tms)) {
-      // Geometry<TNum,TConv>.SolverLDG solver = new Geometry<TNum, TConv>.SolverLDG()
+      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(dh.PathBr, dh.PathPs, dh.PathQs, gd, tms);
     }
   }
-  
+
 
   // ---------------------------------------------
 

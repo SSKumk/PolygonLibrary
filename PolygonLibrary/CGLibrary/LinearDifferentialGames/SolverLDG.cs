@@ -11,16 +11,19 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // солвер будет ответственен за решение ОДНОЙ задачи.
+  // Солвер будет ответственен за решение ОДНОЙ задачи.
   // Под решением понимается вычисление мостов, векторграмм и запись их в файл
-  //  в файле хранится хеш задачи, которую решал солвер
+  // Предполагается корректность уже существующих файлов в рабочей папке.
+  // То есть, что задача решается для той же самой динамики, P, Q и M.
   public class SolverLDG {
 
-    public readonly string WorkDir; // Эта папка, в которую пишутся файлы
+    public readonly string BrDir; // Эта папка, в которой находятся мосты
+    public readonly string PsDir; // Эта папка, в которой находятся вектограммы первого игрока
+    public readonly string QsDir; // Эта папка, в которой находятся вектограммы второго игрока
 
 
-    public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
-    public static readonly string Eps = $"{TConv.ToDouble(Tools.Eps):e0}"; // текущая точность в библиотеке
+    public static readonly string NumericalType = typeof(TNum).ToString();           // текущий используемый числовой тип
+    public static readonly string Eps           = $"{TConv.ToDouble(Tools.Eps):e0}"; // текущая точность в библиотеке
 
     public readonly GameData gd;
 
@@ -50,19 +53,16 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public readonly SortedDictionary<TNum, ConvexPolytop> Qs = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
 
-    public readonly string TerminalSetHash;
-
-
     public TNum tMin;
 
 
-    public SolverLDG(string workDir, GameData gameData, ConvexPolytop M, string terminalSetGameInfo) {
+    public SolverLDG(string bridgeDir, string psDir, string qsDir, GameData gameData, ConvexPolytop M) {
       CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-      WorkDir = Path.Combine(workDir, NumericalType, Eps);
-      gd      = gameData;
-
-      TerminalSetHash = Hashes.GetMD5Hash(terminalSetGameInfo);
+      BrDir = Path.Combine(bridgeDir, NumericalType, Eps);
+      PsDir = Path.Combine(psDir, NumericalType, Eps);
+      QsDir = Path.Combine(qsDir, NumericalType, Eps);
+      gd    = gameData;
 
       Debug.Assert
         (
@@ -72,13 +72,61 @@ public partial class Geometry<TNum, TConv>
 
       W       = new SortedDictionary<TNum, ConvexPolytop>(Tools.TComp);
       W[gd.T] = M;
-      
-      Directory.CreateDirectory(WorkDir);
+
+      Directory.CreateDirectory(BrDir);
+      Directory.CreateDirectory(PsDir);
+      Directory.CreateDirectory(QsDir);
 
       WriteBridgeSection(gd.T);
     }
 
-    public static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F3}";
+#region Read-Write
+    public void ReadBridgeSection(TNum t) => ReadSection(W, "W", BrDir, t);
+    public void ReadPsSection(TNum     t) => ReadSection(Ps, "P", PsDir, t);
+    public void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", QsDir, t);
+
+    public void WriteBridgeSection(TNum t) => WriteSection("W", W, BrDir, t, ConvexPolytop.Rep.FLrep);
+    public void WritePsSection(TNum     t) => WriteSection("P", Ps, PsDir, t, ConvexPolytop.Rep.FLrep);
+    public void WriteQsSection(TNum     t) => WriteSection("Q", Qs, QsDir, t, ConvexPolytop.Rep.Vrep);
+
+    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BrDir, t);
+    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsDir, t);
+    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsDir, t);
+
+
+    private static void WriteSection(
+        string                                sectionPrefix
+      , SortedDictionary<TNum, ConvexPolytop> sectionDict
+      , string                                basePath
+      , TNum                                  t
+      , ConvexPolytop.Rep                     repType
+      ) {
+      Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
+      using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      sectionDict[t].WriteIn(prW, repType);
+    }
+
+
+    private static void ReadSection(
+        SortedDictionary<TNum, ConvexPolytop> sectionDict
+      , string                                sectionPrefix
+      , string                                basePath
+      , TNum                                  t
+      ) {
+      string filePath = GetSectionPath(sectionPrefix, basePath, t);
+      Debug.Assert
+        (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
+
+      ParamReader prR = new ParamReader(filePath);
+      sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
+    }
+#endregion
+
+#region Aux
+    public static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F2}";
+
+    private static bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t)
+      => File.Exists(GetSectionPath(sectionPrefix, basePath, t));
 
     private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
       string prefix =
@@ -90,115 +138,9 @@ public partial class Geometry<TNum, TConv>
           , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
           };
 
-      return Path.Combine(basePath, $"{ToPrintTNum(t)}){sectionPrefix}.{prefix}section");
+      return Path.Combine(basePath, $"{ToPrintTNum(t)}.{prefix}section");
     }
-
-
-    private void ReadSection(SortedDictionary<TNum, ConvexPolytop> sectionDict, string sectionPrefix, string basePath, TNum t) {
-      string filePath = GetSectionPath(sectionPrefix, basePath, t);
-      Debug.Assert
-        (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
-
-      ParamReader prR             = new ParamReader(filePath);
-      string      taskDynamicHash = prR.ReadString("md5-dynamic");
-      string      taskHash        = prR.ReadString("md5");
-
-      Debug.Assert
-        (
-         taskDynamicHash == gd.DynamicsHash
-       , $"SolverLDG.ReadSection: The hash-dynamic in the file does not match the expected hash."
-        );
-
-      bool hashIsCorrect =
-        sectionPrefix switch
-          {
-            "W" => taskHash == TerminalSetHash
-          , "P" => taskHash == gd.PHash
-          , "Q" => taskHash == gd.QHash
-          , _   => throw new ArgumentException($"Unknown section prefix: {sectionPrefix}")
-          };
-      Debug.Assert
-        (hashIsCorrect, $"SolverLDG.ReadSection: The hash in the file does not match the expected hash ({sectionPrefix}Hash).");
-
-      sectionDict.Add(t, ConvexPolytop.CreateFromReader(prR));
-    }
-
-    private void WriteSection(
-        string                                sectionPrefix
-      , SortedDictionary<TNum, ConvexPolytop> sectionDict
-      , string                                basePath
-      , TNum                                  t
-      , string                                hash
-      , ConvexPolytop.Rep                     repType
-      ) {
-      Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
-      using ParamWriter prW = new ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
-      prW.WriteString("md5-dynamic", gd.DynamicsHash);
-      prW.WriteString("md5", hash);
-      sectionDict[t].WriteIn(prW, repType);
-    }
-
-    public void ReadBridgeSection(TNum t) => ReadSection(W, "W", WorkDir, t);
-    public void ReadPsSection(TNum     t) => ReadSection(Ps, "P", WorkDir, t);
-    public void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", WorkDir, t);
-
-    public void WriteBridgeSection(TNum t)
-      => WriteSection
-        (
-         "W"
-       , W
-       , WorkDir
-       , t
-       , TerminalSetHash
-       , ConvexPolytop.Rep.FLrep
-        );
-
-    public void WritePsSection(TNum t)
-      => WriteSection
-        (
-         "P"
-       , Ps
-       , WorkDir
-       , t
-       , gd.PHash
-       , ConvexPolytop.Rep.FLrep
-        );
-
-    public void WriteQsSection(TNum t)
-      => WriteSection
-        (
-         "Q"
-       , Qs
-       , WorkDir
-       , t
-       , gd.QHash
-       , ConvexPolytop.Rep.Vrep
-        );
-
-
-    private bool SectionFileCorrect(
-        string sectionPrefix
-      , string basePath
-      , TNum   t
-      , string expectedDynamicHash
-      , string expectedHash
-      ) {
-      string filePath = GetSectionPath(sectionPrefix, basePath, t);
-      if (!File.Exists(filePath)) {
-        return false;
-      }
-
-      ParamReader prR = new ParamReader(filePath);
-
-      string fileHash1 = prR.ReadString("md5-dynamic");
-      string fileHash2 = prR.ReadString("md5");
-
-      return fileHash1 == expectedDynamicHash && fileHash2 == expectedHash;
-    }
-
-    public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", WorkDir, t, gd.DynamicsHash, TerminalSetHash);
-    public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", WorkDir, t, gd.DynamicsHash, gd.PHash);
-    public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", WorkDir, t, gd.DynamicsHash, gd.QHash);
+#endregion
 
 
     /// <summary>
@@ -248,7 +190,8 @@ public partial class Geometry<TNum, TConv>
         if (!BridgeSectionFileCorrect(t - gd.dt)) {
           ReadBridgeSection(t);
         }
-      } else {
+      }
+      else {
         if (!Ps.ContainsKey(t)) {
           ReadPsSection(t);
         }
@@ -259,7 +202,8 @@ public partial class Geometry<TNum, TConv>
         if (WNext is null) {
           Console.WriteLine($"The bridge become degenerate at t = {t}.");
           bridgeIsNotDegenerate = false;
-        } else {
+        }
+        else {
           W[t] = WNext;
           WriteBridgeSection(t);
         }
@@ -286,7 +230,7 @@ public partial class Geometry<TNum, TConv>
         tPred =  t;
         tMin  =  t;
         t     -= gd.dt;
-        ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
+        ParamWriter prW = new ParamWriter(Path.Combine(BrDir, "tMin.txt"));
         prW.WriteNumber("tMin", tMin);
         prW.Close();
 
@@ -304,12 +248,12 @@ public partial class Geometry<TNum, TConv>
       tMin -= gd.dt;
 
       {
-        using ParamWriter prW = new ParamWriter(Path.Combine(WorkDir, "tMin.txt"));
+        using ParamWriter prW = new ParamWriter(Path.Combine(BrDir, "tMin.txt"));
         prW.WriteNumber("tMin", tMin);
       }
     }
 
-
+// ===============================================================================================================================
     public void LoadBridge(TNum t0, TNum T) {
       Debug.Assert(Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
 
@@ -399,7 +343,8 @@ public partial class Geometry<TNum, TConv>
             v       = qVert;
           }
         }
-      } else { // лучший из P
+      }
+      else { // лучший из P
         Vector l       = h - x;
         TNum   extrVal = Tools.NegativeInfinity;
         foreach (Vector pVert in gd.P.Vrep) {
@@ -429,11 +374,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="T">Final time.</param>
     /// <returns>List of state vectors representing the trajectory of the system from t0 to T.</returns>
     public List<Vector> Euler(Vector x0, TNum t0, TNum T) {
-      List<Vector> trajectory = new List<Vector>
-        {
-          x0
-        };             // Начальное состояние
-      LoadGame(t0, T); // Загружаем информацию об игре на заданном промежутке
+      List<Vector> trajectory = new List<Vector> { x0 }; // Начальное состояние
+      LoadGame(t0, T);                                   // Загружаем информацию об игре на заданном промежутке
 
       Vector x = x0;
       for (TNum t = t0; Tools.LT(t, T); t += gd.dt) {
@@ -447,6 +389,7 @@ public partial class Geometry<TNum, TConv>
 
       return trajectory;
     }
+
   }
 
 }
