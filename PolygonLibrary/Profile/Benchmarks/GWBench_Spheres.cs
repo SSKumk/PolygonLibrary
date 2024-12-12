@@ -20,15 +20,15 @@ public class GWBenchSpheres {
 
   [Params(10, 18)]
   // ReSharper disable once UnassignedField.Global
-  public int thetaPartition;
+  public int polarDivision;
 
   [Params(10, 16)]
   // ReSharper disable once UnassignedField.Global
-  public int phiPartition;
+  public int azimuthsDivisions;
 
   [GlobalSetup]
   public void SetUp() {
-    var sphere = Sphere_list(dim, thetaPartition, phiPartition, 3);
+    var sphere = Sphere_list(dim, polarDivision, azimuthsDivisions, 3);
     var S      = sphere.Union(SimplexRND(dim, out _, new int[] { dim }, amount - dim - 1));
     polytop = ConvexPolytop.CreateFromPoints(S.ToHashSet());
   }
@@ -51,7 +51,7 @@ public class GWBenchSpheres {
 
 /*
 Заворачиваем сферы с дополнительными точками
-| Method   | dim | amount | thetaPartition | phiPartition | Mean      | Error     | StdDev   |
+| Method   | dim | amount | polarDivision | azimuthsDivisions | Mean      | Error     | StdDev   |
 |--------- |---- |------- |--------------- |------------- |----------:|----------:|---------:|
 | GWSphere | 3   | 0      | 10             | 10           |  0.0164 s |  0.0014 s | 0.0001 s |
 | GWSphere | 3   | 0      | 10             | 16           |  0.0359 s |  0.0088 s | 0.0005 s |

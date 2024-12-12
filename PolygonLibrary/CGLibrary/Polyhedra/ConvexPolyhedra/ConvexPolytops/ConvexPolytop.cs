@@ -617,24 +617,24 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Makes a hD-sphere as Vrep with given radius using the Euclidean norm.
     /// </summary>
-    /// <param name="thetaPartition">The number of partitions at a zenith angle. Theta in [0, Pi].
+    /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].
     ///   thetaPoints should be greater than 2 for proper calculation.</param>
-    /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
+    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="center">The center of a sphere.</param>
     /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytope as Vrep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(int thetaPartition, int phiPartition, Vector center, TNum radius)
-      => Ellipsoid(thetaPartition, phiPartition, center, Vector.Ones(center.SpaceDim) * radius);
+    public static ConvexPolytop Sphere(int polarDivision, int azimuthsDivisions, Vector center, TNum radius)
+      => Ellipsoid(polarDivision, azimuthsDivisions, center, Vector.Ones(center.SpaceDim) * radius);
 
     /// <summary>
     /// Makes a hD-ellipsoid as Vrep with given semi-axis.
     /// </summary>
-    /// <param name="thetaPartition">The number of partitions at a zenith angle.</param>
-    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
+    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
     /// <param name="center">The center of an ellipsoid.</param>
     /// <param name="semiAxis">The vector where each coordinate represents the length of the corresponding semi-axis.</param>
     /// <returns>A convex polytope as Vrep representing the ellipsoid in hD.</returns>
-    public static ConvexPolytop Ellipsoid(int thetaPartition, int phiPartition, Vector center, Vector semiAxis) {
+    public static ConvexPolytop Ellipsoid(int polarDivision, int azimuthsDivisions, Vector center, Vector semiAxis) {
       Debug.Assert
         (
          semiAxis.SpaceDim == center.SpaceDim
@@ -663,16 +663,16 @@ public partial class Geometry<TNum, TConv>
       // Theta in [0, Pi]
       SortedSet<Vector> Ps        = new SortedSet<Vector>();
       int               N         = dim - 2;
-      TNum              thetaStep = Tools.PI / TConv.FromInt(thetaPartition);
-      TNum              phiStep   = Tools.PI2 / TConv.FromInt(phiPartition);
+      TNum              thetaStep = Tools.PI / TConv.FromInt(polarDivision);
+      TNum              phiStep   = Tools.PI2 / TConv.FromInt(azimuthsDivisions);
 
       List<TNum> thetaAll = new List<TNum>();
-      for (int i = 0; i <= thetaPartition; i++) {
+      for (int i = 0; i <= polarDivision; i++) {
         thetaAll.Add(thetaStep * TConv.FromInt(i));
       }
 
       // цикл по переменной [0, 2*Pi)
-      for (int i = 0; i < phiPartition; i++) {
+      for (int i = 0; i < azimuthsDivisions; i++) {
         TNum phi = phiStep * TConv.FromInt(i);
 
         // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
@@ -770,13 +770,13 @@ public partial class Geometry<TNum, TConv>
     // /// Makes the convex polytope which represents the distance to the ball in dim-space.
     // /// </summary>
     // /// <param name="dim">The dimension of the sphere-ball. It is greater than 1.</param>
-    // /// <param name="thetaPartition">The number of partitions at a zenith angle. Theta in [0, Pi].</param>
-    // /// <param name="phiPartition">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
+    // /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].</param>
+    // /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     // /// <param name="radius0">The radius of an initial sphere.</param>
     // /// <param name="CMax">The value of the last coordinate of a final sphere in dim+1 space.</param>
     // /// <returns>The convex polytope which represents the distance to the ball in dim-space. </returns>
-    // public static ConvexPolytop DistanceToBall_2(int dim, int thetaPartition, int phiPartition, TNum radius0, TNum CMax) {
-    //   ConvexPolytop ball0        = Sphere(thetaPartition, phiPartition, Vector.Zero(dim), radius0);
+    // public static ConvexPolytop DistanceToBall_2(int dim, int polarDivision, int azimuthsDivisions, TNum radius0, TNum CMax) {
+    //   ConvexPolytop ball0        = Sphere(polarDivision, azimuthsDivisions, Vector.Zero(dim), radius0);
     //   TNum          radiusF      = radius0 + CMax;
     //   ConvexPolytop ballF        = CreateFromPoints(ball0.Vrep.Select(v => v * radiusF).ToSortedSet());
     //   ConvexPolytop ball0_lifted = ball0.LiftUp(dim + 1, Tools.Zero);
@@ -829,12 +829,12 @@ public partial class Geometry<TNum, TConv>
     /// Makes the convex polytope representing the distance in "euclidean"-norm to the given convex polytope in dimensional space.
     /// </summary>
     /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="thetaPartition">The number of partitions at zenith angle.</param>
-    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at zenith angle.</param>
+    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
     /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int thetaPartition, int phiPartition, TNum CMax)
-      => DistanceToPolytop(P, CMax, (center, radius) => Sphere(thetaPartition, phiPartition, center, radius));
+    public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int polarDivision, int azimuthsDivisions, TNum CMax)
+      => DistanceToPolytop(P, CMax, (center, radius) => Sphere(polarDivision, azimuthsDivisions, center, radius));
     /// <summary>
     /// Makes the convex polytope representing the distance in "_1"-norm to the origin in dimensional space.
     /// </summary>
@@ -855,12 +855,12 @@ public partial class Geometry<TNum, TConv>
     /// Makes the convex polytope representing the distance in "_2"-norm to the origin in (dim)-dimensional space.
     /// </summary>
     /// <param name="point">The point distance to is computed.</param>
-    /// <param name="thetaPartition">The number of partitions at a zenith angle.</param>
-    /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
+    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
     /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_2(Vector point, int thetaPartition, int phiPartition, TNum k)
-      => DistanceToPoint(point, k, (center, radius) => Sphere(thetaPartition, phiPartition, center, radius));
+    public static ConvexPolytop DistanceToPointBall_2(Vector point, int polarDivision, int azimuthsDivisions, TNum k)
+      => DistanceToPoint(point, k, (center, radius) => Sphere(polarDivision, azimuthsDivisions, center, radius));
 
     /// <summary>
     /// Makes the convex polytope representing the distance to the point in (dim)-dimensional space.
@@ -1149,26 +1149,27 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
-    /// Creates a homothetic transformation of the current polytope with respect to the origin.
-    /// The transformation is scaled by the given coefficient <paramref name="k"/>.
+    /// Creates a scaled version of the current polytope with respect to a given origin.
+    /// The polytope is scaled by the given factor <paramref name="k"/>.
     /// </summary>
-    /// <param name="k">The scaling coefficient. Must be non-negative.</param>
+    /// <param name="k">The scaling factor. Must be non-negative.</param>
+    /// <param name="origin">The origin point for scaling.</param>
     /// <returns>
-    /// A new <see cref="ConvexPolytop"/> that is the homothetic transformation of the current polytope.
+    /// A new <see cref="ConvexPolytop"/> that is a scaled version of the current polytope.
     /// </returns>
     /// <exception cref="NotImplementedException">
-    /// Thrown when the scaling coefficient <paramref name="k"/> is negative, as this case is not supported.
+    /// Thrown when the scaling factor <paramref name="k"/> is negative, as this case is not supported for now.
     /// </exception>
-    public ConvexPolytop Homothety(TNum k) {
+    public ConvexPolytop Scale(TNum k, Vector origin) {
       if (Tools.LT(k)) {
-        throw new NotImplementedException("ConvexPolytop.Homothety: Пока не умеем с отрицательным 'k'");
+        throw new NotImplementedException("ConvexPolytop.Scale: Пока не умеем с отрицательным 'k'");
       }
 
       if (IsFLrep) {
-        return CreateFromFaceLattice(FLrep.VertexTransform(v => v * k), true);
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => (v - origin) * k), true);
       }
       if (IsVrep) {
-        return CreateFromPoints(Vrep.Select(v => v * k));
+        return CreateFromPoints(Vrep.Select(v => (v-origin) * k));
       }
 
       return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(hp.Normal, hp.ConstantTerm * k)));

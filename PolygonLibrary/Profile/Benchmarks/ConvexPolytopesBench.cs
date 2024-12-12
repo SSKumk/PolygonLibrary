@@ -24,7 +24,7 @@ public class ConvexPolytopesBench {
   /*
 
 
-| Method      | dimSpheres | thetaPartition | phiPartition | Mean             | Error             | StdDev          | Gen0         | Gen1         | Gen2       | Allocated      |
+| Method      | dimSpheres | polarDivision | azimuthsDivisions | Mean             | Error             | StdDev          | Gen0         | Gen1         | Gen2       | Allocated      |
 |------------ |----------- |--------------- |------------- |-----------------:|------------------:|----------------:|-------------:|-------------:|-----------:|---------------:|
 | MakeSpheres | 3          | 10             | 10           |         382.1 us |          15.78 us |         0.86 us |      15.1367 |       0.9766 |          - |       93.29 KB |
 | MakeSpheres | 3          | 10             | 16           |         640.5 us |         357.74 us |        19.61 us |      22.4609 |       1.9531 |          - |       141.8 KB |
@@ -133,14 +133,14 @@ public class ConvexPolytopesBench {
   //
   // [Params( 10, 18, 36, 72)]
   // // ReSharper disable once UnassignedField.Global
-  // public int thetaPartition;
+  // public int polarDivision;
   //
   // [Params(10, 16, 32, 64)]
   // // ReSharper disable once UnassignedField.Global
-  // public int phiPartition;
+  // public int azimuthsDivisions;
   //
   // [Benchmark]
-  // public void MakeSpheres() => ConvexPolytop.Sphere(dimSpheres, thetaPartition, phiPartition, Vector.Zero(dimSpheres), 1);
+  // public void MakeSpheres() => ConvexPolytop.Sphere(dimSpheres, polarDivision, azimuthsDivisions, Vector.Zero(dimSpheres), 1);
 
 /*
 Немного граней циклических
