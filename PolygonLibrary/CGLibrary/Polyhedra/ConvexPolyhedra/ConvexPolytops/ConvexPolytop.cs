@@ -160,8 +160,7 @@ public partial class Geometry<TNum, TConv>
                   if (firstNonZeroProduct) {
                     if (Tools.GT(dotProduct)) { v = -v; }
                     firstNonZeroProduct = false;
-                  }
-                  else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+                  } else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
                     if (Tools.GT(dotProduct)) {
                       isEdge = false;
 
@@ -228,8 +227,7 @@ public partial class Geometry<TNum, TConv>
 
           if (IsFLrep) {
             _Vrep = FLrep.Vertices;
-          }
-          else {
+          } else {
             _Vrep = HrepToVrep_Geometric(Hrep);
           }
 
@@ -310,8 +308,7 @@ public partial class Geometry<TNum, TConv>
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
         _FLrep = new GiftWrapping(VP).ConstructFL();
         var _ = Vrep; //Сразу инициировали
-      }
-      else {
+      } else {
         _Vrep = new SortedSet<Vector>(VP);
       }
     }
@@ -326,8 +323,7 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = HPs.First().Normal.SpaceDim;
       if (doHRedundancy) {
         _Hrep = HRedundancyByGW(HPs);
-      }
-      else {
+      } else {
         _Hrep = new List<HyperPlane>(HPs);
       }
     }
@@ -457,7 +453,10 @@ public partial class Geometry<TNum, TConv>
       int          PDim = pr.ReadNumber<int>("PDim");
       List<Vector> Vs   = pr.ReadVectors("Vs");
 
-      List<List<FLNode>> lattice = new List<List<FLNode>>(PDim) { Vs.Select(v => new FLNode(v)).ToList() };
+      List<List<FLNode>> lattice = new List<List<FLNode>>(PDim)
+        {
+          Vs.Select(v => new FLNode(v)).ToList()
+        };
       for (int i = 1; i <= PDim; i++) {
         int             predI = i - 1;
         List<List<int>> fk    = pr.Read2DJaggedArray<int>($"f{i}");
@@ -472,6 +471,16 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Special polytopes
+    /// <summary>
+    /// Very simple polytope.
+    /// </summary>
+    /// <returns>One zero point polytope.</returns>
+    public static ConvexPolytop Zero() =>
+      CreateFromPoints(new Vector[]
+        {
+          Vector.Zero(1)
+        });
+
     /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of Vrep.
     /// </summary>
@@ -507,20 +516,35 @@ public partial class Geometry<TNum, TConv>
         );
 
       if (left.SpaceDim == 1) {
-        return CreateFromPoints(new SortedSet<Vector>() { left, right });
+        return CreateFromPoints(new SortedSet<Vector>()
+          {
+            left, right
+          });
       }
 
       List<List<TNum>> rect_prev = new List<List<TNum>>();
       List<List<TNum>> rect      = new List<List<TNum>>();
-      rect_prev.Add(new List<TNum>() { left[0] });
-      rect_prev.Add(new List<TNum>() { right[0] });
+      rect_prev.Add(new List<TNum>()
+        {
+          left[0]
+        });
+      rect_prev.Add(new List<TNum>()
+        {
+          right[0]
+        });
 
       for (int i = 1; i < left.SpaceDim; i++) {
         rect.Clear();
 
         foreach (List<TNum> coords in rect_prev) {
-          rect.Add(new List<TNum>(coords) { left[i] });
-          rect.Add(new List<TNum>(coords) { right[i] });
+          rect.Add(new List<TNum>(coords)
+            {
+              left[i]
+            });
+          rect.Add(new List<TNum>(coords)
+            {
+              right[i]
+            });
         }
 
         rect_prev = new List<List<TNum>>(rect);
@@ -570,8 +594,11 @@ public partial class Geometry<TNum, TConv>
          amountOfPoints > pDim
        , $"TestPolytopes.Cyclic: The amount of points must be greater than the dimension of the space. Dim = {pDim}, amount = {amountOfPoints}"
         );
-      SortedSet<Vector> cycP      = new SortedSet<Vector>() { new Vector(pDim) };
-      TNum              baseCoord = Tools.One + step;
+      SortedSet<Vector> cycP = new SortedSet<Vector>()
+        {
+          new Vector(pDim)
+        };
+      TNum baseCoord = Tools.One + step;
       for (int i = 1; i < amountOfPoints; i++) {
         TNum[] point      = new TNum[pDim];
         TNum   coordinate = baseCoord;
@@ -625,7 +652,10 @@ public partial class Geometry<TNum, TConv>
 #endif
 
       if (dim == 1) {
-        return CreateFromPoints(new[] { center - semiAxis, center + semiAxis });
+        return CreateFromPoints(new[]
+          {
+            center - semiAxis, center + semiAxis
+          });
       }
 
 
@@ -647,15 +677,30 @@ public partial class Geometry<TNum, TConv>
 
         // соберём все наборы углов вида [Phi, t1, t2, t3, ..., t(n-2)]
         // где t_i принимают все возможные свои значения из theta_all
-        List<List<TNum>> thetaAngles_prev = new List<List<TNum>>() { new List<TNum>() { phi } };
-        List<List<TNum>> thetaAngles      = new List<List<TNum>>() { new List<TNum>() { phi } };
+        List<List<TNum>> thetaAngles_prev = new List<List<TNum>>()
+          {
+            new List<TNum>()
+              {
+                phi
+              }
+          };
+        List<List<TNum>> thetaAngles = new List<List<TNum>>()
+          {
+            new List<TNum>()
+              {
+                phi
+              }
+          };
         // сколько раз нужно углы добавлять
         for (int k = 0; k < N; k++) {
           thetaAngles.Clear();
           // формируем наборы добавляя к каждому текущему набору всевозможные углы из theta all
           foreach (List<TNum> angle in thetaAngles_prev) {
             foreach (TNum theta in thetaAll) {
-              thetaAngles.Add(new List<TNum>(angle) { theta });
+              thetaAngles.Add(new List<TNum>(angle)
+                {
+                  theta
+                });
             }
           }
           thetaAngles_prev = new List<List<TNum>>(thetaAngles);
@@ -749,12 +794,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="ballCreator">Function that makes balls.</param>
     /// <returns>A polytope representing the distance to the ball.</returns>
     private static ConvexPolytop DistanceToPolytop(
-        ConvexPolytop                          P
-      , TNum                                   CMax
+        ConvexPolytop                     P
+      , TNum                              CMax
       , Func<Vector, TNum, ConvexPolytop> ballCreator
       ) {
       // R (+) Ball(0, CMax)
-      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(P.SpaceDim, Vector.Zero(P.SpaceDim), CMax), P);
+      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(Vector.Zero(P.SpaceDim), CMax), P);
 
       //{(R,0), (R (+) Ball(0, CMax),CMax)}
       ConvexPolytop toConv = bigP.LiftUp(P.SpaceDim + 1, CMax);
@@ -789,46 +834,45 @@ public partial class Geometry<TNum, TConv>
     /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>
     public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int thetaPartition, int phiPartition, TNum CMax)
-      => DistanceToPolytop(P, CMax, ( center, radius) => Sphere(thetaPartition, phiPartition, center, radius));
-
+      => DistanceToPolytop(P, CMax, (center, radius) => Sphere(thetaPartition, phiPartition, center, radius));
     /// <summary>
     /// Makes the convex polytope representing the distance in "_1"-norm to the origin in dimensional space.
     /// </summary>
-    /// <param name="point"></param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="point">The point distance to is computed.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_1 norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_1(Vector point, TNum CMax) => DistanceToPoint(point, CMax, Ball_1);
+    public static ConvexPolytop DistanceToPointBall_1(Vector point, TNum k) => DistanceToPoint(point, k, Ball_1);
 
     /// <summary>
     /// Makes the convex polytope representing the distance in "_oo"-norm to the origin in dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the space.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="point">The point distance to is computed.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_oo norm.</returns>
-    public static ConvexPolytop DistanceToOriginBall_oo(int pointDim, TNum CMax) => DistanceToPoint(pointDim, CMax, Ball_oo);
+    public static ConvexPolytop DistanceToPointBall_oo(Vector point, TNum k) => DistanceToPoint(point, k, Ball_oo);
 
     /// <summary>
     /// Makes the convex polytope representing the distance in "_2"-norm to the origin in (dim)-dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the space.</param>
+    /// <param name="point">The point distance to is computed.</param>
     /// <param name="thetaPartition">The number of partitions at a zenith angle.</param>
     /// <param name="phiPartition">The number of partitions at each azimuthal angle.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToOriginBall_2(int pointDim, int thetaPartition, int phiPartition, TNum CMax)
-      => DistanceToOrigin(pointDim, CMax, (dim, center, radius) => Sphere(dim, thetaPartition, phiPartition, center, radius));
+    public static ConvexPolytop DistanceToPointBall_2(Vector point, int thetaPartition, int phiPartition, TNum k)
+      => DistanceToPoint(point, k, (center, radius) => Sphere(thetaPartition, phiPartition, center, radius));
 
     /// <summary>
     /// Makes the convex polytope representing the distance to the point in (dim)-dimensional space.
     /// </summary>
-    /// <param name="pointDim">The dimension of the space.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="point">The point distance to is computed.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <param name="ballCreator">Function that creates balls.</param>
     /// <returns>A polytope representing the distance to the origin.</returns>
-    private static ConvexPolytop DistanceToPoint(Vector point, TNum CMax, Func<Vector, TNum, ConvexPolytop> ballCreator) {
-      ConvexPolytop ball   = ballCreator(point.SpaceDim, point, CMax);
-      ConvexPolytop toConv = ball.LiftUp(pointDim + 1, CMax);
-      toConv.Vrep.Add(Vector.Zero(pointDim + 1));
+    private static ConvexPolytop DistanceToPoint(Vector point, TNum k, Func<Vector, TNum, ConvexPolytop> ballCreator) {
+      ConvexPolytop ball   = ballCreator(point, k);
+      ConvexPolytop toConv = ball.LiftUp(point.SpaceDim + 1, k);
+      toConv.Vrep.Add(Vector.Zero(point.SpaceDim + 1));
 
       //conv{...}
       return CreateFromPoints(toConv.Vrep, true);
@@ -862,8 +906,7 @@ public partial class Geometry<TNum, TConv>
 
           return minPs.First();
         }
-      }
-      else {
+      } else {
         isInside = false;
 
         if (IsFLrep) { // todo: Сделать связь Hrep <--> FLrep[^2]
@@ -948,7 +991,10 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The dual polytope.</returns>
     public ConvexPolytop Polar(bool doUnRedundancy = false) { // Начало координат внутри многогранника, важно!
       if (IsFLrep) {
-        List<SortedSet<FLNode>>          newFL    = new List<SortedSet<FLNode>>() { new SortedSet<FLNode>() };
+        List<SortedSet<FLNode>> newFL = new List<SortedSet<FLNode>>()
+          {
+            new SortedSet<FLNode>()
+          };
         SortedDictionary<FLNode, FLNode> oldToNew = new SortedDictionary<FLNode, FLNode>();
 
         //Уровень вершин создаём отдельно
@@ -968,7 +1014,10 @@ public partial class Geometry<TNum, TConv>
             oldToNew.Add(oldNode, reverseNode);
           }
         }
-        newFL.Add(new SortedSet<FLNode>() { new FLNode(newFL.Last()) });
+        newFL.Add(new SortedSet<FLNode>()
+          {
+            new FLNode(newFL.Last())
+          });
 
         return CreateFromFaceLattice(new FaceLattice(newFL, false), false);
       }
@@ -1023,12 +1072,18 @@ public partial class Geometry<TNum, TConv>
     /// <param name="hp">The hyperplane to section P.</param>
     /// <returns>The section of the polytope P.</returns>
     public ConvexPolytop SectionByHyperPlane(HyperPlane hp) {
-      HyperPlane       hp_   = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
-      List<HyperPlane> xList = new List<HyperPlane> { hp };
+      HyperPlane hp_ = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
+      List<HyperPlane> xList = new List<HyperPlane>
+        {
+          hp
+        };
       xList.AddRange(Hrep);
       SortedSet<Vector> x = HrepToVrep_Geometric(xList);
 
-      List<HyperPlane> yList = new List<HyperPlane> { hp_ };
+      List<HyperPlane> yList = new List<HyperPlane>
+        {
+          hp_
+        };
       yList.AddRange(Hrep);
       SortedSet<Vector> y = HrepToVrep_Geometric(yList);
 
@@ -1319,8 +1374,7 @@ public partial class Geometry<TNum, TConv>
               if (firstNonZeroProduct) {
                 if (Tools.GT(dotProduct)) { v = -v; }
                 firstNonZeroProduct = false;
-              }
-              else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+              } else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
                 if (Tools.GT(dotProduct)) {
                   isEdge = false;
 
@@ -1343,16 +1397,14 @@ public partial class Geometry<TNum, TConv>
                 if (hp.Contains(z)) {
                   orthToEdgeHPs.Add(hp);
                 }
-              }
-              else {
+              } else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
 
                 // Если ti > 0 или ti <= tMin, то такая точка годится
                 if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
                   if (Tools.EQ(ti, tMin)) {
                     zNewHPs.Add(hp);
-                  }
-                  else if (Tools.LT(ti, tMin)) {
+                  } else if (Tools.LT(ti, tMin)) {
                     tMin = ti;
                     zNewHPs.Clear();
                     zNewHPs.Add(hp);

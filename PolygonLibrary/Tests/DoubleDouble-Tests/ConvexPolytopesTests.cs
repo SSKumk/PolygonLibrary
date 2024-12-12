@@ -11,7 +11,7 @@ public class ConvexPolytopesTests {
   [Test]
   public void MakeSphereZeroCeneterTest() {
     for (int i = 2; i < 7; i++) {
-      ConvexPolytop sphere   = ConvexPolytop.Sphere(i, 15, 20, Vector.Zero(i),1);
+      ConvexPolytop sphere   = ConvexPolytop.Sphere(15, 20, Vector.Zero(i),1);
       foreach (Vector p in sphere.Vrep) {
         Assert.That(Tools.EQ(p.Length2, 1), "Sphere maker is broken! Do not use it!");
       }
@@ -21,7 +21,7 @@ public class ConvexPolytopesTests {
   public void MakeSphereCeneterTest() {
     for (int i = 2; i < 7; i++) {
       Vector        center = Vector.GenVector(i);
-      ConvexPolytop sphere = ConvexPolytop.Sphere(i, 15, 20, center,1);
+      ConvexPolytop sphere = ConvexPolytop.Sphere(15, 20, center,1);
       foreach (Vector p in sphere.Vrep) {
         Assert.That(Tools.EQ((p - center).Length2, 1), "Sphere maker is broken! Do not use it!");
       }

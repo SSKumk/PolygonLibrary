@@ -111,8 +111,8 @@ public partial class Geometry<TNum, TConv>
     public readonly TNum dt;
 #endregion
 
-    public int    projDim;  // размерность выделенных m координат
-    public int[]  projInd;  // индексы выделенных m координат
+    public int projDim;     // размерность выделенных m координат
+    public int[] projInd;   // индексы выделенных m координат
     public string projInfo; // текстовая характеристика пространства выделенных координат
 
 
@@ -221,7 +221,6 @@ public partial class Geometry<TNum, TConv>
       }
       ProjMatrix = new Matrix(ProjMatrixArr);
     }
-
 #endregion
 
 #region Aux procedures
@@ -238,11 +237,11 @@ public partial class Geometry<TNum, TConv>
         setTypeInfo switch
           {
             "ConvexPolytope" => SetType.ConvexPolytop
-          , "RectParallel" => SetType.RectParallel
-          , "Sphere" => SetType.Sphere
-          , "Ellipsoid" => SetType.Ellipsoid
-          , "ConvexHull" => SetType.ConvexHull
-          , _ => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
+          , "RectParallel"   => SetType.RectParallel
+          , "Sphere"         => SetType.Sphere
+          , "Ellipsoid"      => SetType.Ellipsoid
+          , "ConvexHull"     => SetType.ConvexHull
+          , _                => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
           };
 
       // Array for coordinates of the next point
@@ -272,7 +271,7 @@ public partial class Geometry<TNum, TConv>
           int    phi    = pr.ReadNumber<int>($"{player}Phi");
           TNum[] center = pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum   radius = pr.ReadNumber<TNum>($"{player}Radius");
-          res = ConvexPolytop.Sphere(dim, theta, phi, new Vector(center, false), radius);
+          res = ConvexPolytop.Sphere(theta, phi, new Vector(center, false), radius);
 
           setTypeInfo += $"-T{theta}-P{phi}-R{radius}";
 
@@ -283,7 +282,7 @@ public partial class Geometry<TNum, TConv>
           int    phi            = pr.ReadNumber<int>($"{player}Phi");
           TNum[] center         = pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum[] semiaxesLength = pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
-          res = ConvexPolytop.Ellipsoid(dim, theta, phi, new Vector(center, false), new Vector(semiaxesLength, false));
+          res = ConvexPolytop.Ellipsoid(theta, phi, new Vector(center, false), new Vector(semiaxesLength, false));
 
           setTypeInfo += $"-T{theta}-P{phi}-SA{string.Join(' ', semiaxesLength)}";
 

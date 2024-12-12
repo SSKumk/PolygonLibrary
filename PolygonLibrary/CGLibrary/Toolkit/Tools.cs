@@ -75,6 +75,12 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  public enum BallType {
+    Ball_1,
+    Ball_2,
+    Ball_oo
+  }
+  
   /// <summary>
   /// Class with general purpose procedures
   /// </summary>

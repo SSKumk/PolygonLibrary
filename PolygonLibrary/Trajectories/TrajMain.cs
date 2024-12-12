@@ -119,7 +119,7 @@ public class TrajMain<TNum, TConv>
       // todo: Реализации управлений первого и второго игроков
 
 
-      string md5Hash = Hashes.GetMD5Hash($"{name}{gd.t0}{gd.T}{x0}{fpControl.controlTypeInfo}{spControl.controlTypeInfo}");
+      string md5Hash = Hashes.GetMd5Hash($"{name}{gd.t0}{gd.T}{x0}{fpControl.controlTypeInfo}{spControl.controlTypeInfo}");
 
       WriteHashes(pwT, "Trajectory", gd.DynamicsHash, md5Hash, trajectory);
       WriteHashes(pwP, "AimP", gd.DynamicsHash, md5Hash, fpControl.AimPoints);

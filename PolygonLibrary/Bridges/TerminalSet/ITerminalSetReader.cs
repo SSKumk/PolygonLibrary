@@ -5,8 +5,6 @@ public interface ITerminalSetReader<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public enum BallType { Ball_1, Ball_2, Ball_oo }
-
   public static Geometry<TNum,TConv>.ConvexPolytop DoPolytope(string name, LDGPathHolder<TNum,TConv> dh) {
     return Geometry<TNum, TConv>.PolytopeReader.Read(dh.OpenPolytopeReader(name));
   }

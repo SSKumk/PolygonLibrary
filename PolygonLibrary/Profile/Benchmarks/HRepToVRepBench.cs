@@ -22,7 +22,7 @@ public class HRepToVRepBench {
 
   [GlobalSetup]
   public void SetUp() {
-    P = ConvexPolytop.Sphere(dim, theta, phi, Vector.Zero(3), 1);
+    P = ConvexPolytop.Sphere(theta, phi, Vector.Zero(dim), 1);
     Console.WriteLine($"Hrep.Count = {P.Hrep.Count}");
   }
 
