@@ -26,7 +26,7 @@ public class TerminalSet_MinkowskiFunctional<TNum, TConv> : TerminalSetBase<TNum
     }
 
     foreach (TNum num in cs) {
-      minkFuncSets.Add(basePolytop.Homothety(num));
+      minkFuncSets.Add(basePolytop.Scale(num));
     }
   }
 

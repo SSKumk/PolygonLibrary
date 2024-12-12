@@ -60,6 +60,9 @@
         <Compile Include="Toolkit\Hashes.cs" />
         <Compile Include="Toolkit\ParamReader.cs" />
         <Compile Include="Toolkit\ParamWriter.cs" />
+        <Compile Include="Toolkit\PolytopeReader\Balls\BallFactory.cs" />
+        <Compile Include="Toolkit\PolytopeReader\Balls\Balls.cs" />
+        <Compile Include="Toolkit\PolytopeReader\Balls\IBall.cs" />
         <Compile Include="Toolkit\PolytopeReader\CGLibraryReader.cs" />
         <Compile Include="Toolkit\PolytopeReader\IPolytopeReader.cs" />
         <Compile Include="Toolkit\PolytopeReader\PolytopeReaderFactory.cs" />
