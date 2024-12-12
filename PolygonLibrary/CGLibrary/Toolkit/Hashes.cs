@@ -10,7 +10,7 @@ public class Hashes {
   /// </summary>
   /// <param name="input">The input string to compute the hash for.</param>
   /// <returns>A lowercase hexadecimal string representation of the MD5 hash.</returns>
-  public static string GetMD5Hash(string input)
+  public static string GetMd5Hash(string input)
     {
         byte[] inputBytes = Encoding.UTF8.GetBytes(input);
         byte[] hashBytes = MD5.HashData(inputBytes);
