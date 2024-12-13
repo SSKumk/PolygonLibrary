@@ -7,8 +7,7 @@ public class Minkowski<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop>
     ReadTerminalSets(Geometry<TNum, TConv>.ParamReader pr
-                   , LDGPathHolder<TNum, TConv>        dh
-                   , Geometry<TNum, TConv>.GameData    gd) {
+                   , LDGPathHolder<TNum, TConv>        dh) {
     Geometry<TNum,TConv>.ConvexPolytop polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Name"), dh);
 
     // todo: here -- shift, scale, rotate

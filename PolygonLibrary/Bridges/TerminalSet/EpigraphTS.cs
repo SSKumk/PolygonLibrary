@@ -8,9 +8,7 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGPathHolder<TNum, TConv>        dh
-    , Geometry<TNum, TConv>.GameData    gd
-    ) {
+    , LDGPathHolder<TNum, TConv>        dh) {
     IEpiType<TNum, TConv> epiType = EpiTypeFactory<TNum, TConv>.Read(pr, dh);
 
     TNum k = pr.ReadNumber<TNum>("Constant");

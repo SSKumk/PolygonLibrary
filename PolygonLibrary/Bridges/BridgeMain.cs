@@ -139,9 +139,18 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    string ldgDir = "E:\\Work\\LDG\\";
 
-    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion");
+    Geometry<double,DConvertor>.ParamReader pr = new Geometry<double,DConvertor>.ParamReader(ldgDir + "1.txt");
+    Console.WriteLine(pr.ReadString("some"));
+    for (int i = 0; i < 3; i++) {
+      Console.WriteLine(new Geometry<double,DConvertor>.Vector(pr.ReadNumberLine(3)));
+    }
+    Console.WriteLine(pr.ReadString("some"));
+    // BridgeCreator<double,DConvertor>.SetUpDirectories(ldgDir);
+
+    // BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion");
   }
 
 }

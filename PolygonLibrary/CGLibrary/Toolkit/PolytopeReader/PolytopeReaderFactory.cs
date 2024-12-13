@@ -1,11 +1,11 @@
 namespace CGLibrary;
 
-public partial class Geometry<TNum, TConv>
+public abstract partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public class PolytopeReader {
+  public abstract class PolytopeReader {
 
     public static ConvexPolytop Read(ParamReader pr) {
       _ = pr.ReadString("Name");
@@ -13,7 +13,7 @@ public partial class Geometry<TNum, TConv>
       return GetReader(pr).ReadPolytope(pr);
     }
 
-    public static IPolytopeReader GetReader(ParamReader pr) {
+    private static IPolytopeReader GetReader(ParamReader pr) {
       string type = pr.ReadString("Type");
 
       return type switch

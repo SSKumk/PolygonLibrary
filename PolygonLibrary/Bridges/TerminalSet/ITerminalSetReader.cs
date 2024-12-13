@@ -11,8 +11,6 @@ public interface ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGPathHolder<TNum, TConv>        dh
-    , Geometry<TNum, TConv>.GameData    gd
-    );
+    , LDGPathHolder<TNum, TConv>        dh);
 
 }

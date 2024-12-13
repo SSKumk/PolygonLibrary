@@ -22,7 +22,7 @@ public class TerminalSet<TNum, TConv>
         , _ => throw new ArgumentException($"Bridges.TerminalSet.Ctor: Unknown Type: {type}")
         };
 
-    tmss           = reader.ReadTerminalSets(pr, dh, gd);
+    tmss           = reader.ReadTerminalSets(pr, dh);
     tmssEnumerator = tmss.GetEnumerator();
   }
 

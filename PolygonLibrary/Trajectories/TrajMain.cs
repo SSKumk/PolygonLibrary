@@ -54,10 +54,10 @@ public class TrajMain<TNum, TConv>
         string taskDynamicHash = prR.ReadString("md5-dynamic");
         string _               = prR.ReadString("md5");
 
-        if (taskDynamicHash != gd.DynamicsHash) {
-          throw new ArgumentException
-            ("TrajMain.ReadBridge: The hash-dynamic in the file does not match the expected game data hash.");
-        }
+        // if (taskDynamicHash != gd.DynamicsHash) {
+        //   throw new ArgumentException
+        //     ("TrajMain.ReadBridge: The hash-dynamic in the file does not match the expected game data hash.");
+        // }
 
         W.Add(t, Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
       }
@@ -121,9 +121,9 @@ public class TrajMain<TNum, TConv>
 
       string md5Hash = Hashes.GetMd5Hash($"{name}{gd.t0}{gd.T}{x0}{fpControl.controlTypeInfo}{spControl.controlTypeInfo}");
 
-      WriteHashes(pwT, "Trajectory", gd.DynamicsHash, md5Hash, trajectory);
-      WriteHashes(pwP, "AimP", gd.DynamicsHash, md5Hash, fpControl.AimPoints);
-      WriteHashes(pwQ, "AimQ", gd.DynamicsHash, md5Hash, spControl.AimPoints);
+      // WriteHashes(pwT, "Trajectory", gd.DynamicsHash, md5Hash, trajectory);
+      // WriteHashes(pwP, "AimP", gd.DynamicsHash, md5Hash, fpControl.AimPoints);
+      // WriteHashes(pwQ, "AimQ", gd.DynamicsHash, md5Hash, spControl.AimPoints);
     }
   }
 

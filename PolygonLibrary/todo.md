@@ -2,6 +2,8 @@ TODO file
 
 # CGLibrary
 
+1. [ ] . Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/DataFormat.md)
+
 1. [ ] . TODO XML у методов ConvexPolytope DistanceTo...!
 
 1. [ ] . DistanceToPolytop() P.SpaceDim или P.PolytopDim ? Может быть вообще только полноразмерные могут быть

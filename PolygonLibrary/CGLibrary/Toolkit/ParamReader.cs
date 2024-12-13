@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CGLibrary;
 
@@ -8,13 +10,10 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo: Написать метод SkipObject(string name) (чтобы переходить к следующему)
-  // todo: Написать метод CheckObject(string name) (проверить, есть ли вообще такое следующее поле)
-  // todo: Написать метод ReadNextObject() (Прочитать следующий объект, есть ли вообще такое следующее поле)
-  /// <summary>
+    /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>
-  public class ParamReader {
+  public partial class ParamReader {
 
     /// <summary>
     /// The path to the file from which data is read.
@@ -290,6 +289,59 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
+    
+    
+    
+    
+    /// <summary>
+    /// Reads a line of numbers from the input data.
+    /// </summary>
+    /// <param name="qnt">The expected number of numbers in the line.</param>
+    /// <returns>An array containing the parsed numbers.</returns>
+    /// <exception cref="ArgumentException">Thrown if the number of parsed numbers does not match the expected quantity.</exception>
+    /// <exception cref="FormatException">Thrown if a number in the line has an invalid format.</exception>
+    public TNum[] ReadNumberLine(int qnt)
+    {
+      
+      while (ind < data.Length && "\n\r\t ".Contains(data[ind]))
+      {
+        ind++;
+      }
+      
+      StringBuilder lineBuilder = new StringBuilder();
+      while (ind < data.Length && !"\n\r".Contains(data[ind]))
+      {
+        lineBuilder.Append(data[ind]);
+        ind++;
+      }
+
+      string line = lineBuilder.ToString();
+
+      string[] splited = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+      if (splited.Length != qnt)
+      {
+        throw new ArgumentException($"Expected {qnt} numbers, but found {splited.Length} in line: {line}" +
+                                    $"\n in file {filePath}");
+      }
+
+      TNum[] result = new TNum[qnt];
+      for (int i = 0; i < qnt; i++)
+      {
+        if (!TNum.TryParse(splited[i], CultureInfo.InvariantCulture,  out result[i]))
+        {
+          throw new FormatException($"Invalid number format: {splited[i]} in line: {line}" +
+                                    $"\n in file {filePath}");
+        }
+      }
+
+
+      return result;
+    }
+    
+    
+    
+    
 #endregion
 
 #region Internal methods
@@ -394,11 +446,14 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Method that reads a token and the given terminator after it
+    /// Reads a token from the input data, up to a specified terminator character.
     /// </summary>
-    /// <param name="name">The planned object name (for diagnostic messages)</param>
-    /// <param name="term">The expected termination symbol</param>
-    /// <param name="readData">The data has been read up to the terminator.</param>
+    /// <param name="name">The name of the parameter being read (used for error messages).</param>
+    /// <param name="term">A string containing the characters that terminate the token.</param>
+    /// <param name="readData">Outputs the token read from the input.</param>
+    /// <returns>The terminator character that was encountered.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown if the end of the input data is reached before a terminator is found.</exception>
+    /// <exception cref="Exception">Thrown if an unexpected character is encountered.</exception>
     private char ReadToken(string name, string term, out string readData) {
       if (state != State.ReadingToken)
         throw new Exception("Internal: ReadToken() method is called in a wrong state of the reader");
@@ -596,8 +651,8 @@ public partial class Geometry<TNum, TConv>
         }
       }
     }
-#endregion
+        #endregion
 
-  }
+    }
 
 }
