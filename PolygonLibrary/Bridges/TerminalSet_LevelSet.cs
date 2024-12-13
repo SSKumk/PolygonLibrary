@@ -79,9 +79,9 @@ public class TerminalSet_LevelSet<TNum, TConv> : TerminalSetBase<TNum, TConv>
           terminalSet =
             ballType switch
               {
-                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_1(_polytop, num)
-              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_2(_polytop, _theta, _phi, num)
-              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_oo(_polytop, num)
+                BallType.Ball_1  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_1(_polytop, num)
+              , BallType.Ball_2  => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_2(_polytop, num, _theta, _phi)
+              , BallType.Ball_oo => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_oo(_polytop, num)
               , _                => throw new ArgumentException($"Wrong type of the ball! Found {ballType}")
               };
 

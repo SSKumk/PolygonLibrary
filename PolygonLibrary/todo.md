@@ -2,6 +2,8 @@ TODO file
 
 # CGLibrary
 
+1. [ ] . TODO XML у методов ConvexPolytope DistanceTo...!
+
 1. [ ] . DistanceToPolytop() P.SpaceDim или P.PolytopDim ? Может быть вообще только полноразмерные могут быть
 
 1. [ ] . Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён. 

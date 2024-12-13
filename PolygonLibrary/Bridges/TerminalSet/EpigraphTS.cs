@@ -35,9 +35,9 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
         yield return
           ballType switch
             {
-              Geometry<TNum, TConv>.Ball_1    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_1(d.Polytope, k)
-            , Geometry<TNum, TConv>.Ball_2 b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_2(d.Polytope, b2.PolarDivision, b2.AzimuthsDivisions, k)
-            , Geometry<TNum, TConv>.Ball_oo   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopBall_oo(d.Polytope, k)
+              Geometry<TNum, TConv>.Ball_1    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_1(d.Polytope, k)
+            , Geometry<TNum, TConv>.Ball_2 b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_2(d.Polytope, k, b2.PolarDivision, b2.AzimuthsDivisions)
+            , Geometry<TNum, TConv>.Ball_oo   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_oo(d.Polytope, k)
             };
 
         break;

@@ -271,7 +271,7 @@ public partial class Geometry<TNum, TConv>
           int    phi    = pr.ReadNumber<int>($"{player}Phi");
           TNum[] center = pr.Read1DArray<TNum>($"{player}Center", dim);
           TNum   radius = pr.ReadNumber<TNum>($"{player}Radius");
-          res = ConvexPolytop.Sphere(theta, phi, new Vector(center, false), radius);
+          res = ConvexPolytop.Sphere(new Vector(center, false), radius, theta, phi);
 
           setTypeInfo += $"-T{theta}-P{phi}-R{radius}";
 

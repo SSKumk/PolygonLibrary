@@ -13,6 +13,10 @@ public class Minkowski<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
     // todo: here -- shift, scale, rotate
     TNum[] ks = pr.ReadVector("Constants").GetAsArray();
-    return ks.Select(k => polytope.Scale(k, Geometry<TNum, TConv>.Vector.Zero(1)));
+
+    throw new NotImplementedException("сначала надо подвигать многогранник, а потом уже увеличивать на переданные константы");
+
+    // return ks.Select(k => polytope.Scale(k, ));
+
   }
 }

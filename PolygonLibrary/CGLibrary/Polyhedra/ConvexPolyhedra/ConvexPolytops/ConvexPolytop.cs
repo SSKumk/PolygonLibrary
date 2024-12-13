@@ -617,13 +617,13 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Makes a hD-sphere as Vrep with given radius using the Euclidean norm.
     /// </summary>
+    /// <param name="center">The center of a sphere.</param>
+    /// <param name="radius">The radius of a sphere.</param>
     /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].
     ///   thetaPoints should be greater than 2 for proper calculation.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
-    /// <param name="center">The center of a sphere.</param>
-    /// <param name="radius">The radius of a sphere.</param>
     /// <returns>A convex polytope as Vrep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(int polarDivision, int azimuthsDivisions, Vector center, TNum radius)
+    public static ConvexPolytop Sphere(Vector center, TNum radius, int polarDivision, int azimuthsDivisions)
       => Ellipsoid(polarDivision, azimuthsDivisions, center, Vector.Ones(center.SpaceDim) * radius);
 
     /// <summary>
@@ -790,51 +790,57 @@ public partial class Geometry<TNum, TConv>
     /// Makes the convex polytope which represents the distance to the given convex polytope in dim-space.
     /// </summary>
     /// <param name="P">Polytop the distance to which is constructed.</param>
-    /// <param name="CMax">The value of the last coordinate of P in dim+1 space.</param>
+    /// <param name="k">The value of the last coordinate of P in dim+1 space.</param>
     /// <param name="ballCreator">Function that makes balls.</param>
     /// <returns>A polytope representing the distance to the ball.</returns>
-    private static ConvexPolytop DistanceToPolytop(
+    private static ConvexPolytop DistanceToPolytope(
         ConvexPolytop                     P
-      , TNum                              CMax
+      , TNum                              k
       , Func<Vector, TNum, ConvexPolytop> ballCreator
       ) {
-      // R (+) Ball(0, CMax)
-      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(Vector.Zero(P.SpaceDim), CMax), P);
+      // R (+) Ball(0, k)
+      ConvexPolytop bigP = DistTo_MakeBase(P, k, ballCreator);
 
-      //{(R,0), (R (+) Ball(0, CMax),CMax)}
-      ConvexPolytop toConv = bigP.LiftUp(P.SpaceDim + 1, CMax);
+      //{(R,0), (R (+) Ball(0, k),k)}
+      ConvexPolytop toConv = bigP.LiftUp(P.SpaceDim + 1, k);
       toConv.Vrep.UnionWith(P.LiftUp(P.SpaceDim + 1, Tools.Zero).Vrep);
 
       //conv{...}
       return CreateFromPoints(toConv.Vrep, true);
+    }
+    
+    //todo: xml
+    public static ConvexPolytop DistTo_MakeBase(ConvexPolytop P, TNum k, Func<Vector, TNum, ConvexPolytop> ballCreator) {
+      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(Vector.Zero(P.SpaceDim), k), P);
+      return bigP;
     }
 
     /// <summary>
     ///  Makes the convex polytope representing the distance in "_1"-norm to the given convex polytope in dimensional space.
     /// </summary>
     /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_1 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_1(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_1);
+    public static ConvexPolytop DistanceToPolytopeBall_1(ConvexPolytop P, TNum k) => DistanceToPolytope(P, k, Ball_1);
 
     /// <summary>
     /// Makes the convex polytope representing the distance in "infinity"-norm to the given convex polytope in dimensional space.
     /// </summary>
     /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_oo norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_oo(ConvexPolytop P, TNum CMax) => DistanceToPolytop(P, CMax, Ball_oo);
+    public static ConvexPolytop DistanceToPolytopeBall_oo(ConvexPolytop P, TNum k) => DistanceToPolytope(P, k, Ball_oo);
 
     /// <summary>
     /// Makes the convex polytope representing the distance in "euclidean"-norm to the given convex polytope in dimensional space.
     /// </summary>
     /// <param name="P">The polytope to which the distance is constructed.</param>
+    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <param name="polarDivision">The number of partitions at zenith angle.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
-    /// <param name="CMax">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopBall_2(ConvexPolytop P, int polarDivision, int azimuthsDivisions, TNum CMax)
-      => DistanceToPolytop(P, CMax, (center, radius) => Sphere(polarDivision, azimuthsDivisions, center, radius));
+    public static ConvexPolytop DistanceToPolytopeBall_2(ConvexPolytop P, TNum k, int polarDivision, int azimuthsDivisions)
+      => DistanceToPolytope(P, k, (center, radius) => Sphere(center, radius, polarDivision, azimuthsDivisions));
     /// <summary>
     /// Makes the convex polytope representing the distance in "_1"-norm to the origin in dimensional space.
     /// </summary>
@@ -860,7 +866,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
     public static ConvexPolytop DistanceToPointBall_2(Vector point, int polarDivision, int azimuthsDivisions, TNum k)
-      => DistanceToPoint(point, k, (center, radius) => Sphere(polarDivision, azimuthsDivisions, center, radius));
+      => DistanceToPoint(point, k, Ball_2FuncCreator(polarDivision, azimuthsDivisions));
+    
+    //todo: xml
+    public static Func<Vector, TNum, ConvexPolytop> Ball_2FuncCreator(int polarDivision, int azimuthsDivisions) { return (center, radius) => Sphere(center, radius, polarDivision, azimuthsDivisions); }
 
     /// <summary>
     /// Makes the convex polytope representing the distance to the point in (dim)-dimensional space.
