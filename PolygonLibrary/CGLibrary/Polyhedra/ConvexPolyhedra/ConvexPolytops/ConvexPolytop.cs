@@ -486,7 +486,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="dim">The dimension of the cube.</param>
     /// <returns>A convex polytope as Vrep representation of the hypercube.</returns>
-    public static ConvexPolytop Cube01_VRep(int dim) => RectParallel(Vector.Zero(dim), Vector.Ones(dim));
+    public static ConvexPolytop Cube01_VRep(int dim) => RectAxisParallel(Vector.Zero(dim), Vector.Ones(dim));
 
     /// <summary>
     /// Makes a full-dimension axis-parallel 0-1 cube of given dimension in the form of Hrep.
@@ -508,11 +508,11 @@ public partial class Geometry<TNum, TConv>
     /// Makes a full-dimension axis-parallel rectangle based on two corners.
     /// </summary>
     /// <returns>A convex polytope as Vrep representing the hyper rectangle.</returns>
-    public static ConvexPolytop RectParallel(Vector left, Vector right) {
+    public static ConvexPolytop RectAxisParallel(Vector left, Vector right) {
       Debug.Assert
         (
          left.SpaceDim == right.SpaceDim
-       , $"ConvexPolytop.RectParallel: The dimension of the points must be equal! Found left = {left}, right = {right}"
+       , $"ConvexPolytop.RectAxisParallel: The dimension of the points must be equal! Found left = {left}, right = {right}"
         );
 
       if (left.SpaceDim == 1) {
@@ -763,7 +763,7 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop Ball_oo(Vector center, TNum radius) {
       Vector one = Vector.Ones(center.SpaceDim) * radius;
 
-      return RectParallel(-one + center, one + center);
+      return RectAxisParallel(-one + center, one + center);
     }
 
     // /// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace Bridges;
 
-public class Minkowski<TNum, TConv> : ITerminalSetReader<TNum, TConv>
+public class MinkowskiTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {

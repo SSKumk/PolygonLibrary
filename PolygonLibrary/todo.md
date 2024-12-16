@@ -2,6 +2,10 @@ TODO file
 
 # CGLibrary
 
+1. [ ] . PolytopeReaders: Надо ли наводить интерфейсную историю внутри **Generator**?
+
+1. [ ] . ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.
+
 1. [ ] . Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/DataFormat.md)
 
 1. [ ] . TODO XML у методов ConvexPolytope DistanceTo...!

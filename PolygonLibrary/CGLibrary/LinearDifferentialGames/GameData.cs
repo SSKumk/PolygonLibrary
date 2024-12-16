@@ -18,7 +18,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The type of the set.
     /// ConvexPolytop - The polytope in the format of the library
-    /// RectParallel - Rectangle-parallel: dim X Y -> dimension opposite_vertices
+    /// RectAxisParallel - Rectangle-parallel: dim X Y -> dimension opposite_vertices
     /// Sphere - Sphere: dim x0 x1 .. xn theta phi R -> dimension center_coordinates theta_division phis_division radius
     /// Ellipsoid - Ellipsoid: dim x0 x1 .. xn theta phi a0 a1 ... an -> dimension center_coordinates theta_division phis_division semi-axis_length
     /// </summary>
@@ -215,107 +215,13 @@ public partial class Geometry<TNum, TConv>
       CauchyMatrix = new CauchyMatrix(A, T, dt);
 
       // Setting up the projection matrix
-      TNum[,] ProjMatrixArr = new TNum[projDim, n];
+      TNum[,] projMatrixArr = new TNum[projDim, n];
       for (int i = 0; i < projDim; i++) {
-        ProjMatrixArr[i, projInd[i]] = Tools.One;
+        projMatrixArr[i, projInd[i]] = Tools.One;
       }
-      ProjMatrix = new Matrix(ProjMatrixArr);
+      ProjMatrix = new Matrix(projMatrixArr);
     }
 #endregion
-
-#region Aux procedures
-    /// <summary>
-    /// The function fills in the fields of the original sets
-    /// </summary>
-    /// <param name="pr">The reader used to gather data from a file.</param>
-    /// <param name="player">P - first player. Q - second player. M - terminal set.</param>
-    /// <param name="dim">The dimension of the set to be read.</param>
-    /// <param name="setTypeInfo">The auxiliary information to write into task folder name.</param>
-    public static ConvexPolytop ReadExplicitSet(ParamReader pr, char player, int dim, out string setTypeInfo) {
-      setTypeInfo = pr.ReadString($"{player}SetType");
-      SetType setType =
-        setTypeInfo switch
-          {
-            "ConvexPolytope" => SetType.ConvexPolytop
-          , "RectParallel"   => SetType.RectParallel
-          , "Sphere"         => SetType.Sphere
-          , "Ellipsoid"      => SetType.Ellipsoid
-          , "ConvexHull"     => SetType.ConvexHull
-          , _                => throw new ArgumentOutOfRangeException($"GameData.ReadExplicitSet: {setTypeInfo} is not supported for now.")
-          };
-
-      // Array for coordinates of the next point
-      ConvexPolytop? res = null;
-      switch (setType) {
-        case SetType.ConvexPolytop: {
-          res = ConvexPolytop.CreateFromReader(pr);
-
-          setTypeInfo += res.WhichRepToString();
-          // todo: какие ещё х-ки записать, для однозначной идентификации?
-
-          break;
-        }
-        case SetType.RectParallel: {
-          TNum[] left   = pr.Read1DArray<TNum>($"{player}RectPLeft", dim);
-          TNum[] right  = pr.Read1DArray<TNum>($"{player}RectPRight", dim);
-          Vector vLeft  = new Vector(left, false);
-          Vector vRight = new Vector(right, false);
-          res = ConvexPolytop.RectParallel(vLeft, vRight);
-
-          setTypeInfo += $"-{vLeft}-{vRight}";
-
-          break;
-        }
-        case SetType.Sphere: {
-          int    theta  = pr.ReadNumber<int>($"{player}Theta");
-          int    phi    = pr.ReadNumber<int>($"{player}Phi");
-          TNum[] center = pr.Read1DArray<TNum>($"{player}Center", dim);
-          TNum   radius = pr.ReadNumber<TNum>($"{player}Radius");
-          res = ConvexPolytop.Sphere(new Vector(center, false), radius, theta, phi);
-
-          setTypeInfo += $"-T{theta}-P{phi}-R{radius}";
-
-          break;
-        }
-        case SetType.Ellipsoid: {
-          int    theta          = pr.ReadNumber<int>($"{player}Theta");
-          int    phi            = pr.ReadNumber<int>($"{player}Phi");
-          TNum[] center         = pr.Read1DArray<TNum>($"{player}Center", dim);
-          TNum[] semiaxesLength = pr.Read1DArray<TNum>($"{player}SemiaxesLength", dim);
-          res = ConvexPolytop.Ellipsoid(theta, phi, new Vector(center, false), new Vector(semiaxesLength, false));
-
-          setTypeInfo += $"-T{theta}-P{phi}-SA{string.Join(' ', semiaxesLength)}";
-
-          break;
-        }
-
-        case SetType.ConvexHull: {
-          int vsCount = pr.ReadNumber<int>("VsCount");
-          // todo: Возможно стоит воспользоваться StringReader -ом, но надо запомнить последнюю позицию, после чего выставить в ParamReader -е.
-          /*
-           * using (StringReader reader = new StringReader(someString.Substring(startPosition)))
-{
-    string line;
-    int currentPosition = startPosition;
-
-    while ((line = reader.ReadLine()) != null)
-    {
-        Console.WriteLine($"Строка: {line}, Начальная позиция: {currentPosition}");
-        currentPosition += line.Length + 1; // +1 для символа новой строки
-    }
-}
-           */
-
-          throw new NotImplementedException();
-
-          break;
-        }
-      }
-
-      return res ?? throw new InvalidOperationException($"GameData.ReadSets: Player {player} set is empty!");
-    }
-#endregion
-
   }
 
 }

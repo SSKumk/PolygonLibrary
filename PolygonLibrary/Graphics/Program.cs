@@ -74,7 +74,7 @@ public class Visualization {
     List<Facet>  FList = new List<Facet>();
     AddToFList(ref FList, P);
 
-    ConvexPolytop cube = ConvexPolytop.RectParallel(-0.001 * Vector.Ones(3), 0.001 * Vector.Ones(3)).Shift(x);
+    ConvexPolytop cube = ConvexPolytop.RectAxisParallel(-0.001 * Vector.Ones(3), 0.001 * Vector.Ones(3)).Shift(x);
     VList.AddRange(cube.Vrep);
     AddToFList(ref FList, cube);
 

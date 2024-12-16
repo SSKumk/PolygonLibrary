@@ -77,9 +77,9 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGPathHolder<TNum, TConv>     dh; // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv> dh;     // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
+  public readonly TerminalSet<TNum, TConv> ts;       // данные о терминальном множестве
 #endregion
 
   public BridgeCreator(string pathLDG, string problemFileName) {
@@ -107,6 +107,7 @@ class BridgeCreator<TNum, TConv>
   public void Solve() {
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
       Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(dh.PathBr, dh.PathPs, dh.PathQs, gd, tms!);
+      slv.Solve();
     }
   }
 
@@ -142,10 +143,10 @@ class Program {
     // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     string ldgDir = "E:\\Work\\LDG\\";
 
-    Geometry<double,DConvertor>.ParamReader pr = new Geometry<double,DConvertor>.ParamReader(ldgDir + "1.txt");
+    Geometry<double, DConvertor>.ParamReader pr = new Geometry<double, DConvertor>.ParamReader(ldgDir + "1.txt");
     Console.WriteLine(pr.ReadString("some"));
     for (int i = 0; i < 3; i++) {
-      Console.WriteLine(new Geometry<double,DConvertor>.Vector(pr.ReadNumberLine(3)));
+      Console.WriteLine(new Geometry<double, DConvertor>.Vector(pr.ReadNumberLine(3)));
     }
     Console.WriteLine(pr.ReadString("some"));
     // BridgeCreator<double,DConvertor>.SetUpDirectories(ldgDir);

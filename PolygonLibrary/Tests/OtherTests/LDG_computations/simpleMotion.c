@@ -45,7 +45,7 @@ projJ = {0, 1, 2};
 // PCenter = {0,0,0};
 // PRadius = 1;
 
-PSetType = "RectParallel";
+PSetType = "RectAxisParallel";
 PRectPLeft = {-1,-1,-1};
 PRectPRight = {1,1,1};
 
@@ -56,7 +56,7 @@ QPhi = 12;
 QCenter = {0,0,0};
 QRadius = 0.9;
 
-// QSetType = "RectParallel";
+// QSetType = "RectAxisParallel";
 // QRectPLeft = {-1.5,-1.5,-1.5};
 // QRectPRight = {1.5,1.5,1.5};
 
@@ -72,7 +72,7 @@ GoalType = "Itself";
 // "DistToPolytop" - the game with epigraph of the payoff function as distance to the given polytop.
 MType = "TerminalSet";
 
-MSetType = "RectParallel";
+MSetType = "RectAxisParallel";
 MRectPLeft = {-1,-1,-1};
 MRectPRight = {1,1,1};
 // ==================================================

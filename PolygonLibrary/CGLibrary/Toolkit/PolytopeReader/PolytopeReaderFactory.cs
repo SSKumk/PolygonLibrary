@@ -18,11 +18,11 @@ public abstract partial class Geometry<TNum, TConv>
 
       return type switch
                {
-                 "CGLibrary" => new CGLibraryReader()
-                 // , "Convex Hull"  => new ConvexHullReader()
-                 // , "Hyper Planes" => new HyperPlanesReader()
-                 // , "Generator"    => new GeneratorReader()
-               , _ => throw new ArgumentException($"Toolkit.PolytopeReader.PolytopeReader.GetReader: Unknown Type: {type}")
+                 "CGLibrary"    => new CGLibraryReader()
+               , "Convex Hull"  => new ConvexHullReader()
+               , "Hyper Planes" => new HyperPlanesReader()
+               , "Generator"    => new GeneratorReader()
+               , _              => throw new ArgumentException($"Toolkit.PolytopeReader.PolytopeReader.GetReader: Unknown Type: {type}")
                };
     }
 

@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
     }
   }
 
-  public class HyperPlanes : IPolytopeReader {
+  public class HyperPlanesReader : IPolytopeReader {
     public ConvexPolytop ReadPolytope(ParamReader pr) {
       List<HyperPlane> HPs = new List<HyperPlane>();
 
@@ -42,6 +42,39 @@ public partial class Geometry<TNum, TConv>
       }
       
       return ConvexPolytop.CreateFromHalfSpaces(HPs,doRed);
+    }
+  }
+  
+  public class GeneratorReader : IPolytopeReader {
+
+    
+    public ConvexPolytop ReadPolytope(ParamReader pr) {
+      string genType = pr.ReadString("Generator Type");
+
+      switch (genType) {
+        case "RectAxisParallel": {
+          Vector left = pr.ReadVector("Left");
+          Vector right = pr.ReadVector("Right");
+          return ConvexPolytop.RectAxisParallel(left, right);
+        }
+        case "Sphere": {
+          int dim = pr.ReadNumber<int>("Dim");
+          int azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivision");
+          int polarDivision = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
+
+          return ConvexPolytop.Sphere(Vector.Zero(dim), Tools.One, polarDivision, azimuthsDivisions);
+        }
+        case "Ellipsoid": {
+          int    dim               = pr.ReadNumber<int>("Dim");
+          Vector semiAxis              = pr.ReadVector("SemiAxis");
+          int    azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivision");
+          int    polarDivision     = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
+          
+          return ConvexPolytop.Ellipsoid(polarDivision,azimuthsDivisions,Vector.Zero(dim),semiAxis );
+        }
+      }
+
+      throw new ArgumentException($"PolytopeReaders.Generator: The Type = {genType} is unknown!");
     }
   }
 
