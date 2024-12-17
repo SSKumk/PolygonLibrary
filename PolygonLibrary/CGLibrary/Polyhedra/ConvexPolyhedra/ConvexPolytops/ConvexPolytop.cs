@@ -1052,19 +1052,19 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Writes the convex polytope representation to the specified <see cref="ParamWriter"/> in the chosen format.
     /// </summary>
-    /// <param name="pr">The <see cref="ParamWriter"/> instance where the convex polytope will be written.</param>
+    /// <param name="pw">The <see cref="ParamWriter"/> instance where the convex polytope will be written.</param>
     /// <param name="rep">
     /// The representation format of the convex polytop.
     /// This determines whether the polytope will be written as a Vrep, Hrep, or FLrep.
     /// Defaults to <see cref="Rep.FLrep"/>.
     /// </param>
-    public void WriteIn(ParamWriter pr, Rep rep) {
+    public void WriteIn(ParamWriter pw, Rep rep) {
       switch (rep) {
-        case Rep.Vrep:  WriteAsVRep(pr, this); break;
-        case Rep.Hrep:  WriteAsHRep(pr, this); break;
-        case Rep.FLrep: WriteAsFLRep(pr, this); break;
+        case Rep.Vrep:  WriteAsVRep(pw, this); break;
+        case Rep.Hrep:  WriteAsHRep(pw, this); break;
+        case Rep.FLrep: WriteAsFLRep(pw, this); break;
       }
-      pr.Flush();
+      pw.Flush();
     }
 
     /// <summary>

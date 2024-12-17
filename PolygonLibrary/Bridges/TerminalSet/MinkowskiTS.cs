@@ -5,17 +5,16 @@ public class MinkowskiTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop>
-    ReadTerminalSets(Geometry<TNum, TConv>.ParamReader pr
-                   , LDGPathHolder<TNum, TConv>        ph) {
-    Geometry<TNum,TConv>.ConvexPolytop polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Name"), ph);
+  public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
+      Geometry<TNum, TConv>.ParamReader pr
+    , LDGPathHolder<TNum, TConv>        ph
+    ) {
+    Geometry<TNum, TConv>.ConvexPolytop polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Polytope"), ph);
 
-    // todo: here -- shift, scale, rotate
     TNum[] ks = pr.ReadVector("Constants").GetAsArray();
 
-    throw new NotImplementedException("сначала надо подвигать многогранник, а потом уже увеличивать на переданные константы");
 
-    // return ks.Select(k => polytope.Scale(k, ));
-
+    return ks.Select(k => polytope.Scale(k, polytope.InnerPoint));
   }
+
 }

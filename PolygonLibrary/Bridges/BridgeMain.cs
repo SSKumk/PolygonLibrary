@@ -77,9 +77,9 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGPathHolder<TNum, TConv> ph;     // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv>     ph; // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv> ts;       // данные о терминальном множестве
+  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
 #endregion
 
   public BridgeCreator(string pathLDG, string problemFileName) {
@@ -100,23 +100,27 @@ class BridgeCreator<TNum, TConv>
     Geometry<TNum, TConv>.TransformReader.Transform tmsTransform = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
 
     // заполняем динамику и многогранники ограничений на управления игроков
-    gd = new Geometry<TNum, TConv>.GameData(
-                                            ph.OpenDynamicsReader(dynName)
-                                          , ph.OpenPolytopeReader(fpPolName)
-                                          , ph.OpenPolytopeReader(spPolName)
-                                          , fpTransform, spTransform);
+    gd =
+      new Geometry<TNum, TConv>.GameData
+        (
+         ph.OpenDynamicsReader(dynName)
+       , ph.OpenPolytopeReader(fpPolName)
+       , ph.OpenPolytopeReader(spPolName)
+       , fpTransform
+       , spTransform
+        );
 
     ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
   }
 
   public void Solve() {
+    int i = 1;
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
-      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(ph.PathBr, ph.PathPs, ph.PathQs, gd, tms!);
+      Geometry<TNum, TConv>.SolverLDG slv =
+        new Geometry<TNum, TConv>.SolverLDG(Path.Combine(ph.PathBr, i.ToString()), ph.PathPs, ph.PathQs, gd, tms!);
       slv.Solve();
     }
   }
-
-
 
 
   // ---------------------------------------------
@@ -139,21 +143,5 @@ class BridgeCreator<TNum, TConv>
     if (!File.Exists(tmsPath)) { File.Create(tmsPath); }
   }
   // ---------------------------------------------
-
-}
-
-class Program {
-
-  static void Main(string[] args) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    // string ldgDir = "E:\\Work\\LDG\\";
-
-    // BridgeCreator<double,DConvertor>.SetUpDirectories(ldgDir);
-
-    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion-3D");
-    bridgeCreator.Solve();
-  }
 
 }

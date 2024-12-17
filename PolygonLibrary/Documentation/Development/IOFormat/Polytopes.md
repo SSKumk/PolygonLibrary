@@ -27,8 +27,7 @@ Type = "CGLibrary";
 ### Convex Hull
 Многогранник записан своими вершинами.
 ```
-Type  = "Convex Hull";
-DoRed =  S;  // Выполнять ли удаление избыточных точек 
+DoRed =  B;  // Выполнять ли удаление избыточных точек 
 VsQnt =  N;  // количество веришн
 VsDim =  N;  // количество координат у вершин
 D D ...  D   // VsDim штук -- перечисляем все координаты первой вершины
@@ -38,10 +37,9 @@ D D ...  D
 // VsQnt строк
 ```
 
-Корректные значения `DoRed` : `True`, `False` TODO: !!!
-
 #### Пример. Квадрат
 ```
+Name  = "Square";
 Type  = "Convex Hull";
 DoRed =  False; 
 VsQnt = 4;
@@ -55,8 +53,7 @@ VsDim = 2;
 ### Hyper Planes
 Многогранник задан пересечением полупространств. Векторы нормалей должны быть направлены "наружу" многогранника.
 ```
-Type   = "Hyper Planes";
-DoRed =  S;  // Выполнять ли удаление избыточных неравенств 
+DoRed =  B;  // Выполнять ли удаление избыточных неравенств 
 HPsQnt = N;  // количество гиперплоскостей
 HPsDim = N;  // размерность векторов нормалей у гиперплоскостей
 D D ... D D  // HPsDim + 1 штука. Первые HPsDim штук -- это координаты нормали, последняя -- это свободный член в правой части
@@ -67,6 +64,7 @@ D D ... D D
 
 #### Пример. Квадрат
 ```
+Name   = "Square";
 Type   = "Hyper Planes";
 DoRed  = True;
 HPsQnt = 5;
@@ -90,7 +88,6 @@ HPsDim = 2;
 
 #### RectAxisParallel
 ```
-Type           = Generator;
 GeneratorType = RectAxisParallel;
 Left           = 1D<D>;  // Минимальная  вершина параллепипеда в лексикографическом порядке
 Right          = 1D<D>;  // Максимальная вершина параллепипеда в лексикографическом порядке
@@ -98,10 +95,11 @@ Right          = 1D<D>;  // Максимальная вершина паралл
 
 ##### Пример. Квадрат
 ```
-Type           = Generator;
+Name          = "Square";
+Type          = Generator;
 GeneratorType = RectAxisParallel;
-Left           = {0,0};
-Right          = {1,1};
+Left          = {0,0};
+Right         = {1,1};
 ```
 
 
@@ -109,18 +107,17 @@ Right          = {1,1};
 Некоторое приближение многогранником сферы единичного радиуса с центром в начале координат. 
 
 ```
-Type              = Generator;
-GeneratorType    = Sphere;
+GeneratorType     = Sphere;
 Dim               = N;         // Размерность сферы
 AzimuthsDivisions = N;         // Количество точек разбиения сферы по каждому из азимутных углов.
 [PolarDivision    = N;]        // Количество точек разбиения сферы по зенитному углу. В 2D-случае эта строка отсутствует.
-
 ```
 
 ##### Пример. Квадрат
 ```
+Name              = "Square";
 Type              = Generator;
-GeneratorType    = Sphere;
+GeneratorType     = Sphere;
 Dim               = 2;
 AzimuthsDivisions = 4;
 ```
@@ -130,8 +127,7 @@ AzimuthsDivisions = 4;
 Некоторое приближение многогранником эллипсоида с центром в начале координат.
 
 ```
-Type              = Generator;
-GeneratorType    = Ellipsoid;
+GeneratorType     = Ellipsoid;
 Dim               = N;         // Размерность эллипсоида
 SemiAxis          = 1D<D>;     // Длины полуосей эллипсоида
 AzimuthsDivisions = N;         // Количество точек разбиения эллипсоида по каждому из азимутных углов.
@@ -141,8 +137,9 @@ AzimuthsDivisions = N;         // Количество точек разбиен
 ##### Пример. Квадрат
 
 ```
+Name              = "Square";
 Type              = Generator;
-GeneratorType    = Ellipsoid;
+GeneratorType     = Ellipsoid;
 Dim               = 2;
 SemiAxis          = {1,1};
 AzimuthsDivisions = 4;
