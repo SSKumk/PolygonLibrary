@@ -82,6 +82,25 @@ public partial class Geometry<TNum, TConv>
 
 #region Reading methods
     /// <summary>
+    /// Read the next object and treat it as a bool.
+    /// </summary>
+    /// <param name="name">The name of the field to read.</param>
+    /// <returns>The boolean value read from the file.</returns>
+    /// <exception cref="ArgumentException">Thrown if the value read is not "true" or "false".</exception>
+    public bool ReadBool(string name) {
+      ReadNameAndPassEquivalence(name);
+      state = State.ReadingToken;
+      ReadToken(name, ";", out string readData);
+
+      return readData switch
+               {
+                 "true" => true,
+                 "false" => false,
+                 _ => throw new ArgumentException($"ParamReader.ReadBool: Only 'true' and 'false' value of the {name} is possible. Found {readData}")
+               };
+    }
+      
+    /// <summary>
     /// Read the next object and treat it as a double.
     /// </summary>
     /// <param name="name">Name of the object.</param>

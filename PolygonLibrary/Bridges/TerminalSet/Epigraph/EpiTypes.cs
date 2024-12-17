@@ -8,7 +8,7 @@ public abstract class EpiTypes<TNum, TConv>
   public class DistToPoint : IEpiType<TNum, TConv> {
     public Geometry<TNum, TConv>.Vector Point { get; private set; } = null!;
 
-    public void ReadParameters(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> dh) {
+    public void ReadParameters(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> ph) {
       Point = pr.ReadVector("Point");
     }
   }
@@ -17,8 +17,8 @@ public abstract class EpiTypes<TNum, TConv>
     public Geometry<TNum, TConv>.ConvexPolytop Polytope { get; private set; } = null!;
 
 
-    public void ReadParameters(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> dh) {
-      Polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Name"), dh);
+    public void ReadParameters(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> ph) {
+      Polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Name"), ph);
     }
   }
 

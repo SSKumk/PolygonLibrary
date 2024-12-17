@@ -8,9 +8,9 @@ public class LevelSetTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop>
     ReadTerminalSets(Geometry<TNum, TConv>.ParamReader pr
-                   , LDGPathHolder<TNum, TConv>        dh) {
+                   , LDGPathHolder<TNum, TConv>        ph) {
 
-    ILvlSetType<TNum, TConv> lvlSetType = LvlSetFactory<TNum, TConv>.Read(pr, dh);
+    ILvlSetType<TNum, TConv> lvlSetType = LvlSetFactory<TNum, TConv>.Read(pr, ph);
 
     TNum[] ks = pr.ReadVector("Constants").GetAsArray();
     if (ks.Any(Geometry<TNum, TConv>.Tools.LE)) {

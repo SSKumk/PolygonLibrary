@@ -8,8 +8,8 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGPathHolder<TNum, TConv>        dh) {
-    IEpiType<TNum, TConv> epiType = EpiTypeFactory<TNum, TConv>.Read(pr, dh);
+    , LDGPathHolder<TNum, TConv>        ph) {
+    IEpiType<TNum, TConv> epiType = EpiTypeFactory<TNum, TConv>.Read(pr, ph);
 
     TNum k = pr.ReadNumber<TNum>("Constant");
     if (Geometry<TNum, TConv>.Tools.LE(k)) {

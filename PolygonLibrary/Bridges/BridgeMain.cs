@@ -77,9 +77,9 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGPathHolder<TNum, TConv>     dh; // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv> ph;     // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
+  public readonly TerminalSet<TNum, TConv> ts;       // данные о терминальном множестве
 #endregion
 
   public BridgeCreator(string pathLDG, string problemFileName) {
@@ -88,28 +88,35 @@ class BridgeCreator<TNum, TConv>
     var pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(pathLDG, "Problems", problemFileName) + ".gameconfig");
 
     // Имя выходной папки совпадает с полем ProblemName в файле задачи
-    dh = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("ProblemName")); // установили пути и прочитали словари-связки
+    ph = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("ProblemName")); // установили пути и прочитали словари-связки
 
     // Читаем имена динамики и многогранников ограничений на управления игроков
-    string dynName   = pr.ReadString("DynamicsName");
-    string fpPolName = pr.ReadString("FPName");
-    string spPolName = pr.ReadString("SPName");
-    string tmsName   = pr.ReadString("TSName");
+    string                                          dynName      = pr.ReadString("DynamicsName");
+    string                                          fpPolName    = pr.ReadString("FPName");
+    Geometry<TNum, TConv>.TransformReader.Transform fpTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
+    string                                          spPolName    = pr.ReadString("SPName");
+    Geometry<TNum, TConv>.TransformReader.Transform spTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
+    string                                          tmsName      = pr.ReadString("TSName");
+    Geometry<TNum, TConv>.TransformReader.Transform tmsTransform = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
 
     // заполняем динамику и многогранники ограничений на управления игроков
-    gd =
-      new Geometry<TNum, TConv>.GameData
-        (dh.OpenDynamicsReader(dynName), dh.OpenPolytopeReader(fpPolName), dh.OpenPolytopeReader(spPolName));
+    gd = new Geometry<TNum, TConv>.GameData(
+                                            ph.OpenDynamicsReader(dynName)
+                                          , ph.OpenPolytopeReader(fpPolName)
+                                          , ph.OpenPolytopeReader(spPolName)
+                                          , fpTransform, spTransform);
 
-    ts = new TerminalSet<TNum, TConv>(tmsName, dh, ref gd);
+    ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
   }
 
   public void Solve() {
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
-      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(dh.PathBr, dh.PathPs, dh.PathQs, gd, tms!);
+      Geometry<TNum, TConv>.SolverLDG slv = new Geometry<TNum, TConv>.SolverLDG(ph.PathBr, ph.PathPs, ph.PathQs, gd, tms!);
       slv.Solve();
     }
   }
+
+
 
 
   // ---------------------------------------------

@@ -5,7 +5,7 @@ public abstract class EpiTypeFactory<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public static IEpiType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> dh) {
+  public static IEpiType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph) {
     string epiType = pr.ReadString("Type");
     IEpiType<TNum,TConv> epigraph =
       epiType switch
@@ -19,7 +19,7 @@ public abstract class EpiTypeFactory<TNum, TConv>
                  )
         };
     
-    epigraph.ReadParameters(pr, dh);
+    epigraph.ReadParameters(pr, ph);
     return epigraph;
   }
 }

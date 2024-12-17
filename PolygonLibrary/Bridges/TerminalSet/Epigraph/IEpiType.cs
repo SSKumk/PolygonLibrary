@@ -8,5 +8,5 @@ public interface IEpiType<TNum, TConv>
   /// Reads the specific parameters for the epigraph type from the given parameter reader.
   /// </summary>
   /// <param name="pr">The parameter reader.</param>
-  void ReadParameters(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> dh);
+  void ReadParameters(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph);
 }

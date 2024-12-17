@@ -5,6 +5,6 @@ public interface ILvlSetType<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  void ReadParameters(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> dh);
+  void ReadParameters(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph);
 
 }

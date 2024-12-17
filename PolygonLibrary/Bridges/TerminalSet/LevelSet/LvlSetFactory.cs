@@ -4,7 +4,7 @@ public class LvlSetFactory<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
-  public static ILvlSetType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> dh) {
+  public static ILvlSetType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph) {
     string lvlSet = pr.ReadString("Type");
     ILvlSetType<TNum,TConv> lvlSetType =
       lvlSet switch
@@ -18,7 +18,7 @@ public class LvlSetFactory<TNum, TConv>
                  )
         };
     
-    lvlSetType.ReadParameters(pr, dh);
+    lvlSetType.ReadParameters(pr, ph);
     return lvlSetType;
   }
 }

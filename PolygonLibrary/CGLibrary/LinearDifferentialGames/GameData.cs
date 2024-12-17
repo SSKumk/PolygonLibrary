@@ -183,7 +183,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="prDyn">The reader for dynamic parameters.</param>
     /// <param name="prP">The reader for the first player's control parameters.</param>
     /// <param name="prQ">The reader for the second player's control parameters.</param>
-    public GameData(ParamReader prDyn, ParamReader prP, ParamReader prQ) {
+    public GameData(ParamReader prDyn, ParamReader prP, ParamReader prQ, TransformReader.Transform trP, TransformReader.Transform trQ) {
       // Reading general information
       Name = prDyn.ReadString("Name");
 
@@ -204,10 +204,11 @@ public partial class Geometry<TNum, TConv>
       projInd = prDyn.Read1DArray<int>("ProjInd", projDim);
 
       // Reading the first player's control data
-      P = PolytopeReader.Read(prP);
+      P = TransformReader.DoTransform(PolytopeReader.Read(prP), trP, pDim);
+      
 
       // Reading the second player's control data
-      Q = PolytopeReader.Read(prQ);
+      Q = TransformReader.DoTransform(PolytopeReader.Read(prQ), trQ, qDim);
 
       // Computing the Cauchy matrix
       CauchyMatrix = new CauchyMatrix(A, T, dt);
@@ -222,5 +223,6 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
   }
+
 
 }

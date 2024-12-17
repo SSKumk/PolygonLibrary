@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv>
     public ConvexPolytop ReadPolytope(ParamReader pr) {
       List<Vector> vs = new List<Vector>();
 
-      bool doRed = pr.ReadString("DoRed") == "True"; //todo: <---!
+      bool doRed = pr.ReadBool("DoRed");
       int  qnt   = pr.ReadNumber<int>("VsQnt");
       int  d     = pr.ReadNumber<int>("VsDim");
       for (int i = 0; i < qnt; i++) {
@@ -31,7 +31,7 @@ public partial class Geometry<TNum, TConv>
     public ConvexPolytop ReadPolytope(ParamReader pr) {
       List<HyperPlane> HPs = new List<HyperPlane>();
 
-      bool doRed = pr.ReadString("DoRed") == "True"; //todo: <---!
+      bool doRed = pr.ReadBool("DoRed");
       int  qnt   = pr.ReadNumber<int>("HPsQnt");
       int  d     = pr.ReadNumber<int>("HPsDim");
       int  d1    = d++;

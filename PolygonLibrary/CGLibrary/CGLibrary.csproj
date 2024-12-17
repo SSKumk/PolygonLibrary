@@ -66,6 +66,7 @@
         <Compile Include="Toolkit\PolytopeReader\PolytopeReaders.cs" />
         <Compile Include="Toolkit\PolytopeReader\IPolytopeReader.cs" />
         <Compile Include="Toolkit\PolytopeReader\PolytopeReaderFactory.cs" />
+        <Compile Include="Toolkit\PolytopeReader\TransformReader.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
         <Compile Include="Toolkit\Tools.cs" />
     </ItemGroup>

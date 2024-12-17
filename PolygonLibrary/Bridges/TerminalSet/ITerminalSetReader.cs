@@ -5,12 +5,12 @@ public interface ITerminalSetReader<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public static Geometry<TNum,TConv>.ConvexPolytop DoPolytope(string name, LDGPathHolder<TNum,TConv> dh) {
-    return Geometry<TNum, TConv>.PolytopeReader.Read(dh.OpenPolytopeReader(name));
+  public static Geometry<TNum,TConv>.ConvexPolytop DoPolytope(string name, LDGPathHolder<TNum,TConv> ph) {
+    return Geometry<TNum, TConv>.PolytopeReader.Read(ph.OpenPolytopeReader(name));
   }
 
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
       Geometry<TNum, TConv>.ParamReader pr
-    , LDGPathHolder<TNum, TConv>        dh);
+    , LDGPathHolder<TNum, TConv>        ph);
 
 }
