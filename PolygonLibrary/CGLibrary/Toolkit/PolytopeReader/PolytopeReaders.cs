@@ -49,7 +49,7 @@ public partial class Geometry<TNum, TConv>
 
     
     public ConvexPolytop ReadPolytope(ParamReader pr) {
-      string genType = pr.ReadString("Generator Type");
+      string genType = pr.ReadString("GeneratorType");
 
       switch (genType) {
         case "RectAxisParallel": {

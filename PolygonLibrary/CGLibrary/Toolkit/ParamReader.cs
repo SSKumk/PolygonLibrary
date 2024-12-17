@@ -13,7 +13,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>
-  public partial class ParamReader {
+  public class ParamReader {
 
     /// <summary>
     /// The path to the file from which data is read.
@@ -436,7 +436,8 @@ public partial class Geometry<TNum, TConv>
               flagContinue = false;
             }
             else
-              throw new Exception("Erroneous symbol '" + data[ind] + "' during reading the terminator of the object " + name);
+              throw new Exception("Erroneous symbol '" + data[ind] + $"' during reading the terminator of the object '{name}'."
+                                  + $"The terminator '{term}' is expected before such a symbol.");
 
             break;
         }

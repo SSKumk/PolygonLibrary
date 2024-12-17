@@ -11,7 +11,7 @@ public class TerminalSet<TNum, TConv>
   public TerminalSet(string tmsName, LDGPathHolder<TNum, TConv> dh, ref Geometry<TNum, TConv>.GameData gd) {
     // открыли ридер терминального множества
     Geometry<TNum, TConv>.ParamReader pr   = dh.OpenTerminalSetReader(tmsName);
-    string                            type = pr.ReadString("TS Type");
+    string                            type = pr.ReadString("TSType");
 
     ITerminalSetReader<TNum, TConv> reader =
       type switch

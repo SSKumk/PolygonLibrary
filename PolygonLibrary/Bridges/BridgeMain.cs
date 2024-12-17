@@ -41,9 +41,9 @@ public class LDGPathHolder<TNum, TConv>
     PathQs = Path.Combine(pathOut, "Qs");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
-    name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathDynamics + "!Dict_dynamics.txt"));
-    name2pol = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathPolytopes + "!Dict_polytopes.txt"));
-    name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(PathTerminalSets + "!Dict_terminalsets.txt"));
+    name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
+    name2pol = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathPolytopes, "!Dict_polytopes.txt")));
+    name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathTerminalSets, "!Dict_terminalsets.txt")));
   }
 
   private static Dictionary<string, (int fileName, string comment)> ReadDictionary(Geometry<TNum, TConv>.ParamReader pr) {
@@ -61,13 +61,13 @@ public class LDGPathHolder<TNum, TConv>
   }
 
   public Geometry<TNum, TConv>.ParamReader OpenDynamicsReader(string name)
-    => new(PathDynamics + name2dyn[name].dynFileName + ".gamedata");
+    => new(Path.Combine(PathDynamics, name2dyn[name].dynFileName + ".gamedata"));
 
   public Geometry<TNum, TConv>.ParamReader OpenPolytopeReader(string name)
-    => new(PathPolytopes + name2pol[name].polFileName + ".polytope");
+    => new(Path.Combine(PathPolytopes, name2pol[name].polFileName + ".polytope"));
 
   public Geometry<TNum, TConv>.ParamReader OpenTerminalSetReader(string name)
-    => new(PathTerminalSets + name2tms[name].tmsFileName + ".terminalset");
+    => new(Path.Combine(PathTerminalSets, name2tms[name].tmsFileName + ".terminalset"));
 
 }
 
@@ -77,9 +77,9 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGPathHolder<TNum, TConv> dh;     // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv>     dh; // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv> ts;       // данные о терминальном множестве
+  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
 #endregion
 
   public BridgeCreator(string pathLDG, string problemFileName) {
@@ -87,14 +87,14 @@ class BridgeCreator<TNum, TConv>
 
     var pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(pathLDG, "Problems", problemFileName) + ".gameconfig");
 
-    // Имя выходной папки совпадает с полем Problem Name в файле задачи
-    dh = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("Problem Name")); // установили пути и прочитали словари-связки
+    // Имя выходной папки совпадает с полем ProblemName в файле задачи
+    dh = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("ProblemName")); // установили пути и прочитали словари-связки
 
     // Читаем имена динамики и многогранников ограничений на управления игроков
-    string dynName   = pr.ReadString("Dynamics Name");
-    string fpPolName = pr.ReadString("FP Name");
-    string spPolName = pr.ReadString("SP Name");
-    string tmsName   = pr.ReadString("TS Name");
+    string dynName   = pr.ReadString("DynamicsName");
+    string fpPolName = pr.ReadString("FPName");
+    string spPolName = pr.ReadString("SPName");
+    string tmsName   = pr.ReadString("TSName");
 
     // заполняем динамику и многогранники ограничений на управления игроков
     gd =
@@ -140,18 +140,13 @@ class Program {
   static void Main(string[] args) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    string ldgDir = "E:\\Work\\LDG\\";
+    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    // string ldgDir = "E:\\Work\\LDG\\";
 
-    Geometry<double, DConvertor>.ParamReader pr = new Geometry<double, DConvertor>.ParamReader(ldgDir + "1.txt");
-    Console.WriteLine(pr.ReadString("some"));
-    for (int i = 0; i < 3; i++) {
-      Console.WriteLine(new Geometry<double, DConvertor>.Vector(pr.ReadNumberLine(3)));
-    }
-    Console.WriteLine(pr.ReadString("some"));
     // BridgeCreator<double,DConvertor>.SetUpDirectories(ldgDir);
 
-    // BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion");
+    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion-3D");
+    bridgeCreator.Solve();
   }
 
 }

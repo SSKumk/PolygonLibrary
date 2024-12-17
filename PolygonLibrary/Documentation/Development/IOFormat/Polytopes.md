@@ -82,16 +82,16 @@ HPsDim = 2;
 Многогранник, который умеет создавать CGLibrary, заданный параметрически
 
 Далее идёт поле
-`Generator Type = "S";`  -- тип функции-генератора
+`GeneratorType = "S";`  -- тип функции-генератора
 
-Корректные значения `S`: `RectParallel`, `Sphere`, `Ellipsoid` 
+Корректные значения `S`: `RectAxisParallel`, `Sphere`, `Ellipsoid` 
 
-В зависимости от значения поля `Generator Type` дальнейшая структура файла будет различной.
+В зависимости от значения поля `GeneratorType` дальнейшая структура файла будет различной.
 
 #### RectAxisParallel
 ```
 Type           = Generator;
-Generator Type = RectAxisParallel;
+GeneratorType = RectAxisParallel;
 Left           = 1D<D>;  // Минимальная  вершина параллепипеда в лексикографическом порядке
 Right          = 1D<D>;  // Максимальная вершина параллепипеда в лексикографическом порядке
 ```
@@ -99,7 +99,7 @@ Right          = 1D<D>;  // Максимальная вершина паралл
 ##### Пример. Квадрат
 ```
 Type           = Generator;
-Generator Type = RectAxisParallel;
+GeneratorType = RectAxisParallel;
 Left           = {0,0};
 Right          = {1,1};
 ```
@@ -110,7 +110,7 @@ Right          = {1,1};
 
 ```
 Type              = Generator;
-Generator Type    = Sphere;
+GeneratorType    = Sphere;
 Dim               = N;         // Размерность сферы
 AzimuthsDivisions = N;         // Количество точек разбиения сферы по каждому из азимутных углов.
 [PolarDivision    = N;]        // Количество точек разбиения сферы по зенитному углу. В 2D-случае эта строка отсутствует.
@@ -120,7 +120,7 @@ AzimuthsDivisions = N;         // Количество точек разбиен
 ##### Пример. Квадрат
 ```
 Type              = Generator;
-Generator Type    = Sphere;
+GeneratorType    = Sphere;
 Dim               = 2;
 AzimuthsDivisions = 4;
 ```
@@ -131,7 +131,7 @@ AzimuthsDivisions = 4;
 
 ```
 Type              = Generator;
-Generator Type    = Ellipsoid;
+GeneratorType    = Ellipsoid;
 Dim               = N;         // Размерность эллипсоида
 SemiAxis          = 1D<D>;     // Длины полуосей эллипсоида
 AzimuthsDivisions = N;         // Количество точек разбиения эллипсоида по каждому из азимутных углов.
@@ -142,7 +142,7 @@ AzimuthsDivisions = N;         // Количество точек разбиен
 
 ```
 Type              = Generator;
-Generator Type    = Ellipsoid;
+GeneratorType    = Ellipsoid;
 Dim               = 2;
 SemiAxis          = {1,1};
 AzimuthsDivisions = 4;
