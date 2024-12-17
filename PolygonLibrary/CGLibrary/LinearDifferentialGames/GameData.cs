@@ -111,10 +111,9 @@ public partial class Geometry<TNum, TConv>
     public readonly TNum dt;
 #endregion
 
-    public int projDim;     // размерность выделенных m координат
-    public int[] projInd;   // индексы выделенных m координат
+    public int    projDim;  // размерность выделенных m координат
+    public int[]  projInd;  // индексы выделенных m координат
     public string projInfo; // текстовая характеристика пространства выделенных координат
-
 
 #region Control constraints
     /// <summary>
@@ -191,9 +190,9 @@ public partial class Geometry<TNum, TConv>
       // Reading dynamics
       n    = prDyn.ReadNumber<int>("Dim");
       A    = new Matrix(prDyn.Read2DArray<TNum>("A", n, n));
-      pDim = prDyn.ReadNumber<int>("pDim");
+      pDim = prDyn.ReadNumber<int>("PDim");
       B    = new Matrix(prDyn.Read2DArray<TNum>("B", n, pDim));
-      qDim = prDyn.ReadNumber<int>("qDim");
+      qDim = prDyn.ReadNumber<int>("QDim");
       C    = new Matrix(prDyn.Read2DArray<TNum>("C", n, qDim));
 
       t0 = prDyn.ReadNumber<TNum>("t0");
@@ -201,9 +200,8 @@ public partial class Geometry<TNum, TConv>
       dt = prDyn.ReadNumber<TNum>("dt");
 
       // Reading projection information
-      projDim  = prDyn.ReadNumber<int>("ProjDim");
-      projInd  = prDyn.Read1DArray<int>("ProjInd", projDim);
-      projInfo = string.Join(';', projInd);
+      projDim = prDyn.ReadNumber<int>("ProjDim");
+      projInd = prDyn.Read1DArray<int>("ProjInd", projDim);
 
       // Reading the first player's control data
       P = PolytopeReader.Read(prP);
@@ -222,6 +220,7 @@ public partial class Geometry<TNum, TConv>
       ProjMatrix = new Matrix(projMatrixArr);
     }
 #endregion
+
   }
 
 }
