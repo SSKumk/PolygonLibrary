@@ -56,6 +56,14 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     gd.B            = Geometry<TNum, TConv>.Matrix.vcat(gd.B, Geometry<TNum, TConv>.Matrix.Zero(1, gd.pDim));
     gd.C            = Geometry<TNum, TConv>.Matrix.vcat(gd.C, Geometry<TNum, TConv>.Matrix.Zero(1, gd.qDim));
     gd.CauchyMatrix = new Geometry<TNum, TConv>.CauchyMatrix(gd.A, gd.T, gd.dt);
+    
+    
+    // Setting up the projection matrix
+    TNum[,] projMatrixArr = new TNum[gd.projDim, gd.n];
+    for (int i = 0; i < gd.projDim; i++) {
+      projMatrixArr[i, gd.projInd[i]] = Geometry<TNum,TConv>.Tools.One;
+    }
+    gd.ProjMatrix = new Geometry<TNum,TConv>.Matrix(projMatrixArr);
   }
 
 }

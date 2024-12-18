@@ -159,7 +159,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Projection matrix, which extracts two necessary rows of the Cauchy matrix
     /// </summary>
-    public readonly Matrix ProjMatrix;
+    public Matrix ProjMatrix;
 
     public Matrix Xstar(TNum t) {
       if (_Xstar.TryGetValue(t, out Matrix? matrix)) {

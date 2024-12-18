@@ -14,8 +14,8 @@ public partial class Geometry<TNum, TConv>
     public int AzimuthsDivisions { get; private set; }
 
     public void ReadParameters(ParamReader pr) {
-      PolarDivision    = pr.ReadNumber<int>("Polar");
-      AzimuthsDivisions = pr.ReadNumber<int>("Azimuths");
+      AzimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivisions");
+      PolarDivision    = pr.ReadNumber<int>("PolarDivision");
     }
   }
 
