@@ -19,7 +19,7 @@ public class LvlSetTypes<TNum, TConv>
 
 
     public void ReadParameters(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> ph) {
-      Polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Name"), ph);
+      Polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Polytope"), ph);
     }
   }
 }

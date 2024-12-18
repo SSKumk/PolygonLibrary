@@ -119,6 +119,7 @@ class BridgeCreator<TNum, TConv>
       Geometry<TNum, TConv>.SolverLDG slv =
         new Geometry<TNum, TConv>.SolverLDG(Path.Combine(ph.PathBr, i.ToString()), ph.PathPs, ph.PathQs, gd, tms!);
       slv.Solve();
+      i++;
     }
   }
 

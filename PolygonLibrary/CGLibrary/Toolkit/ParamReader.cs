@@ -10,7 +10,7 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-    /// <summary>
+  /// <summary>
   /// Class whose exemplar takes a data from a file and disassembles it to objects on demand
   /// </summary>
   public class ParamReader {
@@ -94,12 +94,16 @@ public partial class Geometry<TNum, TConv>
 
       return readData switch
                {
-                 "true" => true,
-                 "false" => false,
-                 _ => throw new ArgumentException($"ParamReader.ReadBool: Only 'true' and 'false' value of the {name} is possible. Found {readData}")
+                 "true"  => true
+               , "false" => false
+               , _ => throw new ArgumentException
+                        (
+                         $"ParamReader.ReadBool: Only 'true' and 'false' value of the {name} is possible. Found {readData}" +
+                         $"\nin file {filePath}"
+                        )
                };
     }
-      
+
     /// <summary>
     /// Read the next object and treat it as a double.
     /// </summary>
@@ -243,7 +247,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="name">The identifier for the collection of vectors to be read.</param>
     /// <returns>A list of <see cref="Vector"/> objects.</returns>
-    public List<Vector> ReadVectors(string name) => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray(), false)).ToList();
+    public List<Vector> ReadVectors(string name)
+      => Read2DJaggedArray<TNum>(name).Select(l => new Vector(l.ToArray(), false)).ToList();
 
 
     /// <summary>
@@ -308,10 +313,8 @@ public partial class Geometry<TNum, TConv>
 
       return res;
     }
-    
-    
-    
-    
+
+
     /// <summary>
     /// Reads a line of numbers from the input data.
     /// </summary>
@@ -319,17 +322,13 @@ public partial class Geometry<TNum, TConv>
     /// <returns>An array containing the parsed numbers.</returns>
     /// <exception cref="ArgumentException">Thrown if the number of parsed numbers does not match the expected quantity.</exception>
     /// <exception cref="FormatException">Thrown if a number in the line has an invalid format.</exception>
-    public TNum[] ReadNumberLine(int qnt)
-    {
-      
-      while (ind < data.Length && "\n\r\t ".Contains(data[ind]))
-      {
+    public TNum[] ReadNumberLine(int qnt) {
+      while (ind < data.Length && "\n\r\t ".Contains(data[ind])) {
         ind++;
       }
-      
+
       StringBuilder lineBuilder = new StringBuilder();
-      while (ind < data.Length && !"\n\r".Contains(data[ind]))
-      {
+      while (ind < data.Length && !"\n\r".Contains(data[ind])) {
         lineBuilder.Append(data[ind]);
         ind++;
       }
@@ -338,29 +337,21 @@ public partial class Geometry<TNum, TConv>
 
       string[] splited = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
-      if (splited.Length != qnt)
-      {
-        throw new ArgumentException($"Expected {qnt} numbers, but found {splited.Length} in line: {line}" +
-                                    $"\n in file {filePath}");
+      if (splited.Length != qnt) {
+        throw new ArgumentException
+          ($"Expected {qnt} numbers, but found {splited.Length} in line: {line}" + $"\n in file {filePath}");
       }
 
       TNum[] result = new TNum[qnt];
-      for (int i = 0; i < qnt; i++)
-      {
-        if (!TNum.TryParse(splited[i], CultureInfo.InvariantCulture,  out result[i]))
-        {
-          throw new FormatException($"Invalid number format: {splited[i]} in line: {line}" +
-                                    $"\n in file {filePath}");
+      for (int i = 0; i < qnt; i++) {
+        if (!TNum.TryParse(splited[i], CultureInfo.InvariantCulture, out result[i])) {
+          throw new FormatException($"Invalid number format: {splited[i]} in line: {line}" + $"\n in file {filePath}");
         }
       }
 
 
       return result;
     }
-    
-    
-    
-    
 #endregion
 
 #region Internal methods
@@ -402,7 +393,8 @@ public partial class Geometry<TNum, TConv>
       ReadToken(ObjectName, "=", out string readName);
 
       if (!ObjectName.Equals(readName))
-        throw new Exception("The read name '" + readName + "' doesn't coincide with the given name '" + ObjectName + "'");
+        throw new Exception("The read name '" + readName + "' doesn't coincide with the given name '" + ObjectName + "'."
+                            + $"\nin file {filePath}");
     }
 
     /// <summary>
@@ -433,14 +425,8 @@ public partial class Geometry<TNum, TConv>
 
           case '/':
             switch (data[ind + 1]) {
-              case '/':
-                PassOneRowComment();
-
-                break;
-              case '*':
-                PassMultiRowComment();
-
-                break;
+              case '/': PassOneRowComment(); break;
+              case '*': PassMultiRowComment(); break;
               default:
                 throw new Exception("Erroneous symbol '" + data[ind] + "' during reading the terminator of the object " + name);
             }
@@ -455,8 +441,11 @@ public partial class Geometry<TNum, TConv>
               flagContinue = false;
             }
             else
-              throw new Exception("Erroneous symbol '" + data[ind] + $"' during reading the terminator of the object '{name}'."
-                                  + $"The terminator '{term}' is expected before such a symbol.");
+              throw new Exception
+                (
+                 "Erroneous symbol '" + data[ind] + $"' during reading the terminator of the object '{name}'." +
+                 $"The terminator '{term}' is expected before such a symbol."
+                );
 
             break;
         }
@@ -581,16 +570,17 @@ public partial class Geometry<TNum, TConv>
             break;
 
           case '\\':
-            readData += data[ind + 1] switch
-                          {
-                            '\\' => '\\'
-                          , '"'  => '"'
-                          , 'n'  => '\n'
-                          , 'r'  => '\r'
-                          , 't'  => '\t'
-                          , _ => throw new Exception
-                                   ("Erroneous escape symbol '\\" + data[ind + 1] + "' when reading string object '" + name + "'")
-                          };
+            readData +=
+              data[ind + 1] switch
+                {
+                  '\\' => '\\'
+                , '"'  => '"'
+                , 'n'  => '\n'
+                , 'r'  => '\r'
+                , 't'  => '\t'
+                , _ => throw new Exception
+                         ("Erroneous escape symbol '\\" + data[ind + 1] + "' when reading string object '" + name + "'")
+                };
             ind += 2;
 
             break;
@@ -671,8 +661,8 @@ public partial class Geometry<TNum, TConv>
         }
       }
     }
-        #endregion
+#endregion
 
-    }
+  }
 
 }

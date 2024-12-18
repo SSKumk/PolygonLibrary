@@ -34,7 +34,7 @@ public partial class Geometry<TNum, TConv>
       bool doRed = pr.ReadBool("DoRed");
       int  qnt   = pr.ReadNumber<int>("HPsQnt");
       int  d     = pr.ReadNumber<int>("HPsDim");
-      int  d1    = d++;
+      int  d1    = d + 1;
       for (int i = 0; i < qnt; i++) {
         TNum[] hp = pr.ReadNumberLine(d1);
         TNum[] v  = hp[..d];
@@ -59,7 +59,7 @@ public partial class Geometry<TNum, TConv>
         }
         case "Sphere": {
           int dim = pr.ReadNumber<int>("Dim");
-          int azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivision");
+          int azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivisions");
           int polarDivision = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
 
           return ConvexPolytop.Sphere(Vector.Zero(dim), Tools.One, polarDivision, azimuthsDivisions);
@@ -67,7 +67,7 @@ public partial class Geometry<TNum, TConv>
         case "Ellipsoid": {
           int    dim               = pr.ReadNumber<int>("Dim");
           Vector semiAxis              = pr.ReadVector("SemiAxis");
-          int    azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivision");
+          int    azimuthsDivisions = pr.ReadNumber<int>("AzimuthsDivisions");
           int    polarDivision     = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
           
           return ConvexPolytop.Ellipsoid(polarDivision,azimuthsDivisions,Vector.Zero(dim),semiAxis );

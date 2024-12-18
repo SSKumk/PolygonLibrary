@@ -17,7 +17,7 @@ class Program {
 
     // SetUpDirectories(ldgDir);
 
-    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion-3D.Test1");
+    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test5");
     bridgeCreator.Solve();
   }
 
