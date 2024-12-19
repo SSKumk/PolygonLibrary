@@ -15,10 +15,15 @@ class Program {
     // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     string ldgDir = "E:\\Work\\LDG\\";
 
+    Geometry<double, DConvertor>.ParamReader pr = new Geometry<double, DConvertor>.ParamReader(ldgDir + "test.txt");
+
+    Console.WriteLine(pr.ReadVector("V"));
+    Console.WriteLine(pr.ReadString("Str"));
+    _ = pr.ReadNumberLine(4);
     // SetUpDirectories(ldgDir);
 
-    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test7");
-    bridgeCreator.Solve();
+    // BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test9");
+    // bridgeCreator.Solve();
   }
 
 }

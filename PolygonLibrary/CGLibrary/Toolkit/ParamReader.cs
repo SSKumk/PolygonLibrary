@@ -301,8 +301,7 @@ public partial class Geometry<TNum, TConv>
         state = State.ReadingTerminator;
         if (j == rows - 1) {
           ReadTerminator(name, "}");
-        }
-        else {
+        } else {
           ReadTerminator(name, ",");
         }
       }
@@ -335,7 +334,10 @@ public partial class Geometry<TNum, TConv>
 
       string line = lineBuilder.ToString();
 
-      string[] splited = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] splited = line.Split(new char[]
+        {
+          ' ', '\t'
+        }, StringSplitOptions.RemoveEmptyEntries);
 
       if (splited.Length != qnt) {
         throw new ArgumentException
@@ -356,44 +358,51 @@ public partial class Geometry<TNum, TConv>
 
 #region Internal methods
     /// <summary>
-    /// Passing one row comment
+    /// Skips single-line comments (// ...).
     /// </summary>
+    /// <exception cref="System.Exception">Thrown when a single-line comment is not found or doesn't end with a newline or end of file.</exception>
     private void PassOneRowComment() {
-      if (data[ind] == '/' && data[ind + 1] == '/') {
-        ind += 2;
-        while (data[ind] != '\n')
-          ind++;
+      Debug.Assert(data[ind] == '/' && data[ind + 1] == '/', $"ParamReader.PassOneRowComment: // must be! Found {data[ind]}{data[ind + 1]}");
+
+      ind += 2;
+      while (ind < data.Length && data[ind] != '\n') {
         ind++;
       }
-      else
-        throw new Exception("There is no one row comment!");
     }
 
     /// <summary>
-    /// Passing multirow comment
+    /// Skips multi-line comments (/* ... */).
     /// </summary>
+    /// <exception cref="System.Exception">Thrown when a multi-line comment is not found or is not closed properly.</exception>
     private void PassMultiRowComment() {
-      if (data[ind] == '/' && data[ind + 1] == '*') {
-        ind += 2;
-        while (data[ind] != '*' || data[ind + 1] != '/')
-          ind++;
-        ind += 2;
+      if (data[ind] != '/' || data[ind + 1] != '*')
+        throw new Exception("There is no multi-line comment." + $"\nin file {filePath}");
+
+      ind += 2;
+      while (ind < data.Length - 1) {
+        if (data[ind] == '*' && data[ind + 1] == '/') {
+          ind += 2;
+          return;
+        }
+        ind++;
       }
-      else
-        throw new Exception("There is no multirow comment!");
+
+      throw new Exception($"Multi-line comment is not closed properly" + $" in file {filePath}");
+
     }
+
 
     /// <summary>
     /// Method that reads the name of the next object and passes the sign =.
     /// Finally, the read name is compared with the given name
     /// </summary>
-    /// <param name="ObjectName">The planned name</param>
-    private void ReadNameAndPassEquivalence(string ObjectName) {
+    /// <param name="objectName">The planned name</param>
+    private void ReadNameAndPassEquivalence(string objectName) {
       state = State.ReadingToken;
-      ReadToken(ObjectName, "=", out string readName);
+      ReadToken(objectName, "=", out string readName);
 
-      if (!ObjectName.Equals(readName))
-        throw new Exception("The read name '" + readName + "' doesn't coincide with the given name '" + ObjectName + "'."
+      if (!objectName.Equals(readName))
+        throw new Exception("The read name '" + readName + "' doesn't coincide with the given name '" + objectName + "'."
                             + $"\nin file {filePath}");
     }
 
@@ -412,7 +421,8 @@ public partial class Geometry<TNum, TConv>
       while (flagContinue) {
         if (ind >= data.Length) {
           throw new IndexOutOfRangeException
-            ("ReadTerminator: During reading the string, the automaton has reached the end of the string!");
+            ($"ReadTerminator: During reading the string {name}, the automaton has reached the end of the string! It can't find non of this '{term}' symbols." +
+             $"\nin file {filePath}");
         }
         switch (data[ind]) {
           case ' ':
@@ -424,13 +434,17 @@ public partial class Geometry<TNum, TConv>
             break;
 
           case '/':
+            if (ind + 1 >= data.Length) {
+              throw new Exception($"Unexpected symbol '/' at the end of the file while reading terminator of the object {name} in file {filePath}.");
+            }
+
             switch (data[ind + 1]) {
               case '/': PassOneRowComment(); break;
               case '*': PassMultiRowComment(); break;
               default:
-                throw new Exception("Erroneous symbol '" + data[ind] + "' during reading the terminator of the object " + name);
+                throw new
+                  Exception($"Unexpected symbol '{data[ind]}{data[ind + 1]}' for a comment while reading terminator of the object {name}\"+$\"\nin file {filePath}. Expected '//' for single-line comment or '/*' for multi-line comment.");
             }
-
             break;
 
           default:
@@ -439,12 +453,11 @@ public partial class Geometry<TNum, TConv>
               ind++;
               state        = State.TokenRead;
               flagContinue = false;
-            }
-            else
+            } else
               throw new Exception
                 (
                  "Erroneous symbol '" + data[ind] + $"' during reading the terminator of the object '{name}'." +
-                 $"The terminator '{term}' is expected before such a symbol."
+                 $"The terminator '{term}' is expected before such a symbol." + $"\nin file {filePath}"
                 );
 
             break;
@@ -492,6 +505,9 @@ public partial class Geometry<TNum, TConv>
                 break;
 
               case '/':
+                if (ind + 1 >= data.Length) {
+                  throw new Exception($"Unexpected symbol '/' at the end of the file while reading token of the object {name}" + $"\nin file {filePath}.");
+                }
                 switch (data[ind + 1]) {
                   case '/': {
                     PassOneRowComment();
@@ -525,8 +541,7 @@ public partial class Geometry<TNum, TConv>
                   ind++;
                   state        = State.TokenRead;
                   flagContinue = false;
-                }
-                else {
+                } else {
                   readData += data[ind];
                   ind++;
                 }
@@ -561,6 +576,9 @@ public partial class Geometry<TNum, TConv>
       ReadTerminator(name, "\"");
 
       while (flagContinue) {
+        if (ind >= data.Length) {
+          throw new Exception($"The reader has reached the end of the file during the reading string '{name}'" + $"\n in file {filePath}.");
+        }
         switch (data[ind]) {
           case '\"':
             ind++;
@@ -579,7 +597,7 @@ public partial class Geometry<TNum, TConv>
                 , 'r'  => '\r'
                 , 't'  => '\t'
                 , _ => throw new Exception
-                         ("Erroneous escape symbol '\\" + data[ind + 1] + "' when reading string object '" + name + "'")
+                         ("Erroneous escape symbol '\\" + data[ind + 1] + "' when reading string object '" + name + "'" + $"\nin file {filePath}")
                 };
             ind += 2;
 
@@ -624,7 +642,7 @@ public partial class Geometry<TNum, TConv>
             if (elemQnt is not null) {
               if (i != elemQnt - 1) {
                 throw new IndexOutOfRangeException
-                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!");
+                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!" + $"\nin file {filePath}");
               }
             }
             flagContinue = false;
@@ -633,8 +651,7 @@ public partial class Geometry<TNum, TConv>
 
           yield return (T)(object)readData;
         }
-      }
-      else {
+      } else {
         int i = 0;
         while (flagContinue) {
           state    = State.ReadingToken;
@@ -643,7 +660,7 @@ public partial class Geometry<TNum, TConv>
             if (elemQnt is not null) {
               if (i != elemQnt - 1) {
                 throw new IndexOutOfRangeException
-                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!");
+                  ("ReadArrayRow: Tokens in the string before '}' must be " + elemQnt + ", but found only " + i + "!" + $"\nin file {filePath}");
               }
             }
             flagContinue = false;
@@ -652,7 +669,7 @@ public partial class Geometry<TNum, TConv>
             throw new Exception
               (
                "ReadArrayRow: Cannot convert data '" + readData + "' read during parsing object '" + name + "' into " +
-               typeof(T).FullName + "!"
+               typeof(T).FullName + "!" + $"\nin file {filePath}"
               );
           }
           i++;
