@@ -27,8 +27,6 @@
         <Compile Include="GlobalUsings.cs" />
         <Compile Include="LinearMath\FourierMotzkin.cs" />
         <Compile Include="LinearMath\GaussSLE.cs" />
-        <Compile Include="LinearDifferentialGames\GameData.cs" />
-        <Compile Include="LinearDifferentialGames\SolverLDG.cs" />
         <Compile Include="LinearMath\QRDecomposition.cs" />
         <Compile Include="LinearMath\SimplexMethod.cs" />
         <Compile Include="Polygons\BasicPolygon.cs" />
@@ -60,13 +58,6 @@
         <Compile Include="Toolkit\Hashes.cs" />
         <Compile Include="Toolkit\ParamReader.cs" />
         <Compile Include="Toolkit\ParamWriter.cs" />
-        <Compile Include="Toolkit\PolytopeReader\Balls\BallFactory.cs" />
-        <Compile Include="Toolkit\PolytopeReader\Balls\Balls.cs" />
-        <Compile Include="Toolkit\PolytopeReader\Balls\IBall.cs" />
-        <Compile Include="Toolkit\PolytopeReader\PolytopeReaders.cs" />
-        <Compile Include="Toolkit\PolytopeReader\IPolytopeReader.cs" />
-        <Compile Include="Toolkit\PolytopeReader\PolytopeReaderFactory.cs" />
-        <Compile Include="Toolkit\PolytopeReader\TransformReader.cs" />
         <Compile Include="Toolkit\RandomLC.cs" />
         <Compile Include="Toolkit\Tools.cs" />
     </ItemGroup>

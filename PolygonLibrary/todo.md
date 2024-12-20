@@ -2,11 +2,9 @@ TODO file
 
 # CGLibrary
 
-1. [ ] . PolytopeReaders: Надо ли наводить интерфейсную историю внутри **Generator**?
-
 1. [ ] . ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.
 
-1. [x] . Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/DataFormat.md)
+1. [x] . Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/LDG/DataFormat.md)
 
 1. [ ] . TODO XML у методов ConvexPolytope DistanceTo...!
 
@@ -45,26 +43,17 @@ Type = значение типа (RectParallel, Sphere, Ellipsoid)
 
 ---
 
-1. [ ] Как называть папку конкретного примера, куда складываются все решения задачи?
-
-1. [ ] Надо ли в файл [многранника](./Documentation/Polytopes.md) добавлять поле `doRedundancy`, чтобы  исключать лишние объекты?
-2. [ ] Какие символы НЕ может включать в себя Имя_поля в стандартой записи.
+1. [x] Надо ли в файл [многранника](./Documentation/Polytopes.md) добавлять поле `doRedundancy`, чтобы  исключать лишние объекты? Надо.
+2. [x] Какие символы НЕ может включать в себя Имя_поля в стандартной записи.
 
 
 
 # Счёт примеров
 
-1. [ ] Заготовить файлы различных динамик
-   * простые движения 2D
-   * простые движения 3D
-   * простые движения 4D
+1. [x] Заготовить файлы различных динамик
+   * простые движения 2D 
+   * простые движения 3D 
+   * простые движения 4D 
 
-1. [ ] Заготовить файлы различных explicit sets
-    * Sphere 2D Azim - 20
-    * Sphere 3D Zenith - 6  Azim - 10 
-    * Sphere 3D Zenith - 12 Azim - 20
-    * Sphere 4D Zenith - 8  Azim - 12
-    * Parall. 2D  (-1,0) (1,1)
-    * Parall. 3D  (-1,0,0) (1,1,1)
-    * Parall. 4D  (-1,0,0,0) (1,1,1,1)
-    * ???
+1. [x] Заготовить файлы различных explicit sets
+   

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bridges", "Bridges\Bridges.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trajectories", "Trajectories\Trajectories.csproj", "{82869151-EFE8-467E-B71C-77026E394D89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LDG", "LDG\LDG.csproj", "{E3BB56C5-AF2F-43D0-96EF-85DD55E7CFDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +45,9 @@ Global
 		{82869151-EFE8-467E-B71C-77026E394D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82869151-EFE8-467E-B71C-77026E394D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82869151-EFE8-467E-B71C-77026E394D89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3BB56C5-AF2F-43D0-96EF-85DD55E7CFDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3BB56C5-AF2F-43D0-96EF-85DD55E7CFDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3BB56C5-AF2F-43D0-96EF-85DD55E7CFDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3BB56C5-AF2F-43D0-96EF-85DD55E7CFDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

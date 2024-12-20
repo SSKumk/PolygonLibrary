@@ -38,7 +38,7 @@ public class TrajMain<TNum, TConv>
     // gd = new Geometry<TNum, TConv>.GameData(new Geometry<TNum, TConv>.ParamReader(GameConfigPath));
 
 
-    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(bridgeDir + "tMin.txt");
+    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(bridgeDir + ".tmin");
     tMin = pr.ReadNumber<TNum>("tMin");
 
 
