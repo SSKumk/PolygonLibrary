@@ -17,12 +17,10 @@ class Program {
 
     Geometry<double, DConvertor>.ParamReader pr = new Geometry<double, DConvertor>.ParamReader(ldgDir + "test.txt");
 
-    Console.WriteLine(pr.ReadVector("V"));
-    Console.WriteLine(pr.ReadString("Str"));
-    _ = pr.ReadNumberLine(4);
+    // Console.WriteLine(pr.GetCleanedData());
     // SetUpDirectories(ldgDir);
 
-    // BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test9");
+    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test9");
     // bridgeCreator.Solve();
   }
 

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 
 
 namespace Bridges;
@@ -12,6 +13,7 @@ public class LDGPathHolder<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   public readonly string PathLDG;          // корневая папка для всех данных
+  public readonly string PathGame;         // Путь к папке игры
   public readonly string PathDynamics;     // Путь к папке с файлами динамик системы
   public readonly string PathPolytopes;    // Путь к папке с файлами многогранников
   public readonly string PathTerminalSets; // Путь к папке с файлами терминальных множеств
@@ -35,10 +37,10 @@ public class LDGPathHolder<TNum, TConv>
     PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
     PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
 
-    string pathOut = Path.Combine(PathLDG, "_Out", outputFolderName);
-    PathBr = Path.Combine(pathOut, "Br");
-    PathPs = Path.Combine(pathOut, "Ps");
-    PathQs = Path.Combine(pathOut, "Qs");
+    PathGame = Path.Combine(PathLDG, "_Out", outputFolderName);
+    PathBr = Path.Combine(PathGame, "Br");
+    PathPs = Path.Combine(PathGame, "Ps");
+    PathQs = Path.Combine(PathGame, "Qs");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
@@ -69,6 +71,9 @@ public class LDGPathHolder<TNum, TConv>
   public Geometry<TNum, TConv>.ParamReader OpenTerminalSetReader(string name)
     => new(Path.Combine(PathTerminalSets, name2tms[name].tmsFileName + ".terminalset"));
 
+  public Geometry<TNum, TConv>.ParamReader OpenGameHashReader()
+    => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathGame, "game.md5hash"));
+
 }
 
 class BridgeCreator<TNum, TConv>
@@ -77,9 +82,9 @@ class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly LDGPathHolder<TNum, TConv>     ph; // пути к основным папкам и словари-связки
+  public readonly LDGPathHolder<TNum, TConv> ph;     // пути к основным папкам и словари-связки
   public readonly Geometry<TNum, TConv>.GameData gd; // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv>       ts; // данные о терминальном множестве
+  public readonly TerminalSet<TNum, TConv> ts;       // данные о терминальном множестве
 #endregion
 
   public BridgeCreator(string pathLDG, string problemFileName) {
@@ -91,13 +96,13 @@ class BridgeCreator<TNum, TConv>
     ph = new LDGPathHolder<TNum, TConv>(pathLDG, pr.ReadString("ProblemName")); // установили пути и прочитали словари-связки
 
     // Читаем имена динамики и многогранников ограничений на управления игроков
-    string                                          dynName      = pr.ReadString("DynamicsName");
-    string                                          fpPolName    = pr.ReadString("FPName");
-    Geometry<TNum, TConv>.TransformReader.Transform fpTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
-    string                                          spPolName    = pr.ReadString("SPName");
-    Geometry<TNum, TConv>.TransformReader.Transform spTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
-    string                                          tmsName      = pr.ReadString("TSName");
-    Geometry<TNum, TConv>.TransformReader.Transform tmsTransform = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
+    string dynName      = pr.ReadString("DynamicsName");
+    string fpPolName    = pr.ReadString("FPName");
+    var    fpTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
+    string spPolName    = pr.ReadString("SPName");
+    var    spTransform  = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
+    string tmsName      = pr.ReadString("TSName");
+    var    tmsTransform = Geometry<TNum, TConv>.TransformReader.ReadTransform(pr);
 
     // заполняем динамику и многогранники ограничений на управления игроков
     gd =
@@ -111,6 +116,12 @@ class BridgeCreator<TNum, TConv>
         );
 
     ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
+    
+    // Считаем и пишем хеш игры
+    Geometry<TNum, TConv>.ParamWriter pw = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathGame, "game.md5hash"));
+    pw.WriteString("Problem", pr.GetCleanedData());
+    pw.WriteString("Dynamic", ph.OpenDynamicsReader(dynName).GetCleanedData());
+    pw.Close();
   }
 
   public void Solve() {
