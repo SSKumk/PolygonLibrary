@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using CGLibrary.Toolkit;
 
 namespace CGLibrary;
 
@@ -78,6 +79,18 @@ public partial class Geometry<TNum, TConv>
       StreamReader sr = new StreamReader(filePath);
       data = sr.ReadToEnd();
       sr.Close();
+    }
+
+    /// <summary>
+    /// Calculates the MD5 hash of the file after cleaning it from comments and whitespace.
+    /// </summary>
+    /// <returns>The MD5 hash as a hexadecimal string.</returns>
+    public string GetCleanedData() {
+      string cleaned = Regex.Replace(data, "//.*", "");
+      cleaned = Regex.Replace(cleaned, @"/\*.*?\*/", "", RegexOptions.Singleline);
+      cleaned = Regex.Replace(cleaned, "\\s+", "");
+
+      return cleaned;
     }
 
 #region Reading methods
