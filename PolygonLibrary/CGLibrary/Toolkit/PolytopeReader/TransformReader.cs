@@ -16,7 +16,7 @@ public partial class Geometry<TNum, TConv>
       TNum? scale   = isScale ? pr.ReadNumber<TNum>("Value") : null;
 
       bool    isShift = pr.ReadBool("Shift");
-      Vector? shift   = isShift ? pr.ReadVector("Shift") : null;
+      Vector? shift   = isShift ? pr.ReadVector("Vector") : null;
 
       bool    isRotate = pr.ReadBool("Rotate");
       Matrix? rotate   = null;
