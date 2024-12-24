@@ -1,20 +1,30 @@
 namespace LDG;
 
-public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
+/// <summary>
+/// Represents the terminal set reader for the "Epigraph" type, which builds terminal sets based on the epigraph of a function.
+/// It modifies the game data when constructing the terminal sets.
+///</summary>
+public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> ReadTerminalSets(
-      Geometry<TNum, TConv>.ParamReader pr
-    , LDGPathHolder<TNum, TConv>        ph) {
+  /// <summary>
+  /// Builds the terminal sets based on the provided configuration.
+  /// </summary>
+  /// <param name="pr">The parameter reader used to extract parameters.</param>
+  /// <param name="ph">The path holder providing access to polytope files, it used only for distance-to-polytope function.</param>
+  /// <returns>A collection of terminal sets -- ConvexPolytop.</returns>
+  public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> BuildTerminalSets(
+    Geometry<TNum, TConv>.ParamReader pr
+  , LDGPathHolder<TNum, TConv>        ph) {
     IEpiType<TNum, TConv> epiType = EpiTypeFactory<TNum, TConv>.Read(pr, ph);
 
     TNum k = pr.ReadNumber<TNum>("Constant");
     if (Geometry<TNum, TConv>.Tools.LE(k)) {
       throw new ArgumentException($"Constant must be greater than zero. Found Constant = {k}");
     }
-    IBall<TNum,TConv> ballType = BallFactory<TNum, TConv>.Read(pr);
+    IBall<TNum, TConv> ballType = BallFactory<TNum, TConv>.Read(pr);
     switch (epiType) {
       case EpiTypes<TNum, TConv>.DistToPoint d: {
         yield return
@@ -42,10 +52,14 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     }
   }
 
-  public EpigraphTS(ref GameData<TNum, TConv> gd) {
+  /// <summary>
+  /// Extends the <paramref name="gd"/> (game data) system when the terminal set is an epigraph of a function.
+  /// </summary>
+  /// <param name="gd">The game data to modify when constructing the terminal set for the epigraph.</param>
+  public EpigraphTerminalSet(ref GameData<TNum, TConv> gd) {
     // Расширяем систему, если решаем задачу с надграфиком функции цены
-    gd.projDim++;
-    gd.projInd = new List<int>(gd.projInd)
+    gd.ProjDim++;
+    gd.ProjInd = new List<int>(gd.ProjInd)
       {
         gd.n
       }.ToArray(); // новая координата всегда в ответе
@@ -55,14 +69,13 @@ public class EpigraphTS<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     gd.B            = Geometry<TNum, TConv>.Matrix.vcat(gd.B, Geometry<TNum, TConv>.Matrix.Zero(1, gd.pDim));
     gd.C            = Geometry<TNum, TConv>.Matrix.vcat(gd.C, Geometry<TNum, TConv>.Matrix.Zero(1, gd.qDim));
     gd.CauchyMatrix = new Geometry<TNum, TConv>.CauchyMatrix(gd.A, gd.T, gd.dt);
-    
-    
-    // Setting up the projection matrix
-    TNum[,] projMatrixArr = new TNum[gd.projDim, gd.n];
-    for (int i = 0; i < gd.projDim; i++) {
-      projMatrixArr[i, gd.projInd[i]] = Geometry<TNum,TConv>.Tools.One;
-    }
-    gd.ProjMatrix = new Geometry<TNum,TConv>.Matrix(projMatrixArr);
-  }
 
+
+    // Setting up the projection matrix
+    TNum[,] projMatrixArr = new TNum[gd.ProjDim, gd.n];
+    for (int i = 0; i < gd.ProjDim; i++) {
+      projMatrixArr[i, gd.ProjInd[i]] = Geometry<TNum, TConv>.Tools.One;
+    }
+    gd.ProjMatrix = new Geometry<TNum, TConv>.Matrix(projMatrixArr);
+  }
 }

@@ -1,19 +1,22 @@
 ﻿namespace LDG;
 
-public class BallFactory<TNum, TConv>
+/// <summary>
+/// Factory that reads ball parameters from the given parameter reader based on the specified ball type.
+/// </summary>
+public abstract class BallFactory<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Reads the ball type from a parameter reader and creates an instance of the corresponding ball class.
+  /// Reads the ball type from the provided parameter reader and creates an instance of the corresponding ball class.
   /// </summary>
-  /// <param name="pr">The parameter reader.</param>
+  /// <param name="pr">The parameter reader that contains the ball type and its parameters.</param>
   /// <returns>
-  /// An instance of a class that implements <see cref="IBall"/>.
+  /// An instance of a class implementing <see cref="IBall{TNum, TConv}"/> corresponding to the specified ball type.
   /// </returns>
   /// <exception cref="ArgumentException">
-  /// Thrown if the ball type string is not supported.
+  /// Thrown if an unsupported ball type is encountered in the parameter reader.
   /// </exception>
   public static IBall<TNum, TConv> Read(Geometry<TNum, TConv>.ParamReader pr) {
     string ballType = pr.ReadString("BallType");
@@ -35,5 +38,4 @@ public class BallFactory<TNum, TConv>
 
     return ball;
   }
-
 }

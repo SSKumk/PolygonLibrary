@@ -1,64 +1,92 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using CGLibrary.Toolkit;
 
 namespace LDG;
 
-// Солвер будет ответственен за решение ОДНОЙ задачи.
-// Под решением понимается вычисление мостов, векторграмм и запись их в файл
-// Предполагается корректность уже существующих файлов в рабочей папке.
-// То есть, что задача решается для той же самой динамики, P, Q и M.
+/// <summary>
+/// The solver responsible for solving a single game problem.
+/// The solution includes computing the bridges, vectograms, and writing them to files.
+/// Assume the correctness of the already existing files in the working directory: the problem is solved for the same dynamics, P, Q, and M as before, if it happened.
+/// </summary>
 public class SolverLDG<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public readonly string BrDir; // Эта папка, в которой находятся мосты
-  public readonly string PsDir; // Эта папка, в которой находятся вектограммы первого игрока
-  public readonly string QsDir; // Эта папка, в которой находятся вектограммы второго игрока
+  /// <summary>
+  /// Directory where the bridges are stored.
+  /// </summary>
+  public readonly string BrDir;
 
+  /// <summary>
+  /// Directory where the first player's vectograms are stored.
+  /// </summary>
+  public readonly string PsDir;
 
+  /// <summary>
+  /// Directory where the second player's vectograms are stored.
+  /// </summary>
+  public readonly string QsDir;
+
+  /// <summary>
+  /// The numerical type used in the game.
+  /// </summary>
   public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
+
+  /// <summary>
+  /// The current precision used in the library.
+  /// </summary>
   public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
 
+  /// <summary>
+  /// The game data for the current problem.
+  /// </summary>
   public readonly GameData<TNum, TConv> gd;
 
 
   /// <summary>
-  /// Collection of matrices D for the instants from the time grid
+  /// Collection of matrices D for the instants from the time grid.
   /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
 
   /// <summary>
-  /// Collection of matrices E for the instants from the time grid
+  /// Collection of matrices E for the instants from the time grid.
   /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
 
   /// <summary>
-  /// The bridge of the game
+  /// The bridge of the game.
   /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W;
 
   /// <summary>
-  /// Vectograms of the first player
+  /// Vectograms of the first player.
   /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> Ps =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
 
   /// <summary>
-  /// Vectograms of the second player
+  /// Vectograms of the second player.
   /// </summary>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> Qs =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
 
+  /// <summary>
+  /// The minimum time (greater than or equal to t0) when the bridge is successfully constructed.
+  /// </summary>
   public TNum tMin;
 
 
+  /// <summary>
+  /// Reading the necessary parameters and setting up directories for solving the game.
+  /// </summary>
+  /// <param name="bridgeDir">The directory where bridges are stored.</param>
+  /// <param name="psDir">The directory where the first player's vectograms is stored.</param>
+  /// <param name="qsDir">The directory where the second player's vectograms is stored.</param>
+  /// <param name="gameData">The game data used in the problem.</param>
+  /// <param name="M">The terminal set of the game.</param>
   public SolverLDG(
       string                              bridgeDir
     , string                              psDir
@@ -90,19 +118,32 @@ public class SolverLDG<TNum, TConv>
   }
 
 #region Read-Write
-  public void ReadBridgeSection(TNum t) => ReadSection(W, "W", BrDir, t);
-  public void ReadPsSection(TNum     t) => ReadSection(Ps, "P", PsDir, t);
-  public void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", QsDir, t);
+  // Reads the corresponding section for the given time section.
 
-  public void WriteBridgeSection(TNum t) => WriteSection("W", W, BrDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.FLrep);
-  public void WritePsSection(TNum     t) => WriteSection("P", Ps, PsDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.FLrep);
-  public void WriteQsSection(TNum     t) => WriteSection("Q", Qs, QsDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.Vrep);
+  private void ReadBridgeSection(TNum t) => ReadSection(W, "W", BrDir, t);
+  private void ReadPsSection(TNum     t) => ReadSection(Ps, "P", PsDir, t);
+  private void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", QsDir, t);
 
-  public bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BrDir, t);
-  public bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsDir, t);
-  public bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsDir, t);
+  // Write the corresponding section for the given time section.
 
+  private void WriteBridgeSection(TNum t) => WriteSection("W", W, BrDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.FLrep);
+  private void WritePsSection(TNum     t) => WriteSection("P", Ps, PsDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.FLrep);
+  private void WriteQsSection(TNum     t) => WriteSection("Q", Qs, QsDir, t, Geometry<TNum, TConv>.ConvexPolytop.Rep.Vrep);
 
+  // Checks if the corresponding section file is correct for the given time instant.
+
+  private bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BrDir, t);
+  private bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsDir, t);
+  private bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsDir, t);
+
+  /// <summary>
+  /// Writes the specified section of a convex polytope for a given time t.
+  /// </summary>
+  /// <param name="sectionPrefix">The prefix of the section, e.g. "W", "P", or "Q".</param>
+  /// <param name="sectionDict">The dictionary containing the convex polytopes for each time instant.</param>
+  /// <param name="basePath">The base directory path where the section is written.</param>
+  /// <param name="t">The time instant for which the section is written.</param>
+  /// <param name="repType">The representation type to be used for writing the convex polytope.</param>
   private static void WriteSection(
       string                                                      sectionPrefix
     , SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
@@ -117,6 +158,13 @@ public class SolverLDG<TNum, TConv>
   }
 
 
+  /// <summary>
+  /// Reads the specified section of a convex polytope for a given time t from a file.
+  /// </summary>
+  /// <param name="sectionDict">The dictionary where the read convex polytope will be stored for the specified time.</param>
+  /// <param name="sectionPrefix">The prefix of the section, e.g. "W", "P", or "Q".</param>
+  /// <param name="basePath">The base directory path from which the section is read.</param>
+  /// <param name="t">The time instant for which the section is read.</param>
   private static void ReadSection(
       SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
     , string                                                      sectionPrefix
@@ -133,11 +181,32 @@ public class SolverLDG<TNum, TConv>
 #endregion
 
 #region Aux
-  public static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F2}";
+  /// <summary>
+  /// Converts the given number to a string representation with two decimal places. For example, 1.23.
+  /// The number is converted to a double using the specified converter type TConv.
+  /// </summary>
+  /// <param name="t">The numeric value to convert.</param>
+  /// <returns>A string representation of the number with two decimal places.</returns>
+  private static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F2}";
 
+  /// <summary>
+  /// Checks if the file for the specified section exists at the given time t.
+  /// </summary>
+  /// <param name="sectionPrefix">The prefix of the section (e.g., "W", "P", or "Q").</param>
+  /// <param name="basePath">The base directory path where the section file is stored.</param>
+  /// <param name="t">The time instant for which the section file is checked.</param>
+  /// <returns><c>true</c> if the section file exists, <c>false</c> otherwise.</returns>
   private static bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t)
     => File.Exists(GetSectionPath(sectionPrefix, basePath, t));
 
+  /// <summary>
+  /// Constructs the file path for the specified section at a given time t.
+  /// </summary>
+  /// <param name="sectionPrefix">The prefix of the section (e.g., "W", "P", or "Q").</param>
+  /// <param name="basePath">The base directory path where the section file is located.</param>
+  /// <param name="t">The time instant for which the section file is constructed.</param>
+  /// <returns>The full path of the section file corresponding to the given time.</returns>
+  /// <exception cref="ArgumentException">Thrown if the sectionPrefix is invalid (i.e., not "W", "P", or "Q").</exception>
   private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
     string prefix =
       sectionPrefix switch
@@ -159,7 +228,7 @@ public class SolverLDG<TNum, TConv>
   /// <param name="predSec">The previous section of the bridge.</param>
   /// <param name="currP">The first convex polytope (P) used in the Minkowski sum.</param>
   /// <param name="currQ">The second convex polytope (Q) used in the Minkowski difference.</param>
-  /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytop.</returns>
+  /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytope.</returns>
   public Geometry<TNum, TConv>.ConvexPolytop? DoNextSection(
       Geometry<TNum, TConv>.ConvexPolytop predSec
     , Geometry<TNum, TConv>.ConvexPolytop currP
@@ -180,7 +249,11 @@ public class SolverLDG<TNum, TConv>
 
     return next;
   }
-
+  /// <summary>
+  /// Processes the section of the first player's vectogram (Ps) at the given time t.
+  /// If the section file does not exist, it computes the required values and writes the new section file.
+  /// </summary>
+  /// <param name="t">The time at which the first player's vectogram section is processed.</param>
   private void ProcessPsSection(TNum t) {
     if (!PsSectionFileCorrect(t)) {
       D[t] = gd.Xstar(t) * gd.B;
@@ -190,6 +263,11 @@ public class SolverLDG<TNum, TConv>
     }
   }
 
+  /// <summary>
+  /// Processes the section of the second player's vectogram (Qs) at the given time t.
+  /// If the section file does not exist, it computes the required values and writes the new section file.
+  /// </summary>
+  /// <param name="t">The time at which the second player's vectogram section is processed.</param>
   private void ProcessQsSection(TNum t) {
     if (!QsSectionFileCorrect(t)) {
       E[t] = gd.Xstar(t) * gd.C;
@@ -199,13 +277,19 @@ public class SolverLDG<TNum, TConv>
     }
   }
 
+  /// <summary>
+  /// Processes the bridge section at the given time t by checking if the section is valid and not degenerate.
+  /// It calculates the new bridge section if necessary and writes the new section file .
+  /// </summary>
+  /// <param name="t">The current time for which the bridge section is processed.</param>
+  /// <param name="tPred">The previous time, used to calculate the next bridge section.</param>
+  /// <param name="bridgeIsNotDegenerate">Indicates whether the bridge is not degenerate. Set to <c>false</c> if the bridge becomes degenerate.</param>
   private void ProcessBridgeSection(TNum t, TNum tPred, ref bool bridgeIsNotDegenerate) {
     if (BridgeSectionFileCorrect(t)) {
       if (!BridgeSectionFileCorrect(t - gd.dt)) {
         ReadBridgeSection(t);
       }
-    }
-    else {
+    } else {
       if (!Ps.ContainsKey(t)) {
         ReadPsSection(t);
       }
@@ -216,8 +300,7 @@ public class SolverLDG<TNum, TConv>
       if (WNext is null) {
         Console.WriteLine($"The bridge become degenerate at t = {t}.");
         bridgeIsNotDegenerate = false;
-      }
-      else {
+      } else {
         W[t] = WNext;
         WriteBridgeSection(t);
       }
@@ -225,7 +308,8 @@ public class SolverLDG<TNum, TConv>
   }
 
   /// <summary>
-  /// It computes the time sections of the maximal stable bridge of  the game.
+  /// Solves the problem by iteratively processing the sections of the bridge at each time step.
+  /// The process stops when the bridge becomes degenerate or when the time reaches an initial time.
   /// </summary>
   public void Solve() {
     Stopwatch timer = new Stopwatch();
