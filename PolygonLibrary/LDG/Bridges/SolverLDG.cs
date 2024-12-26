@@ -13,6 +13,9 @@ public class SolverLDG<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  public readonly LDGPathHolder<TNum,TConv> ph;
+  
+
   /// <summary>
   /// Directory where the bridges are stored.
   /// </summary>
@@ -27,16 +30,6 @@ public class SolverLDG<TNum, TConv>
   /// Directory where the second player's vectograms are stored.
   /// </summary>
   public readonly string QsDir;
-
-  /// <summary>
-  /// The numerical type used in the game.
-  /// </summary>
-  public static readonly string NumericalType = typeof(TNum).ToString(); // текущий используемый числовой тип
-
-  /// <summary>
-  /// The current precision used in the library.
-  /// </summary>
-  public static readonly string Eps = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}"; // текущая точность в библиотеке
 
   /// <summary>
   /// The game data for the current problem.
@@ -82,23 +75,23 @@ public class SolverLDG<TNum, TConv>
   /// <summary>
   /// Reading the necessary parameters and setting up directories for solving the game.
   /// </summary>
+  /// <param name="pathHolder">The path holder providing path to an all-game files.</param>
   /// <param name="bridgeDir">The directory where bridges are stored.</param>
-  /// <param name="psDir">The directory where the first player's vectograms is stored.</param>
-  /// <param name="qsDir">The directory where the second player's vectograms is stored.</param>
   /// <param name="gameData">The game data used in the problem.</param>
   /// <param name="M">The terminal set of the game.</param>
   public SolverLDG(
-      string                              bridgeDir
-    , string                              psDir
-    , string                              qsDir
+      LDGPathHolder<TNum, TConv>          pathHolder
+    , string                              bridgeDir
     , GameData<TNum, TConv>               gameData
     , Geometry<TNum, TConv>.ConvexPolytop M
     ) {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-    BrDir = Path.Combine(bridgeDir, NumericalType, Eps);
-    PsDir = Path.Combine(psDir, NumericalType, Eps);
-    QsDir = Path.Combine(qsDir, NumericalType, Eps);
+    ph = pathHolder;
+
+    BrDir = bridgeDir;
+    PsDir = ph.PathPs;
+    QsDir = ph.PathQs;
     gd    = gameData;
 
     Debug.Assert
@@ -120,9 +113,9 @@ public class SolverLDG<TNum, TConv>
 #region Read-Write
   // Reads the corresponding section for the given time section.
 
-  private void ReadBridgeSection(TNum t) => ReadSection(W, "W", BrDir, t);
-  private void ReadPsSection(TNum     t) => ReadSection(Ps, "P", PsDir, t);
-  private void ReadQsSection(TNum     t) => ReadSection(Qs, "Q", QsDir, t);
+  private void ReadBridgeSection(TNum t) => ph.ReadSection(W, "W", BrDir, t);
+  private void ReadPsSection(TNum     t) => ph.ReadSection(Ps, "P", PsDir, t);
+  private void ReadQsSection(TNum     t) => ph.ReadSection(Qs, "Q", QsDir, t);
 
   // Write the corresponding section for the given time section.
 
@@ -144,7 +137,7 @@ public class SolverLDG<TNum, TConv>
   /// <param name="basePath">The base directory path where the section is written.</param>
   /// <param name="t">The time instant for which the section is written.</param>
   /// <param name="repType">The representation type to be used for writing the convex polytope.</param>
-  private static void WriteSection(
+  private void WriteSection(
       string                                                      sectionPrefix
     , SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
     , string                                                      basePath
@@ -153,42 +146,12 @@ public class SolverLDG<TNum, TConv>
     ) {
     Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
     using Geometry<TNum, TConv>.ParamWriter prW =
-      new Geometry<TNum, TConv>.ParamWriter(GetSectionPath(sectionPrefix, basePath, t));
+      new Geometry<TNum, TConv>.ParamWriter(ph.GetSectionPath(sectionPrefix, basePath, t));
     sectionDict[t].WriteIn(prW, repType);
-  }
-
-
-  /// <summary>
-  /// Reads the specified section of a convex polytope for a given time t from a file.
-  /// </summary>
-  /// <param name="sectionDict">The dictionary where the read convex polytope will be stored for the specified time.</param>
-  /// <param name="sectionPrefix">The prefix of the section, e.g. "W", "P", or "Q".</param>
-  /// <param name="basePath">The base directory path from which the section is read.</param>
-  /// <param name="t">The time instant for which the section is read.</param>
-  private static void ReadSection(
-      SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
-    , string                                                      sectionPrefix
-    , string                                                      basePath
-    , TNum                                                        t
-    ) {
-    string filePath = GetSectionPath(sectionPrefix, basePath, t);
-    Debug.Assert
-      (File.Exists(filePath), $"SolverLDG.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
-
-    Geometry<TNum, TConv>.ParamReader prR = new Geometry<TNum, TConv>.ParamReader(filePath);
-    sectionDict.Add(t, Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
   }
 #endregion
 
 #region Aux
-  /// <summary>
-  /// Converts the given number to a string representation with two decimal places. For example, 1.23.
-  /// The number is converted to a double using the specified converter type TConv.
-  /// </summary>
-  /// <param name="t">The numeric value to convert.</param>
-  /// <returns>A string representation of the number with two decimal places.</returns>
-  private static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F2}";
-
   /// <summary>
   /// Checks if the file for the specified section exists at the given time t.
   /// </summary>
@@ -196,29 +159,8 @@ public class SolverLDG<TNum, TConv>
   /// <param name="basePath">The base directory path where the section file is stored.</param>
   /// <param name="t">The time instant for which the section file is checked.</param>
   /// <returns><c>true</c> if the section file exists, <c>false</c> otherwise.</returns>
-  private static bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t)
-    => File.Exists(GetSectionPath(sectionPrefix, basePath, t));
-
-  /// <summary>
-  /// Constructs the file path for the specified section at a given time t.
-  /// </summary>
-  /// <param name="sectionPrefix">The prefix of the section (e.g., "W", "P", or "Q").</param>
-  /// <param name="basePath">The base directory path where the section file is located.</param>
-  /// <param name="t">The time instant for which the section file is constructed.</param>
-  /// <returns>The full path of the section file corresponding to the given time.</returns>
-  /// <exception cref="ArgumentException">Thrown if the sectionPrefix is invalid (i.e., not "W", "P", or "Q").</exception>
-  private static string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
-    string prefix =
-      sectionPrefix switch
-        {
-          "W" => "w"
-        , "P" => "p"
-        , "Q" => "q"
-        , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
-        };
-
-    return Path.Combine(basePath, $"{ToPrintTNum(t)}.{prefix}section");
-  }
+  private bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t)
+    => File.Exists(ph.GetSectionPath(sectionPrefix, basePath, t));
 #endregion
 
 
@@ -249,6 +191,7 @@ public class SolverLDG<TNum, TConv>
 
     return next;
   }
+
   /// <summary>
   /// Processes the section of the first player's vectogram (Ps) at the given time t.
   /// If the section file does not exist, it computes the required values and writes the new section file.
@@ -289,7 +232,8 @@ public class SolverLDG<TNum, TConv>
       if (!BridgeSectionFileCorrect(t - gd.dt)) {
         ReadBridgeSection(t);
       }
-    } else {
+    }
+    else {
       if (!Ps.ContainsKey(t)) {
         ReadPsSection(t);
       }
@@ -300,7 +244,8 @@ public class SolverLDG<TNum, TConv>
       if (WNext is null) {
         Console.WriteLine($"The bridge become degenerate at t = {t}.");
         bridgeIsNotDegenerate = false;
-      } else {
+      }
+      else {
         W[t] = WNext;
         WriteBridgeSection(t);
       }

@@ -15,8 +15,8 @@ public class BridgeCreator<TNum, TConv>
 
 #region Data
   public readonly LDGPathHolder<TNum, TConv> ph; // пути к основным папкам и словари-связки
-  public readonly GameData<TNum, TConv> gd;      // данные по динамике игры
-  public readonly TerminalSet<TNum, TConv> ts;   // данные о терминальном множестве
+  public readonly GameData<TNum, TConv>      gd; // данные по динамике игры
+  public readonly TerminalSet<TNum, TConv>   ts; // данные о терминальном множестве
 #endregion
 
   /// <summary>
@@ -66,12 +66,16 @@ public class BridgeCreator<TNum, TConv>
   /// </summary>
   public void Solve() {
     StreamWriter sw = new StreamWriter(ph.PathBr + "!times.txt");
-    int          i  = 1;
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
       SolverLDG<TNum, TConv> slv =
-        new SolverLDG<TNum, TConv>(Path.Combine(ph.PathBr, i.ToString()), ph.PathPs, ph.PathQs, gd, tms!);
+        new SolverLDG<TNum, TConv>
+          (
+           ph,
+           Path.Combine(ph.PathBr, ts.CurrI.ToString())
+         , gd
+         , tms!
+          );
       slv.Solve();
-      i++;
 
       sw.WriteLine(slv.tMin);
       sw.Flush();

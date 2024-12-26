@@ -8,6 +8,8 @@ public class TerminalSet<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  public int CurrI { get; private set; } = 0;
+
   private readonly IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> _tmss;           // терминальные множества
   private readonly IEnumerator<Geometry<TNum, TConv>.ConvexPolytop> _tmssEnumerator; // Перечислитель терминальных множеств
 
@@ -59,6 +61,7 @@ public class TerminalSet<TNum, TConv>
     bool hasNext = _tmssEnumerator.MoveNext();
     tms = !hasNext ? null : TransformReader<TNum, TConv>.DoTransform(_tmssEnumerator.Current, _tr, _dim);
 
+    CurrI += 1;
     return hasNext;
   }
 

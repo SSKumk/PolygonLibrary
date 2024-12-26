@@ -27,14 +27,18 @@ public abstract class LvlSetFactory<TNum, TConv>
     ILvlSetType<TNum, TConv> lvlSetType =
       lvlSet switch
         {
-          "DistToPoint" => new LvlSetTypes<TNum, TConv>.DistToPoint(), "DistToPolytope" => new LvlSetTypes<TNum, TConv>.DistToPolytope(), _ => throw new ArgumentException
-              (
-               $"Unsupported level set type: '{lvlSet}'.\nIn file {pr.filePath}\n" +
-               $"Please refer to the documentation for supported types."
-              )
+          "DistToPoint"    => new LvlSetTypes<TNum, TConv>.DistToPoint()
+        , "DistToPolytope" => new LvlSetTypes<TNum, TConv>.DistToPolytope()
+        , _ => throw new ArgumentException
+                 (
+                  $"Unsupported level set type: '{lvlSet}'.\nIn file {pr.filePath}\n" +
+                  $"Please refer to the documentation for supported types."
+                 )
         };
 
     lvlSetType.ReadParameters(pr, ph);
+
     return lvlSetType;
   }
+
 }

@@ -11,7 +11,7 @@ public abstract class EpiTypeFactory<TNum, TConv>
   /// Reads the type of epigraph from the parameter reader and creates an instance of the corresponding IEpiType.
   /// </summary>
   /// <param name="pr">The terminal set parameter reader to read from.</param>
-  /// <param name="ph">The path holder providing paths to necessary resources.</param>
+  /// <param name="ph">Provides access to files describing polytopes. Required only for distance-to-polytope calculations.</param>
   /// <returns>An instance of the created epigraph type with corresponding information.</returns>
   /// <exception cref="ArgumentException">Thrown when an unsupported epigraph type is encountered.</exception>
   public static IEpiType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph) {

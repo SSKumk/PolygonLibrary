@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,6 +13,9 @@ public class LDGPathHolder<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
+
+  public readonly string NumType;         // числовой тип
+  public readonly string NumAccuracy; // текущая точность вычислений
 
   #region Paths
   public readonly string PathLDG;          // корневая папка для всех данных
@@ -43,6 +47,9 @@ public class LDGPathHolder<TNum, TConv>
   /// <param name="pathLdg">The root path for all data.</param>
   /// <param name="outputFolderName">The name of the output folder.</param>
   public LDGPathHolder(string pathLdg, string outputFolderName) {
+    NumType     = typeof(TNum).ToString();
+    NumAccuracy = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}";
+
     PathLDG          = pathLdg;
     PathDynamics     = Path.Combine(PathLDG, "Dynamics");
     PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
@@ -78,6 +85,8 @@ public class LDGPathHolder<TNum, TConv>
     return dict;
   }
 
+#region Open reader
+
   /// <summary>
   /// Opens a reader for a dynamics file.
   /// </summary>
@@ -109,6 +118,58 @@ public class LDGPathHolder<TNum, TConv>
   public Geometry<TNum, TConv>.ParamReader OpenGameHashReader()
     => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathGame, "game.md5hash"));
 
+#endregion
+
+#region Load
+
+#endregion
+
+  public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, TNum t)
+  => ReadSection(bridge, "W", Path.Combine(PathBr, i.ToString()),t);
+
+#region Aux
   
+  /// <summary>
+  /// Constructs the file path for the specified section at a given time t.
+  /// </summary>
+  /// <param name="sectionPrefix">The prefix of the section (e.g., "W", "P", or "Q").</param>
+  /// <param name="basePath">The base directory path where the section file is located.</param>
+  /// <param name="t">The time instant for which the section file is constructed.</param>
+  /// <returns>The full path of the section file corresponding to the given time.</returns>
+  /// <exception cref="ArgumentException">Thrown if the sectionPrefix is invalid (i.e., not "W", "P", or "Q").</exception>
+  public string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
+    string prefix =
+      sectionPrefix switch
+        {
+          "W" => "w"
+        , "P" => "p"
+        , "Q" => "q"
+        , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
+        };
+
+    return Path.Combine(basePath, NumType, NumAccuracy, $"{Tools<TNum,TConv>.ToPrintTNum(t)}.{prefix}section");
+  }
+
+  /// <summary>
+  /// Reads the specified section of a convex polytope for a given time t from a file.
+  /// </summary>
+  /// <param name="sectionDict">The dictionary where the read convex polytope will be stored for the specified time.</param>
+  /// <param name="sectionPrefix">The prefix of the section, e.g. "W", "P", or "Q".</param>
+  /// <param name="basePath">The base directory path from which the section is read.</param>
+  /// <param name="t">The time instant for which the section is read.</param>
+  public void ReadSection(
+      SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
+    , string                                                      sectionPrefix
+    , string                                                      basePath
+    , TNum                                                        t
+    ) {
+    string filePath = GetSectionPath(sectionPrefix, basePath, t);
+    Debug.Assert
+      (File.Exists(filePath), $"LDG.PathHolder.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
+
+    Geometry<TNum, TConv>.ParamReader prR = new Geometry<TNum, TConv>.ParamReader(filePath);
+    sectionDict.Add(t, Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
+  }
+#endregion
   
 }
