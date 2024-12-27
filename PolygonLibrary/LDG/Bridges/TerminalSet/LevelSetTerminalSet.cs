@@ -25,6 +25,7 @@ public class LevelSetTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
       throw new ArgumentException($"Bridges...BuildTerminalSets.LevelSetTerminalSet: " +
                                   $"All 'Constants' must be greater than zero.");
     }
+    Array.Sort(ks);
 
     IBall<TNum, TConv> ballType = BallFactory<TNum, TConv>.Read(pr);
 

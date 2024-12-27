@@ -20,6 +20,9 @@ public class ExplicitTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     int      k     = pr.ReadNumber<int>("Qnt");
     string[] names = pr.Read1DArray<string>("Polytopes", k);
 
+
+    //todo: СДЕЛАТЬ ТАК, ЧТОБЫ В ОТВЕТ МНОЖЕСТВА ШЛИ ПО ВКЛЮЧЕНИЮ!
+
     return names.Select(name => ITerminalSetReader<TNum, TConv>.DoPolytope(name, ph));
   }
 }

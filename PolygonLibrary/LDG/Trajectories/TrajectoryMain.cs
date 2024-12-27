@@ -58,17 +58,6 @@ public class TrajectoryMain<TNum, TConv>
       }
       Ws.Add(W);
     }
-
-    // вычисляем матрицы D и E (они легко вычисляются)
-    {
-      TNum t = tMin;
-      do {
-        D[t] = gd.Xstar(t) * gd.B;
-        E[t] = gd.Xstar(t) * gd.C;
-
-        t += gd.dt;
-      } while (Geometry<TNum, TConv>.Tools.LE(t, gd.T));
-    }
   }
 
   public void CalcTraj(string trajName) {
