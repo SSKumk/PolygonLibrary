@@ -24,6 +24,7 @@ public class TrajectoryMain<TNum, TConv>
     new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>();
 
 
+
   public string                       outputTrajName; // имя папки, где будут лежать результаты счёта траектории
   public TNum                         t0;             // начальный момент времени
   public TNum                         T;              // терминальный момент времени
@@ -51,8 +52,7 @@ public class TrajectoryMain<TNum, TConv>
 
     int brDir = Directory.GetDirectories(ph.PathBr).Length;
     for (int j = 1; j <= brDir; j++) {
-      SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> W =
-        new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>();
+      var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>();
       for (TNum t = times[j]; Geometry<TNum, TConv>.Tools.LE(gd.T); t += gd.dt) {
         ph.LoadBridgeSection(W, i, t);
       }
@@ -72,18 +72,54 @@ public class TrajectoryMain<TNum, TConv>
   }
 
   public void CalcTraj(string trajName) {
-    Geometry<TNum, TConv>.ParamReader pr =
-      new Geometry<TNum, TConv>.ParamReader(Path.Combine(ph.PathTrajectories, trajName + ".trajconfig"));
+    var pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(ph.PathTrajectories, trajName + ".trajconfig"));
     outputTrajName = pr.ReadString("Name");
     t0             = pr.ReadNumber<TNum>("t0");
     T              = pr.ReadNumber<TNum>("T");
     x0             = pr.ReadVector("x0");
 
+    Directory.CreateDirectory(Path.Combine(ph.PathTrajectories, outputTrajName));
 
     // Считываем настройки управлений игроков
 
-    IController<TNum,TConv> fp = ControlFactory<TNum,TConv>.Read("FPControl", pr, ph);
-    IController<TNum,TConv> sp = ControlFactory<TNum,TConv>.Read("SPControl",pr,ph);
+    IController<TNum, TConv> fp = ControlFactory<TNum, TConv>.ReadFirstPlayer(pr, Ws);
+    IController<TNum, TConv> sp = ControlFactory<TNum, TConv>.ReadSecondPlayer(pr, Ws);
+
+    var trajectory = new List<Geometry<TNum, TConv>.Vector>() { x0 }; // сама траектория
+    var fpControls = new List<Geometry<TNum, TConv>.Vector>();        // реализация управлений первого игрока
+    var spControls = new List<Geometry<TNum, TConv>.Vector>();        // реализация управлений второго игрока
+    var fpAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания первого игрока
+    var spAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания второго игрока
+
+    Geometry<TNum, TConv>.Vector x = x0;
+    for (TNum t = tMin; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
+      Geometry<TNum, TConv>.Vector proj_x = gd.Xstar(t) * x;
+
+      Geometry<TNum, TConv>.Vector fpControl = fp.Control(t, proj_x, out Geometry<TNum, TConv>.Vector aimFp, gd);
+      Geometry<TNum, TConv>.Vector spControl = sp.Control(t, proj_x, out Geometry<TNum, TConv>.Vector aimSp, gd);
+
+      // Выполняем шаг Эйлера
+      x += gd.dt * (gd.A * x + gd.B * fpControl + gd.C * spControl);
+
+      // сохраняем всё
+      trajectory.Add(x);
+      fpControls.Add(fpControl);
+      spControls.Add(spControl);
+      fpAims.Add(aimFp);
+      spAims.Add(aimSp);
+    }
+
+    using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "traj.txt"));
+    using var pwFPC = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "fp.control"));
+    using var pwSPC = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.control"));
+    using var pwFPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "fp.aim"));
+    using var pwSPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.aim"));
+
+    pwTr.WriteVectors("Trajectory", trajectory);
+    pwTr.WriteVectors("FPControls", fpControls);
+    pwTr.WriteVectors("SPControls", spControls);
+    pwTr.WriteVectors("FPAims", fpAims);
+    pwTr.WriteVectors("SPAims", spAims);
   }
 
 }

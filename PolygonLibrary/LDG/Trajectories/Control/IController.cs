@@ -5,6 +5,6 @@ public interface IController<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public Geometry<TNum,TConv>.Vector Control(TNum t, Geometry<TNum,TConv>.Vector x);
+  public Geometry<TNum,TConv>.Vector Control(TNum t, Geometry<TNum,TConv>.Vector x, out Geometry<TNum, TConv>.Vector aim, GameData<TNum,TConv> gd);
 
 }

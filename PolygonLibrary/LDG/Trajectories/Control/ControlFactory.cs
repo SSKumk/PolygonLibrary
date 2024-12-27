@@ -5,28 +5,38 @@ public abstract class ControlFactory<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  // todo: Как сделать тут красиво? Типа у нас есть fp и sp и два параметра optimal и constant,
-  // причём constant общий, а оптимальный индивидуальный хочется чтобы это всё был просто IController, но как правильно создавать классы?
+  public static IController<TNum, TConv> ReadFirstPlayer(
+      Geometry<TNum, TConv>.ParamReader                                 pr
+    , List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws
+    )
+    => ReadControl(pr, "FPControl", true, Ws);
 
-  public static IController<TNum, TConv> Read(string keyName, Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> ph) {
-    string                   controlType = pr.ReadString(keyName);
-    IController<TNum, TConv> controller;
+  public static IController<TNum, TConv> ReadSecondPlayer(
+      Geometry<TNum, TConv>.ParamReader                                 pr
+    , List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws
+    )
+    => ReadControl(pr, "SPControl", false, Ws);
 
-    if (controlType == "Optimal") {
+  private static IController<TNum, TConv> ReadControl(
+      Geometry<TNum, TConv>.ParamReader                                 pr
+    , string                                                            controlKey
+    , bool                                                              isFirstPlayer
+    , List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws
+    ) {
+    string controlType = pr.ReadString(controlKey);
 
-    }
-    else {
-      return controlType switch
-                   {
-                     "Constant" => new ConstantControl<TNum, TConv>(),
-                     _ => throw new ArgumentException
-                            (
-                             $"Unsupported type of the control: '{controlType}'.\nIn file {pr.filePath}\n" +
-                             $"Please refer to the documentation for supported types."
-                            )
-                   };
-    }
-
+    return controlType switch
+             {
+               "Constant" => new ConstantControl<TNum, TConv>(pr)
+             , "Optimal" => isFirstPlayer
+                              ? new FirstPlayerOptimalControl<TNum, TConv> (Ws)
+                              : new SecondPlayerOptimalControl<TNum, TConv>(Ws)
+             , _ => throw new ArgumentException
+                      (
+                       $"Unsupported type of the control: '{controlType}'.\nIn file {pr.filePath}\n" +
+                       $"Please refer to the documentation for supported types."
+                      )
+             };
   }
 
 }
