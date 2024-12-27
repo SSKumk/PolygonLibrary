@@ -29,7 +29,7 @@ public abstract class ControlFactory<TNum, TConv>
              {
                "Constant" => new ConstantControl<TNum, TConv>(pr)
              , "Optimal" => isFirstPlayer
-                              ? new FirstPlayerOptimalControl<TNum, TConv> (Ws)
+                              ? new FirstPlayerOptimalControl<TNum, TConv>(Ws)
                               : new SecondPlayerOptimalControl<TNum, TConv>(Ws)
              , _ => throw new ArgumentException
                       (
