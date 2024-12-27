@@ -25,7 +25,7 @@
 │           └── *.qsection
 │
 └── Trajectories
-    ├── Config
+    ├── Configs
     │   └── *.trajconfig
     │
     └── ИМЯ_ТРАЕКТОРИИ

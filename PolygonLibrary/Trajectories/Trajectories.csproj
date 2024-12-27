@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
+        <ProjectReference Include="..\LDG\LDG.csproj"/>
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>

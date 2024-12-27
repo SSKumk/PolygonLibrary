@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using CGLibrary.Toolkit;
 
 
 namespace LDG;
@@ -51,30 +52,76 @@ public class BridgeCreator<TNum, TConv>
 
     ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
 
-    // Считаем и пишем хеш игры
-    Geometry<TNum, TConv>.ParamWriter pw = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathGame, "game.md5hash"));
-    pw.WriteString("Problem", RemoveComment(problemReader.GetSanitizedData()));
-    pw.WriteString("Dynamic", RemoveComment(dynamicsReader.GetSanitizedData()));
-    pw.WriteString("P", RemoveComment(fpPolytopeReader.GetSanitizedData()));
-    pw.WriteString("Q", RemoveComment(spPolytopeReader.GetSanitizedData()));
-    pw.WriteString("TerminalSet", RemoveComment(ph.OpenTerminalSetReader(tmsName).GetSanitizedData()));
-    pw.Close();
+    // получаем информацию об игре
+
+    string problemInfo = GetInfo(problemReader);
+    string dynamicInfo = GetInfo(dynamicsReader);
+    string fpInfo      = GetInfo(fpPolytopeReader);
+    string spInfo      = GetInfo(spPolytopeReader);
+    string tmsInfo     = GetInfo(ph.OpenTerminalSetReader(tmsName));
+
+
+    string gameInfoPath = Path.Combine(ph.PathGame, "game.md5hash");
+    if (File.Exists(gameInfoPath)) {
+      Geometry<TNum, TConv>.ParamReader pr              = ph.OpenGameInfoReader();
+      string                            readProblemInfo = pr.ReadString("Problem");
+      string                            readDynamicInfo = pr.ReadString("Dynamic");
+      string                            readFpInfo      = pr.ReadString("P");
+      string                            readSpInfo      = pr.ReadString("Q");
+      string                            readTmsInfo     = pr.ReadString("TerminalSet");
+
+      if (readProblemInfo != problemInfo) {
+        throw new ArgumentException
+          (
+           $"BridgeCreator.Ctor: The problem information read from the file {gameInfoPath} does not match the corresponding data from the file {problemReader.filePath}."
+          );
+      }
+      if (readDynamicInfo != dynamicInfo) {
+        throw new ArgumentException
+          (
+           $"BridgeCreator.Ctor: The dynamic information read from the file {gameInfoPath} does not match the corresponding data from the file {dynamicsReader.filePath}."
+          );
+      }
+
+      if (readFpInfo != fpInfo) {
+        throw new ArgumentException
+          (
+           $"BridgeCreator.Ctor: The first player information read from the file {gameInfoPath} does not match the corresponding data from the file {fpPolytopeReader.filePath}."
+          );
+      }
+
+      if (readSpInfo != spInfo) {
+        throw new ArgumentException
+          (
+           $"BridgeCreator.Ctor: The second player information read from the file {gameInfoPath} does not match the corresponding data from the file {spPolytopeReader.filePath}."
+          );
+      }
+
+      if (readTmsInfo != tmsInfo) {
+        throw new ArgumentException
+          (
+           $"BridgeCreator.Ctor: The terminal set information read from the file {gameInfoPath} does not match the corresponding data from the file {ph.OpenTerminalSetReader(tmsName).filePath}."
+          );
+      }
+    }
+    else { // иначе пишем информацию об игре
+      Geometry<TNum, TConv>.ParamWriter pw = new Geometry<TNum, TConv>.ParamWriter(gameInfoPath);
+      pw.WriteString("Problem", problemInfo);
+      pw.WriteString("Dynamic", dynamicInfo);
+      pw.WriteString("P", fpInfo);
+      pw.WriteString("Q", spInfo);
+      pw.WriteString("TerminalSet", tmsInfo);
+      pw.Close();
+    }
   }
 
   /// <summary>
   /// Solves the game by creating and solving bridges for each terminal set.
   /// </summary>
   public void Solve() {
-    StreamWriter sw = new StreamWriter(ph.PathBr + "!times.txt");
+    StreamWriter sw = new StreamWriter(Path.Combine(ph.PathBrs, "!times.txt"));
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
-      SolverLDG<TNum, TConv> slv =
-        new SolverLDG<TNum, TConv>
-          (
-           ph,
-           Path.Combine(ph.PathBr, ts.CurrI.ToString())
-         , gd
-         , tms!
-          );
+      SolverLDG<TNum, TConv> slv = new SolverLDG<TNum, TConv>(ph, ph.PathBr(ts.CurrI), gd, tms!);
       slv.Solve();
 
       sw.WriteLine(slv.tMin);
@@ -91,6 +138,12 @@ public class BridgeCreator<TNum, TConv>
   /// <returns>The string with the 'Comment="...";' part removed.</returns>
   public static string RemoveComment(string str) { return Regex.Replace(str, "Comment=\".*?\";", ""); }
 
+  /// <summary>
+  /// Gets the information from a given param reader in uniform way. 
+  /// </summary>
+  /// <param name="pr">The param reader from which info has gotten.</param>
+  /// <returns>The string without comments and space symbols.</returns>
+  public static string GetInfo(Geometry<TNum, TConv>.ParamReader pr) => Hashes.GetMd5Hash(RemoveComment(pr.GetSanitizedData()));
   // ---------------------------------------------
 
   /// <summary>

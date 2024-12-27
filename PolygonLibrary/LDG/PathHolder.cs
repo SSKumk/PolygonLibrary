@@ -14,23 +14,26 @@ public class LDGPathHolder<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public readonly string NumType;         // числовой тип
+  public readonly string NumType;     // числовой тип
   public readonly string NumAccuracy; // текущая точность вычислений
 
-  #region Paths
+#region Paths
   public readonly string PathLDG;          // корневая папка для всех данных
   public readonly string PathDynamics;     // Путь к папке с файлами динамик системы
   public readonly string PathPolytopes;    // Путь к папке с файлами многогранников
   public readonly string PathTerminalSets; // Путь к папке с файлами терминальных множеств
-  
+
   public readonly string PathGame;         // Путь к папке игры
   public readonly string PathTrajectories; // Путь к папке с файлами траекторий
-  public readonly string PathBr; // Путь к папке, в которой лежат папки с мостами для разных терминальных множеств
-  public readonly string PathPs; // Путь к папке, в которой лежат вектограммы первого игрока
-  public readonly string PathQs; // Путь к папке, в которой лежат вектограммы второго игрока
-  #endregion
+  public readonly string PathTrajConfigs;  // Путь к папке с файлами настроек траекторий
 
-  #region Dicts
+  public          string PathBr(int i) => Path.Combine(PathBrs, i.ToString(), NumType, NumAccuracy);
+  public readonly string PathBrs; // Путь к папке, в которой лежат папки с мостами для разных терминальных множеств
+  public readonly string PathPs;  // Путь к папке, в которой лежат вектограммы первого игрока
+  public readonly string PathQs;  // Путь к папке, в которой лежат вектограммы второго игрока
+#endregion
+
+#region Dicts
   public readonly Dictionary<string, (int dynFileName, string comment)>
     name2dyn; // имя_динамики --> внутреннее имя файла динамики
 
@@ -39,7 +42,7 @@ public class LDGPathHolder<TNum, TConv>
 
   public readonly Dictionary<string, (int tmsFileName, string comment)>
     name2tms; // имя_терминального_множества --> внутреннее имя файла терминального множества
-  #endregion
+#endregion
 
   /// <summary>
   /// Initializes a new instance of the <see cref="LDGPathHolder{TNum, TConv}"/> class.
@@ -55,15 +58,22 @@ public class LDGPathHolder<TNum, TConv>
     PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
     PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
 
-    PathGame = Path.Combine(PathLDG, "_Out", outputFolderName);
-    PathBr   = Path.Combine(PathGame, "Br");
-    PathPs   = Path.Combine(PathGame, "Ps");
-    PathQs   = Path.Combine(PathGame, "Qs");
+    PathGame         = Path.Combine(PathLDG, "_Out", outputFolderName);
+    PathBrs          = Path.Combine(PathGame, "Br");
+    PathPs           = Path.Combine(PathGame, "Ps", NumType, NumAccuracy);
+    PathQs           = Path.Combine(PathGame, "Qs", NumType, NumAccuracy);
+    PathTrajectories = Path.Combine(PathGame, "Trajectories");
+    PathTrajConfigs  = Path.Combine(PathTrajectories, "Configs");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
     name2pol = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathPolytopes, "!Dict_polytopes.txt")));
     name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathTerminalSets, "!Dict_terminalsets.txt")));
+
+    Directory.CreateDirectory(PathGame);
+    Directory.CreateDirectory(PathBrs);
+    Directory.CreateDirectory(PathTrajectories);
+    Directory.CreateDirectory(PathTrajConfigs);
   }
 
   /// <summary>
@@ -86,7 +96,6 @@ public class LDGPathHolder<TNum, TConv>
   }
 
 #region Open reader
-
   /// <summary>
   /// Opens a reader for a dynamics file.
   /// </summary>
@@ -115,20 +124,32 @@ public class LDGPathHolder<TNum, TConv>
   /// Opens a reader for the game hash file.
   /// </summary>
   /// <returns>A parameter reader for the game hash file.</returns>
-  public Geometry<TNum, TConv>.ParamReader OpenGameHashReader()
+  public Geometry<TNum, TConv>.ParamReader OpenGameInfoReader()
     => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathGame, "game.md5hash"));
 
+  /// <summary>
+  /// Opens a reader for the trajectory config file.
+  /// </summary>
+  /// <param name="name">The name of the trajectory configuration file.</param>
+  /// <returns>A parameter reader for the trajectory config file.</returns>
+  public Geometry<TNum, TConv>.ParamReader OpenTrajConfigReader(string name)
+    => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathTrajConfigs, name + ".trajconfig"));
+
+  // /// <summary>
+  // /// Opens a reader for the file containing the minimum calculated times for each of the bridges.
+  // /// </summary>
+  // /// <returns>A parameter reader for the time file.</returns>
+  // public Geometry<TNum, TConv>.ParamReader OpenTimesReader()
+  //   => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathBrs, "!times.txt"));
 #endregion
 
 #region Load
-
+  public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, TNum t)
+    => ReadSection(bridge, "W", PathBr(i), t);
 #endregion
 
-  public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, TNum t)
-  => ReadSection(bridge, "W", Path.Combine(PathBr, i.ToString()),t);
 
 #region Aux
-  
   /// <summary>
   /// Constructs the file path for the specified section at a given time t.
   /// </summary>
@@ -147,7 +168,7 @@ public class LDGPathHolder<TNum, TConv>
         , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
         };
 
-    return Path.Combine(basePath, NumType, NumAccuracy, $"{Tools<TNum,TConv>.ToPrintTNum(t)}.{prefix}section");
+    return Path.Combine(basePath, $"{Tools<TNum, TConv>.ToPrintTNum(t)}.{prefix}section");
   }
 
   /// <summary>
@@ -171,5 +192,5 @@ public class LDGPathHolder<TNum, TConv>
     sectionDict.Add(t, Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
   }
 #endregion
-  
+
 }

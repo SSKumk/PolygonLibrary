@@ -24,7 +24,6 @@ public class TrajectoryMain<TNum, TConv>
     new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>();
 
 
-
   public string                       outputTrajName; // имя папки, где будут лежать результаты счёта траектории
   public TNum                         t0;             // начальный момент времени
   public TNum                         T;              // терминальный момент времени
@@ -35,12 +34,14 @@ public class TrajectoryMain<TNum, TConv>
     ph = br.ph;
     gd = br.gd;
 
-    // загружаем минимальные времена мостов
-    int          i  = 1;
-    StreamReader sr = new StreamReader(ph.PathBr + "!times.txt");
-    while (sr.EndOfStream) {
-      times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
-      i++;
+
+    { // загружаем минимальные времена мостов
+      int          i  = 1;
+      StreamReader sr = new StreamReader(Path.Combine(ph.PathBrs, "!times.txt"));
+      while (!sr.EndOfStream) {
+        times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
+        i++;
+      }
     }
     tMin = times.MinBy(p => p.Value).Value;
 
@@ -50,18 +51,18 @@ public class TrajectoryMain<TNum, TConv>
 
     // грузим все мосты
 
-    int brDir = Directory.GetDirectories(ph.PathBr).Length;
+    int brDir = Directory.GetDirectories(ph.PathBrs).Length;
     for (int j = 1; j <= brDir; j++) {
-      var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>();
-      for (TNum t = times[j]; Geometry<TNum, TConv>.Tools.LE(gd.T); t += gd.dt) {
-        ph.LoadBridgeSection(W, i, t);
+      var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
+      for (TNum t = times[j]; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {
+        ph.LoadBridgeSection(W, j, t);
       }
       Ws.Add(W);
     }
   }
 
   public void CalcTraj(string trajName) {
-    var pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(ph.PathTrajectories, trajName + ".trajconfig"));
+    Geometry<TNum, TConv>.ParamReader pr = ph.OpenTrajConfigReader(trajName);
     outputTrajName = pr.ReadString("Name");
     t0             = pr.ReadNumber<TNum>("t0");
     T              = pr.ReadNumber<TNum>("T");
