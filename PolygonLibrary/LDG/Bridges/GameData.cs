@@ -86,6 +86,18 @@ public class GameData<TNum, TConv>
 
 #region Matrices related to the system
   /// <summary>
+  /// Collection of matrices D for the instants from the time grid.
+  /// </summary>
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D =
+    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
+
+  /// <summary>
+  /// Collection of matrices E for the instants from the time grid.
+  /// </summary>
+  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E =
+    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
+
+  /// <summary>
   /// The fundamental Cauchy matrix of the corresponding system.
   /// </summary>
   public Geometry<TNum, TConv>.CauchyMatrix CauchyMatrix;
@@ -168,6 +180,15 @@ public class GameData<TNum, TConv>
       projMatrixArr[i, ProjInd[i]] = Geometry<TNum, TConv>.Tools.One;
     }
     ProjMatrix = new Geometry<TNum, TConv>.Matrix(projMatrixArr);
+
+
+    TNum t = t0;
+    do {
+      D[t] = Xstar(t) * B;
+      E[t] = Xstar(t) * C;
+
+      t += dt;
+    } while (Geometry<TNum, TConv>.Tools.LE(t, T));
   }
 #endregion
 

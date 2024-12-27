@@ -36,19 +36,6 @@ public class SolverLDG<TNum, TConv>
   /// </summary>
   public readonly GameData<TNum, TConv> gd;
 
-
-  /// <summary>
-  /// Collection of matrices D for the instants from the time grid.
-  /// </summary>
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D =
-    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
-
-  /// <summary>
-  /// Collection of matrices E for the instants from the time grid.
-  /// </summary>
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E =
-    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
-
   /// <summary>
   /// The bridge of the game.
   /// </summary>
@@ -199,9 +186,8 @@ public class SolverLDG<TNum, TConv>
   /// <param name="t">The time at which the first player's vectogram section is processed.</param>
   private void ProcessPsSection(TNum t) {
     if (!PsSectionFileCorrect(t)) {
-      D[t] = gd.Xstar(t) * gd.B;
       TNum t1 = t;
-      Ps[t] = Geometry<TNum, TConv>.ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * D[t1] * pPoint), true);
+      Ps[t] = Geometry<TNum, TConv>.ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
       WritePsSection(t);
     }
   }
@@ -213,9 +199,8 @@ public class SolverLDG<TNum, TConv>
   /// <param name="t">The time at which the second player's vectogram section is processed.</param>
   private void ProcessQsSection(TNum t) {
     if (!QsSectionFileCorrect(t)) {
-      E[t] = gd.Xstar(t) * gd.C;
       TNum t1 = t;
-      Qs[t] = Geometry<TNum, TConv>.ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * E[t1] * qPoint), false);
+      Qs[t] = Geometry<TNum, TConv>.ConvexPolytop.CreateFromPoints(gd.Q.Vrep.Select(qPoint => gd.dt * gd.E[t1] * qPoint), false);
       WriteQsSection(t);
     }
   }
