@@ -30,10 +30,10 @@
     │
     └── ИМЯ_ТРАЕКТОРИИ
         ├── traj.txt
-        ├── fp.txt
-        ├── sp.txt
-        ├── aimfp.txt
-        └── aimsp.txt
+        ├── fp.control
+        ├── sp.control
+        ├── fp.aim
+        └── sp.aim
 
 ```
 
