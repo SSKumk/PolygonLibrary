@@ -68,7 +68,11 @@ public class TrajectoryMain<TNum, TConv>
     T              = pr.ReadNumber<TNum>("T");
     x0             = pr.ReadVector("x0");
 
-    Directory.CreateDirectory(Path.Combine(ph.PathTrajectories, outputTrajName));
+    string pathTrajName = Path.Combine(ph.PathTrajectories, outputTrajName);
+    if (Directory.Exists(pathTrajName)) {
+      throw new ArgumentException($"The folder with name '{outputTrajName}' already exits in {ph.PathTrajectories} path!");
+    }
+    Directory.CreateDirectory(pathTrajName);
 
     // Считываем настройки управлений игроков
 
@@ -106,10 +110,10 @@ public class TrajectoryMain<TNum, TConv>
     using var pwSPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.aim"));
 
     pwTr.WriteVectors("Trajectory", trajectory);
-    pwTr.WriteVectors("FPControls", fpControls);
-    pwTr.WriteVectors("SPControls", spControls);
-    pwTr.WriteVectors("FPAims", fpAims);
-    pwTr.WriteVectors("SPAims", spAims);
+    pwFPC.WriteVectors("FPControls", fpControls);
+    pwSPC.WriteVectors("SPControls", spControls);
+    pwFPA.WriteVectors("FPAims", fpAims);
+    pwSPA.WriteVectors("SPAims", spAims);
   }
 
 }

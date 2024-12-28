@@ -13,8 +13,8 @@ public class SolverLDG<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public readonly LDGPathHolder<TNum,TConv> ph;
-  
+  public readonly LDGPathHolder<TNum, TConv> ph;
+
 
   /// <summary>
   /// Directory where the bridges are stored.

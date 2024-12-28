@@ -69,11 +69,6 @@ public class LDGPathHolder<TNum, TConv>
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
     name2pol = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathPolytopes, "!Dict_polytopes.txt")));
     name2tms = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathTerminalSets, "!Dict_terminalsets.txt")));
-
-    Directory.CreateDirectory(PathGame);
-    Directory.CreateDirectory(PathBrs);
-    Directory.CreateDirectory(PathTrajectories);
-    Directory.CreateDirectory(PathTrajConfigs);
   }
 
   /// <summary>

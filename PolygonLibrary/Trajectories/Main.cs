@@ -12,6 +12,7 @@ public class Trajectory {
 
     TrajectoryMain<double, DConvertor> traj = new TrajectoryMain<double, DConvertor>(ldgPath, "SimpleMotion.Test1");
     traj.CalcTraj("1");
+    traj.CalcTraj("2");
   }
 
 }

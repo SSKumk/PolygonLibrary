@@ -35,6 +35,14 @@ public class BridgeCreator<TNum, TConv>
       new LDGPathHolder<TNum, TConv>
         (pathLDG, problemReader.ReadString("ProblemName")); // установили пути и прочитали словари-связки
 
+
+    // создаём нужные папки, если их нет
+    Directory.CreateDirectory(ph.PathGame);
+    Directory.CreateDirectory(ph.PathBrs);
+    Directory.CreateDirectory(ph.PathTrajectories);
+    Directory.CreateDirectory(ph.PathTrajConfigs);
+
+
     // Читаем имена динамики и многогранников ограничений на управления игроков
     string dynName      = problemReader.ReadString("DynamicsName");
     string fpPolName    = problemReader.ReadString("FPName");
