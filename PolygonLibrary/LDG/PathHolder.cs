@@ -63,7 +63,7 @@ public class LDGPathHolder<TNum, TConv>
     PathPs           = Path.Combine(PathGame, "Ps", NumType, NumAccuracy);
     PathQs           = Path.Combine(PathGame, "Qs", NumType, NumAccuracy);
     PathTrajectories = Path.Combine(PathGame, "Trajectories");
-    PathTrajConfigs  = Path.Combine(PathTrajectories, "Configs");
+    PathTrajConfigs  = Path.Combine(PathTrajectories, "!Configs");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
