@@ -13,8 +13,10 @@ public class SolverLDG<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  /// <summary>
+  /// Provides access to directories where bridge, Ps and Qs files will be located.
+  /// </summary>
   public readonly LDGPathHolder<TNum, TConv> ph;
-
 
   /// <summary>
   /// Directory where the bridges are stored.
@@ -280,142 +282,4 @@ public class SolverLDG<TNum, TConv>
       prW.WriteNumber("tMin", tMin);
     }
   }
-
-// ===============================================================================================================================
-  // public void LoadBridge(TNum t0, TNum T) {
-  //   Debug.Assert(Geometry<TNum, TConv>.Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
-  //
-  //   TNum t = t0;
-  //   do {
-  //     if (!W.ContainsKey(t)) {
-  //       ReadBridgeSection(t);
-  //     }
-  //     t += gd.dt;
-  //   } while (Geometry<TNum, TConv>.Tools.LE(t, T));
-  // }
-  //
-  // public void LoadPs(TNum t0, TNum T) {
-  //   Debug.Assert(Geometry<TNum, TConv>.Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
-  //
-  //   TNum t = t0;
-  //   do {
-  //     if (!Ps.ContainsKey(t)) {
-  //       ReadPsSection(t);
-  //     }
-  //     t += gd.dt;
-  //   } while (Geometry<TNum, TConv>.Tools.LE(t, T));
-  // }
-  //
-  // public void LoadQs(TNum t0, TNum T) {
-  //   Debug.Assert(Geometry<TNum, TConv>.Tools.LT(t0, T), $"The t0 should be less then T. Found t0 = {t0} < T = {T}");
-  //
-  //   TNum t = t0;
-  //   do {
-  //     if (!Qs.ContainsKey(t)) {
-  //       ReadQsSection(t);
-  //     }
-  //     t += gd.dt;
-  //   } while (Geometry<TNum, TConv>.Tools.LE(t, T));
-  // }
-  //
-  // public void LoadGame(TNum t0, TNum T) {
-  //   LoadQs(t0, T);
-  //   LoadPs(t0, T);
-  //   LoadBridge(t0, T);
-  //
-  //   TNum t = t0;
-  //   do {
-  //     D[t] = gd.Xstar(t) * gd.B;
-  //     E[t] = gd.Xstar(t) * gd.C;
-  //
-  //     t += gd.dt;
-  //   } while (Geometry<TNum, TConv>.Tools.LE(t, T));
-  // }
-  //
-  // /// <summary>
-  // /// Computes the controls for the first and second players in a linear differential game.
-  // /// </summary>
-  // /// <param name="x">Current state vector.</param>
-  // /// <param name="t">Current time.</param>
-  // /// <param name="u">
-  // /// Output control vector for the first player.
-  // /// If the state is inside the bridge section, the first vertex of <c>P</c> is selected.
-  // /// Otherwise, the vertex that maximizes the (h-x, pVert) is chosen.
-  // /// </param>
-  // /// <param name="v">
-  // /// Output control vector for the second player.
-  // /// If the state is outside the bridge section, the first vertex of <c>Q</c> is selected.
-  // /// Otherwise, the vertex that maximizes the (x-h, qVert) is chosen.
-  // /// </param>
-  // public void WorkOutControl(Vector x, TNum t, out Vector u, out Vector v) {
-  //   Debug.Assert(D.ContainsKey(t), $"Matrix D must be defined for time t = {t}, but not found.");
-  //   Debug.Assert(E.ContainsKey(t), $"Matrix E must be defined for time t = {t}, but not found.");
-  //   Debug.Assert(W.ContainsKey(t), $"Bridge W must be defined for time t = {t}, but not found.");
-  //
-  //
-  //   u = Vector.Zero(1); // Чтобы компилятор не ругался, что не присвоено значение
-  //   v = Vector.Zero(1); // Чтобы компилятор не ругался, что не присвоено значение
-  //
-  //   Vector h = W[t].NearestPoint(x, out bool isInside); // Нашли ближайшую точку на сечении моста
-  //
-  //   if (isInside) { // Внутри моста выбираем u так, чтобы тянул систему к "центру" моста
-  //     // Vector strongInner = W[t].Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(W[t].Vrep.Count);
-  //     u = gd.P.Vrep.First(); //todo: прицеливается на капец внутреннюю точку моста
-  //
-  //     Vector l       = h - x;
-  //     TNum   extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
-  //     foreach (Vector qVert in gd.Q.Vrep) {
-  //       TNum val = gd.dt * E[t] * qVert * l;
-  //       if (val > extrVal) {
-  //         extrVal = val;
-  //         v       = qVert;
-  //       }
-  //     }
-  //   }
-  //   else { // лучший из P
-  //     Vector l       = h - x;
-  //     TNum   extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
-  //     foreach (Vector pVert in gd.P.Vrep) {
-  //       TNum val = gd.dt * D[t] * pVert * l;
-  //       if (val > extrVal) {
-  //         extrVal = val;
-  //         u       = pVert;
-  //       }
-  //     }
-  //     extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
-  //     foreach (Vector qVert in gd.Q.Vrep) {
-  //       TNum val = -gd.dt * E[t] * qVert * l;
-  //       if (val > extrVal) {
-  //         extrVal = val;
-  //         v       = qVert;
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // /// <summary>
-  // /// Computes the trajectory of the system using the explicit Euler method
-  // /// from the initial time t0 to the final time T.
-  // /// </summary>
-  // /// <param name="x0">Initial state vector.</param>
-  // /// <param name="t0">Initial time.</param>
-  // /// <param name="T">Final time.</param>
-  // /// <returns>List of state vectors representing the trajectory of the system from t0 to T.</returns>
-  // public List<Vector> Euler(Vector x0, TNum t0, TNum T) {
-  //   List<Vector> trajectory = new List<Vector> { x0 }; // Начальное состояние
-  //   LoadGame(t0, T);                                   // Загружаем информацию об игре на заданном промежутке
-  //
-  //   Vector x = x0;
-  //   for (TNum t = t0; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
-  //     // Вычисляем управления
-  //     WorkOutControl(x, t, out Vector u, out Vector v);
-  //
-  //     // Выполняем шаг Эйлера
-  //     x = x + gd.dt * (gd.A * x + gd.B * u + gd.C * v);
-  //     trajectory.Add(x);
-  //   }
-  //
-  //   return trajectory;
-  // }
-
 }
