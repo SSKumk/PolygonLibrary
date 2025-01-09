@@ -127,8 +127,8 @@ public class BridgeCreator<TNum, TConv>
   /// Solves the game by creating and solving bridges for each terminal set.
   /// </summary>
   public void Solve() {
-    StreamWriter sw = new StreamWriter(Path.Combine(ph.PathBrs, "!times.txt"));
-    while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) {
+    StreamWriter sw = new StreamWriter(ph.PathMinTimes);
+    while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) { // tms -- (t)er(m)inal(s)et
       SolverLDG<TNum, TConv> slv = new SolverLDG<TNum, TConv>(ph, ph.PathBr(ts.CurrI), gd, tms!);
       slv.Solve();
 
