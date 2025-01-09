@@ -31,6 +31,8 @@ public class LDGPathHolder<TNum, TConv>
   public readonly string PathBrs; // Путь к папке, в которой лежат папки с мостами для разных терминальных множеств
   public readonly string PathPs;  // Путь к папке, в которой лежат вектограммы первого игрока
   public readonly string PathQs;  // Путь к папке, в которой лежат вектограммы второго игрока
+
+  public readonly string PathMinTimes; // Путь к файлу минимальных просчитанных времён для каждого моста.
 #endregion
 
 #region Dicts
@@ -53,17 +55,22 @@ public class LDGPathHolder<TNum, TConv>
     NumType     = typeof(TNum).ToString();
     NumAccuracy = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}";
 
+    // глобальные пути
     PathLDG          = pathLdg;
     PathDynamics     = Path.Combine(PathLDG, "Dynamics");
     PathPolytopes    = Path.Combine(PathLDG, "Polytopes");
     PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
 
+    // пути для данной игры
     PathGame         = Path.Combine(PathLDG, "_Out", outputFolderName);
     PathBrs          = Path.Combine(PathGame, "Br");
     PathPs           = Path.Combine(PathGame, "Ps", NumType, NumAccuracy);
     PathQs           = Path.Combine(PathGame, "Qs", NumType, NumAccuracy);
     PathTrajectories = Path.Combine(PathGame, "Trajectories");
     PathTrajConfigs  = Path.Combine(PathTrajectories, "!Configs");
+
+    // пути к конкретным файлам
+    PathMinTimes = Path.Combine(PathBrs, ".mintimes");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
@@ -129,18 +136,20 @@ public class LDGPathHolder<TNum, TConv>
   /// <returns>A parameter reader for the trajectory config file.</returns>
   public Geometry<TNum, TConv>.ParamReader OpenTrajConfigReader(string name)
     => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathTrajConfigs, name + ".trajconfig"));
-
-  // /// <summary>
-  // /// Opens a reader for the file containing the minimum calculated times for each of the bridges.
-  // /// </summary>
-  // /// <returns>A parameter reader for the time file.</returns>
-  // public Geometry<TNum, TConv>.ParamReader OpenTimesReader()
-  //   => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathBrs, "!times.txt"));
 #endregion
 
 #region Load
   public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, TNum t)
     => ReadSection(bridge, "W", PathBr(i), t);
+
+  public void LoadMinimalTimes(Dictionary<int, TNum> times) {
+    int          i  = 1;
+    StreamReader sr = new StreamReader(PathMinTimes);
+    while (!sr.EndOfStream) {
+      times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
+      i++;
+    }
+  }
 #endregion
 
 
