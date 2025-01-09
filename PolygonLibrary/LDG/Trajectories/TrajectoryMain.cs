@@ -7,21 +7,16 @@ public class TrajectoryMain<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public readonly LDGPathHolder<TNum, TConv> ph;
-  public readonly BridgeCreator<TNum, TConv> br;
-  public readonly GameData<TNum, TConv>      gd;
+  public readonly LDGPathHolder<TNum, TConv> ph; // Класс, работающий со структурой папок проекта LDG
+  public readonly BridgeCreator<TNum, TConv> br; // Класс, строящий мосты
+  public readonly GameData<TNum, TConv>      gd; // Класс, хранящий информацию об игре
 
-  public readonly Dictionary<int, TNum> times = new Dictionary<int, TNum>(); // номер моста --> в его t0.
-  public readonly TNum                  tMin;
+  public readonly Dictionary<int, TNum> MinTimes = new Dictionary<int, TNum>(); // Словарь, отображающий номер моста в его tMin
+  public readonly TNum                  tMin;  // Наименьший момент времени из MinTimes, для которого есть сечение моста
 
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> D =
-    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>();
-
-  public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> E =
-    new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>();
 
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws =
-    new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>();
+    new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>(); // Набор мостов
 
 
   public string                       outputTrajName; // имя папки, где будут лежать результаты счёта траектории
@@ -34,16 +29,8 @@ public class TrajectoryMain<TNum, TConv>
     ph = br.ph;
     gd = br.gd;
 
-
-    { // загружаем минимальные времена мостов
-      int          i  = 1;
-      StreamReader sr = new StreamReader(Path.Combine(ph.PathBrs, "!times.txt"));
-      while (!sr.EndOfStream) {
-        times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
-        i++;
-      }
-    }
-    tMin = times.MinBy(p => p.Value).Value;
+    ph.LoadMinimalTimes(MinTimes); // загружаем минимальные времена мостов
+    tMin = MinTimes.MinBy(p => p.Value).Value;
 
     if (Geometry<TNum, TConv>.Tools.GE(tMin, gd.T)) {
       throw new ArgumentException($"The t0 should be less then T. Found t0 = {gd.t0} < T = {gd.T}");
@@ -54,7 +41,7 @@ public class TrajectoryMain<TNum, TConv>
     int brDir = Directory.GetDirectories(ph.PathBrs).Length;
     for (int j = 1; j <= brDir; j++) {
       var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
-      for (TNum t = times[j]; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {
+      for (TNum t = MinTimes[j]; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {
         ph.LoadBridgeSection(W, j, t);
       }
       Ws.Add(W);
@@ -103,7 +90,7 @@ public class TrajectoryMain<TNum, TConv>
       spAims.Add(aimSp);
     }
 
-    using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "traj.txt"));
+    using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "game.traj"));
     using var pwFPC = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "fp.control"));
     using var pwSPC = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.control"));
     using var pwFPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "fp.aim"));
