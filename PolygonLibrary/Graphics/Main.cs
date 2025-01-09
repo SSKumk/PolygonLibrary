@@ -7,6 +7,37 @@ namespace Graphics;
 
 public class Visualization {
 
+  public Visualization(string ) {
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   private class VectorMixedProductComparer : IComparer<Vector> {
 
     private readonly Vector _outerNormal;
@@ -57,12 +88,24 @@ public class Visualization {
 
   }
 
+  private static ConvexPolytop Validate(ConvexPolytop P) {
+    switch (P.SpaceDim) {
+      case 1: throw new NotImplementedException("If P.Dim == 1. Непонятно, что делать.");
+      case 2: P = P.LiftUp(3, 0); break;
+      case 3: break;
+      default:
+        throw new ArgumentException($"The dimension of the space must be equal less or equal 3! Found spaceDim = {P.SpaceDim}.");
+    }
+
+    return P;
+  }
+
   public static void WritePLY(ConvexPolytop P, ParamWriter prW) {
     P = Validate(P);
 
     List<Vector> VList = P.Vrep.ToList();
     List<Facet>  FList = new List<Facet>();
-    AddToFList(ref FList, P);
+    AddToFList(FList, P);
 
     WritePLY_File(prW, VList, FList);
   }
@@ -72,11 +115,11 @@ public class Visualization {
 
     List<Vector> VList = P.Vrep.ToList();
     List<Facet>  FList = new List<Facet>();
-    AddToFList(ref FList, P);
+    AddToFList(FList, P);
 
     ConvexPolytop cube = ConvexPolytop.RectAxisParallel(-0.001 * Vector.Ones(3), 0.001 * Vector.Ones(3)).Shift(x);
     VList.AddRange(cube.Vrep);
-    AddToFList(ref FList, cube);
+    AddToFList(FList, cube);
 
     WritePLY_File(prW, VList, FList);
   }
@@ -107,21 +150,7 @@ public class Visualization {
     }
   }
 
-  private static ConvexPolytop Validate(ConvexPolytop P) {
-    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-    switch (P.SpaceDim) {
-      case 1: throw new NotImplementedException("If P.Dim == 1. Непонятно, что делать."); break;
-      case 2: P = P.LiftUp(3, 0); break;
-      case 3: break;
-      default:
-        throw new ArgumentException($"The dimension of the space must be equal less or equal 3! Found spaceDim = {P.SpaceDim}.");
-    }
-
-    return P;
-  }
-
-  public static void AddToFList(ref List<Facet> FList, ConvexPolytop polytop) {
+  public static void AddToFList(List<Facet> FList, ConvexPolytop polytop) {
     foreach (FLNode F in polytop.FLrep.Lattice[2]) {
       HyperPlane hp = new HyperPlane(F.AffBasis, true, (polytop.FLrep.Top.InnerPoint, false));
       FList.Add
@@ -137,29 +166,6 @@ public class Visualization {
 
 }
 
-/*
- * todo:
- *
- * Сделать три проекта.
- *    1. Счёт мостов. Файл настроек Игры, файл настроек набора Мостов
- *        (задано одно терминальное множество, задана функция платы и набор С, надграфик выпуклой функции)
- *    2. Счёт траекторий. Файл настроек Игры, файл настроек набора Мостов, файлы настроек траекторий
- *        (t0, T, x0, как выбираются управления игроков)
- *    3. Визуализация. Настройки: рисовать только мосты, только траектории, и мосты и траектории.
- *        Проверка хэшей, что мосты и траектории соответствуют, либо опция, что такая проверка не нужна
- *
- * 0. Развести счёт и построение картинки. Записывать в файл точки прицеливания (для P и Q) и точки траектории.
- *      Если вне моста, то точка для Q фиктивная.
- *      Отдельный файл настроек, работаем с одним за раз.
- *      Подумать об именовании фалов траектории, чтобы в одной папке могло лежать несколько траекторий.
- *
- * 1. Точка траектории своего цвета (кубик поболее) [цвет и размер кубика это параметры]
- *
- * 2. Для программы счёта траектории сделать возможности выбора стратегий игроков:
- *      оптимальная, константная, случайная (?)
- *
- */
-
 
 public class Program {
 
@@ -170,27 +176,5 @@ public class Program {
   public static void Main() {
     Tools.Eps = 1e-16;
 
-    int       dim    = 3;
-  //
-  //   SolverLDG solver = new SolverLDG(pathData, "SimpleMotion");
-  //   var       tMin   = solver.Solve(true);
-  //   var       traj   = solver.Euler(new Vector(new ddouble[] { 0, 1, 3 }), tMin, solver.gd.T);
-  //   // var traj = solver.Euler(0.5 * Vector.Ones(dim), tMin, solver.gd.T);
-  //   // var traj = solver.Euler(0.5*Vector.MakeOrth(dim,2), tMin, solver.gd.T);
-  //
-  //   Console.WriteLine($"game {solver.gd.TerminalSetHash}");
-  //   Console.WriteLine($"Ps {solver.gd.PHash}");
-  //   Console.WriteLine($"Qs {solver.gd.QHash}");
-  //
-  //   Directory.CreateDirectory(solver.PicturesPath);
-  //   Directory.Delete(solver.PicturesPath,true);
-  //   Directory.CreateDirectory(solver.PicturesPath);
-  //
-  //   int i = 0;
-  //   for (ddouble t = tMin; Tools.LT(t, solver.gd.T); t += solver.gd.dt, i++) {
-  //     using ParamWriter prW = new ParamWriter(Path.Combine(solver.PicturesPath, $"{DDConvertor.ToDouble(t):0.00}).ply"));
-  //
-  //     Visualization.WritePLY(solver.W[t], traj[i], prW);
-  //   }
   }
 }
