@@ -1,40 +1,118 @@
-﻿using System.Globalization;
-using DoubleDouble;
-// using static CGLibrary.Geometry<double, Graphics.DConvertor>;
-using static CGLibrary.Geometry<DoubleDouble.ddouble, Graphics.DDConvertor>;
+﻿using LDG;
+using static CGLibrary.Geometry<double, Graphics.DConvertor>;
 
 namespace Graphics;
 
 public class Visualization {
 
-  public Visualization(string ) {
+  public struct Traj {
+
+    public List<Vector> Ps;
+
+    public double scale;
+    public int    red;
+    public int    green;
+    public int    blue;
+
+    public Traj(List<Vector> ps, double scale, int red, int green, int blue) {
+      Ps         = ps;
+      this.scale = scale;
+      this.red   = red;
+      this.green = green;
+      this.blue  = blue;
+    }
+
+  }
+
+  public class Facet {
+
+    public readonly IEnumerable<Vector> Vs;
+    public readonly Vector              Normal;
+
+    public int red;
+    public int green;
+    public int blue;
+
+
+    public Facet(IEnumerable<Vector> vs, Vector normal, int red = 192, int green = 192, int blue = 192) {
+      Vs         = vs;
+      Normal     = normal;
+      this.red   = red;
+      this.green = green;
+      this.blue  = blue;
+    }
 
   }
 
 
+  public readonly string VisData;
+  public readonly string VisConf;
+
+  public readonly string OutFolderName;
+  public readonly string GameDirName;
+
+  public readonly string NumericalType;
+  public readonly string Precision;
+
+  public readonly List<string>          BrNames;
+  public readonly List<Traj>            Trajs  = new List<Traj>();
+  public readonly Dictionary<int, Traj> AimsFp = new Dictionary<int, Traj>();
+  public readonly Dictionary<int, Traj> AimsSp = new Dictionary<int, Traj>();
+
+  public Visualization(string pathLdg, string visData, string visConf) {
+    VisData = visData;
+    VisConf = visConf;
 
 
+    string confPath = Path.Combine(pathLdg, "Visualization", "!Configs");
+    {
+      ParamReader prD = new ParamReader(Path.Combine(confPath, VisData + ".visdata"));
 
+      OutFolderName = prD.ReadString("Name");
+      GameDirName   = prD.ReadString("GameDirName");
+      NumericalType = prD.ReadString("NumericalType");
+      Precision     = prD.ReadString("Precision");
+    }
 
+    ParamReader prC     = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
+    List<int>   brNames = prC.ReadList<int>("Bridges");
+    BrNames = brNames.Select(i => i.ToString()).ToList();
 
+    int trajCount = prC.ReadNumber<int>("TrajectoryCount");
+    for (int i = 1; i <= trajCount; i++) {
+      string name = prC.ReadString("Name");
+      {
+        int[]  color = prC.Read1DArray<int>("Color", 3);
+        double scale = prC.ReadNumber<double>("Scale");
+        ParamReader prTr =
+          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "game.traj" }));
+        List<Vector> traj = prTr.ReadVectors("Trajectory");
+        Trajs.Add(new Traj(traj, scale, color[0], color[1], color[2]));
+      }
+      bool drawAimFp = prC.ReadBool("DrawAimFP");
+      if (drawAimFp) {
+        int[]  color = prC.Read1DArray<int>("Color", 3);
+        double scale = prC.ReadNumber<double>("Scale");
+        ParamReader prTr =
+          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "fp.aim" }));
+        List<Vector> traj = prTr.ReadVectors("FPAims");
+        AimsFp.Add(i, new Traj(traj, scale, color[0], color[1], color[2]));
+      }
+      bool drawAimSp = prC.ReadBool("DrawAimSP");
+      if (drawAimSp) {
+        int[]  color = prC.Read1DArray<int>("Color", 3);
+        double scale = prC.ReadNumber<double>("Scale");
+        ParamReader prTr =
+          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "sp.aim" }));
+        List<Vector> traj = prTr.ReadVectors("SPAims");
+        AimsSp.Add(i, new Traj(traj, scale, color[0], color[1], color[2]));
+      }
+    }
+  }
 
+  public void WritePly() { // используя BrNames Trajs AimsFp AimsSp сначала собрать у каждого точки и грани, потом всё налепить в один файл!!!
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  }
 
 
 
@@ -55,7 +133,7 @@ public class Visualization {
     /// <param name="u">The second vector.</param>
     /// <returns>The outward normal to the plane of v and u.</returns>
     public static Vector CrossProduct3D(Vector v, Vector u) {
-      ddouble[] crossProduct = new ddouble[3];
+      double[] crossProduct = new double[3];
       crossProduct[0] = v[1] * u[2] - v[2] * u[1];
       crossProduct[1] = v[2] * u[0] - v[0] * u[2];
       crossProduct[2] = v[0] * u[1] - v[1] * u[0];
@@ -76,17 +154,6 @@ public class Visualization {
 
   }
 
-  public class Facet {
-
-    public readonly IEnumerable<Vector> Vs;
-    public readonly Vector              Normal;
-
-    public Facet(IEnumerable<Vector> vs, Vector normal) {
-      Vs     = vs;
-      Normal = normal;
-    }
-
-  }
 
   private static ConvexPolytop Validate(ConvexPolytop P) {
     switch (P.SpaceDim) {
@@ -166,15 +233,12 @@ public class Visualization {
 
 }
 
-
 public class Program {
 
   private static readonly string pathData =
     // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations";
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
 
-  public static void Main() {
-    Tools.Eps = 1e-16;
+  public static void Main() { Tools.Eps = 1e-16; }
 
-  }
 }
