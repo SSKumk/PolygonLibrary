@@ -97,10 +97,10 @@ public class TrajectoryMain<TNum, TConv>
     using var pwSPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.aim"));
 
     pwTr.WriteVectors("Trajectory", trajectory);
-    pwFPC.WriteVectors("FPControls", fpControls);
-    pwSPC.WriteVectors("SPControls", spControls);
-    pwFPA.WriteVectors("FPAims", fpAims);
-    pwSPA.WriteVectors("SPAims", spAims);
+    pwFPC.WriteVectors("Control", fpControls);
+    pwSPC.WriteVectors("Control", spControls);
+    pwFPA.WriteVectors("Aim", fpAims);
+    pwSPA.WriteVectors("Aim", spAims);
   }
 
 }

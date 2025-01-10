@@ -5,21 +5,87 @@ namespace Graphics;
 
 public class Visualization {
 
-  public struct Traj {
+  public struct Color {
 
-    public List<Vector> Ps;
+    public int red   = 192;
+    public int green = 192;
+    public int blue  = 192;
 
-    public double scale;
-    public int    red;
-    public int    green;
-    public int    blue;
-
-    public Traj(List<Vector> ps, double scale, int red, int green, int blue) {
-      Ps         = ps;
-      this.scale = scale;
+    public Color(int red, int green, int blue) {
       this.red   = red;
       this.green = green;
       this.blue  = blue;
+    }
+
+  }
+
+  public struct ColorAndRadius {
+
+    public Color  color;
+    public double radius;
+
+    public ColorAndRadius(Color color, double radius) {
+      this.color  = color;
+      this.radius = radius;
+    }
+
+  }
+
+  public struct AimTraj {
+
+    public List<Vector>   points;
+    public ColorAndRadius aim; // цвет и размер aim-точки
+
+    public ColorAndRadius? aimCyl; // цвет и размер цилиндра, соединяющего aim-точку и текущее положение системы
+
+    public AimTraj(List<Vector> points, ColorAndRadius aim, ColorAndRadius? aimCyl) {
+      this.points = points;
+      this.aim    = aim;
+      this.aimCyl = aimCyl;
+    }
+
+  }
+
+  public struct Traj {
+
+    public List<Vector>   Ps;
+    public ColorAndRadius trajPoint;
+
+    public ColorAndRadius? traversed = null;
+    public ColorAndRadius? remaining = null;
+
+    public Traj(List<Vector> ps, ColorAndRadius trajPoint, ColorAndRadius? traversed, ColorAndRadius? remaining) {
+      Ps             = ps;
+      this.trajPoint = trajPoint;
+      this.traversed = traversed;
+      this.remaining = remaining;
+    }
+
+  }
+
+  public struct TrajExtended { // траектория, точки прицеливания игроков и все настройки
+
+    public Traj traj;
+
+    public AimTraj? fp;
+    public AimTraj? sp;
+
+    public TrajExtended(Traj traj, AimTraj? fp, AimTraj? sp) {
+      this.traj = traj;
+      this.fp   = fp;
+      this.sp   = sp;
+    }
+
+  }
+
+  public struct SeveralPolytopes {
+
+    public List<Vector>        vertices;  // список вершин
+    public List<ConvexPolytop> polytopes; // набор выпуклых многогранников
+
+    public SeveralPolytopes(List<Vector> vertices, List<ConvexPolytop> polytopes) {
+      this.vertices  = vertices;
+      this.polytopes = polytopes;
     }
 
   }
@@ -54,15 +120,12 @@ public class Visualization {
   public readonly string NumericalType;
   public readonly string Precision;
 
-  public readonly List<string>          BrNames;
-  public readonly List<Traj>            Trajs  = new List<Traj>();
-  public readonly Dictionary<int, Traj> AimsFp = new Dictionary<int, Traj>();
-  public readonly Dictionary<int, Traj> AimsSp = new Dictionary<int, Traj>();
+  public readonly List<string>       BrNames; // имена папок мостов, которые нужно рисовать
+  public readonly List<TrajExtended> Trajs = new List<TrajExtended>();
 
   public Visualization(string pathLdg, string visData, string visConf) {
     VisData = visData;
     VisConf = visConf;
-
 
     string confPath = Path.Combine(pathLdg, "Visualization", "!Configs");
     {
@@ -74,98 +137,94 @@ public class Visualization {
       Precision     = prD.ReadString("Precision");
     }
 
-    ParamReader prC     = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
-    List<int>   brNames = prC.ReadList<int>("Bridges");
+    ParamReader pr      = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
+    List<int>   brNames = pr.ReadList<int>("Bridges");
     BrNames = brNames.Select(i => i.ToString()).ToList();
 
-    int trajCount = prC.ReadNumber<int>("TrajectoryCount");
+    int trajCount = pr.ReadNumber<int>("TrajectoryCount");
     for (int i = 1; i <= trajCount; i++) {
-      string name = prC.ReadString("Name");
-      {
-        int[]  color = prC.Read1DArray<int>("Color", 3);
-        double scale = prC.ReadNumber<double>("Scale");
-        ParamReader prTr =
-          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "game.traj" }));
-        List<Vector> traj = prTr.ReadVectors("Trajectory");
-        Trajs.Add(new Traj(traj, scale, color[0], color[1], color[2]));
+      string       name     = pr.ReadString("Name");
+      string       trajPath = Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name });
+      List<Vector> Ps       = new ParamReader(Path.Combine(trajPath, "game.traj")).ReadVectors("Trajectory");
+
+      ColorAndRadius  trajPoint = ReadColorAndRadius(pr);
+      ColorAndRadius? traversed = null;
+      if (pr.ReadBool("DrawTraversed")) {
+        traversed = ReadColorAndRadius(pr);
       }
-      bool drawAimFp = prC.ReadBool("DrawAimFP");
-      if (drawAimFp) {
-        int[]  color = prC.Read1DArray<int>("Color", 3);
-        double scale = prC.ReadNumber<double>("Scale");
-        ParamReader prTr =
-          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "fp.aim" }));
-        List<Vector> traj = prTr.ReadVectors("FPAims");
-        AimsFp.Add(i, new Traj(traj, scale, color[0], color[1], color[2]));
+      ColorAndRadius? remaining = null;
+      if (pr.ReadBool("DrawTraversed")) {
+        remaining = ReadColorAndRadius(pr);
       }
-      bool drawAimSp = prC.ReadBool("DrawAimSP");
-      if (drawAimSp) {
-        int[]  color = prC.Read1DArray<int>("Color", 3);
-        double scale = prC.ReadNumber<double>("Scale");
-        ParamReader prTr =
-          new ParamReader(Path.Combine(new string[] { pathLdg, "_Out", GameDirName, "Trajectories", name, "sp.aim" }));
-        List<Vector> traj = prTr.ReadVectors("SPAims");
-        AimsSp.Add(i, new Traj(traj, scale, color[0], color[1], color[2]));
+
+      ColorAndRadius  fpAimPoint;
+      ColorAndRadius? fpAimCyl;
+      List<Vector>?   fpAim;
+      AimTraj?        fpAimTraj = null;
+      if (pr.ReadBool("DrawAimFP")) {
+        fpAimPoint = ReadColorAndRadius(pr);
+        fpAimCyl   = ReadColorAndRadius(pr);
+        fpAim      = new ParamReader(Path.Combine(trajPath, "fp.aim")).ReadVectors("Aim");
+        fpAimTraj  = new AimTraj(fpAim, fpAimPoint, fpAimCyl);
       }
+      ColorAndRadius  spAimPoint;
+      ColorAndRadius? spAimCyl;
+      List<Vector>?   spAim;
+      AimTraj?        spAimTraj = null;
+      if (pr.ReadBool("DrawAimSP")) {
+        spAimPoint = ReadColorAndRadius(pr);
+        spAimCyl   = ReadColorAndRadius(pr);
+        spAim      = new ParamReader(Path.Combine(trajPath, "sp.aim")).ReadVectors("Aim");
+        spAimTraj  = new AimTraj(spAim, spAimPoint, spAimCyl);
+      }
+
+      Trajs.Add(new TrajExtended(new Traj(Ps, trajPoint, traversed, remaining), fpAimTraj, spAimTraj));
     }
   }
 
-  public void WritePly() { // используя BrNames Trajs AimsFp AimsSp сначала собрать у каждого точки и грани, потом всё налепить в один файл!!!
+  public void MainDrawFunc() {
+    // Основной цикл по времени всей игры от t0 до T (где их достать?)
+    // внутри цикла отдельная задача нарисовать мосты
+    //              отдельная задача нарисовать траектории
+
+
+    // рисовать мосты, если есть
 
   }
 
+  public SeveralPolytopes MakeCylinderOnTraj(List<Vector> traj, double radius) {
+    SortedSet<Vector>   vertices  = new SortedSet<Vector>();
+    List<ConvexPolytop> polytopes = new List<ConvexPolytop>();
 
-
-  private class VectorMixedProductComparer : IComparer<Vector> {
-
-    private readonly Vector _outerNormal;
-    private readonly Vector _firstPoint;
-
-    public VectorMixedProductComparer(Vector outerNormal, Vector firstPoint) {
-      _outerNormal = outerNormal;
-      _firstPoint  = firstPoint;
+    int k = traj.Count - 1;
+    for (int i = 0; i < k; i++) {
+      ConvexPolytop cylinder = Cylinder(traj[i], traj[i + 1], radius);
+      vertices.UnionWith(cylinder.Vrep);
+      polytopes.Add(cylinder);
     }
 
-    /// <summary>
-    /// The cross-product of two 3D-vectors.
-    /// </summary>
-    /// <param name="v">The first vector.</param>
-    /// <param name="u">The second vector.</param>
-    /// <returns>The outward normal to the plane of v and u.</returns>
-    public static Vector CrossProduct3D(Vector v, Vector u) {
-      double[] crossProduct = new double[3];
-      crossProduct[0] = v[1] * u[2] - v[2] * u[1];
-      crossProduct[1] = v[2] * u[0] - v[0] * u[2];
-      crossProduct[2] = v[0] * u[1] - v[1] * u[0];
+    return new SeveralPolytopes(vertices.ToList(), polytopes);
+  }
 
-      return new Vector(crossProduct);
-    }
+  // public void PrepareFrameToDraw(TrajExtended )
 
-    public int Compare(Vector? v1, Vector? v2) {
-      if (v1 is null && v2 is null)
-        return 0;
-      if (v1 is null)
-        return -1;
-      if (v2 is null)
-        return 1;
-
-      return Tools.CMP(CrossProduct3D(v1 - _firstPoint, v2 - _firstPoint) * _outerNormal);
-    }
-
+  public ConvexPolytop Cylinder(Vector p1, Vector p2, double radius) {
+    // цилиндр между двух точек-центров оснований с заданным радиусом и фиксированным разбиением по азимуту
+    throw new NotImplementedException();
   }
 
 
-  private static ConvexPolytop Validate(ConvexPolytop P) {
-    switch (P.SpaceDim) {
-      case 1: throw new NotImplementedException("If P.Dim == 1. Непонятно, что делать.");
-      case 2: P = P.LiftUp(3, 0); break;
-      case 3: break;
-      default:
-        throw new ArgumentException($"The dimension of the space must be equal less or equal 3! Found spaceDim = {P.SpaceDim}.");
-    }
+  private ColorAndRadius ReadColorAndRadius(ParamReader pr) {
+    int[]  ar     = pr.Read1DArray<int>("Color", 3);
+    double radius = pr.ReadNumber<double>("Radius");
 
-    return P;
+    return new ColorAndRadius(new Color(ar[0], ar[1], ar[2]), radius);
   }
+
+  public void WritePly() {
+    // используя BrNames Trajs AimsFp AimsSp сначала собрать у каждого точки и грани, потом всё налепить в один файл!!!
+  }
+
 
   public static void WritePLY(ConvexPolytop P, ParamWriter prW) {
     P = Validate(P);
@@ -229,6 +288,57 @@ public class Visualization {
            )
         );
     }
+  }
+
+  private class VectorMixedProductComparer : IComparer<Vector> {
+
+    private readonly Vector _outerNormal;
+    private readonly Vector _firstPoint;
+
+    public VectorMixedProductComparer(Vector outerNormal, Vector firstPoint) {
+      _outerNormal = outerNormal;
+      _firstPoint  = firstPoint;
+    }
+
+    /// <summary>
+    /// The cross-product of two 3D-vectors.
+    /// </summary>
+    /// <param name="v">The first vector.</param>
+    /// <param name="u">The second vector.</param>
+    /// <returns>The outward normal to the plane of v and u.</returns>
+    public static Vector CrossProduct3D(Vector v, Vector u) {
+      double[] crossProduct = new double[3];
+      crossProduct[0] = v[1] * u[2] - v[2] * u[1];
+      crossProduct[1] = v[2] * u[0] - v[0] * u[2];
+      crossProduct[2] = v[0] * u[1] - v[1] * u[0];
+
+      return new Vector(crossProduct);
+    }
+
+    public int Compare(Vector? v1, Vector? v2) {
+      if (v1 is null && v2 is null)
+        return 0;
+      if (v1 is null)
+        return -1;
+      if (v2 is null)
+        return 1;
+
+      return Tools.CMP(CrossProduct3D(v1 - _firstPoint, v2 - _firstPoint) * _outerNormal);
+    }
+
+  }
+
+
+  private static ConvexPolytop Validate(ConvexPolytop P) {
+    switch (P.SpaceDim) {
+      case 1: throw new NotImplementedException("If P.Dim == 1. Непонятно, что делать.");
+      case 2: P = P.LiftUp(3, 0); break;
+      case 3: break;
+      default:
+        throw new ArgumentException($"The dimension of the space must be equal less or equal 3! Found spaceDim = {P.SpaceDim}.");
+    }
+
+    return P;
   }
 
 }
