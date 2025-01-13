@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 
 namespace LDG;
 
@@ -13,6 +14,10 @@ public class Tools<TNum, TConv>
   /// </summary>
   /// <param name="t">The numeric value to convert.</param>
   /// <returns>A string representation of the number with two decimal places.</returns>
-  public static string ToPrintTNum(TNum t) => $"{TConv.ToDouble(t):F2}";
+  public static string ToPrintTNum(TNum t) {
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+    return $"{TConv.ToDouble(t):F2}";
+  }
 
 }
