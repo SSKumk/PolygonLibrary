@@ -12,17 +12,11 @@ public class TrajectoryMain<TNum, TConv>
   public readonly GameData<TNum, TConv>      gd; // Класс, хранящий информацию об игре
 
   public readonly Dictionary<int, TNum> MinTimes = new Dictionary<int, TNum>(); // Словарь, отображающий номер моста в его tMin
-  public readonly TNum                  tMin;  // Наименьший момент времени из MinTimes, для которого есть сечение моста
+  public readonly TNum                  tMin; // Наименьший момент времени из MinTimes, для которого есть сечение моста
 
 
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws =
     new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>(); // Набор мостов
-
-
-  public string                       outputTrajName; // имя папки, где будут лежать результаты счёта траектории
-  public TNum                         t0;             // начальный момент времени
-  public TNum                         T;              // терминальный момент времени
-  public Geometry<TNum, TConv>.Vector x0;             // начальная точка
 
   public TrajectoryMain(string ldgPath, string problemFileName) {
     br = new BridgeCreator<TNum, TConv>(ldgPath, problemFileName);
@@ -39,7 +33,7 @@ public class TrajectoryMain<TNum, TConv>
     // грузим все мосты
 
     int brDir = Directory.GetDirectories(ph.PathBrs).Length;
-    for (int j = 1; j <= brDir; j++) {
+    for (int j = 0; j < brDir; j++) {
       var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
       for (TNum t = MinTimes[j]; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {
         ph.LoadBridgeSection(W, j, t);
@@ -50,10 +44,11 @@ public class TrajectoryMain<TNum, TConv>
 
   public void CalcTraj(string trajName) {
     Geometry<TNum, TConv>.ParamReader pr = ph.OpenTrajConfigReader(trajName);
-    outputTrajName = pr.ReadString("Name");
-    t0             = pr.ReadNumber<TNum>("t0");
-    T              = pr.ReadNumber<TNum>("T");
-    x0             = pr.ReadVector("x0");
+
+    string outputTrajName = pr.ReadString("Name"); // имя папки, где будут лежать результаты счёта траектории
+    TNum t0 = pr.ReadNumber<TNum>("t0"); // начальный момент времени
+    TNum T = pr.ReadNumber<TNum>("T"); // терминальный момент времени
+    Geometry<TNum, TConv>.Vector x0 = pr.ReadVector("x0"); // начальная точка
 
     string pathTrajName = Path.Combine(ph.PathTrajectories, outputTrajName);
     if (Directory.Exists(pathTrajName)) {
@@ -71,6 +66,13 @@ public class TrajectoryMain<TNum, TConv>
     var spControls = new List<Geometry<TNum, TConv>.Vector>();        // реализация управлений второго игрока
     var fpAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания первого игрока
     var spAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания второго игрока
+
+    if (Geometry<TNum, TConv>.Tools.LT(t0, tMin)) {
+      throw new ArgumentException
+        (
+         $"The specified time t0 = {t0} is less than the minimum computed time tMin = {tMin}. Bridges are only computed for times greater than or equal to tMin."
+        );
+    }
 
     Geometry<TNum, TConv>.Vector x = x0;
     for (TNum t = tMin; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
@@ -95,12 +97,15 @@ public class TrajectoryMain<TNum, TConv>
     using var pwSPC = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.control"));
     using var pwFPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "fp.aim"));
     using var pwSPA = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "sp.aim"));
+    using var pwT   = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, ".times"));
 
     pwTr.WriteVectors("Trajectory", trajectory);
     pwFPC.WriteVectors("Control", fpControls);
     pwSPC.WriteVectors("Control", spControls);
     pwFPA.WriteVectors("Aim", fpAims);
     pwSPA.WriteVectors("Aim", spAims);
+    pwT.WriteNumber("MinTime", t0);
+    pwT.WriteNumber("MaxTime", T);
   }
 
 }

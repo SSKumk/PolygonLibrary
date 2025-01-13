@@ -143,7 +143,7 @@ public class LDGPathHolder<TNum, TConv>
     => ReadSection(bridge, "W", PathBr(i), t);
 
   public void LoadMinimalTimes(Dictionary<int, TNum> times) {
-    int          i  = 1;
+    int          i  = 0;
     StreamReader sr = new StreamReader(PathMinTimes);
     while (!sr.EndOfStream) {
       times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
@@ -188,6 +188,7 @@ public class LDGPathHolder<TNum, TConv>
     , string                                                      basePath
     , TNum                                                        t
     ) {
+
     string filePath = GetSectionPath(sectionPrefix, basePath, t);
     Debug.Assert
       (File.Exists(filePath), $"LDG.PathHolder.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");

@@ -8,7 +8,7 @@ public class TerminalSet<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public int CurrI { get; private set; } = 0;
+  public int CurrI { get; private set; } = -1;
 
   private readonly IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> _tmss;           // терминальные множества
   private readonly IEnumerator<Geometry<TNum, TConv>.ConvexPolytop> _tmssEnumerator; // Перечислитель терминальных множеств
