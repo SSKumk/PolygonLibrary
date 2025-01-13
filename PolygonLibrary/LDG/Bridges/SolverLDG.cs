@@ -74,8 +74,6 @@ public class SolverLDG<TNum, TConv>
     , GameData<TNum, TConv>               gameData
     , Geometry<TNum, TConv>.ConvexPolytop M
     ) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
     ph = pathHolder;
 
     BrDir = bridgeDir;

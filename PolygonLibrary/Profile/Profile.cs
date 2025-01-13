@@ -17,7 +17,6 @@ class Program {
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
 
   static void Main(string[] args) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     // Tools.Eps = 1e-8;
     Tools.Eps = 1e-16;
 

@@ -11,9 +11,7 @@ namespace Bridges;
 class Program {
 
   static void Main(string[] args) {
-    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-    CGLibrary.Geometry<double, DConvertor>.Tools.Eps = 1e-6;
+    CGLibrary.Geometry<double, DConvertor>.Tools.Eps = 1e-8;
 
 
     string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
