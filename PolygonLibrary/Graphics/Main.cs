@@ -7,9 +7,11 @@ public class Visualization {
 
   public struct Color {
 
-    public int red   = 192;
-    public int green = 192;
-    public int blue  = 192;
+    public int red;
+    public int green;
+    public int blue;
+
+    public static Color Default => new Color(192, 192, 192);
 
     public Color(int red, int green, int blue) {
       this.red   = red;
@@ -92,24 +94,22 @@ public class Visualization {
 
   public class Facet {
 
-    public readonly IEnumerable<Vector> Vs;
+    public readonly IEnumerable<Vector> Vertices;
     public readonly Vector              Normal;
 
-    public int red;
-    public int green;
-    public int blue;
+    public Color Color;
 
+    public Facet(IEnumerable<Vector> vertices, Vector normal) : this(vertices, normal, Color.Default) { }
 
-    public Facet(IEnumerable<Vector> vs, Vector normal, int red = 192, int green = 192, int blue = 192) {
-      Vs         = vs;
-      Normal     = normal;
-      this.red   = red;
-      this.green = green;
-      this.blue  = blue;
+    public Facet(IEnumerable<Vector> vertices, Vector normal, Color color) {
+      Vertices = vertices;
+      Normal   = normal;
+      Color    = color;
     }
 
   }
 
+  private readonly TrajectoryMain<double, DConvertor> tr;
 
   public readonly string VisData;
   public readonly string VisConf;
@@ -120,10 +120,12 @@ public class Visualization {
   public readonly string NumericalType;
   public readonly string Precision;
 
-  public readonly List<string>       BrNames; // имена папок мостов, которые нужно рисовать
+  public readonly List<int>       BrNames; // имена папок мостов, которые нужно рисовать
   public readonly List<TrajExtended> Trajs = new List<TrajExtended>();
 
-  public Visualization(string pathLdg, string visData, string visConf) {
+  public Visualization(string pathLdg, string problemFileName, string visData, string visConf) {
+    tr = new TrajectoryMain<double, DConvertor>(pathLdg, problemFileName);
+
     VisData = visData;
     VisConf = visConf;
 
@@ -138,8 +140,7 @@ public class Visualization {
     }
 
     ParamReader pr      = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
-    List<int>   brNames = pr.ReadList<int>("Bridges");
-    BrNames = brNames.Select(i => i.ToString()).ToList();
+    BrNames = pr.ReadList<int>("Bridges");
 
     int trajCount = pr.ReadNumber<int>("TrajectoryCount");
     for (int i = 1; i <= trajCount; i++) {
@@ -183,13 +184,21 @@ public class Visualization {
   }
 
   public void MainDrawFunc() {
+    for (double t = tr.tMin; Tools.LT(tr.T); t += tr.gd.dt) {
+      // подготавливаем один кадр (frame)
+
+      List<Vector> vertices = new List<Vector>(); // все вершины на данном кадре
+      List<Facet>  facets   = new List<Facet>();  // все грани на данном кадре
+
+      // рисовать мосты, если есть
+      foreach (int brName in BrNames) {
+        tr.Ws[brName]
+      }
+    }
     // Основной цикл по времени всей игры от t0 до T (где их достать?)
     // внутри цикла отдельная задача нарисовать мосты
     //              отдельная задача нарисовать траектории
-
-
-    // рисовать мосты, если есть
-
+    //              отдельная задача нарисовать точки прицеливания игроков
   }
 
   public SeveralPolytopes MakeCylinderOnTraj(List<Vector> traj, double radius) {
@@ -206,11 +215,42 @@ public class Visualization {
     return new SeveralPolytopes(vertices.ToList(), polytopes);
   }
 
-  // public void PrepareFrameToDraw(TrajExtended )
+  /// <summary>
+  /// Generates a convex polytope representing a cylinder in 3D space.
+  /// The cylinder is defined by two points (centers of the bases) and a radius.
+  /// The circle approximation is fixed.
+  /// </summary>
+  /// <param name="p1">The center of the first base of the cylinder.</param>
+  /// <param name="p2">The center of the second base of the cylinder.</param>
+  /// <param name="radius">The radius of the cylinder.</param>
+  /// <param name="segments">
+  /// The number of segments used to approximate the circles at the bases.
+  /// Default is 10, which means each circle is divided into 10 vertices.
+  /// </param>
+  /// <returns>
+  /// A <see cref="ConvexPolytop"/> representing the cylinder.
+  /// The polytop is constructed from the vertices of the two circular bases.
+  /// </returns>
+  public static ConvexPolytop Cylinder(Vector p1, Vector p2, double radius, int segments = 10) {
+    Vector axe = p1 - p2; // ось цилиндра
+    if (axe.Length < 1e-10) {
+      throw new ArgumentException("Points p1 and p2 are too close or coincide.");
+    }
 
-  public ConvexPolytop Cylinder(Vector p1, Vector p2, double radius) {
-    // цилиндр между двух точек-центров оснований с заданным радиусом и фиксированным разбиением по азимуту
-    throw new NotImplementedException();
+    LinearBasis? basePlane = new LinearBasis(axe).FindOrthogonalComplement();
+    Vector       u1        = basePlane![0];
+    Vector       u2        = basePlane[1];
+
+    List<Vector> vs = new List<Vector>();
+    for (int i = 0; i < segments; i++) {
+      double angle         = 2 * Math.PI * i / segments;
+      Vector pointOnCircle = Math.Cos(angle) * u1 + Math.Sin(angle) * u2;
+      Vector onCircle      = radius * pointOnCircle;
+      vs.Add(p1 + onCircle);
+      vs.Add(p2 + onCircle);
+    }
+
+    return ConvexPolytop.CreateFromPoints(vs);
   }
 
 
@@ -231,7 +271,7 @@ public class Visualization {
 
     List<Vector> VList = P.Vrep.ToList();
     List<Facet>  FList = new List<Facet>();
-    AddToFList(FList, P);
+    AddToFacetList(FList, P);
 
     WritePLY_File(prW, VList, FList);
   }
@@ -241,11 +281,11 @@ public class Visualization {
 
     List<Vector> VList = P.Vrep.ToList();
     List<Facet>  FList = new List<Facet>();
-    AddToFList(FList, P);
+    AddToFacetList(FList, P);
 
     ConvexPolytop cube = ConvexPolytop.RectAxisParallel(-0.001 * Vector.Ones(3), 0.001 * Vector.Ones(3)).Shift(x);
     VList.AddRange(cube.Vrep);
-    AddToFList(FList, cube);
+    AddToFacetList(FList, cube);
 
     WritePLY_File(prW, VList, FList);
   }
@@ -268,15 +308,15 @@ public class Visualization {
     }
     // грани
     foreach (Facet F in FList) {
-      prW.Write($"{F.Vs.Count()} ");
-      foreach (Vector vertex in F.Vs) {
+      prW.Write($"{F.Vertices.Count()} ");
+      foreach (Vector vertex in F.Vertices) {
         prW.Write($"{VList.IndexOf(vertex)} ");
       }
       prW.WriteLine();
     }
   }
 
-  public static void AddToFList(List<Facet> FList, ConvexPolytop polytop) {
+  public static void AddToFacetList(List<Facet> FList, ConvexPolytop polytop) {
     foreach (FLNode F in polytop.FLrep.Lattice[2]) {
       HyperPlane hp = new HyperPlane(F.AffBasis, true, (polytop.FLrep.Top.InnerPoint, false));
       FList.Add
@@ -345,10 +385,15 @@ public class Visualization {
 
 public class Program {
 
-  private static readonly string pathData =
-    // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations";
-    "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
+  public static void Main() {
+    string ldgPath = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    Vector p1      = Vector.GenVectorInt(3, -5, 5);
+    Vector p2      = Vector.GenVectorInt(3, -5, 5);
+    double radius  = 1;
 
-  public static void Main() { Tools.Eps = 1e-16; }
+    ConvexPolytop     cylinder = Visualization.Cylinder(p1, p2, radius, 2000);
+    using ParamWriter pw       = new ParamWriter(ldgPath + "cylinder.ply");
+    Visualization.WritePLY(cylinder, pw);
+  }
 
 }
