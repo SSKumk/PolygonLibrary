@@ -25,7 +25,7 @@ Comment      = S;  // Комментарий. Указываются все не
 `!Dict_polytopes.txt` (см. [здесь](../FolderStructure.md));
 
 : _TSName_ должно совпадать со значением одного из `Key` из
-`!Dict_dynamics.txt` (см. [здесь](../FolderStructure.md)).
+`!Dict_terminalsets.txt` (см. [здесь](../FolderStructure.md)).
 
 ---
 
