@@ -14,8 +14,8 @@ class Program {
     CGLibrary.Geometry<double, DConvertor>.Tools.Eps = 1e-8;
 
 
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    // string ldgDir = "E:\\Work\\LDG\\";
+    // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    string ldgDir = "E:\\Work\\LDG\\";
 
     BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test1");
     bridgeCreator.Solve();
