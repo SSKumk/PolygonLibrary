@@ -34,7 +34,7 @@ public class Visualization {
 
   public struct ColorAndRadius {
 
-    public Color color;
+    public          Color  color;
     public readonly double radius;
 
     public ColorAndRadius(Color color, double radius) {
@@ -46,7 +46,7 @@ public class Visualization {
 
   public struct AimTraj {
 
-    public List<Vector> points;
+    public List<Vector>   points;
     public ColorAndRadius aim; // цвет и размер aim-точки
 
     public ColorAndRadius cyl; // цвет и размер цилиндра, соединяющего aim-точку и текущее положение системы
@@ -61,8 +61,8 @@ public class Visualization {
 
   public struct Traj {
 
-    public readonly List<Vector> Ps;
-    public ColorAndRadius trajPointSettings;
+    public readonly List<Vector>   Ps;
+    public          ColorAndRadius trajPointSettings;
 
     public ColorAndRadius? traversed = null;
     public ColorAndRadius? remaining = null;
@@ -100,7 +100,7 @@ public class Visualization {
   public class Facet {
 
     public readonly IEnumerable<Vector> Vertices;
-    public readonly Vector Normal;
+    public readonly Vector              Normal;
 
     public Color color;
 
@@ -126,8 +126,8 @@ public class Visualization {
   public readonly string NumericalType;
   public readonly string Precision;
 
-  public readonly List<int> BrNames; // имена папок мостов, которые нужно рисовать
-  public readonly List<TrajExtended> Trajs = new List<TrajExtended>();
+  public readonly List<int>          BrNames = new List<int>(); // имена папок мостов, которые нужно рисовать
+  public readonly List<TrajExtended> Trajs   = new List<TrajExtended>();
 
   public Visualization(string pathLdg, string problemFileName, string visData, string visConf) {
     tr = new TrajectoryMain<double, DConvertor>(pathLdg, problemFileName);
@@ -224,46 +224,150 @@ public class Visualization {
       foreach (TrajExtended trajAndAim in Trajs) {
         // добавить точку траектории текущего кадра
         AddTrajPointToFrame(trajAndAim.traj, i, vertices, facets);
-        
+
         // часть пройденной траектории
         AddTraversedPathToFrame(trajAndAim.traj, i, vertices, facets);
 
         // часть оставшейся траектории
-        AddRemainingPathToFrame(trajAndAim.traj, i, vertices, facets); 
+        AddRemainingPathToFrame(trajAndAim.traj, i, vertices, facets);
 
-        if (trajAndAim.fp is not null) { // точка прицеливания первого игрока
-          AimTraj       aimTrajFP  = trajAndAim.fp.Value;
-          ConvexPolytop pointFP    = VisTools.Sphere(aimTrajFP.aim.radius).Shift(aimTrajFP.points[i]);
-          ConvexPolytop cylinderFP = VisTools.Cylinder(trajAndAim.traj.Ps[i], aimTrajFP.points[i], aimTrajFP.cyl.radius);
-          vertices.UnionWith(pointFP.Vrep);
-          vertices.UnionWith(cylinderFP.Vrep);
+        // точка прицеливания первого игрока
+        AddAimPoints(trajAndAim.fp, i, vertices, facets);
+        // соединяем точку прицеливания первого игрока и точку траектории
+        AddAimCylinders(trajAndAim.fp, trajAndAim.traj, i, vertices, facets);
 
-          VisTools.AddToFacetList(facets, pointFP, aimTrajFP.aim.color);
-          VisTools.AddToFacetList(facets, cylinderFP, aimTrajFP.cyl.color);
-        }
-
-        if (trajAndAim.sp is not null) { // точка прицеливания второго игрока
-          AimTraj       aimTrajSP  = trajAndAim.sp.Value;
-          ConvexPolytop pointSP    = VisTools.Sphere(aimTrajSP.aim.radius).Shift(aimTrajSP.points[i]);
-          ConvexPolytop cylinderSP = VisTools.Cylinder(trajAndAim.traj.Ps[i], aimTrajSP.points[i], aimTrajSP.cyl.radius);
-          vertices.UnionWith(pointSP.Vrep);
-          vertices.UnionWith(cylinderSP.Vrep);
-
-          VisTools.AddToFacetList(facets, pointSP, aimTrajSP.aim.color);
-          VisTools.AddToFacetList(facets, cylinderSP, aimTrajSP.cyl.color);
-        }
+        // точка прицеливания первого игрока
+        AddAimPoints(trajAndAim.sp, i, vertices, facets);
+        // соединяем точку прицеливания первого игрока и точку траектории
+        AddAimCylinders(trajAndAim.sp, trajAndAim.traj, i, vertices, facets);
       }
 
 
-      plyDrawer.SaveFrame(Path.Combine(pathOutFolder, $"{Tools<double, DConvertor>.ToPrintTNum(t)}"), facets, vertices);
+      plyDrawer.SaveFrame(Path.Combine(pathOutFolder, $"{Tools<double, DConvertor>.ToPrintTNum(t)}"), vertices, facets);
     }
   }
 
-  private ColorAndRadius ReadColorAndRadius(ParamReader pr) {
-    int[]  ar     = pr.Read1DArray<int>("Color", 3);
-    double radius = pr.ReadNumber<double>("Radius");
+  public void DrawSeparate() {
+    PlyDrawer plyDrawer     = new PlyDrawer();
+    string    pathOutFolder = Path.Combine(VisPath, OutFolderName);
+    Directory.CreateDirectory(pathOutFolder);
+    int i = 0;
+    for (double t = tr.tMin; Tools.LT(t, tr.gd.T); t += tr.gd.dt, i++) {
+      // под очередной момент заводим папку
+      string pathMoment = Path.Combine(pathOutFolder, Tools<double, DConvertor>.ToPrintTNum(t));
+      Directory.CreateDirectory(pathMoment);
 
-    return new ColorAndRadius(new Color(ar[0], ar[1], ar[2]), radius);
+      // Рисуем каждое сечение моста отдельно
+      foreach (int brName in BrNames) {
+        double t1 = t;
+        DrawFrame(pathMoment, $"{brName}", plyDrawer, (vertices, facets) => { AddBridgeToFrame(brName, t1, vertices, facets); });
+      }
+
+      int tr = -1;
+      // Рисуем траектории
+      foreach (TrajExtended trajAndAim in Trajs) {
+        tr += 1;
+        int i1 = i;
+        string pathTraj = Path.Combine(pathMoment, $"{tr}");
+        Directory.CreateDirectory(pathTraj);
+        DrawFrame
+          (
+           pathTraj
+         , "trajPoint"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddTrajPointToFrame(trajAndAim.traj, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "traversed"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddTraversedPathToFrame(trajAndAim.traj, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "remaining"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddRemainingPathToFrame(trajAndAim.traj, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "aimFp"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddAimPoints(trajAndAim.fp, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "aimSp"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddAimCylinders(trajAndAim.fp, trajAndAim.traj, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "cylFp"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddAimPoints(trajAndAim.sp, i1, vertices, facets);
+           }
+          );
+
+        DrawFrame
+          (
+           pathTraj
+         , "cylSp"
+         , plyDrawer
+         , (vertices, facets)
+             => {
+             AddAimCylinders(trajAndAim.sp, trajAndAim.traj, i1, vertices, facets);
+           }
+          );
+      }
+    }
+  }
+
+  private static void DrawFrame(
+      string                                 basePath
+    , string                                 frameName
+    , IDrawer                                drawer
+    , Action<SortedSet<Vector>, List<Facet>> addToFrame
+    ) {
+    SortedSet<Vector> vertices = new SortedSet<Vector>();
+    List<Facet>       facets   = new List<Facet>();
+
+    addToFrame(vertices, facets);
+
+    drawer.SaveFrame(Path.Combine(basePath, frameName), vertices, facets);
+  }
+
+  private void AddBridgeToFrame(int brName, double t, SortedSet<Vector> vertices, List<Facet> facets) {
+    ConvexPolytop section = tr.Ws[brName][t];
+    vertices.UnionWith(section.Vrep);
+    VisTools.AddToFacetList(facets, section, null);
   }
 
   private void AddBridgesToFrame(double t, SortedSet<Vector> vertices, List<Facet> facets) {
@@ -271,34 +375,32 @@ public class Visualization {
       if (brName >= tr.Ws.Count) {
         throw new ArgumentException($"There are only {tr.Ws.Count} bridges! Found given bridge name {brName}.");
       }
-      ConvexPolytop section = tr.Ws[brName][t];
-      vertices.UnionWith(section.Vrep);
-      VisTools.AddToFacetList(facets, section, null);
+      AddBridgeToFrame(brName, t, vertices, facets);
     }
   }
 
-  private void AddTrajPointToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
+  private static void AddTrajPointToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
     ConvexPolytop point = VisTools.Sphere(traj.trajPointSettings.radius).Shift(traj.Ps[i]);
     VisTools.AddToFacetList(facets, point, traj.trajPointSettings.color);
     vertices.UnionWith(point.Vrep);
   }
 
-  private void AddTraversedPathToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
-    if (traj.traversed is null)
+  private static void AddTraversedPathToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
+    if (traj.traversed is null) {
       return;
+    }
 
-    VisTools.SeveralPolytopes traversedCylinders =
-      VisTools.MakeCylinderOnTraj(traj.Ps, 0, i, traj.traversed.Value.radius);
+    VisTools.SeveralPolytopes traversedCylinders = VisTools.MakeCylinderOnTraj(traj.Ps, 0, i, traj.traversed.Value.radius);
     vertices.UnionWith(traversedCylinders.vertices);
     foreach (ConvexPolytop cylinder in traversedCylinders.polytopes) {
       VisTools.AddToFacetList(facets, cylinder, traj.traversed.Value.color);
     }
   }
 
-  private void AddRemainingPathToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
-    if (traj.remaining is null)
+  private static void AddRemainingPathToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
+    if (traj.remaining is null) {
       return;
-
+    }
     VisTools.SeveralPolytopes remainingCylinders =
       VisTools.MakeCylinderOnTraj(traj.Ps, i, traj.Ps.Count - 1, traj.remaining.Value.radius);
     vertices.UnionWith(remainingCylinders.vertices);
@@ -306,18 +408,36 @@ public class Visualization {
       VisTools.AddToFacetList(facets, cylinder, traj.remaining.Value.color);
     }
   }
-  
-  // private void AddAimPoints ...
-  // private void AddAimCylinders ...
 
+  private static void AddAimPoints(AimTraj? aimTraj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
+    if (aimTraj is null) {
+      return;
+    }
 
+    AimTraj       aimTrajValue = aimTraj.Value;
+    ConvexPolytop point        = VisTools.Sphere(aimTrajValue.aim.radius).Shift(aimTrajValue.points[i]);
+    vertices.UnionWith(point.Vrep);
 
+    VisTools.AddToFacetList(facets, point, aimTrajValue.aim.color);
+  }
 
+  private static void AddAimCylinders(AimTraj? aimTraj, Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
+    if (aimTraj is null) {
+      return;
+    }
 
+    AimTraj       aimTrajValue = aimTraj.Value;
+    ConvexPolytop cylinder     = VisTools.Cylinder(traj.Ps[i], aimTrajValue.points[i], aimTrajValue.cyl.radius);
+    vertices.UnionWith(cylinder.Vrep);
+    VisTools.AddToFacetList(facets, cylinder, aimTrajValue.cyl.color);
+  }
 
+  private static ColorAndRadius ReadColorAndRadius(ParamReader pr) {
+    int[]  ar     = pr.Read1DArray<int>("Color", 3);
+    double radius = pr.ReadNumber<double>("Radius");
 
-
-
+    return new ColorAndRadius(new Color(ar[0], ar[1], ar[2]), radius);
+  }
 
   private static ConvexPolytop Validate(ConvexPolytop P) {
     switch (P.SpaceDim) {
@@ -336,27 +456,14 @@ public class Visualization {
 public class Program {
 
   public static void Main() {
-    // string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    string pathLdg = "E:\\Work\\LDG\\";
+    string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    // string pathLdg = "E:\\Work\\LDG\\";
 
-    // Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1", "SimpleMotion.Test1", "SimpleMotion.Test1");
+    Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1", "SimpleMotion.Test1", "SimpleMotion.Test1");
     // vis.MainDrawFunc();
-
-    SortedSet<int> a = new SortedSet<int>()
-      {
-        1, 2, 3
-      };
-
-    Console.WriteLine(string.Join(' ', a));
-    A(a);
-    Console.WriteLine(string.Join(' ', a));
+    vis.DrawSeparate();
   }
 
-  private static void A(SortedSet<int> a) {
-    a.UnionWith(new SortedSet<int>()
-      {
-        4, 5, 6
-      });
-  }
+  private static void A(SortedSet<int> a) { a.UnionWith(new SortedSet<int>() { 4, 5, 6 }); }
 
 }

@@ -5,7 +5,7 @@ namespace Graphics.Draw;
 
 public class PlyDrawer : IDrawer {
 
-  public void SaveFrame(string path, IEnumerable<Visualization.Facet> facets, IEnumerable<Vector> vertices) {
+  public void SaveFrame(string path, IEnumerable<Vector> vertices, IEnumerable<Visualization.Facet> facets) {
     using ParamWriter pw = new ParamWriter(path + ".ply");
 
     List<Vector>              VList = vertices.ToList();
