@@ -317,7 +317,7 @@ public class Visualization {
         DrawFrame
           (
            pathTraj
-         , "aimSp"
+         , "cylFp"
          , plyDrawer
          , (vertices, facets)
              => {
@@ -328,7 +328,7 @@ public class Visualization {
         DrawFrame
           (
            pathTraj
-         , "cylFp"
+         , "aimSp"
          , plyDrawer
          , (vertices, facets)
              => {
