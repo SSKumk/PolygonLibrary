@@ -58,7 +58,7 @@ public class VisTools {
   }
 
 
-  public static void AddToFacetList(List<Visualization.Facet> FList, ConvexPolytop polytop, Visualization.Color? color) {
+  public static void AddToFacetList(List<Visualization.Facet> FList, ConvexPolytop polytop, Visualization.Color? color = null) {
     foreach (FLNode F in polytop.FLrep.Lattice[2]) {
       HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
       FList.Add
@@ -135,5 +135,6 @@ public class VisTools {
 
     return new SeveralPolytopes(vertices, polytopes);
   }
+
 
 }
