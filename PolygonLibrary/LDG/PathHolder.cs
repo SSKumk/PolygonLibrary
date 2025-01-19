@@ -50,8 +50,8 @@ public class LDGPathHolder<TNum, TConv>
   /// Initializes a new instance of the <see cref="LDGPathHolder{TNum, TConv}"/> class.
   /// </summary>
   /// <param name="pathLdg">The root path for all data.</param>
-  /// <param name="outputFolderName">The name of the output folder.</param>
-  public LDGPathHolder(string pathLdg, string outputFolderName) {
+  /// <param name="problemFolderName">The name of the output folder.</param>
+  public LDGPathHolder(string pathLdg, string problemFolderName) {
     NumType     = typeof(TNum).ToString();
     NumAccuracy = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}";
 
@@ -62,7 +62,7 @@ public class LDGPathHolder<TNum, TConv>
     PathTerminalSets = Path.Combine(PathLDG, "Terminal sets");
 
     // пути для данной игры
-    PathGame         = Path.Combine(PathLDG, "_Out", outputFolderName);
+    PathGame         = Path.Combine(PathLDG, "_Out", problemFolderName);
     PathBrs          = Path.Combine(PathGame, "Br");
     PathPs           = Path.Combine(PathGame, "Ps", NumType, NumAccuracy);
     PathQs           = Path.Combine(PathGame, "Qs", NumType, NumAccuracy);
@@ -99,6 +99,19 @@ public class LDGPathHolder<TNum, TConv>
 
 #region Open reader
   /// <summary>
+  /// Opens a reader for the game problem file.
+  /// </summary>
+  /// <returns>A parameter reader for the game problem file.</returns>
+  public Geometry<TNum, TConv>.ParamReader OpenProblemReader() => new(Path.Combine(PathGame, ".gameconfig"));
+
+  /// <summary>
+  /// Opens a reader for the game hash file.
+  /// </summary>
+  /// <returns>A parameter reader for the game hash file.</returns>
+  public Geometry<TNum, TConv>.ParamReader OpenGameInfoReader()
+    => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathGame, "game.md5hash"));
+
+  /// <summary>
   /// Opens a reader for a dynamics file.
   /// </summary>
   /// <param name="name">The name of the dynamics.</param>
@@ -121,13 +134,6 @@ public class LDGPathHolder<TNum, TConv>
   /// <returns>A parameter reader for the terminal set file.</returns>
   public Geometry<TNum, TConv>.ParamReader OpenTerminalSetReader(string name)
     => new(Path.Combine(PathTerminalSets, name2tms[name].tmsFileName + ".terminalset"));
-
-  /// <summary>
-  /// Opens a reader for the game hash file.
-  /// </summary>
-  /// <returns>A parameter reader for the game hash file.</returns>
-  public Geometry<TNum, TConv>.ParamReader OpenGameInfoReader()
-    => new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathGame, "game.md5hash"));
 
   /// <summary>
   /// Opens a reader for the trajectory config file.
@@ -188,7 +194,6 @@ public class LDGPathHolder<TNum, TConv>
     , string                                                      basePath
     , TNum                                                        t
     ) {
-
     string filePath = GetSectionPath(sectionPrefix, basePath, t);
     Debug.Assert
       (File.Exists(filePath), $"LDG.PathHolder.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");

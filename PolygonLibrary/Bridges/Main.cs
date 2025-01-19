@@ -15,7 +15,7 @@ class Program {
 
 
     // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    string ldgDir = "E:\\Work\\LDG\\";
+    string ldgDir = "E:\\Work\\LDG\\_Out\\";
 
     BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "SimpleMotion.Test1");
     bridgeCreator.Solve();

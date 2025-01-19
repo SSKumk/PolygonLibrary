@@ -24,20 +24,14 @@ public class BridgeCreator<TNum, TConv>
   ///  Creates the main object responsible for constructing bridges.
   /// </summary>
   /// <param name="pathLDG">The root path for all data.</param>
-  /// <param name="problemFileName">The name of the problem configuration file.</param>
-  public BridgeCreator(string pathLDG, string problemFileName) {
+  /// <param name="problemFolderName">The name of the problem folder on _Out directory.</param>
+  public BridgeCreator(string pathLDG, string problemFolderName) {
     // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
 
-    var problemReader = new Geometry<TNum, TConv>.ParamReader(Path.Combine(pathLDG, "Problems", problemFileName) + ".gameconfig");
-
-    // Имя выходной папки совпадает с полем ProblemName в файле задачи
-    ph =
-      new LDGPathHolder<TNum, TConv>
-        (pathLDG, problemReader.ReadString("ProblemName")); // установили пути и прочитали словари-связки
-
+    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName); // установили пути и прочитали словари-связки
+    Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
 
     // создаём нужные папки, если их нет
-    Directory.CreateDirectory(ph.PathGame);
     Directory.CreateDirectory(ph.PathBrs);
     Directory.CreateDirectory(ph.PathTrajectories);
     Directory.CreateDirectory(ph.PathTrajConfigs);
@@ -168,8 +162,6 @@ public class BridgeCreator<TNum, TConv>
     Directory.CreateDirectory(Path.Combine(ldgDir, "Polytopes"));
     string polPath = Path.Combine(ldgDir, "Polytopes", "!Dict_polytopes.txt");
     if (!File.Exists(polPath)) { File.Create(polPath); }
-
-    Directory.CreateDirectory(Path.Combine(ldgDir, "Problems"));
 
     Directory.CreateDirectory(Path.Combine(ldgDir, "Terminal sets"));
     string tmsPath = Path.Combine(ldgDir, "Terminal sets", "!Dict_terminalsets.txt");
