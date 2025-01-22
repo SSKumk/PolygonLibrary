@@ -18,8 +18,8 @@ public class TrajectoryMain<TNum, TConv>
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws =
     new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>(); // Набор мостов
 
-  public TrajectoryMain(string ldgPath, string problemFileName) {
-    br = new BridgeCreator<TNum, TConv>(ldgPath, problemFileName);
+  public TrajectoryMain(string ldgPath, string problemFolderName) {
+    br = new BridgeCreator<TNum, TConv>(ldgPath, problemFolderName);
     ph = br.ph;
     gd = br.gd;
 
