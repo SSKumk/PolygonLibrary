@@ -18,7 +18,6 @@ public class VisTools {
     return sp;
   }
 
-
   private class VectorMixedProductComparer : IComparer<Vector> {
 
     private readonly Vector _outerNormal;
