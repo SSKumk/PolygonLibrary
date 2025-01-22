@@ -24,6 +24,7 @@ public class PlyDrawer : IDrawer {
     pw.WriteLine("property uchar red");
     pw.WriteLine("property uchar green");
     pw.WriteLine("property uchar blue");
+    pw.WriteLine("property uchar alpha");
     pw.WriteLine("end_header");
     // вершины
     foreach (Vector v in VList) {
@@ -35,7 +36,7 @@ public class PlyDrawer : IDrawer {
       foreach (Vector vertex in F.Vertices) {
         pw.Write($"{VList.IndexOf(vertex)} ");
       }
-      pw.Write($"{F.color.red} {F.color.green} {F.color.blue}");
+      pw.Write($"{F.color.red} {F.color.green} {F.color.blue} 255");
       pw.WriteLine();
     }
   }
@@ -86,10 +87,10 @@ public class PlyDrawer : IDrawer {
       List<Visualization.Facet> FList = facets.ToList();
 
       // Запись вершин
-      WriteCollection(pw, "vertices", VList, v => v.ToString());
+      WriteListOfT(pw, "vertices", VList, v => v.ToString());
 
       // Запись граней
-      WriteCollection
+      WriteListOfT
         (
          pw
        , "faces"
@@ -104,13 +105,13 @@ public class PlyDrawer : IDrawer {
     }
 
 // Общий метод для записи коллекции
-    public void WriteCollection<T>(ParamWriter pw, string name, List<T> collection, Func<T, string> toStringFunc) {
-      pw.Write($"{name} = [");
-      for (int i = 0; i < collection.Count - 1; i++) {
-        pw.Write(toStringFunc(collection[i]));
+    public static void WriteListOfT<T>(ParamWriter pw, string variableName, List<T> list, Func<T, string> toStringFunc) {
+      pw.Write($"{variableName} = [");
+      for (int i = 0; i < list.Count - 1; i++) {
+        pw.Write(toStringFunc(list[i]));
         pw.Write(",");
       }
-      pw.Write(toStringFunc(collection[^1]));
+      pw.Write(toStringFunc(list[^1]));
       pw.WriteLine("]");
     }
 
