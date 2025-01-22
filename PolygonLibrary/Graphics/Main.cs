@@ -46,8 +46,8 @@ public class Visualization {
 
   public struct AimTraj {
 
-    public List<Vector>   points;
-    public ColorAndRadius aim; // цвет и размер aim-точки
+    public readonly List<Vector>   points;
+    public          ColorAndRadius aim; // цвет и размер aim-точки
 
     public ColorAndRadius cyl; // цвет и размер цилиндра, соединяющего aim-точку и текущее положение системы
 
@@ -61,14 +61,14 @@ public class Visualization {
 
   public struct Traj {
 
-    public readonly List<Vector>   Ps;
+    public readonly List<Vector>   points;
     public          ColorAndRadius trajPointSettings;
 
     public ColorAndRadius? traversed = null;
     public ColorAndRadius? remaining = null;
 
-    public Traj(List<Vector> ps, ColorAndRadius trajPointSettings, ColorAndRadius? traversed, ColorAndRadius? remaining) {
-      Ps                     = ps;
+    public Traj(List<Vector> points, ColorAndRadius trajPointSettings, ColorAndRadius? traversed, ColorAndRadius? remaining) {
+      this.points            = points;
       this.trajPointSettings = trajPointSettings;
       this.traversed         = traversed;
       this.remaining         = remaining;
@@ -117,7 +117,6 @@ public class Visualization {
   private readonly TrajectoryMain<double, DConvertor> tr;
 
   public readonly string VisPath;
-  public readonly string VisData;
   public readonly string VisConf;
 
   public readonly string OutFolderName;
@@ -129,24 +128,20 @@ public class Visualization {
   public readonly List<int>          BrNames = new List<int>(); // имена папок мостов, которые нужно рисовать
   public readonly List<TrajExtended> Trajs   = new List<TrajExtended>();
 
-  public Visualization(string pathLdg, string problemFileName, string visData, string visConf) {
-    tr = new TrajectoryMain<double, DConvertor>(pathLdg, problemFileName);
-
+  public Visualization(string pathLdg, string visConf) {
     VisPath = Path.Combine(pathLdg, "Visualization");
-    VisData = visData;
     VisConf = visConf;
 
-    string confPath = Path.Combine(VisPath, "!Configs");
-    {
-      ParamReader prD = new ParamReader(Path.Combine(confPath, VisData + ".visdata"));
+    string      confPath = Path.Combine(VisPath, "!Configs");
+    ParamReader pr       = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
+    OutFolderName = pr.ReadString("Name");
+    GameDirName   = pr.ReadString("GameDirName");
+    NumericalType = pr.ReadString("NumericalType");
+    Precision     = pr.ReadString("Precision");
 
-      OutFolderName = prD.ReadString("Name");
-      GameDirName   = prD.ReadString("GameDirName");
-      NumericalType = prD.ReadString("NumericalType");
-      Precision     = prD.ReadString("Precision");
-    }
+    tr = new TrajectoryMain<double, DConvertor>(pathLdg, GameDirName);
 
-    ParamReader pr = new ParamReader(Path.Combine(confPath, VisConf + ".visconfig"));
+
     if (pr.ReadBool("DrawBridges")) {
       BrNames = pr.ReadList<int>("Bridges");
     }
@@ -202,7 +197,48 @@ public class Visualization {
     }
   }
 
-  public void MainDrawFunc() {
+  public void ForBlender() {
+    PlyDrawer plyDrawer     = new PlyDrawer();
+    string    pathOutFolder = Path.Combine(VisPath, OutFolderName);
+    Directory.CreateDirectory(pathOutFolder);
+    // Тут будут мосты
+    int j = 0;
+    for (double t = tr.tMin; Tools.LT(t, tr.gd.T); t += tr.gd.dt, j++) {
+      // Рисуем каждое сечение моста отдельно
+      foreach (int brName in BrNames) {
+        double t1 = t;
+        DrawFrame
+          (pathOutFolder, $"{j}-{brName}", plyDrawer, (vertices, facets) => { AddBridgeToFrame(brName, t1, vertices, facets); });
+      }
+    }
+
+    // траектории
+    int i = -1;
+    // Рисуем траектории
+    foreach (TrajExtended trajAndAim in Trajs) {
+      i += 1;
+      using ParamWriter pwTr = new ParamWriter(Path.Combine(pathOutFolder, $"traj-{i}.csv"));
+      foreach (Vector v in trajAndAim.traj.points) {
+          pwTr.WriteLine(v.ToStringBraceAndDelim(null,null,','));
+      }
+
+      if (trajAndAim.fp != null) {
+        using ParamWriter pwAF = new ParamWriter(Path.Combine(pathOutFolder, $"aimFp-{i}.csv"));
+        foreach (Vector v in trajAndAim.fp.Value.points) {
+          pwAF.WriteLine(v.ToStringBraceAndDelim(null, null, ','));
+        }
+      }
+
+      if (trajAndAim.sp != null) {
+        using ParamWriter pwAS = new ParamWriter(Path.Combine(pathOutFolder, $"aimSp-{i}.csv"));
+        foreach (Vector v in trajAndAim.sp.Value.points) {
+          pwAS.WriteLine(v.ToStringBraceAndDelim(null, null, ','));
+        }
+      }
+    }
+  }
+
+  public void AllDataAtOneFrame() {
     PlyDrawer plyDrawer     = new PlyDrawer();
     string    pathOutFolder = Path.Combine(VisPath, OutFolderName);
     // if (Directory.Exists(pathOutFolder)) {
@@ -413,7 +449,7 @@ public class Visualization {
   }
 
   private static void AddTrajPointToFrame(Traj traj, int i, SortedSet<Vector> vertices, List<Facet> facets) {
-    ConvexPolytop point = VisTools.Sphere(traj.trajPointSettings.radius).Shift(traj.Ps[i]);
+    ConvexPolytop point = VisTools.Sphere(traj.trajPointSettings.radius).Shift(traj.points[i]);
     VisTools.AddToFacetList(facets, point, traj.trajPointSettings.color);
     vertices.UnionWith(point.Vrep);
   }
@@ -423,7 +459,7 @@ public class Visualization {
       return;
     }
 
-    VisTools.SeveralPolytopes traversedCylinders = VisTools.MakeCylinderOnTraj(traj.Ps, 0, i, traj.traversed.Value.radius);
+    VisTools.SeveralPolytopes traversedCylinders = VisTools.MakeCylinderOnTraj(traj.points, 0, i, traj.traversed.Value.radius);
     vertices.UnionWith(traversedCylinders.vertices);
     foreach (ConvexPolytop cylinder in traversedCylinders.polytopes) {
       VisTools.AddToFacetList(facets, cylinder, traj.traversed.Value.color);
@@ -435,7 +471,7 @@ public class Visualization {
       return;
     }
     VisTools.SeveralPolytopes remainingCylinders =
-      VisTools.MakeCylinderOnTraj(traj.Ps, i, traj.Ps.Count - 1, traj.remaining.Value.radius);
+      VisTools.MakeCylinderOnTraj(traj.points, i, traj.points.Count - 1, traj.remaining.Value.radius);
     vertices.UnionWith(remainingCylinders.vertices);
     foreach (ConvexPolytop cylinder in remainingCylinders.polytopes) {
       VisTools.AddToFacetList(facets, cylinder, traj.remaining.Value.color);
@@ -460,7 +496,7 @@ public class Visualization {
     }
 
     AimTraj       aimTrajValue = aimTraj.Value;
-    ConvexPolytop cylinder     = VisTools.Cylinder(traj.Ps[i], aimTrajValue.points[i], aimTrajValue.cyl.radius);
+    ConvexPolytop cylinder     = VisTools.Cylinder(traj.points[i], aimTrajValue.points[i], aimTrajValue.cyl.radius);
     vertices.UnionWith(cylinder.Vrep);
     VisTools.AddToFacetList(facets, cylinder, aimTrajValue.cyl.color);
   }
@@ -491,159 +527,17 @@ public class Program {
   public static void Main() {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
-
-    Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1", "SimpleMotion.Test1", "SimpleMotion.Test1");
+    // Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1");
     // vis.MainDrawFunc();
     // vis.DrawSeparate();
-    vis.DrawSeparateInOneDir(3);
+    // vis.DrawSeparateInOneDir(3);
+
+    // Console.WriteLine($"{1:D3}");
+    Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1.Blender");
+    vis.ForBlender();
 
     // string pathForTests = "F:\\Works\\IMM\\Проекты\\Визуализация для LDG\\Файлы многогранников\\";
 
-    // 2.1 Сами точки траектории
-    // Vector p1 = Vector.Zero(3);
-    // Vector p2 = Vector.Ones(3);
-    // Vector p3 = new Vector(new double[] { 1, 1, -1 });
-    // Vector p4 = new Vector(new double[] { 1, 1, -1 });
-    //
-    // // 2.2
-    // ConvexPolytop trajPoint1 = VisTools.Sphere(0.2);
-    // ConvexPolytop trajPoint2 = VisTools.Sphere(0.2).Shift(p2);
-    // ConvexPolytop trajPoint3 = VisTools.Sphere(0.2).Shift(p3);
-    // ConvexPolytop trajPoint4 = VisTools.Sphere(0.2).Shift(p4);
-
-    // List<ConvexPolytop> trajPointSpheres =
-    //   new List<ConvexPolytop>()
-    //     {
-    //       trajPoint1
-    //     , trajPoint2
-    //     , trajPoint3
-    //     , trajPoint4
-    //     };
-
-    // 2.3
-    // Vector trajShift1 = p1 - p1;
-    // Vector trajShift2 = p2 - p1;
-    // Vector trajShift3 = p3 - p2;
-    // Vector trajShift4 = p4 - p3;
-
-    // Console.WriteLine($"{trajShift1}");
-    // Console.WriteLine($"{trajShift2}");
-    // Console.WriteLine($"{trajShift3}");
-    // Console.WriteLine($"{trajShift4}");
-
-    // 3.1
-    // List<Vector> traj =
-    //   new List<Vector>()
-    //     {
-    //       p1
-    //     , p2
-    //     , p3
-    //     , p4
-    //     };
-
-    // 3.2
-    // List<ConvexPolytop> cylrs = new List<ConvexPolytop>();
-    // for (int i = 0; i < traj.Count - 2; i++) {
-    //   cylrs.Add(VisTools.Cylinder(traj[i], traj[i + 1], 0.1));
-    // }
-    //
-    // // 3.3
-    // VisTools.SeveralPolytopes trajCylrs = VisTools.MakeCylinderOnTraj(traj, 0, traj.Count - 2, 0.1);
-    // Visualization.DrawFrame
-    //   (
-    //    pathForTests
-    //  , "trajCyls"
-    //  , new PythonArrayDrawer()
-    //  , (vs, fs)
-    //      => {
-    //      vs.UnionWith(trajCylrs.vertices);
-    //      foreach (ConvexPolytop cyl in trajCylrs.polytopes) {
-    //        VisTools.AddToFacetList(fs, cyl);
-    //      }
-    //    }
-    //   );
-
-
-    // for (int i = 1; i <= 4; i++) {
-    //   Visualization.DrawFrame(pathForTests, $"trajPoint{i}", new PythonArrayDrawer(), trajPointSpheres[i - 1]);
-    // }
-
-
-    // foreach (Vector vector in traj) {
-    //   Console.WriteLine($"{vector}");
-    // }
-
-    // for (int i = 0; i < cylrs.Count; i++) {
-    //   Visualization.DrawFrame(pathForTests, $"trajCyl{i + 1}", new PythonArrayDrawer(), cylrs[i]);
-    // }
-
-
-    // первый кадр
-    // {
-    //   ConvexPolytop tetr =
-    //     ConvexPolytop
-    //      .CreateFromPoints
-    //         (
-    //          new List<Vector>()
-    //            {
-    //              new Vector(new double[] { 0.5, 0.5, 0 })
-    //            , new Vector(new double[] { -0.5, -0.5, 0 })
-    //            , new Vector(new double[] { -0.5, 0.5, 0 })
-    //            , new Vector(new double[] { 0.5, -0.5, 0 })
-    //            , new Vector(new double[] { 0, 0, 2 })
-    //            }
-    //         )
-    //      .Scale(0.5, Vector.Zero(3));
-    //
-    //
-    //   Visualization.DrawFrame(pathForTests, "1-frame", new PythonArrayDrawer(), tetr);
-    // }
-    //
-    //
-    // // второй кадр
-    // {
-    //   ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3).Scale(2, Vector.Zero(3)).Shift(Vector.Ones(3));
-    //
-    //   Visualization.DrawFrame(forTests, "2-frame", new PlyDrawer(), cube);
-    // }
-    //
-    //
-    // // третий кадр
-    // {
-    //   ConvexPolytop sphere = ConvexPolytop.Sphere(Vector.Zero(3), 0.1, 10, 12).Shift(-Vector.Ones(3));
-    //   Visualization.DrawFrame(forTests, "3-frame", new PythonArrayDrawer(), sphere);
-    // }
-    //
-    //
-    // // четвёртый кадр
-    // {
-    //   ConvexPolytop tetr =
-    //     ConvexPolytop
-    //      .CreateFromPoints
-    //         (
-    //          new List<Vector>()
-    //            {
-    //              new Vector(new double[] { 1, 1, 1 })
-    //            , new Vector(new double[] { -1, -1, 1 })
-    //            , new Vector(new double[] { -1, 1, -1 })
-    //            , new Vector(new double[] { 1, -1, -1 })
-    //            }
-    //         )
-    //      .Shift(-Vector.Ones(3));
-    //
-    //
-    //   Visualization.DrawFrame
-    //     (
-    //      forTests
-    //    , "4-frame"
-    //    , new PlyDrawer()
-    //    , (VList, FList)
-    //        => {
-    //        VList.UnionWith(tetr.Vrep);
-    //        VisTools.AddToFacetList(FList, tetr, null);
-    //      }
-    //     );
-    // }
   }
 
 }
