@@ -36,7 +36,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
 #endregion
 
-#region Polytopes and Polytopes-list Fabrics
+#region Polytopes and Polytopes-list Factories
   public static List<Vector> Cube_list(int           dim) => Cube01(dim, out _);
   private static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
   public static  List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);

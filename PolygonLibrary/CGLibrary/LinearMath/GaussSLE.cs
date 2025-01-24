@@ -262,7 +262,7 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Fabrics
+#region Factories
     /// <summary>
     /// Solves the system of linear equations represented by the given functions.
     /// </summary>

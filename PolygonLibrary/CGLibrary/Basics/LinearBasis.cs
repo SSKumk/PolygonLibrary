@@ -384,7 +384,7 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-#region Fabrics
+#region Factories
     /// <summary>
     /// Generates a full-dimensional linear basis for the specified dimension.
     /// </summary>
