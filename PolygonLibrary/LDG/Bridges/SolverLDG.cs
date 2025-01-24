@@ -100,9 +100,9 @@ public class SolverLDG<TNum, TConv>
 #region Read-Write
   // Reads the corresponding section for the given time section.
 
-  private void ReadBridgeSection(TNum t) => ph.ReadSection(W, "W", BrDir, t);
-  private void ReadPsSection(TNum     t) => ph.ReadSection(Ps, "P", PsDir, t);
-  private void ReadQsSection(TNum     t) => ph.ReadSection(Qs, "Q", QsDir, t);
+  private void ReadBridgeSection(TNum t) => ph.ReadSection(W, "W", BrDir, TConv.ToDouble(t));
+  private void ReadPsSection(TNum     t) => ph.ReadSection(Ps, "P", PsDir, TConv.ToDouble(t));
+  private void ReadQsSection(TNum     t) => ph.ReadSection(Qs, "Q", QsDir, TConv.ToDouble(t));
 
   // Write the corresponding section for the given time section.
 
@@ -113,7 +113,7 @@ public class SolverLDG<TNum, TConv>
   // Checks if the corresponding section file is correct for the given time instant.
 
   private bool BridgeSectionFileCorrect(TNum t) => SectionFileExist("W", BrDir, t);
-  private bool PsSectionFileExist(TNum     t) => SectionFileExist("P", PsDir, t);
+  private bool PsSectionFileExist(TNum       t) => SectionFileExist("P", PsDir, t);
   private bool QsSectionFileCorrect(TNum     t) => SectionFileExist("Q", QsDir, t);
 
   /// <summary>
@@ -133,7 +133,7 @@ public class SolverLDG<TNum, TConv>
     ) {
     Debug.Assert(sectionDict.ContainsKey(t), $"SolverLDG.WriteSection: There is no {sectionPrefix} section at time {t}.");
     using Geometry<TNum, TConv>.ParamWriter prW =
-      new Geometry<TNum, TConv>.ParamWriter(ph.GetSectionPath(sectionPrefix, basePath, t));
+      new Geometry<TNum, TConv>.ParamWriter(ph.GetSectionPath(sectionPrefix, basePath, TConv.ToDouble(t)));
     sectionDict[t].WriteIn(prW, repType);
   }
 #endregion
@@ -147,7 +147,7 @@ public class SolverLDG<TNum, TConv>
   /// <param name="t">The time instant for which the section file is checked.</param>
   /// <returns><c>true</c> if the section file exists, <c>false</c> otherwise.</returns>
   private bool SectionFileExist(string sectionPrefix, string basePath, TNum t)
-    => File.Exists(ph.GetSectionPath(sectionPrefix, basePath, t));
+    => File.Exists(ph.GetSectionPath(sectionPrefix, basePath, TConv.ToDouble(t)));
 #endregion
 
 
@@ -280,4 +280,5 @@ public class SolverLDG<TNum, TConv>
       prW.WriteNumber("tMin", tMin);
     }
   }
+
 }
