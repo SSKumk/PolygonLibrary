@@ -126,7 +126,7 @@ public class GameData<TNum, TConv>
   /// A sorted dictionary that stores computed projection matrices for different time instants (t).
   /// The key is the time instant, and the value is the corresponding projection matrix for that time.
   /// </summary>
-  private readonly SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> _Xstar =
+  internal SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix> _Xstar =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>(Geometry<TNum, TConv>.Tools.TComp);
 #endregion
 
