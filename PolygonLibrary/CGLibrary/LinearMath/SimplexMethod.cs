@@ -25,20 +25,21 @@ public partial class Geometry<TNum, TConv>
     public SimplexMethod(Func<int, int, TNum> fA, int m, int d, Func<int, TNum> fb, Func<int, TNum> fc) {
       _m     = m;
       _dOrig = d;
-      _d     = 2 * d + _m;
+      _d     = 2 * _dOrig + _m;
       _b     = new TNum[_m];
       for (int i = 0; i < _m; i++) {
         _b[i] = fb(i);
       }
       _A = new TNum[_m, _d];
       for (int i = 0; i < _m; i++) {
-        for (int j = 0, l = 0; j < d; j++, l += 2) {
+        for (int j = 0, l = 0; j < _dOrig; j++, l += 2) {
           _A[i, l]     = fA(i, j);
           _A[i, l + 1] = -fA(i, j);
         }
+        _A[i, 2 * _dOrig + i] = Tools.One;
       }
       _c = new TNum[_d];
-      for (int i = 0, l = 0; i < d; i++, l += 2) {
+      for (int i = 0, l = 0; i < _dOrig; i++, l += 2) {
         _c[l]     = fc(i);
         _c[l + 1] = -fc(i);
       }
@@ -255,8 +256,8 @@ public partial class Geometry<TNum, TConv>
           );
       }
 
-      TNum[] x = CalcPoint(_b, _d - _m, B, id);
-      IEnumerable<int> activeInq = CalcActiveInequalities(_d - _m, B, id);
+      TNum[]           x         = CalcPoint(_b, _d - _m, B, id);
+      IEnumerable<int> activeInq = CalcActiveInequalities(N);
 
       return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x, activeInq);
     }
@@ -272,11 +273,14 @@ public partial class Geometry<TNum, TConv>
       return x;
     }
 
-    private static IEnumerable<int> CalcActiveInequalities(int k, HashSet<int> B, int[] id) {
-      List<int> activeInq = new List<int>();
-      for (int i = 0; i < k; i++) {
-        if (B.Contains(i)) {
-          activeInq.Add(id[i]);
+    private IEnumerable<int> CalcActiveInequalities(HashSet<int> N_optimal) {
+      // Принимаем множество небазисных переменных из оптимального решения
+      List<int> activeInq   = new List<int>();
+      int       slackVarInd = 2 * _dOrig; // Индекс начала столбцов слак-переменных
+
+      for (int i = 0; i < _m; i++, slackVarInd++) { // Итерируем по всем неравенствам (их _m штук)
+        if (N_optimal.Contains(slackVarInd)) {      // Проверяем, является ли слак-переменная небазисной в оптимальном решении
+          activeInq.Add(i);                         // Если да, то i-е неравенство активно
         }
       }
 
@@ -349,17 +353,25 @@ public partial class Geometry<TNum, TConv>
 
       public IEnumerable<int> ActiveInequalitiesID { get; }
 
-      public SimplexMethodResult(SimplexMethodResultStatus status, TNum value, TNum[]? solution, IEnumerable<int> activeInequalitiesId) {
-        Status             = status;
-        Value              = value;
-        Solution           = solution;
+      public SimplexMethodResult(
+          SimplexMethodResultStatus status
+        , TNum                      value
+        , TNum[]?                   solution
+        , IEnumerable<int>          activeInequalitiesId
+        ) {
+        Status               = status;
+        Value                = value;
+        Solution             = solution;
         ActiveInequalitiesID = activeInequalitiesId;
       }
 
       public SimplexMethodResult(SimplexMethodResultStatus status) { Status = status; }
 
-      public void Deconstruct(out SimplexMethodResultStatus status, out TNum value, out TNum[]? solution, out IEnumerable<int>
-                                activeInequalities
+      public void Deconstruct(
+          out SimplexMethodResultStatus status
+        , out TNum                      value
+        , out TNum[]?                   solution
+        , out IEnumerable<int>          activeInequalities
         ) {
         status             = Status;
         value              = Value;
@@ -374,37 +386,3 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
-// public static SimplexMethodResult Simplex(TNum[,] A, TNum[] b, TNum[] c) {
-//   int    m    = A.GetLength(0);
-//   int    n    = A.GetLength(1);
-//   TNum[] bNew = new TNum[m];
-//   for (int i = 0; i < m; i++) {
-//     bNew[i] = b[i];
-//   }
-//   int     nNew = 2 * n + m;
-//   TNum[,] ANew = new TNum[m, nNew];
-//   for (int i = 0; i < m; i++) {
-//     for (int j = 0, l = 0; j < n; j++, l += 2) {
-//       ANew[i, l]     = A[i, j];
-//       ANew[i, l + 1] = -A[i, j];
-//     }
-//   }
-//   TNum[] cNew = new TNum[nNew];
-//   for (int i = 0, l = 0; i < n; i++, l += 2) {
-//     cNew[l]     = c[i];
-//     cNew[l + 1] = -c[i];
-//   }
-//
-//   (SimplexMethodResultStatus status, TNum value, TNum[]? x) = SimplexInAugmentForm(ANew, bNew, cNew);
-//   if (status is not SimplexMethodResultStatus.Ok) {
-//     return new SimplexMethodResult(status);
-//   }
-//
-//   TNum[] res = new TNum[n];
-//   int    nN  = 2 * n;
-//   for (int i = 0, l = 0; l < nN; i++, l += 2) {
-//     res[i] = x![l] - x[l + 1];
-//   }
-//
-//   return new SimplexMethodResult(status, value, res);
-// }
