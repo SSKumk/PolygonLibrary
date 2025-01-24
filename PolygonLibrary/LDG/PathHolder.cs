@@ -88,10 +88,21 @@ public class LDGPathHolder<TNum, TConv>
 
     int k = pr.ReadNumber<int>("Qnt");
     for (int i = 0; i < k; i++) {
-      string key      = pr.ReadString("Key");
-      int    fileName = pr.ReadNumber<int>("Value");
-      string comment  = pr.ReadString("Comment");
-      dict.Add(key, (fileName, comment));
+      try {
+        string key      = pr.ReadString("Key");
+        int    fileName = pr.ReadNumber<int>("Value");
+        string comment  = pr.ReadString("Comment");
+        dict.Add(key, (fileName, comment));
+      }
+      catch (Exception e) {
+        Console.WriteLine
+          (
+           $"An error occurred while reading the file {pr.filePath}! Please check the Qnt field. The program read the value = {k}.\n"
+          );
+
+
+        throw;
+      }
     }
 
     return dict;
