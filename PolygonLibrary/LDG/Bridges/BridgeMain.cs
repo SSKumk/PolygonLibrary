@@ -15,9 +15,14 @@ public class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
+  public readonly string NumType;     // числовой тип
+
   public readonly LDGPathHolder<TNum, TConv> ph; // пути к основным папкам и словари-связки
   public readonly GameData<TNum, TConv>      gd; // данные по динамике игры
   public readonly TerminalSet<TNum, TConv>   ts; // данные о терминальном множестве
+
+  public readonly TNum eps; // точность
+  public readonly TNum epsOld; // точность до вызова функций
 #endregion
 
   /// <summary>
@@ -25,10 +30,17 @@ public class BridgeCreator<TNum, TConv>
   /// </summary>
   /// <param name="pathLDG">The root path for all data.</param>
   /// <param name="problemFolderName">The name of the problem folder on _Out directory.</param>
-  public BridgeCreator(string pathLDG, string problemFolderName) {
+  /// <param name="precision">The CGlibrary precision used in calculations.</param>
+  public BridgeCreator(string pathLDG, string problemFolderName, TNum precision) {
     // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
 
-    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName); // установили пути и прочитали словари-связки
+    eps                             = precision;
+    epsOld                          = Geometry<TNum, TConv>.Tools.Eps;
+    Geometry<TNum, TConv>.Tools.Eps = eps;
+
+    NumType     = typeof(TNum).ToString();
+
+    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, NumType, precision); // установили пути и прочитали словари-связки
     Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
 
     // создаём нужные папки, если их нет
@@ -115,13 +127,14 @@ public class BridgeCreator<TNum, TConv>
       pw.WriteString("TerminalSet", tmsInfo);
       pw.Close();
     }
+    Geometry<TNum, TConv>.Tools.Eps = epsOld;
   }
 
   /// <summary>
   /// Solves the game by creating and solving bridges for each terminal set.
   /// </summary>
   public void Solve() {
-    using StreamWriter sw = new StreamWriter(ph.PathMinTimes);
+    Geometry<TNum, TConv>.Tools.Eps = eps;
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) { // tms -- (t)er(m)inal(s)et
       SolverLDG<TNum, TConv> slv = new SolverLDG<TNum, TConv>(ph, ph.PathBr(ts.CurrI), gd, tms!);
       try {
@@ -129,12 +142,9 @@ public class BridgeCreator<TNum, TConv>
       }
       catch (Exception e) {
         Console.WriteLine($"BridgeMain.Solve: {e}");
-
-        sw.WriteLine(slv.tMin);
-        sw.Flush();
       }
     }
-    sw.Close();
+    Geometry<TNum, TConv>.Tools.Eps = epsOld;
   }
 
 
