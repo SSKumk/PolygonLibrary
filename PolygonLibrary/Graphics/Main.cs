@@ -154,7 +154,8 @@ public class Visualization {
         throw new ArgumentException($"The trajectory with name {name} is already processed!");
       }
 
-      string       trajPath = Path.Combine(tr.ph.PathTrajectories, name);
+      string trajPath = Path.Combine(tr.ph.PathTrajectories, name);
+      // string       trajPath = Path.Combine(tr.ph.PathGame, name);
       List<Vector> Ps       = new ParamReader(Path.Combine(trajPath, "game.traj")).ReadVectors("Trajectory");
 
       ColorAndRadius trajPoint = ReadColorAndRadius(pr);
@@ -203,7 +204,7 @@ public class Visualization {
     Directory.CreateDirectory(pathOutFolder);
     // Тут будут мосты
     int j = 0;
-    for (double t = tr.tMin; Tools.LT(t, tr.gd.T); t += tr.gd.dt, j++) {
+    for (double t = tr.tMin; Tools.LE(t, tr.gd.T); t += tr.gd.dt, j++) {
       // Рисуем каждое сечение моста отдельно
       foreach (int brName in BrNames) {
         double t1 = t;
@@ -533,8 +534,11 @@ public class Program {
     // vis.DrawSeparateInOneDir(3);
 
     // Console.WriteLine($"{1:D3}");
-    Visualization vis = new Visualization(pathLdg, "SimpleMotion.Test1.Blender");
+    Visualization vis = new Visualization(pathLdg, "Oscillator.Blender");
     vis.ForBlender();
+
+    // todo: ААААААА, работает только с double и 1e-008 !!!!
+
 
     // string pathForTests = "F:\\Works\\IMM\\Проекты\\Визуализация для LDG\\Файлы многогранников\\";
 
