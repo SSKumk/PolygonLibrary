@@ -92,7 +92,7 @@ public class SpeedTestsGaussSLE {
     writer.WriteLine("Flat solver:");
     timer.Restart();
     for (int i = 0; i < N; i++) {
-      res = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
+      res = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] _);
       if (res) { k++; }
     }
     timer.Stop();

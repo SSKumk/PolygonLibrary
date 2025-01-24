@@ -60,21 +60,21 @@ public class GaussTests {
     Assert.Multiple
       (
        () => {
-         bool successNo  = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.No, out ddouble[] resNo);
-         bool successRow = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] resRow);
-         bool successCol = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] resCol);
-         bool successAll = GaussSLE.SolveImmutable(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] resAll);
+         bool successNo  = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.No, out ddouble[] resNo);
+         bool successRow = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[] resRow);
+         bool successCol = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] resCol);
+         bool successAll = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.ColWise, out ddouble[] resAll);
 
          if (isSingular) {
-           Assert.That(successNo, Is.EqualTo(false),  "GaussSLE.SolveImmutable should return true for GaussChoice.No");
-           Assert.That(successRow, Is.EqualTo(false), "GaussSLE.SolveImmutable should return true for GaussChoice.RowWise");
-           Assert.That(successCol, Is.EqualTo(false), "GaussSLE.SolveImmutable should return true for GaussChoice.ColWise");
-           Assert.That(successAll, Is.EqualTo(false), "GaussSLE.SolveImmutable should return true for GaussChoice.ColWise");
+           Assert.That(successNo, Is.EqualTo(false),  "GaussSLE.Solve should return true for GaussChoice.No");
+           Assert.That(successRow, Is.EqualTo(false), "GaussSLE.Solve should return true for GaussChoice.RowWise");
+           Assert.That(successCol, Is.EqualTo(false), "GaussSLE.Solve should return true for GaussChoice.ColWise");
+           Assert.That(successAll, Is.EqualTo(false), "GaussSLE.Solve should return true for GaussChoice.ColWise");
          } else {
-           Assert.That(successNo, "GaussSLE.SolveImmutable should return true for GaussChoice.No");
-           Assert.That(successRow, "GaussSLE.SolveImmutable should return true for GaussChoice.RowWise");
-           Assert.That(successCol, "GaussSLE.SolveImmutable should return true for GaussChoice.ColWise");
-           Assert.That(successAll, "GaussSLE.SolveImmutable should return true for GaussChoice.ColWise");
+           Assert.That(successNo, "GaussSLE.Solve should return true for GaussChoice.No");
+           Assert.That(successRow, "GaussSLE.Solve should return true for GaussChoice.RowWise");
+           Assert.That(successCol, "GaussSLE.Solve should return true for GaussChoice.ColWise");
+           Assert.That(successAll, "GaussSLE.Solve should return true for GaussChoice.ColWise");
 
            for (int i = 0; i < b.Length; i++) {
              Assert.That

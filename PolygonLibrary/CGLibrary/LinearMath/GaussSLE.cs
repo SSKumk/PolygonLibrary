@@ -291,7 +291,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
     /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public static bool SolveImmutable(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
       GaussSLE gaussSLE = new GaussSLE((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice);
       gaussSLE.Solve();
 
