@@ -112,9 +112,9 @@ public class SolverLDG<TNum, TConv>
 
   // Checks if the corresponding section file is correct for the given time instant.
 
-  private bool BridgeSectionFileCorrect(TNum t) => SectionFileCorrect("W", BrDir, t);
-  private bool PsSectionFileCorrect(TNum     t) => SectionFileCorrect("P", PsDir, t);
-  private bool QsSectionFileCorrect(TNum     t) => SectionFileCorrect("Q", QsDir, t);
+  private bool BridgeSectionFileCorrect(TNum t) => SectionFileExist("W", BrDir, t);
+  private bool PsSectionFileExist(TNum     t) => SectionFileExist("P", PsDir, t);
+  private bool QsSectionFileCorrect(TNum     t) => SectionFileExist("Q", QsDir, t);
 
   /// <summary>
   /// Writes the specified section of a convex polytope for a given time t.
@@ -146,7 +146,7 @@ public class SolverLDG<TNum, TConv>
   /// <param name="basePath">The base directory path where the section file is stored.</param>
   /// <param name="t">The time instant for which the section file is checked.</param>
   /// <returns><c>true</c> if the section file exists, <c>false</c> otherwise.</returns>
-  private bool SectionFileCorrect(string sectionPrefix, string basePath, TNum t)
+  private bool SectionFileExist(string sectionPrefix, string basePath, TNum t)
     => File.Exists(ph.GetSectionPath(sectionPrefix, basePath, t));
 #endregion
 
@@ -185,7 +185,7 @@ public class SolverLDG<TNum, TConv>
   /// </summary>
   /// <param name="t">The time at which the first player's vectogram section is processed.</param>
   private void ProcessPsSection(TNum t) {
-    if (!PsSectionFileCorrect(t)) {
+    if (!PsSectionFileExist(t)) {
       TNum t1 = t;
       Ps[t] = Geometry<TNum, TConv>.ConvexPolytop.CreateFromPoints(gd.P.Vrep.Select(pPoint => -gd.dt * gd.D[t1] * pPoint), true);
       WritePsSection(t);
