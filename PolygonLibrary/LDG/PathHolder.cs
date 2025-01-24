@@ -14,8 +14,8 @@ public class LDGPathHolder<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public readonly string NumType;     // числовой тип
-  public readonly string NumAccuracy; // текущая точность вычислений
+  private readonly string NumType;     // числовой тип
+  private readonly string NumAccuracy; // текущая точность вычислений
 
 #region Paths
   public readonly string PathLDG;          // корневая папка для всех данных
@@ -29,20 +29,18 @@ public class LDGPathHolder<TNum, TConv>
 
   public          string PathBr(int i) => Path.Combine(PathBrs, i.ToString(), NumType, NumAccuracy);
   public readonly string PathBrs; // Путь к папке, в которой лежат папки с мостами для разных терминальных множеств
-  public readonly string PathPs;  // Путь к папке, в которой лежат вектограммы первого игрока
-  public readonly string PathQs;  // Путь к папке, в которой лежат вектограммы второго игрока
-
-  public readonly string PathMinTimes; // Путь к файлу минимальных просчитанных времён для каждого моста.
+  public readonly string PathPs; // Путь к папке, в которой лежат вектограммы первого игрока
+  public readonly string PathQs; // Путь к папке, в которой лежат вектограммы второго игрока
 #endregion
 
 #region Dicts
-  public readonly Dictionary<string, (int dynFileName, string comment)>
+  private readonly Dictionary<string, (int dynFileName, string comment)>
     name2dyn; // имя_динамики --> внутреннее имя файла динамики
 
-  public readonly Dictionary<string, (int polFileName, string comment)>
+  private readonly Dictionary<string, (int polFileName, string comment)>
     name2pol; // имя_многогранника --> внутреннее имя файла многогранника
 
-  public readonly Dictionary<string, (int tmsFileName, string comment)>
+  private readonly Dictionary<string, (int tmsFileName, string comment)>
     name2tms; // имя_терминального_множества --> внутреннее имя файла терминального множества
 #endregion
 
@@ -51,9 +49,11 @@ public class LDGPathHolder<TNum, TConv>
   /// </summary>
   /// <param name="pathLdg">The root path for all data.</param>
   /// <param name="problemFolderName">The name of the output folder.</param>
-  public LDGPathHolder(string pathLdg, string problemFolderName) {
-    NumType     = typeof(TNum).ToString();
-    NumAccuracy = $"{TConv.ToDouble(Geometry<TNum, TConv>.Tools.Eps):e0}";
+  /// <param name="numType">The numerical type.</param>
+  /// <param name="numAccuracy">The numerical accuracy.</param>
+  public LDGPathHolder(string pathLdg, string problemFolderName, string numType, TNum numAccuracy) {
+    NumType     = numType;
+    NumAccuracy = $"{TConv.ToDouble(numAccuracy):e0}";
 
     // глобальные пути
     PathLDG          = pathLdg;
@@ -70,7 +70,6 @@ public class LDGPathHolder<TNum, TConv>
     PathTrajConfigs  = Path.Combine(PathTrajectories, "!Configs");
 
     // пути к конкретным файлам
-    PathMinTimes = Path.Combine(PathBrs, ".mintimes");
 
     // Считываем словари, переводящие имена во внутренние имена файлов
     name2dyn = ReadDictionary(new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathDynamics, "!Dict_dynamics.txt")));
@@ -156,16 +155,64 @@ public class LDGPathHolder<TNum, TConv>
 #endregion
 
 #region Load
-  public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, TNum t)
+  public void LoadBridgeSection(SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> bridge, int i, double t)
     => ReadSection(bridge, "W", PathBr(i), t);
 
-  public void LoadMinimalTimes(Dictionary<int, TNum> times) {
-    int          i  = 0;
-    StreamReader sr = new StreamReader(PathMinTimes);
-    while (!sr.EndOfStream) {
-      times.Add(i, TNum.Parse(sr.ReadLine(), CultureInfo.InvariantCulture));
-      i++;
+  public SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> LoadBridge(int i) {
+    var    bridge     = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>();
+    string bridgePath = PathBr(i);
+
+    if (!Directory.Exists(bridgePath)) {
+      throw new ArgumentException($"Warning: PathHolder.LoadBridge: Bridge does not exist: {bridgePath}");
     }
+
+    string[] sectionFiles = Directory.GetFiles(bridgePath, "*.wsection"); // Получаем все .wsection файлы
+
+    foreach (string sectionFile in sectionFiles) {
+      string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sectionFile); // Имя файла без расширения
+      if (double.TryParse(fileNameWithoutExtension, NumberStyles.Float, CultureInfo.InvariantCulture, out double t)) {
+        LoadBridgeSection(bridge, i, t); // Вызываем LoadBridgeSection для каждого файла
+      }
+      else {
+        Console.WriteLine
+          (
+           $"Warning: PathHolder.LoadBridge: Invalid filename format for section file: {sectionFile}. Cannot parse time from filename."
+          );
+      }
+    }
+
+    return bridge;
+  }
+
+  public List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> LoadBridges() {
+    var Ws = new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>();
+
+    int k = Directory.GetDirectories(PathBrs).Length;
+
+    for (int i = 0; i < k; i++) {
+      Ws.Add(LoadBridge(i));
+    }
+
+    return Ws;
+  }
+
+
+  public TNum Load_tMin(int i) {
+    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathBr(i), ".tmin"));
+
+    return pr.ReadNumber<TNum>("tMin");
+  }
+
+  public Dictionary<int, TNum> LoadMinimalTimes() {
+    Dictionary<int, TNum> minTimes = new Dictionary<int, TNum>();
+
+    int k = Directory.GetDirectories(PathBrs).Length;
+
+    for (int i = 0; i < k; i++) {
+      minTimes.Add(i, Load_tMin(i));
+    }
+
+    return minTimes;
   }
 #endregion
 
@@ -179,7 +226,9 @@ public class LDGPathHolder<TNum, TConv>
   /// <param name="t">The time instant for which the section file is constructed.</param>
   /// <returns>The full path of the section file corresponding to the given time.</returns>
   /// <exception cref="ArgumentException">Thrown if the sectionPrefix is invalid (i.e., not "W", "P", or "Q").</exception>
-  public string GetSectionPath(string sectionPrefix, string basePath, TNum t) {
+  public string GetSectionPath(string sectionPrefix, string basePath, double t) {
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
     string prefix =
       sectionPrefix switch
         {
@@ -189,7 +238,7 @@ public class LDGPathHolder<TNum, TConv>
         , _   => throw new ArgumentException($"Unknown section prefix: '{sectionPrefix}'. Expected 'W', 'P', or 'Q'.")
         };
 
-    return Path.Combine(basePath, $"{Tools<TNum, TConv>.ToPrintTNum(t)}.{prefix}section");
+    return Path.Combine(basePath, $"{t:F2}.{prefix}section");
   }
 
   /// <summary>
@@ -203,14 +252,14 @@ public class LDGPathHolder<TNum, TConv>
       SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> sectionDict
     , string                                                      sectionPrefix
     , string                                                      basePath
-    , TNum                                                        t
+    , double                                                      t
     ) {
     string filePath = GetSectionPath(sectionPrefix, basePath, t);
     Debug.Assert
       (File.Exists(filePath), $"LDG.PathHolder.ReadSection: There is no {sectionPrefix} section at time {t}. File: {filePath}");
 
     Geometry<TNum, TConv>.ParamReader prR = new Geometry<TNum, TConv>.ParamReader(filePath);
-    sectionDict.Add(t, Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
+    sectionDict.Add(TConv.FromDouble(t), Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(prR));
   }
 #endregion
 
