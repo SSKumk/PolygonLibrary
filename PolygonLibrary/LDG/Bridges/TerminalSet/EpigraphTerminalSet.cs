@@ -77,5 +77,19 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
       projMatrixArr[i, gd.ProjInd[i]] = Geometry<TNum, TConv>.Tools.One;
     }
     gd.ProjMatrix = new Geometry<TNum, TConv>.Matrix(projMatrixArr);
+
+    gd._Xstar = new SortedDictionary<TNum, Geometry<TNum, TConv>.Matrix>();
+
+    TNum t = gd.t0;
+    do {
+      gd.D[t] = gd.Xstar(t) * gd.B;
+      gd.E[t] = gd.Xstar(t) * gd.C;
+
+      t += gd.dt;
+    } while (Geometry<TNum, TConv>.Tools.LE(t, gd.T));
+
+
   }
+
+
 }
