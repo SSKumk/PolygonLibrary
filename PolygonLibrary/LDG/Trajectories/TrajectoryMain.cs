@@ -11,35 +11,20 @@ public class TrajectoryMain<TNum, TConv>
   public readonly BridgeCreator<TNum, TConv> br; // Класс, строящий мосты
   public readonly GameData<TNum, TConv>      gd; // Класс, хранящий информацию об игре
 
-  public readonly Dictionary<int, TNum> MinTimes = new Dictionary<int, TNum>(); // Словарь, отображающий номер моста в его tMin
-  public readonly TNum                  tMin; // Наименьший момент времени из MinTimes, для которого есть сечение моста
+  public readonly TNum tMax; // Момент времени из MinTimes, начиная с которого у каждого моста есть сечения
 
 
-  public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws =
-    new List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>>(); // Набор мостов
+  public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws; // Набор всех мостов
 
-  public TrajectoryMain(string ldgPath, string problemFolderName) {
-    br = new BridgeCreator<TNum, TConv>(ldgPath, problemFolderName);
+  public TrajectoryMain(string ldgPath, string problemFolderName, TNum precision) {
+    br = new BridgeCreator<TNum, TConv>(ldgPath, problemFolderName, precision);
     ph = br.ph;
     gd = br.gd;
 
-    ph.LoadMinimalTimes(MinTimes); // загружаем минимальные времена мостов
-    tMin = MinTimes.MinBy(p => p.Value).Value;
-
-    if (Geometry<TNum, TConv>.Tools.GE(tMin, gd.T)) {
-      throw new ArgumentException($"The t0 should be less then T. Found t0 = {gd.t0} < T = {gd.T}");
-    }
+    tMax = ph.LoadMinimalTimes().MaxBy(p => p.Value).Value;
 
     // грузим все мосты
-
-    int brDir = Directory.GetDirectories(ph.PathBrs).Length;
-    for (int j = 0; j < brDir; j++) {
-      var W = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
-      for (TNum t = MinTimes[j]; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {
-        ph.LoadBridgeSection(W, j, t);
-      }
-      Ws.Add(W);
-    }
+    Ws = ph.LoadBridges();
   }
 
   public void CalcTraj(string trajName) {
@@ -67,15 +52,16 @@ public class TrajectoryMain<TNum, TConv>
     var fpAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания первого игрока
     var spAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания второго игрока
 
-    if (Geometry<TNum, TConv>.Tools.LT(t0, tMin)) {
+    if (Geometry<TNum, TConv>.Tools.LT(t0, tMax)) {
       throw new ArgumentException
         (
-         $"The specified time t0 = {t0} is less than the minimum computed time tMin = {tMin}. Bridges are only computed for times greater than or equal to tMin."
+         $"TrajectoryMain.CalcTraj: The specified time t0 = {t0} is less than the time tMax = {tMax}. All bridges are only computed for times greater than or equal to tMax." +
+         $"In the file {pr.filePath}"
         );
     }
 
     Geometry<TNum, TConv>.Vector x = x0;
-    for (TNum t = tMin; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
+    for (TNum t = tMax; Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
       Geometry<TNum, TConv>.Vector proj_x = gd.Xstar(t) * x;
 
       Geometry<TNum, TConv>.Vector fpControl = fp.Control(t, proj_x, out Geometry<TNum, TConv>.Vector aimFp, gd);
