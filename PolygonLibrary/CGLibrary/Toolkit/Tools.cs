@@ -107,7 +107,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Represents the negative infinity number.
     /// </summary>
-    public static readonly TNum NegativeInfinity = (-TNum.MultiplicativeIdentity) / TNum.AdditiveIdentity;
+    public static readonly TNum NegativeInfinity = -TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
 
     /// <summary>
     /// Represents the Zero-value of TNum ('0').
