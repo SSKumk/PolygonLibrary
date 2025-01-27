@@ -20,7 +20,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   /// More accurate [1, 999] / 1000 
   /// </summary>
   /// <returns>The generated random TNum value.</returns>
-  public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromDouble(1000.0); }
+  public static TNum GenInner(GRandomLC rnd) { return rnd.NextFromInt(1, 999) / TConv.FromInt(1000); }
 
 
   /// <summary>
