@@ -27,7 +27,9 @@ public abstract class ControlFactory<TNum, TConv>
 
     return controlType switch
              {
-               "Constant" => new ConstantControl<TNum, TConv>(pr)
+               "Constant" => isFirstPlayer
+                               ? new FirstPlayerConstantControl<TNum, TConv>(pr)
+                               : new SecondPlayerConstantControl<TNum, TConv>(pr)
              , "Optimal" => isFirstPlayer
                               ? new FirstPlayerOptimalControl<TNum, TConv>(Ws)
                               : new SecondPlayerOptimalControl<TNum, TConv>(Ws)

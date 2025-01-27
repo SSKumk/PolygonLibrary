@@ -1,13 +1,13 @@
 namespace LDG;
 
-public class ConstantControl<TNum, TConv> : IController<TNum, TConv>
+public class FirstPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public readonly Geometry<TNum, TConv>.Vector constantControl;
 
-  public ConstantControl(Geometry<TNum, TConv>.ParamReader pr) { constantControl = pr.ReadVector("Constant"); }
+  public FirstPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr) { constantControl = pr.ReadVector("Constant"); }
 
   public Geometry<TNum, TConv>.Vector Control(
       TNum                             t
@@ -15,7 +15,30 @@ public class ConstantControl<TNum, TConv> : IController<TNum, TConv>
     , out Geometry<TNum, TConv>.Vector aimPoint
     , GameData<TNum, TConv>            gd
     ) {
-    aimPoint = (x + gd.Xstar(t) * constantControl).Normalize();
+    aimPoint = x + (gd.D[t] * constantControl).NormalizeZero();
+
+    return constantControl;
+  }
+
+}
+
+
+public class SecondPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
+  where TConv : INumConvertor<TNum> {
+
+  public readonly Geometry<TNum, TConv>.Vector constantControl;
+
+  public SecondPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr) { constantControl = pr.ReadVector("Constant"); }
+
+  public Geometry<TNum, TConv>.Vector Control(
+      TNum                             t
+    , Geometry<TNum, TConv>.Vector     x
+    , out Geometry<TNum, TConv>.Vector aimPoint
+    , GameData<TNum, TConv>            gd
+    ) {
+    aimPoint = x + (gd.E[t] * constantControl).NormalizeZero();
 
     return constantControl;
   }
