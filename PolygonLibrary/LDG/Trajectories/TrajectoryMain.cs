@@ -27,7 +27,7 @@ public class TrajectoryMain<TNum, TConv>
     Ws = ph.LoadBridges();
   }
 
-  public void CalcTraj(string trajName) {
+  public void CalcTraj(string trajName, bool clearFolder) {
     Geometry<TNum, TConv>.ParamReader pr = ph.OpenTrajConfigReader(trajName);
 
     string outputTrajName = pr.ReadString("Name"); // имя папки, где будут лежать результаты счёта траектории
@@ -35,7 +35,19 @@ public class TrajectoryMain<TNum, TConv>
     TNum T = pr.ReadNumber<TNum>("T"); // терминальный момент времени
     Geometry<TNum, TConv>.Vector x0 = pr.ReadVector("x0"); // начальная точка
 
+    if (x0.SpaceDim != gd.ProjDim) {
+      throw new ArgumentException
+        (
+         $"The dimension of the x0 should be equal to the dimension of the equivalent phase vector = {gd.ProjDim}. Found x0.SpaceDim = {x0.SpaceDim}"
+        );
+    }
+
     string pathTrajName = Path.Combine(ph.PathTrajectories, outputTrajName);
+
+    if (clearFolder) {
+      Directory.Delete(pathTrajName, true);
+    }
+
     if (Directory.Exists(pathTrajName) && Directory.GetFiles(pathTrajName).Length > 0) {
       throw new ArgumentException($"The folder with name '{outputTrajName}' already exits in {ph.PathTrajectories} path!");
     }
@@ -46,11 +58,11 @@ public class TrajectoryMain<TNum, TConv>
     IController<TNum, TConv> fp = ControlFactory<TNum, TConv>.ReadFirstPlayer(pr, Ws);
     IController<TNum, TConv> sp = ControlFactory<TNum, TConv>.ReadSecondPlayer(pr, Ws);
 
-    var trajectory = new List<Geometry<TNum, TConv>.Vector>() { x0 }; // сама траектория
-    var fpControls = new List<Geometry<TNum, TConv>.Vector>();        // реализация управлений первого игрока
-    var spControls = new List<Geometry<TNum, TConv>.Vector>();        // реализация управлений второго игрока
-    var fpAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания первого игрока
-    var spAims     = new List<Geometry<TNum, TConv>.Vector>();        // точки прицеливания второго игрока
+    var trajectory = new List<Geometry<TNum, TConv>.Vector>(); // сама траектория
+    var fpControls = new List<Geometry<TNum, TConv>.Vector>(); // реализация управлений первого игрока
+    var spControls = new List<Geometry<TNum, TConv>.Vector>(); // реализация управлений второго игрока
+    var fpAims     = new List<Geometry<TNum, TConv>.Vector>(); // точки прицеливания первого игрока
+    var spAims     = new List<Geometry<TNum, TConv>.Vector>(); // точки прицеливания второго игрока
 
     if (Geometry<TNum, TConv>.Tools.LT(t0, tMax)) {
       Console.WriteLine
@@ -61,18 +73,10 @@ public class TrajectoryMain<TNum, TConv>
     }
 
 
-    Geometry<TNum, TConv>.Vector x = x0;
+    Geometry<TNum, TConv>.Vector x = x0; // уже в пространстве эквивалентной игры
     for (TNum t = TNum.Max(tMax, t0); Geometry<TNum, TConv>.Tools.LT(t, T); t += gd.dt) {
-      // Geometry<TNum, TConv>.Vector proj_x = gd.Xstar(t) * x;
-      Geometry<TNum, TConv>.Vector proj_x = gd.ProjMatrix * x;
-      // Geometry<TNum, TConv>.Vector proj_x1 = x * gd.ProjMatrix;
-
-      Geometry<TNum, TConv>.Vector fpControl = fp.Control(t, proj_x, out Geometry<TNum, TConv>.Vector aimFp, gd);
-      Geometry<TNum, TConv>.Vector spControl = sp.Control(t, proj_x, out Geometry<TNum, TConv>.Vector aimSp, gd);
-
-      // Выполняем шаг Эйлера
-      // x += gd.dt * (gd.A * x + gd.B * fpControl + gd.C * spControl);
-      x += gd.dt * (gd.D[t] * fpControl + gd.E[t] * spControl);
+      Geometry<TNum, TConv>.Vector fpControl = fp.Control(t, x, out Geometry<TNum, TConv>.Vector aimFp, gd);
+      Geometry<TNum, TConv>.Vector spControl = sp.Control(t, x, out Geometry<TNum, TConv>.Vector aimSp, gd);
 
       // сохраняем всё
       trajectory.Add(x);
@@ -80,6 +84,9 @@ public class TrajectoryMain<TNum, TConv>
       spControls.Add(spControl);
       fpAims.Add(aimFp);
       spAims.Add(aimSp);
+
+      // Выполняем шаг Эйлера
+      x += gd.dt * (gd.D[t] * fpControl + gd.E[t] * spControl);
     }
 
     using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "game.traj"));
