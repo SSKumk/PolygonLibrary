@@ -18,6 +18,53 @@ public class VisTools {
     return sp;
   }
 
+
+  public struct Color {
+
+    public int red;
+    public int green;
+    public int blue;
+
+    public static Color Default => new Color(192, 192, 192);
+
+    public Color(int red, int green, int blue) {
+      ValidateColorComponent(red, nameof(red));
+      ValidateColorComponent(green, nameof(green));
+      ValidateColorComponent(blue, nameof(blue));
+
+      this.red   = red;
+      this.green = green;
+      this.blue  = blue;
+    }
+
+    private void ValidateColorComponent(int value, string componentName) {
+      if (value < 0 || value > 255) {
+        throw new ArgumentException($"The value of '{componentName}' must lie within [0, 255]! Found {value}.");
+      }
+    }
+
+  }
+
+  public class FacetColor : Facet {
+    public Color color;
+
+    public FacetColor(IEnumerable<Vector> vertices, Vector normal, Color? color) : base(vertices, normal) {
+      this.color = color ?? Color.Default;
+    }
+
+  }
+  public class Facet {
+
+    public readonly IEnumerable<Vector> Vertices;
+    public readonly Vector              Normal;
+
+    public Facet(IEnumerable<Vector> vertices, Vector normal) {
+      Vertices   = vertices;
+      Normal     = normal;
+    }
+
+  }
+
   private class VectorMixedProductComparer : IComparer<Vector> {
 
     private readonly Vector _outerNormal;
@@ -57,16 +104,29 @@ public class VisTools {
   }
 
 
-  public static void AddToFacetList(List<Visualization.Facet> FList, ConvexPolytop polytop, Visualization.Color? color = null) {
+  public static void AddToFacetColorList(List<FacetColor> FList, ConvexPolytop polytop, Color? color = null) {
     foreach (FLNode F in polytop.FLrep.Lattice[2]) {
       HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
       FList.Add
         (
-         new Visualization.Facet
+         new FacetColor
            (
             F.Vertices.ToList().OrderByDescending(v => v, new VectorMixedProductComparer(hp.Normal, F.Vertices.First())).ToArray()
           , hp.Normal
           , color
+           )
+        );
+    }
+  }
+  public static void AddToFacetList(List<Facet> FList, ConvexPolytop polytop) {
+    foreach (FLNode F in polytop.FLrep.Lattice[2]) {
+      HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
+      FList.Add
+        (
+         new Facet
+           (
+            F.Vertices.ToList().OrderByDescending(v => v, new VectorMixedProductComparer(hp.Normal, F.Vertices.First())).ToArray()
+          , hp.Normal
            )
         );
     }
