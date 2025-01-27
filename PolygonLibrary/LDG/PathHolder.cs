@@ -159,7 +159,7 @@ public class LDGPathHolder<TNum, TConv>
     => ReadSection(bridge, "W", PathBr(i), t);
 
   public SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> LoadBridge(int i) {
-    var    bridge     = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>();
+    var    bridge     = new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
     string bridgePath = PathBr(i);
 
     if (!Directory.Exists(bridgePath)) {
