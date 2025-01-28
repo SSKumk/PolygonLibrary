@@ -72,11 +72,20 @@ public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     }
     smallBr ??= bridges.First()[t];
 
+    Geometry<TNum, TConv>.Vector h = smallBr.NearestPoint(x, out int position);
+    aimPoint =
+      position switch
+        {
+          -1 => h - smallBr.Hrep.Find(hp => hp.Contains(h))!.Normal // если строго внутри, то целимся в противоположную сторону от ближайшей грани
+        , 0  => smallBr.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(smallBr.Vrep.Count) // если на границе, то целимся "во-внутрь"
+        , 1  => h // если снаружи, то на ближайшую точку на мосте
+        , _ => throw new ArgumentException
+                 (
+                  $"Controls.FPOptimalControl: Invalid value of position it should be -1 (inside), 0 (on the border), and 1 (outside). Found {position}"
+                 )
+        };
 
-    aimPoint = smallBr.NearestPoint(x, out int position);
-    if (position <= 0) {
-      aimPoint = smallBr.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(smallBr.Vrep.Count);
-    }
+    if (position <= 0) { }
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
     TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
     foreach (Geometry<TNum, TConv>.Vector pVert in gd.P.Vrep) {
@@ -132,7 +141,9 @@ public class SecondPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
         , 1 => // если снаружи, то целимся "от" моста
             (x - h).Normalize() + x
         , _ => throw new ArgumentException
-                 ($"Unexpected position value: {position}. Valid values are -1 (inside), 0 (on the border), and 1 (outside).")
+                 (
+                  $"Controls.SPOptimalControl: Invalid value of position it should be -1 (inside), 0 (on the border), and 1 (outside). Found {position}"
+                 )
         };
 
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
