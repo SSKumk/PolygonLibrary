@@ -14,6 +14,8 @@ TODO file
 
 1. [ ]  ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.
 
+1. [ ] ParamReader посмотреть, где надо использовать StringBuilder
+
 
 1. [ ]  TODO XML у методов ConvexPolytope DistanceTo...!
 
