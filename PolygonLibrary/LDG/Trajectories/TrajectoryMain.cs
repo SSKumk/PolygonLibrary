@@ -27,7 +27,7 @@ public class TrajectoryMain<TNum, TConv>
     Ws = ph.LoadBridges();
   }
 
-  public void CalcTraj(string trajName, bool clearFolder) {
+  public void CalcTraj(string trajName, bool clearFolder = false) {
     Geometry<TNum, TConv>.ParamReader pr = ph.OpenTrajConfigReader(trajName);
 
     string outputTrajName = pr.ReadString("Name"); // имя папки, где будут лежать результаты счёта траектории
@@ -44,7 +44,7 @@ public class TrajectoryMain<TNum, TConv>
 
     string pathTrajName = Path.Combine(ph.PathTrajectories, outputTrajName);
 
-    if (clearFolder) {
+    if (Directory.Exists(pathTrajName) && clearFolder) {
       Directory.Delete(pathTrajName, true);
     }
 
@@ -100,6 +100,8 @@ public class TrajectoryMain<TNum, TConv>
     pwSPC.WriteVectors("Control", spControls);
     pwFPA.WriteVectors("Aim", fpAims);
     pwSPA.WriteVectors("Aim", spAims);
+
+    Console.WriteLine($"Traj {trajName} computed!");
   }
 
 }
