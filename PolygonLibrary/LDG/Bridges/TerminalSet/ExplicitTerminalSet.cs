@@ -31,7 +31,7 @@ public class ExplicitTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
   }
 
   /// <summary>
-  /// We assume that the polytopes are contained non-strictly within each other.
+  /// Assumes that the polytopes are non-strictly contained within each other.
   /// </summary>
   private class InclusionComparer : IComparer<Geometry<TNum, TConv>.ConvexPolytop> {
 
@@ -43,20 +43,10 @@ public class ExplicitTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
       if (y is null)
         return 1;
 
-      if (x.Vrep.SetEquals(y.Vrep)) {
-        return 0;
-      }
+      if (x.Vrep.SetEquals(y.Vrep)) { return 0; }
 
-      if (y.Contains(x.Vrep.First())) {
-        if (x.Vrep.All(y.Contains)) {
-          return -1;
-        }
-
-        throw new ArgumentException("InclusionComparer.Compare: Polytopes are not included one into another.");
-      }
-      if (y.Vrep.All(x.Contains)) {
-        return 1;
-      }
+      if (x.Vrep.All(y.ContainsNonStrict)) { return -1; }
+      if (y.Vrep.All(x.ContainsNonStrict)) { return 1; }
 
       throw new ArgumentException("InclusionComparer.Compare: Polytopes are not included one into another.");
     }
