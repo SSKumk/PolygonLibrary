@@ -22,7 +22,6 @@ public class FirstPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
 
 }
 
-
 public class SecondPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
@@ -65,7 +64,7 @@ public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     // маленький -- первый мост (по обратному включению) вне которого лежит 'x'. Если такого нет, то таковым объявляется самый малый по объёму
     Geometry<TNum, TConv>.ConvexPolytop? smallBr = null;
     for (int i = bridges.Count - 1; i >= 0; i--) {
-      if (!bridges[i][t].Contains(x)) {
+      if (bridges[i][t].ContainsComplement(x)) {
         smallBr = bridges[i][t];
 
         break;
@@ -74,8 +73,8 @@ public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     smallBr ??= bridges.First()[t];
 
 
-    aimPoint = smallBr.NearestPoint(x, out bool isInside);
-    if (isInside) {
+    aimPoint = smallBr.NearestPoint(x, out int position);
+    if (position <= 0) {
       aimPoint = smallBr.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(smallBr.Vrep.Count);
     }
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
@@ -110,10 +109,11 @@ public class SecondPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     ) {
     Geometry<TNum, TConv>.Vector spControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
-    // большой -- первый мост (по прямому включению) который содержит 'x', если такого нет, то самый большой по объёму
+    // большой -- первый мост (по прямому включению) который строго содержит 'x', если такого нет, то самый большой по объёму
     Geometry<TNum, TConv>.ConvexPolytop? bigBr = null;
+
     for (int i = 0; i < bridges.Count; i++) {
-      if (bridges[i][t].Contains(x)) {
+      if (bridges[i][t].ContainsStrict(x)) {
         bigBr = bridges[i][t];
 
         break;
@@ -121,13 +121,20 @@ public class SecondPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     }
     bigBr ??= bridges.Last()[t];
 
-    Geometry<TNum, TConv>.Vector h = bigBr.NearestPoint(x, out bool isInside);
-    if (isInside) {
-      aimPoint = h;
-    }
-    else {
-      aimPoint = (x - h).Normalize() + x;
-    }
+    Geometry<TNum, TConv>.Vector h = bigBr.NearestPoint(x, out int position);
+    aimPoint =
+      position switch
+        {
+          -1 => // если внутри, то целимся "на" мост
+            h
+        , 0 => // если на границе, то целимся по любой нормали к гиперграням, которые формируют данную k-грань, где находится x
+            h + bigBr.Hrep.Find(hp => hp.Contains(h))!.Normal
+        , 1 => // если снаружи, то целимся "от" моста
+            (x - h).Normalize() + x
+        , _ => throw new ArgumentException
+                 ($"Unexpected position value: {position}. Valid values are -1 (inside), 0 (on the border), and 1 (outside).")
+        };
+
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
     TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
     foreach (Geometry<TNum, TConv>.Vector qVert in gd.Q.Vrep) {
