@@ -11,15 +11,18 @@ public static class Trajectory {
     // string ldgPath  = "E:\\Work\\LDG\\";
 
     double epsD = 1e-08;
-    ddouble epsDD = 1e-15;
+    double epsDD = 1e-15;
 
     // TrajectoryMain<double, DConvertor> traj = new TrajectoryMain<double, DConvertor>(ldgPath, "SimpleMotion.Test1", 1e-08);
-    // TrajectoryMain<ddouble, DDConvertor> traj = new TrajectoryMain<ddouble, DDConvertor>(ldgPath, "Oscillator", epsDD);
-    TrajectoryMain<ddouble, DDConvertor> traj = new TrajectoryMain<ddouble, DDConvertor>(ldgPath, "MassDot", epsDD);
+    TrajectoryMain<ddouble, DDConvertor> traj = new TrajectoryMain<ddouble, DDConvertor>(ldgPath, "Oscillator", epsDD);
+    // TrajectoryMain<ddouble, DDConvertor> traj = new TrajectoryMain<ddouble, DDConvertor>(ldgPath, "MassDot", epsDD);
 
-    traj.CalcTraj("1", true);
-    // traj.CalcTraj("2");
-    // traj.CalcTraj("3");
+    // traj.CalcTraj("1", true);
+    // traj.CalcTraj("2", true);
+    // traj.CalcTraj("3", true);
+    traj.CalcTraj("4", true);
+
+
   }
 
 }
