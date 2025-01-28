@@ -931,15 +931,13 @@ public partial class Geometry<TNum, TConv>
       if (IsFLrep || IsHrep) {
         foreach (HyperPlane hp in Hrep) {
           int w = Tools.CMP(hp.Eval(v));
-          if (w == 1) {
+          if (w == 1) { // если точка оказалась снаружи хотя бы одной гиперграни, значит она вне многогранника
             return 1;
           }
-          else {
-            inP += w;
-          }
+          inP += w; // иначе складываем -1 и 0. Если всё -1, то внутри, если не всё, то на границе.
         }
 
-        if (inP == Hrep.Count) {
+        if (inP == -Hrep.Count) {
           return -1; // точка внутри
         }
 
