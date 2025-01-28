@@ -11,6 +11,7 @@
     <ItemGroup>
         <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
         <ProjectReference Include="..\Tests\Tests.csproj" />
+        <ProjectReference Include="..\LDG\LDG.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="DoubleDouble">
