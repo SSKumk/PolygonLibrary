@@ -857,42 +857,46 @@ public partial class Geometry<TNum, TConv>
     /// Finds the nearest point on the surface of the convex polytope to the given point and reports inside or outside it is.
     /// </summary>
     /// <param name="point">The point to find the nearest surface point to.</param>
-    /// <param name="isInside">The indicator whenever the point lies outside the polytope or not.</param>
+    /// <param name="position">The indicator whenever the point lies outside the polytope or not.</param>
     /// <returns>The nearest point on the polytope.</returns>
     /// <exception cref="NotImplementedException">
     /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
     /// </exception>
-    public Vector NearestPoint(Vector point, out bool isInside) {
-      if (Contains(point)) {
-        isInside = true;
+    public Vector NearestPoint(Vector point, out int position) {
+      position = Contains(point);
 
-        if (IsFLrep) {
-          IOrderedEnumerable<Vector> minPs =
-            FLrep
-             .AllKfaces_ExceptTop()
-             .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-             .Where(Contains)
-             .OrderBy(v => (point - v).Length);
+      if (position == 0) { // если внутри, то возвращаем текущую точку
+        return point;
+      }
 
-          return minPs.First();
+      if (position < 0) { // Если внутри многогранника, то ищем любую ближайшую точку на гранях
+        if (IsHrep || IsFLrep) {
+          // Перебираем только d-1 грани, в силу выпуклости!!!!
+          Vector? min =
+            Hrep
+             .Select(hp => hp.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
+             // .Where(ContainsNonStrict) // todo: кажется, что можно не проверять!
+             .MinBy(v => (point - v).Length);
+
+          Debug.Assert(min is not null, "ConvexPolytope.NearestPoint: Can't find minimal vector");
+
+          return min;
         }
       }
-      else {
-        isInside = false;
-
-        if (IsFLrep) { // todo: Сделать связь Hrep <--> FLrep[^2]
+      else {           // если снаружи, то ближайшая точка единственна
+        if (IsFLrep) { // visible для ускорения счёта, так как, очевидно, что искать нужно только среди видимых k-граней
           IEnumerable<FLNode> visible =
             FLrep[^2].Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
           SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
-          IOrderedEnumerable<Vector> minPs =
+          Vector? min =
             allKfaces
              .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-             .Where(Contains)
-             .OrderBy(v => (point - v).Length);
+             .Where(ContainsNonStrict)
+             .MinBy(v => (point - v).Length);
 
-          isInside = false;
+          Debug.Assert(min is not null, "ConvexPolytope.NearestPoint: Can't find minimal vector");
 
-          return minPs.First();
+          return min;
         }
       }
 
@@ -908,7 +912,43 @@ public partial class Geometry<TNum, TConv>
     /// <exception cref="NotImplementedException">
     /// Thrown if the nearest point calculation from Vrep and Hrep, i.e. this is not implemented.
     /// </exception>
-    public Vector NearestPoint(Vector point) => NearestPoint(point, isInside: out _);
+    public Vector NearestPoint(Vector point) => NearestPoint(point, position: out _);
+
+    /// <summary>
+    /// Determines the position of a given point relative to the polytope: inside, on the border, or outside.
+    /// </summary>
+    /// <param name="v">The point to check.</param>
+    /// <returns>
+    /// <c>-1</c> if the point is inside the polytope;
+    /// <c>0</c> if the point is on the border of the polytope;
+    /// <c>1</c> if the point is outside the polytope.
+    /// </returns>
+    /// <exception cref="NotImplementedException">
+    /// Thrown when the method is called for a polytope in V-representation.
+    /// </exception>
+    public int Contains(Vector v) {
+      int inP = 0;
+      if (IsFLrep || IsHrep) {
+        foreach (HyperPlane hp in Hrep) {
+          int w = Tools.CMP(hp.Eval(v));
+          if (w == 1) {
+            return 1;
+          }
+          else {
+            inP += w;
+          }
+        }
+
+        if (inP == Hrep.Count) {
+          return -1; // точка внутри
+        }
+
+        return 0; // точка на границе
+      }
+
+      throw new NotImplementedException
+        ("ConvexPolytop.ContainsNonStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
+    }
 
 
     /// <summary>
@@ -918,14 +958,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// <c>true</c> if the vector is contained within the polytope (including the boundary); otherwise, <c>false</c>.
     /// </returns>
-    public bool Contains(Vector v) {
-      if (IsFLrep || IsHrep) {
-        return Hrep.All(hp => hp.ContainsNegativeNonStrict(v));
-      }
-
-      throw new NotImplementedException
-        ("ConvexPolytop.Contains: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
-    }
+    public bool ContainsNonStrict(Vector v) => Contains(v) <= 0;
 
 
     /// <summary>
@@ -935,14 +968,18 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// <c>true</c> if the vector is strictly contained within the polytope (excluding the boundary); otherwise, <c>false</c>.
     /// </returns>
-    public bool ContainsStrict(Vector v) {
-      if (IsFLrep || IsHrep) {
-        return Hrep.All(hp => hp.ContainsNegative(v));
-      }
+    public bool ContainsStrict(Vector v) => Contains(v) < 0;
 
-      throw new NotImplementedException
-        ("ConvexPolytop.ContainsStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
-    }
+
+    /// <summary>
+    /// Determines whether a given point lies outside the polytope.
+    /// </summary>
+    /// <param name="v">The point to check.</param>
+    /// <returns>
+    /// <c>true</c> if the point lies outside the polytope; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ContainsComplement(Vector v) => Contains(v) > 0;
+
 
     /// <summary>
     /// Shifts an origin into a polytope and makes a dual polytope to this.
