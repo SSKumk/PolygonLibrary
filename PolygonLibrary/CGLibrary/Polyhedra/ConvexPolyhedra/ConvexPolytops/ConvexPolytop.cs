@@ -1507,7 +1507,7 @@ public partial class Geometry<TNum, TConv>
       List<HyperPlane> forLambda = activeHPs;
       bool solExist =
         GaussSLE.Solve
-          ((i, j) => forLambda[i].Normal[j], i => forLambda[i].ConstantTerm, 3, GaussSLE.GaussChoice.All, out TNum[] res);
+          ((i, j) => forLambda[i].Normal[j], i => forLambda[i].ConstantTerm, x.Solution.Length, GaussSLE.GaussChoice.All, out TNum[] res);
 
       if (!solExist) {
         throw new ArgumentException
