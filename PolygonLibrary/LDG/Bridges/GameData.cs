@@ -133,8 +133,8 @@ public class GameData<TNum, TConv>
   /// <param name="prDyn">The reader for dynamic parameters.</param>
   /// <param name="prP">The reader for the first player's control parameters.</param>
   /// <param name="prQ">The reader for the second player's control parameters.</param>
-  /// <param name="trP">The reader that reads the transformation for the first player's control set <paramref name="P"/>.</param>
-  /// <param name="trQ">The reader that reads the transformation for the second player's control set <paramref name="Q"/>.</param>
+  /// <param name="trP">The reader that reads the transformation for the first player's control set P.</param>
+  /// <param name="trQ">The reader that reads the transformation for the second player's control set Q.</param>
   public GameData(
       Geometry<TNum, TConv>.ParamReader      prDyn
     , Geometry<TNum, TConv>.ParamReader      prP
