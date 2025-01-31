@@ -6,7 +6,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Provides functionality for solving systems of linear equations using Gaussian elimination.
+  /// Provides functionality for solving systems of linear equations using Gaussian elimination. ONLY SQUARE SYSTEMS!!!
   /// </summary>
   public class GaussSLE {
 
@@ -62,11 +62,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="row">The number of rows in the matrix A.</param>
     /// <param name="col">The number of columns in the matrix A.</param>
     /// <param name="gaussChoice">Optional choice for pivot selection during Gaussian elimination.</param>
-    public GaussSLE(Func<int, int, TNum> AFunc
-                  , Func<int, TNum>      bFunc
-                  , int                  row
-                  , int                  col
-                  , GaussChoice          gaussChoice = GaussChoice.All) : this(row, col) {
+    public GaussSLE(
+        Func<int, int, TNum> AFunc
+      , Func<int, TNum>      bFunc
+      , int                  row
+      , int                  col
+      , GaussChoice          gaussChoice = GaussChoice.All
+      ) : this(row, col) {
       SetSystem(AFunc, bFunc, row, col, gaussChoice);
     }
 
@@ -96,11 +98,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="row">The number of rows in the matrix A.</param>
     /// <param name="col">The number of columns in the matrix A.</param>
     /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
-    public void SetSystem(Func<int, int, TNum> AFunc
-                        , Func<int, TNum>      bFunc
-                        , int                  row
-                        , int                  col
-                        , GaussChoice          gaussChoice = GaussChoice.All) {
+    public void SetSystem(
+        Func<int, int, TNum> AFunc
+      , Func<int, TNum>      bFunc
+      , int                  row
+      , int                  col
+      , GaussChoice          gaussChoice = GaussChoice.All
+      ) {
       Debug.Assert(row == _row, $"The amount of rows in A must be equal to initial parameter row. Found {row} row = {_row}");
       Debug.Assert(col == _col, $"The amount of columns in A must be equal to initial parameter row. Found {col} row = {_row}");
       _gaussChoice = gaussChoice;
@@ -272,11 +276,13 @@ public partial class Geometry<TNum, TConv>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
     /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public static bool Solve(Func<int, int, TNum> AFunc
-                           , Func<int, TNum>      bFunc
-                           , int                  dim
-                           , GaussChoice          gaussChoice
-                           , out TNum[]           result) {
+    public static bool Solve(
+        Func<int, int, TNum> AFunc
+      , Func<int, TNum>      bFunc
+      , int                  dim
+      , GaussChoice          gaussChoice
+      , out TNum[]           result
+      ) {
       GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, dim, dim, gaussChoice);
       gaussSLE.Solve();
 
