@@ -74,6 +74,13 @@ public class Visualization {
       List<Vector> fpAim = new ParamReader(Path.Combine(trajPath, "fp.aim")).ReadVectors("Aim");
       List<Vector> spAim = new ParamReader(Path.Combine(trajPath, "sp.aim")).ReadVectors("Aim");
 
+      if (Ps.First().SpaceDim == 2) {
+        const double val = 1.290119495661504;
+        Ps    = Ps.Select(v => v.LiftUp(3, val)).ToList();
+        fpAim = fpAim.Select(v => v.LiftUp(3, val)).ToList();
+        spAim = spAim.Select(v => v.LiftUp(3, val)).ToList();
+      }
+
       Trajs.Add(new TrajExtended(Ps, fpAim, spAim));
     }
   }
@@ -87,12 +94,18 @@ public class Visualization {
       var Ws_cutted = Ws[k].Where(pair => Tools.GE(pair.Key, tMax));
       int j         = 0;
       foreach (var bridge in Ws_cutted) {
+        // if (Tools.LT(bridge.Key, 6.4)) {
+        // continue;
+        // }
         DrawFrame
           (
            pathOutFolder
          , $"{j}-{k}"
          , plyDrawer
-         , (vertices, facets) => { AddBridgeSectionToFrame(bridge.Value, vertices, facets); }
+         , (vertices, facets)
+             => {
+             AddBridgeSectionToFrame(bridge.Value, vertices, facets);
+           }
           );
         j += 1;
       }
@@ -101,6 +114,8 @@ public class Visualization {
     // траектории
     for (int i = 0; i < Trajs.Count; i++) {
       using ParamWriter pwTr = new ParamWriter(Path.Combine(pathOutFolder, $"traj-{i}.csv"));
+      double            val  = 1;
+
       foreach (Vector v in Trajs[i].traj) {
         pwTr.WriteLine(v.ToStringBraceAndDelim(null, null, ','));
       }
@@ -145,6 +160,24 @@ public class Visualization {
   }
 
   private void AddBridgeSectionToFrame(ConvexPolytop section, SortedSet<Vector> vertices, List<VisTools.Facet> facets) {
+    if (section.PolytopDim == 2) {
+      section = section.LiftUp(3, 1.290119495661504).GetInFLrep();
+      Vector normal = Vector.MakeOrth(3, 3);
+      facets.Add
+        (
+         new VisTools.Facet
+           (
+            section
+             .Vrep.ToList()
+             .OrderByDescending(v => v, new VisTools.VectorMixedProductComparer(normal, section.Vrep.First()))
+             .ToArray()
+          , normal
+           )
+        );
+      vertices.UnionWith(section.Vrep);
+
+      return;
+    }
     vertices.UnionWith(section.Vrep);
     VisTools.AddToFacetList(facets, section);
   }
