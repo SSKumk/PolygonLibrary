@@ -106,10 +106,7 @@ public partial class Geometry<TNum, TConv>
       switch (Swarm.Count) {
         // Пока не будет SubBaseCP размерности 0.
         case 0: throw new ArgumentException("GW: At least one point must be in Swarm for convexification.");
-        case 1:
-          BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null));
-
-          break;
+        case 1: BuiltPolytop = new SubZeroDimensional(new SubPoint(Swarm.First(), null)); break;
         default: {
           // Переводим рой точек на SubPoints чтобы мы могли возвращаться из-подпространств.
           IEnumerable<SubPoint> S       = Swarm.Select(s => new SubPoint(s, null));
@@ -211,8 +208,7 @@ public partial class Geometry<TNum, TConv>
 
         // Создаём начальную грань. (Либо берём, если она передана).
         if (initFace is null) {
-          initFace        = BuildFace(BuildInitialPlane(out Vector normal));
-          initFace.Normal = normal;
+          initFace = BuildFace(BuildInitialPlane());
         }
         Debug.Assert(initFace.Vertices.Count >= spaceDim);
         buildFaces.Add(initFace);
@@ -294,11 +290,10 @@ public partial class Geometry<TNum, TConv>
       /// Procedure builds initial (d-1)-plane in d-space, which holds at least d points of S
       /// and all other points lies for a one side from it.
       /// </summary>
-      /// <param name="normal">The outward normal to the initial plane.</param>
       /// <returns>
       /// Affine basis of the plane, the dimension of the basis is less than d, the dimension of the vectors is d.
       /// </returns>
-      private AffineBasis BuildInitialPlane(out Vector normal) {
+      private AffineBasis BuildInitialPlane() {
         Debug.Assert(S.Count != 0, $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
         // Для построения начальной плоскости найдём точку самую малую в лексикографическом порядке. (левее неё уже точек нет)
@@ -309,7 +304,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo norm?
+          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo: norm?
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
@@ -319,7 +314,6 @@ public partial class Geometry<TNum, TConv>
 
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
-            // Vector u = (s - origin).ProjectToPlane(e, n);
             Vector u = lb.ProjectPointToSubSpace_in_OrigSpace(s - origin);
 
             if (!u.IsZero) {
@@ -361,56 +355,66 @@ public partial class Geometry<TNum, TConv>
 #endif
         }
 
-        normal = n;
-
         return FinalV;
       }
 
       /// <summary>
       /// Builds the next facet of the polytope based on the given basis and normal.
       /// </summary>
-      /// <param name="FaceBasis">The basis of the (d-1)-dimensional subspace in terms of d-space.</param>
+      /// <param name="faceBasis">The basis of the (d-1)-dimensional subspace in terms of d-space.</param>
       /// <param name="initEdge">The (d-2)-dimensional edge in terms of d-space, used as the initial facet in the subspace.</param>
       /// <returns>
       /// The BaseSubCP: (d-1)-dimensional polytope complex expressed in terms of d-dimensional points.
       /// </returns>
-      private BaseSubCP BuildFace(AffineBasis FaceBasis, BaseSubCP? initEdge = null) {
+      private BaseSubCP BuildFace(AffineBasis faceBasis, BaseSubCP? initEdge = null) {
         Debug.Assert
           (
-           FaceBasis.SubSpaceDim == spaceDim - 1
+           faceBasis.SubSpaceDim == spaceDim - 1
          , $"BuildFace (dim = {spaceDim}): The basis must lie in (d-1)-dimensional space!"
           );
 
         BaseSubCP newFace;
 
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
-        // SortedSet<SubPoint> inPlane = S.Where(FaceBasis.Contains).Select(s => s.ProjectTo(FaceBasis)).ToSortedSet();
-        IEnumerable<SubPoint> inPlane = S.Where(FaceBasis.Contains);
+        // SortedSet<SubPoint> inPlane = S.Where(faceBasis.Contains).Select(s => s.ProjectTo(faceBasis)).ToSortedSet();
+        IEnumerable<SubPoint> inPlane = S.Where(faceBasis.Contains);
         Debug.Assert(inPlane.Count() >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
         if (inPlane.Count() == spaceDim) { // Случай симплекса обрабатываем без ухода в подпространство
           newFace = new SubSimplex(inPlane);
         }
         else {
-          inPlane = inPlane.Select(s => s.ProjectTo(FaceBasis));
+          inPlane = inPlane.Select(s => s.ProjectTo(faceBasis));
           // Если нам передали ребро, то в подпространстве оно будет начальной гранью.
           // Его нормаль будет (0,0,...,1)
-          BaseSubCP? prj_initFace = initEdge?.ProjectTo(FaceBasis);
+          BaseSubCP? prj_initFace = initEdge?.ProjectTo(faceBasis);
           if (prj_initFace is not null) {
-            prj_initFace.Normal = Vector.MakeOrth(FaceBasis.SubSpaceDim, FaceBasis.SubSpaceDim);
+            prj_initFace.Normal = Vector.MakeOrth(faceBasis.SubSpaceDim, faceBasis.SubSpaceDim);
           }
 
           // Овыпукляем в подпространстве
           newFace = new GiftWrappingMain(inPlane.ToSortedSet(), prj_initFace).BuiltPolytop.ToPreviousSpace();
 
           // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
-          SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
-          toRemove.ExceptWith(newFace.Vertices);
-          S.ExceptWith(toRemove);
+          // SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
+          // if (toRemove.ToList().Find(x => x[0] == TConv.FromDouble(-0.7097065548996295)) is not null) {
+          //   Console.WriteLine($"AAAA ydalilli");
+          // }
+          // toRemove.ExceptWith(newFace.Vertices);
+          // S.ExceptWith(toRemove);
 
           // todo: Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
         }
 
+        newFace.Normal = CalcOuterNormal(faceBasis);
+#if DEBUG
+        if (initEdge is not null)
+          Debug.Assert
+            (
+             new AffineBasis(initEdge.Vertices).LinBasis.All(bvec => Tools.EQ(bvec * newFace.Normal))
+           , $"RollOverEdge: New face normal is not perpendicular to the edge basis!"
+            );
+#endif
         return newFace;
       }
 
@@ -439,13 +443,39 @@ public partial class Geometry<TNum, TConv>
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
         AffineBasis edgeAffBasis = new AffineBasis(edge.Vertices);
         SubPoint    f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        Vector      v            = edgeAffBasis.LinBasis.Orthonormalize(f - edgeAffBasis.Origin);
+        // var f = face.Vertices.Where(p => !edge.Vertices.Contains(p)).MaxBy(p => (p - edgeAffBasis.Origin).Length);
+
+        // Debug.Assert(f is not null, $"RollOverEdge: No point f!");
+        // Debug.Assert(Tools.GT((f - edgeAffBasis.Origin).Length), $"RollOverEdge: The length of f-edgeAffBasis.Origin is zero!");
+
+        // Vector v = edgeAffBasis.LinBasis.Orthonormalize(f - edgeAffBasis.Origin);
+
+        // Debug.Assert
+        //   (
+        //    edgeAffBasis.LinBasis.All(bvec => Tools.EQ(bvec * v))
+        //  , $"RollOverEdge: The vector 'v' should be perpendicular to the edge!"
+        //   );
+        // var         x = new HyperPlane(new AffineBasis(face.Vertices), true, (face.Vertices.First() + face.Normal, true));
+        // var         y = face.Normal - x.Normal;
+
+        // берём базис ребра
+        // и добавляем в него вектор нормали к грани, с которой мы перекатываемся, ничего не ортогонализируя!
+        // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
+        AffineBasis copyOfEdgeBasis = new AffineBasis(edgeAffBasis);
+        copyOfEdgeBasis.AddVector(face.Normal, false);
+        Vector v = copyOfEdgeBasis.LinBasis.FindOrthonormalVector();
+        if (Tools.LT(v * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
+          v = -v;
+        }
+
+        Debug.Assert(Tools.EQ(face.Normal * v), $"RollOverEdge: The vector 'v' should be perpendicular to the face!");
 
         Debug.Assert
           (
-           Tools.GT((f - edgeAffBasis.Origin) * v)
-         , $"Expected the vector 'v' to be perpendicular to the edge and in the current plane, but found a different dot product: {(f - edgeAffBasis.Origin) * v}"
+           new HyperPlane(face.Normal, edgeAffBasis.Origin).Contains(v + edgeAffBasis.Origin)
+         , $"RollOverEdge: The vector 'v' should lie in a face!"
           );
+        // проверить, что лежит в плоскости
 
         Vector?   r      = null;
         SubPoint? sStar  = null;
@@ -466,25 +496,12 @@ public partial class Geometry<TNum, TConv>
         }
 
         Debug.Assert(r is not null, "GiftWrapping.RollOverEdge: A new vector 'r' is null!");
+        Debug.Assert(sStar is not null, "GiftWrapping.RollOverEdge: A new point 'sStar' is null!");
 
-        edgeAffBasis.AddVector(r); // newF_aBasis.AddVector(r)
-
-        Debug.Assert
-          (
-           edgeAffBasis.SubSpaceDim == face.PolytopDim
-         , $"RollOverEdge (dim = {spaceDim}): The dimension of the basis of new F' must equals to F dimension!"
-          );
-
-        //ПЕРЕКАТ точно. ЛУЧШЕ точно но в DOUBLE
-        // n = CalcOuterNormal(newF_aBasis);
-
-        //ПЕРЕКАТ Сварт. ЧЕМ "быстро" но в DDOUBLE!!!
-        // n = (r! * face.Normal) * v - (r! * v) * face.Normal;
-        // Debug.Assert(Tools.EQ(n.Length, Tools.One), $"GW.RollOverEdge (dim = {spaceDim}): New normal is not of length 1.");
-
+        edgeAffBasis.AddVector(sStar - edgeAffBasis.Origin); // добавили к базису ребра вектор базиса новой грани. Получили базис новой грани.
         BaseSubCP newFace = BuildFace(edgeAffBasis, edge);
-        newFace.Normal = CalcOuterNormal(edgeAffBasis);
 
+        // todo: Возможно что-то плохое случается, если ребро становится слишком коротким, но это не точно!
         return newFace;
       }
 #endregion
