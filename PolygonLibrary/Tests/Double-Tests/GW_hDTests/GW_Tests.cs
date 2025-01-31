@@ -18,6 +18,28 @@ public class GW_Tests {
 
 #region Auxiliary tests
   [Test]
+  public void Aux() {
+    Tools.Eps = 1e-6; // уже с 1e-7 работает. В чём причина?
+
+    const uint seed    = 2337035596;
+    const int  PDim    = 3;
+    const int  nPoints = 10;
+    List<int>  fID     = new List<int>() { 1, 2, 3 };
+    GRandomLC  random  = new GRandomLC(2337035596);
+
+    List<Vector> S = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, random);
+    ShiftAndRotate(3, ref polytop, ref S, random);
+    S.Shuffle(random);
+
+    var x = ConvexPolytop.MinimalDiameter(S);
+
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
+    Assert.That(P.Vrep.SetEquals(polytop), "The set of vertices must be equal.");
+    Assert.That(P.Hrep, Has.Count.EqualTo(4), $"The number of facets of the cube must be equal to 4.");
+    Assert.That(P.FLrep.NumberOfKFaces, Is.EqualTo(15), $"The number of faces of the cube must be equal to 15.");
+  }
+
+  [Test]
   public void GenCubeHDTest() {
     SortedSet<Vector> S = new SortedSet<Vector>()
       {
