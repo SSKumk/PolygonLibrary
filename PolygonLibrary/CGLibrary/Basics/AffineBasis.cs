@@ -55,7 +55,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
     /// </summary>
-    /// <param name="v">The vector to add.</param>
+    /// <param name="v">The vector to add. Not the point!</param>
     /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
     /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
     public bool AddVector(Vector v, bool orthogonalize = true) {
