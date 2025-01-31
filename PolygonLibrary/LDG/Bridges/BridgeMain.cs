@@ -66,8 +66,8 @@ public class BridgeCreator<TNum, TConv>
 
     ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
 
-    // получаем информацию об игре
 
+    // получаем информацию об игре
     string problemInfo = GetInfo(problemReader);
     string dynamicInfo = GetInfo(dynamicsReader);
     string fpInfo      = GetInfo(fpPolytopeReader);
