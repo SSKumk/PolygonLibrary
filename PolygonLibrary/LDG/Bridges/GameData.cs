@@ -8,11 +8,6 @@ public class GameData<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 #region Input data
-  /// <summary>
-  /// The name of this game data.
-  /// </summary>
-  public string NameGameData;
-
 #region Data defining the dynamics of the game
   /// <summary>
   /// Dimension of the phase vector.
@@ -147,9 +142,6 @@ public class GameData<TNum, TConv>
     , TransformReader<TNum, TConv>.Transform trP
     , TransformReader<TNum, TConv>.Transform trQ
     ) {
-    // Reading general information
-    NameGameData = prDyn.ReadString("Name");
-
     // Reading dynamics
     n    = prDyn.ReadNumber<int>("Dim");
     A    = new Geometry<TNum, TConv>.Matrix(prDyn.Read2DArray<TNum>("A", n, n));
