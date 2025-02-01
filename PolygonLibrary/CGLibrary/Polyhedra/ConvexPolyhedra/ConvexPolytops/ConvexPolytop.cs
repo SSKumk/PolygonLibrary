@@ -875,7 +875,7 @@ public partial class Geometry<TNum, TConv>
           Vector? min =
             Hrep
              .Select(hp => hp.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-             // .Where(ContainsNonStrict) // todo: кажется, что можно не проверять!
+              // .Where(ContainsNonStrict) // todo: кажется, что можно не проверять!
              .MinBy(v => (point - v).Length);
 
           Debug.Assert(min is not null, "ConvexPolytope.NearestPoint: Can't find minimal vector");
@@ -1208,6 +1208,26 @@ public partial class Geometry<TNum, TConv>
 
       throw new ArgumentException("ConvexPolytop.WhichRepToString: Unexpected representation type.");
     }
+
+    /// <summary>
+    /// Computes the minimal pairwise distance among the given points.
+    /// </summary>
+    /// <param name="S">The set of points.</param>
+    /// <returns>The minimal pairwise distance.</returns>
+    public static TNum MinimalDiameter(IEnumerable<Vector> S) {
+      TNum         minD   = Tools.PositiveInfinity;
+      List<Vector> points = S.ToList();
+      for (int i = 0; i < points.Count - 1; i++) {
+        for (int j = i + 1; j < points.Count; j++) {
+          TNum d = (points[i] - points[j]).Length;
+          if (Tools.LT(d, minD)) {
+            minD = d;
+          }
+        }
+      }
+
+      return minD;
+    }
 #endregion
 
 #region Write out
@@ -1504,10 +1524,16 @@ public partial class Geometry<TNum, TConv>
         activeHPs.Add(HPs[i]);
       }
 
-      List<HyperPlane> forLambda = activeHPs;
+      List<HyperPlane> forLambdaHPs = activeHPs;
       bool solExist =
         GaussSLE.Solve
-          ((i, j) => forLambda[i].Normal[j], i => forLambda[i].ConstantTerm, x.Solution.Length, GaussSLE.GaussChoice.All, out TNum[] res);
+          (
+           (i, j) => forLambdaHPs[i].Normal[j]
+         , i => forLambdaHPs[i].ConstantTerm
+         , x.Solution.Length
+         , GaussSLE.GaussChoice.All
+         , out TNum[] res
+          );
 
       if (!solExist) {
         throw new ArgumentException
