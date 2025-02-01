@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
     private readonly int         _col;
     private readonly TNum[,]     _A;
     private readonly TNum[]      _b;
-    private readonly TNum[]      _result;
+    private readonly TNum[]?     _result;
     private          GaussChoice _gaussChoice;
 
     private readonly int[] _indARow;
@@ -122,7 +122,10 @@ public partial class Geometry<TNum, TConv>
     /// <param name="A">The matrix A representing the system of linear equations.</param>
     /// <param name="b">The vector b representing the right-hand side of the system.</param>
     /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
-    public void SetSystem(TNum[,] A, TNum[] b, GaussChoice gaussChoice = GaussChoice.All) {
+    private void SetSystem(TNum[,] A, TNum[] b, GaussChoice gaussChoice = GaussChoice.All) {
+      Debug.Assert(A.GetLength(0) == A.GetLength(1), $"GaussSLE.SetSystem: Only square systems available to be solved!");
+
+
       Debug.Assert
         (
          A.GetLength(0) == _row
@@ -248,8 +251,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="result">Output parameter that receives the solution vector.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public bool GetSolution(out TNum[] result) {
-      result = _result;
+    public bool GetSolution(out TNum[]? result) {
+      result = isSuccess is false ? null : _result;
 
       return isSuccess;
     }
@@ -259,8 +262,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="result">Output parameter that receives the solution point.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public bool GetSolution(out Vector result) {
-      result = new Vector(_result, false);
+    public bool GetSolution(out Vector? result) {
+      result = isSuccess is false ? null : new Vector(_result!, false);
 
       return isSuccess;
     }
@@ -281,7 +284,7 @@ public partial class Geometry<TNum, TConv>
       , Func<int, TNum>      bFunc
       , int                  dim
       , GaussChoice          gaussChoice
-      , out TNum[]           result
+      , out TNum[]?          result
       ) {
       GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, dim, dim, gaussChoice);
       gaussSLE.Solve();
@@ -297,7 +300,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
     /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[] result) {
+    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[]? result) {
+
       GaussSLE gaussSLE = new GaussSLE((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice);
       gaussSLE.Solve();
 
