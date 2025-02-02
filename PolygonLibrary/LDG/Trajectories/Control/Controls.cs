@@ -1,20 +1,24 @@
+using System.Diagnostics;
+
 namespace LDG;
 
-public class FirstPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
+public class FirstPlayerConstantControl<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public readonly Geometry<TNum, TConv>.Vector constantControl;
 
-  public FirstPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr) { constantControl = pr.ReadVector("Constant"); }
+  public FirstPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr, GameData<TNum, TConv> gd) : base(gd) {
+    constantControl = pr.ReadVector("Constant");
+    Debug.Assert
+      (
+       gd.P.GetInFLrep().ContainsNonStrict(constantControl)
+     , $"FirstPlayerConstantControl: The control vector doesn't belong to P. Found {constantControl}"
+      );
+  }
 
-  public Geometry<TNum, TConv>.Vector Control(
-      TNum                             t
-    , Geometry<TNum, TConv>.Vector     x
-    , out Geometry<TNum, TConv>.Vector aimPoint
-    , GameData<TNum, TConv>            gd
-    ) {
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
     aimPoint = x + (gd.D[t] * constantControl).NormalizeZero();
 
     return constantControl;
@@ -22,21 +26,23 @@ public class FirstPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
 
 }
 
-public class SecondPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
+public class SecondPlayerConstantControl<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public readonly Geometry<TNum, TConv>.Vector constantControl;
 
-  public SecondPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr) { constantControl = pr.ReadVector("Constant"); }
+  public SecondPlayerConstantControl(Geometry<TNum, TConv>.ParamReader pr, GameData<TNum, TConv> gd) : base(gd) {
+    constantControl = pr.ReadVector("Constant");
+    Debug.Assert
+      (
+       gd.Q.GetInFLrep().ContainsNonStrict(constantControl)
+     , $"FirstPlayerConstantControl: The control vector doesn't belong to Q. Found {constantControl}"
+      );
+  }
 
-  public Geometry<TNum, TConv>.Vector Control(
-      TNum                             t
-    , Geometry<TNum, TConv>.Vector     x
-    , out Geometry<TNum, TConv>.Vector aimPoint
-    , GameData<TNum, TConv>            gd
-    ) {
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
     aimPoint = x + (gd.E[t] * constantControl).NormalizeZero();
 
     return constantControl;
@@ -44,21 +50,19 @@ public class SecondPlayerConstantControl<TNum, TConv> : IController<TNum, TConv>
 
 }
 
-public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
+public class FirstPlayerOptimalControl<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> bridges;
 
-  public FirstPlayerOptimalControl(List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws) { bridges = Ws; }
+  public FirstPlayerOptimalControl(List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws, GameData<TNum, TConv> gd)
+    : base(gd) {
+    bridges = Ws;
+  }
 
-  public Geometry<TNum, TConv>.Vector Control(
-      TNum                             t
-    , Geometry<TNum, TConv>.Vector     x
-    , out Geometry<TNum, TConv>.Vector aimPoint
-    , GameData<TNum, TConv>            gd
-    ) {
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
     Geometry<TNum, TConv>.Vector fpControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
     // маленький -- первый мост (по обратному включению) вне которого лежит 'x'. Если такого нет, то таковым объявляется самый малый по объёму
@@ -76,9 +80,11 @@ public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
     aimPoint =
       position switch
         {
-          -1 => h - smallBr.Hrep.Find(hp => hp.Contains(h))!.Normal // если строго внутри, то целимся в противоположную сторону от ближайшей грани
-        , 0  => smallBr.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(smallBr.Vrep.Count) // если на границе, то целимся "во-внутрь"
-        , 1  => h // если снаружи, то на ближайшую точку на мосте
+          -1 => h - smallBr.Hrep.Find
+                  (hp => hp.Contains(h))!.Normal // если строго внутри, то целимся в противоположную сторону от ближайшей грани
+        , 0 => smallBr.Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt
+                 (smallBr.Vrep.Count) // если на границе, то целимся "во-внутрь"
+        , 1 => h                      // если снаружи, то на ближайшую точку на мосте
         , _ => throw new ArgumentException
                  (
                   $"Controls.FPOptimalControl: Invalid value of position it should be -1 (inside), 0 (on the border), and 1 (outside). Found {position}"
@@ -101,21 +107,21 @@ public class FirstPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
 
 }
 
-public class SecondPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
+public class SecondPlayerOptimalControl<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> bridges;
 
-  public SecondPlayerOptimalControl(List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws) { bridges = Ws; }
+  public SecondPlayerOptimalControl(
+      List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws
+    , GameData<TNum, TConv>                                             gd
+    ) : base(gd) {
+    bridges = Ws;
+  }
 
-  public Geometry<TNum, TConv>.Vector Control(
-      TNum                             t
-    , Geometry<TNum, TConv>.Vector     x
-    , out Geometry<TNum, TConv>.Vector aimPoint
-    , GameData<TNum, TConv>            gd
-    ) {
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
     Geometry<TNum, TConv>.Vector spControl = Geometry<TNum, TConv>.Vector.Zero(1);
 
     // большой -- первый мост (по прямому включению) который строго содержит 'x', если такого нет, то самый большой по объёму
@@ -158,5 +164,79 @@ public class SecondPlayerOptimalControl<TNum, TConv> : IController<TNum, TConv>
 
     return spControl;
   }
+
+}
+
+public class FirstPlayerRandomControl_RectParallel<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
+  where TConv : INumConvertor<TNum> {
+
+  public readonly uint                            seed;
+  public readonly Geometry<TNum, TConv>.GRandomLC rnd;
+  public readonly Geometry<TNum, TConv>.Vector    min;
+  public readonly Geometry<TNum, TConv>.Vector    max;
+
+  public FirstPlayerRandomControl_RectParallel(Geometry<TNum, TConv>.ParamReader pr, GameData<TNum, TConv> gd) : base(gd) {
+    seed = pr.ReadNumber<uint>("Seed");
+    rnd  = new Geometry<TNum, TConv>.GRandomLC(seed);
+
+    min = gd.P.Vrep.Min!;
+    max = gd.P.Vrep.Max!;
+  }
+
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
+    TNum[] rndControl = new TNum[gd.pDim];
+    for (int i = 0; i < rndControl.Length; i++) {
+      rndControl[i] = rnd.NextPrecise(min[i], max[i]);
+    }
+
+    Geometry<TNum, TConv>.Vector control = new Geometry<TNum, TConv>.Vector(rndControl);
+    aimPoint = x + (gd.D[t] * control).NormalizeZero();
+
+    return control;
+  }
+
+}
+
+public class SecondPlayerRandomControl_RectParallel<TNum, TConv> : ControlData<TNum, TConv>, IController<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
+  where TConv : INumConvertor<TNum> {
+
+  public readonly uint                            seed;
+  public readonly Geometry<TNum, TConv>.GRandomLC rnd;
+  public readonly Geometry<TNum, TConv>.Vector    min;
+  public readonly Geometry<TNum, TConv>.Vector    max;
+
+  public SecondPlayerRandomControl_RectParallel(Geometry<TNum, TConv>.ParamReader pr, GameData<TNum, TConv> gd) : base(gd) {
+    seed = pr.ReadNumber<uint>("Seed");
+    rnd  = new Geometry<TNum, TConv>.GRandomLC(seed);
+
+    min = gd.Q.Vrep.Min!;
+    max = gd.Q.Vrep.Max!;
+  }
+
+  public Geometry<TNum, TConv>.Vector Control(TNum t, Geometry<TNum, TConv>.Vector x, out Geometry<TNum, TConv>.Vector aimPoint) {
+    TNum[] rndControl = new TNum[gd.qDim];
+    for (int i = 0; i < rndControl.Length; i++) {
+      rndControl[i] = rnd.NextPrecise(min[i], max[i]);
+    }
+
+    Geometry<TNum, TConv>.Vector control = new Geometry<TNum, TConv>.Vector(rndControl);
+    aimPoint = x + (gd.E[t] * control).NormalizeZero();
+
+    return control;
+  }
+
+}
+
+public class ControlData<TNum, TConv>
+  where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+  IFloatingPoint<TNum>, IFormattable
+  where TConv : INumConvertor<TNum> {
+
+  public GameData<TNum, TConv> gd;
+  public ControlData(GameData<TNum, TConv> gd) { this.gd = gd; }
 
 }
