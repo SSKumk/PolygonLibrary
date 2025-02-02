@@ -10,10 +10,14 @@ public class Program {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
 
-    // Visualization vis = new Visualization(pathLdg, "Oscillator2D.Blender", "DoubleDouble.ddouble", 1e-015);
-    Visualization vis = new Visualization(pathLdg, "Oscillator.Blender", "DoubleDouble.ddouble", 1e-015);
+    Visualization vis = new Visualization(pathLdg, "Oscillator3D.Blender-FirstOptimal", "DoubleDouble.ddouble", 1e-015);
+    Visualization vis1 = new Visualization(pathLdg, "Oscillator3D.Blender-SecondOptimal", "DoubleDouble.ddouble", 1e-015);
+
+
+    // Visualization vis = new Visualization(pathLdg, "Oscillator.Blender", "DoubleDouble.ddouble", 1e-015);
     // Visualization vis = new Visualization(pathLdg, "MassDot.Blender", "DoubleDouble.ddouble", 1e-015);
     vis.ForBlender();
+    vis1.ForBlender();
 
 
     // string pathForTests = "F:\\Works\\IMM\\Проекты\\Визуализация для LDG\\Файлы многогранников\\";
