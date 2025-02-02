@@ -12,7 +12,7 @@ public class TrajectoryMain<TNum, TConv>
   public readonly BridgeCreator<TNum, TConv> br; // Класс, строящий мосты
   public readonly GameData<TNum, TConv>      gd; // Класс, хранящий информацию об игре
 
-  public readonly TNum       tMax;                    // Момент времени из MinTimes, начиная с которого у каждого моста есть сечения
+  public readonly TNum       tMax; // Момент времени из MinTimes, начиная с которого у каждого моста есть сечения
   readonly        List<TNum> tBrs = new List<TNum>(); // моменты времени, в которые существуют все мосты
 
 
@@ -55,14 +55,15 @@ public class TrajectoryMain<TNum, TConv>
     }
 
     if (Directory.Exists(pathTrajName) && Directory.GetFiles(pathTrajName).Length > 0) {
-      throw new ArgumentException($"The folder with name '{outputTrajName}' already exits in {ph.PathTrajectories} path!");
+      Console.WriteLine($"The folder with name '{outputTrajName}' already exits in {ph.PathTrajectories} path!");
+      return;
     }
     Directory.CreateDirectory(pathTrajName);
 
     // Считываем настройки управлений игроков
 
-    IController<TNum, TConv> fp = ControlFactory<TNum, TConv>.ReadFirstPlayer(pr, Ws);
-    IController<TNum, TConv> sp = ControlFactory<TNum, TConv>.ReadSecondPlayer(pr, Ws);
+    IController<TNum, TConv> fp = ControlFactory<TNum, TConv>.ReadFirstPlayer(pr, Ws, gd);
+    IController<TNum, TConv> sp = ControlFactory<TNum, TConv>.ReadSecondPlayer(pr, Ws, gd);
 
     var trajectory = new List<Geometry<TNum, TConv>.Vector>(); // сама траектория
     var fpControls = new List<Geometry<TNum, TConv>.Vector>(); // реализация управлений первого игрока
@@ -81,18 +82,40 @@ public class TrajectoryMain<TNum, TConv>
 
     Geometry<TNum, TConv>.Vector x = x0; // уже в пространстве эквивалентной игры
     for (TNum t = TNum.Max(tMax, t0); Geometry<TNum, TConv>.Tools.LT(t, T); t += dt) {
+      // TNum? tBr = null;
+      // for (int i = 0; i < tBrs.Count - 1; i++) { // находим время, для которого мост определён
+      //   if (Geometry<TNum, TConv>.Tools.LT(t, tBrs[i + 1]) && Geometry<TNum, TConv>.Tools.LE(tBrs[i], t)) {
+      //     // t \in [tBr_i, tBr_i+1)
+      //     tBr = tBrs[i];
+      //
+      //     break;
+      //   }
+      // }
 
-      TNum? tBr = null;
-      for (int i = 0; i < tBrs.Count - 1; i++) { // находим время, для которого мост определён
-        if (Geometry<TNum, TConv>.Tools.LT(t, tBrs[i+1]) && Geometry<TNum, TConv>.Tools.LE(tBrs[i], t)) { // t \in [tBr_i, tBr_i+1)
-          tBr = tBrs[i];
-          break;
+      TNum? tBr  = null;
+      int   low  = 0;
+      int   high = tBrs.Count - 2; // Интервалы [tBr_i, tBr_i+1), поэтому до предпоследнего элемента
+
+      while (low <= high) {
+        int mid = low + (high - low) / 2;
+
+        if (Geometry<TNum, TConv>.Tools.LE(tBrs[mid], t) && Geometry<TNum, TConv>.Tools.LT(t, tBrs[mid + 1])) {
+          // t \in [tBr_i, tBr_i+1)
+          tBr = tBrs[mid];
+
+          break; //нашли
+        }
+        if (Geometry<TNum, TConv>.Tools.LT(t, tBrs[mid])) {
+          high = mid - 1; // t < tBrs[mid], ищем левее
+        }
+        else {
+          low = mid + 1; // t >= tBrs[mid+1], ищем правее
         }
       }
       Debug.Assert(tBr is not null, $"TrajectoryMain.CalcTraj: tBr is null!");
 
-      Geometry<TNum, TConv>.Vector fpControl = fp.Control((TNum)tBr, x, out Geometry<TNum, TConv>.Vector aimFp, gd);
-      Geometry<TNum, TConv>.Vector spControl = sp.Control((TNum)tBr, x, out Geometry<TNum, TConv>.Vector aimSp, gd);
+      Geometry<TNum, TConv>.Vector fpControl = fp.Control((TNum)tBr, x, out Geometry<TNum, TConv>.Vector aimFp);
+      Geometry<TNum, TConv>.Vector spControl = sp.Control((TNum)tBr, x, out Geometry<TNum, TConv>.Vector aimSp);
 
       // сохраняем всё
       trajectory.Add(x);
