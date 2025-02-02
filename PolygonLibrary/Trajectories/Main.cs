@@ -24,8 +24,13 @@ public static class Trajectory {
     // traj.CalcTraj("4", true);
     // traj.CalcTraj("5", true);
 
-    traj.CalcTraj("0.01");
-    traj.CalcTraj("0.001");
+    traj.CalcTraj("OO#0.01");
+    traj.CalcTraj("ZO#0.01");
+    traj.CalcTraj("CO#0.01");
+    traj.CalcTraj("RO#0.01");
+    traj.CalcTraj("OZ#0.01");
+    traj.CalcTraj("OC#0.01");
+    traj.CalcTraj("OR#0.01");
 
 
   }
