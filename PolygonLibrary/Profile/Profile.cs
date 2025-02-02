@@ -25,7 +25,7 @@ class Program {
     double epsD  = 1e-08;
     double epsDD = 1e-15;
 
-  
+
     // LDGPathHolder<double, DConvertor> ph =
     // new LDGPathHolder<double, DConvertor>(pathLdg, "Oscillator", "DoubleDouble.ddouble", epsDD);
 
