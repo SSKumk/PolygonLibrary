@@ -891,7 +891,7 @@ public partial class Geometry<TNum, TConv>
           Vector? min =
             allKfaces
              .Select(node => node.AffBasis.ProjectPointToSubSpace_in_OrigSpace(point))
-             .Where(ContainsNonStrict)
+             .Where(ContainsOnBorder)
              .MinBy(v => (point - v).Length);
 
           Debug.Assert(min is not null, "ConvexPolytope.NearestPoint: Can't find minimal vector");
@@ -948,6 +948,14 @@ public partial class Geometry<TNum, TConv>
         ("ConvexPolytop.ContainsNonStrict: Не умеем в Vrep! Тут надо решить несколько LP задач. Смотри Фукуду.");
     }
 
+    /// <summary>
+    /// Checks whether the given vector is contained on its boundary.
+    /// </summary>
+    /// <param name="v">The vector to check.</param>
+    /// <returns>
+    /// <c>true</c> if the vector is contained on the polytope boundary; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ContainsOnBorder(Vector v) => Contains(v) == 0;
 
     /// <summary>
     /// Checks whether the given vector is contained within the polytope, including its boundary.
