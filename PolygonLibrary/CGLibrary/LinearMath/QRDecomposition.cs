@@ -6,6 +6,71 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   public class QRDecomposition {
+
+    // /// <summary>
+    // /// Solves a system of linear equations (SLE) represented by a set of hyperplanes.
+    // /// </summary>
+    // /// <param name="HPs">
+    // /// The set of hyperplanes representing the linear equations.
+    // /// </param>
+    // /// <returns>
+    // /// The solution vector x that satisfies all hyperplane equations (if a unique solution exists).
+    // /// If the system is overdetermined, the solution is found in the least squares sense.
+    // /// </returns>
+    // public static Vector SolveSLE(IEnumerable<HyperPlane> HPs) {
+    //   HyperPlane[] hps = HPs.ToArray();
+    //
+    //   int rows = hps.Length;
+    //   int cols = hps[0].SpaceDim;
+    //
+    //   Debug.Assert
+    //     (
+    //      rows >= cols
+    //    , "QRDecomposition.SolveSLE: The number of hyperplanes must be greater than or equal to the dimension of the space."
+    //     );
+    //
+    //   TNum[,] A = new TNum[rows, cols];
+    //   TNum[]  b = new TNum[rows];
+    //   for (int i = 0; i < rows; i++) {
+    //     Debug.Assert(hps[i].SpaceDim == cols, "QRDecomposition.SolveSLE: All hyperplanes must have the same dimensionality.");
+    //     for (int j = 0; j < hps[i].SpaceDim; j++) {
+    //       A[i, j] = hps[i].Normal[j];
+    //     }
+    //     b[i] = hps[i].ConstantTerm;
+    //   }
+    //
+    //   return SolveSLE(new Matrix(A), new Vector(b));
+    // }
+    //
+    // /// <summary>
+    // /// Solves the system of linear equations Ax=b using QR decomposition.
+    // /// </summary>
+    // /// <param name="A">The matrix A: m x n, where m >= n.</param>
+    // /// <param name="b">The vector b.</param>
+    // /// <returns>The solution vector x.</returns>
+    // public static Vector SolveSLE(Matrix A, Vector b) {
+    //   // QRx=b
+    //   (Matrix Q, Matrix R) = ByReflection(A);
+    //
+    //   // Rx = Q^T*b
+    //   Vector y = Q.MultiplyTransposedByVector(b);
+    //
+    //   // Rx = y
+    //   int    n = R.Cols;
+    //   TNum[] x = new TNum[n];
+    //   for (int i = n - 1; i >= 0; i--) {
+    //     x[i] = y[i];
+    //     for (int j = i + 1; j < n; j++) {
+    //       x[i] -= R[i, j] * x[j];
+    //     }
+    //     x[i] /= R[i, i];
+    //   }
+    //
+    //   Debug.Assert((A * new Vector(x, false)).Equals(b),"QRDecomposition.SolveSLE: x is not a solution of the system Ax = b!");
+    //
+    //   return new Vector(x, false);
+    // }
+
     /// <summary>
     /// Performs the QR-decomposition of the given m x n matrix A using Householder reflections.
     /// </summary>
