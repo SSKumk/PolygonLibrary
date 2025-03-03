@@ -15,13 +15,13 @@ public class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly string NumType;     // числовой тип
+  public readonly string NumType; // числовой тип
 
   public readonly LDGPathHolder<TNum, TConv> ph; // пути к основным папкам и словари-связки
   public readonly GameData<TNum, TConv>      gd; // данные по динамике игры
   public readonly TerminalSet<TNum, TConv>   ts; // данные о терминальном множестве
 
-  public readonly TNum eps; // точность
+  public readonly TNum eps;    // точность
   public readonly TNum epsOld; // точность до вызова функций
 #endregion
 
@@ -38,7 +38,7 @@ public class BridgeCreator<TNum, TConv>
     epsOld                          = Geometry<TNum, TConv>.Tools.Eps;
     Geometry<TNum, TConv>.Tools.Eps = eps;
 
-    NumType     = typeof(TNum).ToString();
+    NumType = typeof(TNum).ToString();
 
     ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, NumType, precision); // установили пути и прочитали словари-связки
     Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
@@ -137,12 +137,12 @@ public class BridgeCreator<TNum, TConv>
     Geometry<TNum, TConv>.Tools.Eps = eps;
     while (ts.GetNextTerminalSet(out Geometry<TNum, TConv>.ConvexPolytop? tms)) { // tms -- (t)er(m)inal(s)et
       SolverLDG<TNum, TConv> slv = new SolverLDG<TNum, TConv>(ph, ph.PathBr(ts.CurrI), gd, tms!);
-      try {
-        slv.Solve();
-      }
-      catch (Exception e) {
-        Console.WriteLine($"BridgeMain.Solve: {e}");
-      }
+      slv.Solve();
+      // try {
+      // }
+      // catch (Exception e) {
+      //   Console.WriteLine($"BridgeMain.Solve: {e}");
+      // }
     }
     Geometry<TNum, TConv>.Tools.Eps = epsOld;
   }
