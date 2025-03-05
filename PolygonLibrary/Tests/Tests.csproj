@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <LangVersion>13</LangVersion>
+        <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -37,8 +37,8 @@
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
-        <Reference Include="MultiPrecision">
-          <HintPath>..\MultiPrecision.dll</HintPath>
+        <Reference Include="Rationals">
+            <HintPath>..\Rationals.dll</HintPath>
         </Reference>
     </ItemGroup>
     

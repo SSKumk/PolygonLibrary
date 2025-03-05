@@ -3,8 +3,10 @@ using System.Globalization;
 using Tests.ToolsTests;
 using LDG;
 using Tests;
+using Rationals;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static CGLibrary.Geometry<double, Tests.DConvertor>;
+using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
 
 // using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 // using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
@@ -24,6 +26,10 @@ class Program {
     GRandomLC rnd = new GRandomLC(1);
     double epsD  = 1e-08;
     double epsDD = 1e-15;
+
+    ConvexPolytop p = ConvexPolytop.SimplexRND(3);
+    var x = p.GetInFLrep();
+    Console.WriteLine($"{string.Join('\n', x.Vrep)}");
 
 
     // LDGPathHolder<double, DConvertor> ph =

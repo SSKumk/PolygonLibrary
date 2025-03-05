@@ -99,15 +99,10 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Constants
-    /// <summary>
-    /// Represents the positive infinity number.
-    /// </summary>
-    public static readonly TNum PositiveInfinity = TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
-
-    /// <summary>
-    /// Represents the negative infinity number.
-    /// </summary>
-    public static readonly TNum NegativeInfinity = -TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
+    // /// <summary>
+    // /// Represents the negative infinity number.
+    // /// </summary>
+    // public static readonly TNum NegativeInfinity = -TNum.MultiplicativeIdentity / TNum.AdditiveIdentity;
 
     /// <summary>
     /// Represents the Zero-value of TNum ('0').
@@ -142,7 +137,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Represents the value of PI.
     /// </summary>
-    public static readonly TNum PI = TNum.Abs(TNum.Acos(-One));
+    public static readonly TNum PI = TNum.Pi;//TNum.Abs(TNum.Acos(-One));
 
     /// <summary>
     /// Represents half of the value of PI.

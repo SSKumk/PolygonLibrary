@@ -2,10 +2,8 @@ using System.Globalization;
 using CGLibrary;
 using LDG;
 using DoubleDouble;
+using Rationals;
 
-// using static CGLibrary.Geometry<DoubleDouble.ddouble, Bridges.DDConvertor>;
-
-// using static CGLibrary.Geometry<double, Bridges.DConvertor>;
 
 namespace Bridges;
 
@@ -17,9 +15,10 @@ class Program {
 
 
 
-    BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "Oscillator", 1e-08);
+    // BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, "Oscillator", 1e-08);
     // BridgeCreator<ddouble, DDConvertor> bridgeCreator = new BridgeCreator<ddouble, DDConvertor>(ldgDir, "MassDot", 1e-15);
     // BridgeCreator<ddouble, DDConvertor> bridgeCreator = new BridgeCreator<ddouble, DDConvertor>(ldgDir, "Oscillator2D", 1e-15);
+    BridgeCreator<Rational, RConvertor> bridgeCreator = new BridgeCreator<Rational, RConvertor>(ldgDir, "Oscillator2D", (Rational)1e-30);
     bridgeCreator.Solve();
   }
 

@@ -41,7 +41,9 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(Vs.First().SpaceDim == 2, $"SubTwoDimensional: The dimension of the points must be equal to 2!");
 
       // наши "плоские" алгоритмы не создают новые точки, то мы можем спокойно приводить типы.
-      List<Vector2D>       convexPolygon2D = Convexification.GrahamHull(Vs.Select(s => new SubPoint2D(s)));
+      // List<Vector2D>       convexPolygon2D = Convexification.GrahamHull(Vs.Select(s => new SubPoint2D(s)));
+      List<Vector2D>       convexPolygon2D = Convexification.QuickHull2D(Vs.Select(s => new SubPoint2D(s)));
+      // List<Vector2D>       convexPolygon2D = Convexification.ArcHull2D(Vs.Select(s => new SubPoint2D(s)), false);
       List<SubPoint>       VsInOrder = convexPolygon2D.Select(v => ((SubPoint2D)v).SubPoint).ToList();
       List<BaseSubCP> faces = new List<BaseSubCP>() { new SubTwoDimensionalEdge(VsInOrder[^1], VsInOrder[0]) };
       for (int i = 0; i < VsInOrder.Count - 1; i++) {
