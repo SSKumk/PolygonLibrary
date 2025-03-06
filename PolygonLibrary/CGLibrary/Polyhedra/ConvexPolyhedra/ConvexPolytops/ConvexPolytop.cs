@@ -689,8 +689,9 @@ public partial class Geometry<TNum, TConv>
           // собрали 1 и 2 координаты
           TNum sinsN = Tools.One;
           for (int k = 1; k <= N; k++) { sinsN *= TNum.Sin(s[k]); }
-          point.Add(semiAxis[0] * TNum.Cos(phi) * sinsN);
-          point.Add(semiAxis[1] * TNum.Sin(phi) * sinsN);
+          (TNum sinPhi, TNum cosPhi) = TNum.SinCos(phi);
+          point.Add(semiAxis[0] * cosPhi * sinsN);
+          point.Add(semiAxis[1] * sinPhi * sinsN);
 
 
           //добавляем серединные координаты
