@@ -53,7 +53,8 @@ public class LDGPathHolder<TNum, TConv>
   /// <param name="numAccuracy">The numerical accuracy.</param>
   public LDGPathHolder(string pathLdg, string problemFolderName, string numType, TNum numAccuracy) {
     NumType     = numType;
-    NumAccuracy = $"{TConv.ToDouble(numAccuracy):e0}";
+    // NumAccuracy = $"{TConv.ToDouble(numAccuracy):e0}";
+    NumAccuracy = $"{numAccuracy}";
 
     // глобальные пути
     PathLDG          = pathLdg;
