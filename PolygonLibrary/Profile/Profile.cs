@@ -20,6 +20,16 @@ class Program {
     // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations";
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
 
+
+  public static Rational RSum(Rational[] toSum, Func<Rational,Rational,Rational> sum) {
+    Rational res = Rational.Zero;
+    for (int i = 0; i < toSum.Length; i++) {
+      res = sum(res, toSum[i]);
+    }
+    return res;
+  }
+
+
   static void Main(string[] args) {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
 
@@ -27,9 +37,12 @@ class Program {
     double epsD  = 1e-08;
     double epsDD = 1e-15;
 
-    ConvexPolytop p = ConvexPolytop.SimplexRND(3);
-    var x = p.GetInFLrep();
-    Console.WriteLine($"{string.Join('\n', x.Vrep)}");
+
+    // ConvexPolytop p = ConvexPolytop.SimplexRND(3);
+    // var x = p.GetInFLrep();
+    // Console.WriteLine($"{string.Join('\n', x.Vrep)}");
+
+
 
 
     // LDGPathHolder<double, DConvertor> ph =
