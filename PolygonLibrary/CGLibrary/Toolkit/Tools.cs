@@ -295,6 +295,39 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Common procedures
+
+    /// <summary>
+    /// Initializes an array of <c>TNum</c> with the specified size,
+    /// setting all elements to <c>Zero</c>.
+    /// </summary>
+    /// <param name="k">The size of the array.</param>
+    /// <returns>An array of <c>TNum</c> initialized to <c>Zero</c>.</returns>
+    public static TNum[] InitTNumArray(int k) {
+      TNum[] array = new TNum[k];
+      for (int i = 0; i < array.Length; i++) {
+        array[i] = Zero;
+      }
+
+      return array;
+    }
+
+    /// <summary>
+    /// Initializes a two-dimensional array of <c>TNum</c> with the specified dimensions, setting all elements to <c>Zero</c>.
+    /// </summary>
+    /// <param name="row">The number of rows in the array.</param>
+    /// <param name="col">The number of columns in the array.</param>
+    /// <returns>A two-dimensional array of <c>TNum</c> initialized to <c>Zero</c>.</returns>
+    public static TNum[,] InitTNum2DArray(int row, int col) {
+      TNum[,] array2D = new TNum[row, col];
+      for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+          array2D[i, j] = Zero;
+        }
+      }
+
+      return array2D;
+    }
+
     /// <summary>
     /// Signum function based of approximate comparison of numbers.
     /// </summary>
