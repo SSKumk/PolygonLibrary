@@ -167,7 +167,7 @@ public class GameData<TNum, TConv>
     CauchyMatrix = new Geometry<TNum, TConv>.CauchyMatrix(A, T, dt);
 
     // Setting up the projection matrix
-    TNum[,] projMatrixArr = new TNum[ProjDim, n];
+    TNum[,] projMatrixArr = Geometry<TNum, TConv>.Tools.InitTNum2DArray(ProjDim,n);
     for (int i = 0; i < ProjDim; i++) {
       projMatrixArr[i, ProjInd[i]] = Geometry<TNum, TConv>.Tools.One;
     }
