@@ -30,7 +30,8 @@ public partial class Geometry<TNum, TConv>
       for (int i = 0; i < _m; i++) {
         _b[i] = fb(i);
       }
-      _A = new TNum[_m, _d];
+
+      _A = Tools.InitTNum2DArray(_m, _d);
       for (int i = 0; i < _m; i++) {
         for (int j = 0, l = 0; j < _dOrig; j++, l += 2) {
           _A[i, l]     = fA(i, j);
@@ -38,7 +39,7 @@ public partial class Geometry<TNum, TConv>
         }
         _A[i, 2 * _dOrig + i] = Tools.One;
       }
-      _c = new TNum[_d];
+      _c = Tools.InitTNumArray(_d);
       for (int i = 0, l = 0; i < _dOrig; i++, l += 2) {
         _c[l]     = fc(i);
         _c[l + 1] = -fc(i);
@@ -46,7 +47,6 @@ public partial class Geometry<TNum, TConv>
     }
 
     public SimplexMethodResult Solve() {
-      //todo А как правильно активные неравенства находить?! Сейчас activeInequalities работает неверно!
       (SimplexMethodResultStatus status, TNum value, TNum[]? x, IEnumerable<int> activeInequalities) = SimplexInAugmentForm();
       if (status is not SimplexMethodResultStatus.Ok) {
         return new SimplexMethodResult(status);
@@ -80,21 +80,21 @@ public partial class Geometry<TNum, TConv>
       TNum    v = Tools.Zero;
       TNum[,] ANew;
       TNum[]  cCur;
-      TNum[]  bNew = new TNum[_m];
+      TNum[]  bNew = Tools.InitTNumArray(_m);
       if (!_b.All(Tools.GE)) {
-        ANew = new TNum[_m, _d + 1];
+        ANew = Tools.InitTNum2DArray(_m, _d + 1);
         for (int i = 0; i < _m; i++) {
           for (int j = 0; j < _d; j++) {
             ANew[i, j] = _A[i, j];
           }
           ANew[i, _d] = Tools.MinusOne;
         }
-        _A         = new TNum[_m, _d + 1];
+        _A         = Tools.InitTNum2DArray(_m, _d + 1);
         (_A, ANew) = (ANew, _A);
 
-        cCur     = new TNum[_d + 1];
+        cCur     = Tools.InitTNumArray(_d + 1);
         cCur[_d] = Tools.MinusOne;
-        TNum[] cNew = new TNum[_d + 1];
+        TNum[] cNew = Tools.InitTNumArray(_d + 1);
         cNew[_d] = Tools.MinusOne;
 
         N.Add(_d);
@@ -193,7 +193,7 @@ public partial class Geometry<TNum, TConv>
         }
         else { N.Remove(_d); }
 
-        cCur = new TNum[_d];
+        cCur = Tools.InitTNumArray(_d);
         for (int i = 0; i < _d; i++) {
           if (!B.Contains(i)) {
             cCur[i] += _c[i];
@@ -217,8 +217,8 @@ public partial class Geometry<TNum, TConv>
       }
 
 
-      ANew = new TNum[_m, _d];
-      cCur = new TNum[_d];
+      ANew = Tools.InitTNum2DArray(_m, _d);
+      cCur = Tools.InitTNumArray(_d);
       while (N.Any(i => Tools.GT(_c[i]))) {
         e = -1;
         foreach (int i in N) {
@@ -263,7 +263,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     private static TNum[] CalcPoint(TNum[] b, int k, HashSet<int> B, int[] id) {
-      TNum[] x = new TNum[k];
+      TNum[] x = Tools.InitTNumArray(k);
       for (int i = 0; i < k; i++) {
         if (B.Contains(i)) {
           x[i] = b[id[i]];
