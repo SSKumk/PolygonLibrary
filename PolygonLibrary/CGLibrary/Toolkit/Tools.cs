@@ -91,7 +91,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TNum.Parse("1e-8", CultureInfo.InvariantCulture);
+    private static TNum _eps = TConv.FromDouble(1e-8);
 #endregion
 
 #region Constants
