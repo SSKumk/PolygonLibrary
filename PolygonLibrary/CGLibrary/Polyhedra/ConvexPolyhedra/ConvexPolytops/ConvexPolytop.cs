@@ -185,30 +185,18 @@ public partial class Geometry<TNum, TConv>
 
             Vector directionIn = directions.Aggregate((acc, v) => acc + v).Normalize();
 
-            TNum tMin    = Tools.Zero;
-            bool isFirst = true;
-            bool isInf   = true;
+            TNum tMin  = Tools.Zero;
+            bool isInf = true;
             foreach (HyperPlane hp in Hrep) {
-              TNum denominator = hp.Normal * directionIn;
-
-              if (isFirst && !hp.Contains(vertex)) { // чтобы определить tMin
-                isFirst = false;
-
-                tMin  = (hp.ConstantTerm - hp.Normal * vertex) / denominator;
-                isInf = false;
-              }
-              else {
-                if (!hp.Contains(vertex)) {
-                  //todo: мы так-то знаем, каким гиперплоскостям принадлежит точка, это можно как-то учесть?
-                  TNum ti = (hp.ConstantTerm - hp.Normal * vertex) / denominator;
-
-                  // Если ti > 0 и ti < tMin, то обновляем точку
-                  if (Tools.GT(ti) && Tools.LT(ti, tMin)) {
-                    tMin = ti;
-                  }
+              if (!hp.Contains(vertex)) {
+                TNum ti = (hp.ConstantTerm - hp.Normal * vertex) / (hp.Normal * directionIn);
+                if (Tools.GT(ti) && (isInf || Tools.LT(ti, tMin))) {
+                  tMin  = ti;
+                  isInf = false;
                 }
               }
             }
+
 
             Debug.Assert(!isInf, $"ConvexPolytop.InnerPoint: The set of inequalities is unbounded!");
 
@@ -1428,52 +1416,40 @@ public partial class Geometry<TNum, TConv>
             List<HyperPlane> orthToEdgeHPs = new List<HyperPlane>();
             TNum             tMin          = Tools.Zero;
             bool             isInf         = true;
-            bool             isFirst       = true;
             Vector           zNew          = Vector.Zero(d);
             bool             foundPrev     = false;
+
             foreach (HyperPlane hp in HPs) {
               TNum denominator = hp.Normal * v;
 
-              if (Tools.EQ(denominator)) { // если ноль, то мы сейчас находимся на пересечении этих плоскостей
+              if (Tools.EQ(denominator)) { // Точка лежит на гиперплоскости
                 if (hp.Contains(z)) {
-                  orthToEdgeHPs.Add(hp);
+                  orthToEdgeHPs.Add(hp); // мы собираем все грани
                 }
               }
               else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
 
-                if (isFirst) {
-                  isFirst = false;
-                  isInf   = false;
-                  tMin    = ti;
-                  zNewHPs.Add(hp);
-                  zNew = Vector.MulByNumAndAdd(v, tMin, z); //v*tMin + z
-                  if (Vs.Contains(zNew)) {
-                    foundPrev = true;
+                if (Tools.GT(ti)) {                  // учитываем только положительные ti
+                  if (isInf || Tools.LT(ti, tMin)) { // первый кандидат или найден новый минимум
+                    tMin  = ti;
+                    isInf = false;
+                    zNewHPs.Clear();
+                    zNewHPs.Add(hp);
+                    zNew = Vector.MulByNumAndAdd(v, tMin, z); // вычисляем новую точку: v*tMin + z
+                    if (Vs.Contains(zNew)) {
+                      foundPrev = true;
 
-                    break;
+                      break;
+                    }
                   }
-                }
-                else {
-                  if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
-                    if (Tools.EQ(ti, tMin)) { // если ti == tMin, то продолжаем собирать гиперплоскости, сходящиеся в вершине
-                      zNewHPs.Add(hp);
-                    }
-                    else if (Tools.LT(ti, tMin)) { // если ti < tMin, то обновляем минимум и чистим прошлый набор гиперплоскостей
-                      tMin = ti;
-                      zNewHPs.Clear();
-                      zNewHPs.Add(hp);
-                      zNew = Vector.MulByNumAndAdd(v, tMin, z); //v*tMin + z
-                      if (Vs.Contains(zNew)) {
-                        foundPrev = true;
-
-                        break;
-                      }
-                    }
+                  else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
+                    zNewHPs.Add(hp);
                   }
                 }
               }
             }
+
             Debug.Assert(!isInf, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
 
             if (!foundPrev) { // если точку ранее не нашли
