@@ -5,8 +5,9 @@ using LDG;
 using Tests;
 using Rationals;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
-// using static CGLibrary.Geometry<double, Tests.DConvertor>;
-using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
+
+using static CGLibrary.Geometry<double, Tests.DConvertor>;
+// using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
 
 // using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 // using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
@@ -21,11 +22,12 @@ class Program {
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
 
 
-  public static Rational RSum(Rational[] toSum, Func<Rational,Rational,Rational> sum) {
+  public static Rational RSum(Rational[] toSum, Func<Rational, Rational, Rational> sum) {
     Rational res = Rational.Zero;
     for (int i = 0; i < toSum.Length; i++) {
       res = sum(res, toSum[i]);
     }
+
     return res;
   }
 
@@ -33,16 +35,16 @@ class Program {
   static void Main(string[] args) {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
 
-    GRandomLC rnd = new GRandomLC(1);
-    double epsD  = 1e-08;
-    double epsDD = 1e-15;
+    GRandomLC rnd   = new GRandomLC(1);
+    double    epsD  = 1e-08;
+    double    epsDD = 1e-15;
 
+    ConvexPolytop cone = ConvexPolytop.DistanceToPointBall_2(Vector.Zero(2), 2, 30, 2);
+    cone.WriteIn(new ParamWriter($"{pathLdg}cone.polytope"), ConvexPolytop.Rep.FLrep);
 
     // ConvexPolytop p = ConvexPolytop.SimplexRND(3);
     // var x = p.GetInFLrep();
     // Console.WriteLine($"{string.Join('\n', x.Vrep)}");
-
-
 
 
     // LDGPathHolder<double, DConvertor> ph =
@@ -61,4 +63,5 @@ class Program {
     // на пересечении нескольких граней -0.2815753061702822063403420110214,1.290524349044212509360547779272,1.058374937912177279801186291598
     // внутри -0.3 -0.5 1.3
   }
+
 }
