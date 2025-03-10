@@ -1480,7 +1480,7 @@ public partial class Geometry<TNum, TConv>
               Vs.Add(zNew);
               orthToEdgeHPs.AddRange(zNewHPs);
               process.Enqueue((zNew, orthToEdgeHPs));
-              Console.WriteLine($"{zNew}");
+              // Console.WriteLine($"{zNew}");
             }
           }
         } while (J.Next());
