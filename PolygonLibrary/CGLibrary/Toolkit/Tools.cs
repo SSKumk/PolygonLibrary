@@ -1,4 +1,6 @@
-﻿namespace CGLibrary;
+﻿using System.Globalization;
+
+namespace CGLibrary;
 
 /// <summary>
 /// Represents an interface for converting between TNum and other numeric types.
@@ -74,12 +76,6 @@ public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
-
-  public enum BallType {
-    Ball_1,
-    Ball_2,
-    Ball_oo
-  }
   
   /// <summary>
   /// Class with general purpose procedures
@@ -95,7 +91,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Absolute accuracy for comparison
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-8);
+    private static TNum _eps = TNum.Parse("1e-8", CultureInfo.InvariantCulture);
 #endregion
 
 #region Constants
