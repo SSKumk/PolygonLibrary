@@ -1,5 +1,6 @@
 using CGLibrary;
 using DoubleDouble;
+using Rationals;
 
 namespace Graphics;
 
@@ -28,5 +29,20 @@ public class DDConvertor : INumConvertor<ddouble> {
   public static ddouble FromInt(int       from) => from;
   public static uint    ToUInt(ddouble    from) => (uint)from;
   public static ddouble FromUInt(uint     from) => from;
+
+}
+
+
+/// <summary>
+/// Interface for Rationals-conversions.
+/// </summary>
+public class RConvertor : INumConvertor<Rational> {
+
+  public static double   ToDouble(Rational from) => (double)from;
+  public static Rational FromDouble(double from) => Rational.Approximate(from);
+  public static int      ToInt(Rational    from) => (int)from;
+  public static Rational FromInt(int       from) => from;
+  public static uint     ToUInt(Rational   from) => (uint)from;
+  public static Rational FromUInt(uint     from) => from;
 
 }
