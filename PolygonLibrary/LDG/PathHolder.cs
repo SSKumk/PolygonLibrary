@@ -14,8 +14,8 @@ public class LDGPathHolder<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  private readonly string NumType;     // числовой тип
-  private readonly string NumAccuracy; // текущая точность вычислений
+  public readonly string NumType;     // путь-числовой тип, где смотреть данные
+  public readonly string NumAccuracy; // текущая точность вычислений
 
 #region Paths
   public readonly string PathLDG;          // корневая папка для всех данных
@@ -49,12 +49,21 @@ public class LDGPathHolder<TNum, TConv>
   /// </summary>
   /// <param name="pathLdg">The root path for all data.</param>
   /// <param name="problemFolderName">The name of the output folder.</param>
+  /// <param name="numAccuracy">The numerical accuracy.</param>
+  public LDGPathHolder(string pathLdg, string problemFolderName, TNum numAccuracy) : this
+    (pathLdg, problemFolderName, typeof(TNum).ToString(), $"{numAccuracy}") { }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="LDGPathHolder{TNum, TConv}"/> class.
+  /// </summary>
+  /// <param name="pathLdg">The root path for all data.</param>
+  /// <param name="problemFolderName">The name of the output folder.</param>
   /// <param name="numType">The numerical type.</param>
   /// <param name="numAccuracy">The numerical accuracy.</param>
-  public LDGPathHolder(string pathLdg, string problemFolderName, string numType, TNum numAccuracy) {
+  public LDGPathHolder(string pathLdg, string problemFolderName, string numType, string numAccuracy) {
     NumType     = numType;
     // NumAccuracy = $"{TConv.ToDouble(numAccuracy):e0}";
-    NumAccuracy = $"{numAccuracy}";
+    NumAccuracy = numAccuracy;
 
     // глобальные пути
     PathLDG          = pathLdg;
