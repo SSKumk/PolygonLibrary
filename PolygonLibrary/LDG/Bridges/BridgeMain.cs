@@ -16,8 +16,6 @@ public class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly string NumType; // числовой тип
-
   public readonly LDGPathHolder<TNum, TConv> ph; // пути к основным папкам и словари-связки
   public readonly GameData<TNum, TConv>      gd; // данные по динамике игры
   public readonly TerminalSet<TNum, TConv>   ts; // данные о терминальном множестве
@@ -38,9 +36,8 @@ public class BridgeCreator<TNum, TConv>
     epsOld                          = Geometry<TNum, TConv>.Tools.Eps;
     Geometry<TNum, TConv>.Tools.Eps = eps;
 
-    NumType = typeof(TNum).ToString();
 
-    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, NumType, precision); // установили пути и прочитали словари-связки
+    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, precision); // установили пути и прочитали словари-связки
     Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
 
     // создаём нужные папки, если их нет
