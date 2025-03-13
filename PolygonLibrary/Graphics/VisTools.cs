@@ -118,19 +118,7 @@ public class VisTools {
         );
     }
   }
-  public static void AddToFacetList(List<Facet> FList, ConvexPolytop polytop) {
-    foreach (FLNode F in polytop.FLrep.Lattice[2]) {
-      HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
-      FList.Add
-        (
-         new Facet
-           (
-            F.Vertices.ToList().OrderByDescending(v => v, new VectorMixedProductComparer(hp.Normal, F.Vertices.First())).ToArray()
-          , hp.Normal
-           )
-        );
-    }
-  }
+
 
   /// <summary>
   /// Generates a convex polytope representing a cylinder in 3D space.
