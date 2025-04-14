@@ -1,4 +1,5 @@
 using CGLibrary;
+using Graphics.Draw;
 using static CGLibrary.Geometry<double, Graphics.DConvertor>;
 
 namespace Graphics;
@@ -181,6 +182,13 @@ public class VisTools {
     }
 
     return new SeveralPolytopes(vertices, polytopes);
+  }
+
+
+  public static void DrawPolytopePLY(ConvexPolytop polytop, string path) {
+    List<Facet> flist = new List<Facet>();
+    Visualization<double, DConvertor>.AddToFacetList(flist, polytop);
+    new PlyDrawer().SaveFrame(path, polytop.Vrep, flist);
   }
 
 
