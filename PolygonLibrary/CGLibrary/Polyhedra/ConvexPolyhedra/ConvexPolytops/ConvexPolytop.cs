@@ -314,7 +314,7 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = VP.First().SpaceDim;
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
         _FLrep = new GiftWrapping(VP).ConstructFL();
-        var _ = Vrep; //Сразу инициировали
+        _      = Vrep; //Сразу инициировали (достали из решётки)
       }
       else {
         _Vrep = new SortedSet<Vector>(VP);
@@ -1338,7 +1338,7 @@ public partial class Geometry<TNum, TConv>
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
         gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.RowWise);
         gaussSLE.Solve();
-        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
+        if (gaussSLE.GetSolution(out Vector? point)) { // Ищем точку пересечения
           belongs = true;
           foreach (HyperPlane hp in HPs) {
             if (hp.ContainsPositive(point)) {
@@ -1565,7 +1565,10 @@ public partial class Geometry<TNum, TConv>
           );
       }
 
-      return new Vector(res, false);
+      Vector initVertex = new Vector(res, false);
+      activeHPs = HPs.Where(hp => hp.Contains(initVertex)).ToList();
+
+      return initVertex;
     }
 
     /// <summary>
