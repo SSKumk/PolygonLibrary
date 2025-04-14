@@ -222,7 +222,7 @@ public partial class Geometry<TNum, TConv>
         theirs.Sort();
 
         for (int j = 0; j < Lattice[i].Count; j++) {
-          isEqual = isEqual && mine[j].InnerPoint.Equals(theirs[j].InnerPoint);
+          isEqual = isEqual && mine[j].AffBasis.Equals(theirs[j].AffBasis);
         }
 
         if (!isEqual) {
