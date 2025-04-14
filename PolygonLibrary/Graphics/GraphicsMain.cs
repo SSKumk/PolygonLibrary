@@ -179,21 +179,28 @@ public class Visualization<TNum, TConv>
   }
 
   public static void AddToFacetList(List<VisTools.Facet> FList, Geometry<TNum, TConv>.ConvexPolytop polytop) {
-    foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
-      Geometry<TNum, TConv>.HyperPlane hp =
-        new Geometry<TNum, TConv>.HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
+    if (polytop.PolytopDim == 2) {
+      var vertices = ToDList(polytop.Vrep);
       FList.Add
-        (
-         new VisTools.Facet
-           (
-            ToDList
-                (F.Vertices)
-             .OrderByDescending
-                (v => v, new VisTools.VectorMixedProductComparer(ToDVector(hp.Normal), ToDVector(F.Vertices.First())))
-             .ToArray()
-          , ToDVector(hp.Normal)
-           )
-        );
+        (new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.FindOrthonormalVector()));
+    }
+    else {
+      foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
+        Geometry<TNum, TConv>.HyperPlane hp =
+          new Geometry<TNum, TConv>.HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
+        FList.Add
+          (
+           new VisTools.Facet
+             (
+              ToDList
+                  (F.Vertices)
+               .OrderByDescending
+                  (v => v, new VisTools.VectorMixedProductComparer(ToDVector(hp.Normal), ToDVector(F.Vertices.First())))
+               .ToArray()
+            , ToDVector(hp.Normal)
+             )
+          );
+      }
     }
   }
 
