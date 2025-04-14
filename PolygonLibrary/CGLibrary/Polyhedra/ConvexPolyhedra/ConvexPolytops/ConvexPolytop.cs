@@ -567,6 +567,19 @@ public partial class Geometry<TNum, TConv>
       return doFL ? CreateFromPoints(simplex, true) : CreateFromPoints(simplex);
     }
 
+    public static ConvexPolytop Simplex3D_base()
+      => CreateFromPoints
+        (
+         new List<Vector>()
+           {
+             new Vector(new TNum[] { Tools.One, Tools.One, Tools.One })
+           , new Vector(new TNum[] { Tools.One, -Tools.One, -Tools.One })
+           , new Vector(new TNum[] { -Tools.One, Tools.One, -Tools.One })
+           , new Vector(new TNum[] { -Tools.One, -Tools.One, Tools.One })
+           }
+       , true
+        );
+
     /// <summary>
     /// Makes the cyclic polytope in specified dimension with specified number of points.
     /// </summary>
@@ -1542,7 +1555,7 @@ public partial class Geometry<TNum, TConv>
          , i => forLambdaHPs[i].ConstantTerm
          , x.Solution.Length
          , GaussSLE.GaussChoice.All
-         , out TNum[] res
+         , out TNum[]? res
           );
 
       if (!solExist) {
