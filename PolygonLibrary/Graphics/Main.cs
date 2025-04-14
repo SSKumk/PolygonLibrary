@@ -14,15 +14,24 @@ public class Program {
     const string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
 
-    var polytope =
-      Geometry<double, DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double, DConvertor>.ParamReader($"{pathTemp}polytope.polytope"));
-    var polytopeflrep =
-      Geometry<double, DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double, DConvertor>.ParamReader($"{pathTemp}polytopeflrep.polytope"));
+    var P =
+      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
+        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}P.polytope"));
+    var Q =
+      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
+        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}Q.polytope"));
 
-    VisTools.DrawPolytopePLY(polytope, $"{pathTemp}polytope");
-    VisTools.DrawPolytopePLY(polytopeflrep, $"{pathTemp}polytopeflrep");
+    var polytope =
+      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
+        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}polytope.polytope"));
+    var polytopeflrep =
+      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
+        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}polytopeflrep.polytope"));
+
+    VisTools.DrawPolytopePLY<double,DConvertor>(P, $"{pathTemp}P");
+    VisTools.DrawPolytopePLY<double,DConvertor>(Q, $"{pathTemp}Q");
+    VisTools.DrawPolytopePLY<double,DConvertor>(polytope, $"{pathTemp}polytope");
+    VisTools.DrawPolytopePLY<double,DConvertor>(polytopeflrep, $"{pathTemp}polytopeflrep");
 
 
     // Visualization<double, DConvertor>   visD  = new Visualization<double, DConvertor>(pathLdg, "Oscillator3D.Blender", 1e-08);
