@@ -141,7 +141,7 @@ public partial class Geometry<TNum, TConv>
                 Vector innerPoint = (set[fst].InnerPoint + set[snd].InnerPoint) / Tools.Two;
 
                 int iP_belong = vHP.Count(vhp => vhp.Contains(innerPoint));
-                if (iP_belong + i + 1 == PolytopDim) { // Кажется, что это поможет отфильтровать лишние грани
+                if (iP_belong + (i + 1) == PolytopDim) { // Кажется, что это поможет отфильтровать лишние грани
 
                   bool found = false;
                   foreach (FLNode supper in FL[i + 1]) {
