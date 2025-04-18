@@ -525,10 +525,6 @@ public partial class Geometry<TNum, TConv>
         return 1;
       }
 
-
-      // return this.InnerPoint.CompareTo(other.InnerPoint); todo мб это и может работать, но надо думать!
-
-
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
         return -1;
       }

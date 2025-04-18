@@ -21,12 +21,12 @@ public class Sandbox {
 
   [Test]
   public void Sandboxx() {
-    int       dim              = 4;
+    int       dim              = 5;
     // GRandomLC rnd        = new GRandomLC(0);
 
-    // ConvexPolytop Q = ConvexPolytop.SimplexRND(dim);
+    ConvexPolytop Q = ConvexPolytop.SimplexRND(dim);
     // var      Q = ConvexPolytop.SimplexRND(2, false, rnd).LiftUp(4, 0);
-    ConvexPolytop Q = ConvexPolytop.RectAxisParallel(Vector.Zero(dim), Vector.Ones(dim)).RotateRND().Shift(Vector.GenVector(dim, -10,10));
+    // ConvexPolytop Q = ConvexPolytop.RectAxisParallel(Vector.Zero(dim), Vector.Ones(dim)).RotateRND().Shift(Vector.GenVector(dim, -10,10));
 
     // var       P       = ConvexPolytop.SimplexRND(2, false, rnd).LiftUp(3, 0).RotateRND(true, rnd);
     // ConvexPolytop P = ConvexPolytop.SimplexRND(dim);
