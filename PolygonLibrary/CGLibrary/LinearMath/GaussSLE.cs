@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
@@ -251,7 +253,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="result">Output parameter that receives the solution vector.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public bool GetSolution(out TNum[]? result) {
+    public bool GetSolution([NotNullWhen(true)] out TNum[]? result) {
       result = isSuccess is false ? null : _result;
 
       return isSuccess;
@@ -262,7 +264,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="result">Output parameter that receives the solution point.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public bool GetSolution(out Vector? result) {
+    public bool GetSolution([NotNullWhen(true)] out Vector? result) {
       result = isSuccess is false ? null : new Vector(_result!, false);
 
       return isSuccess;
@@ -280,11 +282,11 @@ public partial class Geometry<TNum, TConv>
     /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
     public static bool Solve(
-        Func<int, int, TNum> AFunc
-      , Func<int, TNum>      bFunc
-      , int                  dim
-      , GaussChoice          gaussChoice
-      , out TNum[]?          result
+        Func<int, int, TNum>            AFunc
+      , Func<int, TNum>                 bFunc
+      , int                             dim
+      , GaussChoice                     gaussChoice
+      , [NotNullWhen(true)] out TNum[]? result
       ) {
       GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, dim, dim, gaussChoice);
       gaussSLE.Solve();
@@ -300,7 +302,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
     /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, out TNum[]? result) {
+    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, [NotNullWhen(true)] out TNum[]? result) {
 
       GaussSLE gaussSLE = new GaussSLE((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice);
       gaussSLE.Solve();

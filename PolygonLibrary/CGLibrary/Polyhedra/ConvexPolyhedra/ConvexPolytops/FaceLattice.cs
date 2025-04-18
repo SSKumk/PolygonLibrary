@@ -222,7 +222,7 @@ public partial class Geometry<TNum, TConv>
         theirs.Sort();
 
         for (int j = 0; j < Lattice[i].Count; j++) {
-          isEqual = isEqual && mine[j].InnerPoint.Equals(theirs[j].InnerPoint);
+          isEqual = isEqual && mine[j].AffBasis.Equals(theirs[j].AffBasis);
         }
 
         if (!isEqual) {
@@ -360,15 +360,20 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    public FLNode(IEnumerable<FLNode> sub) {
+    public FLNode(IEnumerable<FLNode> sub, AffineBasis? affBasis = null) {
       Sub        = new SortedSet<FLNode>(sub);
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
-      AffineBasis affine = new AffineBasis(Sub.First().AffBasis);
-      affine.AddVector(InnerPoint - Sub.First().InnerPoint);
-      AffBasis = affine;
+      if (affBasis is not null) {
+        AffBasis = affBasis;
+      }
+      else {
+        AffineBasis affine = new AffineBasis(Sub.First().AffBasis);
+        affine.AddVector(InnerPoint - Sub.First().InnerPoint);
+        AffBasis = affine;
+      }
 
-      foreach (FLNode subNode in sub) {
+      foreach (FLNode subNode in sub) { // связали каждый узел-потомок с создаваемым узлом
         subNode.AddSuper(this);
       }
     }
@@ -380,16 +385,6 @@ public partial class Geometry<TNum, TConv>
     internal FLNode(IEnumerable<Vector> Vs) {
       InnerPoint = Vector.Zero(1);
       AffBasis   = new AffineBasis(Vs.First());
-    }
-
-    /// <summary>
-    /// Constructs an instance of FLNode as an face. (Aux for MinkSumSDas).
-    /// </summary>
-    /// <param name="innerPoint">Inner point of the face.</param>
-    /// <param name="aBasis">The affine basis of the face.</param>
-    internal FLNode(Vector innerPoint, AffineBasis aBasis) {
-      InnerPoint = innerPoint;
-      AffBasis   = aBasis;
     }
 #endregion
 
@@ -529,10 +524,6 @@ public partial class Geometry<TNum, TConv>
       if (this.AffBasis.SubSpaceDim > other.AffBasis.SubSpaceDim) { // this > other
         return 1;
       }
-
-
-      // return this.InnerPoint.CompareTo(other.InnerPoint); todo мб это и может работать, но надо думать!
-
 
       if (this.Vertices.Count < other.Vertices.Count) { // this < other
         return -1;

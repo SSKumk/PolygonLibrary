@@ -74,6 +74,7 @@ public partial class Geometry<TNum, TConv>
       if (SubSpaceDim == 0) {
         return Origin;
       }
+
       return LinBasis.ProjectPointToSubSpace_in_OrigSpace(v - Origin) + Origin;
     }
 
@@ -141,6 +142,7 @@ public partial class Geometry<TNum, TConv>
           return false;
         }
       }
+
       return true;
     }
 #endregion
@@ -244,6 +246,24 @@ public partial class Geometry<TNum, TConv>
     public static AffineBasis GenAffineBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null)
       => new(Vector.GenVector(spaceDim, random), LinearBasis.GenLinearBasis(spaceDim, subSpaceDim, random), false);
 #endregion
+
+    /// <summary>
+    /// Determines whether the specified object represents the same affine subspace as the current instance.
+    /// </summary>
+    /// <param name="obj">Object to compare with this affine basis.</param>
+    /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
+    public override bool Equals(object? obj) {
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
+
+
+      AffineBasis other = (AffineBasis)obj;
+
+      if (!LinBasis.Equals(other.LinBasis)) { return false; }
+
+      return SubSpaceDim == 0 ? Origin.Equals(other.Origin) : Contains(other.Origin);
+    }
 
     /// <summary>
     /// Returns an enumerator that iterates through the linear basis of an affine basis as an IEnumerable.

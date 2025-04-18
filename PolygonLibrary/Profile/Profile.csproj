@@ -17,11 +17,11 @@
         <Reference Include="DoubleDouble">
             <HintPath>..\DoubleDouble.dll</HintPath>
         </Reference>
-<!--        <Reference Include="MultiPrecision">-->
-<!--          <HintPath>..\MultiPrecision.dll</HintPath>-->
-<!--        </Reference>-->
         <Reference Include="AVLUtils">
           <HintPath>..\AVLUtils.dll</HintPath>
+        </Reference>
+        <Reference Include="Rationals">
+            <HintPath>..\Rationals.dll</HintPath>
         </Reference>
     </ItemGroup>
 

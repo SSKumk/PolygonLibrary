@@ -132,8 +132,15 @@ public partial class Geometry<TNum, TConv>
             _innerPoint = Vrep.Aggregate((acc, v) => acc + v) / TConv.FromInt(Vrep.Count);
           }
           if (IsHrep) {
-            Vector           vertex    = FindInitialVertex_Simplex(Hrep, out _);
-            List<HyperPlane> activeHPs = Hrep.Where(hp => hp.Contains(vertex)).ToList();
+            /*
+             * В случае Hrep найдём какую-нибудь вершину p, затем найдём все рёбра выходящие из неё
+             *   после чего, возьмём направление v, как среднее арифметическое векторов-рёбер.
+             * Будем искать наименьшее пересечение q вектора v с гиперплоскостями. Потом возьмём середину между p и q.
+             */
+
+
+            Vector? vertex = FindInitialVertex_Simplex(Hrep, out List<HyperPlane>? activeHPs);
+            Debug.Assert(vertex is not null, $"ConvexPolytop.InnerPoint_Hrep: Current object is not bounded polytope!");
 
             // ищём вектор, направленный строго внутрь многогранника
             Combination  J          = new Combination(activeHPs.Count, SpaceDim - 1);
@@ -178,22 +185,20 @@ public partial class Geometry<TNum, TConv>
 
             Vector directionIn = directions.Aggregate((acc, v) => acc + v).Normalize();
 
-            TNum tMin = Tools.PositiveInfinity;
+            TNum tMin  = Tools.Zero;
+            bool isInf = true;
             foreach (HyperPlane hp in Hrep) {
-              TNum denominator = hp.Normal * directionIn;
-
               if (!hp.Contains(vertex)) {
-                //todo мы так-то знаем, каким гиперплоскостям принадлежит точка, это можно как-то учесть?
-                TNum ti = (hp.ConstantTerm - hp.Normal * vertex) / denominator;
-
-                // Если ti > 0 или ti <= tMin, то такая точка годится
-                if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
-                  tMin = ti;
+                TNum ti = (hp.ConstantTerm - hp.Normal * vertex) / (hp.Normal * directionIn);
+                if (Tools.GT(ti) && (isInf || Tools.LT(ti, tMin))) {
+                  tMin  = ti;
+                  isInf = false;
                 }
               }
             }
 
-            Debug.Assert(tMin != Tools.PositiveInfinity, $"ConvexPolytop.InnerPoint: The set of inequalities is unbounded!");
+
+            Debug.Assert(!isInf, $"ConvexPolytop.InnerPoint: The set of inequalities is unbounded!");
 
 
             _innerPoint = Vector.MulByNumAndAdd(directionIn, tMin / Tools.Two, vertex);
@@ -309,7 +314,7 @@ public partial class Geometry<TNum, TConv>
       SpaceDim = VP.First().SpaceDim;
       if (toConvexify) { // Если уж овыпукляем, то и решётку построим
         _FLrep = new GiftWrapping(VP).ConstructFL();
-        var _ = Vrep; //Сразу инициировали
+        _      = Vrep; //Сразу инициировали (достали из решётки)
       }
       else {
         _Vrep = new SortedSet<Vector>(VP);
@@ -562,6 +567,19 @@ public partial class Geometry<TNum, TConv>
       return doFL ? CreateFromPoints(simplex, true) : CreateFromPoints(simplex);
     }
 
+    public static ConvexPolytop Simplex3D_base()
+      => CreateFromPoints
+        (
+         new List<Vector>()
+           {
+             new Vector(new TNum[] { Tools.One, Tools.One, Tools.One })
+           , new Vector(new TNum[] { Tools.One, -Tools.One, -Tools.One })
+           , new Vector(new TNum[] { -Tools.One, Tools.One, -Tools.One })
+           , new Vector(new TNum[] { -Tools.One, -Tools.One, Tools.One })
+           }
+       , true
+        );
+
     /// <summary>
     /// Makes the cyclic polytope in specified dimension with specified number of points.
     /// </summary>
@@ -672,8 +690,9 @@ public partial class Geometry<TNum, TConv>
           // собрали 1 и 2 координаты
           TNum sinsN = Tools.One;
           for (int k = 1; k <= N; k++) { sinsN *= TNum.Sin(s[k]); }
-          point.Add(semiAxis[0] * TNum.Cos(phi) * sinsN);
-          point.Add(semiAxis[1] * TNum.Sin(phi) * sinsN);
+          (TNum sinPhi, TNum cosPhi) = TNum.SinCos(phi);
+          point.Add(semiAxis[0] * cosPhi * sinsN);
+          point.Add(semiAxis[1] * sinPhi * sinsN);
 
 
           //добавляем серединные координаты
@@ -1210,8 +1229,14 @@ public partial class Geometry<TNum, TConv>
     /// <param name="S">The set of points.</param>
     /// <returns>The minimal pairwise distance.</returns>
     public static TNum MinimalDiameter(IEnumerable<Vector> S) {
-      TNum         minD   = Tools.PositiveInfinity;
       List<Vector> points = S.ToList();
+      Debug.Assert
+        (
+         points.Count > 1
+       , $"ConvexPolytop.MinimalDiameter: The number of points in the collection should be greater than one. Found {points.Count}"
+        );
+
+      TNum minD = (points[0] - points[1]).Length;
       for (int i = 0; i < points.Count - 1; i++) {
         for (int j = i + 1; j < points.Count; j++) {
           TNum d = (points[i] - points[j]).Length;
@@ -1313,7 +1338,7 @@ public partial class Geometry<TNum, TConv>
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
         gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.RowWise);
         gaussSLE.Solve();
-        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
+        if (gaussSLE.GetSolution(out Vector? point)) { // Ищем точку пересечения
           belongs = true;
           foreach (HyperPlane hp in HPs) {
             if (hp.ContainsPositive(point)) {
@@ -1402,46 +1427,49 @@ public partial class Geometry<TNum, TConv>
             // Теперь v определяет луч, на котором лежит ребро
             List<HyperPlane> zNewHPs       = new List<HyperPlane>();
             List<HyperPlane> orthToEdgeHPs = new List<HyperPlane>();
-            TNum             tMin          = Tools.PositiveInfinity;
+            TNum             tMin          = Tools.Zero;
+            bool             isInf         = true;
             Vector           zNew          = Vector.Zero(d);
             bool             foundPrev     = false;
+
             foreach (HyperPlane hp in HPs) {
               TNum denominator = hp.Normal * v;
 
-              if (Tools.EQ(denominator)) { // если ноль, то мы сейчас находимся на пересечении этих плоскостей
+              if (Tools.EQ(denominator)) { // Точка лежит на гиперплоскости
                 if (hp.Contains(z)) {
-                  orthToEdgeHPs.Add(hp);
+                  orthToEdgeHPs.Add(hp); // мы собираем все грани
                 }
               }
               else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z) / denominator;
 
-                // Если ti > 0 или ti <= tMin, то такая точка годится
-                if (Tools.GT(ti) && Tools.LE(ti, tMin)) {
-                  if (Tools.EQ(ti, tMin)) {
-                    zNewHPs.Add(hp);
-                  }
-                  else if (Tools.LT(ti, tMin)) {
-                    tMin = ti;
+                if (Tools.GT(ti)) {                  // учитываем только положительные ti
+                  if (isInf || Tools.LT(ti, tMin)) { // первый кандидат или найден новый минимум
+                    tMin  = ti;
+                    isInf = false;
                     zNewHPs.Clear();
                     zNewHPs.Add(hp);
-                    zNew = Vector.MulByNumAndAdd(v, tMin, z); //v*tMin + z
+                    zNew = Vector.MulByNumAndAdd(v, tMin, z); // вычисляем новую точку: v*tMin + z
                     if (Vs.Contains(zNew)) {
                       foundPrev = true;
 
                       break;
                     }
                   }
+                  else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
+                    zNewHPs.Add(hp);
+                  }
                 }
               }
             }
-            Debug.Assert
-              (tMin != Tools.PositiveInfinity, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
+
+            Debug.Assert(!isInf, $"ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
 
             if (!foundPrev) { // если точку ранее не нашли
               Vs.Add(zNew);
               orthToEdgeHPs.AddRange(zNewHPs);
               process.Enqueue((zNew, orthToEdgeHPs));
+              // Console.WriteLine($"{zNew}");
             }
           }
         } while (J.Next());
@@ -1527,7 +1555,7 @@ public partial class Geometry<TNum, TConv>
          , i => forLambdaHPs[i].ConstantTerm
          , x.Solution.Length
          , GaussSLE.GaussChoice.All
-         , out TNum[] res
+         , out TNum[]? res
           );
 
       if (!solExist) {
@@ -1537,7 +1565,10 @@ public partial class Geometry<TNum, TConv>
           );
       }
 
-      return new Vector(res, false);
+      Vector initVertex = new Vector(res, false);
+      activeHPs = HPs.Where(hp => hp.Contains(initVertex)).ToList();
+
+      return initVertex;
     }
 
     /// <summary>

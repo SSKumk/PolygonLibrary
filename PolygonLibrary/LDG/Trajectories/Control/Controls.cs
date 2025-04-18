@@ -93,7 +93,7 @@ public class FirstPlayerOptimalControl<TNum, TConv> : ControlData<TNum, TConv>, 
 
     if (position <= 0) { }
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
-    TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
+    TNum                         extrVal = gd.dt * gd.D[t] * gd.P.Vrep.First() * l;
     foreach (Geometry<TNum, TConv>.Vector pVert in gd.P.Vrep) {
       TNum val = gd.dt * gd.D[t] * pVert * l;
       if (val > extrVal) {
@@ -153,7 +153,7 @@ public class SecondPlayerOptimalControl<TNum, TConv> : ControlData<TNum, TConv>,
         };
 
     Geometry<TNum, TConv>.Vector l       = aimPoint - x;
-    TNum                         extrVal = Geometry<TNum, TConv>.Tools.NegativeInfinity;
+    TNum                         extrVal = gd.dt * gd.E[t] * gd.Q.Vrep.First() * l;
     foreach (Geometry<TNum, TConv>.Vector qVert in gd.Q.Vrep) {
       TNum val = gd.dt * gd.E[t] * qVert * l;
       if (val > extrVal) {

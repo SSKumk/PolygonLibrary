@@ -3,8 +3,11 @@ using System.Globalization;
 using Tests.ToolsTests;
 using LDG;
 using Tests;
+using Rationals;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
+
+// using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
 
 // using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 // using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
@@ -18,28 +21,45 @@ class Program {
     // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations";
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
 
+
+  public static Rational RSum(Rational[] toSum, Func<Rational, Rational, Rational> sum) {
+    Rational res = Rational.Zero;
+    for (int i = 0; i < toSum.Length; i++) {
+      res = sum(res, toSum[i]);
+    }
+
+    return res;
+  }
+
+
   static void Main(string[] args) {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
 
-    GRandomLC rnd = new GRandomLC(1);
-    double epsD  = 1e-08;
-    double epsDD = 1e-15;
+    GRandomLC rnd   = new GRandomLC(1);
+    double    epsD  = 1e-08;
+    double    epsDD = 1e-15;
 
 
-    // LDGPathHolder<double, DConvertor> ph =
-    // new LDGPathHolder<double, DConvertor>(pathLdg, "Oscillator", "DoubleDouble.ddouble", epsDD);
+    LDGPathHolder<double, DConvertor> phD = new LDGPathHolder<double, DConvertor>(pathLdg, "Oscillator3D", 1e-08);
+    LDGPathHolder<ddouble, DDConvertor> phDD =
+      new LDGPathHolder<ddouble, DDConvertor>(pathLdg, "Oscillator3D", ddouble.Parse("1e-08"));
+    LDGPathHolder<Rational, RConvertor> phR08 =
+      new LDGPathHolder<Rational, RConvertor>(pathLdg, "Oscillator3D", Rational.Parse("1/100000000"));
+    LDGPathHolder<Rational, RConvertor> phR16 =
+      new LDGPathHolder<Rational, RConvertor>(pathLdg, "Oscillator3D", Rational.Parse("1/10000000000000000"));
 
-    // const double                            t      = 6.4;
-    // SortedDictionary<double, ConvexPolytop> bridge = new SortedDictionary<double, ConvexPolytop>(Tools.TComp);
-    // ph.LoadBridgeSection(bridge, 0, t);
-    // var p = bridge[t];
-    // Console.WriteLine($"{p.NearestPoint(new Vector(new double[] { 0.2, 0.3, 3 }))}");
-    // Console.WriteLine($"{p.NearestPoint(new Vector(new double[] { 1.22, 0, 1 }))}"); // на грани  (1.0592591369594095,-0.0066899114567881834,1.290119495661504)
-    // Console.WriteLine($"{p.NearestPoint(new Vector(new double[] { -1.33, 0.1, 1 }))}"); //  на грани  (-1.1195813659540708,0.08769657244251747,1.3269287269958363)
+    var WsD   = phD.LoadBridges().First();
+    var WsDD  = phDD.LoadBridges().First();
+    var WsR08 = phR08.LoadBridges().First();
+    var WsR16 = phR16.LoadBridges().First();
 
-    // p.Vrep.TryGetValue()
-
-    // на пересечении нескольких граней -0.2815753061702822063403420110214,1.290524349044212509360547779272,1.058374937912177279801186291598
-    // внутри -0.3 -0.5 1.3
+    double t = 10;
+    for (int i = 0; i < 13; i++, t -= 0.1) {
+      Console.WriteLine
+        (
+         $"t = {t:F2} |Vrep| D: {WsD[t].Vrep.Count}\tDD: {WsDD[t].Vrep.Count}\tR08: {WsR08[(Rational)t].Vrep.Count}\tR16: {WsR16[(Rational)t].Vrep.Count}"
+        );
+    }
   }
+
 }

@@ -79,7 +79,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <summary>
     /// Maximal value of the UInt expressed in TNum-type.
     /// </summary>
-    private readonly TNum MaxValue = TConv.FromUInt(uint.MaxValue);
+    private readonly TNum UIntMaxValue = TConv.FromUInt(uint.MaxValue);
 
     /// <summary>
     /// Generates the next random precise-number within the [0,1) range.
@@ -93,7 +93,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// <param name="lb">The lower bound of the range (inclusive).</param>
     /// <param name="rb">The upper bound of the range (exclusive).</param>
     /// <returns>The generated random precise number.</returns>
-    public TNum NextPrecise(TNum lb, TNum rb) => TConv.FromUInt(Rand()) / MaxValue * (rb - lb) + lb;
+    public TNum NextPrecise(TNum lb, TNum rb) => TConv.FromUInt(Rand()) / UIntMaxValue * (rb - lb) + lb;
 
     /// <summary>
     /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue] and converts it into TNum.

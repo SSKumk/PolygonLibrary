@@ -78,7 +78,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The projection matrix calculated as the product of the basis matrix and its transpose.
     /// </summary>
-    public Matrix ProjMatrix => _projMatrix ??= Basis.MultiplyBySelfTranspose();
+    public Matrix ProjMatrix => _projMatrix ??= Basis.MultiplyBySelfTranspose(); // BB^T
 
     private Matrix? _Basis      = null;
     private Matrix? _projMatrix = null;
@@ -232,7 +232,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Projects a given vector onto the linear basis in its coordinates.
+    /// Projects a given vector onto the linear basis in its coordinates. B^T * v
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>

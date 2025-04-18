@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using CGLibrary.Toolkit;
@@ -15,8 +16,6 @@ public class BridgeCreator<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
 #region Data
-  public readonly string NumType; // числовой тип
-
   public readonly LDGPathHolder<TNum, TConv> ph; // пути к основным папкам и словари-связки
   public readonly GameData<TNum, TConv>      gd; // данные по динамике игры
   public readonly TerminalSet<TNum, TConv>   ts; // данные о терминальном множестве
@@ -33,14 +32,12 @@ public class BridgeCreator<TNum, TConv>
   /// <param name="precision">The CGlibrary precision used in calculations.</param>
   public BridgeCreator(string pathLDG, string problemFolderName, TNum precision) {
     // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
-
     eps                             = precision;
     epsOld                          = Geometry<TNum, TConv>.Tools.Eps;
     Geometry<TNum, TConv>.Tools.Eps = eps;
 
-    NumType = typeof(TNum).ToString();
 
-    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, NumType, precision); // установили пути и прочитали словари-связки
+    ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, precision); // установили пути и прочитали словари-связки
     Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
 
     // создаём нужные папки, если их нет
@@ -62,10 +59,10 @@ public class BridgeCreator<TNum, TConv>
     Geometry<TNum, TConv>.ParamReader dynamicsReader   = ph.OpenDynamicsReader(dynName);
     Geometry<TNum, TConv>.ParamReader fpPolytopeReader = ph.OpenPolytopeReader(fpPolName);
     Geometry<TNum, TConv>.ParamReader spPolytopeReader = ph.OpenPolytopeReader(spPolName);
+
     gd = new GameData<TNum, TConv>(dynamicsReader, fpPolytopeReader, spPolytopeReader, fpTransform, spTransform);
 
     ts = new TerminalSet<TNum, TConv>(tmsName, ph, ref gd, tmsTransform);
-
 
     // получаем информацию об игре
     string problemInfo = GetInfo(problemReader);

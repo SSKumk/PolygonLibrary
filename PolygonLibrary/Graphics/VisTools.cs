@@ -1,4 +1,6 @@
+using System.Numerics;
 using CGLibrary;
+using Graphics.Draw;
 using static CGLibrary.Geometry<double, Graphics.DConvertor>;
 
 namespace Graphics;
@@ -12,7 +14,7 @@ public class VisTools {
     if (_spheres.TryGetValue(radius, out ConvexPolytop? sphere)) {
       return sphere;
     }
-    ConvexPolytop sp = ConvexPolytop.Sphere(Vector.Zero(3), radius, 6, 6).GetInFLrep();
+    ConvexPolytop sp = ConvexPolytop.Sphere(Geometry<double, DConvertor>.Vector.Zero(3), radius, 6, 6).GetInFLrep();
     _spheres.Add(radius, sp);
 
     return sp;
@@ -48,29 +50,29 @@ public class VisTools {
   public class FacetColor : Facet {
     public Color color;
 
-    public FacetColor(IEnumerable<Vector> vertices, Vector normal, Color? color) : base(vertices, normal) {
+    public FacetColor(IEnumerable<Geometry<double, DConvertor>.Vector> vertices, Geometry<double, DConvertor>.Vector normal, Color? color) : base(vertices, normal) {
       this.color = color ?? Color.Default;
     }
 
   }
   public class Facet {
 
-    public readonly IEnumerable<Vector> Vertices;
-    public readonly Vector              Normal;
+    public readonly IEnumerable<Geometry<double, DConvertor>.Vector> Vertices;
+    public readonly Geometry<double, DConvertor>.Vector                            Normal;
 
-    public Facet(IEnumerable<Vector> vertices, Vector normal) {
+    public Facet(IEnumerable<Geometry<double, DConvertor>.Vector> vertices, Geometry<double, DConvertor>.Vector normal) {
       Vertices   = vertices;
       Normal     = normal;
     }
 
   }
 
-  public class VectorMixedProductComparer : IComparer<Vector> {
+  public class VectorMixedProductComparer : IComparer<Geometry<double, DConvertor>.Vector> {
 
-    private readonly Vector _outerNormal;
-    private readonly Vector _firstPoint;
+    private readonly Geometry<double, DConvertor>.Vector _outerNormal;
+    private readonly Geometry<double, DConvertor>.Vector               _firstPoint;
 
-    public VectorMixedProductComparer(Vector outerNormal, Vector firstPoint) {
+    public VectorMixedProductComparer(Geometry<double, DConvertor>.Vector outerNormal, Geometry<double, DConvertor>.Vector firstPoint) {
       _outerNormal = outerNormal;
       _firstPoint  = firstPoint;
     }
@@ -81,16 +83,16 @@ public class VisTools {
     /// <param name="v">The first vector.</param>
     /// <param name="u">The second vector.</param>
     /// <returns>The outward normal to the plane of v and u.</returns>
-    public static Vector CrossProduct3D(Vector v, Vector u) {
+    public static Geometry<double, DConvertor>.Vector CrossProduct3D(Geometry<double, DConvertor>.Vector v, Geometry<double, DConvertor>.Vector u) {
       double[] crossProduct = new double[3];
       crossProduct[0] = v[1] * u[2] - v[2] * u[1];
       crossProduct[1] = v[2] * u[0] - v[0] * u[2];
       crossProduct[2] = v[0] * u[1] - v[1] * u[0];
 
-      return new Vector(crossProduct);
+      return new Geometry<double, DConvertor>.Vector(crossProduct);
     }
 
-    public int Compare(Vector? v1, Vector? v2) {
+    public int Compare(Geometry<double, DConvertor>.Vector? v1, Geometry<double, DConvertor>.Vector? v2) {
       if (v1 is null && v2 is null)
         return 0;
       if (v1 is null)
@@ -118,19 +120,7 @@ public class VisTools {
         );
     }
   }
-  public static void AddToFacetList(List<Facet> FList, ConvexPolytop polytop) {
-    foreach (FLNode F in polytop.FLrep.Lattice[2]) {
-      HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
-      FList.Add
-        (
-         new Facet
-           (
-            F.Vertices.ToList().OrderByDescending(v => v, new VectorMixedProductComparer(hp.Normal, F.Vertices.First())).ToArray()
-          , hp.Normal
-           )
-        );
-    }
-  }
+
 
   /// <summary>
   /// Generates a convex polytope representing a cylinder in 3D space.
@@ -148,21 +138,21 @@ public class VisTools {
   /// A <see cref="ConvexPolytop"/> representing the cylinder.
   /// The polytop is constructed from the vertices of the two circular bases.
   /// </returns>
-  public static ConvexPolytop Cylinder(Vector p1, Vector p2, double radius, int segments = 10) {
-    Vector axe = p1 - p2; // ось цилиндра
+  public static ConvexPolytop Cylinder(Geometry<double, DConvertor>.Vector p1, Geometry<double, DConvertor>.Vector p2, double radius, int segments = 10) {
+    Geometry<double, DConvertor>.Vector axe = p1 - p2; // ось цилиндра
     if (axe.Length < 1e-10) {
       throw new ArgumentException("Points p1 and p2 are too close or coincide.");
     }
 
-    LinearBasis? basePlane = new LinearBasis(axe).FindOrthogonalComplement();
-    Vector       u1        = basePlane![0];
-    Vector       u2        = basePlane[1];
+    LinearBasis?                        basePlane = new LinearBasis(axe).FindOrthogonalComplement();
+    Geometry<double, DConvertor>.Vector u1        = basePlane![0];
+    Geometry<double, DConvertor>.Vector               u2        = basePlane[1];
 
-    List<Vector> vs = new List<Vector>();
+    List<Geometry<double, DConvertor>.Vector> vs = new List<Geometry<double, DConvertor>.Vector>();
     for (int i = 0; i < segments; i++) {
-      double angle         = 2 * Math.PI * i / segments;
-      Vector pointOnCircle = Math.Cos(angle) * u1 + Math.Sin(angle) * u2;
-      Vector onCircle      = radius * pointOnCircle;
+      double                              angle         = 2 * Math.PI * i / segments;
+      Geometry<double, DConvertor>.Vector pointOnCircle = Math.Cos(angle) * u1 + Math.Sin(angle) * u2;
+      Geometry<double, DConvertor>.Vector               onCircle      = radius * pointOnCircle;
       vs.Add(p1 + onCircle);
       vs.Add(p2 + onCircle);
     }
@@ -172,19 +162,19 @@ public class VisTools {
 
   public struct SeveralPolytopes {
 
-    public SortedSet<Vector>   vertices;  // список вершин
-    public List<ConvexPolytop> polytopes; // набор выпуклых многогранников
+    public SortedSet<Geometry<double, DConvertor>.Vector> vertices;  // список вершин
+    public List<ConvexPolytop>              polytopes; // набор выпуклых многогранников
 
-    public SeveralPolytopes(SortedSet<Vector> vertices, List<ConvexPolytop> polytopes) {
+    public SeveralPolytopes(SortedSet<Geometry<double, DConvertor>.Vector> vertices, List<ConvexPolytop> polytopes) {
       this.vertices  = vertices;
       this.polytopes = polytopes;
     }
 
   }
 
-  public static SeveralPolytopes MakeCylinderOnTraj(List<Vector> traj, int start, int end, double radius) {
-    SortedSet<Vector>   vertices  = new SortedSet<Vector>();
-    List<ConvexPolytop> polytopes = new List<ConvexPolytop>();
+  public static SeveralPolytopes MakeCylinderOnTraj(List<Geometry<double, DConvertor>.Vector> traj, int start, int end, double radius) {
+    SortedSet<Geometry<double, DConvertor>.Vector> vertices  = new SortedSet<Geometry<double, DConvertor>.Vector>();
+    List<ConvexPolytop>                            polytopes = new List<ConvexPolytop>();
 
     for (int i = start; i < end; i++) {
       ConvexPolytop cylinder = Cylinder(traj[i], traj[i + 1], radius);
@@ -193,6 +183,16 @@ public class VisTools {
     }
 
     return new SeveralPolytopes(vertices, polytopes);
+  }
+
+
+  public static void DrawPolytopePLY<TNum, TConv>(CGLibrary.Geometry<TNum, TConv>.ConvexPolytop polytop, string path)
+    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
+    IFloatingPoint<TNum>, IFormattable
+    where TConv : INumConvertor<TNum> {
+    List<Facet> flist = new List<Facet>();
+    Visualization<TNum, TConv>.AddToFacetList(flist, polytop);
+    new PlyDrawer().SaveFrame(path, Visualization<TNum,TConv>.ToDSet(polytop.Vrep), flist);
   }
 
 
