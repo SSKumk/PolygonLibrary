@@ -208,7 +208,7 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Perform the projection to a 2D affine space with the origin o and basis (u1,u2) by the formula:
-    ///<c>res = (this * u1) * u1 + (this * u2) * u2</c>
+    ///<c>res = ([this - o] * u1) * u1 + ([this - o] * u2) * u2</c>
     /// </summary>
     /// <param name="o">The origin of the affine space.</param>
     /// <param name="u1">The first basis vector of the plane.</param>
@@ -276,8 +276,8 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The angle from the first vector to the another one. It is from the interval [-pi, pi).
-    /// It uses the TNum.Acos to calculate the angle.
+    /// Returns the angle from <paramref name="v1"/> to <paramref name="v2"/> in the interval <c>[0, π]</c>.
+    /// Uses <c>TNum.Acos</c> for computation.
     /// </summary>
     /// <param name="v1">The first vector</param>
     /// <param name="v2">The second vector</param>
@@ -286,15 +286,14 @@ public partial class Geometry<TNum, TConv>
       TNum dot = Vector.CosAngle(v1, v2);
       Debug.Assert
         (
-         Tools.GE(dot, Tools.MinusOne) && !Tools.LE(dot, Tools.One)
+         Tools.GE(dot, Tools.MinusOne) && Tools.LE(dot, Tools.One)
        , $"Vector.Angle: The dot product of v1 = {v1} and v2 = {v2} is beyond [-1-{Tools.Eps}, 1+{Tools.Eps}]! Found value: {dot}"
         );
 
-      // The intervals [-1-eps,-1] and [1,1+eps] are contracted to -1 and 1 respectively
-      if (Tools.EQ(dot, Tools.MinusOne) && dot <= Tools.MinusOne) {
+      if (Tools.EQ(dot, Tools.MinusOne)) {
         return TNum.Pi;
       }
-      if (Tools.EQ(dot, Tools.One) && dot >= Tools.One) {
+      if (Tools.EQ(dot, Tools.One)) {
         return TNum.Zero;
       }
 
@@ -387,11 +386,11 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => throw new InvalidOperationException();
 
     public override bool Equals(object? obj) {
-      if (obj is not Vector) {
+      if (obj is not Vector vector) {
         return false;
       }
 
-      return CompareTo((Vector)obj!) == 0;
+      return CompareTo(vector) == 0;
     }
 
     /// <summary>
