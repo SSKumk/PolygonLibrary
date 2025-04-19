@@ -66,12 +66,11 @@ public partial class Geometry<TNum, TConv>
     public Matrix Basis {
       get
         {
-          if (_Basis is null) {
+          if (Empty) {
             throw new ArgumentException("Accessing empty basis!");
           }
-          else {
-            return _Basis;
-          }
+
+          return _Basis!;
         }
     }
 
@@ -137,6 +136,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       if (IsFullDim) { return true; }
+      if (Empty) { return v.IsZero; }
 
       for (int row = 0; row < SpaceDim; row++) {
         if (Tools.NE(ProjMatrix.MultiplyRowByVector(row, v), v[row])) {
@@ -256,8 +256,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to form the basis.</param>
     public LinearBasis(Vector v) {
-      Debug.Assert(!v.IsZero, "LinearBasis: Can't construct the linear basis based ob zero-vector!");
-
+      if (v.IsZero) {
+        throw new ArgumentException("Cannot construct a linear basis from a zero vector.", nameof(v));
+      }
       SpaceDim = v.SpaceDim;
       _Basis   = new Matrix(v.Normalize());
 
@@ -434,6 +435,9 @@ public partial class Geometry<TNum, TConv>
 
       // Сравниваем размерности пространств, задаваемых базисами
       if (this.SubSpaceDim != other.SubSpaceDim) { return false; }
+
+      // Базисы лежащие в разных пространствах -- разные
+      if (this.SpaceDim != other.SpaceDim) { return false; }
 
       // Если хотя бы один вектор не лежит в подпространстве нашего линейного базиса, то они не равны.
       foreach (Vector otherbv in other) {
