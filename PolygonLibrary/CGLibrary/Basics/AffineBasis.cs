@@ -35,7 +35,7 @@ public partial class Geometry<TNum, TConv>
     public int SubSpaceDim => LinBasis.SubSpaceDim;
 
     /// <summary>
-    /// Gets a value indicating whether this affine basis is empty.
+    /// Gets a value indicating whether the linear basis associated with this affine basis is empty.
     /// </summary>
     public bool IsEmpty => LinBasis.Empty;
 
@@ -136,7 +136,11 @@ public partial class Geometry<TNum, TConv>
 
       if (IsFullDim) { return true; }
 
-      // LinBasis.Contains(v - Origin);
+      if (IsEmpty) {
+        return Origin == v;
+      }
+
+      // Equivalent to: LinBasis.Contains(v - Origin)
       for (int row = 0; row < SpaceDim; row++) {
         if (Tools.NE(LinBasis.ProjMatrix.MultiplyRowByDiffOfVectors(row, v, Origin), v[row] - Origin[row])) {
           return false;
@@ -177,7 +181,9 @@ public partial class Geometry<TNum, TConv>
       if (needCopy) {
         LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
       }
-      LinBasis = lBasis;
+      else {
+        LinBasis = lBasis;
+      }
 
 #if DEBUG
       CheckCorrectness(this);
