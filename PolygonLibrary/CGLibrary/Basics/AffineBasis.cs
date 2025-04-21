@@ -282,11 +282,12 @@ public partial class Geometry<TNum, TConv>
     /// <param name="affineBasis">Basis to be checked</param>
     public static void CheckCorrectness(AffineBasis affineBasis) {
       if (!affineBasis.LinBasis.Empty) {
-        Debug.Assert
-          (
-           affineBasis.Origin.SpaceDim == affineBasis.LinBasis.SpaceDim
-         , $"AffineBasis.CheckCorrectness: The space dimensions of the Origin and the LinearBasis should be equal! Found sdim(Orig) = {affineBasis.Origin.SpaceDim}, sdim(LBasis) = {affineBasis.LinBasis.SpaceDim}"
-          );
+        if (affineBasis.Origin.SpaceDim == affineBasis.LinBasis.SpaceDim) {
+          throw new ArgumentException
+            (
+             $"AffineBasis.CheckCorrectness: The space dimensions of the Origin and the LinearBasis should be equal! Found sdim(Orig) = {affineBasis.Origin.SpaceDim}, sdim(LBasis) = {affineBasis.LinBasis.SpaceDim}"
+            );
+        }
       }
       LinearBasis.CheckCorrectness(affineBasis.LinBasis);
     }
