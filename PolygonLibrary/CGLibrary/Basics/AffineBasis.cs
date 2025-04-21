@@ -75,7 +75,7 @@ public partial class Geometry<TNum, TConv>
         return Origin;
       }
 
-      return LinBasis.ProjectPointToSubSpace_in_OrigSpace(v - Origin) + Origin;
+      return LinBasis.ProjectVectorToSubSpace_in_OrigSpace(v - Origin) + Origin;
     }
 
     /// <summary>
@@ -280,7 +280,16 @@ public partial class Geometry<TNum, TConv>
     /// Method to check then the basis is correct
     /// </summary>
     /// <param name="affineBasis">Basis to be checked</param>
-    internal static void CheckCorrectness(AffineBasis affineBasis) { LinearBasis.CheckCorrectness(affineBasis.LinBasis); }
+    public static void CheckCorrectness(AffineBasis affineBasis) {
+      if (!affineBasis.LinBasis.Empty) {
+        Debug.Assert
+          (
+           affineBasis.Origin.SpaceDim == affineBasis.LinBasis.SpaceDim
+         , $"AffineBasis.CheckCorrectness: The space dimensions of the Origin and the LinearBasis should be equal! Found sdim(Orig) = {affineBasis.Origin.SpaceDim}, sdim(LBasis) = {affineBasis.LinBasis.SpaceDim}"
+          );
+      }
+      LinearBasis.CheckCorrectness(affineBasis.LinBasis);
+    }
 
   }
 
