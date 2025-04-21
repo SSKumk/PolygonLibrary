@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace CGLibrary;
 
@@ -88,15 +90,22 @@ public partial class Geometry<TNum, TConv>
     /// Finds the orthogonal complement of the given linear basis.
     /// </summary>
     /// <returns>The orthogonal complement of the basis. Returns null if the basis is full-dimensional.</returns>
-    public LinearBasis? FindOrthogonalComplement() {
-      if (IsFullDim) { return null; }
-      if (Empty) { return new LinearBasis(SpaceDim, SpaceDim); }
+    public bool FindOrthogonalComplement([NotNullWhen(true)] out LinearBasis? ocLinearBasis) {
+      ocLinearBasis = null;
+
+      if (IsFullDim) { return false; }
+      if (Empty) {
+        ocLinearBasis = new LinearBasis(SpaceDim, SpaceDim);
+
+        return true;
+      }
 
       (Matrix Q, _) = QRDecomposition.ByReflection(Basis);
-
       Matrix ogBasis = Q.TakeSubMatrix(null, Enumerable.Range(SubSpaceDim, SpaceDim - SubSpaceDim).ToArray());
 
-      return new LinearBasis(ogBasis);
+      ocLinearBasis = new LinearBasis(ogBasis);
+
+      return true;
     }
 
     /// <summary>
@@ -104,13 +113,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>An orthonormal vector orthogonal to the basis. Returns the zero vector if the basis is full-dimensional.</returns>
     public Vector FindOrthonormalVector() {
-      LinearBasis? oc = FindOrthogonalComplement();
-
-      if (oc is null) {
-        throw new ArgumentException
-          (
-           $"LinearBasis.FindOrthonormalVector: Can not find an orthonormal vector to the linear basis. Found SpaceDim == SubSpaceDim"
-          );
+      if (!FindOrthogonalComplement(out LinearBasis? oc)) {
+        throw new ArgumentException($"LinearBasis.FindOrthonormalVector: Can not find an orthonormal vector to the linear basis.");
       }
 
       return oc[0];
@@ -121,7 +125,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be projected.</param>
     /// <returns>The projected vector in the subspace.</returns>
-    public Vector ProjectPointToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
+    public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
 
     /// <summary>
     /// Checks if the given vector belongs to the linear basis.
@@ -247,6 +251,24 @@ public partial class Geometry<TNum, TConv>
       foreach (Vector v in Swarm) {
         yield return ProjectVectorToSubSpace(v);
       }
+    }
+
+    /// <summary>
+    /// Determines whether the current basis spans the same subspace as the specified basis.
+    /// </summary>
+    /// <param name="other">The basis to compare with the current basis.</param>
+    /// <returns><c>true</c> if both bases span the same subspace; otherwise, <c>false</c>.</returns>
+    public bool SpanSameSpace(LinearBasis other) {
+      if (this.SubSpaceDim != other.SubSpaceDim) { return false; }
+
+      // Базисы лежащие в разных пространствах -- разные
+      if (this.SpaceDim != other.SpaceDim) { return false; }
+
+      foreach (Vector otherbv in other) {
+        if (!Contains(otherbv)) { return false; }
+      }
+
+      return true;
     }
 #endregion
 
@@ -382,6 +404,10 @@ public partial class Geometry<TNum, TConv>
     private LinearBasis(Matrix m) {
       _Basis   = m;
       SpaceDim = m.Rows;
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
     }
 #endregion
 
@@ -392,8 +418,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="spaceDim">The dimension of the space and the basis.</param>
     /// <param name="random">The random to be used. If null, the Random be used.</param>
     /// <returns>A linear basis with the given dimension.</returns>
-    public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null)
-      => GenLinearBasis(spaceDim, spaceDim, random);
+    public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null) => GenLinearBasis(spaceDim, spaceDim, random);
 
     /// <summary>
     /// Generates a k-dimensional linear basis in the specified dimension.
@@ -418,8 +443,21 @@ public partial class Geometry<TNum, TConv>
 
 
 #region Overrides
-    // public override int GetHashCode() => HashCode.Combine(SubSpaceDim, SpaceDim);
     public override int GetHashCode() => throw new InvalidOperationException();
+
+    /// <summary>
+    /// Returns a string representation of the basis as a list of basis vectors, each on a separate line.
+    /// </summary>
+    /// <returns>A <see cref="string"/> containing all basis vectors separated by newline characters.</returns>
+    public override string ToString() {
+      StringBuilder sb = new StringBuilder();
+      foreach (Vector bvec in this) {
+        sb.Append(bvec);
+        sb.Append('\n');
+      }
+
+      return sb.ToString();
+    }
 
     /// <summary>
     /// Two linear basics are equal if they span the same space.
@@ -433,18 +471,7 @@ public partial class Geometry<TNum, TConv>
 
       LinearBasis other = (LinearBasis)obj;
 
-      // Сравниваем размерности пространств, задаваемых базисами
-      if (this.SubSpaceDim != other.SubSpaceDim) { return false; }
-
-      // Базисы лежащие в разных пространствах -- разные
-      if (this.SpaceDim != other.SpaceDim) { return false; }
-
-      // Если хотя бы один вектор не лежит в подпространстве нашего линейного базиса, то они не равны.
-      foreach (Vector otherbv in other) {
-        if (!Contains(otherbv)) { return false; }
-      }
-
-      return true;
+      return SpanSameSpace(other);
     }
 #endregion
 
