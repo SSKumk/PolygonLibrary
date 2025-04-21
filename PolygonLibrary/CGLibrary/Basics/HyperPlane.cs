@@ -8,8 +8,8 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents a (d-1)-dimensional hyperplane in a d-dimensional euclidean space.
-  /// N * x = C, N - the outward normal vector and C is the constant term.
+  /// Represents a (d-1)-dimensional half-space (hyperplane) in a d-dimensional euclidean space.
+  /// N * x &lt;= C, N - the outward normal vector and C is the constant term.
   /// </summary>
   public class HyperPlane {
 
@@ -25,11 +25,6 @@ public partial class Geometry<TNum, TConv>
     public int SpaceDim => Origin.SpaceDim;
 
     /// <summary>
-    /// The dimension of the hyperplane affine basis.
-    /// </summary>
-    public int SubSpaceDim { get; }
-
-    /// <summary>
     /// The affine basis associated with the hyperplane.
     /// </summary>
     public AffineBasis AffBasis {
@@ -39,7 +34,9 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert
               (_normal is not null, "HyperPlane.AffBasis: Normal is null. Can't construct an affine basis of a hyperplane.");
 
-            _affBasis = new AffineBasis(Origin, new LinearBasis(Normal).FindOrthogonalComplement()!, false);
+            new LinearBasis(Normal).FindOrthogonalComplement(out LinearBasis? complement);
+            Debug.Assert(complement is not null, $"HyperPlane.AffBasis: Can't find complement to a given affine basis.");
+            _affBasis = new AffineBasis(Origin, complement, false);
 
 #if DEBUG
             CheckCorrectness(this);
@@ -96,9 +93,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="origin">The point through which a hyperplane passes.</param>
     /// <param name="needNormalize">Whether the normal vector should be normalized.</param>
     public HyperPlane(Vector normal, Vector origin, bool needNormalize = true) {
-      _normal     = needNormalize ? normal.Normalize() : normal;
-      Origin      = origin;
-      SubSpaceDim = Origin.SpaceDim - 1;
+      _normal = needNormalize ? normal.Normalize() : normal;
+      Origin  = origin;
 
 #if DEBUG
       CheckCorrectness(this);
@@ -110,12 +106,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="normal">The normal vector to a hyperplane.</param>
     /// <param name="constant">The constant term in right part.</param>
-    public HyperPlane(Vector normal, TNum constant) {
-      Origin      = normal * constant;
-      SubSpaceDim = normal.SpaceDim - 1;
-      TNum lengthN = normal.Length;
-      _normal       = normal / lengthN;
-      _constantTerm = constant / lengthN;
+    /// <param name="needNormalize">Whether the normal vector should be normalized.</param>
+    public HyperPlane(Vector normal, TNum constant, bool needNormalize = true) {
+      _normal       = needNormalize ? normal.Normalize() : normal;
+      _constantTerm = constant / normal.Length;
+      Origin        = _normal * (TNum)_constantTerm;
 
 #if DEBUG
       CheckCorrectness(this);
@@ -137,14 +132,12 @@ public partial class Geometry<TNum, TConv>
        , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.SpaceDim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
         );
 
-      _affBasis   = needCopy ? new AffineBasis(affBasis) : affBasis;
-      Origin      = affBasis.Origin;
-      SubSpaceDim = Origin.SpaceDim - 1;
+      _affBasis = needCopy ? new AffineBasis(affBasis) : affBasis;
+      Origin    = affBasis.Origin;
 
       if (toOrient is not null) {
         OrientNormal(toOrient.Value.point, toOrient.Value.isPositive);
       }
-
 
 #if DEBUG
       CheckCorrectness(this);
@@ -243,15 +236,18 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Determines if all the points in the given collection lie on the same side of the hyperplane.
+    /// Determines whether all the points in the given collection lie on the same side of the hyperplane.
     /// </summary>
     /// <param name="Swarm">The collection of points to check.</param>
-    /// <returns>A tuple containing a Boolean value indicating whether all the points are on the same side of the hyperplane,
-    /// and an integer value
-    /// +1 if all points lie in the direction of the normal vector
-    /// 0 if all points lie in the plane
-    /// -1 if all points lie in the opposite direction of the normal vector
-    /// int.MaxValue if bool equals to False</returns>
+    /// <returns>
+    /// A tuple where:
+    /// - The <c>bool</c> component is <c>true</c> if all points lie on the same side of the hyperplane.
+    /// - The <c>int</c> component is:
+    ///   +1 if all points lie in the direction of the normal vector;
+    ///   0 if all points lie on the hyperplane;
+    ///  -1 if all points lie in the opposite direction;
+    ///   any value if the <c>bool</c> component is <c>false</c>.
+    /// </returns>
     public (bool atOneSide, int where) AllAtOneSide(IEnumerable<Vector> Swarm) {
       Debug.Assert(Swarm.Any(), "HyperPlane.AllAtOneSide: The 'Swarm' is empty. The method requires a non-empty collection.");
 
@@ -259,6 +255,10 @@ public partial class Geometry<TNum, TConv>
 
       if (!temp.Any()) {
         return (true, 0);
+      }
+
+      if (Swarm.Count() != temp.Count()) {
+        return (false, 1);
       }
 
       int  sign        = temp.First();
@@ -279,7 +279,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Overrides
     public override string ToString()
-      => Normal.ToStringBraceAndDelim(' ', ' ', ',') + ConstantTerm.ToString(null, CultureInfo.InvariantCulture);
+      => Normal.ToStringBraceAndDelim(null, ' ', ',') + ConstantTerm.ToString(null, CultureInfo.InvariantCulture);
 
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
@@ -288,7 +288,7 @@ public partial class Geometry<TNum, TConv>
 
       HyperPlane other = (HyperPlane)obj;
 
-      if (this.SubSpaceDim != other.SubSpaceDim) {
+      if (this.SpaceDim != other.SpaceDim) {
         return false;
       }
 
@@ -307,7 +307,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="hp">The hyperplane to be checked.</param>
     /// <exception cref="ArgumentException">Thrown if the hyperplane is incorrect.</exception>
-    private static void CheckCorrectness(HyperPlane hp) {
+    public static void CheckCorrectness(HyperPlane hp) {
       AffineBasis.CheckCorrectness(hp.AffBasis);
 
       if (!Tools.EQ(hp.Normal.Length, Tools.One)) {
