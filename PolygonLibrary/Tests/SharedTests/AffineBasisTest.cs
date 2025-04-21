@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using CGLibrary;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
-using static Tests.SharedTests.StaticHelpers; // V() и другие хелперы
+using static Tests.SharedTests.StaticHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +11,7 @@ namespace Tests.SharedTests;
 [TestFixture]
 public class AffineBasisTests {
 
-  // Helper для сравнения векторов уже есть в VectorTests, но можно и сюда добавить для удобства
-  private void AssertVectorsAreEqual(Vector v1, Vector v2, string message = "") {
-    Assert.That(v1.SpaceDim, Is.EqualTo(v2.SpaceDim), $"Vector dimensions differ. {message}");
-    for (int i = 0; i < v1.SpaceDim; i++) {
-      Assert.That(Tools.EQ(v1[i], v2[i]), Is.True, $"Vector component {i} differs. Expected: {v2[i]}, Got: {v1[i]}. {message}");
-    }
-  }
-
-  // Helper для проверки ортонормированности LinBasis (если нужно)
+  // Helper для проверки ортонормированности LinBasis
   private void AssertBasisOrthonormal(AffineBasis ab) {
     LinearBasis lb = ab.LinBasis;
 
@@ -33,7 +25,6 @@ public class AffineBasisTests {
       }
     }
 #if DEBUG
-    // Проверка внутреннего состояния
     Assert.DoesNotThrow(() => AffineBasis.CheckCorrectness(ab), "Internal CheckCorrectness failed.");
 #endif
   }
@@ -54,26 +45,18 @@ public class AffineBasisTests {
     AssertVectorsAreEqual(ab[2], V(0, 0, 1));
     AssertBasisOrthonormal(ab);
   }
-  //  todo: Надо ли делать throw или же Debug.Assert (как сейчас)
-  // [Test]
-  // public void Constructor_OriginOnly_CreatesZeroSubspaceDimBasis() {
-  //   Vector      origin = V(1, 2, 3);
-  //   AffineBasis ab     = new AffineBasis(origin);
-  //
-  //   Assert.That(ab.SpaceDim, Is.EqualTo(3));
-  //   Assert.That(ab.SubSpaceDim, Is.EqualTo(0));
-  //   Assert.That(ab.IsFullDim, Is.False);
-  //   Assert.That(ab.IsEmpty, Is.True);
-  //   AssertVectorsAreEqual(ab.Origin, origin);
-  //   Assert.Throws<ArgumentOutOfRangeException>
-  //     (
-  //      ()
-  //        => {
-  //        var x = ab[0];
-  //      }
-  //    , "Accessing index 0 of empty basis should throw."
-  //     );
-  // }
+
+  [Test]
+  public void Constructor_OriginOnly_CreatesZeroSubspaceDimBasis() {
+    Vector      origin = V(1, 2, 3);
+    AffineBasis ab     = new AffineBasis(origin);
+
+    Assert.That(ab.SpaceDim, Is.EqualTo(3));
+    Assert.That(ab.SubSpaceDim, Is.EqualTo(0));
+    Assert.That(ab.IsFullDim, Is.False);
+    Assert.That(ab.IsEmpty, Is.True);
+    AssertVectorsAreEqual(ab.Origin, origin);
+  }
 
   [Test]
   public void Constructor_OriginAndLinearBasis_NeedCopyTrue() {
@@ -96,13 +79,12 @@ public class AffineBasisTests {
   public void Constructor_OriginAndLinearBasis_NeedCopyFalse() {
     Vector      origin = V(1, 1, 1);
     LinearBasis lb     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
-    AffineBasis ab     = new AffineBasis(origin, lb, needCopy: false); // Internal constructor usage? Assumes lb is valid.
+    AffineBasis ab     = new AffineBasis(origin, lb, needCopy: false);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
     Assert.That(ab.LinBasis, Is.SameAs(lb)); // Must be the same instance
 
-    // Modify original lb, ab SHOULD change
     lb.AddVector(V(0, 0, 1));
     Assert.That
       (ab.SubSpaceDim, Is.EqualTo(3), "Affine basis should change when original LinearBasis is modified (NeedCopy=false).");
@@ -113,33 +95,24 @@ public class AffineBasisTests {
   [Test]
   public void Constructor_FromPoints_Line() {
     Vector p1 = V(1, 1, 1);
-    Vector p2 = V(3, 1, 1);  // Along X axis from p1
-    Vector p3 = V(-1, 1, 1); // Also along X axis from p1
+    Vector p2 = V(3, 1, 1);
+    Vector p3 = V(-1, 1, 1);
 
-    AffineBasis ab =
-      new AffineBasis
-        (
-         new List<Vector>
-           {
-             p1
-           , p2
-           , p3
-           }
-        );
+    AffineBasis ab = new AffineBasis(new List<Vector> { p1, p2, p3 });
 
     AssertVectorsAreEqual(ab.Origin, p1);
     Assert.That(ab.SpaceDim, Is.EqualTo(3));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(1), "Should only find one independent direction (p2-p1).");
-    AssertVectorsAreEqual(ab[0], V(1, 0, 0), "Basis vector should be normalized direction."); // (p2-p1).Normalize()
+    AssertVectorsAreEqual(ab[0], V(1, 0, 0), "Basis vector should be normalized direction.");
     AssertBasisOrthonormal(ab);
   }
 
   [Test]
   public void Constructor_FromPoints_Plane() {
     Vector p1 = V(0, 0, 0);
-    Vector p2 = V(2, 0, 0); // X direction
-    Vector p3 = V(0, 3, 0); // Y direction
-    Vector p4 = V(1, 1, 0); // In XY plane
+    Vector p2 = V(2, 0, 0);
+    Vector p3 = V(0, 3, 0);
+    Vector p4 = V(1, 1, 0);
 
     AffineBasis ab =
       new AffineBasis
@@ -177,7 +150,7 @@ public class AffineBasisTests {
   [Test]
   public void Constructor_CopyConstructor() {
     Vector      origin   = V(1, 2, 3);
-    LinearBasis lb       = LinearBasis.GenLinearBasis(3, 2); // Generate a 2D basis in 3D space
+    LinearBasis lb       = LinearBasis.GenLinearBasis(spaceDim:3, subSpaceDim:2);
     AffineBasis original = new AffineBasis(origin, lb);
     AffineBasis copy     = new AffineBasis(original);
 
@@ -188,7 +161,7 @@ public class AffineBasisTests {
     Assert.That(copy.SubSpaceDim, Is.EqualTo(original.SubSpaceDim));
 
     // Modify copy's linear basis, original should not change
-    copy.AddVector(V(0, 0, 1)); // Assuming this doesn't make it non-orthonormal for simplicity
+    copy.AddVector(V(0, 0, 1));
     Assert.That(original.SubSpaceDim, Is.EqualTo(2), "Original SubSpaceDim should remain unchanged.");
   }
 #endregion
@@ -197,13 +170,12 @@ public class AffineBasisTests {
   [Test]
   public void Factory_FromVectors() {
     Vector      o  = V(1, 1, 0);
-    Vector      v1 = V(2, 0, 0);                                              // Not normalized
-    Vector      v2 = V(0, 0, 3);                                              // Not normalized, but orthogonal to v1
-    AffineBasis ab = AffineBasis.FromVectors(o, new List<Vector> { v1, v2 }); // Orthogonalize = true default
+    Vector      v1 = V(2, 0, 0);
+    Vector      v2 = V(0, 0, 3);
+    AffineBasis ab = AffineBasis.FromVectors(o, new List<Vector> { v1, v2 });
 
     AssertVectorsAreEqual(ab.Origin, o);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
-    // Check if basis vectors are normalized versions of input
     AssertVectorsAreEqual(ab[0], V(1, 0, 0));
     AssertVectorsAreEqual(ab[1], V(0, 0, 1));
     AssertBasisOrthonormal(ab);
@@ -212,8 +184,8 @@ public class AffineBasisTests {
   [Test]
   public void Factory_FromPoints() {
     Vector      o  = V(1, 1, 1);
-    Vector      p1 = V(3, 1, 1); // Direction (2,0,0) -> e1
-    Vector      p2 = V(1, 1, 4); // Direction (0,0,3) -> e3
+    Vector      p1 = V(3, 1, 1);
+    Vector      p2 = V(1, 1, 4);
     AffineBasis ab = AffineBasis.FromPoints(o, new List<Vector> { p1, p2 });
 
     AssertVectorsAreEqual(ab.Origin, o);
@@ -225,22 +197,21 @@ public class AffineBasisTests {
 
   [Test]
   public void Factory_GenAffineBasis() {
-    AffineBasis ab = AffineBasis.GenAffineBasis(4, 2); // 2D subspace in 4D space
+    AffineBasis ab = AffineBasis.GenAffineBasis(spaceDim:4, subSpaceDim:2);
     Assert.That(ab.SpaceDim, Is.EqualTo(4));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
-    Assert.That(ab.Origin.IsZero, Is.False); // Highly unlikely to be zero
-    AssertBasisOrthonormal(ab);              // Checks LinBasis
+    AssertBasisOrthonormal(ab);
   }
 #endregion
 
-#region Method Tests (Operations)
+#region Method Tests
   [Test]
   public void Method_AddVector() {
     Vector      o  = V(1, 1, 1);
-    AffineBasis ab = new AffineBasis(o, new LinearBasis(V(1, 0, 0))); // Start with X-axis basis
+    AffineBasis ab = new AffineBasis(o, new LinearBasis(V(1, 0, 0)));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(1));
 
-    bool added1 = ab.AddVector(V(0, 5, 0)); // Add Y-direction (will be normalized)
+    bool added1 = ab.AddVector(V(0, 5, 0));
     Assert.That(added1, Is.True);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
     AssertVectorsAreEqual(ab[0], V(1, 0, 0));
@@ -255,7 +226,7 @@ public class AffineBasisTests {
     Assert.That(ab.SubSpaceDim, Is.EqualTo(3));
     AssertVectorsAreEqual(ab[2], V(0, 0, 1));
 
-    bool added4 = ab.AddVector(V(1, 1, 1)); // Add to full basis
+    bool added4 = ab.AddVector(V(1, 1, 1));
     Assert.That(added4, Is.False);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(3));
 
@@ -263,8 +234,37 @@ public class AffineBasisTests {
   }
 
   [Test]
+  public void ProjectToAffineSpace_Reflect() {
+    Vector origin = V(0, 0);
+    List<Vector> basis = new List<Vector> { V(-1, 0), V(0, -1) };
+    SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 3), V(-1, 4) };
+    SortedSet<Vector> expected = new SortedSet<Vector> { V(-1, -1), V(-2, -3), V(1, -4) };
+
+    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis, false);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
+
+    bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
+    Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
+  }
+
+  [Test]
+  public void ProjectToAffineSpace_ReflectAndShift() {
+    Vector origin = V(2, 2);
+    List<Vector> basis = new List<Vector> { V(-1, 0), V(0, -1) };
+    SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 4), V(-4, 4) };
+    SortedSet<Vector> expected = new SortedSet<Vector> { V(1, 1), V(0, -2), V(6, -2) };
+
+    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis, false);
+    IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
+
+    bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
+    Assert.That(areEqual, $"The following sets are not equal:\n -- {result} \n -- {expected}.");
+  }
+
+
+  [Test]
   public void Method_ProjectPointToSubSpace_in_OrigSpace_Plane() {
-    Vector      o  = V(0, 0, 1); // XY plane shifted to z=1
+    Vector      o  = V(0, 0, 1);
     LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
     AffineBasis ab = new AffineBasis(o, lb);
 
@@ -283,27 +283,23 @@ public class AffineBasisTests {
 
   [Test]
   public void Method_ProjectPointToSubSpace_in_OrigSpace_Line() {
-    Vector      o  = V(1, 1, 1);                  // Origin of the line
-    LinearBasis lb = new LinearBasis(V(1, 0, 0)); // Line along X-axis
+    Vector      o  = V(1, 1, 1);
+    LinearBasis lb = new LinearBasis(V(1, 0, 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector p_on  = V(5, 1, 1);
-    Vector p_off = V(5, 2, 1); // Same X, different Y
+    Vector p_off = V(5, 2, 1);
 
     Vector proj_on  = ab.ProjectPointToSubSpace_in_OrigSpace(p_on);
     Vector proj_off = ab.ProjectPointToSubSpace_in_OrigSpace(p_off);
 
-    // Formula: Origin + LinBasis.ProjMatrix * (p - Origin)
-    // For p_off: p - Origin = (4, 1, 0). LinBasis.ProjMatrix = [1 0 0; 0 0 0; 0 0 0]
-    // ProjMatrix * (p - Origin) = (4, 0, 0)
-    // Result = Origin + (4, 0, 0) = (1,1,1) + (4,0,0) = (5,1,1)
     AssertVectorsAreEqual(proj_on, p_on, "Projection of point on line should be itself.");
     AssertVectorsAreEqual(proj_off, V(5, 1, 1), "Projection of point off line should land on line.");
   }
 
   [Test]
   public void Method_ProjectPointToSubSpace_in_OrigSpace_Point() {
-    Vector      o  = V(1, 2, 3); // 0-dim subspace
+    Vector      o  = V(1, 2, 3);
     AffineBasis ab = new AffineBasis(o);
 
     Vector p    = V(5, 5, 5);
@@ -314,15 +310,13 @@ public class AffineBasisTests {
 
   [Test]
   public void Method_ProjectPointToSubSpace_Coordinates_Plane() {
-    Vector      o  = V(0, 0, 1);                                        // XY plane shifted to z=1
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // Standard e1, e2 basis
+    Vector      o  = V(0, 0, 1);
+    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector p = V(3, 4, 5);
-    // p - Origin = (3, 4, 4)
-    // Project (3,4,4) onto basis e1, e2 --> coords are ( (3,4,4)*e1, (3,4,4)*e2 ) = (3, 4)
     Vector coords         = ab.ProjectPointToSubSpace(p);
-    Vector expectedCoords = V(3, 4); // Coordinates in the basis e1, e2
+    Vector expectedCoords = V(3, 4);
 
     Assert.That(coords.SpaceDim, Is.EqualTo(ab.SubSpaceDim), "Coordinate dimension should match SubSpaceDim.");
     AssertVectorsAreEqual(coords, expectedCoords);
@@ -330,17 +324,13 @@ public class AffineBasisTests {
 
   [Test]
   public void Method_ProjectPointToSubSpace_Coordinates_Line() {
-    Vector      o  = V(1, 1, 1);                                                // Origin of the line
-    LinearBasis lb = new LinearBasis(V(1 / Math.Sqrt(2), 1 / Math.Sqrt(2), 0)); // Line along (1,1,0) direction
+    Vector      o  = V(1, 1, 1);
+    LinearBasis lb = new LinearBasis(V(1 / Math.Sqrt(2), 1 / Math.Sqrt(2), 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector p = V(3, 3, 1); // Point on the line: o + sqrt(8)*basis_vector
-    // p - Origin = (2, 2, 0)
-    // Project (2,2,0) onto basis vector b = (1/sqrt(2), 1/sqrt(2), 0)
-    // Coord = (p - Origin) * b = (2,2,0) * (1/sqrt(2), 1/sqrt(2), 0) = 2/sqrt(2) + 2/sqrt(2) = 4/sqrt(2) = 2*sqrt(2)
-    // The coordinate represents the distance along the normalized basis vector. Length of (2,2,0) is sqrt(8) = 2*sqrt(2).
+    Vector p = V(3, 3, 1);
     Vector coords         = ab.ProjectPointToSubSpace(p);
-    Vector expectedCoords = V(Math.Sqrt(8)); // Coordinate along the single basis vector
+    Vector expectedCoords = V(Math.Sqrt(8));
 
     Assert.That(coords.SpaceDim, Is.EqualTo(1));
     AssertVectorsAreEqual(coords, expectedCoords);
@@ -349,12 +339,10 @@ public class AffineBasisTests {
   [Test]
   public void Method_TranslateToOriginal_Plane() {
     Vector      o  = V(0, 0, 1);
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // e1, e2
+    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector coords = V(3, 4); // Coordinates relative to basis (e1, e2)
-    // Expected original = Origin + coords[0]*Basis[0] + coords[1]*Basis[1]
-    // = (0,0,1) + 3*(1,0,0) + 4*(0,1,0) = (3, 4, 1)
+    Vector coords = V(3, 4);
     Vector originalPoint = ab.TranslateToOriginal(coords);
     Vector expectedPoint = V(3, 4, 1);
 
@@ -368,11 +356,7 @@ public class AffineBasisTests {
     LinearBasis lb = new LinearBasis(b);
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector coords = V(Math.Sqrt(8)); // Coordinate relative to basis vector b (distance along b)
-    // Expected original = Origin + coords[0]*Basis[0]
-    // = (1,1,1) + sqrt(8) * (1/sqrt(2), 1/sqrt(2), 0)
-    // = (1,1,1) + 2*sqrt(2) * (1/sqrt(2), 1/sqrt(2), 0)
-    // = (1,1,1) + (2, 2, 0) = (3, 3, 1)
+    Vector coords = V(Math.Sqrt(8));
     Vector originalPoint = ab.TranslateToOriginal(coords);
     Vector expectedPoint = V(3, 3, 1);
 
@@ -488,7 +472,6 @@ public class AffineBasisTests {
 
   [Test]
   public void Override_GetEnumerator() {
-    // Corrected constructor call
     AffineBasis ab      = new AffineBasis(V(1, 1, 1), new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
     int         count   = 0;
     var         vectors = new List<Vector>();
