@@ -4,21 +4,13 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics;
 using static Tests.SharedTests.StaticHelpers;
 
 namespace Tests.SharedTests;
 
 [TestFixture]
 public class LinearBasisTests {
-
-
-  // Helper for comparing vectors with tolerance
-  private void AssertVectorsAreEqual(Vector v1, Vector v2, string message = "") {
-    Assert.That(v1.SpaceDim, Is.EqualTo(v2.SpaceDim), $"Vector dimensions differ. {message}");
-    for (int i = 0; i < v1.SpaceDim; i++) {
-      Assert.That(v1[i], Is.EqualTo(v2[i]).Within(Tools.Eps), $"Vector component {i} differs. {message}");
-    }
-  }
 
   // Helper to check orthonormality (useful for debugging tests)
   private void AssertBasisOrthonormal(LinearBasis lb) {
@@ -81,6 +73,7 @@ public class LinearBasisTests {
     Assert.Throws<ArgumentException>
       (() => new LinearBasis(Vector.Zero(3)), "Constructor should always throw ArgumentException for a zero vector.");
   }
+
   [Test]
   public void Constructor_StandardBasis() {
     LinearBasis basis = new LinearBasis(3); // Should create standard 3D basis
@@ -252,7 +245,6 @@ public class LinearBasisTests {
 #endif
   }
 
-
   [Test]
   public void AddVector_Independent_Orthogonalize() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0));
@@ -331,7 +323,7 @@ public class LinearBasisTests {
   [Test]
   public void AddVector_Dependent_NoOrthogonalize_InvalidInput_Throws() {
     LinearBasis basis           = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // Корректный базис
-    Vector      dependentVector = V(1, 1, 0); // Зависим => не ортогонален, также не нормирован
+    Vector      dependentVector = V(1, 1, 0);
 
 #if DEBUG
     Assert.Throws<ArgumentException>
@@ -358,7 +350,7 @@ public class LinearBasisTests {
         , V(0, 0, 1, 0)
         , V(0, 0, 0, 5)
         };
-    basis.AddVectors(vectors); // Orthogonalize = true default
+    basis.AddVectors(vectors);
 
     Assert.That(basis.SubSpaceDim, Is.EqualTo(4));
     Assert.That(basis.IsFullDim, Is.True);
@@ -375,45 +367,45 @@ public class LinearBasisTests {
 
     Assert.That(added, Is.True);
     Assert.That(basis.SubSpaceDim, Is.EqualTo(2));
-    AssertBasisOrthonormal(basis); // Проверка должна пройти
+    AssertBasisOrthonormal(basis);
   }
 #endregion
 
 #region Projection and Contains Tests
   [Test]
-  public void ProjectPointToSubSpace_in_OrigSpace_Simple() {
+  public void ProjectVectorToSubSpace_in_OrigSpace_Simple() {
     LinearBasis basis     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // XY plane in 3D
     Vector      v         = V(3, 4, 5);
-    Vector      projected = basis.ProjectPointToSubSpace_in_OrigSpace(v);
+    Vector      projected = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
     Vector      expected  = V(3, 4, 0);
 
     AssertVectorsAreEqual(expected, projected);
   }
 
   [Test]
-  public void ProjectPointToSubSpace_in_OrigSpace_VectorInSubspace() {
+  public void ProjectVectorToSubSpace_in_OrigSpace_VectorInSubspace() {
     LinearBasis basis     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
     Vector      v         = V(3, 4, 0); // Already in subspace
-    Vector      projected = basis.ProjectPointToSubSpace_in_OrigSpace(v);
+    Vector      projected = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
 
     AssertVectorsAreEqual(v, projected, "Projection of vector already in subspace should be the vector itself.");
   }
 
   [Test]
-  public void ProjectPointToSubSpace_in_OrigSpace_VectorOrthogonalToSubspace() {
+  public void ProjectVectorToSubSpace_in_OrigSpace_VectorOrthogonalToSubspace() {
     LinearBasis basis     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
     Vector      v         = V(0, 0, 5); // Orthogonal to subspace
-    Vector      projected = basis.ProjectPointToSubSpace_in_OrigSpace(v);
+    Vector      projected = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
     Vector      expected  = V(0, 0, 0);
 
     AssertVectorsAreEqual(expected, projected, "Projection of vector orthogonal to subspace should be zero vector.");
   }
 
   [Test]
-  public void ProjectPointToSubSpace_in_OrigSpace_FullDimBasis() {
+  public void ProjectVectorToSubSpace_in_OrigSpace_FullDimBasis() {
     LinearBasis basis     = new LinearBasis(3); // Full 3D basis
     Vector      v         = V(3, 4, 5);
-    Vector      projected = basis.ProjectPointToSubSpace_in_OrigSpace(v);
+    Vector      projected = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
 
     AssertVectorsAreEqual(v, projected, "Projection onto full dimension basis should be the vector itself.");
   }
@@ -538,11 +530,12 @@ public class LinearBasisTests {
 
   [Test]
   public void FindOrthogonalComplement_PartialBasis() {
-    LinearBasis  basis      = new LinearBasis(new[] { V(1, 0, 0, 0), V(0, 1, 0, 0) }); // Span e1, e2 in 4D
-    LinearBasis? complement = basis.FindOrthogonalComplement();
+    LinearBasis basis = new LinearBasis(new[] { V(1, 0, 0, 0), V(0, 1, 0, 0) }); // Span e1, e2 in 4D
+    bool        isOC  = basis.FindOrthogonalComplement(out LinearBasis? complement);
 
+    Assert.That(isOC, Is.True);
     Assert.That(complement, Is.Not.Null);
-    Assert.That(complement!.SpaceDim, Is.EqualTo(4));
+    Assert.That(complement.SpaceDim, Is.EqualTo(4));
     Assert.That(complement.SubSpaceDim, Is.EqualTo(2)); // Should be 4 - 2 = 2
     AssertBasisOrthonormal(complement);
 
@@ -561,18 +554,20 @@ public class LinearBasisTests {
 
   [Test]
   public void FindOrthogonalComplement_FullBasis() {
-    LinearBasis  basis      = new LinearBasis(3); // Full 3D basis
-    LinearBasis? complement = basis.FindOrthogonalComplement();
+    LinearBasis basis = new LinearBasis(3); // Full 3D basis
+    bool        isOC  = basis.FindOrthogonalComplement(out LinearBasis? complement);
 
+    Assert.That(isOC, Is.False);
     Assert.That(complement, Is.Null);
   }
 
   [Test]
   public void FindOrthogonalComplement_EmptyBasis() {
-    LinearBasis  basis        = new LinearBasis(4, 0); // Empty basis in 4D
-    LinearBasis? complement   = basis.FindOrthogonalComplement();
-    LinearBasis  expectedFull = new LinearBasis(4); // Expect full basis as complement
+    LinearBasis basis        = new LinearBasis(4, 0); // Empty basis in 4D
+    bool        isOC         = basis.FindOrthogonalComplement(out LinearBasis? complement);
+    LinearBasis expectedFull = new LinearBasis(4); // Expect full basis as complement
 
+    Assert.That(isOC, Is.True);
     Assert.That(complement, Is.Not.Null);
     Assert.That(complement!.SpaceDim, Is.EqualTo(4));
     Assert.That(complement.SubSpaceDim, Is.EqualTo(4));
@@ -677,6 +672,106 @@ public class LinearBasisTests {
   }
 #endregion
 
+#region SpanSameSpace Tests
+  [Test]
+  public void SpanSameSpace_IdenticalObjects() {
+    LinearBasis basis = LinearBasis.GenLinearBasis(4, 2);
+    Assert.That(basis.SpanSameSpace(basis), Is.True);
+  }
+
+  [Test]
+  public void SpanSameSpace_EqualCopies() {
+    LinearBasis basis1 = LinearBasis.GenLinearBasis(3, 2);
+    LinearBasis basis2 = new LinearBasis(basis1);
+    Assert.That(basis1.SpanSameSpace(basis2), Is.True);
+    Assert.That(basis2.SpanSameSpace(basis1), Is.True);
+  }
+
+  [Test]
+  public void SpanSameSpace_EquivalentBases_SameVectorsDifferentOrder() {
+    Vector      v1     = V(1, 0, 0);
+    Vector      v2     = V(0, 1, 0);
+    LinearBasis basis1 = new LinearBasis(new[] { v1, v2 });
+    LinearBasis basis2 = new LinearBasis(new[] { v2, v1 }); // Тот же базис, другой порядок
+    Assert.That(basis1.SpanSameSpace(basis2), Is.True);
+    Assert.That(basis2.SpanSameSpace(basis1), Is.True);
+  }
+
+  [Test]
+  public void SpanSameSpace_EquivalentBases_RotatedXYPlane() {
+    // Стандартный базис XY плоскости
+    LinearBasis basisXY = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    // Повернутый базис XY плоскости
+    double      ca       = Math.Cos(Math.PI / 4.0); // cos(45)
+    double      sa       = Math.Sin(Math.PI / 4.0); // sin(45)
+    LinearBasis basisRot = new LinearBasis(new[] { V(ca, sa, 0), V(-sa, ca, 0) });
+
+    Assert.That(basisXY.SubSpaceDim, Is.EqualTo(basisRot.SubSpaceDim));
+    Assert.That(basisXY.SpanSameSpace(basisRot), Is.True, "Standard XY and rotated XY should span the same space.");
+    Assert.That(basisRot.SpanSameSpace(basisXY), Is.True, "Symmetry check for rotated basis.");
+  }
+
+  [Test]
+  public void SpanSameSpace_EquivalentBases_GeneratedVsStandard() {
+    LinearBasis basisStd = new LinearBasis(3);
+
+    GRandomLC   rnd      = new GRandomLC(54321);
+    LinearBasis basisGen = LinearBasis.GenLinearBasis(3, 3, rnd);
+
+    Assert.That(basisStd.IsFullDim, Is.True);
+    Assert.That(basisGen.IsFullDim, Is.True);
+    Assert.That(basisStd.SpanSameSpace(basisGen), Is.True, "Standard R3 and generated full R3 should span the same space.");
+    Assert.That(basisGen.SpanSameSpace(basisStd), Is.True, "Symmetry check for generated R3.");
+  }
+
+  [Test]
+  public void SpanSameSpace_DifferentSubSpaceDim() {
+    LinearBasis basis1D    = new LinearBasis(new[] { V(1, 0, 0) });             // Line
+    LinearBasis basis2D    = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // Plane
+    LinearBasis basisEmpty = new LinearBasis(3, 0);                             // Empty
+
+    Assert.That(basis1D.SpanSameSpace(basis2D), Is.False);
+    Assert.That(basis2D.SpanSameSpace(basis1D), Is.False);
+    Assert.That(basis1D.SpanSameSpace(basisEmpty), Is.False);
+    Assert.That(basisEmpty.SpanSameSpace(basis1D), Is.False);
+  }
+
+  [Test]
+  public void SpanSameSpace_SameSubSpaceDimDifferentSpace() {
+    // XY плоскость
+    LinearBasis basisXY = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    // XZ плоскость
+    LinearBasis basisXZ = new LinearBasis(new[] { V(1, 0, 0), V(0, 0, 1) });
+    // Плоскость y=x
+    LinearBasis basisDiag = new LinearBasis(new[] { V(1, 1, 0).Normalize(), V(0, 0, 1) });
+
+    Assert.That(basisXY.SpanSameSpace(basisXZ), Is.False, "XY vs XZ plane");
+    Assert.That(basisXZ.SpanSameSpace(basisXY), Is.False);
+    Assert.That(basisXY.SpanSameSpace(basisDiag), Is.False, "XY vs Diagonal plane");
+    Assert.That(basisDiag.SpanSameSpace(basisXY), Is.False);
+  }
+
+  [Test]
+  public void SpanSameSpace_DifferentSpaceDim() {
+    LinearBasis basis2D = new LinearBasis(new[] { V(1, 0) });    // R^2
+    LinearBasis basis3D = new LinearBasis(new[] { V(1, 0, 0) }); // R^3
+
+    // У них SubSpaceDim = 1, но SpaceDim разный
+    Assert.That(basis2D.SpanSameSpace(basis3D), Is.False);
+    Assert.That(basis3D.SpanSameSpace(basis2D), Is.False);
+  }
+
+  [Test]
+  public void SpanSameSpace_BothEmpty() {
+    LinearBasis basisEmpty1  = new LinearBasis(3, 0);
+    LinearBasis basisEmpty2  = new LinearBasis(3, 0);
+    LinearBasis basisEmpty4D = new LinearBasis(4, 0);
+
+    Assert.That(basisEmpty1.SpanSameSpace(basisEmpty2), Is.True, "Two empty bases in same SpaceDim.");
+    Assert.That(basisEmpty1.SpanSameSpace(basisEmpty4D), Is.False, "Empty bases in different SpaceDim.");
+  }
+#endregion
+
 #region Generation Test
   [Test]
   public void GenLinearBasis_FullDim() {
@@ -694,6 +789,95 @@ public class LinearBasisTests {
     Assert.That(lb.SubSpaceDim, Is.EqualTo(2));
     Assert.That(lb.IsFullDim, Is.False);
     AssertBasisOrthonormal(lb);
+  }
+#endregion
+
+#region Random tests
+  [Test]
+  public void OrthonormalizeRND() {
+    GRandomLC   rnd   = new GRandomLC(1234);
+    LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
+    Vector      v     = Vector.GenVector(5, rnd);
+
+    Vector ov       = basis.Orthonormalize(v);
+    Vector expected = V(-0.17574983491041277, -0.3573953264012456, -0.22696505419765584, 0.8059592355030082, 0.37456261302480787);
+
+    Assert.That(ov.Equals(expected) || ov.Equals(-expected), "Some orthogonalization of vector v");
+  }
+
+  [Test]
+  public void AddVectorRND() {
+    GRandomLC   rnd   = new GRandomLC(2345);
+    LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
+    Vector      v     = Vector.GenVector(5, rnd);
+
+    basis.AddVector(v);
+
+    List<Vector> basisList =
+      new List<Vector>()
+        {
+          V(-0.5469069029145192, 0.7375266873774018, -0.06093629951375099, -0.04428435868483195, -0.3889381543741992)
+        , V(-0.5437514327000299, -0.5605588954339749, -0.5887103066895489, -0.06269356730321592, -0.19899194858787822)
+        , V(0.35056986554378083, 0.14703950888480366, -0.46820894124701984, 0.7644356160825109, -0.22781292412948903)
+        };
+
+    List<Vector> exp1 = new List<Vector>(basisList);
+    List<Vector> exp2 = new List<Vector>(basisList);
+    Vector       ov   = V(-0.00709854200521387, -0.3363850420894928, 0.5556769114749364, 0.18883245131301185, -0.7364510774957459);
+    exp1.Add(ov);
+    exp2.Add(-ov);
+
+    Assert.That(basis.SequenceEqual(exp1) || basis.SequenceEqual(exp2), "Add vector to the basis");
+  }
+
+  [Test]
+  public void FindOrthogonalComplement() {
+    GRandomLC   rnd   = new GRandomLC(3456);
+    LinearBasis basis = LinearBasis.GenLinearBasis(5, 2, rnd);
+
+    basis.FindOrthogonalComplement(out LinearBasis? complement);
+
+    LinearBasis expected =
+      new LinearBasis
+        (
+         new List<Vector>()
+           {
+             V
+               (0.49828681673115194, 0.5043344719202018, 0.6554103491752181, 0.01653950264222742, 0.25984747016523546)
+           , V(-0.516489212458386, 0.1974367874017911, 0.23895366498487525, 0.796883632509154, -0.046208555743365354)
+           , V(-0.03138801268197455, -0.5352593332246187, 0.10435700671977013, 0.12897224902012222, 0.8276400262112715)
+           }
+       , false
+        );
+
+    Assert.That(complement is not null, Is.True);
+    Assert.That(complement.SpanSameSpace(expected), Is.True);
+  }
+
+  [Test]
+  public void ProjectVectorToSubspace() {
+    GRandomLC   rnd   = new GRandomLC(4567);
+    LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
+
+    Vector v        = Vector.GenVector(5, rnd);
+    Vector expected = V(0.14525705641968203, -0.2535536397279014, -0.036500911569481743);
+
+    Vector prv = basis.ProjectVectorToSubSpace(v);
+
+    Assert.That(prv, Is.EqualTo(expected), "Proj vector to some subspace.");
+  }
+
+  [Test]
+  public void ProjectVectorToSS_inOrig() {
+    GRandomLC   rnd   = new GRandomLC(4567);
+    LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
+
+    Vector v        = Vector.GenVector(5, rnd);
+    Vector expected = V(-0.09590126543490077, -0.1165857398613803, -0.014731846409157014, -0.07624884049551936, -0.240626633558726);
+
+    Vector prv = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
+
+    Assert.That(prv, Is.EqualTo(expected), "Proj vector to some subspace.");
   }
 #endregion
 
