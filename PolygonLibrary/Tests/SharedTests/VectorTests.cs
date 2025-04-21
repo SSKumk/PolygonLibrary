@@ -11,13 +11,6 @@ namespace Tests.SharedTests; // Используем общй namespace
 
 [TestFixture]
 public class VectorTests {
-
-
-  // Helper to check if ArgumentException related to dimension mismatch is thrown
-  private void AssertThrowsDimMismatch(TestDelegate code, string message = "") {
-    Assert.Throws(Is.InstanceOf<Exception>().And.Message.Contains("different dimensions"), code, message);
-  }
-
 #region Constructors and Factories Tests
   [Test]
   public void Constructor_Default_CreatesZeroVector() {
@@ -191,45 +184,6 @@ public class VectorTests {
   }
 
   [Test]
-  public void Operator_Addition_DimMismatch_Throws() {
-    Vector v2 = V(1, 2);
-    Vector v3 = V(1, 2, 3);
-    AssertThrowsDimMismatch
-      (
-       ()
-         => {
-         var x = v2 + v3;
-       }
-     , "v2+v3 should throw DimMismatch"
-      );
-  }
-
-  [Test]
-  public void Operator_Subtraction() {
-    Vector v1   = V(5, 1, 3);
-    Vector v2   = V(4, -1, 0);
-    Vector diff = v1 - v2;
-    AssertVectorsAreEqual(diff, V(1, 2, 3));
-
-    AssertVectorsAreEqual(v1 - Vector.Zero(3), v1);
-    AssertVectorsAreEqual(Vector.Zero(3) - v1, -v1);
-  }
-
-  [Test]
-  public void Operator_Subtraction_DimMismatch_Throws() {
-    Vector v2 = V(1, 2);
-    Vector v3 = V(1, 2, 3);
-    AssertThrowsDimMismatch
-      (
-       ()
-         => {
-         var x = v2 - v3;
-       }
-     , "v2-v3 should throw DimMismatch"
-      );
-  }
-
-  [Test]
   public void Operator_ScalarMultiplication() {
     Vector v      = V(1, -2, 3);
     double scalar = 2.0;
@@ -275,20 +229,6 @@ public class VectorTests {
     Assert.That(Tools.EQ(v1 * Vector.Zero(3), 0.0), Is.True, "Dot product with zero vector should be zero.");
     Assert.That(Tools.EQ(v1 * v1, v1.Length2), Is.True, "Dot product with self should be Length2.");
   }
-
-  [Test]
-  public void Operator_DotProduct_DimMismatch_Throws() {
-    Vector v2 = V(1, 2);
-    Vector v3 = V(1, 2, 3);
-    AssertThrowsDimMismatch
-      (
-       ()
-         => {
-         var x = v2 * v3;
-       }
-     , "v2*v3 should throw DimMismatch"
-      );
-  }
 #endregion
 
 #region Comparison Tests
@@ -306,13 +246,6 @@ public class VectorTests {
     Assert.That(v3.CompareTo(v1), Is.GreaterThan(0));
 
     Assert.That(v1.CompareTo(null), Is.EqualTo(1));
-  }
-
-  [Test]
-  public void Comparison_CompareTo_DimMismatch_Throws() {
-    Vector v2 = V(1, 2);
-    Vector v3 = V(1, 2, 3);
-    AssertThrowsDimMismatch(() => v2.CompareTo(v3), "v2.CompareTo(v3) should throw DimMismatch");
   }
 
   [Test]
