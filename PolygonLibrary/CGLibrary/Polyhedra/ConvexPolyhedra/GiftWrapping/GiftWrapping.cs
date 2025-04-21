@@ -314,7 +314,7 @@ public partial class Geometry<TNum, TConv>
 
           foreach (SubPoint s in S) {
             // вычисляем "кандидата" проецируя в плоскость (e,n)
-            Vector u = lb.ProjectPointToSubSpace_in_OrigSpace(s - origin);
+            Vector u = lb.ProjectVectorToSubSpace_in_OrigSpace(s - origin);
 
             if (!u.IsZero) {
               TNum cos = e * u / u.Length;
