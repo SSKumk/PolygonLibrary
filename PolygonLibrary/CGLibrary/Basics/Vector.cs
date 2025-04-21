@@ -461,7 +461,7 @@ public partial class Geometry<TNum, TConv>
     /// Indicates whether a copy of the array should be made.
     /// If <c>true</c>, a copy of the array is created; otherwise, the original array is used directly.
     /// </param>
-    internal Vector(TNum[] nv, TNum vlen, bool needCopy = true) : this(nv, needCopy) { _length = vlen; }
+    private Vector(TNum[] nv, TNum vlen, bool needCopy = true) : this(nv, needCopy) { _length = vlen; }
 
     /// <summary>
     /// Copying constructor.
