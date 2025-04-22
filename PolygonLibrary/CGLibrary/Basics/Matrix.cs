@@ -209,7 +209,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Throws an <see cref="InvalidOperationException"/> because hash code generation is not supported for matrices.
     /// </summary>
-    public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Rows, Cols);
+    public override int GetHashCode() => throw new InvalidOperationException();
 
     /// <summary>
     /// Compares this matrix to another object for equality.
@@ -1055,6 +1055,65 @@ public partial class Geometry<TNum, TConv>
       }
 
       return new Vector(res, false);
+    }
+
+    /// <summary>
+    /// Computes the Reduced Row Echelon Form (RREF) of the matrix using Gauss-Jordan elimination with partial pivoting.
+    /// </summary>
+    /// <returns>A new matrix in RREF (each leading entry is 1, and all other entries in its column are zero).</returns>
+    public Matrix ToRREF() {
+      TNum[,] rrefData = this;
+      int     pivotRow = 0; // Текущая ведущая строка
+
+      for (int leadCol = 0; leadCol < Cols && pivotRow < Rows; leadCol++) {
+        int maxRow = pivotRow;
+
+        // Находим строку с максимальным по модулю элементом в текущем столбце
+        TNum maxValAbs = TNum.Abs(rrefData[maxRow, leadCol]);
+        for (int currentRow = pivotRow + 1; currentRow < Rows; currentRow++) {
+          TNum currentValAbs = TNum.Abs(rrefData[currentRow, leadCol]);
+          if (currentValAbs > maxValAbs) {
+            maxValAbs   = currentValAbs;
+            maxRow = currentRow;
+          }
+        }
+
+        // Если максимальный элемент в столбце (ниже или на leadRow) близок к нулю,
+        // то в этом столбце нет ведущего элемента, переходим к следующему столбцу.
+        if (Tools.EQ(maxValAbs)) { continue; }
+
+        // Меняем местами текущую ведущую строку и строку с найденным pivot-ом
+        if (maxRow != pivotRow) {
+          for (int j = 0; j < Cols; j++) {
+            Tools.Swap(ref rrefData[pivotRow, j], ref rrefData[maxRow, j]);
+          }
+        }
+
+        TNum maxVal = rrefData[pivotRow, leadCol];
+        if (Tools.NE(maxVal, Tools.One)) { // чтоб на единицу не делить
+          for (int j = leadCol; j < Cols; j++) {
+            rrefData[pivotRow, j] /= maxVal;
+          }
+        }
+        rrefData[pivotRow, leadCol] = Tools.One; // Явно устанавливаем значение 1 для точности
+
+        for (int i = 0; i < Rows; i++) {
+          if (i != pivotRow) {
+            TNum factor = rrefData[i, leadCol];
+            if (Tools.NE(factor)) {
+              for (int j = leadCol; j < Cols; j++) {
+                rrefData[i, j] -= factor * rrefData[pivotRow, j];
+              }
+              rrefData[i, leadCol] = Tools.Zero;// Явно устанавливаем значение 0 для точности
+            }
+          }
+        }
+
+        // Переходим к следующей ведущей строке
+        pivotRow++;
+      }
+
+      return new Matrix(rrefData);
     }
 #endregion
 
