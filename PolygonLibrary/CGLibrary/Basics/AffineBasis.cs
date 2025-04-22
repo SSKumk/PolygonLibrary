@@ -101,14 +101,14 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="point">The point should be written in terms of this affine basis.</param>
     /// <returns>The point expressed in terms of the original affine system.</returns>
-    public Vector TranslateToOriginal(Vector point) {
+    public Vector ToOriginalCoords(Vector point) {
       Debug.Assert
         (
          SubSpaceDim == point.SpaceDim
-       , "AffineBasis.TranslateToOriginal: The dimension of the basis space should be equal to the dimension of the current point."
+       , "AffineBasis.ToOriginalCoords: The dimension of the basis space should be equal to the dimension of the current point."
         );
 
-      return LinBasis.Basis * point + Origin; // !!! Создается промежуточный вектор
+      return LinBasis.ToOriginalCoords(point) + Origin;
     }
 
     /// <summary>
@@ -116,9 +116,9 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Ps">Points should be written in terms of this affine basis.</param>
     /// <returns>Points expressed in terms of the original affine system.</returns>
-    public IEnumerable<Vector> TranslateToOriginal(IEnumerable<Vector> Ps) {
+    public IEnumerable<Vector> ToOriginalCoords(IEnumerable<Vector> Ps) {
       foreach (Vector point in Ps) {
-        yield return TranslateToOriginal(point);
+        yield return ToOriginalCoords(point);
       }
     }
 
@@ -282,7 +282,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="affineBasis">Basis to be checked</param>
     public static void CheckCorrectness(AffineBasis affineBasis) {
       if (!affineBasis.LinBasis.Empty) {
-        if (affineBasis.Origin.SpaceDim == affineBasis.LinBasis.SpaceDim) {
+        if (affineBasis.Origin.SpaceDim != affineBasis.LinBasis.SpaceDim) {
           throw new ArgumentException
             (
              $"AffineBasis.CheckCorrectness: The space dimensions of the Origin and the LinearBasis should be equal! Found sdim(Orig) = {affineBasis.Origin.SpaceDim}, sdim(LBasis) = {affineBasis.LinBasis.SpaceDim}"
