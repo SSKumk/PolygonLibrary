@@ -343,7 +343,7 @@ public class AffineBasisTests {
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector coords = V(3, 4);
-    Vector originalPoint = ab.TranslateToOriginal(coords);
+    Vector originalPoint = ab.ToOriginalCoords(coords);
     Vector expectedPoint = V(3, 4, 1);
 
     AssertVectorsAreEqual(originalPoint, expectedPoint);
@@ -357,7 +357,7 @@ public class AffineBasisTests {
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector coords = V(Math.Sqrt(8));
-    Vector originalPoint = ab.TranslateToOriginal(coords);
+    Vector originalPoint = ab.ToOriginalCoords(coords);
     Vector expectedPoint = V(3, 3, 1);
 
     AssertVectorsAreEqual(originalPoint, expectedPoint);
@@ -374,9 +374,9 @@ public class AffineBasisTests {
   //
   //   // Debug.Assert should catch this, potentially throws ArgumentException if made explicit
   //   Assert.Throws<Exception>
-  //     (() => ab.TranslateToOriginal(coords1D), "TranslateToOriginal should throw if coord dim != SubSpaceDim");
+  //     (() => ab.ToOriginalCoords(coords1D), "ToOriginalCoords should throw if coord dim != SubSpaceDim");
   //   Assert.Throws<Exception>
-  //     (() => ab.TranslateToOriginal(coords3D), "TranslateToOriginal should throw if coord dim != SubSpaceDim");
+  //     (() => ab.ToOriginalCoords(coords3D), "ToOriginalCoords should throw if coord dim != SubSpaceDim");
   // }
 
   [Test]
