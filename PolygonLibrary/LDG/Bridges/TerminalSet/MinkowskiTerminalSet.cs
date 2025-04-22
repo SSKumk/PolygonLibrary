@@ -22,7 +22,7 @@ public class MinkowskiTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     ) {
     Geometry<TNum, TConv>.ConvexPolytop polytope = ITerminalSetReader<TNum, TConv>.DoPolytope(pr.ReadString("Polytope"), ph);
 
-    TNum[] ks = pr.ReadVector("Constants").GetAsArray();
+    TNum[] ks = pr.ReadVector("Constants").GetCopyAsArray();
     Array.Sort(ks);
     if (ks.Any(Geometry<TNum, TConv>.Tools.LE)) {
       throw new ArgumentException("MinkowskiTerminalSet.BuildTerminalSets: All constants must be greater than zero!");

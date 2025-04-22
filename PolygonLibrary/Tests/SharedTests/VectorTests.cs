@@ -124,7 +124,7 @@ public class VectorTests {
   [Test]
   public void Method_GetAsArray_ReturnsCopy() {
     Vector   v   = V(10, 20);
-    double[] arr = v.GetAsArray();
+    double[] arr = v.GetCopyAsArray();
 
     Assert.That(arr.Length, Is.EqualTo(2));
     Assert.That(arr[0], Is.EqualTo(10.0));
@@ -132,7 +132,7 @@ public class VectorTests {
 
     // Modify returned array, vector should not change
     arr[0] = 0.0;
-    Assert.That(v[0], Is.EqualTo(10.0), "Vector should not be affected by modifying array returned by GetAsArray.");
+    Assert.That(v[0], Is.EqualTo(10.0), "Vector should not be affected by modifying array returned by GetCopyAsArray.");
   }
 
 

@@ -20,7 +20,7 @@ public class LevelSetTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
     ILvlSetType<TNum, TConv> lvlSetType = LvlSetFactory<TNum, TConv>.Read(pr, ph);
 
-    TNum[] ks = pr.ReadVector("Constants").GetAsArray();
+    TNum[] ks = pr.ReadVector("Constants").GetCopyAsArray();
     if (ks.Any(Geometry<TNum, TConv>.Tools.LE)) {
       throw new ArgumentException($"Bridges...BuildTerminalSets.LevelSetTerminalSet: " +
                                   $"All 'Constants' must be greater than zero.");
