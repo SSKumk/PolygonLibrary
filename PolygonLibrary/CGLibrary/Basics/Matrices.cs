@@ -195,13 +195,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a matrix from a vector.
+    /// Creates a matrix consisting of a single row from the specified vector.
     /// </summary>
-    /// <param name="v">The vector used to create a matrix with one column.</param>
+    /// <param name="v">The vector used to create a matrix with one row and <c>v.SpaceDim</c> columns.</param>
     public Matrix(Vector v) {
-      Rows = v.SpaceDim;
-      Cols = 1;
-      _m   = v.GetAsArray();
+      Rows = 1;
+      Cols = v.SpaceDim;
+      _m   = v.GetCopyAsArray();
     }
 #endregion
 
@@ -528,6 +528,35 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Vertically concatenates a matrix and a vector, adding the vector as the last row.
+    /// </summary>
+    /// <param name="m">The matrix to which the vector will be appended.</param>
+    /// <param name="v">The vector to append as a new row. Its dimension must match the number of columns in the matrix.</param>
+    /// <returns>A new matrix with one additional row containing the elements of the vector.</returns>
+    public static Matrix vcat(Matrix m, Vector v) {
+      Debug.Assert
+        (
+         m.Cols == v.SpaceDim
+       , $"Matrix.vcat: Cannot concatenate matrix and vector with different number of columns. Matrix cols: {m.Cols}, Vector dimension: {v.SpaceDim}"
+        );
+
+      int    r  = m.Rows + 1;
+      TNum[] nv = new TNum[r * m.Cols];
+      m._m.CopyTo(nv, 0);
+      v.V.CopyTo(nv, m.Rows * m.Cols);
+
+      return new Matrix(r, m.Cols, nv, false);
+    }
+
+    /// <summary>
+    /// Vertically concatenates the matrix and a vector, adding the vector as the last row.
+    /// </summary>
+    /// <param name="v">The vector to append as a new row. Its dimension must match the number of columns in the matrix.</param>
+    /// <returns>A new matrix with one additional row containing the elements of the vector.</returns>
+    public Matrix vcat(Vector v) => vcat(this, v);
+
+
+    /// <summary>
     /// Vertical concatenation of two matrices (with equal number of columns).
     /// </summary>
     /// <param name="m1">The upper concatenated matrix.</param>
@@ -563,10 +592,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="rows">List of row indices to be taken.</param>
     /// <returns>The resultant matrix.</returns>
-    public Matrix TakeRows(int[] rows) {
+    public Matrix TakeRows(params int[] rows) {
       int r = rows.Length;
 
-      Debug.Assert(r > 0, $"Matrix.TakeRows: Wrong number of rows to be taken. Found {r}");
+      Debug.Assert(r > 0 && r <= Rows, $"Matrix.TakeRows: Wrong number of rows to be taken. Found {r}");
 
       int    d   = r * Cols, k = 0, ind, i, j;
       TNum[] res = new TNum[d];
@@ -585,10 +614,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="cols">List of column indices to be taken.</param>
     /// <returns>The resultant matrix.</returns>
-    public Matrix TakeCols(int[] cols) {
+    public Matrix TakeCols(params int[] cols) {
       int c = cols.Length;
 
-      Debug.Assert(c > 0, $"Matrix.TakeCols: Wrong number of columns to be taken. Found {c}");
+      Debug.Assert(c > 0 && c <= Cols, $"Matrix.TakeCols: Wrong number of columns to be taken. Found {c}");
 
       int    d   = Rows * c, k = 0, start, i, j;
       TNum[] res = new TNum[d];
@@ -645,16 +674,17 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Retrieves a vector corresponding to the specified column in the matrix.
+    /// Retrieves a vector corresponding to the specified row in the matrix.
     /// </summary>
-    /// <param name="colInd">The column index (zero-based) from which to take the vector.</param>
-    /// <returns>A vector containing the elements of the specified column.</returns>
-    public Vector TakeVector(int colInd) {
-      Debug.Assert(colInd >= 0 && colInd < Cols, "Matrix.TakeVector: Column index must lie in [0, Cols).");
+    /// <param name="rowInd">The row index (zero-based) from which to take the vector.</param>
+    /// <returns>A vector containing the elements of the specified row.</returns>
+    public Vector TakeVector(int rowInd) {
+      Debug.Assert(rowInd >= 0 && rowInd < Rows, "Matrix.TakeVector: Row index must lie in [0, Rows).");
 
-      TNum[] res = new TNum[Rows];
-      for (int row = 0, k = colInd; row < Rows; row++, k += Cols) {
-        res[row] = _m[k];
+      TNum[] res = new TNum[Cols];
+      int    k   = rowInd * Cols;
+      for (int col = 0; col < Cols; col++) {
+        res[col] = _m[k + col];
       }
 
       return new Vector(res, false);
@@ -983,6 +1013,27 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Computes the product of the transpose of this matrix and the matrix itself (A^T * A).
+    /// The result is a symmetric matrix of size <c>Cols</c> x <c>Cols</c>.
+    /// </summary>
+    /// <returns>A new matrix representing the product of the transpose and the matrix.</returns>
+    public Matrix MultiplyTransposeBySelf() {
+      throw new NotImplementedException();
+
+      TNum[] res = new TNum[Cols * Cols];
+
+      // Итерируем по верхнему треугольнику результирующей матрицы C[i, j], где i <= j
+      // i соответствует i-му столбцу исходной матрицы A
+      // j соответствует j-му столбцу исходной матрицы A
+      for (int i = 0; i < Cols; i++) {
+        for (int j = i; j < Cols; j++) { }
+      }
+
+      // Возвращаем новую матрицу размера Cols x Cols с полученными данными
+      return new Matrix(Cols, Cols, res, false);
+    }
+
+    /// <summary>
     /// Multiplies the transposed matrix by a given vector.
     /// </summary>
     /// <param name="vector">The vector to multiply by the transposed matrix.</param>
@@ -995,10 +1046,10 @@ public partial class Geometry<TNum, TConv>
         );
 
       TNum[] res = new TNum[Cols];
-      int    t           = 0;
+      int    t   = 0;
       for (int col = 0; col < Cols; col++, t = col) {
         res[col] = Tools.Zero;
-        for (int row = 0; row < Rows; row++, t+=Cols) {
+        for (int row = 0; row < Rows; row++, t += Cols) {
           res[col] += _m[t] * vector[row];
         }
       }
