@@ -6,14 +6,21 @@ namespace Sandbox;
 class Sandbox {
 
   static void Main(string[] args) {
-    GRandomLC   rnd   = new GRandomLC(4567);
-    LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
 
-    Vector v        = Vector.GenVector(5, rnd);
+    GRandomLC rnd = new GRandomLC(1);
+    Matrix    m   = Matrix.GenMatrixInt(3,4, -10,10);
 
-    Vector prv = basis.ProjectVectorToSubSpace_in_OrigSpace(v);
+    Console.WriteLine($"{m}");
 
-    Console.WriteLine($"{prv}");
+    Vector v = Vector.GenVectorInt(4,6,7,rnd);
+
+    Console.WriteLine($"{v}");
+
+    Console.WriteLine($"{Matrix.vcat(m,v)}");
+
+
+
   }
+
 
 }
