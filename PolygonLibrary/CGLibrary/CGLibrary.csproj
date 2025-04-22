@@ -27,7 +27,7 @@
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="LinearMath\FourierMotzkin.cs"/>
         <Compile Include="LinearMath\GaussSLE.cs"/>
-        <Compile Include="LinearMath\QRDecomposition.cs"/>
+        <Compile Include="LinearMath\Decomposition.cs" />
         <Compile Include="LinearMath\SimplexMethod.cs"/>
         <Compile Include="Polygons\BasicPolygon.cs"/>
         <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs"/>
