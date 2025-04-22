@@ -21,7 +21,7 @@
         <Compile Include="Basics\HyperPlane.cs"/>
         <Compile Include="Basics\Line2D.cs"/>
         <Compile Include="Basics\LinearBasis.cs"/>
-        <Compile Include="Basics\Matrices.cs"/>
+        <Compile Include="Basics\Matrix.cs" />
         <Compile Include="Basics\Vector.cs"/>
         <Compile Include="Basics\Vector2D.cs"/>
         <Compile Include="GlobalUsings.cs"/>
