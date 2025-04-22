@@ -215,7 +215,10 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      if (isAdded) { _projMatrix = null; }
+      if (isAdded) {
+        _Basis!.ToRREF();
+        _projMatrix = null;
+      }
 
 #if DEBUG
       CheckCorrectness(this);
@@ -293,6 +296,7 @@ public partial class Geometry<TNum, TConv>
       }
       SpaceDim = v.SpaceDim;
       _Basis   = new Matrix(v.Normalize());
+      _Basis.ToRREF();
 
 #if DEBUG
       CheckCorrectness(this);
@@ -399,10 +403,14 @@ public partial class Geometry<TNum, TConv>
     /// Copy constructor for the linear basis.
     /// </summary>
     /// <param name="lb">The linear basis to copy.</param>
-    public LinearBasis(LinearBasis lb) {
+    /// <param name="toRREF">If set to <c>true</c>, the newly created basis will be reduced to Reduced Row Echelon Form (RREF).</param>
+    public LinearBasis(LinearBasis lb, bool toRREF = true) {
       _Basis   = lb.Empty ? null : new Matrix(lb.Basis);
       SpaceDim = lb.SpaceDim;
 
+      if (!Empty && toRREF) {
+        _Basis!.ToRREF();
+      }
 #if DEBUG
       CheckCorrectness(this);
 #endif
