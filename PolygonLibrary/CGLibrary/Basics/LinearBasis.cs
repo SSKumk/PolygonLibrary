@@ -23,10 +23,10 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Number of vectors in the basis.
     /// </summary>
-    public int SubSpaceDim => Empty ? 0 : Basis.Cols;
+    public int SubSpaceDim => Empty ? 0 : Basis.Rows;
 
     /// <summary>
-    /// True if the basis contains d-linearly independent vectors in d-dimensional space.
+    /// <c>True</c> if the basis contains d-linearly independent vectors in d-dimensional space.
     /// Indicates that the basis spans the entire space.
     /// </summary>
     public bool IsFullDim {
@@ -41,7 +41,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// True if there are no vectors in the basis.
+    /// <c>True</c> if there are no vectors in the basis.
     /// Checks whether the basis is empty.
     /// </summary>
     public bool Empty => _Basis is null;
@@ -63,7 +63,7 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The matrix that stores the basis vectors in its columns.
+    /// The matrix that stores the basis vectors in its rows.
     /// </summary>
     public Matrix Basis {
       get
@@ -77,9 +77,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The projection matrix calculated as the product of the basis matrix and its transpose.
+    /// The projection matrix calculated as the product of the transposed basis matrix and the matrix itself.
+    /// <c>B^T*B</c>
     /// </summary>
-    public Matrix ProjMatrix => _projMatrix ??= Basis.MultiplyBySelfTranspose(); // BB^T
+    public Matrix ProjMatrix => _projMatrix ??= Basis.Transpose() * Basis; // todo: В одну операцию! MultiplyTransposeBySelf()
 
     private Matrix? _Basis      = null;
     private Matrix? _projMatrix = null;
@@ -100,10 +101,10 @@ public partial class Geometry<TNum, TConv>
         return true;
       }
 
-      (Matrix Q, _) = QRDecomposition.ByReflection(Basis);
-      Matrix ogBasis = Q.TakeSubMatrix(null, Enumerable.Range(SubSpaceDim, SpaceDim - SubSpaceDim).ToArray());
+      (_, Matrix Q) = Decomposition.LQ_ByReflection(Basis);
+      Matrix ocBasis = Q.TakeSubMatrix(Enumerable.Range(SubSpaceDim, SpaceDim - SubSpaceDim).ToArray(), null);
 
-      ocLinearBasis = new LinearBasis(ogBasis);
+      ocLinearBasis = new LinearBasis(ocBasis);
 
       return true;
     }
@@ -142,6 +143,7 @@ public partial class Geometry<TNum, TConv>
       if (IsFullDim) { return true; }
       if (Empty) { return v.IsZero; }
 
+      // ProjMatrix * v == v
       for (int row = 0; row < SpaceDim; row++) {
         if (Tools.NE(ProjMatrix.MultiplyRowByVector(row, v), v[row])) {
           return false;
@@ -161,8 +163,8 @@ public partial class Geometry<TNum, TConv>
       if (Empty) { return v.NormalizeZero(); }
 
       Vector toAdd;
-      (Matrix Q, Matrix R) = QRDecomposition.ByReflection(Matrix.hcat(Basis, v));
-      if (Tools.EQ(R[SubSpaceDim, SubSpaceDim])) {
+      (Matrix L, Matrix Q) = Decomposition.LQ_ByReflection(Basis.vcat(v));
+      if (Tools.EQ(L[SubSpaceDim, SubSpaceDim])) {
         toAdd = Vector.Zero(v.SpaceDim);
       }
       else {
@@ -182,7 +184,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be potentially added.</param>
     /// <param name="orthogonalize">If false, the vector is added without orthogonalization.</param>
-    /// <returns>True if the vector is added to the basis; otherwise, false.</returns>
+    /// <returns><c>True</c> if the vector is added to the basis; otherwise, false.</returns>
     public bool AddVector(Vector v, bool orthogonalize = true) {
       if (IsFullDim) { return false; }
       if (v.IsZero) { return false; }
@@ -198,7 +200,7 @@ public partial class Geometry<TNum, TConv>
           (SpaceDim == v.SpaceDim, "The dimension the vector to be added must be equal to the dimension of basis vectors!");
 
         if (!orthogonalize) {
-          _Basis  = Matrix.hcat(Basis, v);
+          _Basis  = Basis.vcat(v);
           isAdded = true;
         }
         else {
@@ -207,7 +209,7 @@ public partial class Geometry<TNum, TConv>
             isAdded = false;
           }
           else {
-            _Basis  = Matrix.hcat(Basis, toAdd);
+            _Basis  = Basis.vcat(toAdd);
             isAdded = true;
           }
         }
@@ -236,11 +238,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Projects a given vector onto the linear basis in its coordinates. B^T * v
+    /// Projects a given vector onto the linear basis in its coordinates. B * v
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v) => Basis.MultiplyTransposedByVector(v);
+    public Vector ProjectVectorToSubSpace(Vector v) => Basis * v;
 
     /// <summary>
     /// Projects a given collection of vectors onto the linear basis.
@@ -252,6 +254,14 @@ public partial class Geometry<TNum, TConv>
         yield return ProjectVectorToSubSpace(v);
       }
     }
+
+    /// <summary>
+    /// Maps a vector from the coordinate system of this basis to the original one.
+    /// </summary>
+    /// <param name="coords">The coordinates in this basis.</param>
+    /// <returns>The corresponding vector in the original coordinate system.</returns>
+    public Vector ToOriginalCoords(Vector coords) => Basis.Transpose() * coords;
+
 
     /// <summary>
     /// Determines whether the current basis spans the same subspace as the specified basis.
@@ -307,7 +317,7 @@ public partial class Geometry<TNum, TConv>
        , $"LinearBasis: The dimension of the vectors in basis must be greater or equal than basis subspace! Found spaceDim = {spaceDim} < subSpaceDim = {subSpaceDim}."
         );
 
-      _Basis   = subSpaceDim == 0 ? null : Matrix.Eye(spaceDim, subSpaceDim);
+      _Basis   = subSpaceDim == 0 ? null : Matrix.Eye(subSpaceDim, spaceDim);
       SpaceDim = spaceDim;
     }
 
@@ -358,7 +368,6 @@ public partial class Geometry<TNum, TConv>
           if (!IsFullDim) {
             foreach (Vector bvec2 in lb2) {
               AddVector(bvec2);
-              // TODO: Как следует !*ПОДУМАТЬ*! об оптимальности - в предыдущей строке многократно пересоздается объект матрицы
 
               if (IsFullDim) {
                 break;
@@ -371,7 +380,6 @@ public partial class Geometry<TNum, TConv>
           if (!IsFullDim) {
             foreach (Vector bvec1 in lb1) {
               AddVector(bvec1);
-              // TODO: Как следует !*ПОДУМАТЬ*! об оптимальности - в предыдущей строке многократно пересоздается объект матрицы
 
               if (IsFullDim) {
                 break;
@@ -400,10 +408,10 @@ public partial class Geometry<TNum, TConv>
 #endif
     }
 
-    // Хорошая матрица! m x n, m >= n; rang = n
+    // Хорошая матрица! n x m, m >= n; rang = n
     private LinearBasis(Matrix m) {
       _Basis   = m;
-      SpaceDim = m.Rows;
+      SpaceDim = m.Cols;
 
 #if DEBUG
       CheckCorrectness(this);
@@ -431,7 +439,6 @@ public partial class Geometry<TNum, TConv>
       LinearBasis lb = new LinearBasis(spaceDim, 0);
       do {
         lb.AddVector(Vector.GenVector(spaceDim, random));
-        // TODO: Опять *ПОДУМАТЬ* об оптимальности
       } while (lb.SubSpaceDim != subSpaceDim);
 
 #if DEBUG
@@ -484,12 +491,9 @@ public partial class Geometry<TNum, TConv>
     /// Returns a generic enumerator that iterates through the vectors in the linear basis.
     /// </summary>
     IEnumerator<Vector> IEnumerable<Vector>.GetEnumerator() {
-      List<Vector> Vs = new List<Vector>(SubSpaceDim);
       for (int i = 0; i < SubSpaceDim; i++) {
-        Vs.Add(this[i]);
+        yield return this[i];
       }
-
-      return Vs.GetEnumerator();
     }
 
     /// <summary>
