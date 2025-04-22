@@ -14,17 +14,17 @@ public partial class Geometry<TNum, TConv>
 
 #region Internal storage, access properties, and convertors
     /// <summary>
-    /// The internal storage of the vector as a one-dimensional array
+    /// The internal storage of the vector as a one-dimensional array.
     /// </summary>
-    private readonly TNum[] _v;
+    internal TNum[] V { get; }
 
     /// <summary>
-    /// Gets the coordinates of the vector as array.
+    /// Gets the copy of coordinates of the vector as array.
     /// </summary>
-    /// <returns>The array of vector coordinates.</returns>
-    public TNum[] GetAsArray() {
+    /// <returns>The copy array of vector coordinates.</returns>
+    public TNum[] GetCopyAsArray() {
       TNum[] v = new TNum[SpaceDim];
-      _v.CopyTo(v, 0);
+      V.CopyTo(v, 0);
 
       return v;
     }
@@ -32,7 +32,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Dimension of the vector
     /// </summary>
-    public int SpaceDim => _v.Length;
+    public int SpaceDim => V.Length;
 
     /// <summary>
     /// Indexer access
@@ -44,7 +44,7 @@ public partial class Geometry<TNum, TConv>
         {
           Debug.Assert(i >= 0 && i < SpaceDim, $"Vector.Indexer: Index out of range. Found index: {i}, dimension: {SpaceDim}");
 
-          return _v[i];
+          return V[i];
         }
     }
 
@@ -82,7 +82,7 @@ public partial class Geometry<TNum, TConv>
             TNum res = Tools.Zero;
 
             for (int i = 0; i < SpaceDim; i++) {
-              res += _v[i] * _v[i];
+              res += V[i] * V[i];
             }
 
             length2 = res;
@@ -102,7 +102,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be converted</param>
     /// <returns>The resultant array</returns>
-    public static explicit operator TNum[](Vector v) => v.GetAsArray();
+    public static explicit operator TNum[](Vector v) => v.GetCopyAsArray();
 #endregion
 
 #region Comparing
@@ -192,7 +192,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum[] res = new TNum[SpaceDim];
       for (int i = 0; i < SpaceDim; i++) {
-        res[i] = _v[i] / Length;
+        res[i] = V[i] / Length;
       }
 
       return new Vector(res, TNum.MultiplicativeIdentity, false);
@@ -224,7 +224,7 @@ public partial class Geometry<TNum, TConv>
       TNum fst = Tools.Zero;
       TNum snd = Tools.Zero;
       for (int i = 0; i < SpaceDim; i++) {
-        TNum vi = _v[i] - o[i];
+        TNum vi = V[i] - o[i];
         fst += vi * u1[i];
         snd += vi * u2[i];
       }
@@ -248,7 +248,7 @@ public partial class Geometry<TNum, TConv>
 
       TNum[] np = new TNum[d];
       for (int i = 0; i < SpaceDim; i++) {
-        np[i] = _v[i];
+        np[i] = V[i];
       }
       for (int i = SpaceDim; i < d; i++) {
         np[i] = val;
@@ -313,7 +313,7 @@ public partial class Geometry<TNum, TConv>
       int    k   = 0;
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-          res[k] = _v[i] * v._v[j];
+          res[k] = V[i] * v.V[j];
           k++;
         }
       }
@@ -334,7 +334,7 @@ public partial class Geometry<TNum, TConv>
 
       int    length      = endIndex - startIndex + 1;
       TNum[] subElements = new TNum[length];
-      Array.Copy(_v, startIndex, subElements, 0, length);
+      Array.Copy(V, startIndex, subElements, 0, length);
 
       return new Vector(subElements, false);
     }
@@ -358,7 +358,7 @@ public partial class Geometry<TNum, TConv>
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
-        res += (v1._v[i] - origin._v[i]) * v2._v[i];
+        res += (v1.V[i] - origin.V[i]) * v2.V[i];
       }
 
       return res;
@@ -375,7 +375,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] res = new TNum[v1.SpaceDim];
 
       for (int i = 0; i < res.Length; i++) {
-        res[i] = v1._v[i] * a + v2._v[i];
+        res[i] = v1.V[i] * a + v2.V[i];
       }
 
       return new Vector(res, false);
@@ -410,7 +410,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A string representing the vector with the given braces and delimiter.</returns>
     public string ToStringBraceAndDelim(char? braceOpen, char? braceClose, char delim)
       => (braceOpen is null ? "" : braceOpen) + string.Join
-           (delim, _v.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) +
+           (delim, V.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) +
          (braceClose is null ? "" : braceClose);
 #endregion
 
@@ -422,9 +422,9 @@ public partial class Geometry<TNum, TConv>
     public Vector(int n) {
       Debug.Assert(n > 0, $"Vector.Ctor: Dimension of a vector cannot be non-positive. Found {n}.");
 
-      _v = new TNum[n];
-      for (int i = 0; i < _v.Length; i++) {
-        _v[i] = Tools.Zero;
+      V = new TNum[n];
+      for (int i = 0; i < V.Length; i++) {
+        V[i] = Tools.Zero;
       }
     }
 
@@ -441,14 +441,14 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert(nv.Rank == 1, $"Vector.Ctor: Cannot initialize a vector by a multidimensional array. Found {nv.Rank}.");
 
       if (needCopy) {
-        _v = new TNum[nv.Length];
+        V = new TNum[nv.Length];
 
         for (int i = 0; i < nv.Length; i++) {
-          _v[i] = nv[i];
+          V[i] = nv[i];
         }
       }
       else {
-        _v = nv;
+        V = nv;
       }
     }
 
@@ -467,7 +467,7 @@ public partial class Geometry<TNum, TConv>
     /// Copying constructor.
     /// </summary>
     /// <param name="v">The vector to be copied.</param>
-    public Vector(Vector v) { _v = v.GetAsArray(); }
+    public Vector(Vector v) { V = v.GetCopyAsArray(); }
 
     /// <summary>
     /// Constructor to a multidimensional vector from a two-dimensional vector.
@@ -578,7 +578,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
-        nv[i] = -v._v[i];
+        nv[i] = -v.V[i];
       }
 
       return new Vector(nv, false);
@@ -601,7 +601,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
-        nv[i] = v1._v[i] + v2._v[i];
+        nv[i] = v1.V[i] + v2.V[i];
       }
 
       return new Vector(nv, false);
@@ -624,7 +624,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
-        nv[i] = v1._v[i] - v2._v[i];
+        nv[i] = v1.V[i] - v2.V[i];
       }
 
       return new Vector(nv, false);
@@ -641,7 +641,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
-        nv[i] = a * v._v[i];
+        nv[i] = a * v.V[i];
       }
 
       return new Vector(nv, false);
@@ -668,7 +668,7 @@ public partial class Geometry<TNum, TConv>
       TNum[] nv = new TNum[d];
 
       for (i = 0; i < d; i++) {
-        nv[i] = v._v[i] / a;
+        nv[i] = v.V[i] / a;
       }
 
       return new Vector(nv, false);
@@ -691,7 +691,7 @@ public partial class Geometry<TNum, TConv>
       TNum res = Tools.Zero;
 
       for (i = 0; i < d; i++) {
-        res += v1._v[i] * v2._v[i];
+        res += v1.V[i] * v2.V[i];
       }
 
       return res;
