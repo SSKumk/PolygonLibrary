@@ -56,8 +56,7 @@ public partial class Geometry<TNum, TConv>
               if (firstNonZeroProduct) {
                 if (Tools.GT(dotProduct)) { v = -v; }
                 firstNonZeroProduct = false;
-              }
-              else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+              } else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
                 if (Tools.GT(dotProduct)) {
                   isEdge = false;
 
@@ -82,8 +81,7 @@ public partial class Geometry<TNum, TConv>
                 if (hp.Contains(z.InnerPoint)) {
                   orthToEdgeHPs.Add(hp);
                 }
-              }
-              else {
+              } else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z.InnerPoint) / denominator;
 
                 if (Tools.GT(ti)) {                  // учитываем только положительные ti
@@ -99,8 +97,7 @@ public partial class Geometry<TNum, TConv>
 
                       break;
                     }
-                  }
-                  else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
+                  } else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
                     zNewHPs.Add(hp);
                   }
                 }
@@ -112,7 +109,10 @@ public partial class Geometry<TNum, TConv>
             FL[1]
              .Add
                 (
-                 new FLNode(new List<FLNode>() { z, zNew_node }, new AffineBasis(z.InnerPoint, new LinearBasis(v)))
+                 new FLNode(new List<FLNode>()
+                   {
+                     z, zNew_node
+                   }, new AffineBasis(z.InnerPoint, new LinearBasis(v)))
                 ); // todo: а в любом случае стоит собирать ребро?
 
             if (!foundPrev) {
@@ -127,42 +127,43 @@ public partial class Geometry<TNum, TConv>
       }
 
       // Теперь собираем всю оставшуюся решётку
-      foreach (FLNode vertex in FL[0]) {
-        List<HyperPlane> vHP = vToHPs[vertex];
-        foreach (HyperPlane hp in vHP) {             // Цикл по гиперплоскостям, на которых строим k-грани
-          for (int i = 1; i < PolytopDim - 1; i++) { // Цикл по размерности узлов, по которым будем строить решётку
-            // строим узел размерности i+1
+      foreach (HyperPlane hp in HPs) {             // Цикл по гиперплоскостям, на которых строим k-грани
+        for (int i = 1; i < PolytopDim - 1; i++) { // Цикл по размерности узлов, по которым будем строить решётку
+          // строим узел размерности i+1
 
-            // собрали все грани размерности i, которые лежат в данной гиперплоскости -- они будут формировать (i+1) грань
-            var set = FL[i].Where(node => hp.Contains(node.InnerPoint)).ToList();
-            // перебираем по две штуки
-            for (int fst = 0; fst < set.Count - 1; fst++) {
-              for (int snd = fst + 1; snd < set.Count; snd++) {
-                Vector innerPoint = (set[fst].InnerPoint + set[snd].InnerPoint) / Tools.Two;
+          // собрали все грани размерности i, которые лежат в данной гиперплоскости -- они будут формировать (i+1) грань
+          var set = FL[i].Where(node => hp.Contains(node.InnerPoint)).ToList();
+          // перебираем по две штуки
+          for (int fst = 0; fst < set.Count - 1; fst++) {
+            for (int snd = fst + 1; snd < set.Count; snd++) {
+              Vector innerPoint = (set[fst].InnerPoint + set[snd].InnerPoint) / Tools.Two;
 
-                int iP_belong = vHP.Count(vhp => vhp.Contains(innerPoint));
-                if (iP_belong + (i + 1) == PolytopDim) { // Кажется, что это поможет отфильтровать лишние грани
+              int iP_belong = HPs.Count(vhp => vhp.Contains(innerPoint));
+              if (iP_belong + (i + 1) >= PolytopDim) { // Кажется, что это поможет отфильтровать лишние грани
 
-                  bool found = false;
-                  foreach (FLNode supper in FL[i + 1]) {
-                    // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
-                    if (supper.AffBasis.Contains(innerPoint)) {
-                      FLNode.Connect(set[fst], supper, false);
-                      FLNode.Connect(set[snd], supper, false);
-                      found = true;
+                bool found = false;
+                foreach (FLNode supper in FL[i + 1]) {
+                  // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
+                  if (supper.AffBasis.Contains(innerPoint)) {
+                    FLNode.Connect(set[fst], supper, false);
+                    FLNode.Connect(set[snd], supper, false);
+                    found = true;
 
-                      break;
-                    }
+                    break;
                   }
-                  if (!found) { // иначе создаём узел и устанавливаем связи
-                    FL[i + 1].Add(new FLNode(new List<FLNode>() { set[fst], set[snd] }));
-                  }
+                }
+                if (!found) { // иначе создаём узел и устанавливаем связи
+                  FL[i + 1].Add(new FLNode(new List<FLNode>()
+                    {
+                      set[fst], set[snd]
+                    }));
                 }
               }
             }
           }
         }
       }
+
       FL[PolytopDim].Add(new FLNode(FL[^2]));
 
 
