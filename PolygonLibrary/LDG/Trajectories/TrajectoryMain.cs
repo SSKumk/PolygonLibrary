@@ -134,8 +134,7 @@ public class TrajectoryMain<TNum, TConv>
 
 
       // Выполняем шаг Эйлера
-      x += dt * (Geometry<TNum, TConv>.Matrix.MultMatrixByColumnVector(gd.D[t], fpControl)
-               + Geometry<TNum, TConv>.Matrix.MultMatrixByColumnVector(gd.E[t], spControl));
+      x += dt * (gd.D[t] * fpControl + gd.E[t] * spControl);
     }
 
     using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "game.traj"));

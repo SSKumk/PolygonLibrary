@@ -98,13 +98,13 @@ public partial class Geometry<TNum, TConv>
            , ar_v3 = new TNum[] { Tools.Zero, b, Tools.One };
 
       Vector v0o = new Vector(ar_v0, false)
-           , v0  = Matrix.MultMatrixByColumnVector(mapMatrix, v0o)
+           , v0  = mapMatrix * v0o
            , v1o = new Vector(ar_v1, false)
-           , v1  = Matrix.MultMatrixByColumnVector(mapMatrix, v1o)
+           , v1  = mapMatrix * v1o
            , v2o = new Vector(ar_v2, false)
-           , v2  = Matrix.MultMatrixByColumnVector(mapMatrix, v2o)
+           , v2  = mapMatrix * v2o
            , v3o = new Vector(ar_v3, false)
-           , v3  = Matrix.MultMatrixByColumnVector(mapMatrix, v3o);
+           , v3  = mapMatrix * v3o;
 
       List<Vector2D> res = new List<Vector2D>();
       res.Add(new Vector2D(v0[0], v0[1]));

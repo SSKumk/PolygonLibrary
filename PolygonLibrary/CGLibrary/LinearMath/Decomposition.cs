@@ -195,7 +195,7 @@ public partial class Geometry<TNum, TConv>
 
       if (currentBasisDimension == d || v.IsZero) { return currentBasisDimension; }
 
-      Vector y = Matrix.MultMatrixByColumnVector(currentQ, v);
+      Vector y = currentQ * v;
 
       int    orthSize = d - currentBasisDimension;
       TNum[] orthData = new TNum[orthSize];

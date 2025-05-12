@@ -409,6 +409,32 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Multiplication of a matrix by a vector at right. The vector factor is considered as a column vectors.
+    /// </summary>
+    /// <param name="m">The matrix (first) factor.</param>
+    /// <param name="v">The vector (second) factor.</param>
+    /// <returns>The resultant vector.</returns>
+    public static Vector operator *(Matrix m, Vector v) {
+      Debug.Assert
+        (
+         m.Cols == v.SpaceDim
+       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.SpaceDim}"
+        );
+
+      TNum[] res = new TNum[m.Rows];
+      int    r   = m.Rows, c = m.Cols, i, j, k = 0;
+
+      for (i = 0; i < r; i++) {
+        res[i] = Tools.Zero;
+        for (j = 0; j < c; j++, k++) {
+          res[i] += m._m[k] * v[j];
+        }
+      }
+
+      return new Vector(res, false);
+    }
+
+    /// <summary>
     /// Horizontal concatenation of two matrices (with equal number of rows).
     /// </summary>
     /// <param name="m1">The left concatenated matrix.</param>
@@ -1009,32 +1035,6 @@ public partial class Geometry<TNum, TConv>
       return new Vector(res, false);
     }
 
-
-    /// <summary>
-    /// Multiplication of a matrix by a vector at right. The vector factor is considered as a column vectors.
-    /// </summary>
-    /// <param name="m">The matrix (first) factor.</param>
-    /// <param name="v">The vector (second) factor.</param>
-    /// <returns>The resultant vector.</returns>
-    public static Vector MultMatrixByColumnVector(Matrix m, Vector v) {
-      Debug.Assert
-        (
-         m.Cols == v.SpaceDim
-       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.SpaceDim}"
-        );
-
-      TNum[] res = new TNum[m.Rows];
-      int    r   = m.Rows, c = m.Cols, i, j, k = 0;
-
-      for (i = 0; i < r; i++) {
-        res[i] = Tools.Zero;
-        for (j = 0; j < c; j++, k++) {
-          res[i] += m._m[k] * v[j];
-        }
-      }
-
-      return new Vector(res, false);
-    }
 
     /// <summary>
     /// Multiplies the transposed matrix by a given vector.

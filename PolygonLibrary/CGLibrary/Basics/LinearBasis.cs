@@ -126,7 +126,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be projected.</param>
     /// <returns>The projected vector in the subspace.</returns>
-    public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => Matrix.MultMatrixByColumnVector(ProjMatrix, v);
+    public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
 
     /// <summary>
     /// Checks if the given vector belongs to the linear basis.
@@ -245,7 +245,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v) => Matrix.MultMatrixByColumnVector(Basis, v);
+    public Vector ProjectVectorToSubSpace(Vector v) => Basis * v;
 
     /// <summary>
     /// Projects a given collection of vectors onto the linear basis.
@@ -263,7 +263,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="coords">The coordinates in this basis.</param>
     /// <returns>The corresponding vector in the original coordinate system.</returns>
-    public Vector ToOriginalCoords(Vector coords) => Matrix.MultMatrixByColumnVector(Basis.Transpose(), coords);
+    public Vector ToOriginalCoords(Vector coords) => Basis.Transpose() * coords;
 
 
     /// <summary>
