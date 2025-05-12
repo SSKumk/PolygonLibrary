@@ -156,6 +156,17 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Construct a new matrix consisting of the first <paramref name="row"/> rows of the given matrix.
+    /// </summary>
+    /// <param name="row">The number of rows to include in the new matrix.</param>
+    /// <param name="m">The source matrix from which the rows are taken.</param>
+    /// <param name="needCopy">
+    /// Indicates whether a copy of the internal array should be made. If <c>true</c>, a copy is made;
+    /// otherwise, the original array is used directly.
+    /// </param>
+    public Matrix(int row, Matrix m, bool needCopy = true) : this(row, m.Cols, m._m, needCopy) { }
+
+    /// <summary>
     /// Constructs a matrix from a two-dimensional array.
     /// </summary>
     /// <param name="nm">The two-dimensional array used to construct the matrix.</param>
@@ -1127,21 +1138,22 @@ public partial class Geometry<TNum, TConv>
   /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
   /// for modifying matrix elements, including setting submatrices.
   /// </summary>
-  public class MutableMatrix : Matrix {
+  public class MatrixMutable : Matrix {
 
     /// <summary>
     /// Constructs a mutable matrix from the given dimensions and an array of elements.
     /// </summary>
-    /// <param name="n">Number of rows in the matrix.</param>
-    /// <param name="m">Number of columns in the matrix.</param>
+    /// <param name="row">Number of rows in the matrix.</param>
+    /// <param name="col">Number of columns in the matrix.</param>
     /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
-    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
+    /// <param name="needCopy"></param>
+    public MatrixMutable(int row, int col, TNum[] ar, bool needCopy) : base(row, col, ar, needCopy) { }
 
     /// <summary>
     /// Constructs a mutable matrix by copying the elements from an existing matrix.
     /// </summary>
     /// <param name="m">The matrix to copy.</param>
-    public MutableMatrix(Matrix m) : base(m) { }
+    public MatrixMutable(Matrix m) : base(m) { }
 
     /// <summary>
     /// Indexer to get or set the matrix element at the specified row and column.
@@ -1152,15 +1164,15 @@ public partial class Geometry<TNum, TConv>
     public new TNum this[int i, int j] {
       get
         {
-          Debug.Assert(i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-          Debug.Assert(j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+          Debug.Assert(i >= 0 && i < Rows, $"MatrixMutable.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert(j >= 0 && j < Cols, $"MatrixMutable.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
 
           return _m[i * Cols + j];
         }
       set
         {
-          Debug.Assert(i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-          Debug.Assert(j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+          Debug.Assert(i >= 0 && i < Rows, $"MatrixMutable.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert(j >= 0 && j < Cols, $"MatrixMutable.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
 
           _m[i * Cols + j] = value;
         }
@@ -1168,25 +1180,25 @@ public partial class Geometry<TNum, TConv>
 
 
     //todo: Transpose нормально!
-    public new MutableMatrix Transpose() => new MutableMatrix(base.Transpose());
+    public new MatrixMutable Transpose() => new MatrixMutable(base.Transpose());
 
-    // /// <summary>
-    // /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
-    // /// </summary>
-    // /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
-    // /// <returns>A new identity matrix.</returns>
-    // public new static MutableMatrix Eye(int d) {
-    //   int    k  = 0;
-    //   TNum[] nv = new TNum[d * d];
-    //
-    //   for (int i = 0; i < d; i++) {
-    //     for (int j = 0; j < d; j++, k++) {
-    //       nv[k] = (i == j) ? Tools.One : Tools.Zero;
-    //     }
-    //   }
-    //
-    //   return new MutableMatrix(d, d, nv);
-    // }
+    /// <summary>
+    /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
+    /// </summary>
+    /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
+    /// <returns>A new identity matrix.</returns>
+    public new static MatrixMutable Eye(int d) {
+      int    k  = 0;
+      TNum[] nv = new TNum[d * d];
+
+      for (int i = 0; i < d; i++) {
+        for (int j = 0; j < d; j++, k++) {
+          nv[k] = (i == j) ? Tools.One : Tools.Zero;
+        }
+      }
+
+      return new MatrixMutable(d, d, nv, false);
+    }
 
     /// <summary>
     /// Sets a submatrix within the current matrix at the specified starting row and column.
@@ -1199,12 +1211,12 @@ public partial class Geometry<TNum, TConv>
       Debug.Assert
         (
          startRow >= 0 && startRow + subMatrix.Rows <= Rows
-       , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
+       , $"MatrixMutable.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
         );
       Debug.Assert
         (
          startCol >= 0 && startCol + subMatrix.Cols <= Cols
-       , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
+       , $"MatrixMutable.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
         );
 
       int k     = startRow * Cols + startCol;
@@ -1234,12 +1246,32 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Create a new matrix by swapping two contiguous row blocks of the original matrix.
+    /// The matrix is assumed to be square and stored in row-major order.
+    /// </summary>
+    /// <param name="m">The original matrix whose rows are to be reordered.</param>
+    /// <param name="d">The dimension of the square matrix (number of rows and columns).</param>
+    /// <param name="k">The number of leading rows to move to the bottom of the matrix.</param>
+    /// <returns>A new matrix with the top <paramref name="k"/> rows moved to the bottom, and the remaining rows shifted up.</returns>
+    public static MatrixMutable SwapRowBlocks(MatrixMutable m, int d, int k) {
+      Debug.Assert(m.Rows == d, $"Matrix.SwapRowBlocks: Matrix must have {d} rows. Found {m.Rows}");
+      Debug.Assert(m.Cols == d, $"Matrix.SwapRowBlocks: Matrix must have {d} columns. Found {m.Cols}");
+      Debug.Assert(k >= 0 && k <= d, $"Matrix.SwapRowBlocks: Parameter k must be between 0 and {d}. Found {k}");
+
+      TNum[] newData = new TNum[d * d];
+      Array.Copy(m._m, k * d, newData, 0, (d - k) * d);
+      Array.Copy(m._m, 0, newData, (d - k) * d, k * d);
+
+     return new MatrixMutable(d, d, newData, false);
+    }
+
+    /// <summary>
     /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
     /// </summary>
     /// <param name="m1">The first matrix.</param>
     /// <param name="m2">The second matrix.</param>
     /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
-    public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
+    public static MatrixMutable operator *(MatrixMutable m1, MatrixMutable m2) => new((Matrix)m1 * (Matrix)m2);
 
   }
 
