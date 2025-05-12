@@ -106,6 +106,137 @@ public partial class Geometry<TNum, TConv>
       return (R_T.Transpose(), Q_T.Transpose());
     }
 
+    /// <summary>
+    /// Adds vector <paramref name="v"/> to the orthonormal basis represented by <paramref name="currentQ"/>
+    /// using a QR decomposition update via Householder reflections.
+    /// </summary>
+    /// <param name="currentQ">The current orthogonal d×d matrix. Updated in-place if <paramref name="v"/> is independent.</param>
+    /// <param name="currentBasisDimension">Number of basis vectors already in <paramref name="currentQ"/> (0 ≤ value ≤ d).</param>
+    /// <param name="v">The vector to add.</param>
+    /// <returns>
+    /// <c>currentBasisDimension + 1</c> if <paramref name="v"/> is linearly independent; otherwise, returns <paramref name="currentBasisDimension"/>.
+    /// </returns>
+    public static int QR_FullUpdate(ref MutableMatrix currentQ, int currentBasisDimension, Vector v) {
+      int d = currentQ.Rows;
+
+      Debug.Assert(currentQ.Rows == currentQ.Cols, "QR_FullUpdate: currentQ must be a square matrix.");
+      Debug.Assert(v.SpaceDim == d, "QR_FullUpdate: Vector v must have the same dimension as currentQ.");
+      // currentBasisDimension - это количество уже существующих векторов в базисе.
+      // Может быть от 0 (пустой базис) до d (базис полон).
+      Debug.Assert
+        (
+         currentBasisDimension >= 0 && currentBasisDimension <= d
+       , "QR_FullUpdate: currentBasisDimension must be between 0 and d (inclusive)."
+        );
+
+      if (currentBasisDimension == d || v.IsZero) { return currentBasisDimension; }
+
+
+      Vector y = Matrix.MultRowVectorByMatrix(v, currentQ);
+
+      int    orthSize = d - currentBasisDimension;
+      TNum[] orthData = new TNum[orthSize];
+      for (int i = 0; i < orthSize; i++) {
+        orthData[i] = y[currentBasisDimension + i];
+      }
+      Vector orthPart = new Vector(orthData);
+
+      TNum rho = orthPart.Length;
+      if (orthPart.IsZero) { return currentBasisDimension; }
+
+
+      TNum[] houseData = orthPart.GetCopyAsArray();
+      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
+      if (Tools.EQ(orthPart[0], Tools.Zero)) {
+        sign = Tools.One;
+      }
+      houseData[0] += sign * rho;
+      Vector house = new Vector(houseData);
+
+      if (house.IsZero) {
+        return currentBasisDimension + 1;
+      }
+
+      TNum beta = Tools.Two / house.Length2;
+      for (int row = 0; row < d; row++) {
+        TNum dot = Tools.Zero;
+        for (int j = 0; j < orthSize; j++) { dot += currentQ[row, currentBasisDimension + j] * house[j]; }
+        for (int j = 0; j < orthSize; j++) { currentQ[row, currentBasisDimension + j] -= dot * (beta * house[j]); }
+      }
+
+      return currentBasisDimension + 1;
+    }
+
+
+    /// <summary>
+    /// Adds vector (representing a row) <paramref name="v"/> to the orthonormal basis
+    /// represented by the first <paramref name="currentBasisDimension"/> rows of <paramref name="currentQ"/>
+    /// using an LQ decomposition update via Householder reflections.
+    /// </summary>
+    /// <param name="currentQ">The current orthogonal d×d matrix. Its rows are updated in-place if <paramref name="v"/> is independent.</param>
+    /// <param name="currentBasisDimension">Number of basis vectors (rows) already in <paramref name="currentQ"/> (0 ≤ value ≤ d).</param>
+    /// <param name="v">The d×1 column vector that semantically represents the row to add.</param>
+    /// <returns>
+    /// <c>currentBasisDimension + 1</c> if <paramref name="v"/> is linearly independent from the current basis rows;
+    /// otherwise, returns <paramref name="currentBasisDimension"/>.
+    /// If update occurs, <paramref name="currentQ"/> is modified.
+    /// </returns>
+    public static int LQ_FullUpdate(ref MutableMatrix currentQ, int currentBasisDimension, Vector v) {
+      int d = currentQ.Rows; // Размерность пространства d
+
+      // --- Предусловия ---
+      Debug.Assert(currentQ.Rows == currentQ.Cols, "LQ_FullUpdate: currentQ must be a square matrix.");
+      Debug.Assert(v.SpaceDim == d, "LQ_FullUpdate: Vector v must have the same dimension as currentQ.");
+      Debug.Assert
+        (
+         currentBasisDimension >= 0 && currentBasisDimension <= d
+       , "LQ_FullUpdate: currentBasisDimension must be between 0 and d (inclusive)."
+        );
+
+      if (currentBasisDimension == d || v.IsZero) { return currentBasisDimension; }
+
+      Vector y = Matrix.MultMatrixByColumnVector(currentQ, v);
+
+      int    orthSize = d - currentBasisDimension;
+      TNum[] orthData = new TNum[orthSize];
+      for (int k = 0; k < orthSize; k++) {
+        orthData[k] = y[currentBasisDimension + k];
+      }
+      Vector orthPart = new Vector(orthData);
+
+      TNum rho = orthPart.Length;
+      if (orthPart.IsZero) { return currentBasisDimension; }
+
+      TNum[] houseData = orthPart.GetCopyAsArray();
+      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
+      if (Tools.EQ(orthPart[0], Tools.Zero)) {
+        sign = Tools.One;
+      }
+      houseData[0] += sign * rho;
+      Vector house = new Vector(houseData);
+
+      if (house.IsZero) { return currentBasisDimension + 1; }
+
+      TNum   beta          = Tools.Two / house.Length2;
+      TNum[] projectionRow = new TNum[d];
+      for (int col = 0; col < d; col++) {
+        TNum dot = Tools.Zero;
+        for (int i = 0; i < orthSize; i++) {
+          dot += house[i] * currentQ[currentBasisDimension + i, col];
+        }
+        projectionRow[col] = dot;
+      }
+
+      for (int i = 0; i < orthSize; i++)  {
+        int global_row_index = currentBasisDimension + i;
+        for (int col = 0; col < d; col++) {
+          currentQ[global_row_index, col] -= beta * house[i] * projectionRow[col];
+        }
+      }
+
+      return currentBasisDimension + 1;
+    }
+
   }
 
 }
