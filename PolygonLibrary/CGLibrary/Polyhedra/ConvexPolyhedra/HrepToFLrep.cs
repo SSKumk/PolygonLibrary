@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv>
             continue;
           } // Несколько гиперплоскостей "наложились", ребро не получим
 
-          Vector v = coEdgeLinSpace.FindOrthonormalVector();
+          Vector v = coEdgeLinSpace.OrthonormalVector();
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;

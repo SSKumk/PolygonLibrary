@@ -154,7 +154,7 @@ public partial class Geometry<TNum, TConv>
               LinearBasis coEdgeLinSpace = new LinearBasis(edge.Select(hp => hp.Normal));
               bool        isEdge         = true;
 
-              Vector v = coEdgeLinSpace.FindOrthonormalVector(); // ищем направляющий вектор ребра
+              Vector v = coEdgeLinSpace.OrthonormalVector(); // ищем направляющий вектор ребра
 
               // проверяем, что вектор v действительно определяет ребро
               bool firstNonZeroProduct = true;
@@ -1399,7 +1399,7 @@ public partial class Geometry<TNum, TConv>
 
 
           // ищем направляющий вектор ребра
-          Vector v = coEdgeLinSpace.FindOrthonormalVector();
+          Vector v = coEdgeLinSpace.OrthonormalVector();
 
           // проверяем вектор v
           bool isEdge              = true;

@@ -304,7 +304,7 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).FindOrthonormalVector(); //todo: norm?
+          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthonormalVector(); //todo: norm?
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
@@ -463,7 +463,7 @@ public partial class Geometry<TNum, TConv>
         // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
         AffineBasis copyOfEdgeBasis = new AffineBasis(edgeAffBasis);
         copyOfEdgeBasis.AddVector(face.Normal, false);
-        Vector v = copyOfEdgeBasis.LinBasis.FindOrthonormalVector();
+        Vector v = copyOfEdgeBasis.LinBasis.OrthonormalVector();
         if (Tools.LT(v * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
           v = -v;
         }
@@ -513,7 +513,7 @@ public partial class Geometry<TNum, TConv>
       /// <param name="planeBasis">The basis of the plane.</param>
       /// <returns>The outer normal vector.</returns>
       private Vector CalcOuterNormal(AffineBasis planeBasis) {
-        Vector n = planeBasis.LinBasis.FindOrthonormalVector();
+        Vector n = planeBasis.LinBasis.OrthonormalVector();
         OrientNormal(ref n, planeBasis.Origin);
 
 #if DEBUG

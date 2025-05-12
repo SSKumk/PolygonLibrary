@@ -182,7 +182,7 @@ public class Visualization<TNum, TConv>
     if (polytop.PolytopDim == 2) {
       var vertices = ToDList(polytop.Vrep);
       FList.Add
-        (new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.FindOrthonormalVector()));
+        (new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.OrthonormalVector()));
     }
     else {
       foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
