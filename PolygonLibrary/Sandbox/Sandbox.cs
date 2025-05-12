@@ -45,8 +45,8 @@ class Sandbox {
     var lb = LinearBasis.GenLinearBasis(dim, 0, rnd);
     int nk = 0;
     int ns = 0;
-    var q  = new MutableMatrix(Matrix.Eye(dim));
-    var w  = new MutableMatrix(Matrix.Eye(dim));
+    var q  = new MatrixMutable(Matrix.Eye(dim));
+    var w  = new MatrixMutable(Matrix.Eye(dim));
 
     // Локальный метод для обработки одного вектора
     void Process((Vector vec, string name) item) {
@@ -106,7 +106,7 @@ class Sandbox {
 // Console.WriteLine($"{m.ToRREF()}");
 // LinearBasis basis = LinearBasis.GenLinearBasis(3, 2);
 //
-// Vector n = basis.FindOrthonormalVector();
+// Vector n = basis.OrthonormalVector();
 //
 // HyperPlane hp = new HyperPlane(n, Vector.Zero(3));
 //

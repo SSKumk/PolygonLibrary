@@ -116,7 +116,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// <c>currentBasisDimension + 1</c> if <paramref name="v"/> is linearly independent; otherwise, returns <paramref name="currentBasisDimension"/>.
     /// </returns>
-    public static int QR_FullUpdate(ref MutableMatrix currentQ, int currentBasisDimension, Vector v) {
+    public static int QR_FullUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v) {
       int d = currentQ.Rows;
 
       Debug.Assert(currentQ.Rows == currentQ.Cols, "QR_FullUpdate: currentQ must be a square matrix.");
@@ -181,7 +181,7 @@ public partial class Geometry<TNum, TConv>
     /// otherwise, returns <paramref name="currentBasisDimension"/>.
     /// If update occurs, <paramref name="currentQ"/> is modified.
     /// </returns>
-    public static int LQ_FullUpdate(ref MutableMatrix currentQ, int currentBasisDimension, Vector v) {
+    public static int LQ_FullUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v) {
       int d = currentQ.Rows; // Размерность пространства d
 
       // --- Предусловия ---
