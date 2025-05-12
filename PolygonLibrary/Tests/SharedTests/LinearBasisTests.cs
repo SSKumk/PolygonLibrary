@@ -36,7 +36,7 @@ public class LinearBasisTests {
     Assert.That(basis.Empty, Is.True);
     Assert.That(basis.SpaceDim, Is.EqualTo(3));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(0));
-    Assert.That(basis.IsFullDim, Is.False);
+    Assert.That(basis.FullDim, Is.False);
     Assert.Throws<ArgumentException>
       (
        ()
@@ -63,7 +63,7 @@ public class LinearBasisTests {
     Assert.That(basis.Empty, Is.False);
     Assert.That(basis.SpaceDim, Is.EqualTo(3));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(1));
-    Assert.That(basis.IsFullDim, Is.False);
+    Assert.That(basis.FullDim, Is.False);
     AssertVectorsAreEqual(V(0.6, 0.8, 0), basis[0], "Single vector constructor should normalize.");
     AssertBasisOrthonormal(basis);
   }
@@ -80,7 +80,7 @@ public class LinearBasisTests {
     Assert.That(basis.Empty, Is.False);
     Assert.That(basis.SpaceDim, Is.EqualTo(3));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(3));
-    Assert.That(basis.IsFullDim, Is.True);
+    Assert.That(basis.FullDim, Is.True);
     AssertVectorsAreEqual(V(1, 0, 0), basis[0]);
     AssertVectorsAreEqual(V(0, 1, 0), basis[1]);
     AssertVectorsAreEqual(V(0, 0, 1), basis[2]);
@@ -93,7 +93,7 @@ public class LinearBasisTests {
     Assert.That(basis.Empty, Is.False);
     Assert.That(basis.SpaceDim, Is.EqualTo(4));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(2));
-    Assert.That(basis.IsFullDim, Is.False);
+    Assert.That(basis.FullDim, Is.False);
     AssertVectorsAreEqual(V(1, 0, 0, 0), basis[0]);
     AssertVectorsAreEqual(V(0, 1, 0, 0), basis[1]);
     AssertBasisOrthonormal(basis);
@@ -115,7 +115,7 @@ public class LinearBasisTests {
 
     Assert.That(basis.SpaceDim, Is.EqualTo(3), "SpaceDim should be determined from vectors.");
     Assert.That(basis.SubSpaceDim, Is.EqualTo(3), "Should find 3 linearly independent vectors.");
-    Assert.That(basis.IsFullDim, Is.True);
+    Assert.That(basis.FullDim, Is.True);
     Assert.That(basis.Empty, Is.False);
     AssertBasisOrthonormal(basis);
 
@@ -151,7 +151,7 @@ public class LinearBasisTests {
 
     Assert.That(basis2.SpaceDim, Is.EqualTo(basis1.SpaceDim));
     Assert.That(basis2.SubSpaceDim, Is.EqualTo(basis1.SubSpaceDim));
-    Assert.That(basis2.IsFullDim, Is.EqualTo(basis1.IsFullDim));
+    Assert.That(basis2.FullDim, Is.EqualTo(basis1.FullDim));
     Assert.That(basis2.Empty, Is.EqualTo(basis1.Empty));
     Assert.That(basis1.Equals(basis2), Is.True);
 
@@ -297,7 +297,7 @@ public class LinearBasisTests {
 
     Assert.That(added, Is.False);
     Assert.That(basis.SubSpaceDim, Is.EqualTo(2));
-    Assert.That(basis.IsFullDim, Is.True);
+    Assert.That(basis.FullDim, Is.True);
     AssertBasisOrthonormal(basis);
   }
 
@@ -353,7 +353,7 @@ public class LinearBasisTests {
     basis.AddVectors(vectors);
 
     Assert.That(basis.SubSpaceDim, Is.EqualTo(4));
-    Assert.That(basis.IsFullDim, Is.True);
+    Assert.That(basis.FullDim, Is.True);
     AssertBasisOrthonormal(basis);
   }
 
@@ -531,7 +531,7 @@ public class LinearBasisTests {
   [Test]
   public void FindOrthogonalComplement_PartialBasis() {
     LinearBasis basis = new LinearBasis(new[] { V(1, 0, 0, 0), V(0, 1, 0, 0) }); // Span e1, e2 in 4D
-    bool        isOC  = basis.FindOrthogonalComplement(out LinearBasis? complement);
+    bool        isOC  = basis.OrthogonalComplement();
 
     Assert.That(isOC, Is.True);
     Assert.That(complement, Is.Not.Null);
@@ -555,7 +555,7 @@ public class LinearBasisTests {
   [Test]
   public void FindOrthogonalComplement_FullBasis() {
     LinearBasis basis = new LinearBasis(3); // Full 3D basis
-    bool        isOC  = basis.FindOrthogonalComplement(out LinearBasis? complement);
+    bool        isOC  = basis.OrthogonalComplement();
 
     Assert.That(isOC, Is.False);
     Assert.That(complement, Is.Null);
@@ -564,7 +564,7 @@ public class LinearBasisTests {
   [Test]
   public void FindOrthogonalComplement_EmptyBasis() {
     LinearBasis basis        = new LinearBasis(4, 0); // Empty basis in 4D
-    bool        isOC         = basis.FindOrthogonalComplement(out LinearBasis? complement);
+    bool        isOC         = basis.OrthogonalComplement();
     LinearBasis expectedFull = new LinearBasis(4); // Expect full basis as complement
 
     Assert.That(isOC, Is.True);
@@ -579,7 +579,7 @@ public class LinearBasisTests {
   [Test]
   public void FindOrthonormalVector_PartialBasis() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0, 0)); // Span e1 in 4D
-    Vector      ortho = basis.FindOrthonormalVector();
+    Vector      ortho = basis.OrthonormalVector();
 
     Assert.That(ortho.IsZero, Is.False);
     Assert.That(ortho.Length, Is.EqualTo(1.0).Within(Tools.Eps));
@@ -589,7 +589,7 @@ public class LinearBasisTests {
   [Test]
   public void FindOrthonormalVector_FullBasis_Throws() {
     LinearBasis basis = new LinearBasis(3); // Full 3D basis
-    Assert.Throws<ArgumentException>(() => basis.FindOrthonormalVector());
+    Assert.Throws<ArgumentException>(() => basis.OrthonormalVector());
   }
 #endregion
 
@@ -718,8 +718,8 @@ public class LinearBasisTests {
     GRandomLC   rnd      = new GRandomLC(54321);
     LinearBasis basisGen = LinearBasis.GenLinearBasis(3, 3, rnd);
 
-    Assert.That(basisStd.IsFullDim, Is.True);
-    Assert.That(basisGen.IsFullDim, Is.True);
+    Assert.That(basisStd.FullDim, Is.True);
+    Assert.That(basisGen.FullDim, Is.True);
     Assert.That(basisStd.SpanSameSpace(basisGen), Is.True, "Standard R3 and generated full R3 should span the same space.");
     Assert.That(basisGen.SpanSameSpace(basisStd), Is.True, "Symmetry check for generated R3.");
   }
@@ -778,7 +778,7 @@ public class LinearBasisTests {
     LinearBasis lb = LinearBasis.GenLinearBasis(4);
     Assert.That(lb.SpaceDim, Is.EqualTo(4));
     Assert.That(lb.SubSpaceDim, Is.EqualTo(4));
-    Assert.That(lb.IsFullDim, Is.True);
+    Assert.That(lb.FullDim, Is.True);
     AssertBasisOrthonormal(lb);
   }
 
@@ -787,7 +787,7 @@ public class LinearBasisTests {
     LinearBasis lb = LinearBasis.GenLinearBasis(5, 2);
     Assert.That(lb.SpaceDim, Is.EqualTo(5));
     Assert.That(lb.SubSpaceDim, Is.EqualTo(2));
-    Assert.That(lb.IsFullDim, Is.False);
+    Assert.That(lb.FullDim, Is.False);
     AssertBasisOrthonormal(lb);
   }
 #endregion
@@ -835,7 +835,7 @@ public class LinearBasisTests {
     GRandomLC   rnd   = new GRandomLC(3456);
     LinearBasis basis = LinearBasis.GenLinearBasis(5, 2, rnd);
 
-    basis.FindOrthogonalComplement(out LinearBasis? complement);
+    basis.OrthogonalComplement();
 
     LinearBasis expected =
       new LinearBasis
