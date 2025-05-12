@@ -161,7 +161,7 @@ public class VisTools {
       throw new ArgumentException("Points p1 and p2 are too close or coincide.");
     }
 
-    if (!new LinearBasis(axe).FindOrthogonalComplement(out LinearBasis? basePlane)) {
+    if (!new LinearBasis(axe).OrthogonalComplement()) {
       throw new Exception("VisTools.Cylinder: Strange internal error.");
     }
 
