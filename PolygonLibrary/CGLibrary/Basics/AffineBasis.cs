@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// <c>True</c> if this affine basis is full dimension.
     /// </summary>
-    public bool IsFullDim => LinBasis.IsFullDim;
+    public bool IsFullDim => LinBasis.FullDim;
 
     /// <summary>
     /// Gets the number of vectors in the linear basis associated with the affine basis.
