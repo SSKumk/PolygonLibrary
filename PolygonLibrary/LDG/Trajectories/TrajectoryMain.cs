@@ -12,7 +12,7 @@ public class TrajectoryMain<TNum, TConv>
   public readonly BridgeCreator<TNum, TConv> br; // Класс, строящий мосты
   public readonly GameData<TNum, TConv>      gd; // Класс, хранящий информацию об игре
 
-  public readonly TNum       tMax; // Момент времени из MinTimes, начиная с которого у каждого моста есть сечения
+  public readonly TNum       tMax;                    // Момент времени из MinTimes, начиная с которого у каждого моста есть сечения
   readonly        List<TNum> tBrs = new List<TNum>(); // моменты времени, в которые существуют все мосты
 
 
@@ -35,11 +35,11 @@ public class TrajectoryMain<TNum, TConv>
   public void CalcTraj(string trajName, bool clearFolder = false) {
     Geometry<TNum, TConv>.ParamReader pr = ph.OpenTrajConfigReader(trajName);
 
-    string outputTrajName = pr.ReadString("Name"); // имя папки, где будут лежать результаты счёта траектории
-    TNum t0 = pr.ReadNumber<TNum>("t0"); // начальный момент времени
-    TNum T = pr.ReadNumber<TNum>("T"); // терминальный момент времени
-    TNum dt = pr.ReadNumber<TNum>("dt"); // шаг по времени
-    Geometry<TNum, TConv>.Vector x0 = pr.ReadVector("x0"); // начальная точка
+    string                       outputTrajName = pr.ReadString("Name"); // имя папки, где будут лежать результаты счёта траектории
+    TNum                         t0             = pr.ReadNumber<TNum>("t0"); // начальный момент времени
+    TNum                         T              = pr.ReadNumber<TNum>("T"); // терминальный момент времени
+    TNum                         dt             = pr.ReadNumber<TNum>("dt"); // шаг по времени
+    Geometry<TNum, TConv>.Vector x0             = pr.ReadVector("x0"); // начальная точка
 
     if (x0.SpaceDim != gd.ProjDim) {
       throw new ArgumentException
@@ -56,6 +56,7 @@ public class TrajectoryMain<TNum, TConv>
 
     if (Directory.Exists(pathTrajName) && Directory.GetFiles(pathTrajName).Length > 0) {
       Console.WriteLine($"The folder with name '{outputTrajName}' already exits in {ph.PathTrajectories} path!");
+
       return;
     }
     Directory.CreateDirectory(pathTrajName);
@@ -133,7 +134,8 @@ public class TrajectoryMain<TNum, TConv>
 
 
       // Выполняем шаг Эйлера
-      x += dt * (gd.D[t] * fpControl + gd.E[t] * spControl);
+      x += dt * (Geometry<TNum, TConv>.Matrix.MultMatrixByColumnVector(gd.D[t], fpControl)
+               + Geometry<TNum, TConv>.Matrix.MultMatrixByColumnVector(gd.E[t], spControl));
     }
 
     using var pwTr  = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(ph.PathTrajectories, outputTrajName, "game.traj"));

@@ -58,7 +58,7 @@ public partial class Geometry<TNum, TConv>
 
           Debug.Assert(Basis is not null, "LinearBasis.this[]: Basis is null. Can't do this task.");
 
-          return Basis.TakeVector(ind);
+          return Basis.TakeRowVector(ind);
         }
     }
 
@@ -126,7 +126,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to be projected.</param>
     /// <returns>The projected vector in the subspace.</returns>
-    public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
+    public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => Matrix.MultMatrixByColumnVector(ProjMatrix, v);
 
     /// <summary>
     /// Checks if the given vector belongs to the linear basis.
@@ -168,7 +168,7 @@ public partial class Geometry<TNum, TConv>
         toAdd = Vector.Zero(v.SpaceDim);
       }
       else {
-        toAdd = Q.TakeVector(SubSpaceDim);
+        toAdd = Q.TakeRowVector(SubSpaceDim);
       }
 
       if (Tools.LT(v * toAdd)) {
@@ -216,7 +216,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       if (isAdded) {
-        _Basis!.ToRREF();
+        // _Basis!.ToRREF();
         _projMatrix = null;
       }
 
@@ -245,7 +245,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to project.</param>
     /// <returns>The projected vector.</returns>
-    public Vector ProjectVectorToSubSpace(Vector v) => Basis * v;
+    public Vector ProjectVectorToSubSpace(Vector v) => Matrix.MultMatrixByColumnVector(Basis, v);
 
     /// <summary>
     /// Projects a given collection of vectors onto the linear basis.
@@ -263,7 +263,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="coords">The coordinates in this basis.</param>
     /// <returns>The corresponding vector in the original coordinate system.</returns>
-    public Vector ToOriginalCoords(Vector coords) => Basis.Transpose() * coords;
+    public Vector ToOriginalCoords(Vector coords) => Matrix.MultMatrixByColumnVector(Basis.Transpose(), coords);
 
 
     /// <summary>
@@ -296,7 +296,7 @@ public partial class Geometry<TNum, TConv>
       }
       SpaceDim = v.SpaceDim;
       _Basis   = new Matrix(v.Normalize());
-      _Basis.ToRREF();
+      // _Basis.ToRREF();
 
 #if DEBUG
       CheckCorrectness(this);
@@ -416,7 +416,7 @@ public partial class Geometry<TNum, TConv>
 #endif
     }
 
-    // Хорошая матрица! n x m, m >= n; rang = n
+    // Хорошая матрица! n x m, m >= n; rang = n; m^T ==
     private LinearBasis(Matrix m) {
       _Basis   = m;
       SpaceDim = m.Cols;
@@ -445,6 +445,7 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A linear basis with the given dimension.</returns>
     public static LinearBasis GenLinearBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null) {
       LinearBasis lb = new LinearBasis(spaceDim, 0);
+      if (subSpaceDim == 0) { return lb; }
       do {
         lb.AddVector(Vector.GenVector(spaceDim, random));
       } while (lb.SubSpaceDim != subSpaceDim);

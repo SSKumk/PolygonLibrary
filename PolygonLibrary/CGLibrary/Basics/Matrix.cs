@@ -109,45 +109,45 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Constructs a zero matrix of the specified size.
     /// </summary>
-    /// <param name="n">Number of rows.</param>
-    /// <param name="m">Number of columns.</param>
-    private Matrix(int n, int m) {
-      Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows must be positive. Found {n}");
-      Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns must be positive. Found {m}");
+    /// <param name="row">Number of rows.</param>
+    /// <param name="col">Number of columns.</param>
+    private Matrix(int row, int col) {
+      Debug.Assert(row > 0, $"Matrix.Ctor: Number of rows must be positive. Found {row}");
+      Debug.Assert(col > 0, $"Matrix.Ctor: Number of columns must be positive. Found {col}");
 
-      int d = n * m;
+      int d = row * col;
       _m = new TNum[d];
       for (int i = 0; i < d; i++) { _m[i] = Tools.Zero; }
-      Rows = n;
-      Cols = m;
+      Rows = row;
+      Cols = col;
     }
 
     /// <summary>
     /// Construct a new matrix based on the number of rows, columns,
     /// and a one-dimensional array containing the elements of the matrix in row-wise order.
     /// </summary>
-    /// <param name="n">The number of rows in the matrix.</param>
-    /// <param name="m">The number of columns in the matrix.</param>
+    /// <param name="row">The number of rows in the matrix.</param>
+    /// <param name="col">The number of columns in the matrix.</param>
     /// <param name="ar">The one-dimensional array containing matrix elements in row-wise order.</param>
     /// <param name="needCopy">Indicates whether a copy of the array should be made. If <c>true</c>, a copy is made;
     /// otherwise, the original array is used directly.
     /// </param>
-    public Matrix(int n, int m, TNum[] ar, bool needCopy = true) {
-      Debug.Assert(n > 0, $"Matrix.Ctor: Number of rows should be positive. Found {n}");
-      Debug.Assert(m > 0, $"Matrix.Ctor: Number of columns should be positive. Found {m}");
+    public Matrix(int row, int col, TNum[] ar, bool needCopy = true) {
+      Debug.Assert(row > 0, $"Matrix.Ctor: Number of rows should be positive. Found {row}");
+      Debug.Assert(col > 0, $"Matrix.Ctor: Number of columns should be positive. Found {col}");
       Debug.Assert
         (
-         n * m == ar.Length
-       , $"Matrix.Ctor: Product of sizes does not equal to number of elements in the array. Expected {n * m}, found {ar.Length}"
+         row * col == ar.Length
+       , $"Matrix.Ctor: Product of sizes does not equal to number of elements in the array. Expected {row * col}, found {ar.Length}"
         );
       Debug.Assert(ar.Rank == 1, $"Matrix.Ctor: The array is not one-dimensional. Found rank {ar.Rank}");
 
 
-      Rows = n;
-      Cols = m;
+      Rows = row;
+      Cols = col;
 
       if (needCopy) {
-        _m = new TNum[n * m];
+        _m = new TNum[row * col];
         ar.CopyTo(_m, 0);
       }
       else {
@@ -378,59 +378,6 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(m.Rows, m.Cols, nv, false);
     }
 
-    /// <summary>
-    /// Multiplication of a matrix by a vector at right. The vector factor and the result
-    /// are considered as a column vectors.
-    /// </summary>
-    /// <param name="m">The matrix (first) factor.</param>
-    /// <param name="v">The vector (second) factor.</param>
-    /// <returns>The resultant vector.</returns>
-    public static Vector operator *(Matrix m, Vector v) {
-      Debug.Assert
-        (
-         m.Cols == v.SpaceDim
-       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.SpaceDim}"
-        );
-
-      TNum[] res = new TNum[m.Rows];
-      int    r   = m.Rows, c = m.Cols, i, j, k = 0;
-
-      for (i = 0; i < r; i++) {
-        res[i] = Tools.Zero;
-        for (j = 0; j < c; j++, k++) {
-          res[i] += m._m[k] * v[j];
-        }
-      }
-
-      return new Vector(res, false);
-    }
-
-    /// <summary>
-    /// Multiplication of a matrix by a vector at left. The vector factor and the result
-    /// are considered as row vectors.
-    /// </summary>
-    /// <param name="v">The vector (first) factor.</param>
-    /// <param name="m">The matrix (second) factor.</param>
-    /// <returns>The resultant vector.</returns>
-    public static Vector operator *(Vector v, Matrix m) {
-      Debug.Assert
-        (
-         m.Rows == v.SpaceDim
-       , $"Matrix.*: Cannot multiply a vector and a matrix of improper dimensions. Matrix rows: {m.Rows}, vector dimensions: {v.SpaceDim}"
-        );
-
-      TNum[] res = new TNum[m.Cols];
-      int    r   = m.Rows, c = m.Cols, i, j, k;
-
-      for (i = 0; i < c; i++) {
-        res[i] = Tools.Zero;
-        for (j = 0, k = i; j < r; j++, k += c) {
-          res[i] += m._m[k] * v[j];
-        }
-      }
-
-      return new Vector(res, false);
-    }
 
     /// <summary>
     /// Multiplication of two matrices.
@@ -526,6 +473,13 @@ public partial class Geometry<TNum, TConv>
 
       return new Matrix(r, c, nv, false);
     }
+
+    /// <summary>
+    /// Horizontal concatenation of matrix and a vector (with equal number of rows).
+    /// </summary>
+    /// <param name="v">The right concatenated vector.</param>
+    /// <returns>The resultant matrix.</returns>
+    public Matrix hcat(Vector v) => hcat(this, v);
 
     /// <summary>
     /// Vertically concatenates a matrix and a vector, adding the vector as the last row.
@@ -678,13 +632,29 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="rowInd">The row index (zero-based) from which to take the vector.</param>
     /// <returns>A vector containing the elements of the specified row.</returns>
-    public Vector TakeVector(int rowInd) {
-      Debug.Assert(rowInd >= 0 && rowInd < Rows, "Matrix.TakeVector: Row index must lie in [0, Rows).");
+    public Vector TakeRowVector(int rowInd) {
+      Debug.Assert(rowInd >= 0 && rowInd < Rows, "Matrix.TakeRowVector: Row index must lie in [0, Rows).");
 
       TNum[] res = new TNum[Cols];
       int    k   = rowInd * Cols;
       for (int col = 0; col < Cols; col++) {
         res[col] = _m[k + col];
+      }
+
+      return new Vector(res, false);
+    }
+
+    /// <summary>
+    /// Retrieves a vector corresponding to the specified column in the matrix.
+    /// </summary>
+    /// <param name="colInd">The column index (zero-based) from which to take the vector.</param>
+    /// <returns>A vector containing the elements of the specified column.</returns>
+    public Vector TakeColumnVector(int colInd) {
+      Debug.Assert(colInd >= 0 && colInd < Cols, "Matrix.TakeVector: Column index must lie in [0, Cols).");
+
+      TNum[] res = new TNum[Rows];
+      for (int row = 0, k = colInd; row < Rows; row++, k += Cols) {
+        res[row] = _m[k];
       }
 
       return new Vector(res, false);
@@ -1012,25 +982,58 @@ public partial class Geometry<TNum, TConv>
       return new Matrix(Rows, Rows, res, false);
     }
 
+
     /// <summary>
-    /// Computes the product of the transpose of this matrix and the matrix itself (A^T * A).
-    /// The result is a symmetric matrix of size <c>Cols</c> x <c>Cols</c>.
+    /// Multiplication of a matrix by a vector at left. The vector factor is considered as row vectors.
     /// </summary>
-    /// <returns>A new matrix representing the product of the transpose and the matrix.</returns>
-    public Matrix MultiplyTransposeBySelf() {
-      throw new NotImplementedException();
+    /// <param name="v">The vector (first) factor.</param>
+    /// <param name="m">The matrix (second) factor.</param>
+    /// <returns>The resultant vector.</returns>
+    public static Vector MultRowVectorByMatrix(Vector v, Matrix m) {
+      Debug.Assert
+        (
+         m.Rows == v.SpaceDim
+       , $"Matrix.*: Cannot multiply a vector and a matrix of improper dimensions. Matrix rows: {m.Rows}, vector dimensions: {v.SpaceDim}"
+        );
 
-      TNum[] res = new TNum[Cols * Cols];
+      TNum[] res = new TNum[m.Cols];
+      int    r   = m.Rows, c = m.Cols, i, j, k;
 
-      // Итерируем по верхнему треугольнику результирующей матрицы C[i, j], где i <= j
-      // i соответствует i-му столбцу исходной матрицы A
-      // j соответствует j-му столбцу исходной матрицы A
-      for (int i = 0; i < Cols; i++) {
-        for (int j = i; j < Cols; j++) { }
+      for (i = 0; i < c; i++) {
+        res[i] = Tools.Zero;
+        for (j = 0, k = i; j < r; j++, k += c) {
+          res[i] += m._m[k] * v[j];
+        }
       }
 
-      // Возвращаем новую матрицу размера Cols x Cols с полученными данными
-      return new Matrix(Cols, Cols, res, false);
+      return new Vector(res, false);
+    }
+
+
+    /// <summary>
+    /// Multiplication of a matrix by a vector at right. The vector factor is considered as a column vectors.
+    /// </summary>
+    /// <param name="m">The matrix (first) factor.</param>
+    /// <param name="v">The vector (second) factor.</param>
+    /// <returns>The resultant vector.</returns>
+    public static Vector MultMatrixByColumnVector(Matrix m, Vector v) {
+      Debug.Assert
+        (
+         m.Cols == v.SpaceDim
+       , $"Matrix.*: Cannot multiply a matrix and a vector of improper dimensions. Matrix columns: {m.Cols}, vector dimensions: {v.SpaceDim}"
+        );
+
+      TNum[] res = new TNum[m.Rows];
+      int    r   = m.Rows, c = m.Cols, i, j, k = 0;
+
+      for (i = 0; i < r; i++) {
+        res[i] = Tools.Zero;
+        for (j = 0; j < c; j++, k++) {
+          res[i] += m._m[k] * v[j];
+        }
+      }
+
+      return new Vector(res, false);
     }
 
     /// <summary>
@@ -1073,8 +1076,8 @@ public partial class Geometry<TNum, TConv>
         for (int currentRow = pivotRow + 1; currentRow < Rows; currentRow++) {
           TNum currentValAbs = TNum.Abs(rrefData[currentRow, leadCol]);
           if (currentValAbs > maxValAbs) {
-            maxValAbs   = currentValAbs;
-            maxRow = currentRow;
+            maxValAbs = currentValAbs;
+            maxRow    = currentRow;
           }
         }
 
@@ -1104,7 +1107,7 @@ public partial class Geometry<TNum, TConv>
               for (int j = leadCol; j < Cols; j++) {
                 rrefData[i, j] -= factor * rrefData[pivotRow, j];
               }
-              rrefData[i, leadCol] = Tools.Zero;// Явно устанавливаем значение 0 для точности
+              rrefData[i, leadCol] = Tools.Zero; // Явно устанавливаем значение 0 для точности
             }
           }
         }
@@ -1119,125 +1122,125 @@ public partial class Geometry<TNum, TConv>
 
   }
 
-  // /// <summary>
-  // /// Represents a mutable matrix that allows modification of its elements.
-  // /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
-  // /// for modifying matrix elements, including setting submatrices.
-  // /// </summary>
-  // public class MutableMatrix : Matrix {
-  //
-  //   /// <summary>
-  //   /// Constructs a mutable matrix from the given dimensions and an array of elements.
-  //   /// </summary>
-  //   /// <param name="n">Number of rows in the matrix.</param>
-  //   /// <param name="m">Number of columns in the matrix.</param>
-  //   /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
-  //   public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
-  //
-  //   /// <summary>
-  //   /// Constructs a mutable matrix by copying the elements from an existing matrix.
-  //   /// </summary>
-  //   /// <param name="m">The matrix to copy.</param>
-  //   public MutableMatrix(Matrix m) : base(m) { }
-  //
-  //   /// <summary>
-  //   /// Indexer to get or set the matrix element at the specified row and column.
-  //   /// </summary>
-  //   /// <param name="i">The row index (zero-based).</param>
-  //   /// <param name="j">The column index (zero-based).</param>
-  //   /// <returns>The value of the matrix element at the specified row and column.</returns>
-  //   public new TNum this[int i, int j] {
-  //     get
-  //       {
-  //         Debug.Assert
-  //           (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-  //         Debug.Assert
-  //           (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
-  //
-  //         return _m[i * Cols + j];
-  //       }
-  //     set
-  //       {
-  //         Debug.Assert
-  //           (i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
-  //         Debug.Assert
-  //           (j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
-  //
-  //         _m[i * Cols + j] = value;
-  //       }
-  //   }
-  //
-  //   /// <summary>
-  //   /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
-  //   /// </summary>
-  //   /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
-  //   /// <returns>A new identity matrix.</returns>
-  //   public new static MutableMatrix Eye(int d) {
-  //     int    k  = 0;
-  //     TNum[] nv = new TNum[d * d];
-  //
-  //     for (int i = 0; i < d; i++) {
-  //       for (int j = 0; j < d; j++, k++) {
-  //         nv[k] = (i == j) ? Tools.One : Tools.Zero;
-  //       }
-  //     }
-  //
-  //     return new MutableMatrix(d, d, nv);
-  //   }
-  //
-  //   /// <summary>
-  //   /// Sets a submatrix within the current matrix at the specified starting row and column.
-  //   /// </summary>
-  //   /// <param name="startRow">The starting row index for the submatrix.</param>
-  //   /// <param name="startCol">The starting column index for the submatrix.</param>
-  //   /// <param name="subMatrix">The submatrix to be inserted.</param>
-  //   /// <remarks>The size of the submatrix must fit within the bounds of the main matrix.</remarks>
-  //   public void SetSubMatrix(int startRow, int startCol, Matrix subMatrix) {
-  //     Debug.Assert
-  //       (
-  //        startRow >= 0 && startRow + subMatrix.Rows <= Rows
-  //      , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
-  //       );
-  //     Debug.Assert
-  //       (
-  //        startCol >= 0 && startCol + subMatrix.Cols <= Cols
-  //      , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
-  //       );
-  //
-  //     int k     = startRow * Cols + startCol;
-  //     int s     = 0;
-  //     int shift = Cols - subMatrix.Cols;
-  //     for (int row = 0; row < subMatrix.Rows; row++, k += shift) {
-  //       for (int col = 0; col < subMatrix.Cols; col++, s++, k++) {
-  //         _m[k] = subMatrix[s];
-  //       }
-  //     }
-  //   }
-  //
-  //   /// <summary>
-  //   /// Sets a subvector in the matrix starting from the specified startRow and column.
-  //   /// </summary>
-  //   /// <param name="startRow">The starting startRow index.</param>
-  //   /// <param name="startCol">The column where the vector will be inserted.</param>
-  //   /// <param name="vector">The vector to insert into the matrix.</param>
-  //   public void SetSubVector(int startRow, int startCol, Vector vector) {
-  //     Debug.Assert(startRow + vector.SpaceDim <= Rows, "SetSubVector: The vector does not fit into the matrix vertically.");
-  //     Debug.Assert(startCol < Cols, "SetSubVector: The column index is out of bounds.");
-  //
-  //     int k = startRow * Cols + startCol;
-  //     for (int i = 0; i < vector.SpaceDim; i++, k+=Cols) {
-  //       _m[k] = vector[i];
-  //     }
-  //   }
-  //
-  //   /// <summary>
-  //   /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
-  //   /// </summary>
-  //   /// <param name="m1">The first matrix.</param>
-  //   /// <param name="m2">The second matrix.</param>
-  //   /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
-  //   public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
-  //
-  // }
+  /// <summary>
+  /// Represents a mutable matrix that allows modification of its elements.
+  /// This class extends the base <see cref="Matrix"/> class, providing additional functionality
+  /// for modifying matrix elements, including setting submatrices.
+  /// </summary>
+  public class MutableMatrix : Matrix {
+
+    /// <summary>
+    /// Constructs a mutable matrix from the given dimensions and an array of elements.
+    /// </summary>
+    /// <param name="n">Number of rows in the matrix.</param>
+    /// <param name="m">Number of columns in the matrix.</param>
+    /// <param name="ar">Array of elements in row-major order to initialize the matrix.</param>
+    public MutableMatrix(int n, int m, TNum[] ar) : base(n, m, ar, false) { }
+
+    /// <summary>
+    /// Constructs a mutable matrix by copying the elements from an existing matrix.
+    /// </summary>
+    /// <param name="m">The matrix to copy.</param>
+    public MutableMatrix(Matrix m) : base(m) { }
+
+    /// <summary>
+    /// Indexer to get or set the matrix element at the specified row and column.
+    /// </summary>
+    /// <param name="i">The row index (zero-based).</param>
+    /// <param name="j">The column index (zero-based).</param>
+    /// <returns>The value of the matrix element at the specified row and column.</returns>
+    public new TNum this[int i, int j] {
+      get
+        {
+          Debug.Assert(i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert(j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+
+          return _m[i * Cols + j];
+        }
+      set
+        {
+          Debug.Assert(i >= 0 && i < Rows, $"MutableMatrix.Indexer: The first index must be in the range [0, {Rows}). Found: {i}");
+          Debug.Assert(j >= 0 && j < Cols, $"MutableMatrix.Indexer: The second index must be in the range [0, {Cols}). Found: {j}");
+
+          _m[i * Cols + j] = value;
+        }
+    }
+
+
+    //todo: Transpose нормально!
+    public new MutableMatrix Transpose() => new MutableMatrix(base.Transpose());
+
+    // /// <summary>
+    // /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
+    // /// </summary>
+    // /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
+    // /// <returns>A new identity matrix.</returns>
+    // public new static MutableMatrix Eye(int d) {
+    //   int    k  = 0;
+    //   TNum[] nv = new TNum[d * d];
+    //
+    //   for (int i = 0; i < d; i++) {
+    //     for (int j = 0; j < d; j++, k++) {
+    //       nv[k] = (i == j) ? Tools.One : Tools.Zero;
+    //     }
+    //   }
+    //
+    //   return new MutableMatrix(d, d, nv);
+    // }
+
+    /// <summary>
+    /// Sets a submatrix within the current matrix at the specified starting row and column.
+    /// </summary>
+    /// <param name="startRow">The starting row index for the submatrix.</param>
+    /// <param name="startCol">The starting column index for the submatrix.</param>
+    /// <param name="subMatrix">The submatrix to be inserted.</param>
+    /// <remarks>The size of the submatrix must fit within the bounds of the main matrix.</remarks>
+    public void SetSubMatrix(int startRow, int startCol, Matrix subMatrix) {
+      Debug.Assert
+        (
+         startRow >= 0 && startRow + subMatrix.Rows <= Rows
+       , $"MutableMatrix.SetSubMatrix: The submatrix row range must fit within the matrix. Matrix row count: {Rows}, submatrix row count: {subMatrix.Rows}, starting at row {startRow}."
+        );
+      Debug.Assert
+        (
+         startCol >= 0 && startCol + subMatrix.Cols <= Cols
+       , $"MutableMatrix.SetSubMatrix: The submatrix column range must fit within the matrix. Matrix column count: {Cols}, submatrix column count: {subMatrix.Cols}, starting at column {startCol}."
+        );
+
+      int k     = startRow * Cols + startCol;
+      int s     = 0;
+      int shift = Cols - subMatrix.Cols;
+      for (int row = 0; row < subMatrix.Rows; row++, k += shift) {
+        for (int col = 0; col < subMatrix.Cols; col++, s++, k++) {
+          _m[k] = subMatrix[s];
+        }
+      }
+    }
+
+    /// <summary>
+    /// Sets a subvector in the matrix starting from the specified startRow and column.
+    /// </summary>
+    /// <param name="startRow">The starting startRow index.</param>
+    /// <param name="startCol">The column where the vector will be inserted.</param>
+    /// <param name="vector">The vector to insert into the matrix.</param>
+    public void SetSubVector(int startRow, int startCol, Vector vector) {
+      Debug.Assert(startRow + vector.SpaceDim <= Rows, "SetSubVector: The vector does not fit into the matrix vertically.");
+      Debug.Assert(startCol < Cols, "SetSubVector: The column index is out of bounds.");
+
+      int k = startRow * Cols + startCol;
+      for (int i = 0; i < vector.SpaceDim; i++, k += Cols) {
+        _m[k] = vector[i];
+      }
+    }
+
+    /// <summary>
+    /// Multiplies two mutable matrices and returns the result as a new mutable matrix.
+    /// </summary>
+    /// <param name="m1">The first matrix.</param>
+    /// <param name="m2">The second matrix.</param>
+    /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
+    public static MutableMatrix operator *(MutableMatrix m1, MutableMatrix m2) => new((Matrix)m1 * (Matrix)m2);
+
+  }
 
 }

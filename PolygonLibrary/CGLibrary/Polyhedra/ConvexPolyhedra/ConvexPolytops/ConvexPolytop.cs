@@ -1136,13 +1136,13 @@ public partial class Geometry<TNum, TConv>
     /// <returns>A new convex polytop rotated by the given matrix.</returns>
     public ConvexPolytop Rotate(Matrix rotate) {
       if (IsFLrep) {
-        return CreateFromFaceLattice(FLrep.VertexTransform(v => v * rotate), false);
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => Matrix.MultRowVectorByMatrix(v, rotate)), false);
       }
       if (_Vrep is not null) {
-        return CreateFromPoints(Vrep.Select(v => v * rotate));
+        return CreateFromPoints(Vrep.Select(v => Matrix.MultRowVectorByMatrix(v , rotate)));
       }
 
-      return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(hp.Normal * rotate, hp.ConstantTerm)));
+      return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(Matrix.MultRowVectorByMatrix(hp.Normal , rotate), hp.ConstantTerm)));
     }
 
     /// <summary>
