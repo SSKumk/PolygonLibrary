@@ -20,17 +20,7 @@ class Program {
   private static readonly string pathData =
     // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations";
     "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations";
-
-
-  public static Rational RSum(Rational[] toSum, Func<Rational, Rational, Rational> sum) {
-    Rational res = Rational.Zero;
-    for (int i = 0; i < toSum.Length; i++) {
-      res = sum(res, toSum[i]);
-    }
-
-    return res;
-  }
-
+  
 
   static void Main(string[] args) {
     string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
