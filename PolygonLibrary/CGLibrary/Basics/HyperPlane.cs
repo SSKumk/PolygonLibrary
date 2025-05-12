@@ -34,9 +34,7 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert
               (_normal is not null, "HyperPlane.AffBasis: Normal is null. Can't construct an affine basis of a hyperplane.");
 
-            new LinearBasis(Normal).FindOrthogonalComplement(out LinearBasis? complement);
-            Debug.Assert(complement is not null, $"HyperPlane.AffBasis: Can't find complement to a given affine basis.");
-            _affBasis = new AffineBasis(Origin, complement, false);
+            _affBasis = new AffineBasis(Origin, new LinearBasis(Normal).OrthogonalComplement(), false);
 
 #if DEBUG
             CheckCorrectness(this);
@@ -58,7 +56,7 @@ public partial class Geometry<TNum, TConv>
           if (_normal is null) {
             Debug.Assert(_affBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
 
-            _normal = AffBasis.LinBasis.FindOrthonormalVector();
+            _normal = AffBasis.LinBasis.OrthonormalVector();
 
 #if DEBUG
             CheckCorrectness(this);
