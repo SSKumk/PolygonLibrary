@@ -1,3 +1,8 @@
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Reports;
+using BenchmarkDotNet.Running;
+using Perfolizer.Horology;
+
 namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
@@ -7,8 +12,8 @@ using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
 [WarmupCount(1)]
 public class GWBenchCubes {
 
-  // [Params(3, 4, 5, 6)]
-  [Params(7)]
+  [Params(3, 4, 5, 6)]
+  // [Params(7)]
   // ReSharper disable once UnassignedField.Global
   public int dim;
 
@@ -20,7 +25,7 @@ public class GWBenchCubes {
 
   [GlobalSetup]
   public void SetUp() {
-    polytop = ConvexPolytop.CreateFromPoints(Cube01(dim, out _, new int[]{dim}, amount).ToHashSet());
+    polytop = ConvexPolytop.CreateFromPoints(Cube01(dim, out _, new int[]{dim}, amount));
 
   }
 
@@ -28,14 +33,14 @@ public class GWBenchCubes {
   public void GWCube() => GiftWrapping.WrapVRep(polytop!.Vrep);
 
 
-  // public class Program {
-  //
-  //   public static void Main(string[] args) {
-  //     var summary = BenchmarkRunner.Run<GWBenchCubes>
-  //       (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
-  //   }
-  //
-  // }
+  public class Program {
+
+    public static void Main(string[] args) {
+      var summary = BenchmarkRunner.Run<GWBenchCubes>
+        (DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithTimeUnit(TimeUnit.Second)));
+    }
+
+  }
 
 }
 
