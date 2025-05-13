@@ -133,7 +133,7 @@ public partial class Geometry<TNum, TConv>
               // Живём в пространстве x (+) y == z, а потенциальная грань xi (+) yj имеет на 1 размерность меньше.
 
               // Строим гиперплоскость. Нужна для проверки валидности получившийся подграни.
-              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candAffBasis, zSpace), false);
+              HyperPlane A = new HyperPlane(ReCalcAffineBasis(candAffBasis, zSpace));
 
               // Технический if. Невозможно ориентировать, если внутренняя точка попала в гиперплоскость.
               if (A.Contains(innerInAffine_z)) { continue; }
@@ -201,7 +201,7 @@ public partial class Geometry<TNum, TConv>
 
       if (onlyHrep) {
         return ConvexPolytop.CreateFromHalfSpaces
-          (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, false, (PQ.InnerPoint, false))).ToList());
+          (FL[dim - 1].Select(facet => new HyperPlane(facet.AffBasis, (PQ.InnerPoint, false))).ToList());
       }
 
       Debug.Assert(PQ.Sub is not null, "There are NO face lattice!");
@@ -230,7 +230,7 @@ public partial class Geometry<TNum, TConv>
   /// <returns>'From' basis in terms of 'to' basis.</returns>
   private static AffineBasis ReCalcAffineBasis(AffineBasis from, AffineBasis to) {
     Vector      newO  = to.ProjectPointToSubSpace(from.Origin);
-    LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis), false);
+    LinearBasis newLB = new LinearBasis(newO.SpaceDim, to.LinBasis.ProjectVectorsToSubSpace(from.LinBasis));
 
     return new AffineBasis(newO, newLB, false);
   }

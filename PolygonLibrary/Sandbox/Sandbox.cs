@@ -42,11 +42,11 @@ class Sandbox {
         , (v3, "v3")
         };
 
-    var lb = LinearBasis.GenLinearBasis(dim, 0, rnd);
+    LinearBasisMutable lb = LinearBasisMutable.GenLinearBasis(dim, 0, rnd);
     int nk = 0;
     int ns = 0;
-    var q  = new MatrixMutable(Matrix.Eye(dim));
-    var w  = new MatrixMutable(Matrix.Eye(dim));
+    var q  = new MatrixMutable(Matrix.Eye(dim), false);
+    var w  = new MatrixMutable(Matrix.Eye(dim), false);
 
     // Локальный метод для обработки одного вектора
     void Process((Vector vec, string name) item) {

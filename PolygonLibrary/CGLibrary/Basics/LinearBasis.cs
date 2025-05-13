@@ -58,7 +58,7 @@ public partial class Geometry<TNum, TConv>
             throw new ArgumentException($"LinearBasis.this[]: Index should lie within [0, {SubSpaceDim}]. Found ind = {ind}");
           }
 
-          Debug.Assert(Empty, "LinearBasis.this[]: Basis is empty. Can't take a vector.");
+          Debug.Assert(!Empty, "LinearBasis.this[]: Basis is empty. Can't take a vector.");
 
           return Basis.TakeRowVector(ind);
         }
@@ -139,9 +139,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The input vector to orthonormalize.</param>
     /// <returns>The resulting orthonormalized vector. If the basis is empty, returns a normalized vector.</returns>
-    public Vector Orthonormalize(Vector v) {
-      throw new NotImplementedException("todo");
-    }
+    public Vector Orthonormalize(Vector v) { throw new NotImplementedException("todo"); }
 
     /// <summary>
     /// Adds the given vector to the basis. If the vector is zero or linearly dependent on the basis, it is not included.
@@ -315,6 +313,19 @@ public partial class Geometry<TNum, TConv>
     public LinearBasis(IEnumerable<Vector> Vs) : this(Vs.First().SpaceDim, Vs) { }
 
     /// <summary>
+    /// Copy constructor for the linear basis.
+    /// </summary>
+    /// <param name="lb">The linear basis to copy.</param>
+    /// <param name="needCopy"></param>
+    public LinearBasis(LinearBasis lb, bool needCopy) {
+      _Basis      = new MatrixMutable(lb._Basis, needCopy);
+      SubSpaceDim = lb.SubSpaceDim;
+#if DEBUG
+      CheckCorrectness();
+#endif
+    }
+
+    /// <summary>
     /// Merges two linear bases into one.
     /// </summary>
     /// <param name="lb1">The first basis to merge.</param>
@@ -454,6 +465,28 @@ public partial class Geometry<TNum, TConv>
         }
       }
     }
+
+  }
+
+  public class LinearBasisMutable : LinearBasis {
+
+    public LinearBasisMutable(Vector              v) : base(v) { }
+    public LinearBasisMutable(int                 spaceDim) : base(spaceDim) { }
+    public LinearBasisMutable(int                 spaceDim, int                 subSpaceDim) : base(spaceDim, subSpaceDim) { }
+    public LinearBasisMutable(int                 spaceDim, IEnumerable<Vector> Vs) : base(spaceDim, Vs) { }
+    public LinearBasisMutable(IEnumerable<Vector> Vs) : base(Vs) { }
+    public LinearBasisMutable(LinearBasis         lb1, LinearBasis lb2) : base(lb1, lb2) { }
+    public LinearBasisMutable(LinearBasis         lb,  bool        needCopy) : base(lb, needCopy) { }
+
+
+    public new bool AddVector(Vector               v)  => base.AddVector(v);
+    public new void AddVectors(IEnumerable<Vector> vs) => base.AddVectors(vs);
+
+    public new static LinearBasisMutable GenLinearBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null)
+      => new LinearBasisMutable(LinearBasis.GenLinearBasis(spaceDim, subSpaceDim, random), needCopy: false);
+
+    public new static LinearBasisMutable GenLinearBasis(int spaceDim, GRandomLC? random = null)
+      => new LinearBasisMutable(LinearBasis.GenLinearBasis(spaceDim, random), needCopy: false);
 
   }
 

@@ -120,7 +120,7 @@ public class VisTools {
 
   public static void AddToFacetColorList(List<FacetColor> FList, ConvexPolytop polytop, Color? color = null) {
     foreach (FLNode F in polytop.FLrep.Lattice[2]) {
-      HyperPlane hp = new HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
+      HyperPlane hp = new HyperPlane(F.AffBasis, (polytop.FLrep.Top.InnerPoint, false));
       FList.Add
         (
          new FacetColor
@@ -161,9 +161,7 @@ public class VisTools {
       throw new ArgumentException("Points p1 and p2 are too close or coincide.");
     }
 
-    if (!new LinearBasis(axe).OrthogonalComplement()) {
-      throw new Exception("VisTools.Cylinder: Strange internal error.");
-    }
+    LinearBasis basePlane = new LinearBasis(axe).OrthogonalComplement();
 
     Geometry<double, DConvertor>.Vector u1 = basePlane[0];
     Geometry<double, DConvertor>.Vector u2 = basePlane[1];

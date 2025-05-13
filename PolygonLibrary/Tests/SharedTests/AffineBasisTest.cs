@@ -37,8 +37,8 @@ public class AffineBasisTests {
 
     Assert.That(ab.SpaceDim, Is.EqualTo(3));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(3));
-    Assert.That(ab.IsFullDim, Is.True);
-    Assert.That(ab.IsEmpty, Is.False);
+    Assert.That(ab.FullDim, Is.True);
+    Assert.That(ab.Empty, Is.False);
     AssertVectorsAreEqual(ab.Origin, Vector.Zero(3));
     AssertVectorsAreEqual(ab[0], V(1, 0, 0));
     AssertVectorsAreEqual(ab[1], V(0, 1, 0));
@@ -53,8 +53,8 @@ public class AffineBasisTests {
 
     Assert.That(ab.SpaceDim, Is.EqualTo(3));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(0));
-    Assert.That(ab.IsFullDim, Is.False);
-    Assert.That(ab.IsEmpty, Is.True);
+    Assert.That(ab.FullDim, Is.False);
+    Assert.That(ab.Empty, Is.True);
     AssertVectorsAreEqual(ab.Origin, origin);
   }
 
@@ -144,7 +144,7 @@ public class AffineBasisTests {
     AssertVectorsAreEqual(ab.Origin, p1);
     Assert.That(ab.SpaceDim, Is.EqualTo(3));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(0));
-    Assert.That(ab.IsEmpty, Is.True);
+    Assert.That(ab.Empty, Is.True);
   }
 
   [Test]
@@ -428,11 +428,11 @@ public class AffineBasisTests {
     AffineBasis ab2 = new AffineBasis(o, lb, false);
     Assert.That(ab1.Equals(ab2), Is.True);
 
-    AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb));
+    AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb, (bool)TODO));
     Assert.That(ab1.Equals(ab3), Is.True);
 
     Vector      o4  = o + ab1[0] * 5.0 + ab1[1] * (-3.0);
-    AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb));
+    AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb, (bool)TODO));
     Assert.That(ab1.Equals(ab4), Is.True);
 
     // Corrected constructor call

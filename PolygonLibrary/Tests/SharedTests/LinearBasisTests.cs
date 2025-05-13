@@ -147,7 +147,7 @@ public class LinearBasisTests {
   [Test]
   public void Constructor_Copy() {
     LinearBasis basis1 = new LinearBasis(new[] { V(1, 2, 0), V(0, 0, 3) });
-    LinearBasis basis2 = new LinearBasis(basis1);
+    LinearBasis basis2 = new LinearBasis(basis1, (bool)TODO);
 
     Assert.That(basis2.SpaceDim, Is.EqualTo(basis1.SpaceDim));
     Assert.That(basis2.SubSpaceDim, Is.EqualTo(basis1.SubSpaceDim));
@@ -682,7 +682,7 @@ public class LinearBasisTests {
   [Test]
   public void SpanSameSpace_EqualCopies() {
     LinearBasis basis1 = LinearBasis.GenLinearBasis(3, 2);
-    LinearBasis basis2 = new LinearBasis(basis1);
+    LinearBasis basis2 = new LinearBasis(basis1, (bool)TODO);
     Assert.That(basis1.SpanSameSpace(basis2), Is.True);
     Assert.That(basis2.SpanSameSpace(basis1), Is.True);
   }

@@ -245,10 +245,10 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
       for (int i = 0; i < simplexDim + 1; i++) {
         simplex.Add(new Vector(Vector.GenVector(simplexDim, TConv.FromInt(0), TConv.FromInt(10), random)));
       }
-    } while (!new AffineBasis(simplex).IsFullDim);
+    } while (!new AffineBasis(simplex).FullDim);
     List<Vector> aux = new List<Vector>(simplex);
     aux.RemoveAt(0);
-    Debug.Assert(new HyperPlane(new AffineBasis(aux), false).FilterIn(simplex).Count() != simplex.Count);
+    Debug.Assert(new HyperPlane(new AffineBasis(aux)).FilterIn(simplex).Count() != simplex.Count);
 
     pureSimplex = new List<Vector>(simplex);
 

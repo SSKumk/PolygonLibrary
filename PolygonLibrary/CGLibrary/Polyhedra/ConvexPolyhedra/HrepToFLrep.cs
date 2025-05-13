@@ -56,7 +56,8 @@ public partial class Geometry<TNum, TConv>
               if (firstNonZeroProduct) {
                 if (Tools.GT(dotProduct)) { v = -v; }
                 firstNonZeroProduct = false;
-              } else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
+              }
+              else { // Для всех последующих не нулевых произведений требуется, чтобы они были отрицательные
                 if (Tools.GT(dotProduct)) {
                   isEdge = false;
 
@@ -81,7 +82,8 @@ public partial class Geometry<TNum, TConv>
                 if (hp.Contains(z.InnerPoint)) {
                   orthToEdgeHPs.Add(hp);
                 }
-              } else {
+              }
+              else {
                 TNum ti = (hp.ConstantTerm - hp.Normal * z.InnerPoint) / denominator;
 
                 if (Tools.GT(ti)) {                  // учитываем только положительные ti
@@ -97,7 +99,8 @@ public partial class Geometry<TNum, TConv>
 
                       break;
                     }
-                  } else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
+                  }
+                  else if (Tools.EQ(ti, tMin)) { // если ti равен текущему минимуму, добавляем гиперплоскость
                     zNewHPs.Add(hp);
                   }
                 }
@@ -106,14 +109,9 @@ public partial class Geometry<TNum, TConv>
             Debug.Assert(!isInf, $"HrepToFLrep_Geometric: The set of inequalities is unbounded!");
             Debug.Assert(zNew_node is not null, "HrepToFLrep_Geometric new node is null!");
 
-            FL[1]
-             .Add
-                (
-                 new FLNode(new List<FLNode>()
-                   {
-                     z, zNew_node
-                   }, new AffineBasis(z.InnerPoint, new LinearBasis(v)))
-                ); // todo: а в любом случае стоит собирать ребро?
+            FL[1].Add(
+                      new FLNode(new List<FLNode>() { z, zNew_node }, new AffineBasis(z.InnerPoint, new LinearBasis(v), false))
+                     ); // todo: а в любом случае стоит собирать ребро?
 
             if (!foundPrev) {
               FL[0].Add(zNew_node);
@@ -153,10 +151,7 @@ public partial class Geometry<TNum, TConv>
                   }
                 }
                 if (!found) { // иначе создаём узел и устанавливаем связи
-                  FL[i + 1].Add(new FLNode(new List<FLNode>()
-                    {
-                      set[fst], set[snd]
-                    }));
+                  FL[i + 1].Add(new FLNode(new List<FLNode>() { set[fst], set[snd] }));
                 }
               }
             }

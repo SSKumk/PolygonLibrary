@@ -298,18 +298,21 @@ public partial class Geometry<TNum, TConv>
 
         // Для построения начальной плоскости найдём точку самую малую в лексикографическом порядке. (левее неё уже точек нет)
         SubPoint    origin = S.Min()!;
-        AffineBasis FinalV = new AffineBasis(origin);
+        AffineBasisMutable FinalV = new AffineBasisMutable(origin);
 
         // нормаль к плоскости начальной
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthonormalVector(); //todo: norm?
+          // Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthonormalVector(); //todo: norm?
+          LinearBasisMutable lbm = new LinearBasisMutable(FinalV.LinBasis, needCopy: true);
+          lbm.AddVector(n);
+          Vector e = lbm.OrthonormalVector();
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
           SubPoint?   sExtr  = null;
-          LinearBasis lb     = new LinearBasis(new Vector[] { e, n }, false);
+          LinearBasis lb     = new LinearBasis(new Vector[] { e, n });
 
 
           foreach (SubPoint s in S) {
@@ -441,8 +444,8 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
         // v вектор перпендикулярный ребру и лежащий в текущей плоскости
-        AffineBasis edgeAffBasis = new AffineBasis(edge.Vertices);
-        SubPoint    f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
+        AffineBasisMutable edgeAffBasis = new AffineBasisMutable(edge.Vertices);
+        SubPoint           f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
         // var f = face.Vertices.Where(p => !edge.Vertices.Contains(p)).MaxBy(p => (p - edgeAffBasis.Origin).Length);
 
         // Debug.Assert(f is not null, $"RollOverEdge: No point f!");
@@ -461,9 +464,9 @@ public partial class Geometry<TNum, TConv>
         // берём базис ребра
         // и добавляем в него вектор нормали к грани, с которой мы перекатываемся, ничего не ортогонализируя!
         // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
-        AffineBasis copyOfEdgeBasis = new AffineBasis(edgeAffBasis);
-        copyOfEdgeBasis.AddVector(face.Normal, false);
-        Vector v = copyOfEdgeBasis.LinBasis.OrthonormalVector();
+        AffineBasisMutable copyOfEdgeBasis = new AffineBasisMutable(edgeAffBasis, needCopy: true);
+        copyOfEdgeBasis.AddVector(face.Normal);
+        Vector v = copyOfEdgeBasis.OrthonormalVector();
         if (Tools.LT(v * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
           v = -v;
         }
@@ -517,7 +520,7 @@ public partial class Geometry<TNum, TConv>
         OrientNormal(ref n, planeBasis.Origin);
 
 #if DEBUG
-        HyperPlane hp = new HyperPlane(planeBasis, false);
+        HyperPlane hp = new HyperPlane(planeBasis);
         if (S.All(s => hp.Contains(s))) {
           throw new ArgumentException
             ("GiftWrappingMain.CalcOuterNormal: All points from S lies in face! There are no convex hull of full dimension.");

@@ -264,7 +264,7 @@ public partial class Geometry<TNum, TConv>
               (
                FLrep
                 .Lattice[^2]
-                .Select(n => new HyperPlane(new AffineBasis(n.AffBasis), false, (FLrep.Top.InnerPoint, false)))
+                .Select(n => new HyperPlane(new AffineBasis(n.AffBasis, false), (FLrep.Top.InnerPoint, false)))
                 .ToList()
               );
           Debug.Assert(IsHrep, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
@@ -561,7 +561,7 @@ public partial class Geometry<TNum, TConv>
         for (int i = 0; i < simplexDim + 1; i++) {
           simplex.Add(new Vector(Vector.GenVector(simplexDim, TConv.FromInt(0), TConv.FromInt(10), random)));
         }
-      } while (!new AffineBasis(simplex).IsFullDim);
+      } while (!new AffineBasis(simplex).FullDim);
 
 
       return doFL ? CreateFromPoints(simplex, true) : CreateFromPoints(simplex);
@@ -905,7 +905,7 @@ public partial class Geometry<TNum, TConv>
       else {           // если снаружи, то ближайшая точка единственна
         if (IsFLrep) { // visible для ускорения счёта, так как, очевидно, что искать нужно только среди видимых k-граней
           IEnumerable<FLNode> visible =
-            FLrep[^2].Where(hnode => new HyperPlane(hnode.AffBasis, false, (InnerPoint, false)).ContainsPositive(point));
+            FLrep[^2].Where(hnode => new HyperPlane(hnode.AffBasis, (InnerPoint, false)).ContainsPositive(point));
           SortedSet<FLNode> allKfaces = visible.SelectMany(node => node.AllNonStrictSub).ToSortedSet();
           Vector? min =
             allKfaces
@@ -1029,7 +1029,7 @@ public partial class Geometry<TNum, TConv>
 
         //Уровень вершин создаём отдельно
         foreach (FLNode oldNode in FLrep[^2]) {
-          HyperPlane hp        = new HyperPlane(oldNode.AffBasis, true, (InnerPoint, false));
+          HyperPlane hp        = new HyperPlane(oldNode.AffBasis, (InnerPoint, false));
           FLNode     newVertex = new FLNode(hp.Normal / hp.ConstantTerm);
           newFL[0].Add(newVertex);
           oldToNew.Add(oldNode, newVertex);

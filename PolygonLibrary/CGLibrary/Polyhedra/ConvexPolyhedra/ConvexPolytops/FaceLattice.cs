@@ -276,7 +276,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to this polytop.
     /// </summary>
-    public AffineBasis AffBasis { get; }
+    public AffineBasisMutable AffBasis { get; }
 
     /// <summary>
     /// The list of the supernodes, whose Dim = this.Dim + 1.
@@ -353,22 +353,23 @@ public partial class Geometry<TNum, TConv>
     /// <param name="vertex">Vertex on which this instance will be created.</param>
     public FLNode(Vector vertex) {
       InnerPoint = vertex;
-      AffBasis   = new AffineBasis(vertex);
+      AffBasis   = new AffineBasisMutable(vertex);
     }
 
     /// <summary>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
+    /// <param name="affBasis">The affine space of the sub given explicitly.</param>
     public FLNode(IEnumerable<FLNode> sub, AffineBasis? affBasis = null) {
       Sub        = new SortedSet<FLNode>(sub);
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
       if (affBasis is not null) {
-        AffBasis = affBasis;
+        AffBasis = new AffineBasisMutable(affBasis, false);
       }
       else {
-        AffineBasis affine = new AffineBasis(Sub.First().AffBasis);
+        AffineBasisMutable affine = new AffineBasisMutable(Sub.First().AffBasis, true);
         affine.AddVector(InnerPoint - Sub.First().InnerPoint);
         AffBasis = affine;
       }
@@ -384,7 +385,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="Vs">The points of the Polytop.</param>
     internal FLNode(IEnumerable<Vector> Vs) {
       InnerPoint = Vector.Zero(1);
-      AffBasis   = new AffineBasis(Vs.First());
+      AffBasis   = new AffineBasisMutable(Vs.First());
     }
 #endregion
 

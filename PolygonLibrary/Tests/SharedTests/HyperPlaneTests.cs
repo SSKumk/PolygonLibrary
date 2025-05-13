@@ -85,7 +85,7 @@ public class HyperPlaneTests {
   public void Constructor_AffineBasis_CorrectDerivation() {
     Vector      o  = V(0, 0, 1);
     AffineBasis ab = new AffineBasis(o, new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
-    HyperPlane  hp = new HyperPlane(ab, needCopy: false);
+    HyperPlane  hp = new HyperPlane(ab);
 
     Assert.That(hp.SpaceDim, Is.EqualTo(3));
     AssertVectorsAreEqual(hp.Origin, o);
@@ -106,20 +106,20 @@ public class HyperPlaneTests {
     Vector      pointNegative = V(0, 0, -5);
 
     // 1. Ориентация по точке в положительном полупространстве
-    HyperPlane hpPos = new HyperPlane(ab, false, toOrient: (pointPositive, true));
+    HyperPlane hpPos = new HyperPlane(ab, toOrient: (pointPositive, true));
     AssertVectorsAreEqual(hpPos.Normal, V(0, 0, 1), "Normal should point towards positive point.");
     Assert.That(Tools.EQ(hpPos.ConstantTerm, 0.0));
     AssertHyperPlaneConsistent(hpPos);
 
     // 2. Ориентация по точке в отрицательном полупространстве (isPositive = false)
-    HyperPlane hpNeg = new HyperPlane(ab, false, toOrient: (pointNegative, false));
+    HyperPlane hpNeg = new HyperPlane(ab, toOrient: (pointNegative, false));
     AssertVectorsAreEqual
       (hpNeg.Normal, V(0, 0, 1), "Normal should point towards the 'positive' side, even if orientation point is negative.");
     Assert.That(Tools.EQ(hpNeg.ConstantTerm, 0.0));
     AssertHyperPlaneConsistent(hpNeg);
 
     // 3. Ориентация по точке в положительном полупространстве (isPositive = false) -> нормаль должна перевернуться
-    HyperPlane hpFlip = new HyperPlane(ab, false, toOrient: (pointPositive, false));
+    HyperPlane hpFlip = new HyperPlane(ab, toOrient: (pointPositive, false));
     AssertVectorsAreEqual(hpFlip.Normal, V(0, 0, -1), "Normal should flip if orientation is reversed.");
     Assert.That(Tools.EQ(hpFlip.ConstantTerm, 0.0));
     AssertHyperPlaneConsistent(hpFlip);
@@ -301,7 +301,7 @@ public class HyperPlaneTests {
 
     AffineBasis aBasis = AffineBasis.FromVectors(origin, new List<Vector>() { v1, v2 });
 
-    HyperPlane hp = new HyperPlane(aBasis, false);
+    HyperPlane hp = new HyperPlane(aBasis);
 
     Vector p1 = Vector.LinearCombination(v1, 3, v2, 5);
     Vector p2 = Vector.LinearCombination(v1, -3, v2, 5);
@@ -326,7 +326,7 @@ public class HyperPlaneTests {
 
     AffineBasis aBasis = AffineBasis.FromVectors(origin, new Vector[] { e1, e2 });
 
-    HyperPlane hp = new HyperPlane(aBasis, false);
+    HyperPlane hp = new HyperPlane(aBasis);
 
     List<Vector> Swarm =
       new List<Vector>()
@@ -408,7 +408,7 @@ public class HyperPlaneTests {
   public void LazyInitialization_NormalFirst() {
     Vector      o  = V(1, 1, 1);
     AffineBasis ab = new AffineBasis(o, new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
-    HyperPlane  hp = new HyperPlane(ab, false);
+    HyperPlane  hp = new HyperPlane(ab);
 
     // 1. Получаем Normal
     Vector normal = hp.Normal;

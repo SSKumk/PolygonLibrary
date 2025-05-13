@@ -187,7 +187,7 @@ public class Visualization<TNum, TConv>
     else {
       foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
         Geometry<TNum, TConv>.HyperPlane hp =
-          new Geometry<TNum, TConv>.HyperPlane(F.AffBasis, false, (polytop.FLrep.Top.InnerPoint, false));
+          new Geometry<TNum, TConv>.HyperPlane(F.AffBasis, (polytop.FLrep.Top.InnerPoint, false));
         FList.Add
           (
            new VisTools.Facet
