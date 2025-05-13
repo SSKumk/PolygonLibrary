@@ -119,18 +119,17 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a hyperplane from the given affine basis.
     /// </summary>
     /// <param name="affBasis">The affine basis that defines a hyperplane.</param>
-    /// <param name="needCopy">Whether the affine basis should be copied.</param>
     /// <param name="toOrient">The pair to orient a hyperplane explicitly.
-    /// If not null, the point part of the pair should belong to the positive semi-space
-    /// if the bool part of the pair is <c>true</c>, and to the negative semi-space otherwise.</param>
-    public HyperPlane(AffineBasis affBasis, bool needCopy, (Vector point, bool isPositive)? toOrient = null) {
+    ///   If not null, the point part of the pair should belong to the positive semi-space
+    ///   if the bool part of the pair is <c>true</c>, and to the negative semi-space otherwise.</param>
+    public HyperPlane(AffineBasis affBasis, (Vector point, bool isPositive)? toOrient = null) {
       Debug.Assert
         (
          affBasis.SubSpaceDim == affBasis.Origin.SpaceDim - 1
        , $"HyperPlane.Ctor: Hyperplane should has (d-1) = {affBasis.Origin.SpaceDim - 1} independent vectors in its basis. Found {affBasis.SubSpaceDim}"
         );
 
-      _affBasis = needCopy ? new AffineBasis(affBasis) : affBasis;
+      _affBasis = affBasis;
       Origin    = affBasis.Origin;
 
       if (toOrient is not null) {
@@ -152,7 +151,7 @@ public partial class Geometry<TNum, TConv>
     /// if the bool part of the pair is true, and to the negative semi-space otherwise.
     /// </param>
     public HyperPlane(IEnumerable<Vector> inPlane, (Vector point, bool isPositive)? toOrient = null) : this
-      (new AffineBasis(inPlane), false, toOrient) { }
+      (new AffineBasis(inPlane), toOrient) { }
 #endregion
 
 #region Functions

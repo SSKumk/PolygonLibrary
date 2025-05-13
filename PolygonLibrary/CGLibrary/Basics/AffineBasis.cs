@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// <c>True</c> if this affine basis is full dimension.
     /// </summary>
-    public bool IsFullDim => LinBasis.FullDim;
+    public bool FullDim => LinBasis.FullDim;
 
     /// <summary>
     /// Gets the number of vectors in the linear basis associated with the affine basis.
@@ -37,7 +37,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets a value indicating whether the linear basis associated with this affine basis is empty.
     /// </summary>
-    public bool IsEmpty => LinBasis.Empty;
+    public bool Empty => LinBasis.Empty;
 
     /// <summary>
     /// Gets the vector corresponding to the specified index in the linear basis associated with the affine basis.
@@ -48,23 +48,12 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The linear basis associated with the affine basis.
     /// </summary>
-    public LinearBasis LinBasis { get; }
+    public LinearBasis LinBasis => new LinearBasis(_linearBasis, needCopy: true);
+
+    protected LinearBasisMutable _linearBasis;
 #endregion
 
 #region Functions
-    /// <summary>
-    /// Adds the vector to the linear basis associated with the affine basis.
-    /// </summary>
-    /// <param name="v">The vector to add. Not the point!</param>
-    /// <param name="orthogonalize">If the vector does not need to be orthogonalized, it should be set to false</param>
-    /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
-    public bool AddVector(Vector v, bool orthogonalize = true) {
-      Debug.Assert
-        (Origin.SpaceDim == v.SpaceDim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
-
-      return LinBasis.AddVector(v, orthogonalize);
-    }
-
     /// <summary>
     /// Projects a point onto the subspace with coordinates in the original space.
     /// </summary>
@@ -134,9 +123,9 @@ public partial class Geometry<TNum, TConv>
        , $"AffineBasis.Contains: The dimension of the vector must be equal to the dimension of the basis vectors! Found: {v.SpaceDim}"
         );
 
-      if (IsFullDim) { return true; }
+      if (FullDim) { return true; }
 
-      if (IsEmpty) {
+      if (Empty) {
         return Origin == v;
       }
 
@@ -149,6 +138,12 @@ public partial class Geometry<TNum, TConv>
 
       return true;
     }
+
+    /// <summary>
+    /// Finds an orthonormal vector that is orthogonal to the given basis, i.e., some vector from orthogonal complement space.
+    /// </summary>
+    /// <returns>An orthonormal vector orthogonal to the basis. Returns the zero vector if the basis is full-dimensional.</returns>
+    public Vector OrthonormalVector() => _linearBasis.OrthonormalVector();
 #endregion
 
 #region Constructors
@@ -157,8 +152,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="vecDim">The dimension of the basis</param>
     public AffineBasis(int vecDim) {
-      Origin   = new Vector(vecDim);
-      LinBasis = new LinearBasis(vecDim, vecDim);
+      Origin       = new Vector(vecDim);
+      _linearBasis = new LinearBasisMutable(vecDim, vecDim);
     }
 
     /// <summary>
@@ -166,8 +161,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     public AffineBasis(Vector o) {
-      Origin   = o;
-      LinBasis = new LinearBasis(o.SpaceDim, 0);
+      Origin       = o;
+      _linearBasis = new LinearBasisMutable(o.SpaceDim, 0);
     }
 
     /// <summary>
@@ -176,14 +171,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     /// <param name="needCopy">Whether the affine basis should be copied.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy = true) {
-      Origin = o;
-      if (needCopy) {
-        LinBasis = new LinearBasis(lBasis); // new надо так как есть AddVector()
-      }
-      else {
-        LinBasis = lBasis;
-      }
+    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy) {
+      Origin       = o;
+      _linearBasis = new LinearBasisMutable(lBasis, needCopy);
 
 #if DEBUG
       CheckCorrectness(this);
@@ -198,8 +188,8 @@ public partial class Geometry<TNum, TConv>
     public AffineBasis(IEnumerable<Vector> Ps) {
       Debug.Assert(Ps.Any(), "AffineBasis: At least one point must be in points.");
 
-      Origin   = Ps.First();
-      LinBasis = new LinearBasis(Ps.Select(v => v - Origin));
+      Origin       = Ps.First();
+      _linearBasis = new LinearBasisMutable(Ps.Select(v => v - Origin));
 
 #if DEBUG
       CheckCorrectness(this);
@@ -210,10 +200,8 @@ public partial class Geometry<TNum, TConv>
     /// Copy constructor.
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
-    public AffineBasis(AffineBasis affineBasis) {
-      Origin   = affineBasis.Origin;
-      LinBasis = new LinearBasis(affineBasis.LinBasis);
-
+    /// <param name="needCopy">Whether the affine basis should be copied.</param>
+    public AffineBasis(AffineBasis affineBasis, bool needCopy) : this(affineBasis.Origin, affineBasis._linearBasis, needCopy) {
 #if DEBUG
       CheckCorrectness(this);
 #endif
@@ -226,11 +214,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="Vs">The vectors to use in the linear basis associated with the affine basis.</param>
-    /// <param name="orthogonalize">If the vectors do not need to be orthogonalized, it should be set to false</param>
     /// <returns>The affine basis.</returns>
-    public static AffineBasis FromVectors(Vector o, IEnumerable<Vector> Vs, bool orthogonalize = true) {
-      return new AffineBasis(o, new LinearBasis(Vs, orthogonalize), false);
-    }
+    public static AffineBasis FromVectors(Vector o, IEnumerable<Vector> Vs) => new(o, new LinearBasis(Vs), false);
 
     /// <summary>
     /// Produce the new affine basis which is the span of {o, Ps}.
@@ -238,9 +223,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin of the affine basis.</param>
     /// <param name="Ps">The points that lie in affine space.</param>
     /// <returns>The affine basis.</returns>
-    public static AffineBasis FromPoints(Vector o, IEnumerable<Vector> Ps) {
-      return new AffineBasis(o, new LinearBasis(Ps.Select(v => v - o)), false);
-    }
+    public static AffineBasis FromPoints(Vector o, IEnumerable<Vector> Ps) => new(o, new LinearBasis(Ps.Select(v => v - o)), false);
 
     /// <summary>
     /// Generates an affine basis in the given space dimension and subspace dimension.
@@ -289,7 +272,29 @@ public partial class Geometry<TNum, TConv>
             );
         }
       }
-      LinearBasis.CheckCorrectness(affineBasis.LinBasis);
+      affineBasis.LinBasis.CheckCorrectness();
+    }
+
+  }
+
+  public class AffineBasisMutable : AffineBasis {
+
+    public AffineBasisMutable(int                 vecDim) : base(vecDim) { }
+    public AffineBasisMutable(Vector              o) : base(o) { }
+    public AffineBasisMutable(Vector              o, LinearBasis lBasis, bool needCopy = true) : base(o, lBasis, needCopy) { }
+    public AffineBasisMutable(IEnumerable<Vector> Ps) : base(Ps) { }
+    public AffineBasisMutable(AffineBasis         affineBasis, bool needCopy) : base(affineBasis, needCopy) { }
+
+    /// <summary>
+    /// Adds the vector to the linear basis associated with the affine basis.
+    /// </summary>
+    /// <param name="v">The vector to add. Not the point!</param>
+    /// <returns><c>true</c> if the vector was added successfully; otherwise, <c>false</c>.</returns>
+    public bool AddVector(Vector v) {
+      Debug.Assert
+        (Origin.SpaceDim == v.SpaceDim, "AffineBasis.AddVector: Adding a vector with a wrong dimension into an affine basis.");
+
+      return _linearBasis.AddVector(v);
     }
 
   }
