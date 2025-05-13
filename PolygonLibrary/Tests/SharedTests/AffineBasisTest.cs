@@ -60,9 +60,9 @@ public class AffineBasisTests {
 
   [Test]
   public void Constructor_OriginAndLinearBasis_NeedCopyTrue() {
-    Vector      origin = V(1, 1, 1);
-    LinearBasis lb     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
-    AffineBasis ab     = new AffineBasis(origin, lb, needCopy: true);
+    Vector             origin = V(1, 1, 1);
+    LinearBasisMutable lb     = new LinearBasisMutable(new[] { V(1, 0, 0), V(0, 1, 0) });
+    AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: true);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
@@ -77,9 +77,9 @@ public class AffineBasisTests {
 
   [Test]
   public void Constructor_OriginAndLinearBasis_NeedCopyFalse() {
-    Vector      origin = V(1, 1, 1);
-    LinearBasis lb     = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
-    AffineBasis ab     = new AffineBasis(origin, lb, needCopy: false);
+    Vector             origin = V(1, 1, 1);
+    LinearBasisMutable lb     = new LinearBasisMutable(new[] { V(1, 0, 0), V(0, 1, 0) });
+    AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: false);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
@@ -152,7 +152,7 @@ public class AffineBasisTests {
     Vector      origin   = V(1, 2, 3);
     LinearBasis lb       = LinearBasis.GenLinearBasis(spaceDim:3, subSpaceDim:2);
     AffineBasis original = new AffineBasis(origin, lb);
-    AffineBasis copy     = new AffineBasis(original);
+    AffineBasisMutable copy     = new AffineBasisMutable(original, true);
 
     AssertVectorsAreEqual(copy.Origin, original.Origin);
     Assert.That(copy.LinBasis.Equals(original.LinBasis), Is.True, "Linear bases should be equal.");
@@ -207,8 +207,8 @@ public class AffineBasisTests {
 #region Method Tests
   [Test]
   public void Method_AddVector() {
-    Vector      o  = V(1, 1, 1);
-    AffineBasis ab = new AffineBasis(o, new LinearBasis(V(1, 0, 0)));
+    Vector             o  = V(1, 1, 1);
+    AffineBasisMutable ab = new AffineBasisMutable(o, new LinearBasis(V(1, 0, 0)));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(1));
 
     bool added1 = ab.AddVector(V(0, 5, 0));
@@ -240,7 +240,7 @@ public class AffineBasisTests {
     SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 3), V(-1, 4) };
     SortedSet<Vector> expected = new SortedSet<Vector> { V(-1, -1), V(-2, -3), V(1, -4) };
 
-    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis, false);
+    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -254,7 +254,7 @@ public class AffineBasisTests {
     SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 4), V(-4, 4) };
     SortedSet<Vector> expected = new SortedSet<Vector> { V(1, 1), V(0, -2), V(6, -2) };
 
-    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis, false);
+    AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis);
     IEnumerable<Vector> result = aBasis.ProjectPoints(swarm);
 
     bool areEqual = expected.Count == result.Count() && expected.All(x => result.Any(y => x == y));
@@ -362,22 +362,6 @@ public class AffineBasisTests {
 
     AssertVectorsAreEqual(originalPoint, expectedPoint);
   }
-  //  todo: Надо ли делать throw или же Debug.Assert (как сейчас)
-  // [Test]
-  // public void Method_TranslateToOriginal_DimMismatch_Throws() {
-  //   Vector      o  = V(0, 0, 1);
-  //   LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }); // SubSpaceDim = 2
-  //   AffineBasis ab = new AffineBasis(o, lb);
-  //
-  //   Vector coords1D = V(5);
-  //   Vector coords3D = V(1, 2, 3);
-  //
-  //   // Debug.Assert should catch this, potentially throws ArgumentException if made explicit
-  //   Assert.Throws<Exception>
-  //     (() => ab.ToOriginalCoords(coords1D), "ToOriginalCoords should throw if coord dim != SubSpaceDim");
-  //   Assert.Throws<Exception>
-  //     (() => ab.ToOriginalCoords(coords3D), "ToOriginalCoords should throw if coord dim != SubSpaceDim");
-  // }
 
   [Test]
   public void Method_Contains_Plane() {
@@ -424,15 +408,15 @@ public class AffineBasisTests {
     Vector o = V(1, 1, 1);
     // Corrected constructor call
     LinearBasis lb  = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
-    AffineBasis ab1 = new AffineBasis(o, lb, false);
-    AffineBasis ab2 = new AffineBasis(o, lb, false);
+    AffineBasis ab1 = new AffineBasis(o, lb);
+    AffineBasis ab2 = new AffineBasis(o, lb);
     Assert.That(ab1.Equals(ab2), Is.True);
 
-    AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb, (bool)TODO));
+    AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb, false));
     Assert.That(ab1.Equals(ab3), Is.True);
 
     Vector      o4  = o + ab1[0] * 5.0 + ab1[1] * (-3.0);
-    AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb, (bool)TODO));
+    AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb, false));
     Assert.That(ab1.Equals(ab4), Is.True);
 
     // Corrected constructor call

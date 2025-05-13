@@ -84,7 +84,7 @@ public class HyperPlaneTests {
   [Test]
   public void Constructor_AffineBasis_CorrectDerivation() {
     Vector      o  = V(0, 0, 1);
-    AffineBasis ab = new AffineBasis(o, new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
+    AffineBasis ab = new AffineBasis(o, new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     HyperPlane  hp = new HyperPlane(ab);
 
     Assert.That(hp.SpaceDim, Is.EqualTo(3));
@@ -101,7 +101,7 @@ public class HyperPlaneTests {
   [Test]
   public void Constructor_AffineBasis_WithOrientation() {
     Vector      o             = V(0, 0, 0);
-    AffineBasis ab            = new AffineBasis(o, new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
+    AffineBasis ab            = new AffineBasis(o, new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     Vector      pointPositive = V(0, 0, 5);
     Vector      pointNegative = V(0, 0, -5);
 
@@ -407,7 +407,7 @@ public class HyperPlaneTests {
   [Test]
   public void LazyInitialization_NormalFirst() {
     Vector      o  = V(1, 1, 1);
-    AffineBasis ab = new AffineBasis(o, new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
+    AffineBasis ab = new AffineBasis(o, new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     HyperPlane  hp = new HyperPlane(ab);
 
     // 1. Получаем Normal
