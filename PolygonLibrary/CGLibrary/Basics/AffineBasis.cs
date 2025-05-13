@@ -48,9 +48,9 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The linear basis associated with the affine basis.
     /// </summary>
-    public LinearBasis LinBasis => new LinearBasis(_linearBasis, needCopy: true);
+    public LinearBasis LinBasis => new LinearBasis(_linearBasis, needCopy: false);
 
-    protected LinearBasisMutable _linearBasis;
+    protected readonly LinearBasisMutable _linearBasis;
 #endregion
 
 #region Functions
