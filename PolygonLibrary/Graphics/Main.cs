@@ -14,35 +14,15 @@ public class Program {
     const string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
 
-    var P =
-      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}P.polytope"));
-    var Q =
-      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}Q.polytope"));
-
-    var polytope =
-      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}polytope.polytope"));
-    var polytopeflrep =
-      Geometry<double,DConvertor>.ConvexPolytop.CreateFromReader
-        (new Geometry<double,DConvertor>.ParamReader($"{pathTemp}polytopeflrep.polytope"));
-
-    VisTools.DrawPolytopePLY<double,DConvertor>(P, $"{pathTemp}P");
-    VisTools.DrawPolytopePLY<double,DConvertor>(Q, $"{pathTemp}Q");
-    VisTools.DrawPolytopePLY<double,DConvertor>(polytope, $"{pathTemp}polytope");
-    VisTools.DrawPolytopePLY<double,DConvertor>(polytopeflrep, $"{pathTemp}polytopeflrep");
-
-
-    // Visualization<double, DConvertor>   visD  = new Visualization<double, DConvertor>(pathLdg, "Oscillator3D.Blender", 1e-08);
+    Visualization<double, DConvertor>   visD  = new Visualization<double, DConvertor>(pathLdg, "Oscillator-mass.Blender", 1e-08);
     // Visualization<ddouble, DDConvertor> visDD = new Visualization<ddouble, DDConvertor>(pathLdg, "Oscillator3D.Blender", ddouble.Parse("1e-08"));
     // Visualization<Rational, RConvertor> visR08 =
-    //   new Visualization<Rational, RConvertor>(pathLdg, "Oscillator3D.Blender", Rational.Parse("1/100000000"));
+      // new Visualization<Rational, RConvertor>(pathLdg, "Oscillator3D.Blender", Rational.Parse("1/100000000"));
     // Visualization<Rational, RConvertor> visR16 =
-    //   new Visualization<Rational, RConvertor>(pathLdg, "Oscillator3D.Blender", Rational.Parse("1/10000000000000000"));
-    //
-    //
-    // visD.ForBlender();
+      // new Visualization<Rational, RConvertor>(pathLdg, "Oscillator3D.Blender", Rational.Parse("1/10000000000000000"));
+
+
+    visD.ForBlender();
     // visDD.ForBlender();
     // visR08.ForBlender();
     // visR16.ForBlender();
