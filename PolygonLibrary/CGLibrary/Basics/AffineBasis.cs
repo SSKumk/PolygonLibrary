@@ -171,7 +171,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="o">The origin point of the affine basis.</param>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     /// <param name="needCopy">Whether the affine basis should be copied.</param>
-    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy) {
+    public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy = false) {
       Origin       = o;
       _linearBasis = new LinearBasisMutable(lBasis, needCopy);
 
@@ -245,7 +245,6 @@ public partial class Geometry<TNum, TConv>
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
       }
-
 
       AffineBasis other = (AffineBasis)obj;
 
