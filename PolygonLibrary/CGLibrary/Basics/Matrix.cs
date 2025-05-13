@@ -135,11 +135,6 @@ public partial class Geometry<TNum, TConv>
     public Matrix(int row, int col, TNum[] ar, bool needCopy = true) {
       Debug.Assert(row > 0, $"Matrix.Ctor: Number of rows should be positive. Found {row}");
       Debug.Assert(col > 0, $"Matrix.Ctor: Number of columns should be positive. Found {col}");
-      Debug.Assert
-        (
-         row * col == ar.Length
-       , $"Matrix.Ctor: Product of sizes does not equal to number of elements in the array. Expected {row * col}, found {ar.Length}"
-        );
       Debug.Assert(ar.Rank == 1, $"Matrix.Ctor: The array is not one-dimensional. Found rank {ar.Rank}");
 
 
@@ -193,15 +188,21 @@ public partial class Geometry<TNum, TConv>
     /// Copy constructor that creates a matrix from another matrix.
     /// </summary>
     /// <param name="m">The matrix to be copied</param>
-    public Matrix(Matrix m) {
+    /// <param name="needCopy"></param>
+    public Matrix(Matrix m, bool needCopy) {
       Rows = m.Rows;
       Cols = m.Cols;
-      _m   = new TNum[Rows * Cols];
-      int k = 0;
+      if (!needCopy) {
+        _m = m._m;
+      }
+      else {
+        _m = new TNum[Rows * Cols];
+        int k = 0;
 
-      foreach (TNum el in m._m) {
-        _m[k] = el;
-        k++;
+        foreach (TNum el in m._m) {
+          _m[k] = el;
+          k++;
+        }
       }
     }
 
@@ -873,8 +874,8 @@ public partial class Geometry<TNum, TConv>
     public static Matrix GenNonSingular(int dim, TNum a, TNum b, GRandomLC? random = null) {
       Debug.Assert(dim > 0, $"Matrix.GenNonSingular: Size of a square matrix should be positive. Found {dim}");
 
-      TNum[,]     m       = new TNum[dim, dim];
-      LinearBasis toCheck = new LinearBasis(dim, 0);
+      TNum[,]            m       = new TNum[dim, dim];
+      LinearBasisMutable toCheck = new LinearBasisMutable(dim, 0);
       for (int r = 0; r < dim; r++) {
         TNum[] row;
         do {
@@ -1153,7 +1154,8 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a mutable matrix by copying the elements from an existing matrix.
     /// </summary>
     /// <param name="m">The matrix to copy.</param>
-    public MatrixMutable(Matrix m) : base(m) { }
+    /// <param name="needCopy"></param>
+    public MatrixMutable(Matrix m, bool needCopy) : base(m, needCopy) { }
 
     /// <summary>
     /// Indexer to get or set the matrix element at the specified row and column.
@@ -1179,26 +1181,15 @@ public partial class Geometry<TNum, TConv>
     }
 
 
-    //todo: Transpose нормально!
-    public new MatrixMutable Transpose() => new MatrixMutable(base.Transpose());
+    //todo: Transpose inplace нормально!
+    public new MatrixMutable Transpose() => new MatrixMutable(base.Transpose(), false);
 
     /// <summary>
     /// Creates an identity matrix of size <paramref name="d"/> x <paramref name="d"/>.
     /// </summary>
     /// <param name="d">The size of the identity matrix (number of rows and columns).</param>
     /// <returns>A new identity matrix.</returns>
-    public new static MatrixMutable Eye(int d) {
-      int    k  = 0;
-      TNum[] nv = new TNum[d * d];
-
-      for (int i = 0; i < d; i++) {
-        for (int j = 0; j < d; j++, k++) {
-          nv[k] = (i == j) ? Tools.One : Tools.Zero;
-        }
-      }
-
-      return new MatrixMutable(d, d, nv, false);
-    }
+    public new static MatrixMutable Eye(int d) => new MatrixMutable(Matrix.Eye(d), false);
 
     /// <summary>
     /// Sets a submatrix within the current matrix at the specified starting row and column.
@@ -1262,7 +1253,7 @@ public partial class Geometry<TNum, TConv>
       Array.Copy(m._m, k * d, newData, 0, (d - k) * d);
       Array.Copy(m._m, 0, newData, (d - k) * d, k * d);
 
-     return new MatrixMutable(d, d, newData, false);
+      return new MatrixMutable(d, d, newData, false);
     }
 
     /// <summary>
@@ -1271,7 +1262,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m1">The first matrix.</param>
     /// <param name="m2">The second matrix.</param>
     /// <returns>A new matrix that is the product of <paramref name="m1"/> and <paramref name="m2"/>.</returns>
-    public static MatrixMutable operator *(MatrixMutable m1, MatrixMutable m2) => new((Matrix)m1 * (Matrix)m2);
+    public static MatrixMutable operator *(MatrixMutable m1, MatrixMutable m2) => new((Matrix)m1 * (Matrix)m2, false);
 
   }
 
