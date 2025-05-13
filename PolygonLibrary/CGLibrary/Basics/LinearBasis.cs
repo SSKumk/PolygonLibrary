@@ -100,7 +100,7 @@ public partial class Geometry<TNum, TConv>
     /// Finds an orthonormal vector that is orthogonal to the given basis, i.e., some vector from orthogonal complement space.
     /// </summary>
     /// <returns>An orthonormal vector orthogonal to the basis. Returns the zero vector if the basis is full-dimensional.</returns>
-    public Vector OrthonormalVector() => FullDim ? Vector.Zero(SpaceDim) : _Basis.TakeRowVector(SubSpaceDim + 1);
+    public Vector OrthonormalVector() => FullDim ? Vector.Zero(SpaceDim) : _Basis.TakeRowVector(SubSpaceDim);
 
     /// <summary>
     /// Projects a point onto the subspace with coordinates in the original space.
@@ -187,6 +187,13 @@ public partial class Geometry<TNum, TConv>
           for (int col = 0; col < SpaceDim; col++) {
             _Basis[global_row_index, col] -= beta * house[i] * projectionRow[col];
           }
+        }
+      }
+
+
+      if (Tools.EQ(sign, Tools.One)) { // новый базисный вектор сонаправлен с v.
+        for (int j = 0; j < SpaceDim; j++) {
+          _Basis[SubSpaceDim, j] = -_Basis[SubSpaceDim, j];
         }
       }
 
@@ -310,7 +317,7 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a linear basis from a set of vectors.
     /// </summary>
     /// <param name="Vs">The vectors to form the basis.</param>
-    public LinearBasis(IEnumerable<Vector> Vs) : this(Vs.First().SpaceDim, Vs) { }
+    public LinearBasis(params IEnumerable<Vector> Vs) : this(Vs.First().SpaceDim, Vs) { }
 
     /// <summary>
     /// Copy constructor for the linear basis.
@@ -342,13 +349,15 @@ public partial class Geometry<TNum, TConv>
       }
       else {
         if (lb1.SubSpaceDim > lb2.SubSpaceDim) {
-          _Basis = lb1._Basis;
+          _Basis      = lb1._Basis;
+          SubSpaceDim = lb1.SubSpaceDim;
           if (!FullDim) {
             AddVectors(lb2);
           }
         }
         else {
-          _Basis = lb2._Basis;
+          _Basis      = lb2._Basis;
+          SubSpaceDim = lb2.SubSpaceDim;
           if (!FullDim) {
             AddVectors(lb1);
           }
@@ -418,13 +427,18 @@ public partial class Geometry<TNum, TConv>
     /// <param name="obj">Object to compare with this linear basis.</param>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
     public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
+      if (obj == null) {
         return false;
       }
+      if (ReferenceEquals(this, obj)) {
+        return true;
+      }
 
-      LinearBasis other = (LinearBasis)obj;
+      if (obj is LinearBasis other) {
+        return SpanSameSpace(other);
+      }
 
-      return SpanSameSpace(other);
+      return false;
     }
 #endregion
 
@@ -474,7 +488,7 @@ public partial class Geometry<TNum, TConv>
     public LinearBasisMutable(int                 spaceDim) : base(spaceDim) { }
     public LinearBasisMutable(int                 spaceDim, int                 subSpaceDim) : base(spaceDim, subSpaceDim) { }
     public LinearBasisMutable(int                 spaceDim, IEnumerable<Vector> Vs) : base(spaceDim, Vs) { }
-    public LinearBasisMutable(IEnumerable<Vector> Vs) : base(Vs) { }
+    public LinearBasisMutable(params IEnumerable<Vector> Vs) : base(Vs) { }
     public LinearBasisMutable(LinearBasis         lb1, LinearBasis lb2) : base(lb1, lb2) { }
     public LinearBasisMutable(LinearBasis         lb,  bool        needCopy) : base(lb, needCopy) { }
 
