@@ -124,6 +124,7 @@ public partial class Geometry<TNum, TConv>
         // Console.WriteLine($"QSize = {process.Count}");
       }
 
+      throw new NotImplementedException("Теперь тут надо сначала собрать все подузлы, а уже затем собирать узел размерности больше");
       // Теперь собираем всю оставшуюся решётку
       foreach (HyperPlane hp in HPs) {             // Цикл по гиперплоскостям, на которых строим k-грани
         for (int i = 1; i < PolytopDim - 1; i++) { // Цикл по размерности узлов, по которым будем строить решётку
@@ -143,8 +144,8 @@ public partial class Geometry<TNum, TConv>
                 foreach (FLNode supper in FL[i + 1]) {
                   // Если узел уже есть, то устанавливаем связи. Смотрим на аффинные пространства узлов!
                   if (supper.AffBasis.Contains(innerPoint)) {
-                    FLNode.Connect(set[fst], supper, false);
-                    FLNode.Connect(set[snd], supper, false);
+                    // FLNode.Connect(set[fst], supper, false);
+                    // FLNode.Connect(set[snd], supper, false);
                     found = true;
 
                     break;
@@ -162,7 +163,7 @@ public partial class Geometry<TNum, TConv>
       FL[PolytopDim].Add(new FLNode(FL[^2]));
 
 
-      return new FaceLattice(FL, true);
+      return new FaceLattice(FL);
     }
 
     /// <summary>
