@@ -142,8 +142,9 @@ public partial class Geometry<TNum, TConv>
       Cols = col;
 
       if (needCopy) {
-        _m = new TNum[row * col];
-        ar.CopyTo(_m, 0);
+        int length = row * col;
+        _m = new TNum[length];
+        Array.Copy(ar, 0, _m, 0, length);
       }
       else {
         _m = ar;
@@ -452,17 +453,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="m1">The left concatenated matrix.</param>
     /// <param name="m2">The right concatenated matrix.</param>
     /// <returns>The resultant matrix.</returns>
-    public static Matrix? hcat(Matrix? m1, Matrix? m2) {
-      if (m1 is null && m2 is null) {
-        return null;
-      }
-      if (m1 is null && m2 is not null) {
-        return m2;
-      }
-      if (m1 is not null && m2 is null) {
-        return m2;
-      }
-
+    public static Matrix hcat(Matrix m1, Matrix m2) {
       Debug.Assert
         (
          m1!.Rows == m2!.Rows
