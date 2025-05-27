@@ -64,7 +64,7 @@ public class LinearBasisTests {
     Assert.That(basis.SpaceDim, Is.EqualTo(3));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(1));
     Assert.That(basis.FullDim, Is.False);
-    AssertVectorsAreEqual(V(-0.6, -0.8, 0), basis[0], "Single vector constructor should normalize.");
+    AssertVectorsAreEqual(V(0.6, 0.8, 0), basis[0], "Single vector constructor should normalize.");
     AssertBasisOrthonormal(basis);
   }
 
