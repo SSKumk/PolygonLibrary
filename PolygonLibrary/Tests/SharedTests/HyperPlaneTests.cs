@@ -12,7 +12,6 @@ namespace Tests.SharedTests;
 [TestFixture]
 public class HyperPlaneTests {
 
-  // Helper для проверки внутренней согласованности (если нужно вызвать CheckCorrectness)
   private void AssertHyperPlaneConsistent(HyperPlane hp) {
 #if DEBUG
     Assert.DoesNotThrow(() => HyperPlane.CheckCorrectness(hp));
@@ -76,8 +75,7 @@ public class HyperPlaneTests {
     Assert.That(Tools.EQ(hp.ConstantTerm, 2.0), "ConstantTerm should be normalized.");
 
     Vector expectedOrigin = V(0, 2, 0);
-    AssertVectorsAreEqual
-      (hp.Origin, expectedOrigin, "Calculated Origin is incorrect."); // <-- Эта проверка упадет из-за ошибки в конструкторе!
+    AssertVectorsAreEqual(hp.Origin, expectedOrigin, "Calculated Origin is incorrect.");
     AssertHyperPlaneConsistent(hp);
   }
 
