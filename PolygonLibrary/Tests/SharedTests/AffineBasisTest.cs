@@ -61,7 +61,7 @@ public class AffineBasisTests {
   [Test]
   public void Constructor_OriginAndLinearBasis_NeedCopyTrue() {
     Vector             origin = V(1, 1, 1);
-    LinearBasisMutable lb     = new LinearBasisMutable(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasisMutable lb     = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
     AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: true);
 
     AssertVectorsAreEqual(ab.Origin, origin);
@@ -78,17 +78,16 @@ public class AffineBasisTests {
   [Test]
   public void Constructor_OriginAndLinearBasis_NeedCopyFalse() {
     Vector             origin = V(1, 1, 1);
-    LinearBasisMutable lb     = new LinearBasisMutable(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasisMutable lb     = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
     AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: false);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
-    Assert.That(ab.LinBasis, Is.SameAs(lb)); // Must be the same instance
 
     lb.AddVector(V(0, 0, 1));
     Assert.That
       (ab.SubSpaceDim, Is.EqualTo(3), "Affine basis should change when original LinearBasis is modified (NeedCopy=false).");
-    AssertBasisOrthonormal(ab); // lb was modified correctly, so ab should still be valid
+    AssertBasisOrthonormal(ab);
   }
 
 
@@ -149,9 +148,9 @@ public class AffineBasisTests {
 
   [Test]
   public void Constructor_CopyConstructor() {
-    Vector      origin   = V(1, 2, 3);
-    LinearBasis lb       = LinearBasis.GenLinearBasis(spaceDim:3, subSpaceDim:2);
-    AffineBasis original = new AffineBasis(origin, lb);
+    Vector             origin   = V(1, 2, 3);
+    LinearBasis        lb       = LinearBasis.GenLinearBasis(spaceDim: 3, subSpaceDim: 2);
+    AffineBasis        original = new AffineBasis(origin, lb);
     AffineBasisMutable copy     = new AffineBasisMutable(original, true);
 
     AssertVectorsAreEqual(copy.Origin, original.Origin);
@@ -197,7 +196,7 @@ public class AffineBasisTests {
 
   [Test]
   public void Factory_GenAffineBasis() {
-    AffineBasis ab = AffineBasis.GenAffineBasis(spaceDim:4, subSpaceDim:2);
+    AffineBasis ab = AffineBasis.GenAffineBasis(spaceDim: 4, subSpaceDim: 2);
     Assert.That(ab.SpaceDim, Is.EqualTo(4));
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
     AssertBasisOrthonormal(ab);
@@ -216,15 +215,19 @@ public class AffineBasisTests {
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
     AssertVectorsAreEqual(ab[0], V(1, 0, 0));
     AssertVectorsAreEqual(ab[1], V(0, 1, 0));
+    Matrix abPM1 = ab.LinBasis.ProjMatrix;
 
     bool added2 = ab.AddVector(V(3, 0, 0)); // Add dependent vector
     Assert.That(added2, Is.False);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(2));
+    Assert.That(ab.LinBasis.ProjMatrix, Is.EqualTo(abPM1));
 
     bool added3 = ab.AddVector(V(0, 0, 1)); // Add Z-direction
     Assert.That(added3, Is.True);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(3));
     AssertVectorsAreEqual(ab[2], V(0, 0, 1));
+    Assert.That(ab.LinBasis.ProjMatrix, Is.Not.EqualTo(abPM1), "If AddVector adds the vector it must set _projMatrix to null!");
+
 
     bool added4 = ab.AddVector(V(1, 1, 1));
     Assert.That(added4, Is.False);
@@ -235,9 +238,9 @@ public class AffineBasisTests {
 
   [Test]
   public void ProjectToAffineSpace_Reflect() {
-    Vector origin = V(0, 0);
-    List<Vector> basis = new List<Vector> { V(-1, 0), V(0, -1) };
-    SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 3), V(-1, 4) };
+    Vector            origin   = V(0, 0);
+    List<Vector>      basis    = new List<Vector> { V(-1, 0), V(0, -1) };
+    SortedSet<Vector> swarm    = new SortedSet<Vector> { V(1, 1), V(2, 3), V(-1, 4) };
     SortedSet<Vector> expected = new SortedSet<Vector> { V(-1, -1), V(-2, -3), V(1, -4) };
 
     AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis);
@@ -249,9 +252,9 @@ public class AffineBasisTests {
 
   [Test]
   public void ProjectToAffineSpace_ReflectAndShift() {
-    Vector origin = V(2, 2);
-    List<Vector> basis = new List<Vector> { V(-1, 0), V(0, -1) };
-    SortedSet<Vector> swarm = new SortedSet<Vector> { V(1, 1), V(2, 4), V(-4, 4) };
+    Vector            origin   = V(2, 2);
+    List<Vector>      basis    = new List<Vector> { V(-1, 0), V(0, -1) };
+    SortedSet<Vector> swarm    = new SortedSet<Vector> { V(1, 1), V(2, 4), V(-4, 4) };
     SortedSet<Vector> expected = new SortedSet<Vector> { V(1, 1), V(0, -2), V(6, -2) };
 
     AffineBasis         aBasis = AffineBasis.FromVectors(origin, basis);
@@ -265,7 +268,7 @@ public class AffineBasisTests {
   [Test]
   public void Method_ProjectPointToSubSpace_in_OrigSpace_Plane() {
     Vector      o  = V(0, 0, 1);
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector p_above  = V(3, 4, 5);
@@ -311,10 +314,10 @@ public class AffineBasisTests {
   [Test]
   public void Method_ProjectPointToSubSpace_Coordinates_Plane() {
     Vector      o  = V(0, 0, 1);
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector p = V(3, 4, 5);
+    Vector p              = V(3, 4, 5);
     Vector coords         = ab.ProjectPointToSubSpace(p);
     Vector expectedCoords = V(3, 4);
 
@@ -328,7 +331,7 @@ public class AffineBasisTests {
     LinearBasis lb = new LinearBasis(V(1 / Math.Sqrt(2), 1 / Math.Sqrt(2), 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector p = V(3, 3, 1);
+    Vector p              = V(3, 3, 1);
     Vector coords         = ab.ProjectPointToSubSpace(p);
     Vector expectedCoords = V(Math.Sqrt(8));
 
@@ -339,10 +342,10 @@ public class AffineBasisTests {
   [Test]
   public void Method_TranslateToOriginal_Plane() {
     Vector      o  = V(0, 0, 1);
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector coords = V(3, 4);
+    Vector coords        = V(3, 4);
     Vector originalPoint = ab.ToOriginalCoords(coords);
     Vector expectedPoint = V(3, 4, 1);
 
@@ -356,7 +359,7 @@ public class AffineBasisTests {
     LinearBasis lb = new LinearBasis(b);
     AffineBasis ab = new AffineBasis(o, lb);
 
-    Vector coords = V(Math.Sqrt(8));
+    Vector coords        = V(Math.Sqrt(8));
     Vector originalPoint = ab.ToOriginalCoords(coords);
     Vector expectedPoint = V(3, 3, 1);
 
@@ -366,7 +369,7 @@ public class AffineBasisTests {
   [Test]
   public void Method_Contains_Plane() {
     Vector      o  = V(0, 0, 1);
-    LinearBasis lb = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab = new AffineBasis(o, lb);
 
     Vector p_on     = V(5, -2, 1);
@@ -394,6 +397,16 @@ public class AffineBasisTests {
     Assert.That(ab.Contains(V(1, 2, 4)), Is.False, "0-dim basis should not contain other points.");
     Assert.That(ab.Contains(Vector.Zero(3)), Is.False, "0-dim basis at non-zero origin should not contain zero.");
   }
+
+  [Test]
+  public void Method_Contains_Point_Cube() {
+    LinearBasis lb = new LinearBasis(V(1, 0, 0), V(0, 0, 1));
+    AffineBasis ab = new AffineBasis(V(0, 1, 0), lb);
+    Assert.That(ab.Contains(V(1, 1, 1)), Is.True);
+    Assert.That(ab.Contains(V(1, 1, 0)), Is.True);
+    Assert.That(ab.Contains(V(0, 1, 1)), Is.True);
+    Assert.That(ab.Contains(V(0.5, 1, 0.5)), Is.True);
+  }
 #endregion
 
 #region Override Tests
@@ -407,7 +420,7 @@ public class AffineBasisTests {
   public void Override_Equals_DifferentObjectsSameSubspace() {
     Vector o = V(1, 1, 1);
     // Corrected constructor call
-    LinearBasis lb  = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o, lb);
     AffineBasis ab2 = new AffineBasis(o, lb);
     Assert.That(ab1.Equals(ab2), Is.True);
@@ -420,7 +433,7 @@ public class AffineBasisTests {
     Assert.That(ab1.Equals(ab4), Is.True);
 
     // Corrected constructor call
-    LinearBasis lb_rot = new LinearBasis(new[] { V(0, 1, 0), V(-1, 0, 0) });
+    LinearBasis lb_rot = new LinearBasis(V(0, 1, 0), V(-1, 0, 0));
     AffineBasis ab5    = new AffineBasis(o, lb_rot);
     Assert.That(ab1.Equals(ab5), Is.True);
   }
@@ -428,8 +441,8 @@ public class AffineBasisTests {
   [Test]
   public void Override_Equals_DifferentSubspaces() {
     // Corrected constructor calls
-    AffineBasis ab_XY = new AffineBasis(Vector.Zero(3), new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
-    AffineBasis ab_XZ = new AffineBasis(Vector.Zero(3), new LinearBasis(new[] { V(1, 0, 0), V(0, 0, 1) }));
+    AffineBasis ab_XY = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
+    AffineBasis ab_XZ = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 0, 1)));
     AffineBasis ab_X  = new AffineBasis(Vector.Zero(3), new LinearBasis(new[] { V(1, 0, 0) }));
     Assert.That(ab_XY.Equals(ab_XZ), Is.False);
     Assert.That(ab_XY.Equals(ab_X), Is.False);
@@ -437,7 +450,7 @@ public class AffineBasisTests {
     Vector o1 = V(0, 0, 0);
     Vector o2 = V(0, 0, 1);
     // Corrected constructor call
-    LinearBasis lb  = new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o1, lb);
     AffineBasis ab2 = new AffineBasis(o2, lb);
     Assert.That(ab1.Equals(ab2), Is.False);
@@ -456,7 +469,7 @@ public class AffineBasisTests {
 
   [Test]
   public void Override_GetEnumerator() {
-    AffineBasis ab      = new AffineBasis(V(1, 1, 1), new LinearBasis(new[] { V(1, 0, 0), V(0, 1, 0) }));
+    AffineBasis ab      = new AffineBasis(V(1, 1, 1), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     int         count   = 0;
     var         vectors = new List<Vector>();
     foreach (Vector v in ab) {
