@@ -341,14 +341,9 @@ public partial class Geometry<TNum, TConv>
     /// Constructs a ConvexPolytop using a face lattice (FLrep).
     /// </summary>
     /// <param name="fLrep">The face lattice defining the polytop.</param>
-    /// <param name="updateIP">If true, updates inner points of a face lattice.</param>
-    private ConvexPolytop(FaceLattice fLrep, bool updateIP) {
+    private ConvexPolytop(FaceLattice fLrep) {
       SpaceDim = fLrep.Top.AffBasis.SpaceDim;
       _FLrep   = fLrep;
-
-      if (updateIP) {
-        _FLrep.Top.ReCalcAddInfo();
-      }
     }
 #endregion
 
@@ -393,7 +388,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="faceLattice">The face lattice representing the polytop.</param>
     /// <param name="updateIP">If true, updates inner points of a face lattice.</param>
     public static ConvexPolytop CreateFromFaceLattice(FaceLattice faceLattice, bool updateIP = false)
-      => new ConvexPolytop(faceLattice, updateIP);
+      => new ConvexPolytop(faceLattice);
 
     /// <summary>
     /// Represents the actions that can be performed on a built polytop.
@@ -472,7 +467,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList(), false), true);
+      return CreateFromFaceLattice(new FaceLattice(lattice.Select(level => level.ToSortedSet()).ToList()), true);
     }
 #endregion
 
@@ -1046,7 +1041,7 @@ public partial class Geometry<TNum, TConv>
         }
         newFL.Add(new SortedSet<FLNode>() { new FLNode(newFL.Last()) });
 
-        return CreateFromFaceLattice(new FaceLattice(newFL, false), false);
+        return CreateFromFaceLattice(new FaceLattice(newFL), false);
       }
 
       if (IsVrep) {
