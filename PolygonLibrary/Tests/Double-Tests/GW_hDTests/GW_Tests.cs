@@ -62,6 +62,14 @@ public class GW_Tests {
 
 #region Cube3D-Static Тесты 3D-куба не зависящие от _random
   [Test]
+  public void Cube3D() {
+    List<Vector> S     = Cube01(3, out List<Vector> _);
+
+    ConvexPolytop P = ConvexPolytop.CreateFromPoints(S, true);
+    Assert.That(P.Vrep.SetEquals(S), "The set of vertices must be equal.");
+  }
+
+  [Test]
   public void Cube3D_Rotated_Z45() {
     List<Vector> S     = Cube01(3, out List<Vector> _);
     double       angle = Tools.PI / 4;
