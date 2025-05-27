@@ -23,7 +23,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Number of vectors in the basis.
     /// </summary>
-    public int SubSpaceDim = 0;
+    public int SubSpaceDim;
 
     /// <summary>
     /// <c>True</c> if the basis contains d-linearly independent vectors in d-dimensional space.
@@ -198,6 +198,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       SubSpaceDim += 1;
+      _projMatrix =  null;
 
       return true;
     }
@@ -484,13 +485,13 @@ public partial class Geometry<TNum, TConv>
 
   public class LinearBasisMutable : LinearBasis {
 
-    public LinearBasisMutable(Vector              v) : base(v) { }
-    public LinearBasisMutable(int                 spaceDim) : base(spaceDim) { }
-    public LinearBasisMutable(int                 spaceDim, int                 subSpaceDim) : base(spaceDim, subSpaceDim) { }
-    public LinearBasisMutable(int                 spaceDim, IEnumerable<Vector> Vs) : base(spaceDim, Vs) { }
+    public LinearBasisMutable(Vector                     v) : base(v) { }
+    public LinearBasisMutable(int                        spaceDim) : base(spaceDim) { }
+    public LinearBasisMutable(int                        spaceDim, int subSpaceDim) : base(spaceDim, subSpaceDim) { }
+    public LinearBasisMutable(int                        spaceDim, IEnumerable<Vector> Vs) : base(spaceDim, Vs) { }
     public LinearBasisMutable(params IEnumerable<Vector> Vs) : base(Vs) { }
-    public LinearBasisMutable(LinearBasis         lb1, LinearBasis lb2) : base(lb1, lb2) { }
-    public LinearBasisMutable(LinearBasis         lb,  bool        needCopy) : base(lb, needCopy) { }
+    public LinearBasisMutable(LinearBasis                lb1, LinearBasis lb2) : base(lb1, lb2) { }
+    public LinearBasisMutable(LinearBasis                lb,  bool        needCopy) : base(lb, needCopy) { }
 
 
     public new bool AddVector(Vector               v)  => base.AddVector(v);
