@@ -22,8 +22,10 @@ class Program {
     // string problem = "Oscillator3D"; // double: (+), (-), (*), (/),
     // string problem = "Oscillator"; // double: (+), (-), (*), (/),
 
+
+    string problem = "Oscillator-pyramid";
+    // string problem = "Oscillator-mass";
     // string problem = "MassDot-mass";
-    string problem = "Oscillator-mass-fromCube";
 
     BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, problem, (double)eps);
     // BridgeCreator<ddouble, DDConvertor> bridgeCreator = new BridgeCreator<ddouble, DDConvertor>(ldgDir, problem, eps);
