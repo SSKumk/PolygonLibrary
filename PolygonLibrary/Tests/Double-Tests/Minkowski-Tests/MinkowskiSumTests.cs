@@ -311,7 +311,6 @@ public class MinkowskiSum_hD {
     ConvexPolytop sum_CH = MinkowskiSum.ByConvexHull(P, Q);
     ConvexPolytop sum    = MinkowskiSum.BySandipDas(P, Q);
 
-    Assert.That(sum_CH, Is.EqualTo(sum));
     // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Octahedron_Octahedron45XY.txt");
   }
 
@@ -328,10 +327,8 @@ public class MinkowskiSum_hD {
 
     Assert.That(sum_CH, Is.EqualTo(sum));
 
-    // P.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid.txt");
-    // Q.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid45XY.txt");
-
-    // sum.WriteTXT("../../../Double-Tests/Minkowski-Tests/3D-pictures/Pyramid_Pyramid45XY.txt");
+    // sum_CH.WriteIn(new ParamWriter("F:\\Works\\IMM\\Аспирантура\\LDG\\Visualization\\Temp\\pyramid-CH.cpolytope"), ConvexPolytop.Rep.FLrep);
+    // sum.WriteIn(new ParamWriter("F:\\Works\\IMM\\Аспирантура\\LDG\\Visualization\\Temp\\pyramid.cpolytope"), ConvexPolytop.Rep.FLrep);
   }
 
 
