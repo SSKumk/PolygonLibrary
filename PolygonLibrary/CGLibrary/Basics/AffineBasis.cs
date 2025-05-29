@@ -50,7 +50,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     public LinearBasis LinBasis => _linearBasis;
 
-    protected readonly LinearBasisMutable _linearBasis;
+    protected LinearBasisMutable _linearBasis;
 #endregion
 
 #region Functions
@@ -172,8 +172,17 @@ public partial class Geometry<TNum, TConv>
     /// <param name="lBasis">The linear basis associated with the affine basis.</param>
     /// <param name="needCopy">Whether the affine basis should be copied.</param>
     public AffineBasis(Vector o, LinearBasis lBasis, bool needCopy = false) {
-      Origin       = o;
-      _linearBasis = new LinearBasisMutable(lBasis, needCopy);
+      Origin = o;
+
+      if (needCopy) {
+        _linearBasis = new LinearBasisMutable(lBasis, true);
+      }
+      else {
+        if (lBasis is LinearBasisMutable) {
+          throw new ArgumentException("Found LinearBasisMutable in AffineBasis constructor!");
+        }
+        _linearBasis = new LinearBasisMutable(lBasis, false);
+      }
 
 #if DEBUG
       CheckCorrectness(this);
@@ -280,9 +289,22 @@ public partial class Geometry<TNum, TConv>
 
     public AffineBasisMutable(int                 vecDim) : base(vecDim) { }
     public AffineBasisMutable(Vector              o) : base(o) { }
-    public AffineBasisMutable(Vector              o, LinearBasis lBasis, bool needCopy = true) : base(o, lBasis, needCopy) { }
     public AffineBasisMutable(IEnumerable<Vector> Ps) : base(Ps) { }
     public AffineBasisMutable(AffineBasis         affineBasis, bool needCopy) : base(affineBasis, needCopy) { }
+
+    public AffineBasisMutable(Vector o, LinearBasis lBasis, bool needCopy) : base(o) {
+      if (!needCopy && lBasis is LinearBasisMutable mutableBasis) {
+        _linearBasis = mutableBasis;
+      }
+      else {
+        _linearBasis = new LinearBasisMutable(lBasis, true);
+      }
+
+#if DEBUG
+      CheckCorrectness(this);
+#endif
+    }
+
 
     /// <summary>
     /// Adds the vector to the linear basis associated with the affine basis.
