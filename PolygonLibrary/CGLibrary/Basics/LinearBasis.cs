@@ -350,14 +350,14 @@ public partial class Geometry<TNum, TConv>
       }
       else {
         if (lb1.SubSpaceDim > lb2.SubSpaceDim) {
-          _Basis      = lb1._Basis;
+          _Basis      = new MatrixMutable(lb1._Basis, true);
           SubSpaceDim = lb1.SubSpaceDim;
           if (!FullDim) {
             AddVectors(lb2);
           }
         }
         else {
-          _Basis      = lb2._Basis;
+          _Basis      = new MatrixMutable(lb2._Basis, true);
           SubSpaceDim = lb2.SubSpaceDim;
           if (!FullDim) {
             AddVectors(lb1);
