@@ -59,10 +59,10 @@ public class AffineBasisTests {
   }
 
   [Test]
-  public void Constructor_OriginAndLinearBasis_NeedCopyTrue() {
+  public void Constructor_OriginAndLinearBasis_Mutable_NeedCopyTrue() {
     Vector             origin = V(1, 1, 1);
     LinearBasisMutable lb     = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
-    AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: true);
+    AffineBasisMutable ab     = new AffineBasisMutable(origin, lb, needCopy: true);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
@@ -76,13 +76,14 @@ public class AffineBasisTests {
   }
 
   [Test]
-  public void Constructor_OriginAndLinearBasis_NeedCopyFalse() {
+  public void Constructor_OriginAndLinearBasis_Mutable_NeedCopyFalse() {
     Vector             origin = V(1, 1, 1);
     LinearBasisMutable lb     = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
-    AffineBasis        ab     = new AffineBasis(origin, lb, needCopy: false);
+    AffineBasisMutable ab     = new AffineBasisMutable(origin, lb, needCopy: false);
 
     AssertVectorsAreEqual(ab.Origin, origin);
     Assert.That(ab.LinBasis.Equals(lb), Is.True);
+    Assert.That(ab.LinBasis, Is.SameAs(lb));
 
     lb.AddVector(V(0, 0, 1));
     Assert.That
@@ -207,7 +208,7 @@ public class AffineBasisTests {
   [Test]
   public void Method_AddVector() {
     Vector             o  = V(1, 1, 1);
-    AffineBasisMutable ab = new AffineBasisMutable(o, new LinearBasis(V(1, 0, 0)));
+    AffineBasisMutable ab = new AffineBasisMutable(o, new LinearBasis(V(1, 0, 0)), false);
     Assert.That(ab.SubSpaceDim, Is.EqualTo(1));
 
     bool added1 = ab.AddVector(V(0, 5, 0));
