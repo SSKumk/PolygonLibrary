@@ -6,7 +6,7 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using static Tests.SharedTests.StaticHelpers;
 using System;
 
-namespace Tests.CGLibraryTests {
+namespace Tests.SharedTests {
 [TestFixture]
 public class FLNodeTests {
 
