@@ -264,7 +264,7 @@ public partial class Geometry<TNum, TConv>
               (
                FLrep
                 .Lattice[^2]
-                .Select(n => new HyperPlane(new AffineBasis(n.AffBasis, false), (FLrep.Top.InnerPoint, false)))
+                .Select(n => new HyperPlane(n.AffBasis, (FLrep.Top.InnerPoint, false)))
                 .ToList()
               );
           Debug.Assert(IsHrep, $"ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
@@ -1320,7 +1320,7 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    public static SortedSet<Vector> HrepToVrep_Naive(List<HyperPlane> HPs) {
+    public static SortedSet<Vector> HrepToVrep_Naive(List<HyperPlane> HPs, bool decimation = false) {
       int m = HPs.Count;
       int d = HPs.First().Normal.SpaceDim;
 
@@ -1357,9 +1357,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
-    public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs) {
-      SortedSet<Vector> Vs = new SortedSet<Vector>();
-      int               d  = HPs.First().Normal.SpaceDim;
+    public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs, bool decimation = false) {
+      SortedSet<Vector> Vs    = new SortedSet<Vector>();
+      SortedSet<Vector> toDel = new SortedSet<Vector>();
+      int             d     = HPs.First().Normal.SpaceDim;
+
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
 
       Vector? firstPoint = FindInitialVertex_Simplex(HPs, out List<HyperPlane>? activeHPs);
@@ -1445,6 +1447,11 @@ public partial class Geometry<TNum, TConv>
                     zNewHPs.Clear();
                     zNewHPs.Add(hp);
                     zNew = Vector.MulByNumAndAdd(v, tMin, z); // вычисляем новую точку: v*tMin + z
+
+                    if (decimation && (z - zNew).IsZero) {
+                      toDel.Add(zNew);
+                    }
+
                     if (Vs.Contains(zNew)) {
                       foundPrev = true;
 
@@ -1468,6 +1475,10 @@ public partial class Geometry<TNum, TConv>
             }
           }
         } while (J.Next());
+      }
+      if (toDel.Count > 0) {
+        Vs.ExceptWith(toDel);
+        Console.WriteLine($"Del {toDel.Count} elements");
       }
 
       return Vs;
