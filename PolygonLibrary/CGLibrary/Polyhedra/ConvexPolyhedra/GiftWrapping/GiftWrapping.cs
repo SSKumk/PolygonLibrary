@@ -43,47 +43,6 @@ public partial class Geometry<TNum, TConv>
       return FaceLattice.ConstructFromBaseSubCP(lattice);
     }
 
-    // /// <summary>
-    // /// Auxiliary function. It constructs the face lattice node based on given BaseSubCP.
-    // /// </summary>
-    // /// <param name="BSP">The BaseSubCP used to construct the node.</param>
-    // /// <param name="lattice">The list of sorted sets that represents the face lattice being constructed.</param>
-    // /// <returns>The constructed face lattice node, including all sub-nodes.</returns>
-    // private FLNode ConstructFLN(BaseSubCP BSP, ref List<SortedSet<FLNode>> lattice) {
-    //   if (BSP is SubTwoDimensionalEdge) {
-    //     List<FLNode> sub = new List<FLNode>();
-    //     foreach (FLNode vertex in BSP.OriginalVertices.Select(p => new FLNode(p))) {
-    //       if (lattice[0].TryGetValue(vertex, out FLNode? vertexInLattice)) {
-    //         sub.Add(vertexInLattice);
-    //       }
-    //       else {
-    //         lattice[0].Add(vertex);
-    //         sub.Add(vertex);
-    //       }
-    //     }
-    //     FLNode seg = new FLNode(sub);
-    //     lattice[1].Add(seg);
-    //
-    //     return seg;
-    //   }
-    //   else {
-    //     List<FLNode> sub = new List<FLNode>();
-    //
-    //     foreach (BaseSubCP subF in BSP.Faces!) {
-    //       sub.Add
-    //         (
-    //          lattice[subF.PolytopDim].TryGetValue(new FLNode(subF.OriginalVertices), out FLNode? polytopInLattice)
-    //            ? polytopInLattice
-    //            : ConstructFLN(subF, ref lattice)
-    //         );
-    //     }
-    //     FLNode node = new FLNode(sub);
-    //     lattice[node.PolytopDim].Add(node);
-    //
-    //     return node;
-    //   }
-    // }
-
     /// <summary>
     /// Wraps the convex polytope of the given swarm and produce its face lattice.
     /// </summary>
