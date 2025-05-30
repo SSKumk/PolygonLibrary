@@ -89,7 +89,7 @@ public class Visualization<TNum, TConv>
         DrawFrame
           (
            pathOutFolder
-         , $"{j}-{k}"
+         , $"{j}-{k}-{TConv.ToDouble(bridge.Key)}"
          , plyDrawer
          , (vertices, facets)
              => {
