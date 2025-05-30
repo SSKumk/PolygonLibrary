@@ -99,14 +99,14 @@ public partial class Geometry<TNum, TConv>
 
 
     private static bool MinkDiff(
-        List<HyperPlane>                           F
-      , SortedSet<Vector>                          G
-      , out ConvexPolytop?                         diffFG
-      , Func<SortedSet<Vector>, Vector, Vector>    findExtrInG_on_lFromNF
-      , Func<HyperPlane, Vector, HyperPlane>       doSubtract // <-- todo Как назвать?
-      , Func<List<HyperPlane>, SortedSet<Vector>?> HRepToVRep
-      , Func<SortedSet<Vector>, FaceLattice>       produceFL
-      , Func<List<HyperPlane>, List<HyperPlane>>?  doHRedundancy = null
+        List<HyperPlane>                                 F
+      , SortedSet<Vector>                                G
+      , out ConvexPolytop?                               diffFG
+      , Func<SortedSet<Vector>, Vector, Vector>          findExtrInG_on_lFromNF
+      , Func<HyperPlane, Vector, HyperPlane>             doSubtract // <-- todo Как назвать?
+      , Func<List<HyperPlane>, bool, SortedSet<Vector>?> HRepToVRep
+      , Func<SortedSet<Vector>, FaceLattice>             produceFL
+      , Func<List<HyperPlane>, List<HyperPlane>>?        doHRedundancy = null
       ) {
       List<HyperPlane> gamma = new List<HyperPlane>();
       foreach (HyperPlane hpF in F) {
@@ -126,7 +126,7 @@ public partial class Geometry<TNum, TConv>
       // timer.Restart();
 
       // 4) Построить V - representation V(F - G) набора Г = { (l, C'(l)) }
-      SortedSet<Vector>? VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma));
+      SortedSet<Vector>? VRepFminusG = HRepToVRep(new List<HyperPlane>(gamma), true);
       if (VRepFminusG is null || VRepFminusG.Count < 3) { // разность пуста
         diffFG = null;
 
