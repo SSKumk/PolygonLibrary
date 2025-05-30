@@ -19,7 +19,7 @@ public class Program {
     // string visConfig = "Oscillator-mass.Blender";
     // string visConfig = "MassDot-mass.Blender";
 
-    double eps  = double.Parse("1e-8");
+    double eps  = double.Parse("1e-3");
     // ddouble eps = ddouble.Parse("1e-15");
     // Rational eps = Rational.Parse("1/10000000000000000");
 
@@ -31,8 +31,8 @@ public class Program {
       // new Visualization<Rational, RConvertor>(pathLdg, visConfig, Rational.Parse("1/10000000000000000"));
 
 
-    // visD.ForBlender();
-    visDD.ForBlender();
+    visD.ForBlender();
+    // visDD.ForBlender();
     // visR08.ForBlender();
     // visR16.ForBlender();
 
