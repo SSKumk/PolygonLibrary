@@ -1361,8 +1361,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
     public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs, bool decimation = false) {
-      SortedSet<Vector> Vs    = new SortedSet<Vector>();
-      SortedSet<Vector> toDel = new SortedSet<Vector>();
+      SortedSet<Vector> Vs    = new SortedSet<Vector>();// todo: хранить SortedSet<(Vector, List<HyperPlane>)>
+      SortedSet<Vector> toDel = new SortedSet<Vector>(); //VectorCompNoEPS
       int             d     = HPs.First().Normal.SpaceDim;
 
       // Этап 1. Поиск какой-либо вершины и определение гиперплоскостей, которым она принадлежит
@@ -1455,7 +1455,7 @@ public partial class Geometry<TNum, TConv>
                       toDel.Add(zNew);
                     }
 
-                    if (Vs.Contains(zNew)) {
+                    if (Vs.Contains(zNew)) { // todo: Сравнивать по набору гиперплоскостей, которые их определяют!
                       foundPrev = true;
 
                       break;
