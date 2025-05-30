@@ -1324,7 +1324,7 @@ public partial class Geometry<TNum, TConv>
       int m = HPs.Count;
       int d = HPs.First().Normal.SpaceDim;
 
-      SortedSet<Vector>    Vs          = new SortedSet<Vector>();
+      List<Vector>         Vs          = new List<Vector>();
       Combination          combination = new Combination(m, d);
       Func<int, int, TNum> AFunc       = (r, l) => HPs[combination[r]].Normal[l];
       Func<int, TNum>      bFunc       = r => HPs[combination[r]].ConstantTerm;
@@ -1348,6 +1348,9 @@ public partial class Geometry<TNum, TConv>
         }
       } while (combination.Next());
 
+      if (decimation) {
+        throw new NotImplementedException("TODO");
+      }
       return new SortedSet<Vector>(Vs);
     }
 
