@@ -19,6 +19,16 @@ public partial class Geometry<TNum, TConv>
         AB.UnionWith(Shift(B, a));
       }
 
+#if DEBUG
+      List<Vector> ab = new List<Vector>();
+      foreach (Vector a in A) {
+        foreach (Vector b in Shift(B, a)) {
+          ab.Add(b);
+        }
+      }
+
+      Debug.Assert(AB.SetEquals(ab), $"AlgSumEatSomePoints!");
+#endif
       return AB;
     }
 
@@ -236,3 +246,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+
