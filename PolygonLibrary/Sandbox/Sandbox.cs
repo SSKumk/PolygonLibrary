@@ -19,12 +19,19 @@ class Sandbox {
   static void Main(string[] args) {
 
     int                dim = 100;
-    LinearBasisMutable lb  = new LinearBasisMutable(dim,30);
+    // LinearBasisMutable lb  = new LinearBasisMutable(dim,30);
     // AffineBasis        ab  = new AffineBasis(Vector.Zero(dim), lb, needCopy: true);
     // AffineBasis        ab  = new AffineBasis(Vector.Zero(dim), lb, needCopy: false);
 
     // Console.WriteLine($"{ab.Empty}");
 
+    // Tools.Eps = 1;
+
+    SortedSet<Vector> Vs = new SortedSet<Vector>();
+    Vs.Add(V(1, 2, 3));
+    Vs.Add(V(1.1, 2.2, 3.3));
+
+    Console.WriteLine($"{Vs.Count}");
 
 
 
