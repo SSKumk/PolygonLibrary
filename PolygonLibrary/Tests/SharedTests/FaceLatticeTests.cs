@@ -34,7 +34,7 @@ public class FLNodeTests {
     FLNode expectedFirstVert = v0.CompareTo(v1) < 0 ? v0 : v1;
     FLNode expectedLastVert  = v0.CompareTo(v1) < 0 ? v1 : v0;
 
-    FLNode edge = new FLNode(new[] { v0, v1 });
+    FLNode edge = new FLNode([v0, v1]);
 
     Assert.That(edge.Sub.Count, Is.EqualTo(2), "Edge should have 2 sub-nodes (vertices).");
     Assert.That(edge.Sub.Contains(v0), Is.True, "Edge.Sub should contain v0.");
@@ -65,12 +65,12 @@ public class FLNodeTests {
     FLNode v2 = new FLNode(V(1, 1)); // Middle
 
     // Sub-nodes for edges
-    FLNode e_v0_v1 = new FLNode(new[] { v0, v1 }); // Sub = {v0,v1}
-    FLNode e_v1_v2 = new FLNode(new[] { v1, v2 }); // Sub = {v2,v1} (v2<v1 by vector compare)
-    FLNode e_v0_v2 = new FLNode(new[] { v0, v2 }); // Sub = {v0,v2}
+    FLNode e_v0_v1 = new FLNode([v0, v1]); // Sub = {v0,v1}
+    FLNode e_v1_v2 = new FLNode([v1, v2]); // Sub = {v2,v1} (v2<v1 by vector compare)
+    FLNode e_v0_v2 = new FLNode([v0, v2]); // Sub = {v0,v2}
 
 
-    FLNode f_triangle = new FLNode(new[] { e_v0_v1, e_v1_v2, e_v0_v2 });
+    FLNode f_triangle = new FLNode([e_v0_v1, e_v1_v2, e_v0_v2]);
 
     return (v0, v1, v2, e_v0_v1, e_v1_v2, e_v0_v2, f_triangle);
   }
@@ -107,9 +107,9 @@ public class FLNodeTests {
   public void Constructor_FromSubNodes_WithExplicitAffBasis() {
     FLNode      v0            = new FLNode(V(0, 0));
     FLNode      v1            = new FLNode(V(1, 0));
-    AffineBasis explicitBasis = new AffineBasis(new[] { V(0, 0), V(1, 0) }); // A 1D basis
+    AffineBasis explicitBasis = new AffineBasis([V(0, 0), V(1, 0)]); // A 1D basis
 
-    FLNode edge = new FLNode(new[] { v0, v1 }, explicitBasis);
+    FLNode edge = new FLNode([v0, v1], explicitBasis);
 
     Assert.That(edge.AffBasis, Is.EqualTo(explicitBasis), "Edge should use the provided AffineBasis.");
     Assert.That(edge.PolytopDim, Is.EqualTo(explicitBasis.SubSpaceDim), "PolytopDim from explicit basis.");
@@ -158,8 +158,8 @@ public class FLNodeTests {
     FLNode v_0_0                = new FLNode(V(0, 0));
     FLNode v_0_0_copy           = new FLNode(V(0, 0));
     FLNode v_1_0                = new FLNode(V(1, 0));
-    FLNode edge1                = new FLNode(new[] { v_0_0, v_1_0 });
-    FLNode edge1_equiv_vertices = new FLNode(new[] { new FLNode(V(0, 0)), new FLNode(V(1, 0)) });
+    FLNode edge1                = new FLNode([v_0_0, v_1_0]);
+    FLNode edge1_equiv_vertices = new FLNode([new FLNode(V(0, 0)), new FLNode(V(1, 0))]);
 
 
     Assert.That(v_0_0.Equals(null), Is.False);
@@ -171,7 +171,7 @@ public class FLNodeTests {
     Assert.That(edge1.Equals(edge1_equiv_vertices), Is.True, "Edges with same vertex sets should be equal.");
 
     FLNode v_0_1 = new FLNode(V(0, 1));
-    FLNode edge2 = new FLNode(new[] { v_0_0, v_0_1 });
+    FLNode edge2 = new FLNode([v_0_0, v_0_1]);
     Assert.That(edge1.Equals(edge2), Is.False, "Edges with different vertex sets are not equal.");
   }
 
@@ -181,8 +181,8 @@ public class FLNodeTests {
     FLNode v1      = new FLNode(V(1, 0)); // dim 0
     FLNode v0_copy = new FLNode(V(0, 0)); // dim 0
 
-    FLNode edge_v0_v1  = new FLNode(new[] { v0, v1 });                  // dim 1, 2 vertices {V(0,0), V(1,0)}
-    FLNode edge_v0_v0x = new FLNode(new[] { v0, new FLNode(V(0, 1)) }); // dim 1, 2 vertices {V(0,0), V(0,1)}
+    FLNode edge_v0_v1  = new FLNode([v0, v1]);                  // dim 1, 2 vertices {V(0,0), V(1,0)}
+    FLNode edge_v0_v0x = new FLNode([v0, new FLNode(V(0, 1))]); // dim 1, 2 vertices {V(0,0), V(0,1)}
 
 
     Assert.That(v0.CompareTo(null), Is.EqualTo(1));
