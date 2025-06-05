@@ -32,7 +32,6 @@ public class TerminalSet<TNum, TConv>
     ) {
     // открыли ридер терминального множества
     Geometry<TNum, TConv>.ParamReader pr   = ph.OpenTerminalSetReader(tmsName);
-    string                            _    = pr.ReadString("Name");
     string                            type = pr.ReadString("TSType");
 
     ITerminalSetReader<TNum, TConv> reader =

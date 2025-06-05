@@ -18,11 +18,7 @@ public abstract class PolytopeReader<TNum, TConv>
   /// <exception cref="ArgumentException">
   /// Thrown if the polytope type is unknown.
   /// </exception>
-  public static Geometry<TNum, TConv>.ConvexPolytop Read(Geometry<TNum, TConv>.ParamReader pr) {
-    _ = pr.ReadString("Name");
-
-    return GetReader(pr).ReadPolytope(pr);
-  }
+  public static Geometry<TNum, TConv>.ConvexPolytop Read(Geometry<TNum, TConv>.ParamReader pr) => GetReader(pr).ReadPolytope(pr);
 
   /// <summary>
   /// Determines the correct reader for the polytope based on its 'Type' parameter and returns the appropriate reader instance.

@@ -6,7 +6,6 @@
 
 ## Структура файла
 ```
-Name = "S";  // имя многогранника 
 Type = "S";  // способ задания многогранника
 [описание типа]
 ```
@@ -39,7 +38,6 @@ D D ...  D
 
 #### Пример. Квадрат
 ```
-Name  = "Square";
 Type  = "Convex Hull";
 DoRed =  False; 
 VsQnt = 4;
@@ -64,7 +62,6 @@ D D ... D D
 
 #### Пример. Квадрат
 ```
-Name   = "Square";
 Type   = "Hyper Planes";
 DoRed  = True;
 HPsQnt = 5;
@@ -95,7 +92,6 @@ Right          = 1D<D>;  // Максимальная вершина паралл
 
 ##### Пример. Квадрат
 ```
-Name          = "Square";
 Type          = Generator;
 GeneratorType = RectAxisParallel;
 Left          = {0,0};
@@ -115,7 +111,6 @@ AzimuthsDivisions = N;         // Количество точек разбиен
 
 ##### Пример. Квадрат
 ```
-Name              = "Square";
 Type              = Generator;
 GeneratorType     = Sphere;
 Dim               = 2;
@@ -137,7 +132,6 @@ AzimuthsDivisions = N;         // Количество точек разбиен
 ##### Пример. Квадрат
 
 ```
-Name              = "Square";
 Type              = Generator;
 GeneratorType     = Ellipsoid;
 Dim               = 2;
