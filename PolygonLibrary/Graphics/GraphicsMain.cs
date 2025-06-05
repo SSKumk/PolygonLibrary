@@ -89,14 +89,15 @@ public class Visualization<TNum, TConv>
         DrawFrame
           (
            pathOutFolder
-         , $"{j}-{k}-{TConv.ToDouble(bridge.Key)}"
+         , $"{j}-{k}-{TConv.ToDouble(bridge.Key):F1}"
          , plyDrawer
          , (vertices, facets)
              => {
              AddBridgeSectionToFrame(bridge.Value, vertices, facets);
            }
           );
-        j += 1;
+        // j += 1;
+        j += 10;
       }
     }
 
