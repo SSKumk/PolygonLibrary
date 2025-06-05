@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
@@ -611,22 +613,22 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="center">The center of a sphere.</param>
     /// <param name="radius">The radius of a sphere.</param>
+    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].
     ///   thetaPoints should be greater than 2 for proper calculation.</param>
-    /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <returns>A convex polytope as Vrep representing the sphere in hD.</returns>
-    public static ConvexPolytop Sphere(Vector center, TNum radius, int polarDivision, int azimuthsDivisions)
-      => Ellipsoid(polarDivision, azimuthsDivisions, center, Vector.Ones(center.SpaceDim) * radius);
+    public static ConvexPolytop Sphere(Vector center, TNum radius, int azimuthsDivisions, int polarDivision)
+      => Ellipsoid(azimuthsDivisions, polarDivision, center, Vector.Ones(center.SpaceDim) * radius);
 
     /// <summary>
     /// Makes a hD-ellipsoid as Vrep with given semi-axis.
     /// </summary>
-    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
     /// <param name="center">The center of an ellipsoid.</param>
     /// <param name="semiAxis">The vector where each coordinate represents the length of the corresponding semi-axis.</param>
     /// <returns>A convex polytope as Vrep representing the ellipsoid in hD.</returns>
-    public static ConvexPolytop Ellipsoid(int polarDivision, int azimuthsDivisions, Vector center, Vector semiAxis) {
+    public static ConvexPolytop Ellipsoid(int azimuthsDivisions, int polarDivision, Vector center, Vector semiAxis) {
       Debug.Assert
         (
          semiAxis.SpaceDim == center.SpaceDim
@@ -642,6 +644,7 @@ public partial class Geometry<TNum, TConv>
           );
       }
 #endif
+      Debug.Assert(azimuthsDivisions >= 3, $"ConvexPolytop.Ellipsoid: The azimuthsDivisions should be greater than 2.");
 
       if (dim == 1) {
         return CreateFromPoints(new[] { center - semiAxis, center + semiAxis });
@@ -808,11 +811,11 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="P">The polytope to which the distance is constructed.</param>
     /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <param name="polarDivision">The number of partitions at zenith angle.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at zenith angle.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopeBall_2(ConvexPolytop P, TNum k, int polarDivision, int azimuthsDivisions)
-      => DistanceToPolytope(P, k, (center, radius) => Sphere(center, radius, polarDivision, azimuthsDivisions));
+    public static ConvexPolytop DistanceToPolytopeBall_2(ConvexPolytop P, TNum k, int azimuthsDivisions, int polarDivision)
+      => DistanceToPolytope(P, k, (center, radius) => Sphere(center, radius, azimuthsDivisions, polarDivision));
 
     /// <summary>
     /// Makes the convex polytope representing the distance in "_1"-norm to the origin in dimensional space.
@@ -834,16 +837,16 @@ public partial class Geometry<TNum, TConv>
     /// Makes the convex polytope representing the distance in "_2"-norm to the origin in (dim)-dimensional space.
     /// </summary>
     /// <param name="point">The point distance to is computed.</param>
-    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
+    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
     /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_2(Vector point, int polarDivision, int azimuthsDivisions, TNum k)
-      => DistanceToPoint(point, k, Ball_2FuncCreator(polarDivision, azimuthsDivisions));
+    public static ConvexPolytop DistanceToPointBall_2(Vector point, int azimuthsDivisions, int polarDivision, TNum k)
+      => DistanceToPoint(point, k, Ball_2FuncCreator(azimuthsDivisions, polarDivision));
 
     //todo: xml
-    public static Func<Vector, TNum, ConvexPolytop> Ball_2FuncCreator(int polarDivision, int azimuthsDivisions) {
-      return (center, radius) => Sphere(center, radius, polarDivision, azimuthsDivisions);
+    public static Func<Vector, TNum, ConvexPolytop> Ball_2FuncCreator(int azimuthsDivisions, int polarDivision) {
+      return (center, radius) => Sphere(center, radius, azimuthsDivisions, polarDivision);
     }
 
     /// <summary>
@@ -1078,6 +1081,20 @@ public partial class Geometry<TNum, TConv>
         case Rep.FLrep: WriteAsFLRep(pw, this); break;
       }
       pw.Flush();
+    }
+
+    /// <summary>
+    /// Writes the convex polytope to a file with the specified name and format.
+    /// </summary>
+    /// <param name="path">The directory path where the file will be written.</param>
+    /// <param name="name">The name of the file without extension.</param>
+    /// <param name="rep">
+    /// The representation format of the convex polytope.
+    /// This determines whether the polytope will be written as a Vrep, Hrep, or FLrep.
+    /// </param>
+    public void WriteIn(string path, string name, Rep rep) {
+      string fullPath = Path.Combine(path, name + ".cpolytope");
+      WriteIn(new ParamWriter(fullPath), rep);
     }
 
     /// <summary>

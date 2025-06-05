@@ -31,7 +31,7 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
           ballType switch
             {
               Ball_1<TNum, TConv>    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_1(d.Point, k)
-            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_2(d.Point, b2.PolarDivision, b2.AzimuthsDivisions, k)
+            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_2(d.Point, b2.AzimuthsDivisions, b2.PolarDivision, k)
             , Ball_oo<TNum, TConv>   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_oo(d.Point, k)
             };
 
@@ -43,7 +43,7 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
           ballType switch
             {
               Ball_1<TNum, TConv>    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_1(d.Polytope, k)
-            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_2(d.Polytope, k, b2.PolarDivision, b2.AzimuthsDivisions)
+            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_2(d.Polytope, k, b2.AzimuthsDivisions, b2.PolarDivision)
             , Ball_oo<TNum, TConv>   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_oo(d.Polytope, k)
             };
 

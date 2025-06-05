@@ -119,7 +119,7 @@ public class GeneratorReader<TNum, TConv> : IPolytopeReader<TNum, TConv>
         int polarDivision     = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
 
         return Geometry<TNum, TConv>.ConvexPolytop.Sphere
-          (Geometry<TNum, TConv>.Vector.Zero(dim), Geometry<TNum, TConv>.Tools.One, polarDivision, azimuthsDivisions);
+          (Geometry<TNum, TConv>.Vector.Zero(dim), Geometry<TNum, TConv>.Tools.One, azimuthsDivisions, polarDivision);
       }
       case "Ellipsoid": {
         int                          dim               = pr.ReadNumber<int>("Dim");
@@ -128,7 +128,7 @@ public class GeneratorReader<TNum, TConv> : IPolytopeReader<TNum, TConv>
         int                          polarDivision     = dim > 2 ? pr.ReadNumber<int>("PolarDivision") : 0;
 
         return Geometry<TNum, TConv>.ConvexPolytop.Ellipsoid
-          (polarDivision, azimuthsDivisions, Geometry<TNum, TConv>.Vector.Zero(dim), semiAxis);
+          (azimuthsDivisions, polarDivision, Geometry<TNum, TConv>.Vector.Zero(dim), semiAxis);
       }
     }
 

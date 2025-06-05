@@ -36,7 +36,7 @@ public class LevelSetTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
             ballType switch
               {
                 Ball_1<TNum, TConv>    => Geometry<TNum, TConv>.ConvexPolytop.Ball_1(d.Point, k)
-              , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.Sphere(d.Point, k, b2.PolarDivision, b2.AzimuthsDivisions)
+              , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.Sphere(d.Point, k, b2.AzimuthsDivisions, b2.PolarDivision)
               , Ball_oo<TNum, TConv>   => Geometry<TNum, TConv>.ConvexPolytop.Ball_oo(d.Point, k)
               };
 
@@ -51,7 +51,7 @@ public class LevelSetTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
                 Ball_1<TNum, TConv> => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k, Geometry<TNum, TConv>.ConvexPolytop.Ball_1)
               , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k
                                                                                             , Geometry<TNum, TConv>.ConvexPolytop
-                                                                                               .Ball_2FuncCreator(b2.PolarDivision, b2.AzimuthsDivisions))
+                                                                                               .Ball_2FuncCreator(b2.AzimuthsDivisions, b2.PolarDivision))
               , Ball_oo<TNum, TConv> => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k, Geometry<TNum, TConv>.ConvexPolytop.Ball_oo)
               };
 

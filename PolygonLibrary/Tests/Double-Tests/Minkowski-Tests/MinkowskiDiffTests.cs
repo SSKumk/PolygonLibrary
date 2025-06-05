@@ -66,7 +66,7 @@ public class MinkowskiDiff3D
   [Test]
   public void Sphere_Seg0_0_z()
   {
-    ConvexPolytop F = ConvexPolytop.Sphere(Vector.Zero(3), 2, 10, 20);
+    ConvexPolytop F = ConvexPolytop.Sphere(Vector.Zero(3), 2, 20, 10);
     Assert.Multiple
       (
        () =>
