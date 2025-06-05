@@ -1,91 +1,23 @@
-﻿using static CGLibrary.Geometry<double, Sandbox.DConvertor>;
+﻿// using static CGLibrary.Geometry<double, Sandbox.DConvertor>;
+using static CGLibrary.Geometry<DoubleDouble.ddouble, Sandbox.DDConvertor>;
 
 
 namespace Sandbox;
 
 class Sandbox {
-
-  static bool Orthg(Matrix A) {
-    bool   res = true;
-    Matrix eye = Matrix.Eye(A.Rows);
-    res &= (A.Transpose() * A).Equals(eye);
-    res &= (A * A.Transpose()).Equals(eye);
-
-    return res;
-  }
-
-  public static Vector V(params double[] coords) => new Vector(coords);
+  // public static Vector V(params double[] coords) => new Vector(coords);
+  // public static Vector V(params ddouble[] coords) => new Vector(coords);
 
   static void Main(string[] args) {
+    const string ppath = @"F:\Works\IMM\Аспирантура\LDG\Polytopes\";
 
-    int                dim = 100;
-    // LinearBasisMutable lb  = new LinearBasisMutable(dim,30);
-    // AffineBasis        ab  = new AffineBasis(Vector.Zero(dim), lb, needCopy: true);
-    // AffineBasis        ab  = new AffineBasis(Vector.Zero(dim), lb, needCopy: false);
+    string      pname = "6";
+    ConvexPolytop p = ConvexPolytop.DistanceToPointBall_2(Vector.Zero(2), 6, -1, 1);
+    p.WriteIn(ppath, pname, ConvexPolytop.Rep.FLrep);
 
-    // Console.WriteLine($"{ab.Empty}");
-
-    // Tools.Eps = 1;
-
-    SortedSet<Vector> Vs = new SortedSet<Vector>();
-    Vs.Add(V(1, 2, 3));
-    Vs.Add(V(1.1, 2.2, 3.3));
-
-    Console.WriteLine($"{Vs.Count}");
 
 
 
   }
 
 }
-
-
-// int dim = 5;
-//
-//
-// ConvexPolytop polytop1 = ConvexPolytop.SimplexRND(dim);
-// //ConvexPolytop polytop2 = ConvexPolytop.SimplexRND(dim);
-//
-// ConvexPolytop polytop2 = ConvexPolytop.Cube01_VRep(dim);
-//
-// ConvexPolytop res = MinkowskiSum.BySandipDas(polytop1, polytop2);
-//
-// _ = res.Hrep;
-// Stopwatch timer = new Stopwatch();
-//
-// timer.Restart();
-// // previous approach
-// var x = ConvexPolytop.HrepToVrep_Geometric(res.Hrep);
-// var y = ConvexPolytop.CreateFromPoints(x!);
-// _ = y.FLrep;
-// timer.Stop();
-// Console.WriteLine($"old: {timer.Elapsed.Seconds}");
-// Console.WriteLine($"old f-vec: {string.Join(", ", y.fVector)}");
-//
-//
-// timer.Restart();
-// // new approach
-// ConvexPolytop nwe = ConvexPolytop.CreateFromFaceLattice(HrepToFLrep.HrepToFLrep_Geometric(res.Hrep, 5)!);
-//
-// timer.Stop();
-// Console.WriteLine($"new: {timer.Elapsed.Seconds}");
-// Console.WriteLine($"new f-vec: {string.Join(", ", nwe.fVector)}");
-//
-// Console.WriteLine($"res = {string.Join(", ", res.fVector)}");
-// Console.WriteLine($"{y.FLrep.Equals(nwe.FLrep)}");
-
-// Matrix m = new Matrix(new double[,]{ { 2.0, 3, 4 }});
-// Console.WriteLine($"{m.ToRREF()}");
-// LinearBasis basis = LinearBasis.GenLinearBasis(3, 2);
-//
-// Vector n = basis.OrthonormalVector();
-//
-// HyperPlane hp = new HyperPlane(n, Vector.Zero(3));
-//
-//
-// Console.WriteLine($"{basis}");
-// LinearBasis linBasis = hp.AffBasis.LinBasis;
-// Console.WriteLine($"{linBasis}");
-// Console.WriteLine($"same space? {linBasis.SpanSameSpace(basis)}\n");
-// Console.WriteLine($"{basis.Basis.ToRREF()}\n");
-// Console.WriteLine($"{linBasis.Basis.ToRREF()}");
