@@ -83,16 +83,6 @@ public class TrajectoryMain<TNum, TConv>
 
     Geometry<TNum, TConv>.Vector x = x0; // уже в пространстве эквивалентной игры
     for (TNum t = TNum.Max(tMax, t0); Geometry<TNum, TConv>.Tools.LT(t, T); t += dt) {
-      // TNum? tBr = null;
-      // for (int i = 0; i < tBrs.Count - 1; i++) { // находим время, для которого мост определён
-      //   if (Geometry<TNum, TConv>.Tools.LT(t, tBrs[i + 1]) && Geometry<TNum, TConv>.Tools.LE(tBrs[i], t)) {
-      //     // t \in [tBr_i, tBr_i+1)
-      //     tBr = tBrs[i];
-      //
-      //     break;
-      //   }
-      // }
-
       TNum? tBr  = null;
       int   low  = 0;
       int   high = tBrs.Count - 2; // Интервалы [tBr_i, tBr_i+1), поэтому до предпоследнего элемента
