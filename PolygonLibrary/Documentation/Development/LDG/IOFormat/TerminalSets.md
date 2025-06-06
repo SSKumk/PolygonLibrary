@@ -94,14 +94,34 @@ BallType = S;  // Норма шара
 
 Корректные значения `Type`: `DistToPoint`, `DistToPolytope`
 
+* `DistToPointFromPolytope` -- расстояние до заданной точки от заданного многогранника
 * `DistToPoint` -- расстояние до данной точки
 * `DistToPolytope` -- расстояние до данного многогранника
 
+#### DistToPointFromPolytope
+```
+Polytope = S;  // Имя многогранника (из папки Polytopes)
+ScaleFrom = 1D<D>;  // Точка, относительно которой будет растягиваться многогранник
+```
+Пример
+```
+TSType = "Epigraph";
+Type = "DistToPointFromPolytope";
+Point = {0,0};
+Polytope = "2D-Circle";
+ScaleFrom = {0,0};
+Constant = 2; // TODO: НЕ НУЖНО ДОДЕЛАТЬ!
+BallType = Ball_1; // TODO: НЕ НУЖНО ДОДЕЛАТЬ!
+```
+
+
+// TODO: НЕ НУЖНО ДОДЕЛАТЬ!
 #### DistToPoint
 ```
 Point = 1D<D>;  // координаты точки
 ```
 
+// TODO: НУЖНО ПЕРЕДЕЛАТЬ!
 #### DistToPolytope
 ```
 Polytope = S;  // имя многогранника
