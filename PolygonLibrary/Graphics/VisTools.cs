@@ -64,7 +64,7 @@ public class VisTools {
   public class Facet {
 
     public readonly IEnumerable<Geometry<double, DConvertor>.Vector> Vertices;
-    public readonly Geometry<double, DConvertor>.Vector              Normal;
+    public readonly Geometry<double, DConvertor>.Vector Normal;
 
     public Facet(IEnumerable<Geometry<double, DConvertor>.Vector> vertices, Geometry<double, DConvertor>.Vector normal) {
       Vertices = vertices;
@@ -180,8 +180,8 @@ public class VisTools {
 
   public struct SeveralPolytopes {
 
-    public SortedSet<Geometry<double, DConvertor>.Vector> vertices;  // список вершин
-    public List<ConvexPolytop>                            polytopes; // набор выпуклых многогранников
+    public SortedSet<Geometry<double, DConvertor>.Vector> vertices; // список вершин
+    public List<ConvexPolytop> polytopes;                           // набор выпуклых многогранников
 
     public SeveralPolytopes(SortedSet<Geometry<double, DConvertor>.Vector> vertices, List<ConvexPolytop> polytopes) {
       this.vertices  = vertices;
@@ -208,14 +208,5 @@ public class VisTools {
     return new SeveralPolytopes(vertices, polytopes);
   }
 
-
-  public static void DrawPolytopePLY<TNum, TConv>(CGLibrary.Geometry<TNum, TConv>.ConvexPolytop polytop, string path)
-    where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
-    IFloatingPoint<TNum>, IFormattable
-    where TConv : INumConvertor<TNum> {
-    List<Facet> flist = new List<Facet>();
-    Visualization<TNum, TConv>.AddToFacetList(flist, polytop);
-    new PlyDrawer().SaveFrame(path, Visualization<TNum, TConv>.ToDSet(polytop.Vrep), flist);
-  }
 
 }
