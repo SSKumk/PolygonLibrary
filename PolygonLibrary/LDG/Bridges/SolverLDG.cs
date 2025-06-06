@@ -269,7 +269,7 @@ public class SolverLDG<TNum, TConv>
       timer.Stop();
 
       if (W.TryGetValue(t, out Geometry<TNum, TConv>.ConvexPolytop? br)) {
-        Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. Vrep.Count = {br.Vrep.Count}");
+        Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. |Vrep| = {br.Vrep.Count}. |Hrep| = {br.Hrep.Count}");
       }
     }
 
