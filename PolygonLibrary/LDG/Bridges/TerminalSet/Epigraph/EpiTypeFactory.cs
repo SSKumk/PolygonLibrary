@@ -14,20 +14,21 @@ public abstract class EpiTypeFactory<TNum, TConv>
   /// <param name="ph">Provides access to files describing polytopes. Required only for distance-to-polytope calculations.</param>
   /// <returns>An instance of the created epigraph type with corresponding information.</returns>
   /// <exception cref="ArgumentException">Thrown when an unsupported epigraph type is encountered.</exception>
-  public static IEpiType<TNum,TConv> Read(Geometry<TNum,TConv>.ParamReader pr, LDGPathHolder<TNum,TConv> ph) {
+  public static IEpiType<TNum, TConv> Read(Geometry<TNum, TConv>.ParamReader pr, LDGPathHolder<TNum, TConv> ph) {
     string epiType = pr.ReadString("Type");
-    IEpiType<TNum,TConv> epigraph =
+    IEpiType<TNum, TConv> epigraph =
       epiType switch
         {
-          "DistToPoint"    => new EpiTypes<TNum,TConv>.DistToPoint()
-        , "DistToPolytope" => new EpiTypes<TNum,TConv>.DistToPolytope()
+          "DistToPointFromPolytope" => new EpiTypes<TNum, TConv>.DistToPointFromPolytope()
+        , "DistToPoint"             => new EpiTypes<TNum, TConv>.DistToPoint()
+        , "DistToPolytope"          => new EpiTypes<TNum, TConv>.DistToPolytope()
         , _ => throw new ArgumentException
                  (
                   $"Unsupported epigraph type: '{epiType}'.\nIn file {pr.filePath}\n" +
                   $"Please refer to the documentation for supported types."
                  )
         };
-    
+
     epigraph.ReadParameters(pr, ph);
     return epigraph;
   }

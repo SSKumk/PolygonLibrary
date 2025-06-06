@@ -26,6 +26,11 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     }
     IBall<TNum, TConv> ballType = BallFactory<TNum, TConv>.Read(pr);
     switch (epiType) {
+      case EpiTypes<TNum, TConv>.DistToPointFromPolytope d: {
+        yield return Geometry<TNum, TConv>.ConvexPolytop.DistTo_Point(d.Cap, d.Point, d.ScaleFrom,k);
+        break;
+      }
+
       case EpiTypes<TNum, TConv>.DistToPoint d: {
         yield return
           ballType switch
