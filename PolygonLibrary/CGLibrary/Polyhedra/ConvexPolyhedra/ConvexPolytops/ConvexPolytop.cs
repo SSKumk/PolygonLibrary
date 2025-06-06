@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 
 namespace CGLibrary;
@@ -744,25 +745,21 @@ public partial class Geometry<TNum, TConv>
       return RectAxisParallel(-one + center, one + center);
     }
 
-    // /// <summary>
-    // /// Makes the convex polytope which represents the distance to the ball in dim-space.
-    // /// </summary>
-    // /// <param name="dim">The dimension of the sphere-ball. It is greater than 1.</param>
-    // /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].</param>
-    // /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
-    // /// <param name="radius0">The radius of an initial sphere.</param>
-    // /// <param name="CMax">The value of the last coordinate of a final sphere in dim+1 space.</param>
-    // /// <returns>The convex polytope which represents the distance to the ball in dim-space. </returns>
-    // public static ConvexPolytop DistanceToBall_2(int dim, int polarDivision, int azimuthsDivisions, TNum radius0, TNum CMax) {
-    //   ConvexPolytop ball0        = Sphere(polarDivision, azimuthsDivisions, Vector.Zero(dim), radius0);
-    //   TNum          radiusF      = radius0 + CMax;
-    //   ConvexPolytop ballF        = CreateFromPoints(ball0.Vrep.Select(v => v * radiusF).ToSortedSet());
-    //   ConvexPolytop ball0_lifted = ball0.LiftUp(dim + 1, Tools.Zero);
-    //   ConvexPolytop ballF_lifted = ballF.LiftUp(dim + 1, CMax);
-    //   ball0_lifted.Vrep.UnionWith(ballF_lifted.Vrep); // Теперь тут лежат все точки
-    //
-    //   return CreateFromPoints(ball0_lifted.Vrep, true);
-    // }
+
+    /// <summary>
+    /// Makes the convex polytope representing the distance to the point in (dim)-dimensional space.
+    /// </summary>
+    /// <param name="polytope">The (d-dim)-polytope distance from is computed.</param>
+    /// <param name="point">The (d-dim)-point distance to is computed.</param>
+    /// <param name="scaleFrom">The (d-dim)-point which is the center of the scaling in 'k' times..</param>
+    /// <param name="k">The value of the last coordinate in the (d-dim + 1)-space.</param>
+    public static ConvexPolytop DistTo_Point(ConvexPolytop polytope, Vector point, Vector scaleFrom, TNum k) {
+      int               newDim = polytope.PolytopDim+1;
+      ConvexPolytop     lifted             = polytope.Scale(k, scaleFrom).LiftUp(newDim, k);
+      SortedSet<Vector> toConv             = new SortedSet<Vector>(lifted.Vrep){point.LiftUp(newDim, Tools.Zero)};
+
+      return CreateFromPoints(toConv, true);
+    }
 
     /// <summary>
     /// Makes the convex polytope which represents the distance to the given convex polytope in dim-space.
@@ -1075,6 +1072,7 @@ public partial class Geometry<TNum, TConv>
     /// Defaults to <see cref="Rep.FLrep"/>.
     /// </param>
     public void WriteIn(ParamWriter pw, Rep rep) {
+      CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
       switch (rep) {
         case Rep.Vrep:  WriteAsVRep(pw, this); break;
         case Rep.Hrep:  WriteAsHRep(pw, this); break;
@@ -1205,7 +1203,9 @@ public partial class Geometry<TNum, TConv>
         return CreateFromPoints(Vrep.Select(v => (v - origin) * k));
       }
 
-      return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(hp.Normal, hp.ConstantTerm * k)));
+      // todo: проверить, работает ли
+      return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(hp.Normal, (Tools.One-k)*origin*hp.Normal + hp.ConstantTerm * k)));
+      // return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(new AffineBasis((hp.AffBasis.Origin-origin)*k, hp.AffBasis.LinBasis), ??? )));
     }
 
     /// <summary>
