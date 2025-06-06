@@ -233,5 +233,29 @@ public class Visualization<TNum, TConv>
 
     return res;
   }
+  
+  
+  public static void ReadAndDrawPolytopePLY(string polytopePath, string polytopeName, string? outputName = null, string? outputPath = null)
+   {
+    outputPath ??= polytopePath;
+    outputName??= polytopeName;
+    string fullPath = Path.Combine(polytopePath, polytopeName + ".cpolytope");
+    
+    Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(fullPath);
+
+    Geometry<TNum, TConv>.ConvexPolytop readed = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);
+
+    string outPath = Path.Combine(outputPath, outputName);
+    
+    DrawPolytopePLY(readed, outPath);
+
+   }
+
+  public static void DrawPolytopePLY(Geometry<TNum, TConv>.ConvexPolytop polytop, string path)
+  {
+    List<VisTools.Facet> flist = new List<VisTools.Facet>();
+    AddToFacetList(flist, polytop);
+    new PlyDrawer().SaveFrame(path, ToDSet(polytop.Vrep), flist);
+  }
 
 }
