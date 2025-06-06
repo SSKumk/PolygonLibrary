@@ -7,8 +7,8 @@ namespace Trajectories;
 public static class Trajectory {
 
   public static void Main() {
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
-    // string ldgPath  = "E:\\Work\\LDG\\";
+    // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    string ldgDir  = "E:\\Work\\LDG\\";
 
     // double eps = double.Parse("1e-8");
     ddouble eps = ddouble.Parse("1e-15");
