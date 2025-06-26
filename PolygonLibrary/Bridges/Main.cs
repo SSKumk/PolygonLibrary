@@ -13,14 +13,16 @@ class Program {
     // string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     string ldgDir = "E:\\Work\\LDG\\";
 
+    // double eps = double.Parse("1e-5");
     double eps = double.Parse("1e-8");
     // ddouble eps = ddouble.Parse("1e-15");
     // Rational eps = Rational.Parse("1/10000000000000000");
 
 
+    string problem = "Oscillator-cone6";
     // string problem = "Oscillator-cone6";
     // string problem = "Oscillator-mass-cone6";
-    string problem = "Oscillator3D-mass-cone6";
+    // string problem = "Oscillator3D-mass-cone6";
     // string problem = "Oscillator3D-mass-epi-hex_prism";
 
     BridgeCreator<double, DConvertor> bridgeCreator = new BridgeCreator<double, DConvertor>(ldgDir, problem, eps);
