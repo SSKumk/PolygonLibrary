@@ -75,15 +75,6 @@ public partial class Geometry<TNum, TConv>
       Top = Lattice[^1].First();
     }
 
-    // /// <summary>
-    // /// Construct a face lattice based on a maximum element.
-    // /// </summary>
-    // /// <param name="Maximum">The maximum node.</param>
-    // public FaceLattice(FLNode Maximum) {
-    //   Top     = Maximum;
-    //   Lattice = Maximum.GetAllLevels();
-    // }
-
     internal static FaceLattice ConstructFromFLNodeSum(List<SortedSet<FLNodeSum>> FLS) {
       List<SortedSet<FLNode>> newFL = new List<SortedSet<FLNode>>();
       for (int i = 0; i <= FLS[^1].First().PolytopDim; i++) {
