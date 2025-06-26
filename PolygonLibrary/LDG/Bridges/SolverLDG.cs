@@ -158,7 +158,7 @@ public class SolverLDG<TNum, TConv>
   /// <param name="currP">The first convex polytope (P) used in the Minkowski sum.</param>
   /// <param name="currQ">The second convex polytope (Q) used in the Minkowski difference.</param>
   /// <returns>The next section of the stable bridge, or null if the operation results in an invalid polytope.</returns>
-  public Geometry<TNum, TConv>.ConvexPolytop? DoNextSection(
+  public static Geometry<TNum, TConv>.ConvexPolytop? DoNextSection(
       Geometry<TNum, TConv>.ConvexPolytop predSec
     , Geometry<TNum, TConv>.ConvexPolytop currP
     , Geometry<TNum, TConv>.ConvexPolytop currQ
