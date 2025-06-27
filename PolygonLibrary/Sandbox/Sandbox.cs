@@ -35,11 +35,11 @@ class Sandbox {
     ConvexPolytop q   = ConvexPolytop.CreateFromReader(prq);
 
 
-    // Hrep
+    // SDasCut
     var sumCut = MinkowskiSum.BySandipDas(w, p, true);
-    string sumSD_cut_f = $"{eps} w{brT}+p{pqT}-SDasCut";
-    sumCut.WriteIn(temp, sumSD_cut_f, ConvexPolytop.Rep.Hrep);
-    Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_cut_f);
+    // string sumSD_cut_f = $"{eps} w{brT}+p{pqT}-SDasCut";
+    // sumCut.WriteIn(temp, sumSD_cut_f, ConvexPolytop.Rep.Hrep);
+    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_cut_f);
 
 
     // var sumSD  = MinkowskiSum.BySandipDas(w, p, false);
