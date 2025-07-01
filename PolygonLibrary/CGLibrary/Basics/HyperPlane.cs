@@ -11,7 +11,7 @@ public partial class Geometry<TNum, TConv>
   /// Represents a (d-1)-dimensional half-space (hyperplane) in a d-dimensional euclidean space.
   /// N * x &lt;= C, N - the outward normal vector and C is the constant term.
   /// </summary>
-  public class HyperPlane {
+  public class HyperPlane : IComparable<HyperPlane> {
 
 #region Data and Properties
     /// <summary>
@@ -262,6 +262,33 @@ public partial class Geometry<TNum, TConv>
       bool isAtOneSide = temp.All(k => k == sign);
 
       return (isAtOneSide, sign);
+    }
+
+    /// <summary>
+    /// Compares the current hyperplane with another hyperplane.
+    /// The comparison is lexicographical:
+    /// 1. First, the normal vectors are compared.
+    /// 2. If the normals are identical, the constant terms are compared.
+    /// </summary>
+    /// <param name="other">A hyperplane to compare with this instance.</param>
+    /// <returns>
+    /// A value:
+    /// Less than zero: This instance precedes other in the sort order.
+    /// Zero: This instance occurs in the same position in the sort order as other.
+    /// Greater than zero: This instance follows other in the sort order.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown if the hyperplanes exist in spaces of different dimensions.</exception>
+    public int CompareTo(HyperPlane? other) {
+      if (other is null) {
+        return 1;
+      }
+
+      // It's meaningless to compare hyperplanes from different spaces.
+      Debug.Assert(this.SpaceDim == other.SpaceDim, $"HyperPlane.CompareTo: Cannot compare hyperplanes of different dimensions.");
+
+      int normalComparison = this.Normal.CompareTo(other.Normal);
+
+      return normalComparison != 0 ? normalComparison : Tools.CMP(this.ConstantTerm, other.ConstantTerm);
     }
 #endregion
 
