@@ -6,7 +6,7 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Represents the gift wrapping algorithm for constructing convex polytops from Vrep*.
+  /// Represents the 1985 Garret Swart's gift wrapping algorithm for constructing convex polytopes from Vrep*.
   /// </summary>
   public class GiftWrapping {
 
@@ -46,16 +46,16 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Wraps the convex polytope of the given swarm and produce its face lattice.
     /// </summary>
-    /// <param name="S">The swarm of points to construct the face lattice from.</param>
+    /// <param name="Swarm">The swarm of points to construct the face lattice from.</param>
     /// <returns>The constructed face lattice.</returns>
-    public static FaceLattice WrapFaceLattice(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).ConstructFL();
+    public static FaceLattice WrapFaceLattice(IReadOnlyCollection<Vector> Swarm) => new GiftWrapping(Swarm).ConstructFL();
 
     /// <summary>
     /// Wraps the given swarm and returns the Vrep.
     /// </summary>
-    /// <param name="S">The swarm to thin convexify.</param>
+    /// <param name="Swarm">The swarm to thin convexify.</param>
     /// <returns>The Vrep of wrapped swarm.</returns>
-    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> S) => new GiftWrapping(S).BuiltPolytop.OriginalVertices;
+    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> Swarm) => new GiftWrapping(Swarm).BuiltPolytop.OriginalVertices;
 
     /// <summary>
     /// Constructs a convex hull of the given swarm of points during initialization.
@@ -213,6 +213,13 @@ public partial class Geometry<TNum, TConv>
           foreach (BaseSubCP edge in face.Faces!.Where(edge => buildIncidence[edge].F2 is null)) {
             BaseSubCP nextFace = RollOverEdge(face, edge);
 
+#if DEBUG
+            var x = new SortedSet<BaseSubCP>(nextFace.Faces!);
+            if (nextFace.Faces.Count != x.Count) {
+              throw new ArgumentException("Error!");
+            }
+#endif
+
             Debug.Assert(nextFace.Vertices.Count >= spaceDim);
             buildFaces.Add(nextFace);
             buildPoints.UnionWith(nextFace.Vertices);
@@ -340,6 +347,8 @@ public partial class Geometry<TNum, TConv>
         // Нужно выбрать точки лежащие в плоскости и спроектировать их в подпространство этой плоскости
         // SortedSet<SubPoint> inPlane = S.Where(faceBasis.Contains).Select(s => s.ProjectTo(faceBasis)).ToSortedSet();
         IEnumerable<SubPoint> inPlane = S.Where(faceBasis.Contains);
+        // HyperPlane            x       = new HyperPlane(faceBasis);
+        // var                   y       = S.Select(s => (x.Eval(s), s)).Where(a => a.Item1 < TConv.FromDouble(1e-4));
         Debug.Assert(inPlane.Count() >= spaceDim, $"BuildFace (dim = {spaceDim}): In plane must be at least d points!");
 
         if (inPlane.Count() == spaceDim) { // Случай симплекса обрабатываем без ухода в подпространство
