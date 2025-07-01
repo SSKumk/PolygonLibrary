@@ -401,6 +401,39 @@ public class HyperPlaneTests {
   }
 #endregion
 
+#region Comparison Tests
+  [Test]
+  public void CompareTo_Null_ReturnsOne() {
+    HyperPlane hp = new HyperPlane(V(0, 0, 1), 5.0);
+    Assert.That(hp.CompareTo(null), Is.EqualTo(1));
+  }
+
+  [Test]
+  public void CompareTo_IdenticalPlanes_ReturnsZero() {
+    HyperPlane hp1 = new HyperPlane(V(0, 0, 1), 5.0);
+    HyperPlane hp2 = new HyperPlane(V(0, 0, 1), 5.0);
+    Assert.That(hp1.CompareTo(hp2), Is.EqualTo(0));
+  }
+
+  [Test]
+  public void CompareTo_DifferentNormals_ComparesNormalsFirst() {
+    HyperPlane hp1_smaller_normal = new HyperPlane(V(0, 0, 1), 10.0);
+    HyperPlane hp2_larger_normal  = new HyperPlane(V(0, 1, 0), 5.0);
+
+    Assert.That(hp1_smaller_normal.CompareTo(hp2_larger_normal), Is.LessThan(0), "Plane with smaller normal should come first.");
+    Assert.That(hp2_larger_normal.CompareTo(hp1_smaller_normal), Is.GreaterThan(0), "Plane with larger normal should come second.");
+  }
+
+  [Test]
+  public void CompareTo_SameNormalDifferentConstants_ComparesConstants() {
+    HyperPlane hp1 = new HyperPlane(V(0, 0, 1), 5.0);
+    HyperPlane hp2 = new HyperPlane(V(0, 0, 1), 6.0);
+
+    Assert.That(hp1.CompareTo(hp2), Is.LessThan(0), "Plane with smaller constant should come first.");
+    Assert.That(hp2.CompareTo(hp1), Is.GreaterThan(0), "Plane with larger constant should come second.");
+  }
+#endregion
+
 #region Lazy Initialization Tests
   [Test]
   public void LazyInitialization_NormalFirst() {
