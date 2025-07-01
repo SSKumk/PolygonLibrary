@@ -182,8 +182,7 @@ public class Visualization<TNum, TConv>
   public static void AddToFacetList(List<VisTools.Facet> FList, Geometry<TNum, TConv>.ConvexPolytop polytop) {
     if (polytop.PolytopDim == 2) {
       var vertices = ToDList(polytop.Vrep);
-      FList.Add
-        (new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.OrthonormalVector()));
+      FList.Add(new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.OrthonormalVector()));
     }
     else {
       foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
@@ -193,8 +192,7 @@ public class Visualization<TNum, TConv>
           (
            new VisTools.Facet
              (
-              ToDList
-                  (F.Vertices)
+              ToDList(F.Vertices)
                .OrderByDescending
                   (v => v, new VisTools.VectorMixedProductComparer(ToDVector(hp.Normal), ToDVector(F.Vertices.First())))
                .ToArray()
@@ -233,26 +231,28 @@ public class Visualization<TNum, TConv>
 
     return res;
   }
-  
-  
-  public static void ReadAndDrawPolytopePLY(string polytopePath, string polytopeName, string? outputName = null, string? outputPath = null)
-   {
+
+
+  public static void ReadAndDrawPolytopePLY(
+      string  polytopePath
+    , string  polytopeName
+    , string? outputName = null
+    , string? outputPath = null
+    ) {
     outputPath ??= polytopePath;
-    outputName??= polytopeName;
+    outputName ??= polytopeName;
     string fullPath = Path.Combine(polytopePath, polytopeName + ".cpolytope");
-    
+
     Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(fullPath);
 
     Geometry<TNum, TConv>.ConvexPolytop readed = Geometry<TNum, TConv>.ConvexPolytop.CreateFromReader(pr);
 
     string outPath = Path.Combine(outputPath, outputName);
-    
+
     DrawPolytopePLY(readed, outPath);
+  }
 
-   }
-
-  public static void DrawPolytopePLY(Geometry<TNum, TConv>.ConvexPolytop polytop, string path)
-  {
+  public static void DrawPolytopePLY(Geometry<TNum, TConv>.ConvexPolytop polytop, string path) {
     List<VisTools.Facet> flist = new List<VisTools.Facet>();
     AddToFacetList(flist, polytop);
     new PlyDrawer().SaveFrame(path, ToDSet(polytop.Vrep), flist);
