@@ -293,10 +293,18 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Gets the number of faces at each dimension level of the face lattice.
-    /// The f-vector represents the count of elements at each dimension level of the face lattice of the polytop.
+    /// Gets the f-vector of the polytope, which contains the number of faces for each dimension.
     /// </summary>
+    /// <value>
+    /// An integer array where the element at index <c>k</c> is the number of <c>k</c>-dimensional faces.
+    /// For example, <c>fVector[0]</c> is the number of vertices, <c>fVector[1]</c> is the number of edges, and so on.
+    /// </value>
     public int[] fVector => FLrep.Lattice.Select(lvl => lvl.Count).ToArray();
+
+    /// <summary>
+    /// Gets a string representation of the f-vector.
+    /// </summary>
+    public string fVectorStr => $"[{string.Join(',', fVector)}]";
 #endregion
 
 #region Constructors
@@ -806,7 +814,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="P">The polytope to which the distance is measured.</param>
     /// <param name="scaleFactor">The radius of the L1-ball and the height of the epigraph's upper base.</param>
     /// <returns>A new polytope representing the distance epigraph.</returns>
-    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_L1(ConvexPolytop P, TNum scaleFactor) => DistanceToPolytope(P, scaleFactor, Ball_1);
+    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_L1(ConvexPolytop P, TNum scaleFactor)
+      => DistanceToPolytope(P, scaleFactor, Ball_1);
 
     /// <summary>
     /// Builds an epigraph for the distance to a polytope <paramref name="P"/>, measured using the Linf (Chebyshev) norm.
@@ -817,7 +826,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="P">The polytope to which the distance is measured.</param>
     /// <param name="scaleFactor">The radius of the Linf-ball and the height of the epigraph's upper base.</param>
     /// <returns>A new polytope representing the distance epigraph.</returns>
-    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_Linf(ConvexPolytop P, TNum scaleFactor) => DistanceToPolytope(P, scaleFactor, Ball_oo);
+    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_Linf(ConvexPolytop P, TNum scaleFactor)
+      => DistanceToPolytope(P, scaleFactor, Ball_oo);
 
     /// <summary>
     /// Builds an epigraph for the distance to a polytope <paramref name="P"/>, measured using the L2 (Euclidean) norm.
