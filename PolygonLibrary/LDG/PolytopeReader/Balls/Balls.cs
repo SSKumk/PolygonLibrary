@@ -34,8 +34,8 @@ public class Ball_2<TNum, TConv> : IBall<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
-  public int PolarDivision     { get; private set; }
   public int AzimuthsDivisions { get; private set; }
+  public int PolarDivision     { get; private set; }
 
   /// <summary>
   /// Reads the parameters for the unit ball of the second norm.

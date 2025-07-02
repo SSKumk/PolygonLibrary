@@ -27,7 +27,7 @@ public abstract class LvlSetFactory<TNum, TConv>
     ILvlSetType<TNum, TConv> lvlSetType =
       lvlSet switch
         {
-          "DistToPoint"    => new LvlSetTypes<TNum, TConv>.DistToPoint()
+          "DistToPointByNorm"    => new LvlSetTypes<TNum, TConv>.DistToPoint()
         , "DistToPolytope" => new LvlSetTypes<TNum, TConv>.DistToPolytope()
         , _ => throw new ArgumentException
                  (

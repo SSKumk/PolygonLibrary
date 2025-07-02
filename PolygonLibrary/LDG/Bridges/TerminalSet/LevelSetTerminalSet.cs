@@ -49,9 +49,7 @@ public class LevelSetTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
             ballType switch
               {
                 Ball_1<TNum, TConv> => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k, Geometry<TNum, TConv>.ConvexPolytop.Ball_1)
-              , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k
-                                                                                            , Geometry<TNum, TConv>.ConvexPolytop
-                                                                                               .Ball_2FuncCreator(b2.AzimuthsDivisions, b2.PolarDivision))
+              , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k, Geometry<TNum, TConv>.ConvexPolytop.Ball_2FuncCreator(b2.AzimuthsDivisions, b2.PolarDivision))
               , Ball_oo<TNum, TConv> => Geometry<TNum, TConv>.ConvexPolytop.DistTo_MakeBase(d.Polytope, k, Geometry<TNum, TConv>.ConvexPolytop.Ball_oo)
               };
 

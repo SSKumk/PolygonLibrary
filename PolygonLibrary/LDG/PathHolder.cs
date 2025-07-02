@@ -207,6 +207,7 @@ public class LDGPathHolder<TNum, TConv>
   }
 
 
+  //todo: убрать эту штуку, для каких моментов мост есть, для тех и будем строить траектории.
   public TNum Load_tMin(int i) {
     Geometry<TNum, TConv>.ParamReader pr = new Geometry<TNum, TConv>.ParamReader(Path.Combine(PathBr(i), ".tmin"));
 
