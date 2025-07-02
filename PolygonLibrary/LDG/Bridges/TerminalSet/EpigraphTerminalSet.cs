@@ -13,62 +13,27 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
   /// Builds the terminal sets based on the provided configuration.
   /// </summary>
   /// <param name="pr">The parameter reader used to extract parameters.</param>
-  /// <param name="ph">The path holder providing access to polytope files, it used only for distance-to-polytope function.</param>
+  /// <param name="ph">The path holder providing access to polytope files. Used by epigraph types that rely on explicit polytopes.</param>
   /// <returns>A collection of terminal sets -- ConvexPolytop.</returns>
   public IEnumerable<Geometry<TNum, TConv>.ConvexPolytop> BuildTerminalSets(
-    Geometry<TNum, TConv>.ParamReader pr
-  , LDGPathHolder<TNum, TConv>        ph) {
-    IEpiType<TNum, TConv> epiType = EpiTypeFactory<TNum, TConv>.Read(pr, ph);
+      Geometry<TNum, TConv>.ParamReader pr
+    , LDGPathHolder<TNum, TConv>        ph
+    ) {
+    EpiTypeBase<TNum, TConv> epiTypeBase = EpiTypeFactory<TNum, TConv>.Read(pr, ph);
 
-    TNum k = pr.ReadNumber<TNum>("Constant");
-    if (Geometry<TNum, TConv>.Tools.LE(k)) {
-      throw new ArgumentException($"Constant must be greater than zero. Found Constant = {k}");
-    }
-    IBall<TNum, TConv> ballType = BallFactory<TNum, TConv>.Read(pr);
-    switch (epiType) {
-      case EpiTypes<TNum, TConv>.DistToPointFromPolytope d: {
-        yield return Geometry<TNum, TConv>.ConvexPolytop.DistTo_Point(d.Cap, d.Point, d.ScaleFrom,k);
-        break;
-      }
-
-      case EpiTypes<TNum, TConv>.DistToPoint d: {
-        yield return
-          ballType switch
-            {
-              Ball_1<TNum, TConv>    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_1(d.Point, k)
-            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_2(d.Point, b2.AzimuthsDivisions, b2.PolarDivision, k)
-            , Ball_oo<TNum, TConv>   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPointBall_oo(d.Point, k)
-            };
-
-        break;
-      }
-
-      case EpiTypes<TNum, TConv>.DistToPolytope d: {
-        yield return
-          ballType switch
-            {
-              Ball_1<TNum, TConv>    => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_1(d.Polytope, k)
-            , Ball_2<TNum, TConv> b2 => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_2(d.Polytope, k, b2.AzimuthsDivisions, b2.PolarDivision)
-            , Ball_oo<TNum, TConv>   => Geometry<TNum, TConv>.ConvexPolytop.DistanceToPolytopeBall_oo(d.Polytope, k)
-            };
-
-        break;
-      }
-    }
+    yield return epiTypeBase.BuildEpigraph();
   }
 
   /// <summary>
   /// Extends the <paramref name="gd"/> (game data) system when the terminal set is an epigraph of a function.
   /// </summary>
-  /// <param name="gd">The game data to modify when constructing the terminal set for the epigraph.</param>
+  /// <param name="gd">The game data to be modified. Its dimension 'n' will be incremented,
+  /// and system matrices will be augmented accordingly.</param>
   public EpigraphTerminalSet(ref GameData<TNum, TConv> gd) {
     // Расширяем систему, если решаем задачу с надграфиком функции цены
     gd.ProjDim++;
-    gd.ProjInd = new List<int>(gd.ProjInd)
-      {
-        gd.n
-      }.ToArray(); // новая координата всегда в ответе
-    gd.n++;        // размерность стала на 1 больше
+    gd.ProjInd = new List<int>(gd.ProjInd) { gd.n }.ToArray(); // новая координата всегда в ответе
+    gd.n++;                                                    // размерность стала на 1 больше
     gd.A            = Geometry<TNum, TConv>.Matrix.vcat(gd.A, Geometry<TNum, TConv>.Matrix.Zero(1, gd.n - 1));
     gd.A            = Geometry<TNum, TConv>.Matrix.hcat(gd.A, Geometry<TNum, TConv>.Matrix.Zero(gd.n, 1))!;
     gd.B            = Geometry<TNum, TConv>.Matrix.vcat(gd.B, Geometry<TNum, TConv>.Matrix.Zero(1, gd.pDim));
@@ -92,9 +57,6 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
 
       t += gd.dt;
     } while (Geometry<TNum, TConv>.Tools.LE(t, gd.T));
-
-
   }
-
 
 }

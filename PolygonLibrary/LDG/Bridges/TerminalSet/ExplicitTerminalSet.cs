@@ -19,8 +19,11 @@ public class ExplicitTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
       Geometry<TNum, TConv>.ParamReader pr
     , LDGPathHolder<TNum, TConv>        ph
     ) {
-    int      k     = pr.ReadNumber<int>("Qnt");
-    string[] names = pr.Read1DArray<string>("Polytopes", k);
+
+    // int      k     = pr.ReadNumber<int>("Qnt");
+    // string[] names = pr.Read1DArray<string>("Polytopes", k);
+
+    List<string> names = pr.ReadList<string>("Polytopes");
 
     Geometry<TNum, TConv>.ConvexPolytop[] polytopes =
       names.Select(name => ITerminalSetReader<TNum, TConv>.DoPolytope(name, ph)).ToArray();

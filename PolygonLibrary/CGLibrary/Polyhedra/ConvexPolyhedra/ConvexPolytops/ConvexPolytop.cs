@@ -740,101 +740,156 @@ public partial class Geometry<TNum, TConv>
 
 
     /// <summary>
-    /// Makes the convex polytope representing the distance to the point in (dim)-dimensional space.
+    /// Creates a cone-like polytope in (d+1) dimensions representing a distance function.
+    /// The distance metric is defined by the shape of the 'unitBall' polytope (Minkowski distance).
+    /// The resulting cone has its apex at 'targetPoint' (at height 0) and its base at height 'scaleFactor'.
     /// </summary>
-    /// <param name="polytope">The (d-dim)-polytope distance from is computed.</param>
-    /// <param name="point">The (d-dim)-point distance to is computed.</param>
-    /// <param name="scaleFrom">The (d-dim)-point which is the center of the scaling in 'k' times..</param>
-    /// <param name="k">The value of the last coordinate in the (d-dim + 1)-space.</param>
-    public static ConvexPolytop DistTo_Point(ConvexPolytop polytope, Vector point, Vector scaleFrom, TNum k) {
-      int               newDim = polytope.PolytopDim + 1;
-      ConvexPolytop     lifted = polytope.Scale(k, scaleFrom).LiftUp(newDim, k);
-      SortedSet<Vector> toConv = new SortedSet<Vector>(lifted.Vrep) { point.LiftUp(newDim, Tools.Zero) };
+    /// <param name="unitBall">The convex polytope that acts as the unit ball for the distance norm.</param>
+    /// <param name="targetPoint">The point to which distance is measured; becomes the apex of the cone.</param>
+    /// <param name="scaleFactor">The scaling factor for the 'unitBall' and the height of the cone's base.</param>
+    public static ConvexPolytop BuildDistanceEpigraph(ConvexPolytop unitBall, Vector targetPoint, TNum scaleFactor) {
+      int newDim = unitBall.PolytopDim + 1;
+      ConvexPolytop lifted =
+        unitBall
+         .Scale(scaleFactor, Vector.Zero(unitBall.PolytopDim))
+         .Shift(targetPoint)
+         .LiftUp(newDim, scaleFactor);
+      SortedSet<Vector> toConv = new SortedSet<Vector>(lifted.Vrep) { targetPoint.LiftUp(newDim, Tools.Zero) };
 
       return CreateFromPoints(toConv, true);
     }
 
     /// <summary>
-    /// Makes the convex polytope which represents the distance to the given convex polytope in dim-space.
+    /// Constructs the epigraph of the distance function from a given polytope <paramref name="P"/>,
+    /// measured using a norm defined by the <paramref name="ballCreator"/>.
     /// </summary>
-    /// <param name="P">Polytop the distance to which is constructed.</param>
-    /// <param name="k">The value of the last coordinate of P in dim+1 space.</param>
-    /// <param name="ballCreator">Function that makes balls.</param>
-    /// <returns>A polytope representing the distance to the ball.</returns>
+    /// <remarks>
+    /// The resulting epigraph is the convex hull of two sets:
+    /// 1. The input polytope <paramref name="P"/> lifted to height 0.
+    /// 2. The Minkowski sum of <paramref name="P"/> and a ball of radius <paramref name="k"/>, lifted to height <paramref name="k"/>.
+    /// This creates a skewed "cone" over <paramref name="P"/>.
+    /// </remarks>
+    /// <param name="P">The polytope to which the distance is measured.</param>
+    /// <param name="k">The radius of the norm ball and the height of the epigraph's upper base.</param>
+    /// <param name="ballCreator">A factory function that creates a norm ball of a given radius centered at the origin.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
     private static ConvexPolytop DistanceToPolytope(ConvexPolytop P, TNum k, Func<Vector, TNum, ConvexPolytop> ballCreator) {
-      // R (+) Ball(0, k)
-      ConvexPolytop bigP = DistTo_MakeBase(P, k, ballCreator);
+      ConvexPolytop upperBase = DistTo_MakeBase(P, k, ballCreator).LiftUp(P.SpaceDim + 1, k);
+      ConvexPolytop lowerBase = P.LiftUp(P.SpaceDim + 1, Tools.Zero);
 
-      //{(R,0), (R (+) Ball(0, k),k)}
-      ConvexPolytop toConv = bigP.LiftUp(P.SpaceDim + 1, k);
-      toConv.Vrep.UnionWith(P.LiftUp(P.SpaceDim + 1, Tools.Zero).Vrep);
+      SortedSet<Vector> allVertices = new SortedSet<Vector>(upperBase.Vrep);
+      allVertices.UnionWith(lowerBase.Vrep);
 
-      //conv{...}
-      return CreateFromPoints(toConv.Vrep, true);
+      return CreateFromPoints(allVertices, true);
     }
 
-    //todo: xml
-    public static ConvexPolytop DistTo_MakeBase(ConvexPolytop P, TNum k, Func<Vector, TNum, ConvexPolytop> ballCreator) {
-      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(Vector.Zero(P.SpaceDim), k), P);
+    /// <summary>
+    /// Computes the Minkowski sum of a polytope <paramref name="P"/> and a norm ball.
+    /// This forms the upper base of a distance epigraph.
+    /// </summary>
+    /// <param name="P">The input polytope.</param>
+    /// <param name="radius">The radius of the norm ball.</param>
+    /// <param name="ballCreator">A factory function that creates the norm ball.</param>
+    /// <returns>The resulting polytope from the Minkowski sum.</returns>
+    public static ConvexPolytop DistTo_MakeBase(ConvexPolytop P, TNum radius, Func<Vector, TNum, ConvexPolytop> ballCreator) {
+      ConvexPolytop bigP = MinkowskiSum.BySandipDas(ballCreator(Vector.Zero(P.SpaceDim), radius), P);
 
       return bigP;
     }
 
     /// <summary>
-    ///  Makes the convex polytope representing the distance in "_1"-norm to the given convex polytope in dimensional space.
+    /// Builds an epigraph for the distance to a polytope <paramref name="P"/>, measured using the L1 (Manhattan) norm.
     /// </summary>
-    /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <returns>A polytope representing the distance to the polytope P in ball_1 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopeBall_1(ConvexPolytop P, TNum k) => DistanceToPolytope(P, k, Ball_1);
+    /// <remarks>
+    /// Following common convention, this method uses 'L1' to refer to the l_1 vector norm.
+    /// </remarks>
+    /// <param name="P">The polytope to which the distance is measured.</param>
+    /// <param name="scaleFactor">The radius of the L1-ball and the height of the epigraph's upper base.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
+    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_L1(ConvexPolytop P, TNum scaleFactor) => DistanceToPolytope(P, scaleFactor, Ball_1);
 
     /// <summary>
-    /// Makes the convex polytope representing the distance in "infinity"-norm to the given convex polytope in dimensional space.
+    /// Builds an epigraph for the distance to a polytope <paramref name="P"/>, measured using the Linf (Chebyshev) norm.
     /// </summary>
-    /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <returns>A polytope representing the distance to the polytope P in ball_oo norm.</returns>
-    public static ConvexPolytop DistanceToPolytopeBall_oo(ConvexPolytop P, TNum k) => DistanceToPolytope(P, k, Ball_oo);
+    /// <remarks>
+    /// Following common convention, this method uses 'Linf' to refer to the l_inf vector norm.
+    /// </remarks>
+    /// <param name="P">The polytope to which the distance is measured.</param>
+    /// <param name="scaleFactor">The radius of the Linf-ball and the height of the epigraph's upper base.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
+    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_Linf(ConvexPolytop P, TNum scaleFactor) => DistanceToPolytope(P, scaleFactor, Ball_oo);
 
     /// <summary>
-    /// Makes the convex polytope representing the distance in "euclidean"-norm to the given convex polytope in dimensional space.
+    /// Builds an epigraph for the distance to a polytope <paramref name="P"/>, measured using the L2 (Euclidean) norm.
     /// </summary>
-    /// <param name="P">The polytope to which the distance is constructed.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
+    /// <remarks>
+    /// Following common convention, this method uses 'L2' to refer to the l_2 vector norm.
+    /// </remarks>
+    /// <param name="P">The polytope to which the distance is measured.</param>
+    /// <param name="scaleFactor">The radius of the Linf-ball and the height of the epigraph's upper base.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
-    /// <param name="polarDivision">The number of partitions at zenith angle.</param>
+    /// <param name="polarDivision">The number of partitions at the zenith angle.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPolytopeBall_2(ConvexPolytop P, TNum k, int azimuthsDivisions, int polarDivision)
-      => DistanceToPolytope(P, k, (center, radius) => Sphere(center, radius, azimuthsDivisions, polarDivision));
+    public static ConvexPolytop BuildDistanceEpigraph_ToPolytope_L2(
+        ConvexPolytop P
+      , TNum          scaleFactor
+      , int           azimuthsDivisions
+      , int           polarDivision
+      )
+      => DistanceToPolytope
+        (
+         P
+       , scaleFactor
+       , (center, radius) => Sphere(center, radius, azimuthsDivisions, polarDivision)
+        );
 
     /// <summary>
-    /// Makes the convex polytope representing the distance in "_1"-norm to the origin in dimensional space.
+    /// Builds an epigraph for the distance to a point, measured using the L1 (Manhattan) norm.
+    /// The result is a cone with its apex at the origin of the (d+1) space and its base being an L1-ball centered at <paramref name="point"/> and lifted to height <paramref name="scaleFactor"/>.
     /// </summary>
-    /// <param name="point">The point distance to is computed.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <returns>A polytope representing the distance to the origin in ball_1 norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_1(Vector point, TNum k) => DistanceToPoint(point, k, Ball_1);
+    /// <remarks>
+    /// Following common convention, this method uses 'L1' to refer to the l_1 vector norm.
+    /// </remarks>
+    /// <param name="point">The center of the distance function; the base of the cone will be centered here.</param>
+    /// <param name="scaleFactor">The radius of the L1-ball and the height of the cone's base.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
+    public static ConvexPolytop BuildDistanceEpigraph_L1(Vector point, TNum scaleFactor)
+      => DistanceToPoint(point, scaleFactor, Ball_1);
 
     /// <summary>
-    /// Makes the convex polytope representing the distance in "_oo"-norm to the origin in dimensional space.
+    /// Builds an epigraph for the distance to a point, measured using the Linf (Chebyshev) norm.
+    /// The result is a cone with its apex at the origin of the (d+1) space and its base being a Linf-ball centered at <paramref name="point"/> and lifted to height <paramref name="scaleFactor"/>.
     /// </summary>
-    /// <param name="point">The point distance to is computed.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <returns>A polytope representing the distance to the origin in ball_oo norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_oo(Vector point, TNum k) => DistanceToPoint(point, k, Ball_oo);
+    /// <remarks>
+    /// Following common convention, this method uses 'Linf' to refer to the l_inf vector norm.
+    /// </remarks>
+    /// <param name="point">The center of the distance function; the base of the cone will be centered here.</param>
+    /// <param name="scaleFactor">The radius of the Linf-ball and the height of the cone's base.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
+    public static ConvexPolytop BuildDistanceEpigraph_Linf(Vector point, TNum scaleFactor)
+      => DistanceToPoint(point, scaleFactor, Ball_oo);
 
     /// <summary>
-    /// Makes the convex polytope representing the distance in "_2"-norm to the origin in (dim)-dimensional space.
+    /// Builds an epigraph for the distance to a point, measured using the L2 (Euclidean) norm.
+    /// The result is a cone with its apex at the origin of the (d+1) space and its base being a L2-ball centered at <paramref name="point"/> and lifted to height <paramref name="scaleFactor"/>.
     /// </summary>
+    /// <remarks>
+    /// Following common convention, this method uses 'L2' to refer to the l_2 vector norm.
+    /// </remarks>
     /// <param name="point">The point distance to is computed.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
     /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
-    /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
-    /// <returns>A polytope representing the distance to the origin in ball_2 norm.</returns>
-    public static ConvexPolytop DistanceToPointBall_2(Vector point, int azimuthsDivisions, int polarDivision, TNum k)
-      => DistanceToPoint(point, k, Ball_2FuncCreator(azimuthsDivisions, polarDivision));
+    /// <param name="scaleFactor">The radius of the L2-ball and the height of the cone's base.</param>
+    /// <returns>A new polytope representing the distance epigraph.</returns>
+    public static ConvexPolytop BuildDistanceEpigraph_L2(Vector point, int azimuthsDivisions, int polarDivision, TNum scaleFactor)
+      => DistanceToPoint(point, scaleFactor, Ball_2FuncCreator(azimuthsDivisions, polarDivision));
 
-    //todo: xml
+    /// <summary>
+    /// Creates a factory function for generating L2-balls (spheres) with a fixed mesh resolution.
+    /// </summary>
+    /// <param name="azimuthsDivisions">The number of subdivisions for the azimuthal angles (longitude).</param>
+    /// <param name="polarDivision">The number of subdivisions for the polar angle (latitude).</param>
+    /// <returns>A function that takes a center and radius and returns a sphere polytope.</returns>
     public static Func<Vector, TNum, ConvexPolytop> Ball_2FuncCreator(int azimuthsDivisions, int polarDivision) {
       return (center, radius) => Sphere(center, radius, azimuthsDivisions, polarDivision);
     }
@@ -845,18 +900,17 @@ public partial class Geometry<TNum, TConv>
     /// <param name="point">The point distance to is computed.</param>
     /// <param name="k">The value of the last coordinate in the (dim + 1)-dimensional space.</param>
     /// <param name="ballCreator">Function that creates balls.</param>
-    /// <returns>A polytope representing the distance to the origin.</returns>
+    /// <returns>A polytope representing the distance to the specified <paramref name="point"/>.</returns>
     private static ConvexPolytop DistanceToPoint(Vector point, TNum k, Func<Vector, TNum, ConvexPolytop> ballCreator) {
       ConvexPolytop ball   = ballCreator(point, k);
       ConvexPolytop toConv = ball.LiftUp(point.SpaceDim + 1, k);
-      toConv.Vrep.Add(Vector.Zero(point.SpaceDim + 1));
+      Vector        apex   = point.LiftUp(point.SpaceDim + 1, Tools.Zero);
+
+      toConv.Vrep.Add(apex);
 
       //conv{...}
       return CreateFromPoints(toConv.Vrep, true);
     }
-#endregion
-
-#region Get it specific forms
 #endregion
 
 #region Functions
