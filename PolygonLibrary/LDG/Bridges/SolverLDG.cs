@@ -55,10 +55,12 @@ public class SolverLDG<TNum, TConv>
   public readonly SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop> Qs =
     new SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>(Geometry<TNum, TConv>.Tools.TComp);
 
-  /// <summary>
-  /// The minimum time (greater than or equal to t0) when the bridge is successfully constructed.
-  /// </summary>
-  public TNum tMin;
+  // /// <summary>
+  // /// The minimum time (greater than or equal to t0) when the bridge is successfully constructed.
+  // /// </summary>
+  // public TNum tMin;
+
+  private readonly Geometry<TNum, TConv>.ParamWriter structWr;
 
 
   /// <summary>
@@ -93,6 +95,9 @@ public class SolverLDG<TNum, TConv>
     Directory.CreateDirectory(BrDir);
     Directory.CreateDirectory(PsDir);
     Directory.CreateDirectory(QsDir);
+
+    structWr           = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(BrDir, ".structure"), append: true);
+    structWr.AutoFlush = true;
 
     WriteBridgeSection(gd.T);
   }
@@ -213,6 +218,8 @@ public class SolverLDG<TNum, TConv>
   /// <param name="tPred">The previous time, used to calculate the next bridge section.</param>
   /// <param name="bridgeIsNotDegenerate">Indicates whether the bridge is not degenerate. Set to <c>false</c> if the bridge becomes degenerate.</param>
   private void ProcessBridgeSection(TNum t, TNum tPred, ref bool bridgeIsNotDegenerate) {
+    Stopwatch timer = new Stopwatch();
+
     if (BridgeSectionFileCorrect(t)) {
       if (!BridgeSectionFileCorrect(t - gd.dt)) {
         ReadBridgeSection(t);
@@ -225,14 +232,34 @@ public class SolverLDG<TNum, TConv>
       if (!Qs.ContainsKey(t)) {
         ReadQsSection(t);
       }
-      Geometry<TNum, TConv>.ConvexPolytop? WNext = DoNextSection(W[tPred], Ps[t], Qs[t]);
-      if (WNext is null) {
-        Console.WriteLine($"The bridge become degenerate at t = {t}.");
-        bridgeIsNotDegenerate = false;
+      try {
+        timer.Restart();
+        Geometry<TNum, TConv>.ConvexPolytop? WNext = DoNextSection(W[tPred], Ps[t], Qs[t]);
+        timer.Stop();
+
+        if (WNext is null) {
+          Console.WriteLine($"The bridge become degenerate at t = {t}.");
+          bridgeIsNotDegenerate = false;
+        }
+        else {
+          W[t] = WNext;
+          WriteBridgeSection(t);
+
+          if (W.TryGetValue(t, out Geometry<TNum, TConv>.ConvexPolytop? br)) {
+            Console.WriteLine
+              (
+               $"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. |FLrep| = {br.FLrep.NumberOfKFaces}"
+              );
+            structWr.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalSeconds:F4} sec. f-vec = {br.fVectorStr}");
+          }
+        }
       }
-      else {
-        W[t] = WNext;
-        WriteBridgeSection(t);
+      catch (Exception e) {
+        Console.WriteLine(e);
+        structWr.Flush();
+        structWr.Close();
+
+        throw;
       }
     }
   }
@@ -242,10 +269,8 @@ public class SolverLDG<TNum, TConv>
   /// The process stops when the bridge becomes degenerate or when the time reaches an initial time.
   /// </summary>
   public void Solve() {
-    Stopwatch timer = new Stopwatch();
-
     TNum t = gd.T;
-    tMin = gd.T;
+    // tMin = gd.T;
     TNum tPred;
     bool bridgeIsNotDegenerate = true;
 
@@ -255,30 +280,27 @@ public class SolverLDG<TNum, TConv>
 
     // Основной цикл
     while (Geometry<TNum, TConv>.Tools.GT(t, gd.t0) && bridgeIsNotDegenerate) {
-      tPred =  t;
-      tMin  =  t;
-      t     -= gd.dt;
-      Geometry<TNum, TConv>.ParamWriter prW = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(BrDir, ".tmin"));
-      prW.WriteNumber("tMin", tMin);
-      prW.Close();
+      tPred = t;
+      // tMin  =  t;
+      t -= gd.dt;
+      // Geometry<TNum, TConv>.ParamWriter prW = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(BrDir, ".tmin"));
+      // prW.WriteNumber("tMin", tMin);
+      // prW.Close();
 
-      timer.Restart();
       ProcessPsSection(t);
       ProcessQsSection(t);
       ProcessBridgeSection(t, tPred, ref bridgeIsNotDegenerate);
-      timer.Stop();
-
-      if (W.TryGetValue(t, out Geometry<TNum, TConv>.ConvexPolytop? br)) {
-        Console.WriteLine($"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. |Vrep| = {br.Vrep.Count}. |Hrep| = {br.Hrep.Count}");
-      }
     }
 
-    tMin -= gd.dt;
+    // tMin -= gd.dt;
 
-    {
-      using Geometry<TNum, TConv>.ParamWriter prW = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(BrDir, ".tmin"));
-      prW.WriteNumber("tMin", tMin);
-    }
+    // {
+    // using Geometry<TNum, TConv>.ParamWriter prW = new Geometry<TNum, TConv>.ParamWriter(Path.Combine(BrDir, ".tmin"));
+    // prW.WriteNumber("tMin", tMin);
+    // }
+
+    structWr.Flush();
+    structWr.Close();
   }
 
 }
