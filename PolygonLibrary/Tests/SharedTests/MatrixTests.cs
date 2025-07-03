@@ -159,6 +159,46 @@ public class MatrixTests {
       );
   }
 
+
+  [Test]
+  public void Constructor_FromListOfVectors_CreatesCorrectMatrix() {
+    List<Vector> rows = new List<Vector> { V(1, 2, 3), V(4, 5, 6) };
+
+    Matrix m = new Matrix(rows);
+
+    Assert.Multiple
+      (()
+         => {
+         Assert.That(m.Rows, Is.EqualTo(2), "Rows should be 2.");
+         Assert.That(m.Cols, Is.EqualTo(3), "Cols should be 3.");
+
+         Assert.That(m[0, 0], Is.EqualTo(1));
+         Assert.That(m[0, 1], Is.EqualTo(2));
+         Assert.That(m[0, 2], Is.EqualTo(3));
+
+         Assert.That(m[1, 0], Is.EqualTo(4));
+         Assert.That(m[1, 1], Is.EqualTo(5));
+         Assert.That(m[1, 2], Is.EqualTo(6));
+       }
+      );
+  }
+
+  [Test]
+  public void Constructor_FromListOfVectors_SingleRow() {
+    List<Vector> rows = new List<Vector> { V(10, 20) };
+    Matrix       m    = new Matrix(rows);
+
+    Assert.Multiple
+      (()
+         => {
+         Assert.That(m.Rows, Is.EqualTo(1));
+         Assert.That(m.Cols, Is.EqualTo(2));
+         Assert.That(m[0, 0], Is.EqualTo(10));
+         Assert.That(m[0, 1], Is.EqualTo(20));
+       }
+      );
+  }
+
   [Test]
   public void Indexer_2D_Get_ValidIndices() {
     Matrix m = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
@@ -285,6 +325,76 @@ public class MatrixTests {
   public void GetHashCode_ThrowsInvalidOperationException() {
     Matrix m = new Matrix();
     Assert.Throws<InvalidOperationException>(() => m.GetHashCode());
+  }
+
+  [Test]
+  public void CompareTo_Null_Returns1() {
+    Matrix m1 = new Matrix(new double[,] { { 1, 2 } });
+    Assert.That(m1.CompareTo(null), Is.EqualTo(1));
+  }
+
+  [Test]
+  public void CompareTo_SameMatrix_Returns0() {
+    Matrix m1 = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
+    Matrix m2 = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
+    Assert.That(m1.CompareTo(m2), Is.EqualTo(0));
+  }
+
+  [Test]
+  public void CompareTo_DifferentRows_ReturnsCorrectComparison() {
+    Matrix m1 = new Matrix(new double[,] { { 1 } });        // 1x1
+    Matrix m2 = new Matrix(new double[,] { { 1 }, { 2 } }); // 2x1
+    Assert.That(m1.CompareTo(m2), Is.LessThan(0), "Matrix with fewer rows should be smaller.");
+    Assert.That(m2.CompareTo(m1), Is.GreaterThan(0), "Matrix with more rows should be larger.");
+  }
+
+  [Test]
+  public void CompareTo_DifferentCols_ReturnsCorrectComparison() {
+    Matrix m1 = new Matrix(new double[,] { { 1 } });    // 1x1
+    Matrix m2 = new Matrix(new double[,] { { 1, 2 } }); // 1x2
+    Assert.That(m1.CompareTo(m2), Is.LessThan(0), "Matrix with fewer columns should be smaller.");
+    Assert.That(m2.CompareTo(m1), Is.GreaterThan(0), "Matrix with more columns should be larger.");
+  }
+
+  [Test]
+  public void CompareTo_LexicographicallySmaller_ReturnsNegative() {
+    Matrix m1 = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
+    Matrix m2 = new Matrix(new double[,] { { 1, 2 }, { 3, 5 } });
+    Assert.That(m1.CompareTo(m2), Is.LessThan(0));
+  }
+
+  [Test]
+  public void CompareTo_LexicographicallyLarger_ReturnsPositive() {
+    Matrix m1 = new Matrix(new double[,] { { 2, 0 }, { 0, 0 } });
+    Matrix m2 = new Matrix(new double[,] { { 1, 9 }, { 9, 9 } });
+    Assert.That(m1.CompareTo(m2), Is.GreaterThan(0));
+  }
+
+  [Test]
+  public void CompareTo_Transitivity() {
+    Matrix m1 = new Matrix(new double[,] { { 1, 0 } });
+    Matrix m2 = new Matrix(new double[,] { { 2, 0 } });
+    Matrix m3 = new Matrix(new double[,] { { 3, 0 } });
+
+    Assert.Multiple
+      (()
+         => {
+         Assert.That(m1.CompareTo(m2), Is.LessThan(0));
+         Assert.That(m2.CompareTo(m3), Is.LessThan(0));
+         Assert.That(m1.CompareTo(m3), Is.LessThan(0));
+       }
+      );
+  }
+
+  [Test]
+  public void CompareTo_Symmetry() {
+    Matrix m1 = new Matrix(new double[,] { { 1, 0 } });
+    Matrix m2 = new Matrix(new double[,] { { 2, 0 } });
+
+    int comparison1 = m1.CompareTo(m2);
+    int comparison2 = m2.CompareTo(m1);
+
+    Assert.That(Math.Sign(comparison1), Is.EqualTo(-Math.Sign(comparison2)));
   }
 
   [Test]
@@ -444,11 +554,10 @@ public class MatrixTests {
 
   [Test]
   public void HCat_TwoMatrices_Valid() {
-    Matrix  m1     = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
-    Matrix  m2     = new Matrix(new double[,] { { 5, 6 }, { 7, 8 } });
-    Matrix? result = Matrix.hcat(m1, m2);
+    Matrix m1     = new Matrix(new double[,] { { 1, 2 }, { 3, 4 } });
+    Matrix m2     = new Matrix(new double[,] { { 5, 6 }, { 7, 8 } });
+    Matrix result = Matrix.hcat(m1, m2);
 
-    Assert.IsNotNull(result);
     Assert.Multiple
       (()
          => {
