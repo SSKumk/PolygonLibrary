@@ -44,7 +44,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="other">The pair to be compared with</param>
     /// <returns>-1, this pair is less; +1, this pair is greater; 0, the pairs are equal</returns>
     public int CompareTo(GammaPair? other) {
-      Debug.Assert(other != null, nameof(other) + " != null");
+      if (other is null) { return 1; } // null < this (always)
       int res = Tools.CMP(this.Normal.PolarAngle, other.Normal.PolarAngle);
       if (res != 0) {
         return res;
