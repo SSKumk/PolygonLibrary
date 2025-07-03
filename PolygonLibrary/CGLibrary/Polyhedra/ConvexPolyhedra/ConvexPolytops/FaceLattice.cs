@@ -226,7 +226,6 @@ public partial class Geometry<TNum, TConv>
   public class FLNode : IComparable<FLNode> {
 
 #region Data and properties
-
     private readonly SortedSet<Vector> _nodeVertices;
 
     /// <summary>
@@ -237,7 +236,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the d-dimensional point 'p' which lies within P and does not lie on any faces of P.
     /// </summary>
-    public Vector InnerPoint { get;}
+    public Vector InnerPoint { get; }
 
     /// <summary>
     /// Gets the list of d-dimensional points which forms the affine space (not a Affine basis) corresponding to this polytop.
@@ -276,7 +275,6 @@ public partial class Geometry<TNum, TConv>
           return _levelNodes;
         }
     }
-
 #endregion
 
 #region Constructors
@@ -296,8 +294,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
     /// <param name="affBasis">The affine space of the sub given explicitly.</param>
     public FLNode(IEnumerable<FLNode> sub, AffineBasis? affBasis = null) {
-      Sub       = new SortedSet<FLNode>(sub);
-      _nodeVertices = new SortedSet<Vector>(Sub.SelectMany(s=>s._nodeVertices));
+      Sub           = new SortedSet<FLNode>(sub);
+      _nodeVertices = new SortedSet<Vector>(Sub.SelectMany(s => s._nodeVertices));
 
       InnerPoint = new Vector((new Vector(Sub.First().InnerPoint) + new Vector(Sub.Last().InnerPoint)) / Tools.Two);
 
@@ -595,36 +593,20 @@ public partial class Geometry<TNum, TConv>
 #region Overrides
     public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Vertices.Count);
 
-    /// <summary>
-    /// The equality function for FLNode. It checks only the Node itself, not its neighbors.
-    /// </summary>
-    /// <param name="obj">Compare this FLNode with another object.</param>
-    /// <returns>Two FLNodes are considered equal if obj is a FLNode:
-    /// 1) polytopes corresponding to the nodes are equal.
-    /// </returns>
+    //todo: xml
     public override bool Equals(object? obj) {
-      throw new InvalidOperationException();
+      if (obj == null || this.GetType() != obj.GetType()) {
+        return false;
+      }
 
-      // if (obj == null || this.GetType() != obj.GetType()) {
-      //   return false;
-      // }
-      //
-      // FLNodeSum other = (FLNodeSum)obj;
-      //
-      // return this.Vertices.SetEquals(other.Vertices);
+      FLNodeSum other = (FLNodeSum)obj;
+
+      return this.AffBasis.Equals(other.AffBasis);
     }
 
-    /// <summary>
-    /// Compares two FLNodes.
-    /// </summary>
-    /// <param name="other">The FLNode object to compare with.</param>
-    /// <returns>
-    /// Returns '-1' if the number of vertices in 'this' is less than that of 'other'.
-    /// Returns '+1' if the number of vertices in 'this' is greater than that of 'other'.
-    /// Otherwise, it returns the result based on a lexicographical comparison of their elements.
-    /// If all corresponding elements are equal, then the sets are considered equal.
-    /// </returns>
+    //todo: xml
     public int CompareTo(FLNodeSum? other) {
+
       if (other is null) { return 1; } // null < this (always)
 
       if (this.AffBasis.SubSpaceDim < other.AffBasis.SubSpaceDim) { // this < other
@@ -634,8 +616,11 @@ public partial class Geometry<TNum, TConv>
       if (this.AffBasis.SubSpaceDim > other.AffBasis.SubSpaceDim) { // this > other
         return 1;
       }
+      if (this.InnerPoint.Equals(other.InnerPoint) && !this.AffBasis.Equals(other.AffBasis)) {
+        Console.WriteLine($"oops");
+      }
 
-      return this.InnerPoint.CompareTo(other.InnerPoint);
+      return this.AffBasis.CompareTo(other.AffBasis);
     }
 #endregion
 
