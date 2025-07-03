@@ -13,9 +13,9 @@ TODO file
 # CGLibrary
 
 
-1. [ ] AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF для LinearBasis и проекция 0 в качестве Origin.
+1. [x] ~~AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF для LinearBasis и проекция 0 в качестве Origin.~~
 
-1. [ ] LinearBasis: RREF научиться "дёшево" обновлять при добавлении очередного вектора.
+1. [ ] LinearBasis: RREF научиться "дёшево" обновлять (и вообще хранить) при добавлении очередного вектора.
 
 1. [ ] LinearBasis: В одну операцию! MultiplyTransposeBySelf()
 
@@ -26,7 +26,6 @@ TODO file
 
 1. [x]  ~~TODO XML у методов ConvexPolytope DistanceTo...!~~
 
-1. [ ]  DistanceToPolytop() P.SpaceDim или P.PolytopDim ? Может быть вообще только полноразмерные могут быть
 
 1. [ ]  Добавить в нашу библиотеку проект LDG2D. Для этого сделать пространство имён. 
 
