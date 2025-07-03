@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 
 
 namespace CGLibrary;
@@ -261,6 +262,8 @@ public partial class Geometry<TNum, TConv>
 
       return SubSpaceDim == 0 ? Origin.Equals(other.Origin) : Contains(other.Origin);
     }
+
+    public override int GetHashCode() => throw new InvalidOperationException();
 
     /// <summary>
     /// Returns an enumerator that iterates through the linear basis of an affine basis as an IEnumerable.
