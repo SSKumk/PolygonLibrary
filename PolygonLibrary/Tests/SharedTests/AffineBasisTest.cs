@@ -412,35 +412,35 @@ public class AffineBasisTests {
 
 #region Override Tests
   [Test]
-  public void Override_Equals_SameObject() {
+  public void Equals_SameObject() {
     AffineBasis ab = AffineBasis.GenAffineBasis(3, 2);
     Assert.That(ab, Is.EqualTo(ab));
   }
 
   [Test]
-  public void Override_Equals_DifferentObjectsSameSubspace() {
+  public void Equals_DifferentObjectsSameSubspace() {
     Vector o = V(1, 1, 1);
     // Corrected constructor call
     LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o, lb);
     AffineBasis ab2 = new AffineBasis(o, lb);
-    Assert.That(ab1, Is.EqualTo(ab2));
+    Assert.That(ab1.Equals(ab2));
 
     AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb, false));
-    Assert.That(ab1, Is.EqualTo(ab3));
+    Assert.That(ab1.Equals(ab3));
 
     Vector      o4  = o + ab1[0] * 5.0 + ab1[1] * (-3.0);
     AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb, false));
-    Assert.That(ab1, Is.EqualTo(ab4));
+    Assert.That(ab1.Equals(ab4));
 
     // Corrected constructor call
     LinearBasis lb_rot = new LinearBasis(V(0, 1, 0), V(-1, 0, 0));
     AffineBasis ab5    = new AffineBasis(o, lb_rot);
-    Assert.That(ab1, Is.EqualTo(ab5));
+    Assert.That(ab1.Equals(ab5));
   }
 
   [Test]
-  public void Override_Equals_DifferentSubspaces() {
+  public void Equals_DifferentSubspaces() {
     // Corrected constructor calls
     AffineBasis ab_XY = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     AffineBasis ab_XZ = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 0, 1)));
@@ -454,22 +454,65 @@ public class AffineBasisTests {
     LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o1, lb);
     AffineBasis ab2 = new AffineBasis(o2, lb);
-    Assert.That(ab1, Is.Not.EqualTo(ab2));
+    Assert.That(!ab1.Equals(ab2));
 
     AffineBasis ab_3D = new AffineBasis(3);
     AffineBasis ab_4D = new AffineBasis(4);
-    Assert.That(ab_3D, Is.Not.EqualTo(ab_4D));
+    Assert.That(!ab_3D.Equals(ab_4D));
   }
 
   [Test]
-  public void Override_Equals_NullOrDifferentType() {
+  public void Equals_NullOrDifferentType() {
     AffineBasis ab = new AffineBasis(3);
     Assert.That(ab, Is.Not.EqualTo(null));
     Assert.That(ab, Is.Not.EqualTo(new object()));
   }
 
   [Test]
-  public void Override_GetEnumerator() {
+  public void CompareTo_Null_Returns1() {
+    AffineBasis ab = new AffineBasis(V(1, 1, 1));
+    Assert.That(ab.CompareTo(null), Is.EqualTo(1));
+  }
+
+  [Test]
+  public void CompareTo_EqualBases_Returns0() {
+    AffineBasis ab1 = new AffineBasis(V(0, 0), new LinearBasis(V(1, 1)));
+    AffineBasis ab2 = new AffineBasis(V(5, 5), new LinearBasis(V(-1, -1)));
+
+    Assert.That(ab1.CompareTo(ab2), Is.EqualTo(0));
+  }
+
+  [Test]
+  public void CompareTo_Order_BySubspaceDim() {
+    AffineBasis ab_line  = new AffineBasis(V(0, 0, 0), new LinearBasis(3, 1));
+    AffineBasis ab_plane = new AffineBasis(V(0, 0, 0), new LinearBasis(3, 2));
+
+    Assert.That(ab_line.CompareTo(ab_plane), Is.LessThan(0));
+    Assert.That(ab_plane.CompareTo(ab_line), Is.GreaterThan(0));
+  }
+
+  [Test]
+  public void CompareTo_Order_ByLinearBasis() {
+    AffineBasis ab_XY = new AffineBasis(V(0, 0, 0), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
+    AffineBasis ab_XZ = new AffineBasis(V(0, 0, 0), new LinearBasis(V(1, 0, 0), V(0, 0, 1)));
+
+    Assert.That(ab_XY.CompareTo(ab_XZ), Is.GreaterThan(0));
+    Assert.That(ab_XZ.CompareTo(ab_XY), Is.LessThan(0));
+  }
+
+  [Test]
+  public void CompareTo_Order_ByCanonicalOrigin() {
+    // Прямая y=x (каноническое начало в (0,0))
+    AffineBasis ab1 = new AffineBasis(V(5, 5), new LinearBasis(V(1, 1)));
+    // Прямая y=x+1 (каноническое начало в (-0.5, 0.5))
+    AffineBasis ab2 = new AffineBasis(V(2, 3), new LinearBasis(V(1, 1)));
+
+    Assert.That(ab1.CompareTo(ab2), Is.GreaterThan(0));
+    Assert.That(ab2.CompareTo(ab1), Is.LessThan(0));
+  }
+
+  [Test]
+  public void GetEnumerator() {
     AffineBasis ab      = new AffineBasis(V(1, 1, 1), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     int         count   = 0;
     var         vectors = new List<Vector>();
