@@ -351,7 +351,7 @@ public partial class Geometry<TNum, TConv>
 
       public TNum[]? Solution { get; } = null;
 
-      public IEnumerable<int> ActiveInequalitiesID { get; }
+      public IEnumerable<int> ActiveInequalitiesID { get; } = Array.Empty<int>();
 
       public SimplexMethodResult(
           SimplexMethodResultStatus status

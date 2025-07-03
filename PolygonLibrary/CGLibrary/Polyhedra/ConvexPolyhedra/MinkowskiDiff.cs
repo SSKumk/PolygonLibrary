@@ -134,7 +134,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       // 5) Построить fLrep роя V(F-G)
-      diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG), true);
+      diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG));
 
       return true;
     }

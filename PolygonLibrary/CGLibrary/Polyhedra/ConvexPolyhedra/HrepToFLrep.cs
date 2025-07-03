@@ -184,7 +184,7 @@ public partial class Geometry<TNum, TConv>
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей в поиске любой вершины.
         gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.All);
         gaussSLE.Solve();
-        if (gaussSLE.GetSolution(out Vector point)) { // Ищем точку пересечения
+        if (gaussSLE.GetSolution(out Vector? point)) { // Ищем точку пересечения
           belongs = true;
           foreach (HyperPlane hp in HPs) {
             if (hp.ContainsPositive(point)) {

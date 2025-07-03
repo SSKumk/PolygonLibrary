@@ -84,7 +84,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// The outward normal of the (d-1)-dimensional polytope (face).
     /// </summary>
-    public Vector Normal { get; set; }
+    public Vector? Normal { get; set; }
 
 
     /// <summary>

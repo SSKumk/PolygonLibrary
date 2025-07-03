@@ -238,7 +238,7 @@ public partial class Geometry<TNum, TConv>
 
         return;
       }
-      _result[_indACol[maxRowInd]] = _b[_indB[maxRowInd]] / _A[_indARow[maxRowInd], _indACol[maxRowInd]];
+      _result![_indACol[maxRowInd]] = _b[_indB[maxRowInd]] / _A[_indARow[maxRowInd], _indACol[maxRowInd]];
       for (int k = maxRowInd - 1; k >= 0; k--) {
         TNum sum = Tools.Zero;
         for (int i = k + 1; i < _row; i++) { sum += _A[_indARow[k], _indACol[i]] * _result[_indACol[i]]; }

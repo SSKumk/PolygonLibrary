@@ -215,7 +215,7 @@ public partial class Geometry<TNum, TConv>
 
 #if DEBUG
             var x = new SortedSet<BaseSubCP>(nextFace.Faces!);
-            if (nextFace.Faces.Count != x.Count) {
+            if (nextFace.Faces!.Count != x.Count) {
               throw new ArgumentException("Error!");
             }
 #endif
