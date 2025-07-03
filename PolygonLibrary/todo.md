@@ -13,14 +13,14 @@ TODO file
 # CGLibrary
 
 
-1. [ ] AffineBasis: Возможно ли привести их к какому-то каноническому виду?
+1. [ ] AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF
 
-1. [ ]  ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.
+1. [x]  ~~ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.~~
 
 1. [ ] ParamReader посмотреть, где надо использовать StringBuilder
 
 
-1. [ ]  TODO XML у методов ConvexPolytope DistanceTo...!
+1. [x]  ~~TODO XML у методов ConvexPolytope DistanceTo...!~~
 
 1. [ ]  DistanceToPolytop() P.SpaceDim или P.PolytopDim ? Может быть вообще только полноразмерные могут быть
 
