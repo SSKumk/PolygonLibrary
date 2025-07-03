@@ -19,9 +19,11 @@ public class TrajectoryMain<TNum, TConv>
   public readonly List<SortedDictionary<TNum, Geometry<TNum, TConv>.ConvexPolytop>> Ws; // Набор всех мостов
 
   public TrajectoryMain(string ldgPath, string problemFolderName, TNum precision) {
-    br = new BridgeCreator<TNum, TConv>(ldgPath, problemFolderName, precision);
-    ph = br.ph;
-    gd = br.gd;
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+    br                         = new BridgeCreator<TNum, TConv>(ldgPath, problemFolderName, precision);
+    ph                         = br.ph;
+    gd                         = br.gd;
 
     tMax = ph.LoadMinimalTimes().MaxBy(p => p.Value).Value;
     for (TNum t = tMax; Geometry<TNum, TConv>.Tools.LE(t, gd.T); t += gd.dt) {

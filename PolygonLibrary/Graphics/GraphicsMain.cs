@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using CGLibrary;
 using DoubleDouble;
@@ -45,6 +46,8 @@ public class Visualization<TNum, TConv>
   public readonly List<TrajExtended> Trajs = new List<TrajExtended>();
 
   public Visualization(string pathLdg, string visConf, TNum numAccuracy) {
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
     VisPath = Path.Combine(pathLdg, "Visualization");
     VisConf = visConf;
 

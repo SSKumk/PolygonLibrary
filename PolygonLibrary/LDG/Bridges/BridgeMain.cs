@@ -31,10 +31,13 @@ public class BridgeCreator<TNum, TConv>
   /// <param name="problemFolderName">The name of the problem folder on _Out directory.</param>
   /// <param name="precision">The CGlibrary precision used in calculations.</param>
   public BridgeCreator(string pathLDG, string problemFolderName, TNum precision) {
+    CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
     // Предполагаем, что структура папок LDG создана и корректна. Если это не так, вызвать SetUpDirectories.
     eps                             = precision;
     epsOld                          = Geometry<TNum, TConv>.Tools.Eps;
     Geometry<TNum, TConv>.Tools.Eps = eps;
+
 
 
     ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, precision); // установили пути и прочитали словари-связки
