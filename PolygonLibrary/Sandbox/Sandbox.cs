@@ -104,16 +104,19 @@ class Sandbox {
   }
 
   static void Main(string[] args) {
-    Tools.Eps = 1e-8;
-    var e8 = GWproblem().FLrep;
-    Tools.Eps = 1e-5;
-    var e5 = GWproblem().FLrep;
+    // Tools.Eps = 1e-8;
+    // var e8 = GWproblem().FLrep;
+    // Tools.Eps = 1e-5;
+    // var e5 = GWproblem().FLrep;
+
+
 
 
 
     const string ppath = @"F:\Works\IMM\Аспирантура\LDG\";
     // const string ppath = @"E:\Work\LDG\";
 
+    Tools.Eps = 1e-5;
     const string eps   = "1E-05";
     const string ntype = "System.Double";
 
@@ -124,19 +127,19 @@ class Sandbox {
 
     const string temp = $@"{ppath}Visualization\Temp";
 
-    const string brT = "9.40";
-    const string pqT = "9.30";
+    const string brT = "9.50";
+    const string pqT = "9.40";
 
     ParamReader prw = new ParamReader($"{br}{brT}.wsection");
     ParamReader prp = new ParamReader($"{vecp}{pqT}.psection");
     ParamReader prq = new ParamReader($"{vecq}{pqT}.qsection");
-    // ConvexPolytop w   = ConvexPolytop.CreateFromReader(prw);
-    // ConvexPolytop p   = ConvexPolytop.CreateFromReader(prp);
-    // ConvexPolytop q   = ConvexPolytop.CreateFromReader(prq);
+    ConvexPolytop w   = ConvexPolytop.CreateFromReader(prw);
+    ConvexPolytop p   = ConvexPolytop.CreateFromReader(prp);
+    ConvexPolytop q   = ConvexPolytop.CreateFromReader(prq);
 
 
     // SDasCut
-    // var sumCut = MinkowskiSum.BySandipDas(w, p, true);
+    var sumCut = MinkowskiSum.BySandipDas(w, p, true);
     // string sumSD_cut_f = $"{eps} w{brT}+p{pqT}-SDasCut";
     // sumCut.WriteIn(temp, sumSD_cut_f, ConvexPolytop.Rep.Hrep);
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_cut_f);
@@ -147,25 +150,25 @@ class Sandbox {
 
 
     // string sumSD_Hrep_f  = $"{eps} w{brT}+p{pqT}-SDas_Hrep";
-    // string sumSD_FLrep_f = $"{eps} w{brT}+p{pqT}-SDas_FLrep";
-    // string sumSD_Vrep_f  = $"{eps} w{brT}+p{pqT}-SDas_Vrep";
     // sumSD.WriteIn(temp, sumSD_Hrep_f, ConvexPolytop.Rep.Hrep);
+    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_Hrep_f);
+    // string sumSD_FLrep_f = $"{eps} w{brT}+p{pqT}-SDas_FLrep";
     // sumSD.WriteIn(temp, sumSD_FLrep_f, ConvexPolytop.Rep.FLrep);
+    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_FLrep_f);
+    // string sumSD_Vrep_f  = $"{eps} w{brT}+p{pqT}-SDas_Vrep";
     // sumSD.WriteIn(temp, sumSD_Vrep_f, ConvexPolytop.Rep.Vrep);
+    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_Vrep_f);
 
     // string sumCH_f = $"{eps} w{brT}+p{pqT}-CH";
     // sumCH.WriteIn(temp, sumCH_f, ConvexPolytop.Rep.FLrep);
-
-    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_cut_f);
-
-    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_Vrep_f);
-    // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_FLrep_f);
-
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumCH_f);
 
 
-    // var    diff   = MinkowskiDiff.Geometric(sumCH, q);
-    // string diff_f = $"({sumCH_f})-q";
+
+
+
+    var    diff   = MinkowskiDiff.Geometric(sumCut, q);
+    // string diff_f = $"({sumCut})-q";
     // diff.WriteIn(temp, diff_f, ConvexPolytop.Rep.FLrep);
     //
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, diff_f);
