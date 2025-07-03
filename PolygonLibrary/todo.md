@@ -13,7 +13,11 @@ TODO file
 # CGLibrary
 
 
-1. [ ] AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF
+1. [ ] AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF для LinearBasis и проекция 0 в качестве Origin.
+
+1. [ ] LinearBasis: RREF научиться "дёшево" обновлять при добавлении очередного вектора.
+
+1. [ ] LinearBasis: В одну операцию! MultiplyTransposeBySelf()
 
 1. [x]  ~~ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.~~
 
