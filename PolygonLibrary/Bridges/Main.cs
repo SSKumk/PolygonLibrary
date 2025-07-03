@@ -13,8 +13,8 @@ class Program {
     string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string ldgDir = "E:\\Work\\LDG\\";
 
-    double eps = double.Parse("1e-3");
-    // double eps = double.Parse("1e-8");
+    // double eps = double.Parse("1e-3");
+    double eps = double.Parse("1e-8");
     // ddouble eps = ddouble.Parse("1e-15");
     // Rational eps = Rational.Parse("1/10000000000000000");
 
