@@ -60,7 +60,7 @@ public class LDGPathHolder<TNum, TConv>
   /// <param name="problemFolderName">The name of the output folder.</param>
   /// <param name="numType">The numerical type.</param>
   /// <param name="numAccuracy">The numerical accuracy.</param>
-  public LDGPathHolder(string pathLdg, string problemFolderName, string numType, string numAccuracy) {
+  private LDGPathHolder(string pathLdg, string problemFolderName, string numType, string numAccuracy) {
     NumType     = numType;
     // NumAccuracy = $"{TConv.ToDouble(numAccuracy):e0}";
     NumAccuracy = numAccuracy;
