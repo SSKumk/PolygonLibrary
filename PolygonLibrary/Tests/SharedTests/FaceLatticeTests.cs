@@ -162,17 +162,17 @@ public class FLNodeTests {
     FLNode edge1_equiv_vertices = new FLNode([new FLNode(V(0, 0)), new FLNode(V(1, 0))]);
 
 
-    Assert.That(v_0_0.Equals(null), Is.False);
-    Assert.That(v_0_0.Equals(new object()), Is.False);
-    Assert.That(v_0_0.Equals(v_0_0), Is.True, "Equals self.");
-    Assert.That(v_0_0.Equals(v_0_0_copy), Is.True, "Equals another node with same vertex.");
-    Assert.That(v_0_0.Equals(v_1_0), Is.False, "Not equals node with different vertex.");
+    Assert.That(v_0_0, Is.Not.EqualTo(null));
+    Assert.That(v_0_0, Is.Not.EqualTo(new object()));
+    Assert.That(v_0_0, Is.EqualTo(v_0_0), "Equals self.");
+    Assert.That(v_0_0, Is.EqualTo(v_0_0_copy), "Equals another node with same vertex.");
+    Assert.That(v_0_0, Is.Not.EqualTo(v_1_0), "Not equals node with different vertex.");
 
-    Assert.That(edge1.Equals(edge1_equiv_vertices), Is.True, "Edges with same vertex sets should be equal.");
+    Assert.That(edge1, Is.EqualTo(edge1_equiv_vertices), "Edges with same vertex sets should be equal.");
 
     FLNode v_0_1 = new FLNode(V(0, 1));
     FLNode edge2 = new FLNode([v_0_0, v_0_1]);
-    Assert.That(edge1.Equals(edge2), Is.False, "Edges with different vertex sets are not equal.");
+    Assert.That(edge1, Is.Not.EqualTo(edge2), "Edges with different vertex sets are not equal.");
   }
 
   [Test]

@@ -392,12 +392,12 @@ public class HyperPlaneTests {
     // y = 5 (другая ориентация)
     HyperPlane hp3_other = new HyperPlane(V(0, 1, 0), 5.0);
 
-    Assert.That(hp1.Equals(hp1_copy), Is.True, "Equals: Same object representation");
-    Assert.That(hp1.Equals(hp1_flipped), Is.False, "Equals: Same plane, flipped representation");
-    Assert.That(hp1.Equals(hp2_parallel), Is.False, "Equals: Parallel planes");
-    Assert.That(hp1.Equals(hp3_other), Is.False, "Equals: Different planes");
-    Assert.That(hp1.Equals(null), Is.False, "Equals: Null");
-    Assert.That(hp1.Equals(V(0, 0, 1)), Is.False, "Equals: Different type");
+    Assert.That(hp1, Is.EqualTo(hp1_copy), "Equals: Same object representation");
+    Assert.That(hp1, Is.Not.EqualTo(hp1_flipped), "Equals: Same plane, flipped representation");
+    Assert.That(hp1, Is.Not.EqualTo(hp2_parallel), "Equals: Parallel planes");
+    Assert.That(hp1, Is.Not.EqualTo(hp3_other), "Equals: Different planes");
+    Assert.That(hp1, Is.Not.EqualTo(null), "Equals: Null");
+    Assert.That(hp1, Is.Not.EqualTo(new object()), "Equals: Different type");
   }
 #endregion
 

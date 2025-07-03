@@ -25,7 +25,7 @@ public class GW_Tests {
     const int  PDim    = 3;
     const int  nPoints = 10;
     List<int>  fID     = new List<int>() { 1, 2, 3 };
-    GRandomLC  random  = new GRandomLC(2337035596);
+    GRandomLC  random  = new GRandomLC(seed);
 
     List<Vector> S = SimplexRND(PDim, out List<Vector> polytop, fID, nPoints, random);
     ShiftAndRotate(3, ref polytop, ref S, random);

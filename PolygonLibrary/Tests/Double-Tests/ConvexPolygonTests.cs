@@ -335,7 +335,7 @@ public partial class ConvexPolygonTests
 				new Vector2D(2,-1)
 			};
 
-		Assert.IsTrue(cp3.Contour.Count == res.Length, "Sum 1: wrong number of vertices");
+		Assert.That(cp3.Contour.Count, Is.EqualTo(res.Length), "Sum 1: wrong number of vertices");
 		foreach (Vector2D p in res) {
 			Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 1: vertex " + p + " is not in the resultant polygon");
 		}
@@ -355,7 +355,7 @@ public partial class ConvexPolygonTests
 				new Vector2D(2,-2)
 			};
 
-		Assert.IsTrue(cp3.Contour.Count == res.Length, "Sum 2: wrong number of vertices");
+		Assert.That(cp3.Contour.Count, Is.EqualTo(res.Length), "Sum 2: wrong number of vertices");
 		foreach (Vector2D p in res) {
 			Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 2: vertex " + p + " is not in the resultant polygon");
 		}
@@ -463,7 +463,7 @@ public partial class ConvexPolygonTests
 			cp2 = PolygonTools.RectangleTurned(-3.01, 4, -1, 4, Tools.PI / 4),
 			cp3 = cp1 - cp2;
 
-		Assert.IsTrue(cp3 == null, "Diff 6: the difference is not empty");
+		Assert.That(cp3, Is.EqualTo(null), "Diff 6: the difference is not empty");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -474,7 +474,7 @@ public partial class ConvexPolygonTests
 			cp2 = PolygonTools.RectangleParallel(-3.01, 4, -1, 4),
 			cp3 = cp1 - cp2;
 
-		Assert.IsTrue(cp3 == null, "Diff 7: the difference is not empty");
+		Assert.That(cp3, Is.EqualTo(null), "Diff 7: the difference is not empty");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -485,7 +485,7 @@ public partial class ConvexPolygonTests
 			cp2 = PolygonTools.RectangleParallel(0, -1, 0, 1),
 			cp3 = cp1 - cp2;
 
-		Assert.IsTrue(cp3 == null, "Diff 8: the difference is not empty");
+		Assert.That(cp3, Is.EqualTo(null), "Diff 8: the difference is not empty");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -496,7 +496,7 @@ public partial class ConvexPolygonTests
 			cp2 = PolygonTools.Circle(0, 0, 1.01, 100),
 			cp3 = cp1 - cp2;
 
-		Assert.IsTrue(cp3 == null, "Diff 9: the difference is not empty");
+		Assert.That(cp3, Is.EqualTo(null), "Diff 9: the difference is not empty");
 	}
 
 	[Category("ConvexPolygonTests"), Test]

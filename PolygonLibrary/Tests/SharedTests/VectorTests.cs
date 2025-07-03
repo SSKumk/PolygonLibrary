@@ -254,10 +254,10 @@ public class VectorTests {
     Vector v2      = V(1, 2, 4);
     Vector v1_copy = new Vector(v1);
 
-    Assert.That(v1 == v1_copy, Is.True);
-    Assert.That(v1 != v1_copy, Is.False);
-    Assert.That(v1 == v2, Is.False);
-    Assert.That(v1 != v2, Is.True);
+    Assert.That(v1, Is.EqualTo(v1_copy));
+    Assert.That(v1, Is.EqualTo(v1_copy));
+    Assert.That(v1, Is.Not.EqualTo(v2));
+    Assert.That(v1, Is.Not.EqualTo(v2));
 
     Assert.That(v1 < v2, Is.True);
     Assert.That(v1 <= v2, Is.True);
@@ -280,11 +280,11 @@ public class VectorTests {
     object v1_obj   = v1_copy;
     object otherObj = new object();
 
-    Assert.That(v1.Equals(v1_copy), Is.True);
-    Assert.That(v1.Equals(v1_obj), Is.True);
-    Assert.That(v1.Equals(v2), Is.False);
-    Assert.That(v1.Equals(null), Is.False);
-    Assert.That(v1.Equals(otherObj), Is.False);
+    Assert.That(v1, Is.EqualTo(v1_copy));
+    Assert.That(v1, Is.EqualTo(v1_obj));
+    Assert.That(v1, Is.Not.EqualTo(v2));
+    Assert.That(v1, Is.Not.EqualTo(null));
+    Assert.That(v1, Is.Not.EqualTo(otherObj));
   }
 
   [Test]

@@ -133,7 +133,7 @@ public class LinearBasisTests {
     Assert.That(basis2.SubSpaceDim, Is.EqualTo(basis1.SubSpaceDim));
     Assert.That(basis2.FullDim, Is.EqualTo(basis1.FullDim));
     Assert.That(basis2.Empty, Is.EqualTo(basis1.Empty));
-    Assert.That(basis1.Equals(basis2), Is.True);
+    Assert.That(basis1, Is.EqualTo(basis2));
 
     // Ensure it's a deep copy of the matrix data (modify basis1, basis2 shouldn't change)
     basis1.AddVector(V(2, -1, 0)); // Add orthogonal vector
@@ -159,7 +159,7 @@ public class LinearBasisTests {
 
     Assert.That(lb_11.SubSpaceDim, Is.EqualTo(1)); // Adding same vector shouldn't increase dim
     AssertBasisOrthonormal(lb_11);
-    Assert.That(lb_11.Equals(lb1));
+    Assert.That(lb_11, Is.EqualTo(lb1));
 
     Assert.That(lb_123.SubSpaceDim, Is.EqualTo(3));
     AssertBasisOrthonormal(lb_123);
@@ -169,9 +169,9 @@ public class LinearBasisTests {
 
     Assert.That(lb_empty_1.SubSpaceDim, Is.EqualTo(1));
     AssertBasisOrthonormal(lb_empty_1);
-    Assert.That(lb_empty_1.Equals(lb1));
+    Assert.That(lb_empty_1, Is.EqualTo(lb1));
 
-    Assert.That(new LinearBasis(lb1, lb_empty).Equals(lb1));
+    Assert.That(new LinearBasis(lb1, lb_empty), Is.EqualTo(lb1));
     Assert.That(new LinearBasis(lb_empty, lb_empty).Empty);
   }
 
@@ -495,7 +495,7 @@ public class LinearBasisTests {
   [Test]
   public void Equals_SameBasisObject() {
     LinearBasis basis = new LinearBasis(V(1, 0), V(0, 1));
-    Assert.That(basis.Equals(basis), Is.True);
+    Assert.That(basis, Is.EqualTo(basis));
   }
 
   [Test]
@@ -509,9 +509,9 @@ public class LinearBasisTests {
         , V(1 / Math.Sqrt(2), -1 / Math.Sqrt(2), 0)
         ); // Different vectors, same plane
 
-    Assert.That(basis1.Equals(basis2), Is.True);
-    Assert.That(basis1.Equals(basis3), Is.True);
-    Assert.That(basis2.Equals(basis3), Is.True);
+    Assert.That(basis1, Is.EqualTo(basis2));
+    Assert.That(basis1, Is.EqualTo(basis3));
+    Assert.That(basis2, Is.EqualTo(basis3));
   }
 
   [Test]
@@ -521,25 +521,25 @@ public class LinearBasisTests {
     LinearBasis basisX    = new LinearBasis(V(1, 0, 0));
     LinearBasis basisFull = new LinearBasis(3);
 
-    Assert.That(basisXY.Equals(basisYZ), Is.False);
-    Assert.That(basisXY.Equals(basisX), Is.False);
-    Assert.That(basisX.Equals(basisXY), Is.False); // Check symmetry
-    Assert.That(basisXY.Equals(basisFull), Is.False);
-    Assert.That(basisFull.Equals(basisXY), Is.False);
+    Assert.That(basisXY, Is.Not.EqualTo(basisYZ));
+    Assert.That(basisXY, Is.Not.EqualTo(basisX));
+    Assert.That(basisX, Is.Not.EqualTo(basisXY)); // Check symmetry
+    Assert.That(basisXY, Is.Not.EqualTo(basisFull));
+    Assert.That(basisFull, Is.Not.EqualTo(basisXY));
   }
 
   [Test]
   public void Equals_DifferentSpaceDim() {
     LinearBasis basis3D = new LinearBasis(V(1, 0, 0));
     LinearBasis basis4D = new LinearBasis(V(1, 0, 0, 0));
-    Assert.That(basis3D.Equals(basis4D), Is.False);
+    Assert.That(basis3D, Is.Not.EqualTo(basis4D));
   }
 
   [Test]
   public void Equals_NullOrDifferentType() {
     LinearBasis basis = new LinearBasis(V(1, 0));
-    Assert.That(basis.Equals(null), Is.False);
-    Assert.That(basis.Equals(new Vector(new double[] { 1, 0 })), Is.False);
+    Assert.That(basis, Is.Not.EqualTo(null));
+    Assert.That(basis, Is.Not.EqualTo(new object()));
   }
 
 

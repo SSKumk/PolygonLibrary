@@ -65,7 +65,7 @@ public class AffineBasisTests {
     AffineBasisMutable ab     = new AffineBasisMutable(origin, lb, needCopy: true);
 
     AssertVectorsAreEqual(ab.Origin, origin);
-    Assert.That(ab.LinBasis.Equals(lb), Is.True);
+    Assert.That(ab.LinBasis, Is.EqualTo(lb));
     Assert.That(ab.LinBasis, Is.Not.SameAs(lb)); // Must be a copy
 
     // Modify original lb, ab should not change
@@ -82,7 +82,7 @@ public class AffineBasisTests {
     AffineBasisMutable ab     = new AffineBasisMutable(origin, lb, needCopy: false);
 
     AssertVectorsAreEqual(ab.Origin, origin);
-    Assert.That(ab.LinBasis.Equals(lb), Is.True);
+    Assert.That(ab.LinBasis, Is.EqualTo(lb));
     Assert.That(ab.LinBasis, Is.SameAs(lb));
 
     lb.AddVector(V(0, 0, 1));
@@ -155,7 +155,7 @@ public class AffineBasisTests {
     AffineBasisMutable copy     = new AffineBasisMutable(original, true);
 
     AssertVectorsAreEqual(copy.Origin, original.Origin);
-    Assert.That(copy.LinBasis.Equals(original.LinBasis), Is.True, "Linear bases should be equal.");
+    Assert.That(copy.LinBasis, Is.EqualTo(original.LinBasis), "Linear bases should be equal.");
     Assert.That(copy.LinBasis, Is.Not.SameAs(original.LinBasis), "Linear basis should be a copy.");
     Assert.That(copy.SpaceDim, Is.EqualTo(original.SpaceDim));
     Assert.That(copy.SubSpaceDim, Is.EqualTo(original.SubSpaceDim));
@@ -414,7 +414,7 @@ public class AffineBasisTests {
   [Test]
   public void Override_Equals_SameObject() {
     AffineBasis ab = AffineBasis.GenAffineBasis(3, 2);
-    Assert.That(ab.Equals(ab), Is.True);
+    Assert.That(ab, Is.EqualTo(ab));
   }
 
   [Test]
@@ -424,19 +424,19 @@ public class AffineBasisTests {
     LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o, lb);
     AffineBasis ab2 = new AffineBasis(o, lb);
-    Assert.That(ab1.Equals(ab2), Is.True);
+    Assert.That(ab1, Is.EqualTo(ab2));
 
     AffineBasis ab3 = new AffineBasis(o, new LinearBasis(lb, false));
-    Assert.That(ab1.Equals(ab3), Is.True);
+    Assert.That(ab1, Is.EqualTo(ab3));
 
     Vector      o4  = o + ab1[0] * 5.0 + ab1[1] * (-3.0);
     AffineBasis ab4 = new AffineBasis(o4, new LinearBasis(lb, false));
-    Assert.That(ab1.Equals(ab4), Is.True);
+    Assert.That(ab1, Is.EqualTo(ab4));
 
     // Corrected constructor call
     LinearBasis lb_rot = new LinearBasis(V(0, 1, 0), V(-1, 0, 0));
     AffineBasis ab5    = new AffineBasis(o, lb_rot);
-    Assert.That(ab1.Equals(ab5), Is.True);
+    Assert.That(ab1, Is.EqualTo(ab5));
   }
 
   [Test]
@@ -445,8 +445,8 @@ public class AffineBasisTests {
     AffineBasis ab_XY = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
     AffineBasis ab_XZ = new AffineBasis(Vector.Zero(3), new LinearBasis(V(1, 0, 0), V(0, 0, 1)));
     AffineBasis ab_X  = new AffineBasis(Vector.Zero(3), new LinearBasis(new[] { V(1, 0, 0) }));
-    Assert.That(ab_XY.Equals(ab_XZ), Is.False);
-    Assert.That(ab_XY.Equals(ab_X), Is.False);
+    Assert.That(ab_XY, Is.Not.EqualTo(ab_XZ));
+    Assert.That(ab_XY, Is.Not.EqualTo(ab_X));
 
     Vector o1 = V(0, 0, 0);
     Vector o2 = V(0, 0, 1);
@@ -454,18 +454,18 @@ public class AffineBasisTests {
     LinearBasis lb  = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
     AffineBasis ab1 = new AffineBasis(o1, lb);
     AffineBasis ab2 = new AffineBasis(o2, lb);
-    Assert.That(ab1.Equals(ab2), Is.False);
+    Assert.That(ab1, Is.Not.EqualTo(ab2));
 
     AffineBasis ab_3D = new AffineBasis(3);
     AffineBasis ab_4D = new AffineBasis(4);
-    Assert.That(ab_3D.Equals(ab_4D), Is.False);
+    Assert.That(ab_3D, Is.Not.EqualTo(ab_4D));
   }
 
   [Test]
   public void Override_Equals_NullOrDifferentType() {
     AffineBasis ab = new AffineBasis(3);
-    Assert.That(ab.Equals(null), Is.False);
-    Assert.That(ab.Equals(V(1, 2, 3)), Is.False);
+    Assert.That(ab, Is.Not.EqualTo(null));
+    Assert.That(ab, Is.Not.EqualTo(new object()));
   }
 
   [Test]
