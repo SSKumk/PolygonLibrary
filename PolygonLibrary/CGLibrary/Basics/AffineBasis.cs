@@ -12,7 +12,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Represents an affine basis (origin, linear basis).
   /// </summary>
-  public class AffineBasis : IEnumerable {
+  public class AffineBasis : IEnumerable, IComparable<AffineBasis> {
 
 #region Data and Properties
     /// <summary>
@@ -245,6 +245,46 @@ public partial class Geometry<TNum, TConv>
     public static AffineBasis GenAffineBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null)
       => new(Vector.GenVector(spaceDim, random), LinearBasis.GenLinearBasis(spaceDim, subSpaceDim, random), false);
 #endregion
+
+    /// <summary>
+    /// Compares the current affine basis with another one to determine their relative order.
+    /// The comparison is based on a canonical representation of the affine spaces.
+    /// </summary>
+    /// <remarks>
+    /// An affine space is uniquely defined by its parallel linear subspace and a point.
+    /// The comparison uses a canonical representation for both:
+    /// <list type="number">
+    /// <item><description>The linear subspace is compared using its canonical Reduced Row Echelon Form (RREF).</description></item>
+    /// <item><description>The position is compared using a canonical origin point, which is the projection of the ambient space's origin onto the affine space.</description></item>
+    /// </list>
+    /// The comparison proceeds in the following order:
+    /// 1. By the dimension of the ambient space (<see cref="SpaceDim"/>).
+    /// 2. By the dimension of the subspace (<see cref="SubSpaceDim"/>).
+    /// 3. By the canonical representation of the associated linear subspaces (<see cref="LinBasis"/>).
+    /// 4. By the coordinates of their canonical origin points.
+    /// </remarks>
+    /// <param name="other">The affine basis to compare with this instance.</param>
+    /// <returns>
+    /// An integer that indicates the relative order of the objects being compared.
+    /// <list type="bullet">
+    /// <item><description>Less than zero: This instance precedes <paramref name="other"/> in the sort order.</description></item>
+    /// <item><description>Zero: This instance occurs in the same position in the sort order as <paramref name="other"/> (they represent the same affine space).</description></item>
+    /// <item><description>Greater than zero: This instance follows <paramref name="other"/> in the sort order.</description></item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(AffineBasis? other) {
+      if (other is null) { return 1; }
+
+      // Сравнение линейных частей (теперь через RREF)
+      int basisCompare = this.LinBasis.CompareTo(other.LinBasis);
+      if (basisCompare != 0) { return basisCompare; }
+
+      // Сравнение канонических начал
+      Vector thisCanonicalOrigin  = this.ProjectPointToSubSpace_in_OrigSpace(Vector.Zero(this.SpaceDim));
+      Vector otherCanonicalOrigin = other.ProjectPointToSubSpace_in_OrigSpace(Vector.Zero(this.SpaceDim));
+
+      return thisCanonicalOrigin.CompareTo(otherCanonicalOrigin);
+    }
 
     /// <summary>
     /// Determines whether the specified object represents the same affine subspace as the current instance.
