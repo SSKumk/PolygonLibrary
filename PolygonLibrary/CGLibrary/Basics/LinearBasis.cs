@@ -12,7 +12,7 @@ public partial class Geometry<TNum, TConv>
   /// <summary>
   /// Orthonormal linear basis in d-dimensional space.
   /// </summary>
-  public class LinearBasis : IEnumerable<Vector> {
+  public class LinearBasis : IEnumerable<Vector>, IComparable<LinearBasis> {
 
 #region Data and Properties
     /// <summary>
@@ -404,7 +404,6 @@ public partial class Geometry<TNum, TConv>
     }
 #endregion
 
-
 #region Overrides
     public override int GetHashCode() => throw new InvalidOperationException();
 
@@ -423,20 +422,49 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Compares the current linear basis with another one to determine their relative order.
+    /// The comparison is based on a canonical representation (Reduced Row Echelon Form) of the subspaces.
+    /// </summary>
+    /// <remarks>
+    /// The comparison proceeds in the following order:
+    /// 1. By the dimension of the ambient space (<see cref="SpaceDim"/>).
+    /// 2. By the dimension of the subspace (<see cref="SubSpaceDim"/>).
+    /// 3. Lexicographically by the elements of their canonical RREF matrices.
+    /// </remarks>
+    /// <param name="other">The linear basis to compare with this instance.</param>
+    /// <returns>
+    /// An integer that indicates the relative order of the objects being compared.
+    /// <list type="bullet">
+    /// <item><description>Less than zero: This instance precedes <paramref name="other"/> in the sort order.</description></item>
+    /// <item><description>Zero: This instance occurs in the same position in the sort order as <paramref name="other"/> (they represent the same subspace).</description></item>
+    /// <item><description>Greater than zero: This instance follows <paramref name="other"/> in the sort order.</description></item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(LinearBasis? other) {
+      if (other is null) { return 1; } // null < this (always)
+
+      int spaceDimCompare = this.SpaceDim.CompareTo(other.SpaceDim);
+      if (spaceDimCompare != 0) { return spaceDimCompare; }
+
+      int subSpaceDimCompare = this.SubSpaceDim.CompareTo(other.SubSpaceDim);
+      if (subSpaceDimCompare != 0) { return subSpaceDimCompare; }
+
+      return this.Basis.ToRREF().CompareTo(other.Basis.ToRREF());
+    }
+
+    /// <summary>
     /// Two linear basics are equal if they span the same space.
     /// </summary>
     /// <param name="obj">Object to compare with this linear basis.</param>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
     public override bool Equals(object? obj) {
-      if (obj == null) {
-        return false;
-      }
-      if (ReferenceEquals(this, obj)) {
-        return true;
-      }
+      if (obj == null) { return false; }
+      if (ReferenceEquals(this, obj)) { return true; }
 
       if (obj is LinearBasis other) {
-        return SpanSameSpace(other);
+        // return SpanSameSpace(other);
+
+        return CompareTo(other) == 0;
       }
 
       return false;
