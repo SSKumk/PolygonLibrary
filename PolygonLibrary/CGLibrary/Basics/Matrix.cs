@@ -216,9 +216,32 @@ public partial class Geometry<TNum, TConv>
       Cols = v.SpaceDim;
       _m   = v.GetCopyAsArray();
     }
+
+    /// <summary>
+    /// Constructs a matrix from a list of vectors, where each vector represents a row.
+    /// </summary>
+    /// <param name="rows">A list of vectors to form the rows of the matrix. All vectors must have the same dimension.</param>
+    public Matrix(IReadOnlyList<Vector> rows) {
+      Debug.Assert(rows.Count > 0, "Matrix.Ctor(List<Vector>): Input list cannot be empty.");
+
+      Rows = rows.Count;
+      Cols = rows[0].SpaceDim;
+      _m   = new TNum[Rows * Cols];
+
+      for (int i = 0; i < Rows; i++) {
+        Vector currentRow = rows[i];
+        Debug.Assert
+          (
+           currentRow.SpaceDim == Cols
+         , $"Matrix.Ctor(List<Vector>): All vectors must have the same dimension. Expected {Cols}, but vector at index {i} has dimension {currentRow.SpaceDim}."
+          );
+
+        Array.Copy(currentRow.V, 0, _m, i * Cols, Cols);
+      }
+    }
 #endregion
 
-#region Overrides
+#region Overrides and Comparison
     /// <summary>
     /// Throws an <see cref="InvalidOperationException"/> because hash code generation is not supported for matrices.
     /// </summary>
@@ -258,6 +281,32 @@ public partial class Geometry<TNum, TConv>
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Compares the current matrix with another matrix.
+    /// Comparison is done first by rows, then by columns, and then lexicographically element by element.
+    /// </summary>
+    /// <param name="other">The matrix to compare with this matrix.</param>
+    /// <returns>An integer that indicates the relative order of the matrices being compared.</returns>
+    public int CompareTo(Matrix? other) {
+      if (other is null) { return 1; } // null < this (always)
+
+      // 1. Сравнение по количеству строк
+      int rowsCompare = this.Rows.CompareTo(other.Rows);
+      if (rowsCompare != 0) { return rowsCompare; }
+
+      // 2. Сравнение по количеству столбцов
+      int colsCompare = this.Cols.CompareTo(other.Cols);
+      if (colsCompare != 0) { return colsCompare; }
+
+      // 3. Лексикографическое сравнение элементов
+      for (int i = 0; i < _m.Length; i++) {
+        int elementCompare = Tools.CMP(this._m[i], other._m[i]);
+        if (elementCompare != 0) { return elementCompare; }
+      }
+
+      return 0;
     }
 
     /// <summary>
