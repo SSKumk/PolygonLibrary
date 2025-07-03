@@ -126,7 +126,7 @@ public class LinearBasisTests {
 
   [Test]
   public void Constructor_Copy() {
-    LinearBasisMutable basis1 = new LinearBasisMutable(new[] { V(1, 2, 0), V(0, 0, 3) });
+    LinearBasisMutable basis1 = new LinearBasisMutable(V(1, 2, 0), V(0, 0, 3));
     LinearBasis        basis2 = new LinearBasis(basis1, true);
 
     Assert.That(basis2.SpaceDim, Is.EqualTo(basis1.SpaceDim));
@@ -231,7 +231,7 @@ public class LinearBasisTests {
 
   [Test]
   public void AddVector_Dependent_Orthogonalize() {
-    LinearBasisMutable basis = new LinearBasisMutable(new[] { V(1, 0, 0), V(0, 1, 0) });
+    LinearBasisMutable basis = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
     bool               added = basis.AddVector(V(3, 4, 0)); // Lies in the span of the basis
 
     Assert.That(added, Is.False);                  // Should not add a dependent vector
@@ -509,9 +509,9 @@ public class LinearBasisTests {
         , V(1 / Math.Sqrt(2), -1 / Math.Sqrt(2), 0)
         ); // Different vectors, same plane
 
-    Assert.That(basis1, Is.EqualTo(basis2));
-    Assert.That(basis1, Is.EqualTo(basis3));
-    Assert.That(basis2, Is.EqualTo(basis3));
+    Assert.That(basis1.Equals(basis2));
+    Assert.That(basis1.Equals(basis3));
+    Assert.That(basis2.Equals(basis3));
   }
 
   [Test]
@@ -532,7 +532,7 @@ public class LinearBasisTests {
   public void Equals_DifferentSpaceDim() {
     LinearBasis basis3D = new LinearBasis(V(1, 0, 0));
     LinearBasis basis4D = new LinearBasis(V(1, 0, 0, 0));
-    Assert.That(basis3D, Is.Not.EqualTo(basis4D));
+    Assert.That(!basis3D.Equals(basis4D));
   }
 
   [Test]
@@ -542,6 +542,55 @@ public class LinearBasisTests {
     Assert.That(basis, Is.Not.EqualTo(new object()));
   }
 
+  [Test]
+public void CompareTo_Null_Returns1()
+{
+    LinearBasis lb1 = new LinearBasis(V(1, 0, 0));
+    Assert.That(lb1.CompareTo(null), Is.EqualTo(1));
+}
+
+[Test]
+public void CompareTo_EqualBases_Returns0()
+{
+    LinearBasis lb1 = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
+    LinearBasis lb2 = new LinearBasis(V(1, 1, 0), V(1, -1, 0));
+
+    Assert.That(lb1.CompareTo(lb2), Is.EqualTo(0));
+}
+
+[Test]
+public void CompareTo_Order_BySpaceDim()
+{
+    LinearBasis lb_R2 = new LinearBasis(2, 1);
+    LinearBasis lb_R3 = new LinearBasis(3, 1);
+
+    Assert.That(lb_R2.CompareTo(lb_R3), Is.LessThan(0));
+    Assert.That(lb_R3.CompareTo(lb_R2), Is.GreaterThan(0));
+}
+
+[Test]
+public void CompareTo_Order_BySubspaceDim()
+{
+    LinearBasis lb_line_in_R3 = new LinearBasis(3, 1);
+    LinearBasis lb_plane_in_R3 = new LinearBasis(3, 2);
+
+    Assert.That(lb_line_in_R3.CompareTo(lb_plane_in_R3), Is.LessThan(0));
+    Assert.That(lb_plane_in_R3.CompareTo(lb_line_in_R3), Is.GreaterThan(0));
+}
+
+[Test]
+public void CompareTo_Order_ByRREF()
+{
+    LinearBasis lb_XY = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
+    LinearBasis lb_XZ = new LinearBasis(V(1, 0, 0), V(0, 0, 1));
+    LinearBasis lb_YZ = new LinearBasis(V(0, 1, 0), V(0, 0, 1));
+
+    Assert.That(lb_XY.CompareTo(lb_XZ), Is.GreaterThan(0));
+    Assert.That(lb_XZ.CompareTo(lb_XY), Is.LessThan(0));
+
+    Assert.That(lb_XY.CompareTo(lb_YZ), Is.GreaterThan(0));
+    Assert.That(lb_XZ.CompareTo(lb_YZ), Is.GreaterThan(0));
+}
 
   [Test]
   public void GetEnumerator_IteratesCorrectly() {
