@@ -196,8 +196,9 @@ public partial class Geometry<TNum, TConv>
               FL[d].Add(node); // Добавляем узел в решётку
               // Добавляем информацию о связи суммы и слагаемых в соответствующие словари
               bool addToZ= zTo_xy.TryAdd(node, (xi, yj));
-              Debug.Assert(addToZ, $"MinkowskiSum.BySandipDas: Can't add!");
-              xyToz.Add((xi, yj), node);
+              Debug.Assert(addToZ, $"MinkowskiSum.BySandipDas: Can't add to zTo_xy!");
+              bool addToXY = xyToz.TryAdd((xi, yj), node);
+              Debug.Assert(addToZ, $"MinkowskiSum.BySandipDas: Can't add to xyTo_z!");
               // Устанавливаем связи
               z.AddSub(node);
               node.AddSuper(z);
