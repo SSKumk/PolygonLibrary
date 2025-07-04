@@ -219,7 +219,7 @@ public partial class Geometry<TNum, TConv>
           _Hrep ??=
             new List<HyperPlane>(FLrep.Lattice[^2].Select(n => new HyperPlane(n.AffBasis, (FLrep.Top.InnerPoint, false))).ToList());
           Debug.Assert(IsHrep, "ConvexPolytop.Hrep: _Hrep is null after constructing. Something went wrong!");
-
+          _Hrep.Sort();
           return _Hrep;
         }
     }
@@ -254,12 +254,8 @@ public partial class Geometry<TNum, TConv>
     /// An integer array where the element at index <c>k</c> is the number of <c>k</c>-dimensional faces.
     /// For example, <c>fVector[0]</c> is the number of vertices, <c>fVector[1]</c> is the number of edges, and so on.
     /// </value>
-    public int[] fVector => FLrep.Lattice.Select(lvl => lvl.Count).ToArray();
+    public Vector fVector => new Vector(FLrep.Lattice.Select(lvl => lvl.Count));
 
-    /// <summary>
-    /// Gets a string representation of the f-vector.
-    /// </summary>
-    public string fVectorStr => $"[{string.Join(',', fVector)}]";
 #endregion
 
 #region Constructors
@@ -294,6 +290,7 @@ public partial class Geometry<TNum, TConv>
       else {
         _Hrep = new List<HyperPlane>(HPs);
       }
+      _Hrep.Sort();
     }
 
     /// <summary>
@@ -1123,13 +1120,15 @@ public partial class Geometry<TNum, TConv>
       HyperPlane       hp_   = new HyperPlane(-hp.Normal, -hp.ConstantTerm);
       List<HyperPlane> xList = new List<HyperPlane> { hp };
       xList.AddRange(Hrep);
-      SortedSet<Vector> x = HrepToVrep_Geometric(xList)
-                         ?? throw new InvalidOperationException("ConvexPolytop.SectionByHyperPlane: Set is unbounded!");
+      SortedSet<Vector> x =
+        HrepToVrep_Geometric(xList)
+     ?? throw new InvalidOperationException("ConvexPolytop.SectionByHyperPlane: Set is unbounded!");
 
       List<HyperPlane> yList = new List<HyperPlane> { hp_ };
       yList.AddRange(Hrep);
-      SortedSet<Vector> y = HrepToVrep_Geometric(yList)
-                         ?? throw new InvalidOperationException("ConvexPolytop.SectionByHyperPlane: Set is unbounded!");
+      SortedSet<Vector> y =
+        HrepToVrep_Geometric(yList)
+     ?? throw new InvalidOperationException("ConvexPolytop.SectionByHyperPlane: Set is unbounded!");
 
       x.IntersectWith(y);
 
@@ -1329,7 +1328,21 @@ public partial class Geometry<TNum, TConv>
       if (obj.GetType() != this.GetType())
         return false;
 
-      return FLEquals((ConvexPolytop)obj);
+      ConvexPolytop other = (ConvexPolytop)obj;
+      if (this.IsFLrep && other.IsFLrep) {
+        return FLEquals(other);
+      }
+
+      if (this.IsVrep && other.IsVrep) {
+        return this.Vrep.SetEquals(other.Vrep);
+      }
+
+      if (this.IsHrep && other.IsHrep) {
+        return this.Hrep.SequenceEqual(other.Hrep);
+      }
+
+      // produce FLrep and compare
+      return FLEquals(other);
     }
 #endregion
 
@@ -1363,11 +1376,12 @@ public partial class Geometry<TNum, TConv>
       bool                 belongs;
       GaussSLE             gaussSLE = new GaussSLE(d, d);
       do { // Перебираем все сочетания из d элементов из набора гиперплоскостей
-        gaussSLE.SetSystem(AFunc, bFunc, d, d, GaussSLE.GaussChoice.RowWise);
+        gaussSLE.SetSystem(AFunc, bFunc, d, d);
         gaussSLE.Solve();
         if (gaussSLE.GetSolution(out Vector? point)) { // Ищем точку пересечения
           belongs = true;
           foreach (HyperPlane hp in HPs) {
+            var x = hp.Eval(point);
             if (hp.ContainsPositive(point)) {
               belongs = false;
 
