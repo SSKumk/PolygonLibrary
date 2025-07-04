@@ -21,6 +21,11 @@ public partial class Geometry<TNum, TConv>
     public Vector Origin { get; }
 
     /// <summary>
+    /// Gets the canonical representation of the origin.
+    /// </summary>
+    public Vector CanonicalOrigin => ProjectPointToSubSpace_in_OrigSpace(Vector.Zero(SpaceDim));
+
+    /// <summary>
     /// Gets the dimension of the affine basis.
     /// </summary>
     public int SpaceDim => Origin.SpaceDim;
@@ -275,15 +280,11 @@ public partial class Geometry<TNum, TConv>
     public int CompareTo(AffineBasis? other) {
       if (other is null) { return 1; }
 
-      // Сравнение линейных частей (теперь через RREF)
+      if (SubSpaceDim == 0) { return this.Origin.CompareTo(other.Origin); }
+
       int basisCompare = this.LinBasis.CompareTo(other.LinBasis);
-      if (basisCompare != 0) { return basisCompare; }
 
-      // Сравнение канонических начал
-      Vector thisCanonicalOrigin  = this.ProjectPointToSubSpace_in_OrigSpace(Vector.Zero(this.SpaceDim));
-      Vector otherCanonicalOrigin = other.ProjectPointToSubSpace_in_OrigSpace(Vector.Zero(this.SpaceDim));
-
-      return thisCanonicalOrigin.CompareTo(otherCanonicalOrigin);
+      return basisCompare != 0 ? basisCompare : this.CanonicalOrigin.CompareTo(other.CanonicalOrigin);
     }
 
     /// <summary>
@@ -292,15 +293,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="obj">Object to compare with this affine basis.</param>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
     public override bool Equals(object? obj) {
-      if (obj == null || this.GetType() != obj.GetType()) {
-        return false;
-      }
+      if (obj == null) { return false; }
 
-      AffineBasis other = (AffineBasis)obj;
-
-      if (!LinBasis.Equals(other.LinBasis)) { return false; }
-
-      return SubSpaceDim == 0 ? Origin.Equals(other.Origin) : Contains(other.Origin);
+      return CompareTo((AffineBasis)obj) == 0;
     }
 
     public override int GetHashCode() => throw new InvalidOperationException();
