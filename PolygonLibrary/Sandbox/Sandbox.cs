@@ -12,135 +12,68 @@ class Sandbox {
   public static Vector V(params double[] coords) => new Vector(coords);
   // public static Vector V(params ddouble[] coords) => new Vector(coords);
 
-  public static ConvexPolytop GWproblem() {
-    SortedSet<Vector> p =
-      new SortedSet<Vector>()
-        {
-          V(-1.7028559385798847, -0.7379143911688305, 1.9999999999999998)
-        , V(-1.6828892719132102, -0.5389135578354415, 1.9999999999999993)
-        , V(-1.6591511400475014, -1.153737772804339, 2.000000000000001)
-        , V(-1.6391844733808258, -0.12309017619998375, 1.9999999999999982)
-        , V(-1.5994506403252697, 0.07292314324793542, 1.9999999999999982)
-        , V(-1.5403466478191108, 0.2639904518208142, 1.9999999999999973)
-        , V(-1.5299468538650831, -1.5513876773204447, 2.0000000000000018)
-        , V(-1.411142361636724, 0.6616403563368153, 1.999999999999997)
-        , V(-1.3332587565206357, 0.8458525758953339, 1.999999999999996)
-        , V(-1.3208899273297825, -1.9134848957537827, 2.0000000000000027)
-        , V(-1.2373737249958365, 1.021369121996241, 1.999999999999996)
-        , V(-1.0411171512976083, -2.224204042123624, 2.0000000000000036)
-        , V(-1.028316798460542, 1.3834663404295635, 1.9999999999999951)
-        , V(-0.9153883907200107, 1.548533512804993, 1.999999999999995)
-        , V(-0.8857769699527128, -2.337065290178756, 2.0000000000000036)
-        , V(-0.8487461472337658, -2.3535524746938066, 2.0000000000000036)
-        , V(-0.8089716787517339, -2.3620067989566005, 2.0000000000000036)
-        , V(-0.7888290174431324, -2.1691465107423866, 1.8061040949808411)
-        , V(-0.788661761989098, -2.1687708488419895, 1.805699652250439)
-        , V(-0.6743054835603787, -1.816818413349292, 1.4518085643499865)
-        , V(-0.6356156146878249, 1.8592526591748393, 1.9999999999999938)
-        , V(-0.5744604863859923, -1.592562878005259, 1.2263177668236125)
-        , V(-0.49358867149454955, -2.3620067989565996, 2.0000000000000036)
-        , V(-0.48029739094045004, -1.3027586693430488, 0.9609704836438273)
-        , V(-0.4341871089760414, -1.1991932803958942, 0.8687499197150099)
-        , V(-0.3826499387905007, -1.0405781801632457, 0.7441271745412911)
-        , V(-0.3541522173056591, -0.9765712497358072, 0.6969867614484089)
-        , V(-0.31917311802337855, -0.8689166517295009, 0.6300860718577963)
-        , V(-0.29829982978414127, -0.8220344787518681, 0.6042852686801521)
-        , V(-0.2973544019701168, 2.1050138157889213, 1.9999999999999933)
-        , V(-0.2709675564795892, -0.7379143911688401, 0.5681116178997045)
-        , V(-0.2537835489067414, -0.6990803761154261, 0.5548240052359228)
-        , V(-0.19542489263561688, -0.5389135578352475, 0.5125356207224268)
-        , V(-0.18251826606945443, -0.5037431716481972, 0.5033255507004528)
-        , V(-0.1609304691952823, -0.43730276460462525, 0.4887209219993358)
-        , V(-0.1484470018610038, -0.4043619817040365, 0.4830303568766996)
-        , V(-0.09120439792727489, -0.2476644921879007, 0.4580586393438907)
-        , V(-0.0846116092799597, -2.2750760408103594, 2.0000000000000036)
-        , V(-0.0783878428878555, -0.21734701632007047, 0.4547604198576167)
-        , V(-0.020618155447514133, -0.05903781118972484, 0.4463198690754656)
-        , V(-0.009469239020183151, -0.02914332104205175, 0.44494700425429246)
-        , V(0.009469239020250049, 0.02914332104223813, 0.44494700425432177)
-        , V(0.0206181554476752, 0.05903781119020862, 0.44631986907552323)
-        , V(0.07838784288795624, 0.2173470163203945, 0.45476041985766413)
-        , V(0.08461160927998851, 2.2750760408103505, 1.9999999999999931)
-        , V(0.09120439792743573, 0.24766449218836725, 0.45805863934395386)
-        , V(0.1484470018611117, 0.4043619817043787, 0.48303035687674956)
-        , V(0.1609304691952269, 0.43730276460451895, 0.4887209219993178)
-        , V(0.1825182660695213, 0.503743171648356, 0.503325550700492)
-        , V(0.19542489263331175, 0.5389135578289131, 0.5125356207207568)
-        , V(0.2537835489068064, 0.6990803761155981, 0.5548240052359712)
-        , V(0.27096755647958015, 0.7379143911688318, 0.5681116178996972)
-        , V(0.2973544019702104, -2.1050138157888814, 2.000000000000003)
-        , V(0.2982998297841775, 0.822034478751957, 0.6042852686801959)
-        , V(0.3191731180233355, 0.8689166517294038, 0.6300860718577386)
-        , V(0.3541522173056714, 0.9765712497358308, 0.6969867614484228)
-        , V(0.38264993879031794, 1.0405781801628096, 0.7441271745409648)
-        , V(0.4341871089760653, 1.199193280395879, 0.8687499197149906)
-        , V(0.48029739094025237, 1.302758669342431, 0.9609704836432618)
-        , V(0.49358867149457125, 2.362006798956589, 1.999999999999993)
-        , V(0.5744604863859872, 1.592562878005243, 1.2263177668235996)
-        , V(0.6356156146880769, -1.85925265917465, 2.0000000000000027)
-        , V(0.6743054835603903, 1.8168184133493201, 1.4518085643500185)
-        , V(0.7886617619890908, 2.168770848841947, 1.8056996522503994)
-        , V(0.7888290174431667, 2.169146510742436, 1.806104094980901)
-        , V(0.8089716787517264, 2.3620067989565876, 1.9999999999999931)
-        , V(0.8487461472337822, 2.353552474693788, 1.9999999999999931)
-        , V(0.8857769699527134, 2.3370652901787445, 1.9999999999999931)
-        , V(0.9153883907204218, -1.5485335128044686, 2.0000000000000018)
-        , V(1.0283167984609627, -1.3834663404290242, 2.0000000000000013)
-        , V(1.0411171512975885, 2.224204042123623, 1.9999999999999933)
-        , V(1.2373737249965282, -1.0213691219948635, 2.0000000000000004)
-        , V(1.3208899273302774, 1.913484895753227, 1.999999999999994)
-        , V(1.3332587565212475, -0.845852575894101, 2)
-        , V(1.41114236163732, -0.661640356335629, 1.9999999999999998)
-        , V(1.5299468538654162, 1.5513876773195399, 1.999999999999995)
-        , V(1.5403466478194963, -0.26399045181897773, 1.999999999999999)
-        , V(1.5994506403256432, -0.07292314324613339, 1.9999999999999984)
-        , V(1.6391844733806007, 0.12309017619892343, 1.999999999999998)
-        , V(1.659151140047532, 1.1537377728040896, 1.9999999999999958)
-        , V(1.6828892719107937, 0.5389135578113953, 1.9999999999999971)
-        , V(1.7028559385798725, 0.737914391168768, 1.9999999999999967)
-        };
-
-    return ConvexPolytop.CreateFromPoints(p);
-  }
-
   static void Main(string[] args) {
-    // Tools.Eps = 1e-8;
-    // var e8 = GWproblem().FLrep;
-    // Tools.Eps = 1e-5;
-    // var e5 = GWproblem().FLrep;
-
-
-
-
+    Tools.Eps = 1e-8;
 
     const string ppath = @"F:\Works\IMM\Аспирантура\LDG\";
     // const string ppath = @"E:\Work\LDG\";
 
-    Tools.Eps = 1e-5;
-    const string eps   = "1E-05";
+    const string eps = "0.001";
+    // const string eps   = "1E-08";
     const string ntype = "System.Double";
 
-    const string gameName = "Oscillator-cone6";
+    const string gameName = "Oscillator-triangle";
     const string br       = $@"{ppath}_Out\{gameName}\Br\0\{ntype}\{eps}\";
     const string vecp     = $@"{ppath}_Out\{gameName}\Ps\{ntype}\{eps}\";
     const string vecq     = $@"{ppath}_Out\{gameName}\Qs\{ntype}\{eps}\";
 
     const string temp = $@"{ppath}Visualization\Temp";
 
-    const string brT = "9.50";
-    const string pqT = "9.40";
+    const string brT = "9.70";
+    const string pqT = "9.60";
 
-    ParamReader prw = new ParamReader($"{br}{brT}.wsection");
-    ParamReader prp = new ParamReader($"{vecp}{pqT}.psection");
-    ParamReader prq = new ParamReader($"{vecq}{pqT}.qsection");
+    ParamReader   prw = new ParamReader($"{br}{brT}.wsection");
+    ParamReader   prp = new ParamReader($"{vecp}{pqT}.psection");
+    ParamReader   prq = new ParamReader($"{vecq}{pqT}.qsection");
     ConvexPolytop w   = ConvexPolytop.CreateFromReader(prw);
     ConvexPolytop p   = ConvexPolytop.CreateFromReader(prp);
-    ConvexPolytop q   = ConvexPolytop.CreateFromReader(prq);
+    // ConvexPolytop q   = ConvexPolytop.CreateFromReader(prq);
+
+    // ConvexPolytop w = MinkowskiSum.BySandipDas(ConvexPolytop.Cube01_VRep(3).RotateRND(), ConvexPolytop.SimplexRND(3));
+
+
+    Tools.Eps = 1e-8;
+    var sumCut18 = MinkowskiSum.BySandipDas(w, p, true);
+    var sum18    = MinkowskiSum.BySandipDas(w, p);
+    var sum18ch  = MinkowskiSum.ByConvexHull(w, p);
+    var vrep18g  = ConvexPolytop.HrepToVrep_Geometric(sumCut18.Hrep);
+    var vrep18n  = ConvexPolytop.HrepToVrep_Naive(sumCut18.Hrep);
+    Tools.Eps = 1e-3;
+    var sumCut13 = MinkowskiSum.BySandipDas(w, p, true);
+    var sum13    = MinkowskiSum.BySandipDas(w, p);
+    var sum13ch  = MinkowskiSum.ByConvexHull(w, p);
+    var vrep13g  = ConvexPolytop.HrepToVrep_Geometric(sumCut13.Hrep);
+    var vrep13n  = ConvexPolytop.HrepToVrep_Naive(sumCut13.Hrep);
+
+    Tools.Eps = 1e-8;
+    Console.WriteLine($"sC18 == sC13: {sumCut13.Equals(sumCut18)}");
+    Console.WriteLine($"s18 == s13: {sum13.Equals(sum18)}");
+    Console.WriteLine($"sC18vg == sC13vg: {vrep13g.SetEquals(vrep18g)}");
+    Console.WriteLine($"sC18vn == sC13vn: {vrep13n.SetEquals(vrep18n)}");
+    Console.WriteLine($"sC13vg == sC13vn: {vrep13g.SetEquals(vrep13n)}");
+    Console.WriteLine($"sC18vg == sC18vn: {vrep18g.SetEquals(vrep18n)}");
+    Console.WriteLine($"s18 == sC18vn: {sum18.Vrep.SetEquals(vrep18n)}");
+    Console.WriteLine($"s18 == sC18vg: {sum18.Vrep.SetEquals(vrep18g)}");
+    Console.WriteLine($"s13 == sC13vn: {sum13.Vrep.SetEquals(vrep13n)}");
+    Console.WriteLine($"s13 == sC13vg: {sum13.Vrep.SetEquals(vrep13g)}");
+    Console.WriteLine($"s18ch == s13ch: {sum18ch.Vrep.SetEquals(sum13ch.Vrep)}");
+
+    Console.WriteLine($"");
 
 
     // SDasCut
-    var sumCut = MinkowskiSum.BySandipDas(w, p, true);
-    // string sumSD_cut_f = $"{eps} w{brT}+p{pqT}-SDasCut";
+    // var sumCut = MinkowskiSum.BySandipDas(w, p, true);
+    // string sumSD_cut_f = $"Eps = {Tools.Eps}, eps = {eps} w{brT}+p{pqT}-SDasCut";
     // sumCut.WriteIn(temp, sumSD_cut_f, ConvexPolytop.Rep.Hrep);
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumSD_cut_f);
 
@@ -164,10 +97,7 @@ class Sandbox {
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, sumCH_f);
 
 
-
-
-
-    var    diff   = MinkowskiDiff.Geometric(sumCut, q);
+    // var    diff   = MinkowskiDiff.Geometric(sumCut, q);
     // string diff_f = $"({sumCut})-q";
     // diff.WriteIn(temp, diff_f, ConvexPolytop.Rep.FLrep);
     //
