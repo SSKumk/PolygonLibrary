@@ -109,7 +109,7 @@ TSType = "Epigraph";
 Type = "DistToPointByNorm"
 ScaleFactor = 2;
 Point = {0,0};
-BallType = Ball_2;
+BallType = "Ball_2";
 AzimuthsDivisions = 6; // Количество точек разбиения сферы по каждому из азимутных углов.
 PolarDivision = -1; // Количество точек разбиения сферы по зенитному углу. В 2д случае неважно чему равно это поле.
 ```
