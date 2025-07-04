@@ -250,7 +250,7 @@ public class SolverLDG<TNum, TConv>
               (
                $"{TConv.ToDouble(t):F2}) DoNS = {timer.Elapsed.TotalSeconds:F4} sec. |FLrep| = {br.FLrep.NumberOfKFaces}"
               );
-            structWr.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalSeconds:F4} sec. f-vec = {br.fVectorStr}");
+            structWr.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalSeconds:F4} sec. f-vec = {br.fVector.ToStringBraceAndDelim('[',']',',')}");
           }
         }
       }
