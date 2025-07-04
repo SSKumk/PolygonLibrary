@@ -265,7 +265,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="result">Output parameter that receives the solution point.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
     public bool GetSolution([NotNullWhen(true)] out Vector? result) {
-      result = isSuccess is false ? null : new Vector(_result!, false);
+      result = isSuccess is false ? null : new Vector(_result!);
 
       return isSuccess;
     }
