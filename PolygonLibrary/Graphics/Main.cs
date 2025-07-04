@@ -14,14 +14,16 @@ public class Program {
     const string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
 
-    string visConfig = "Oscillator-hexagon.Blender";
+    string visConfig = "Oscillator-triangle.Blender";
+
+
     // string visConfig = "Oscillator-cone6.Blender";
     // string visConfig = "Oscillator-cone6.Blender";
     // string visConfig = "Oscillator-mass-cone6.Blender";
     // string visConfig = "Oscillator3D-mass-cone6.Blender";
 
+    // double eps  = double.Parse("1e-3");
     double eps  = double.Parse("1e-8");
-    // double eps  = double.Parse("1e-8");
     // ddouble eps = ddouble.Parse("1e-15");
     // Rational eps = Rational.Parse("1/10000000000000000");
 
