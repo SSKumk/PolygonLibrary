@@ -409,9 +409,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="delim">The delimiter character.</param>
     /// <returns>A string representing the vector with the given braces and delimiter.</returns>
     public string ToStringBraceAndDelim(char? braceOpen, char? braceClose, char delim)
-      => (braceOpen is null ? "" : braceOpen) + string.Join
-           (delim, V.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture))) +
-         (braceClose is null ? "" : braceClose);
+      => (braceOpen is null ? "" : braceOpen)
+       + string.Join(delim, V.Select(v => TConv.ToDouble(v).ToString(null, CultureInfo.InvariantCulture)))
+       + (braceClose is null ? "" : braceClose);
 #endregion
 
 #region Constructors
@@ -425,6 +425,19 @@ public partial class Geometry<TNum, TConv>
       V = new TNum[n];
       for (int i = 0; i < V.Length; i++) {
         V[i] = Tools.Zero;
+      }
+    }
+
+    /// <summary>
+    /// Constructs a new vector using an enumerable collection of int.
+    /// </summary>
+    /// <param name="nv">An enumerable collection of int, which is the vector's components.</param>
+    public Vector(IEnumerable<int> nv) {
+      int[] ar = nv.ToArray();
+      V = new TNum[ar.Length];
+
+      for (int i = 0; i < ar.Length; i++) {
+        V[i] = TConv.FromInt(ar[i]);
       }
     }
 
