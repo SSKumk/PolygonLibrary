@@ -55,7 +55,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="Swarm">The swarm to thin convexify.</param>
     /// <returns>The Vrep of wrapped swarm.</returns>
-    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> Swarm) => new GiftWrapping(Swarm).BuiltPolytop.OriginalVertices;
+    public static SortedSet<Vector> WrapVRep(IReadOnlyCollection<Vector> Swarm)
+      => new GiftWrapping(Swarm).BuiltPolytop.OriginalVertices;
 
     /// <summary>
     /// Constructs a convex hull of the given swarm of points during initialization.
@@ -263,7 +264,7 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(S.Count != 0, $"BuildInitialPlaneSwart (dim = {spaceDim}): The swarm must has at least one point!");
 
         // Для построения начальной плоскости найдём точку самую малую в лексикографическом порядке. (левее неё уже точек нет)
-        SubPoint    origin = S.Min()!;
+        SubPoint           origin = S.Min()!;
         AffineBasisMutable FinalV = new AffineBasisMutable(origin);
 
         // нормаль к плоскости начальной
@@ -368,13 +369,16 @@ public partial class Geometry<TNum, TConv>
 
           // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
           // SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
-          // if (toRemove.ToList().Find(x => x[0] == TConv.FromDouble(-0.7097065548996295)) is not null) {
-          //   Console.WriteLine($"AAAA ydalilli");
-          // }
           // toRemove.ExceptWith(newFace.Vertices);
-          // S.ExceptWith(toRemove);
+          // if (toRemove.Count > 0) {
+          //   S.ExceptWith(toRemove);
+          // }
 
           // todo: Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
+          if (newFace.Vertices.Count == 3) {
+            newFace = new SubSimplex(newFace.Vertices);
+          }
+
         }
 
         newFace.Normal = CalcOuterNormal(faceBasis);
@@ -469,10 +473,10 @@ public partial class Geometry<TNum, TConv>
         Debug.Assert(r is not null, "GiftWrapping.RollOverEdge: A new vector 'r' is null!");
         Debug.Assert(sStar is not null, "GiftWrapping.RollOverEdge: A new point 'sStar' is null!");
 
-        edgeAffBasis.AddVector(sStar - edgeAffBasis.Origin); // добавили к базису ребра вектор базиса новой грани. Получили базис новой грани.
+        edgeAffBasis.AddVector
+          (sStar - edgeAffBasis.Origin); // добавили к базису ребра вектор базиса новой грани. Получили базис новой грани.
         BaseSubCP newFace = BuildFace(edgeAffBasis, edge);
 
-        // todo: Возможно что-то плохое случается, если ребро становится слишком коротким, но это не точно!
         return newFace;
       }
 #endregion
