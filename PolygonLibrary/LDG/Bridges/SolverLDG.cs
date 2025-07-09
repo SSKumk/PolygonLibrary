@@ -232,7 +232,12 @@ public class SolverLDG<TNum, TConv>
       if (!Qs.ContainsKey(t)) {
         ReadQsSection(t);
       }
-      try {
+      // try {
+
+        using (Geometry<TNum, TConv>.ParamWriter pw = new Geometry<TNum,TConv>.ParamWriter(Path.Combine(BrDir, ".distribution"), true))
+        {
+          pw.Write($"{TConv.ToDouble(t):F2}) ");
+        }
         timer.Restart();
         Geometry<TNum, TConv>.ConvexPolytop? WNext = DoNextSection(W[tPred], Ps[t], Qs[t]);
         timer.Stop();
@@ -253,14 +258,14 @@ public class SolverLDG<TNum, TConv>
             structWr.WriteLine($"{TConv.ToDouble(t):F2}) = {timer.Elapsed.TotalSeconds:F4} sec. f-vec = {br.fVector.ToStringBraceAndDelim('[',']',',')}");
           }
         }
-      }
-      catch (Exception e) {
-        Console.WriteLine(e);
-        structWr.Flush();
-        structWr.Close();
+      // }
+      // catch (Exception e) {
+        // Console.WriteLine(e);
+        // structWr.Flush();
+        // structWr.Close();
 
-        throw;
-      }
+        // throw;
+      // }
     }
   }
 
