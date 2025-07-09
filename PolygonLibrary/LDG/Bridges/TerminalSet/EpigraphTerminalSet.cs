@@ -44,6 +44,11 @@ public class EpigraphTerminalSet<TNum, TConv> : ITerminalSetReader<TNum, TConv>
     // Setting up the projection matrix
     TNum[,] projMatrixArr = new TNum[gd.ProjDim, gd.n];
     for (int i = 0; i < gd.ProjDim; i++) {
+      for (int j = 0; j < gd.n; j++) {
+        projMatrixArr[i, j] = Geometry<TNum,TConv>.Tools.Zero;
+      }
+    }
+    for (int i = 0; i < gd.ProjDim; i++) {
       projMatrixArr[i, gd.ProjInd[i]] = Geometry<TNum, TConv>.Tools.One;
     }
     gd.ProjMatrix = new Geometry<TNum, TConv>.Matrix(projMatrixArr);
