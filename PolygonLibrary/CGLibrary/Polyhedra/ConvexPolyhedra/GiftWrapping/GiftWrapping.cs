@@ -368,11 +368,12 @@ public partial class Geometry<TNum, TConv>
           newFace = new GiftWrappingMain(inPlane.ToSortedSet(), prj_initFace).BuiltPolytop.ToPreviousSpace();
 
           // Из роя убираем точки, которые не попали в выпуклую оболочку под-граней
-          // SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
-          // toRemove.ExceptWith(newFace.Vertices);
-          // if (toRemove.Count > 0) {
-          //   S.ExceptWith(toRemove);
-          // }
+          SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
+          toRemove.ExceptWith(newFace.Vertices);
+          if (toRemove.Count > 0) {
+            // S.ExceptWith(toRemove);
+            Console.WriteLine($"GW.Rem =  {toRemove.Count}.\t");
+          }
 
           // todo: Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?
           if (newFace.Vertices.Count == 3) {

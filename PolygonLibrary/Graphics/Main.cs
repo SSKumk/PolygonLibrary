@@ -14,8 +14,7 @@ public class Program {
     const string pathLdg = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
     // string pathLdg = "E:\\Work\\LDG\\";
 
-    // string visConfig = "Oscillator-triangle.Blender";
-    string visConfig = "Oscillator-triangle_x100.Blender";
+    string visConfig = "Oscillator-triangle.Blender";
 
 
     // string visConfig = "Oscillator-cone6.Blender";
@@ -23,13 +22,13 @@ public class Program {
     // string visConfig = "Oscillator-mass-cone6.Blender";
     // string visConfig = "Oscillator3D-mass-cone6.Blender";
 
-    double eps  = double.Parse("1e-3");
+    // double eps  = double.Parse("1e-5");
     // double eps  = double.Parse("1e-8");
-    // ddouble eps = ddouble.Parse("1e-15");
+    ddouble eps = ddouble.Parse("1e-15");
     // Rational eps = Rational.Parse("1/10000000000000000");
 
-    Visualization<double, DConvertor>   visD  = new Visualization<double, DConvertor>(pathLdg, visConfig, eps);
-    // Visualization<ddouble, DDConvertor> visD = new Visualization<ddouble, DDConvertor>(pathLdg, visConfig, eps);
+    // Visualization<double, DConvertor>   visD  = new Visualization<double, DConvertor>(pathLdg, visConfig, eps);
+    Visualization<ddouble, DDConvertor> visD = new Visualization<ddouble, DDConvertor>(pathLdg, visConfig, eps);
     // Visualization<Rational, RConvertor> visR08 =
       // new Visualization<Rational, RConvertor>(pathLdg, visConfig, Rational.Parse("1/100000000"));
     // Visualization<Rational, RConvertor> visR16 =

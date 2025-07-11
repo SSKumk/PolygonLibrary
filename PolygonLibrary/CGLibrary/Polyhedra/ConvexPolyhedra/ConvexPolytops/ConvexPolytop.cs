@@ -1432,9 +1432,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="HPs">List of hyperplanes defining the Hrep.</param>
     /// <returns>The Vrep of the convex polytop.</returns>
     public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs) {
-#if DEBUG
+// #if DEBUG
       int[] bins = new int[28];
-#endif
+// #endif
 
       SortedSet<Vector> Vs = new SortedSet<Vector>();
       int               d  = HPs.First().Normal.SpaceDim;
@@ -1542,42 +1542,60 @@ public partial class Geometry<TNum, TConv>
 
             zNew = Vector.MulByNumAndAdd(v, tMin, z);
             zNewActiveHPs.AddRange(zNewDefiningHPs);
+            Debug.Assert
+              (
+               zNewDefiningHPs.All(hp => hp.Contains(zNew))
+             , $"ConvexPolytop.Hre2Vrep_Geometric: A new point doesn't belong to the some hyper plane!"
+              );
+            Vector check = zNew - z;
+
+// #if DEBUG
+            // Vector check = zNew - z;
+            if (Tools.GT(check.Length, Tools.One)) {
+              bins[0]++;
+            }
+            else if (Tools.LT(check.Length, TNum.Pow(Tools.Two, TConv.FromInt(-26)))) {
+              bins[27]++;
+            }
+            else {
+              double len = TConv.ToDouble(check.Length);
+              int    num = -(int)Math.Ceiling(Math.Log2(len));
+              bins[num]++;
+            }
+// #endif
+
 
             if (HPsings.Add(new SortedSet<int>(zNewActiveHPs.Select(hp => HP2ind[hp])))) {
-#if DEBUG
-              Vector check = zNew - z;
-              if (Tools.GT(check.Length, Tools.One)) {
-                bins[0]++;
-              }
-              else if (Tools.LT(check.Length, TNum.Pow(Tools.Two, TConv.FromInt(-26)))) {
-                bins[27]++;
-              }
-              else {
-                double len = TConv.ToDouble(check.Length);
-                int    num = -(int)Math.Ceiling(Math.Log2(len));
-                bins[num]++;
-              }
-#endif
-              Vs.Add(zNew);
-              process.Enqueue((zNew, zNewActiveHPs));
+              // if (Tools.GE(check.Length, Tools.EpsG)) { // добавляем точку, только если она "далеко", по точности
+                Vs.Add(zNew);
+                process.Enqueue((zNew, zNewActiveHPs));
+              // }
+              // else {
+                // Console.WriteLine($"H2V skip, len = {check.Length}");
+              // }
             }
+            // else {
+            //   if (Tools.LT(check.Length, Tools.EpsG)) { // добавляем точку, только если она "далеко", по точности
+            //     Console.WriteLine($"H2V small edge, but add, len = {check.Length}");
+            //   }
+            // }
           }
         } while (J.Next());
       }
 
-#if DEBUG
+// #if DEBUG
       using (ParamWriter pr =
              new ParamWriter
                (
-                // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
+                "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
                 // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\System.Double\\1E-08\\.distribution"
-                "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-circle30\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
+                // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-circle30\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
               , true
                )) {
         pr.Write($"[{string.Join(',', bins)}]");
         pr.WriteLine();
       }
-#endif
+// #endif
       return Vs;
     }
 

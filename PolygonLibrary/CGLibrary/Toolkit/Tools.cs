@@ -76,7 +76,7 @@ public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
-  
+
   /// <summary>
   /// Class with general purpose procedures
   /// </summary>
@@ -84,14 +84,34 @@ public partial class Geometry<TNum, TConv>
 
 #region Fields
     /// <summary>
+    /// Absolute accuracy for comparison
+    /// </summary>
+    private static TNum _eps = TConv.FromDouble(1e-8);
+
+    /// <summary>
     /// The random generator.
     /// </summary>
     public static readonly GRandomLC Random = new GRandomLC();
 
+
+    private static int gmult = 100;
     /// <summary>
-    /// Absolute accuracy for comparison
+    /// Gets or sets the absolute accuracy of the computations.
     /// </summary>
-    private static TNum _eps = TConv.FromDouble(1e-8);
+    public static TNum Eps {
+      get => _eps;
+      set
+        {
+          Debug.Assert(value > TNum.AdditiveIdentity, $"Tools.Eps: Non-positive precision parameter. Found {value}");
+          _eps = value;
+          EpsG = value * TConv.FromInt(gmult);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the absolute accuracy for a some geometric algorithms.
+    /// </summary>
+    public static TNum EpsG { get; private set; } = Eps * TConv.FromInt(gmult);
 #endregion
 
 #region Constants
@@ -133,7 +153,7 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Represents the value of PI.
     /// </summary>
-    public static readonly TNum PI = TNum.Pi;//TNum.Abs(TNum.Acos(-One));
+    public static readonly TNum PI = TNum.Pi; //TNum.Abs(TNum.Acos(-One));
 
     /// <summary>
     /// Represents half of the value of PI.
@@ -147,20 +167,6 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Comparison
-    /// <summary>
-    /// Property to deal with the accuracy
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Is thrown when the precision parameter is not positive</exception>
-    public static TNum Eps {
-      get => _eps;
-      set
-        {
-          Debug.Assert(value > TNum.AdditiveIdentity, $"Tools.Eps: Non-positive precision parameter. Found {value}");
-          _eps = value;
-        }
-    }
-
-
     /// <summary>
     /// Compares given number with the Zero with precision.
     /// </summary>
@@ -281,7 +287,9 @@ public partial class Geometry<TNum, TConv>
     /// Implements a comparer for TNum values.
     /// </summary>
     public class TNumComparer : IComparer<TNum> {
+
       public int Compare(TNum a, TNum b) => CMP(a, b);
+
     }
 
     /// <summary>
@@ -291,7 +299,6 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Common procedures
-
     /// <summary>
     /// Initializes an array of <c>TNum</c> with the specified size,
     /// setting all elements to <c>Zero</c>.

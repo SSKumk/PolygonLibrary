@@ -39,7 +39,6 @@ public class BridgeCreator<TNum, TConv>
     Geometry<TNum, TConv>.Tools.Eps = eps;
 
 
-
     ph = new LDGPathHolder<TNum, TConv>(pathLDG, problemFolderName, precision); // установили пути и прочитали словари-связки
     Geometry<TNum, TConv>.ParamReader problemReader = ph.OpenProblemReader();
 
