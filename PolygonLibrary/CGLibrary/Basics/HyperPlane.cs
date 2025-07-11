@@ -282,8 +282,6 @@ public partial class Geometry<TNum, TConv>
       if (other is null) {
         return 1;
       }
-
-      // It's meaningless to compare hyperplanes from different spaces.
       Debug.Assert(this.SpaceDim == other.SpaceDim, $"HyperPlane.CompareTo: Cannot compare hyperplanes of different dimensions.");
 
       int normalComparison = this.Normal.CompareTo(other.Normal);
