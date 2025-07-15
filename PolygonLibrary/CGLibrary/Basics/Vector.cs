@@ -184,6 +184,13 @@ public partial class Geometry<TNum, TConv>
 
 #region Miscellaneous procedures
     /// <summary>
+    /// Calculates the vector sum of a sequence of vectors.
+    /// </summary>
+    /// <param name="Vs">The sequence of vectors to sum.</param>
+    /// <returns>A new <c>Vector</c> representing the sum of all vectors in the sequence.</returns>
+    public static Vector Sum(IEnumerable<Vector> Vs) => Vs.Aggregate((acc, v) => acc + v);
+
+    /// <summary>
     /// Normalizes the vector.
     /// </summary>
     /// <returns>The normalized vector.</returns>
