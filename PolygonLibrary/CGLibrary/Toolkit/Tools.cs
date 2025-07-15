@@ -94,7 +94,8 @@ public partial class Geometry<TNum, TConv>
     public static readonly GRandomLC Random = new GRandomLC();
 
 
-    private static int gmult = 100;
+    private const int _epsgMult = 100;
+
     /// <summary>
     /// Gets or sets the absolute accuracy of the computations.
     /// </summary>
@@ -104,14 +105,14 @@ public partial class Geometry<TNum, TConv>
         {
           Debug.Assert(value > TNum.AdditiveIdentity, $"Tools.Eps: Non-positive precision parameter. Found {value}");
           _eps = value;
-          EpsG = value * TConv.FromInt(gmult);
+          EpsG = value * TConv.FromInt(_epsgMult);
         }
     }
 
     /// <summary>
     /// Gets or sets the absolute accuracy for a some geometric algorithms.
     /// </summary>
-    public static TNum EpsG { get; private set; } = Eps * TConv.FromInt(gmult);
+    public static TNum EpsG { get; private set; } = Eps * TConv.FromInt(_epsgMult);
 #endregion
 
 #region Constants
