@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 
-namespace Tests.SharedTests; // Используем общй namespace
+namespace Tests.SharedTests;
 
 [TestFixture]
 public class VectorTests {
