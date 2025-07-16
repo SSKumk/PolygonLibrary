@@ -136,6 +136,12 @@ public partial class Geometry<TNum, TConv>
       /// <param name="Swarm">The set of points used for constructing the convex polytop.</param>
       /// <param name="initFace">The initial facet to start the gift wrapping algorithm. If null, the algorithm constructs it.</param>
       public GiftWrappingMain(SortedSet<SubPoint> Swarm, BaseSubCP? initFace = null) {
+#if DEBUG
+        TNum minDiam = ConvexPolytop.MinimalDiameter(Swarm);
+        Debug.Assert(minDiam > Tools.EpsG, $"GiftWrappingMain.Ctor: Points to close: {minDiam}!");
+#endif
+
+
         S             = Swarm;
         spaceDim      = S.First().SpaceDim;
         this.initFace = initFace;
@@ -371,7 +377,7 @@ public partial class Geometry<TNum, TConv>
           SortedSet<SubPoint> toRemove = inPlane.Select(s => s.Parent).ToSortedSet()!;
           toRemove.ExceptWith(newFace.Vertices);
           if (toRemove.Count > 0) {
-            // S.ExceptWith(toRemove);
+            S.ExceptWith(toRemove);
             Console.WriteLine($"GW.Rem =  {toRemove.Count}.\t");
           }
 
@@ -379,7 +385,6 @@ public partial class Geometry<TNum, TConv>
           if (newFace.Vertices.Count == 3) {
             newFace = new SubSimplex(newFace.Vertices);
           }
-
         }
 
         newFace.Normal = CalcOuterNormal(faceBasis);
