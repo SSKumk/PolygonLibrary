@@ -103,7 +103,7 @@ public class SpeedTestsGaussSLE {
     writer.WriteLine("Function solver:");
     timer.Restart();
     for (int i = 0; i < N; i++) {
-      res = GaussSLE.Solve((r, l) => A[r, l], r => b[r], dim, GaussSLE.GaussChoice.RowWise, out ddouble[]? _);
+      res = GaussSLE.Solve((r, l) => A[r, l], r => b[r], dim,dim, GaussSLE.GaussChoice.RowWise, out ddouble[]? _);
       if (res) { k++; }
     }
     timer.Stop();
