@@ -8,7 +8,9 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Provides functionality for solving systems of linear equations using Gaussian elimination. ONLY SQUARE SYSTEMS!!!
+  /// Provides functionality for solving systems of linear equations using Gaussian elimination.
+  /// It can find an unique solution for square (n x n) and overdetermined (m x n, m > n) systems.
+  /// For underdetermined systems (m &lt; n) or systems with no or infinite solutions, it reports failure.
   /// </summary>
   public class GaussSLE {
 
@@ -107,8 +109,6 @@ public partial class Geometry<TNum, TConv>
       , int                  col
       , GaussChoice          gaussChoice = GaussChoice.All
       ) {
-      Debug.Assert(row == _row, $"The amount of rows in A must be equal to initial parameter row. Found {row} row = {_row}");
-      Debug.Assert(col == _col, $"The amount of columns in A must be equal to initial parameter row. Found {col} row = {_row}");
       _gaussChoice = gaussChoice;
       for (int r = 0; r < _row; r++) {
         for (int l = 0; l < _col; l++) {
@@ -125,9 +125,6 @@ public partial class Geometry<TNum, TConv>
     /// <param name="b">The vector b representing the right-hand side of the system.</param>
     /// <param name="gaussChoice">Choice for pivot selection during Gaussian elimination.</param>
     private void SetSystem(TNum[,] A, TNum[] b, GaussChoice gaussChoice = GaussChoice.All) {
-      Debug.Assert(A.GetLength(0) == A.GetLength(1), $"GaussSLE.SetSystem: Only square systems available to be solved!");
-
-
       Debug.Assert
         (
          A.GetLength(0) == _row
@@ -152,100 +149,93 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Solves the system of linear equations using Gaussian elimination.
+    /// The method can find a unique solution for square (n x n) and overdetermined (m x n, m > n) systems.
     /// </summary>
     public void Solve() {
-      for (int i = 0; i < _row; i++) { // Установили индексные массивы
-        _indARow[i] = i;
-        _indACol[i] = i;
-        _indB[i]    = i;
+      isSuccess = false; // По умолчанию считаем, что решения нет
+
+      // Система, в которой уравнений меньше, чем неизвестных (m < n),
+      // не может иметь единственного решения.
+      if (_row < _col) {
+        return;
       }
 
-      int maxRowInd = _row - 1;
-      int maxColInd = _col - 1;
-      for (int k = 0; k < maxRowInd; k++) { // последний элемент будем обрабатывать отдельно
+      // Инициализация индексных массивов
+      for (int i = 0; i < _row; i++) {
+        _indARow[i] = i;
+        _indB[i]    = i;
+      }
+      for (int i = 0; i < _col; i++) {
+        _indACol[i] = i;
+      }
+
+      // --- Прямой ход Гаусса ---
+      for (int k = 0; k < _col; k++) { // последний элемент будем обрабатывать отдельно
         int  maxRowWiseInd = k;
         int  maxColWiseInd = k;
-        int  lcol          = k, rcol = k, rrow = k, lrow = k;
         TNum absMaxEl      = Tools.Abs(_A[_indARow[k], _indACol[k]]);
 
-        switch (_gaussChoice) {
-          case GaussChoice.No: {
-            if (Tools.EQ(absMaxEl)) {
-              isSuccess = false;
-
-              return;
-            } // Если очередной элемент на диагонали ноль, то решения нет
-
-            break;
-          } // Всё выставлено куда надо.
-
-          case GaussChoice.RowWise: {
-            lcol = rcol = k;
-            lrow = k;
-            rrow = maxRowInd;
-
-            break;
+        if (_gaussChoice != GaussChoice.No) {
+          int lcol = k, rcol = _col - 1, rrow = _row - 1, lrow = k;
+          switch (_gaussChoice) {
+            case GaussChoice.RowWise: lcol = rcol = k; break;
+            case GaussChoice.ColWise: lrow = rrow = k; break;
+            case GaussChoice.All:     break; // Область поиска уже установлена [k.._row-1, k.._col-1]
           }
-          case GaussChoice.ColWise: {
-            lrow = rrow = k;
-            lcol = k;
-            rcol = maxColInd;
 
-            break;
-          }
-          case GaussChoice.All: {
-            lrow = k;
-            lcol = k;
-            rrow = maxRowInd;
-            rcol = maxColInd;
-
-            break;
-          }
-        }
-
-        for (int i = lrow; i <= rrow; i++) {
-          for (int j = lcol; j <= rcol; j++) {
-            TNum curAbs = Tools.Abs(_A[_indARow[i], _indACol[j]]);
-            if (curAbs > absMaxEl) {
-              absMaxEl      = curAbs;
-              maxRowWiseInd = i;
-              maxColWiseInd = j;
+          for (int i = lrow; i <= rrow; i++) {
+            for (int j = lcol; j <= rcol; j++) {
+              TNum curAbs = Tools.Abs(_A[_indARow[i], _indACol[j]]);
+              if (curAbs > absMaxEl) { // ищем самый большой, честно
+                absMaxEl      = curAbs;
+                maxRowWiseInd = i;
+                maxColWiseInd = j;
+              }
             }
           }
+
+          // Перестановка индексов строк и столбцов для использования пивота
+          Tools.Swap(ref _indB[k], ref _indB[maxRowWiseInd]);
+          Tools.Swap(ref _indARow[k], ref _indARow[maxRowWiseInd]);
+          Tools.Swap(ref _indACol[k], ref _indACol[maxColWiseInd]);
+        }
+        // Если максимальный элемент в оставшейся подматрице равен нулю,
+        // то ранг матрицы меньше n. Единственного решения нет.
+        if (Tools.EQ(absMaxEl)) {
+          return; // isSuccess остается false
         }
 
-        Tools.Swap(ref _indB[k], ref _indB[maxRowWiseInd]);
-        Tools.Swap(ref _indARow[k], ref _indARow[maxRowWiseInd]);
-        Tools.Swap(ref _indACol[k], ref _indACol[maxColWiseInd]);
-
-        if (Tools.EQ(absMaxEl)) { //Если все элементы в строке нулевые
-          isSuccess = false;
-
-          return;
-        }
-
-        for (int i = k + 1; i < _row; i++) {
-          TNum t = _A[_indARow[i], _indACol[k]] / _A[_indARow[k], _indACol[k]];
+        // Нормировка k-й строки
+        TNum pivotInv = TNum.One / _A[_indARow[k], _indACol[k]];
+        for (int i = k + 1; i < _row; i++) { // Обнуление элементов под пивотом в k-м столбце
+          TNum t = _A[_indARow[i], _indACol[k]] * pivotInv;
           _b[_indB[i]] -= t * _b[_indB[k]];
-          for (int j = k; j < _row; j++) {
+          for (int j = k; j < _col; j++) {
             _A[_indARow[i], _indACol[j]] -= t * _A[_indARow[k], _indACol[j]];
           }
         }
       }
 
-      if (Tools.EQ(_A[_indARow[maxRowInd], _indACol[maxRowInd]])) {
-        isSuccess = false;
-
-        return;
+      // --- Проверка на совместность для переопределенных систем (m > n) ---
+      // После прямого хода в нижних (m - n) строках матрицы A должны быть нули.
+      // Проверяем, равны ли нулю соответствующие элементы вектора b.
+      for (int i = _col; i < _row; i++) {
+        if (Tools.NE(_b[_indB[i]])) { // Найдено уравнение вида 0 = c, где c != 0. Система несовместна.
+          return;                     // isSuccess остается false
+        }
       }
-      _result![_indACol[maxRowInd]] = _b[_indB[maxRowInd]] / _A[_indARow[maxRowInd], _indACol[maxRowInd]];
-      for (int k = maxRowInd - 1; k >= 0; k--) {
+
+      // --- Обратный ход Гаусса ---
+      // Решаем систему, которая теперь является квадратной n x n.
+      for (int k = _col - 1; k >= 0; k--) {
         TNum sum = Tools.Zero;
-        for (int i = k + 1; i < _row; i++) { sum += _A[_indARow[k], _indACol[i]] * _result[_indACol[i]]; }
-        _result[_indACol[k]] = (_b[_indB[k]] - sum) / _A[_indARow[k], _indACol[k]];
+        for (int i = k + 1; i < _col; i++) {
+          sum += _A[_indARow[k], _indACol[i]] * _result![_indACol[i]];
+        }
+        _result![_indACol[k]] = (_b[_indB[k]] - sum) / _A[_indARow[k], _indACol[k]];
       }
 
-      isSuccess = true;
+      isSuccess = true; // Если мы дошли до сюда, значит, уникальное решение найдено.
     }
 
     /// <summary>
@@ -273,41 +263,88 @@ public partial class Geometry<TNum, TConv>
 
 #region Factories
     /// <summary>
-    /// Solves the system of linear equations represented by the given functions.
+    /// Solves a system of linear equations defined by generator functions.
+    /// Finds a unique solution if one exists for a square (n x n) or overdetermined (m x n, m > n) system.
     /// </summary>
-    /// <param name="AFunc">Function provides the coefficients of the matrix A.</param>
-    /// <param name="bFunc">Function provides the right side vector b.</param>
-    /// <param name="dim">Dimension of the square matrix A and the length of vector b.</param>
+    /// <param name="AFunc">A function that provides the coefficients of the m x n matrix A, taking (row, column) indices.</param>
+    /// <param name="bFunc">A function that provides the elements of the m-element right-side vector b, taking a row index.</param>
+    /// <param name="rows">The number of rows in the system (equations).</param>
+    /// <param name="cols">The number of columns in the system (variables).</param>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
-    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <param name="result">Output parameter that receives the n-element solution vector if it is unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
     public static bool Solve(
         Func<int, int, TNum>            AFunc
       , Func<int, TNum>                 bFunc
-      , int                             dim
+      , int                             rows
+      , int                             cols
       , GaussChoice                     gaussChoice
       , [NotNullWhen(true)] out TNum[]? result
       ) {
-      GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, dim, dim, gaussChoice);
+      GaussSLE gaussSLE = new GaussSLE(AFunc, bFunc, rows, cols, gaussChoice);
       gaussSLE.Solve();
 
       return gaussSLE.GetSolution(out result);
     }
 
     /// <summary>
-    /// Solves the system of linear equations represented by the given matrices.
+    /// Solves a system of linear equations represented by a rectangular matrix.
+    /// Finds a unique solution if one exists for a square (n x n) or overdetermined (m x n, m > n) system.
     /// </summary>
-    /// <param name="A">The coefficient matrix A.</param>
-    /// <param name="b">The right side vector b.</param>
+    /// <param name="A">The m x n coefficient matrix A.</param>
+    /// <param name="b">The m-element right side vector b.</param>
     /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements.</param>
-    /// <param name="result">Output parameter that receives the solution vector if it unique.</param>
+    /// <param name="result">Output parameter that receives the n-element solution vector if it is unique.</param>
     /// <returns><c>True</c> if the system has a unique solution, otherwise <c>false</c>.</returns>
-    public static bool Solve(TNum[,] A, TNum[] b, GaussChoice gaussChoice, [NotNullWhen(true)] out TNum[]? result) {
+    public static bool Solve(
+        TNum[,]                         A
+      , TNum[]                          b
+      , GaussChoice                     gaussChoice
+      , [NotNullWhen(true)] out TNum[]? result
+      ) {
+      int rows = A.GetLength(0);
+
+      if (rows != b.Length) {
+        throw new ArgumentException("The number of rows in matrix A must match the length of vector b.");
+      }
 
       GaussSLE gaussSLE = new GaussSLE((TNum[,])A.Clone(), (TNum[])b.Clone(), gaussChoice);
       gaussSLE.Solve();
 
       return gaussSLE.GetSolution(out result);
+    }
+
+    /// <summary>
+    /// Finds the unique intersection point of a set of hyperplanes by solving the system of linear equations they represent.
+    /// A unique solution can be found if the system is square (number of hyperplanes equals space dimension) or
+    /// overdetermined (more hyperplanes than the space dimension) but consistent.
+    /// </summary>
+    /// <param name="HPs">A collection of hyperplanes whose intersection is to be found.</param>
+    /// <param name="gaussChoice">Specifies the strategy for choosing pivot elements during Gaussian elimination.</param>
+    /// <param name="result"> If successful, the coordinates of the unique intersection point; otherwise, <c>null</c>. </param>
+    /// <returns><c>true</c> if a unique intersection point is found; otherwise, <c>false</c>.</returns>
+    public static bool Solve(
+        IEnumerable<HyperPlane>         HPs
+      , GaussChoice                     gaussChoice
+      , [NotNullWhen(true)] out TNum[]? result
+      ) {
+      HyperPlane[] hps = HPs.ToArray();
+
+      if (hps.Length == 0) {
+        result = null;
+
+        return false;
+      }
+
+      return Solve
+        (
+         (i, j) => hps[i].Normal[j]
+       , i => hps[i].ConstantTerm
+       , hps.Length
+       , hps[0].SpaceDim
+       , gaussChoice
+       , out result
+        );
     }
 #endregion
 
