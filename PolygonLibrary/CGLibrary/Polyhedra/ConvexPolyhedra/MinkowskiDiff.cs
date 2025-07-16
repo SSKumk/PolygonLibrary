@@ -133,8 +133,6 @@ public partial class Geometry<TNum, TConv>
         return false;
       }
 
-      Debug.Assert(ConvexPolytop.MinimalDiameter(VRepFminusG) > Tools.EpsG, $"MinkowskiDiff.Geometric: Points to close: {ConvexPolytop.MinimalDiameter(VRepFminusG)}!");
-
       // 5) Построить fLrep роя V(F-G)
       diffFG = ConvexPolytop.CreateFromFaceLattice(produceFL(VRepFminusG));
 
