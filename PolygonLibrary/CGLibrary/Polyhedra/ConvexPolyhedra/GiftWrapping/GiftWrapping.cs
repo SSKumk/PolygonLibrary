@@ -284,7 +284,7 @@ public partial class Geometry<TNum, TConv>
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
-          SubPoint?   sExtr  = null;
+          SubPoint?   sStar  = null;
           LinearBasis lb     = new LinearBasis(new Vector[] { e, n });
 
 
@@ -297,12 +297,12 @@ public partial class Geometry<TNum, TConv>
               // Кандидата с самым большим углом запоминаем
               if (cos < minCos) {
                 minCos = cos;
-                sExtr  = s;
                 r      = u;
+                sStar  = s;
               }
             }
           }
-          bool isAdded = FinalV.AddVector(sExtr! - origin);
+          bool isAdded = FinalV.AddVector(sStar! - origin);
 
           Debug.Assert
             (
@@ -421,40 +421,26 @@ public partial class Geometry<TNum, TConv>
           (Tools.EQ(face.Normal.Length, Tools.One), $"RollOverEdge (dim = {spaceDim}): The face has the non normalize normal!");
         Debug.Assert(!face.Normal.IsZero, $"RollOverEdge (dim = {spaceDim}): face.Normal has zero length");
 
-        // v вектор перпендикулярный ребру и лежащий в текущей плоскости
+        // e вектор перпендикулярный ребру и лежащий в текущей плоскости
         AffineBasisMutable edgeAffBasis = new AffineBasisMutable(edge.Vertices);
         SubPoint           f            = face.Vertices.First(p => !edge.Vertices.Contains(p));
-        // var f = face.Vertices.Where(p => !edge.Vertices.Contains(p)).MaxBy(p => (p - edgeAffBasis.Origin).Length);
-
-        // Debug.Assert(f is not null, $"RollOverEdge: No point f!");
-        // Debug.Assert(Tools.GT((f - edgeAffBasis.Origin).Length), $"RollOverEdge: The length of f-edgeAffBasis.Origin is zero!");
-
-        // Vector v = edgeAffBasis.LinBasis.Orthonormalize(f - edgeAffBasis.Origin);
-
-        // Debug.Assert
-        //   (
-        //    edgeAffBasis.LinBasis.All(bvec => Tools.EQ(bvec * v))
-        //  , $"RollOverEdge: The vector 'v' should be perpendicular to the edge!"
-        //   );
-        // var         x = new HyperPlane(new AffineBasis(face.Vertices), true, (face.Vertices.First() + face.Normal, true));
-        // var         y = face.Normal - x.Normal;
 
         // берём базис ребра
         // и добавляем в него вектор нормали к грани, с которой мы перекатываемся, ничего не ортогонализируя!
         // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
         AffineBasisMutable copyOfEdgeBasis = new AffineBasisMutable(edgeAffBasis, needCopy: true);
         copyOfEdgeBasis.AddVector(face.Normal);
-        Vector v = copyOfEdgeBasis.OrthonormalVector();
-        if (Tools.LT(v * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
-          v = -v;
+        Vector e = copyOfEdgeBasis.OrthonormalVector();
+        if (Tools.LT(e * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
+          e = -e;
         }
 
-        Debug.Assert(Tools.EQ(face.Normal * v), $"RollOverEdge: The vector 'v' should be perpendicular to the face!");
+        Debug.Assert(Tools.EQ(face.Normal * e), $"RollOverEdge: The vector 'e' should be perpendicular to the face!");
 
         Debug.Assert
           (
-           new HyperPlane(face.Normal, edgeAffBasis.Origin).Contains(v + edgeAffBasis.Origin)
-         , $"RollOverEdge: The vector 'v' should lie in a face!"
+           new HyperPlane(face.Normal, edgeAffBasis.Origin).Contains(e + edgeAffBasis.Origin)
+         , $"RollOverEdge: The vector 'e' should lie in a face!"
           );
         // проверить, что лежит в плоскости
 
@@ -462,11 +448,11 @@ public partial class Geometry<TNum, TConv>
         SubPoint? sStar  = null;
         TNum      minCos = Tools.Two;
 
-        // ищем точку s, не лежащую в ребре, такую, что ее проекция на плоскость (v,N) дает угол, наибольший в сравнении с другими точками (дает наименьший косинус)
+        // ищем точку s, не лежащую в ребре, такую, что ее проекция на плоскость (e,N) дает угол, наибольший в сравнении с другими точками (наименьший косинус)
         foreach (SubPoint s in S) {
           if (!edgeAffBasis.Contains(s)) {
-            Vector u   = s.ProjectTo2DAffineSpace(edgeAffBasis.Origin, v, face.Normal);
-            TNum   cos = Vector.CosAngle(v, u);
+            Vector u   = s.ProjectTo2DAffineSpace(edgeAffBasis.Origin, e, face.Normal);
+            TNum   cos = Vector.CosAngle(e, u);
 
             if (cos < minCos) {
               minCos = cos;
