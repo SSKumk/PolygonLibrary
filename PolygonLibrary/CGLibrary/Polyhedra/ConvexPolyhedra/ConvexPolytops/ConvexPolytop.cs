@@ -1263,7 +1263,7 @@ public partial class Geometry<TNum, TConv>
         );
 
       TNum minD = (points[0] - points[1]).Length;
-      for (int i = 0; i < points.Count - 1; i++) {
+      for (int i = 0; i < points.Count; i++) {
         for (int j = i + 1; j < points.Count; j++) {
           TNum d = (points[i] - points[j]).Length;
           if (Tools.LT(d, minD)) {
@@ -1433,11 +1433,61 @@ public partial class Geometry<TNum, TConv>
     /// <returns>The Vrep of the convex polytop.</returns>
     public static SortedSet<Vector>? HrepToVrep_Geometric(List<HyperPlane> HPs) {
 // #if DEBUG
-      int[] bins = new int[28];
+      // int[] bins = new int[28];
 // #endif
 
-      SortedSet<Vector> Vs = new SortedSet<Vector>();
-      int               d  = HPs.First().Normal.SpaceDim;
+      GaussSLE.Solve
+        (
+         new List<HyperPlane>()
+           {
+             HPs[319]
+           , HPs[368]
+           , HPs[380]
+           }
+       , GaussSLE.GaussChoice.All
+       , out TNum[]? nums1
+        );
+      var x1 = new Vector(nums1);
+      GaussSLE.Solve
+        (
+         new List<HyperPlane>()
+           {
+             HPs[308]
+           , HPs[368]
+           , HPs[380]
+           }
+       , GaussSLE.GaussChoice.All
+       , out TNum[]? nums2
+        );
+      var x2 = new Vector(nums2);
+      GaussSLE.Solve
+        (
+         new List<HyperPlane>()
+           {
+             HPs[308]
+           , HPs[319]
+           , HPs[380]
+           }
+       , GaussSLE.GaussChoice.All
+       , out TNum[]? nums3
+        );
+      var x3 = new Vector(nums3);
+      GaussSLE.Solve
+        (
+         new List<HyperPlane>()
+           {
+             HPs[308]
+           , HPs[319]
+           , HPs[368]
+           }
+       , GaussSLE.GaussChoice.All
+       , out TNum[]? nums4
+        );
+      var x4 = new Vector(nums4);
+
+      SortedSet<Vector> Vs       = new SortedSet<Vector>(); // копим точки результата
+      SortedSet<Vector> toRemove = new SortedSet<Vector>(); // метим точки к удалению
+      int               d        = HPs.First().Normal.SpaceDim;
 
       // словарь гиперплоскость --> её индекс в списке HPs
       SortedDictionary<HyperPlane, int> HP2ind = new SortedDictionary<HyperPlane, int>();
@@ -1512,6 +1562,7 @@ public partial class Geometry<TNum, TConv>
             TNum             tMin            = Tools.Zero;
             bool             isInf           = true;
             Vector           zNew            = Vector.Zero(d);
+            Vector           zEdge           = Vector.Zero(d);
 
             foreach (HyperPlane hp in HPs) {
               TNum denominator = hp.Normal * v;
@@ -1540,65 +1591,225 @@ public partial class Geometry<TNum, TConv>
 
             Debug.Assert(!isInf, "ConvexPolytop.HrepToVrep_Geometric: The set of inequalities is unbounded!");
 
-            zNew = Vector.MulByNumAndAdd(v, tMin, z);
+
+            zEdge = v * tMin;
+            zNew  = z + zEdge;
+            // zNew  = Vector.MulByNumAndAdd(v, tMin, z);
             zNewActiveHPs.AddRange(zNewDefiningHPs);
             Debug.Assert
               (
                zNewDefiningHPs.All(hp => hp.Contains(zNew))
              , $"ConvexPolytop.Hre2Vrep_Geometric: A new point doesn't belong to the some hyper plane!"
               );
-            Vector check = zNew - z;
+
+            if (Tools.LT(zEdge.Length, Tools.EpsG)) { // если очередное ребро "короткое"
+              toRemove.Add(z);                        // пометим точку, из которой вышли
+              toRemove.Add(zNew);                     // пометим точку, в которую пришли
+            }
 
 // #if DEBUG
             // Vector check = zNew - z;
-            if (Tools.GT(check.Length, Tools.One)) {
-              bins[0]++;
-            }
-            else if (Tools.LT(check.Length, TNum.Pow(Tools.Two, TConv.FromInt(-26)))) {
-              bins[27]++;
-            }
-            else {
-              double len = TConv.ToDouble(check.Length);
-              int    num = -(int)Math.Ceiling(Math.Log2(len));
-              bins[num]++;
-            }
+            // if (Tools.GT(check.Length, Tools.One)) {
+            //   bins[0]++;
+            // }
+            // else if (Tools.LT(check.Length, TNum.Pow(Tools.Two, TConv.FromInt(-26)))) {
+            //   bins[27]++;
+            // }
+            // else {
+            //   double len = TConv.ToDouble(check.Length);
+            //   int    num = -(int)Math.Ceiling(Math.Log2(len));
+            //   bins[num]++;
+            // }
 // #endif
 
 
+            // встречалась ли эта точка ранее (определяем набором гиперплоскостей)
             if (HPsings.Add(new SortedSet<int>(zNewActiveHPs.Select(hp => HP2ind[hp])))) {
-              // if (Tools.GE(check.Length, Tools.EpsG)) { // добавляем точку, только если она "далеко", по точности
-                Vs.Add(zNew);
-                process.Enqueue((zNew, zNewActiveHPs));
-              // }
-              // else {
-                // Console.WriteLine($"H2V skip, len = {check.Length}");
-              // }
+#if DEBUG
+              Vector debug1 =
+                new Vector
+                  (
+                   new TNum[]
+                     {
+                       TConv.FromDouble(-0.11672077723995719)
+                     , TConv.FromDouble(-0.034065725195791235)
+                     , TConv.FromDouble(1.4895504951987597)
+                     }
+                  );
+              Vector debug2 =
+                new Vector
+                  (
+                   new TNum[]
+                     {
+                       TConv.FromDouble(-0.11672071294872709)
+                     , TConv.FromDouble(-0.03406571234948039)
+                     , TConv.FromDouble(1.489550464970621)
+                     }
+                  );
+              if (zNew.Equals(debug1)) {
+                var x = 1;
+                var o = Tools.Eps;
+              }
+              Debug.Assert
+                (
+                 GaussSLE.Solve(zNewActiveHPs, GaussSLE.GaussChoice.All, out TNum[]? point)
+               , $"ConvexPolytop.Hrep2Vrep_Geometric: ActiveHPs doesn't describe a point!"
+                );
+              var xx = zNew - new Vector(point);
+#endif
+              Vs.Add(zNew);
+              process.Enqueue((zNew, zNewActiveHPs));
             }
-            // else {
-            //   if (Tools.LT(check.Length, Tools.EpsG)) { // добавляем точку, только если она "далеко", по точности
-            //     Console.WriteLine($"H2V small edge, but add, len = {check.Length}");
-            //   }
-            // }
           }
         } while (J.Next());
       }
 
 // #if DEBUG
-      using (ParamWriter pr =
-             new ParamWriter
-               (
-                "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
-                // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\System.Double\\1E-08\\.distribution"
-                // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-circle30\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
-              , true
-               )) {
-        pr.Write($"[{string.Join(',', bins)}]");
-        pr.WriteLine();
-      }
+      // using (ParamWriter pr =
+      //        new ParamWriter
+      //          (
+      //           "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
+      //           // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-triangle\\Br\\0\\System.Double\\1E-08\\.distribution"
+      //           // "F:\\Works\\IMM\\Аспирантура\\LDG\\_Out\\Oscillator-circle30\\Br\\0\\DoubleDouble.ddouble\\1E-15\\.distribution"
+      //         , true
+      //          )) {
+      //   pr.Write($"[{string.Join(',', bins)}]");
+      //   pr.WriteLine();
+      // }
 // #endif
+
+      if (toRemove.Count > 0) {
+        var x = FindClosePairs_Naive(Vs, Tools.EpsG);
+        Vs.ExceptWith(toRemove);
+        var y = FindClosePairs_Naive(Vs, Tools.EpsG);
+// #if DEBUG
+//         TNum minDiamPruned = MinimalDiameter(Vs);
+//         Debug.Assert
+//           (
+//            minDiamPruned > Tools.EpsG
+//          , $"ConvexPolytop.Hrep2Vrep_Geometric: A close points presents in the pruned set of vertices! Found: {minDiamPruned}"
+//           );
+// #endif
+
+        Vs.UnionWith(MergePoints(toRemove)); // вернули "склеенные" точки в рой
+
+// #if DEBUG
+//         TNum minDiamUnion = MinimalDiameter(Vs);
+//         Debug.Assert
+//           (
+//            minDiamUnion > Tools.EpsG
+//          , $"ConvexPolytop.Hrep2Vrep_Geometric: A close points presents in the pruned set of vertices! Found: {minDiamUnion}"
+//           );
+// #endif
+
+        Console.WriteLine($"h2v.toRem: {toRemove.Count}");
+      }
+
       return Vs;
     }
 
+    /// <summary>
+    /// Находит все пары точек, расстояние между которыми меньше заданного порога.
+    /// Реализовано с помощью простого перебора всех пар (сложность O(N²)).
+    /// </summary>
+    /// <param name="points">Входной набор ("рой") точек.</param>
+    /// <param name="epsilon">Пороговое расстояние.</param>
+    /// <returns>
+    /// Словарь, где ключ - это точка, имеющая слишком близких соседей,
+    /// а значение - список этих соседей.
+    /// </returns>
+    public static SortedDictionary<Vector, List<Vector>> FindClosePairs_Naive(
+        IEnumerable<Vector> points
+      , TNum                epsilon
+      ) {
+      var result    = new SortedDictionary<Vector, List<Vector>>();
+      var pointList = points.ToList(); // Нужен доступ по индексу для эффективности
+
+      if (pointList.Count < 2) {
+        return result; // Не может быть пар
+      }
+
+      for (int i = 0; i < pointList.Count; i++) {
+        for (int j = i + 1; j < pointList.Count; j++) {
+          Vector p1 = pointList[i];
+          Vector p2 = pointList[j];
+
+          TNum distance = (p1 - p2).Length;
+
+          if (Tools.LT(distance, epsilon)) {
+            // Нашли "плохую" пару (p1, p2)
+
+            // Добавляем p2 в список для p1
+            if (!result.ContainsKey(p1)) {
+              result[p1] = new List<Vector>();
+            }
+            result[p1].Add(p2);
+
+            // Добавляем p1 в список для p2
+            if (!result.ContainsKey(p2)) {
+              result[p2] = new List<Vector>();
+            }
+            result[p2].Add(p1);
+          }
+        }
+      }
+
+      return result;
+    }
+
+
+    /// <summary>
+    /// Merges clusters of nearby points into their arithmetic mean.
+    /// </summary>
+    /// <param name="Ps">The initial set of points.</param>
+    /// <returns>A set of points where each cluster of close points has been replaced by its average.</returns>
+    /// <remarks>
+    /// Two or more points are considered a cluster if the distance between them is less than <c>Tools.EpsG</c>.
+    /// Clusters are detected and merged sequentially: after merging a cluster, the process restarts on the updated set.
+    /// </remarks>
+    public static SortedSet<Vector> MergePoints(IEnumerable<Vector> Ps) {
+      List<Vector> points = Ps.ToList();
+
+      if (points.Count < 2) {
+        return points.ToSortedSet();
+      }
+
+      bool changed;
+      do {
+        changed = false;
+
+        for (int i = 0; i < points.Count; i++) {
+          SortedSet<Vector> cluster = new() { points[i] };
+
+          for (int j = i + 1; j < points.Count; j++) {
+            if (Tools.LT((points[i] - points[j]).Length, Tools.EpsG)) {
+              cluster.Add(points[j]);
+            }
+          }
+
+          if (cluster.Count > 1) {
+            Vector average = Vector.Sum(cluster) / TConv.FromInt(cluster.Count);
+            points.RemoveAll(p => cluster.Contains(p));
+            points.Add(average);
+            changed = true;
+
+            break; // начинаем заново после замены
+          }
+        }
+      } while (changed);
+
+#if DEBUG
+      if (points.Count > 1) {
+        Debug.Assert
+          (
+           MinimalDiameter(points) > Tools.EpsG
+         , $"ConvexPolytop.MergePoints: The merging process went wrong! Found: {MinimalDiameter(points)}"
+          );
+      }
+#endif
+
+      return points.ToSortedSet();
+    }
 
     /// <summary>
     /// Finds an initial vertex of the convex polytope using a naive approach by checking combinations of hyperplanes.
@@ -1660,24 +1871,12 @@ public partial class Geometry<TNum, TConv>
         return null;
       }
 
-      // Vector sol = new Vector(x.Solution);
-      // Debug.Assert(HPs.Select(hp => hp.Contains(sol)).Count(b => b) >= sol.SpaceDim, $"ConvexPolytop.FindInitialVertex_Simplex: Wrong vertex found!");
-
       activeHPs = new List<HyperPlane>();
       foreach (int i in x.ActiveInequalitiesID) {
         activeHPs.Add(HPs[i]);
       }
 
-      List<HyperPlane> forLambdaHPs = activeHPs;
-      bool solExist =
-        GaussSLE.Solve
-          (
-           (i, j) => forLambdaHPs[i].Normal[j]
-         , i => forLambdaHPs[i].ConstantTerm
-         , x.Solution.Length
-         , GaussSLE.GaussChoice.All
-         , out TNum[]? res
-          );
+      bool solExist = GaussSLE.Solve(activeHPs, GaussSLE.GaussChoice.All, out TNum[]? res);
 
       if (!solExist) {
         throw new ArgumentException
