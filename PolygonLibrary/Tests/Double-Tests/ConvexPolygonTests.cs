@@ -114,24 +114,24 @@ public partial class ConvexPolygonTests
 			outside4 = new Vector2D(7.9, 10),
 			outside5 = new Vector2D(6, 11);
 
-		Assert.IsTrue(cp.Contains(inside1), "inside1");
-		Assert.IsTrue(cp.Contains(inside2), "inside2");
-		Assert.IsTrue(cp.Contains(inside3), "inside3");
+		Assert.That(cp.Contains(inside1), Is.True, "inside1");
+		Assert.That(cp.Contains(inside2), Is.True, "inside2");
+		Assert.That(cp.Contains(inside3), Is.True, "inside3");
 
-		Assert.IsTrue(cp.Contains(boundary1), "boundary1");
-		Assert.IsTrue(cp.Contains(boundary2), "boundary2");
-		Assert.IsTrue(cp.Contains(boundary3), "boundary3");
-		Assert.IsTrue(cp.Contains(boundary4), "boundary4");
-		Assert.IsTrue(cp.Contains(boundary5), "boundary5");
-		Assert.IsTrue(cp.Contains(boundary6), "boundary6");
-		Assert.IsTrue(cp.Contains(boundary7), "boundary7");
-		Assert.IsTrue(cp.Contains(boundary8), "boundary8");
+		Assert.That(cp.Contains(boundary1), Is.True, "boundary1");
+		Assert.That(cp.Contains(boundary2), Is.True, "boundary2");
+		Assert.That(cp.Contains(boundary3), Is.True, "boundary3");
+		Assert.That(cp.Contains(boundary4), Is.True, "boundary4");
+		Assert.That(cp.Contains(boundary5), Is.True, "boundary5");
+		Assert.That(cp.Contains(boundary6), Is.True, "boundary6");
+		Assert.That(cp.Contains(boundary7), Is.True, "boundary7");
+		Assert.That(cp.Contains(boundary8), Is.True, "boundary8");
 
-		Assert.IsFalse(cp.Contains(outside1), "outside1");
-		Assert.IsFalse(cp.Contains(outside2), "outside2");
-		Assert.IsFalse(cp.Contains(outside3), "outside3");
-		Assert.IsFalse(cp.Contains(outside4), "outside4");
-		Assert.IsFalse(cp.Contains(outside5), "outside5");
+		Assert.That(cp.Contains(outside1), Is.False, "outside1");
+		Assert.That(cp.Contains(outside2), Is.False, "outside2");
+		Assert.That(cp.Contains(outside3), Is.False, "outside3");
+		Assert.That(cp.Contains(outside4), Is.False, "outside4");
+		Assert.That(cp.Contains(outside5), Is.False, "outside5");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -226,24 +226,24 @@ public partial class ConvexPolygonTests
 			outside4 = new Vector2D(7.9, 10),
 			outside5 = new Vector2D(6, 11);
 
-		Assert.IsTrue(cp.ContainsInside(inside1), "inside1");
-		Assert.IsTrue(cp.ContainsInside(inside2), "inside2");
-		Assert.IsTrue(cp.ContainsInside(inside3), "inside3");
+		Assert.That(cp.ContainsInside(inside1), Is.True, "inside1");
+		Assert.That(cp.ContainsInside(inside2), Is.True, "inside2");
+		Assert.That(cp.ContainsInside(inside3), Is.True, "inside3");
 
-		Assert.IsFalse(cp.ContainsInside(boundary1), "boundary1");
-		Assert.IsFalse(cp.ContainsInside(boundary2), "boundary2");
-		Assert.IsFalse(cp.ContainsInside(boundary3), "boundary3");
-		Assert.IsFalse(cp.ContainsInside(boundary4), "boundary4");
-		Assert.IsFalse(cp.ContainsInside(boundary5), "boundary5");
-		Assert.IsFalse(cp.ContainsInside(boundary6), "boundary6");
-		Assert.IsFalse(cp.ContainsInside(boundary7), "boundary7");
-		Assert.IsFalse(cp.ContainsInside(boundary8), "boundary8");
+		Assert.That(cp.ContainsInside(boundary1), Is.False, "boundary1");
+		Assert.That(cp.ContainsInside(boundary2), Is.False, "boundary2");
+		Assert.That(cp.ContainsInside(boundary3), Is.False, "boundary3");
+		Assert.That(cp.ContainsInside(boundary4), Is.False, "boundary4");
+		Assert.That(cp.ContainsInside(boundary5), Is.False, "boundary5");
+		Assert.That(cp.ContainsInside(boundary6), Is.False, "boundary6");
+		Assert.That(cp.ContainsInside(boundary7), Is.False, "boundary7");
+		Assert.That(cp.ContainsInside(boundary8), Is.False, "boundary8");
 
-		Assert.IsFalse(cp.ContainsInside(outside1), "outside1");
-		Assert.IsFalse(cp.ContainsInside(outside2), "outside2");
-		Assert.IsFalse(cp.ContainsInside(outside3), "outside3");
-		Assert.IsFalse(cp.ContainsInside(outside4), "outside4");
-		Assert.IsFalse(cp.ContainsInside(outside5), "outside5");
+		Assert.That(cp.ContainsInside(outside1), Is.False, "outside1");
+		Assert.That(cp.ContainsInside(outside2), Is.False, "outside2");
+		Assert.That(cp.ContainsInside(outside3), Is.False, "outside3");
+		Assert.That(cp.ContainsInside(outside4), Is.False, "outside4");
+		Assert.That(cp.ContainsInside(outside5), Is.False, "outside5");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -337,7 +337,7 @@ public partial class ConvexPolygonTests
 
 		Assert.That(cp3.Contour.Count, Is.EqualTo(res.Length), "Sum 1: wrong number of vertices");
 		foreach (Vector2D p in res) {
-			Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 1: vertex " + p + " is not in the resultant polygon");
+			Assert.That(cp3.Contour.Vertices.Contains(p), Is.True, "Sum 1: vertex " + p + " is not in the resultant polygon");
 		}
 	}
 
@@ -357,7 +357,7 @@ public partial class ConvexPolygonTests
 
 		Assert.That(cp3.Contour.Count, Is.EqualTo(res.Length), "Sum 2: wrong number of vertices");
 		foreach (Vector2D p in res) {
-			Assert.IsTrue(cp3.Contour.Vertices.Contains(p), "Sum 2: vertex " + p + " is not in the resultant polygon");
+			Assert.That(cp3.Contour.Vertices.Contains(p), Is.True, "Sum 2: vertex " + p + " is not in the resultant polygon");
 		}
 	}
 
@@ -505,7 +505,7 @@ public partial class ConvexPolygonTests
 		ConvexPolygon cp = new ConvexPolygon(ps1, true);
 		double        s  = cp.Square;
 
-		Assert.IsTrue(Tools.EQ(s, 4), "WeightTest1: wrong square");
+		Assert.That(Tools.EQ(s, 4), Is.True, "WeightTest1: wrong square");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -525,7 +525,7 @@ public partial class ConvexPolygonTests
 			                                     }, true);
 		double s = cp.Square;
 
-		Assert.IsTrue(Tools.EQ(s, 14), "WeightTest1: wrong square");
+		Assert.That(Tools.EQ(s, 14), Is.True, "WeightTest1: wrong square");
 	}
 
 	[Category("ConvexPolygonTests"), Test]
@@ -539,7 +539,7 @@ public partial class ConvexPolygonTests
 		}
 
 		for (i = 0; i < N; i++) {
-			Assert.IsTrue(cp.Contains(rndPoints[i]), "RandomPoint1: a point is obtained that is outside the polygon");
+			Assert.That(cp.Contains(rndPoints[i]), Is.True, "RandomPoint1: a point is obtained that is outside the polygon");
 		}
 	}
 
@@ -571,7 +571,7 @@ public partial class ConvexPolygonTests
 		double cornPointsFreq = cornerPoints.Length * 7, _01PointsFreq = _01Points.Length * 14;
 
 		for (i = 0; i < N; i++) {
-			Assert.IsTrue(cp.Contains(rndPoints[i]), "RandomPoint2: a point is obtained that is outside the polygon");
+			Assert.That(cp.Contains(rndPoints[i]), Is.True, "RandomPoint2: a point is obtained that is outside the polygon");
 		}
 	}
 

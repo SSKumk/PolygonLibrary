@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using DoubleDouble;
 using NUnit.Framework;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;

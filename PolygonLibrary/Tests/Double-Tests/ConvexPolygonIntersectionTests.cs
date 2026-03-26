@@ -19,7 +19,7 @@ public partial class ConvexPolygonTests {
   private void CyclicListComparison(List<Vector2D> l1, List<Vector2D> l2, string mes) {
     Assert.That(l1.Count, Is.EqualTo(l2.Count), mes + ": lengths of the lists are different");
     int i2 = l2.IndexOf(l1[0]);
-    Assert.GreaterOrEqual(i2, 0, mes + ": the second list does not contain the point " + l1[0]);
+    Assert.That(i2, Is.GreaterThanOrEqualTo(0), mes + ": the second list does not contain the point " + l1[0]);
     for (int i1 = 0; i1 < l1.Count; i1++, i2 = (i2 + 1) % l2.Count) {
       Assert.That(
          l1[i1].CompareTo(l2[i2]), Is.EqualTo(0
@@ -37,8 +37,8 @@ public partial class ConvexPolygonTests {
         ConvexPolygon? resPQ = ConvexPolygon.IntersectionPolygon(P, Q);
         ConvexPolygon? resQP = ConvexPolygon.IntersectionPolygon(Q, P);
 
-        Assert.IsNotNull(resPQ, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
-        Assert.IsNotNull(resQP, $"Intersection{mes}: Q-P : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
+        Assert.That(resPQ, Is.Not.Null, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
+        Assert.That(resQP, Is.Not.Null, $"Intersection{mes}: Q-P : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]} is Null");
 
         CyclicListComparison
           (answer, resPQ.Vertices, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
@@ -57,8 +57,8 @@ public partial class ConvexPolygonTests {
         ConvexPolygon  Q     = new ConvexPolygon(Q_List);
         ConvexPolygon? resPQ = ConvexPolygon.IntersectionPolygon(P, Q);
         ConvexPolygon? resQP = ConvexPolygon.IntersectionPolygon(Q, P);
-        Assert.IsNull(resPQ, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
-        Assert.IsNull(resQP, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
+        Assert.That(resPQ, Is.Null, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
+        Assert.That(resQP, Is.Null, $"Intersection{mes}: P-Q : P starts at {P.Vertices[0]}, Q starts at {Q.Vertices[0]}");
         Q_List.CyclicShift();
       }
       P_List.CyclicShift();

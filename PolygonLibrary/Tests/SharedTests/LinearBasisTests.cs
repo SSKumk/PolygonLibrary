@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using CGLibrary;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using System.Collections.Generic;
@@ -37,16 +37,14 @@ public class LinearBasisTests {
     Assert.That(basis.SpaceDim, Is.EqualTo(3));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(0));
     Assert.That(basis.FullDim, Is.False);
-    Assert.Throws<ArgumentException>
-      (
+    Assert.Throws<ArgumentException>(
        ()
          => {
          var b = basis.Basis;
        }
      , "Accessing Basis property of empty basis should throw."
       );
-    Assert.Throws<ArgumentException>
-      (
+    Assert.Throws<ArgumentException>(
        ()
          => {
          var p = basis.ProjMatrix;
@@ -70,8 +68,7 @@ public class LinearBasisTests {
 
   [Test]
   public void Constructor_SingleZeroVector_Throws() {
-    Assert.Throws<ArgumentException>
-      (() => new LinearBasis(Vector.Zero(3)), "Constructor should always throw ArgumentException for a zero vector.");
+    Assert.Throws<ArgumentException>(() => new LinearBasis(Vector.Zero(3)), "Constructor should always throw ArgumentException for a zero vector.");
   }
 
   [Test]

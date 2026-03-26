@@ -124,11 +124,11 @@ public class SegmentCrossTests {
   //     Assert.That(info.crossType, Is.EqualTo(res[i].crossType)
   //     , "(direct, direct), test #" + i + ": different cross types");
   //     if (info.crossType == CrossType.NoCross) {
-  //       Assert.IsNull(info.fp, "(direct, direct), test #" + i + ": non-null result point");
-  //       Assert.IsNull(info.sp, "(direct, direct), test #" + i + ": non-null additional point");
+  //       Assert.That(info.fp, Is.Null, "(direct, direct), test #" + i + ": non-null result point");
+  //       Assert.That(info.sp, Is.Null, "(direct, direct), test #" + i + ": non-null additional point");
   //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
-  //       Assert.IsTrue(res[i].fp == info.fp, "(direct, direct), test #" + i + ": different result points");
-  //       Assert.IsNull(info.sp, "(direct, direct), test #" + i + ": non-null additional point");
+  //       Assert.That(res[i].fp == info.fp, Is.True, "(direct, direct), test #" + i + ": different result points");
+  //       Assert.That(info.sp, Is.Null, "(direct, direct), test #" + i + ": non-null additional point");
   //     } else {
   //       Assert.That(res[i].fp, Is.EqualTo(info.fp), "(direct, direct), test #" + i + ": different result points");
   //       Assert.That(res[i].sp, Is.EqualTo(info.sp), "(direct, direct), test #" + i + ": different additional points");
@@ -153,11 +153,11 @@ public class SegmentCrossTests {
   //       Assert.That(info.fp, Is.Null, "(direct, back), test #" + i + ": non-null result point");
   //       Assert.That(info.sp, Is.Null, "(direct, back), test #" + i + ": non-null additional point");
   //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
-  //       Assert.IsTrue(res[i].fp == info.fp, "(direct, back), test #" + i + ": different result points");
-  //       Assert.IsNull(info.sp, "(direct, back), test #" + i + ": non-null additional point");
+  //       Assert.That(res[i].fp == info.fp, Is.True, "(direct, back), test #" + i + ": different result points");
+  //       Assert.That(info.sp, Is.Null, "(direct, back), test #" + i + ": non-null additional point");
   //     } else {
-  //       Assert.IsTrue(res[i].fp == info.fp, "(direct, back), test #" + i + ": different result points");
-  //       Assert.IsTrue(res[i].sp == info.sp, "(direct, back), test #" + i + ": different additional points");
+  //       Assert.That(res[i].fp == info.fp, Is.True, "(direct, back), test #" + i + ": different result points");
+  //       Assert.That(res[i].sp == info.sp, Is.True, "(direct, back), test #" + i + ": different additional points");
   //     }
   //   }
   //
@@ -179,11 +179,11 @@ public class SegmentCrossTests {
   //       Assert.That(info.fp, Is.Null, "(back, direct), test #" + i + ": non-null result point");
   //       Assert.That(info.sp, Is.Null, "(back, direct), test #" + i + ": non-null additional point");
   //     } else if (info.crossType == CrossType.SinglePoint || info.crossType == CrossType.SinglePoint) {
-  //       Assert.IsTrue(res[i].fp == info.fp, "(back, direct), test #" + i + ": different result points");
-  //       Assert.IsNull(info.sp, "(back, direct), test #" + i + ": non-null additional point");
+  //       Assert.That(res[i].fp == info.fp, Is.True, "(back, direct), test #" + i + ": different result points");
+  //       Assert.That(info.sp, Is.Null, "(back, direct), test #" + i + ": non-null additional point");
   //     } else {
-  //       Assert.IsTrue(res[i].fp == info.sp, "(back, direct), test #" + i + ": different result points");
-  //       Assert.IsTrue(res[i].sp == info.fp, "(back, direct), test #" + i + ": different additional points");
+  //       Assert.That(res[i].fp == info.sp, Is.True, "(back, direct), test #" + i + ": different result points");
+  //       Assert.That(res[i].sp == info.fp, Is.True, "(back, direct), test #" + i + ": different additional points");
   //     }
   //   }
   //
@@ -207,8 +207,8 @@ public class SegmentCrossTests {
   //       Assert.That(res[i].fp, Is.EqualTo(info.fp), "(back, back), test #" + i + ": different result points");
   //       Assert.That(info.sp, Is.Null, "(back, back), test #" + i + ": non-null additional point");
   //     } else {
-  //       Assert.IsTrue(res[i].fp == info.sp, "(back, back), test #" + i + ": different result points");
-  //       Assert.IsTrue(res[i].sp == info.fp, "(back, back), test #" + i + ": different additional points");
+  //       Assert.That(res[i].fp == info.sp, Is.True, "(back, back), test #" + i + ": different result points");
+  //       Assert.That(res[i].sp == info.fp, Is.True, "(back, back), test #" + i + ": different additional points");
   //     }
   //   }
   // }

@@ -1,4 +1,4 @@
-using CGLibrary;
+﻿using CGLibrary;
 using DoubleDouble;
 using Rationals;
 namespace Tests;

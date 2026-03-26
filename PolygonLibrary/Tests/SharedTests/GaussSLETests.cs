@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using CGLibrary;
 using static CGLibrary.Geometry<double, Tests.DConvertor>; // Используем double
 using static Tests.SharedTests.StaticHelpers;              // Используем V() и Assert-хелперы

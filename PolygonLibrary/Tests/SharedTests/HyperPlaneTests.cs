@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using CGLibrary;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using static Tests.SharedTests.StaticHelpers;
@@ -27,7 +27,6 @@ public class HyperPlaneTests {
       Assert.That(Tools.EQ(n * bvec), Is.True, $"Normal should be orthogonal to basis vector {bvec}");
     }
   }
-
 
 #region Constructor Tests
   [Test]
@@ -240,12 +239,12 @@ public class HyperPlaneTests {
     List<Vector> filteredNotIn = hp.FilterNotIn(swarm).ToList();
 
     Assert.That(filteredIn.Count, Is.EqualTo(2));
-    Assert.Contains(p_on1, filteredIn);
-    Assert.Contains(p_on2, filteredIn);
+    Assert.That(filteredIn, Does.Contain(p_on1));
+    Assert.That(filteredIn, Does.Contain(p_on2));
 
     Assert.That(filteredNotIn.Count, Is.EqualTo(2));
-    Assert.Contains(p_above, filteredNotIn);
-    Assert.Contains(p_below, filteredNotIn);
+    Assert.That(filteredNotIn, Does.Contain(p_above));
+    Assert.That(filteredNotIn, Does.Contain(p_below));
   }
 
   [Test]

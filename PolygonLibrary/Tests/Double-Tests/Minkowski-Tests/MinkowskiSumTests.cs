@@ -1,4 +1,4 @@
-using DoubleDouble;
+﻿using DoubleDouble;
 using NUnit.Framework;
 using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
 using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using DoubleDouble;
 using NUnit.Framework;
 using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;

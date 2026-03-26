@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using CGLibrary;
 using NUnit.Framework;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;

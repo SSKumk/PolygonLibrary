@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using CGLibrary;
 using static CGLibrary.Geometry<double, Tests.DConvertor>; // Используем double
 using static Tests.SharedTests.StaticHelpers;              // Используем общий V()
@@ -206,8 +206,7 @@ public class VectorTests {
   // [Test]
   // public void Operator_ScalarDivision_ByZero_Throws() {
   //   Vector v = V(1, 2);
-  //   Assert.Throws<DivideByZeroException>
-  //     (
+  //   Assert.Throws//     (
   //      ()
   //        => {
   //        var x = v / 0.0;
