@@ -219,3 +219,15 @@
   - [`PolygonExtremeTests.cs`](../../Tests/Double-Tests/PolygonExtremeTests.cs)
 - Note:
   - smoke-only `CreateCP*` и `DoCutTest` заменены прямыми assertions; `IntersectionPolygon` сознательно не дублируется, потому что уже закрыт отдельным классом `Intersection`
+
+### FaceLattice
+
+- New tests:
+  - [`FaceLatticeAssert.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeAssert.cs) (локальные helper-ы для создания и сравнения `Vector` в polyhedra-сценариях)
+  - [`FaceLatticeTestData.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeTestData.cs) (построение треугольной иерархии `FLNode` и готовой тестовой решётки)
+  - [`FaceLatticeNodeTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeNodeTests.cs) (конструкторы `FLNode`, уровни, `AllNonStrictSub`, сравнение и overrides с сохранением legacy-сообщений)
+  - [`FaceLatticeStructureAndTransformTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs) (конструкторы `FaceLattice`, агрегаты, `AllKfaces_ExceptTop`, `VertexTransform`, `Equals`, `GetHashCode`)
+- Legacy:
+  - [`FaceLatticeTests.cs`](../../Tests/SharedTests/FaceLatticeTests.cs)
+- Note:
+  - legacy-набор был сосредоточен почти целиком на `FLNode`; при миграции добавлен отдельный прямой слой на сам контейнер `FaceLattice`
