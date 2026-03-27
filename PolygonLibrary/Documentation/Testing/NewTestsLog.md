@@ -143,3 +143,14 @@
   - [`HyperPlaneTests.cs`](../../Tests/SharedTests/HyperPlaneTests.cs)
 - Note:
   - сохранены полезные сообщения для ориентации, строкового формата и согласованности ленивой инициализации; дополнительно вынесен отдельный прямой тест на публичный контракт `GetHashCode`
+
+### Polyline
+
+- New tests:
+  - [`PolylineTestData.cs`](../../Tests/DoubleGeometry/Polygons/Polyline/PolylineTestData.cs) (общие наборы вершин для выпуклого и невыпуклого контуров)
+  - [`PolylineConstructionAndGeometryTests.cs`](../../Tests/DoubleGeometry/Polygons/Polyline/PolylineConstructionAndGeometryTests.cs) (конструкторы, циклический индексатор, рёбра, площадь, пустая полилиния и `EdgeAngle`)
+  - [`PolylineContainmentTests.cs`](../../Tests/DoubleGeometry/Polygons/Polyline/PolylineContainmentTests.cs) (`ContainsPoint` и `ContainsPointInside` для выпуклого и невыпуклого контура с сохранением legacy-сообщений)
+- Legacy:
+  - [`PolylineTests.cs`](../../Tests/Double-Tests/PolylineTests.cs)
+- Note:
+  - сохранены исторические диагностические сообщения `${i}th test: ...`; дополнительно добавлен прямой сценарий для clockwise-обхода и явные тесты на базовую геометрию класса
