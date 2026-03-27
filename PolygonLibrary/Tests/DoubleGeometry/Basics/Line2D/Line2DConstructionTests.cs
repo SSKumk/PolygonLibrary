@@ -172,6 +172,18 @@ public class Line2DConstructionTests {
   }
 
   [Test]
+  public void Factory_PointAndDirect_WithExternalPoint_ThrowsWhenExternalPointBelongsToLine() {
+    Vector2D point = new Vector2D(0.0, 0.0);
+    Vector2D direct = new Vector2D(2.0, 0.0);
+    Vector2D external = new Vector2D(10.0, 0.0);
+
+    Assert.That(
+      () => Line2D.Line2D_PointAndDirect(point, direct, external),
+      Throws.TypeOf<ArgumentException>().With.Message.EqualTo("The point that should define the positive halfplane belongs to the line")
+    );
+  }
+
+  [Test]
   public void Factory_PointAndNormal_CreatesLineFromPointAndNormal() {
     Vector2D point = new Vector2D(0.0, 2.0);
     Vector2D normal = new Vector2D(0.0, 5.0);
@@ -183,6 +195,24 @@ public class Line2DConstructionTests {
       Line2DAssert.AreEqual(line.Direct, new Vector2D(1.0, 0.0));
       Assert.That(Tools.GT(line[new Vector2D(0.0, 3.0)]), Is.True);
       Assert.That(Tools.LT(line[new Vector2D(0.0, 1.0)]), Is.True);
+    });
+
+    Line2DAssert.HasInvariantGeometry(line, point);
+  }
+
+  [Test]
+  public void Factory_PointAndNormal_NormalizesInclinedNormalAndUsesItsOrientation() {
+    Vector2D point = new Vector2D(1.0, 1.0);
+    Vector2D normal = new Vector2D(2.0, -2.0);
+    Line2D   line = Line2D.Line2D_PointAndNormal(point, normal);
+    double   coord = double.Sqrt(0.5);
+
+    Assert.Multiple(() => {
+      Assert.That(line.PassesThrough(point), Is.True);
+      Line2DAssert.AreEqual(line.Normal, new Vector2D(coord, -coord));
+      Line2DAssert.AreEqual(line.Direct, new Vector2D(-coord, -coord));
+      Assert.That(Tools.GT(line[new Vector2D(2.0, 0.0)]), Is.True);
+      Assert.That(Tools.LT(line[new Vector2D(0.0, 2.0)]), Is.True);
     });
 
     Line2DAssert.HasInvariantGeometry(line, point);

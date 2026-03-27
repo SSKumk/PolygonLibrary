@@ -29,6 +29,8 @@
 | `L2D-CTOR-014` | `x` | После построения `Normal` и `Direct` ортогональны. | [`Line2DAssert.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DAssert.cs), [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) |
 | `L2D-CTOR-015` | `x` | После построения `Normal` и `Direct` нормированы. | [`Line2DAssert.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DAssert.cs), [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) |
 | `L2D-CTOR-016` | `x` | Коэффициенты `A`, `B`, `C` согласованы с `Normal`. | [`Line2DAssert.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DAssert.cs), [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) |
+| `L2D-CTOR-017` | `x` | Фабрика `Line2D_PointAndDirect` с внешней точкой выбрасывает ошибку, если внешняя точка лежит на прямой. | [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) |
+| `L2D-CTOR-018` | `x` | Фабрика `Line2D_PointAndNormal` корректно работает для наклонной ненормированной нормали и сохраняет ориентацию по знаку нормали. | [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) |
 
 ## Gaps
 

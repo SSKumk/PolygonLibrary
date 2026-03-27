@@ -28,6 +28,16 @@ public class Line2DQueriesAndIntersectionTests {
   }
 
   [Test]
+  public void PassesThrough_UsesEpsilonForNearLinePoints() {
+    Line2D line = new Line2D(new Vector2D(0.0, 0.0), new Vector2D(2.0, 0.0));
+
+    Assert.Multiple(() => {
+      Assert.That(line.PassesThrough(new Vector2D(1.0, Tools.Eps / 2.0)), Is.True);
+      Assert.That(line.PassesThrough(new Vector2D(1.0, 2.0 * Tools.Eps)), Is.False);
+    });
+  }
+
+  [Test]
   public void Reorient_KeepsSameGeometricLineButFlipsHalfPlanes() {
     Line2D original = new Line2D(new Vector2D(0.0, 0.0), new Vector2D(2.0, 0.0));
     Line2D reoriented = original.Reorient();
@@ -112,6 +122,19 @@ public class Line2DQueriesAndIntersectionTests {
   public void Intersect_CoincidentLines_ReturnOverlapAndNullPoint() {
     Line2D first = new Line2D(new Vector2D(0.0, 0.0), new Vector2D(2.0, 2.0));
     Line2D second = new Line2D(new Vector2D(1.0, 1.0), new Vector2D(3.0, 3.0));
+
+    Line2D.LineCrossType crossType = Line2D.Intersect(first, second, out Vector2D? point);
+
+    Assert.Multiple(() => {
+      Assert.That(crossType, Is.EqualTo(Line2D.LineCrossType.Overlap));
+      Assert.That(point, Is.Null);
+    });
+  }
+
+  [Test]
+  public void Intersect_CoincidentLinesWithOppositeOrientation_ReturnOverlapAndNullPoint() {
+    Line2D first = new Line2D(new Vector2D(0.0, 0.0), new Vector2D(2.0, 0.0));
+    Line2D second = new Line2D(new Vector2D(2.0, 0.0), new Vector2D(0.0, 0.0));
 
     Line2D.LineCrossType crossType = Line2D.Intersect(first, second, out Vector2D? point);
 

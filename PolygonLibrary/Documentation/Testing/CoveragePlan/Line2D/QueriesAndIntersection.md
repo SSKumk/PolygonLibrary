@@ -29,6 +29,8 @@
 | `L2D-QRY-014` | `x` | Пересечение корректно работает для вертикальной и горизонтальной прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
 | `L2D-QRY-015` | `x` | Пересечение корректно работает для двух наклонных прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
 | `L2D-QRY-016` | `x` | Пересечение корректно отражает epsilon-чувствительное поведение в почти совпадающих и почти параллельных случаях. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-017` | `x` | `PassesThrough` использует текущий `Tools.Eps` при решении, лежит ли точка на прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-018` | `x` | `Intersect` возвращает `Overlap` для совпадающих прямых независимо от ориентации их направляющих векторов. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
 
 ## Gaps
 
