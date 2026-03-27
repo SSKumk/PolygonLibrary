@@ -254,3 +254,15 @@
   - отдельного прямого legacy-файла не было
 - Note:
   - здесь сознательно зафиксирован именно текущий наблюдаемый контракт неработающего метода, а не гипотетическая успешная конвертация
+
+### GiftWrapping
+
+- New tests:
+  - [`GiftWrappingTestData.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingTestData.cs) (базовые 2D/3D swarm-наборы, включая внутренние точки и линейный случай)
+  - [`GiftWrappingInitializationTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingInitializationTests.cs) (пустой, точечный и линейный случаи инициализации)
+  - [`GiftWrappingHullExtractionTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingHullExtractionTests.cs) (`WrapVRep` для квадрата, тетраэдра и куба с сохранением legacy-сообщения про множество вершин)
+  - [`GiftWrappingFaceLatticeTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingFaceLatticeTests.cs) (`WrapFaceLattice` и `ConstructFL` для типовых 2D/3D оболочек)
+- Legacy:
+  - [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs)
+- Note:
+  - прямой слой на алгоритм вынесен отдельно, а тяжёлый randomized/regression legacy-набор исключён из активной компиляции как исторический

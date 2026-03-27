@@ -33,6 +33,7 @@
         <Compile Remove="Double-Tests\ConvexPolygonIntersectionTests.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonLegacyHelpers.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonTests.cs" />
+        <Compile Remove="Double-Tests\GW_hDTests\GW_Tests.cs" />
         <Compile Remove="Double-Tests\PolygonToolsTests.cs" />
         <Compile Remove="Double-Tests\PolygonExtremeTests.cs" />
         <Compile Remove="Double-Tests\PolylineTests.cs" />
