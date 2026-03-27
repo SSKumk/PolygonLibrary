@@ -3,6 +3,8 @@
 Эта папка содержит документацию по покрытию тестами.
 
 - [`ScenarioFormat.md`](ScenarioFormat.md) — зафиксированный шаблон оформления.
+- [`DoubleGeometryMigrationOrder.md`](DoubleGeometryMigrationOrder.md) — порядок закрытия классов и текущий статус миграции.
+- [`NewTestsLog.md`](NewTestsLog.md) — журнал новых тестовых файлов по уже закрытым классам.
 
 Назначение:
 
