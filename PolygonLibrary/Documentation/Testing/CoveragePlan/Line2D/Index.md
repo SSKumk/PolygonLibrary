@@ -19,12 +19,15 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction | ` ` | Сценарии ещё не размечены по фактическому покрытию. |
-| Queries and Intersection | ` ` | Сценарии ещё не размечены по фактическому покрытию. |
+| Construction | `x` | Базовый набор сценариев покрыт тестами из `Tests/DoubleGeometry/Basics/Line2D`. |
+| Queries and Intersection | `x` | Базовый набор сценариев покрыт тестами из `Tests/DoubleGeometry/Basics/Line2D`. |
 
 ## Existing Tests
 
-На данный момент в тестовом проекте явного и содержательного покрытия `Line2D` не зафиксировано.
+Покрытие `Line2D` вынесено в новую структуру:
+
+- [`Line2DConstructionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs)
+- [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs)
 
 
 
