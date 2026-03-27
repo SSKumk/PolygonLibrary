@@ -29,8 +29,8 @@
 | 7 | `Matrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Matrix`, legacy `SharedTests/MatrixTests.cs` исключён из компиляции. |
 | 8 | `LinearBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/LinearBasis`, legacy `SharedTests/LinearBasisTests.cs` исключён из компиляции. |
 | 9 | `AffineBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/AffineBasis`, legacy `SharedTests/AffineBasisTest.cs` исключён из компиляции. |
-| 10 | `HyperPlane` | `in_progress` | Опирается на базисы и векторы. |
-| 11 | `Polyline` | `pending` | Базовая 2D-полигональная сущность. |
+| 10 | `HyperPlane` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/HyperPlane`, legacy `SharedTests/HyperPlaneTests.cs` исключён из компиляции. |
+| 11 | `Polyline` | `in_progress` | Базовая 2D-полигональная сущность. |
 | 12 | `BasicPolygon` | `pending` | Низкоуровневый полигональный слой. |
 | 13 | `PolygonTools` | `pending` | Вспомогательные polygon-операции. |
 | 14 | `GammaPair` | `pending` | Вспомогательный объект для support-function логики. |

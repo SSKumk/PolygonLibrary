@@ -19,14 +19,12 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction and Orientation | `x` | Есть подробный отдельный test fixture. |
-| Evaluation and Containment | `x` | Есть прямые тесты на вычисление, принадлежность и фильтрацию. |
-| Comparison, Overrides and Factory | `x` | Есть прямые тесты на фабрику, строки, равенство и сравнение. |
+| Construction and Orientation | `x` | Перенесено в отдельный файл новой структуры. |
+| Evaluation and Containment | `x` | Перенесено в отдельный файл новой структуры. |
+| Comparison, Overrides and Factory | `x` | Перенесено в отдельный файл новой структуры, включая `GetHashCode`. |
 
 ## Existing Test Sources
 
-- [`HyperPlaneTests.cs`](../../../../Tests/SharedTests/HyperPlaneTests.cs)
-- [`HyperPlaneTests.cs`](../../../../Tests/SharedTests/HyperPlaneTests.cs)
 - [`HyperPlaneTests.cs`](../../../../Tests/SharedTests/HyperPlaneTests.cs)
 
 ## Notes

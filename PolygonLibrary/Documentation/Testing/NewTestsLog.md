@@ -131,3 +131,15 @@
   - [`AffineBasisTest.cs`](../../Tests/SharedTests/AffineBasisTest.cs)
 - Note:
   - сохранены полезные диагностические сообщения для copy/no-copy сценариев, проекций и сравнений множеств точек; дополнительно явно зафиксированы контракты `CanonicalOrigin`, `GetHashCode` и запрет на `AffineBasis(origin, LinearBasisMutable, needCopy: false)`
+
+### HyperPlane
+
+- New tests:
+  - [`HyperPlaneAssert.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneAssert.cs) (проверка согласованности `Normal`, `Origin`, `ConstantTerm` и `AffBasis`)
+  - [`HyperPlaneConstructionAndOrientationTests.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneConstructionAndOrientationTests.cs) (конструкторы, ориентация нормали и ленивые сценарии инициализации)
+  - [`HyperPlaneEvaluationAndContainmentTests.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneEvaluationAndContainmentTests.cs) (`Eval`, `Contains*`, фильтрация и `AllAtOneSide`)
+  - [`HyperPlaneComparisonOverridesAndFactoryTests.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneComparisonOverridesAndFactoryTests.cs) (фабрика `Make3D_xyParallel`, `ToString`, `Equals`, `CompareTo`, `GetHashCode`)
+- Legacy:
+  - [`HyperPlaneTests.cs`](../../Tests/SharedTests/HyperPlaneTests.cs)
+- Note:
+  - сохранены полезные сообщения для ориентации, строкового формата и согласованности ленивой инициализации; дополнительно вынесен отдельный прямой тест на публичный контракт `GetHashCode`
