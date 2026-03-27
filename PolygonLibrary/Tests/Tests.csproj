@@ -29,8 +29,12 @@
     <ItemGroup>
         <Compile Remove="_Store\**" />
         <Compile Remove="BentlyOttmannTests.cs" />
+        <Compile Remove="Double-Tests\ConvexPolygonCutTests.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonIntersectionTests.cs" />
+        <Compile Remove="Double-Tests\ConvexPolygonLegacyHelpers.cs" />
+        <Compile Remove="Double-Tests\ConvexPolygonTests.cs" />
         <Compile Remove="Double-Tests\PolygonToolsTests.cs" />
+        <Compile Remove="Double-Tests\PolygonExtremeTests.cs" />
         <Compile Remove="Double-Tests\PolylineTests.cs" />
         <Compile Remove="Double-Tests\SegmentCrossTests.cs" />
         <Compile Remove="Double-Tests\SupportFunctionTests.cs" />

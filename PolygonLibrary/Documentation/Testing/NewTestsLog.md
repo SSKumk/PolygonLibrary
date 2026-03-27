@@ -201,3 +201,21 @@
   - [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
 - Note:
   - legacy-набор полностью разложен по темам, старые диагностические тексты сохранены; дополнительно добраны point/segment ctor и прямая выпуклификация, которых раньше не было
+
+### ConvexPolygon
+
+- New tests:
+  - [`ConvexPolygonTestData.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonTestData.cs) (legacy-наборы вершин, `GammaPair` и базовые polygon-данные)
+  - [`ConvexPolygonAssert.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonAssert.cs) (циклическое сравнение списков вершин из legacy helper-а)
+  - [`ConvexPolygonConstructionTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonConstructionTests.cs) (конструкторы из точек, `Vector`, `SupportFunction` и lazy-согласование `SF`)
+  - [`ConvexPolygonContainmentTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonContainmentTests.cs) (`Contains` и `ContainsInside` с сохранением legacy-сообщений)
+  - [`ConvexPolygonExtremeAndAreaTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonExtremeAndAreaTests.cs) (`GetExtremeElements`, `Square` и текущий `NearestPoint`)
+  - [`ConvexPolygonRandomAndCutTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonRandomAndCutTests.cs) (случайные точки, барицентрические веса и прямой контракт `CutConvexPolygon`)
+  - [`ConvexPolygonMinkowskiTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonMinkowskiTests.cs) (операторы суммы и разности Минковского с переносом legacy-сценариев)
+- Legacy:
+  - [`ConvexPolygonTests.cs`](../../Tests/Double-Tests/ConvexPolygonTests.cs)
+  - [`ConvexPolygonCutTests.cs`](../../Tests/Double-Tests/ConvexPolygonCutTests.cs)
+  - [`ConvexPolygonLegacyHelpers.cs`](../../Tests/Double-Tests/ConvexPolygonLegacyHelpers.cs)
+  - [`PolygonExtremeTests.cs`](../../Tests/Double-Tests/PolygonExtremeTests.cs)
+- Note:
+  - smoke-only `CreateCP*` и `DoCutTest` заменены прямыми assertions; `IntersectionPolygon` сознательно не дублируется, потому что уже закрыт отдельным классом `Intersection`
