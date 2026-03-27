@@ -177,3 +177,14 @@
   - [`PolygonToolsTests.cs`](../../Tests/Double-Tests/PolygonToolsTests.cs)
 - Note:
   - прямой legacy-набор на прямоугольники перенесён без потери диагностических текстов; для `Circle/Ellipse` добавлено новое прямое покрытие, которого раньше не было
+
+### GammaPair
+
+- New tests:
+  - [`GammaPairConstructionAndEqualityTests.cs`](../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairConstructionAndEqualityTests.cs) (конструкторы, нормализация, копирование и прямое `Equals(GammaPair)`)
+  - [`GammaPairComparisonAndFormattingTests.cs`](../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairComparisonAndFormattingTests.cs) (`CompareTo`, `CompareTo(null)`, нормированное сравнение и `ToString`)
+  - [`GammaPairCrossPairsTests.cs`](../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairCrossPairsTests.cs) (`CrossPairs` для legacy-набора непараллельных случаев, дробных пересечений и ненормированных нормалей)
+- Legacy:
+  - прямого legacy-файла не было; релевантные косвенные сценарии жили в [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
+- Note:
+  - сохранены исторические сообщения `Bad crossing ...`; параллельный случай сознательно не закреплён как mandatory, пока `CrossPairs` опирается на `Debug.Assert`
