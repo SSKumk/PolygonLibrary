@@ -13,33 +13,31 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `TLS-UTIL-001` | ` ` | Константы `Zero`, `HalfOne`, `One`, `MinusOne`, `Two`, `Six` имеют ожидаемые значения для `double`. | |
-| `TLS-UTIL-002` | ` ` | Константы `PI`, `HalfPI` и `PI2` согласованы между собой. | |
-| `TLS-UTIL-003` | ` ` | `InitTNumArray(k)` создаёт массив длины `k`, заполненный нулями. | |
-| `TLS-UTIL-004` | ` ` | `InitTNum2DArray(row, col)` создаёт двумерный массив нужного размера, заполненный нулями. | |
-| `TLS-UTIL-005` | ` ` | `Sign(x)` согласован с `CMP(x)` для отрицательных, нулевых и положительных значений. | |
-| `TLS-UTIL-006` | ` ` | `Swap(ref a, ref b)` меняет местами значения для value type. | |
-| `TLS-UTIL-007` | ` ` | `Swap(ref a, ref b)` меняет местами ссылки для reference type. | |
-| `TLS-UTIL-008` | ` ` | `Atan2(0, 0)` возвращает `0`. | |
-| `TLS-UTIL-009` | ` ` | `Atan2(y, x)` корректно работает в первой четверти. | |
-| `TLS-UTIL-010` | ` ` | `Atan2(y, x)` корректно работает во второй четверти. | |
-| `TLS-UTIL-011` | ` ` | `Atan2(y, x)` корректно работает в третьей четверти. | |
-| `TLS-UTIL-012` | ` ` | `Atan2(y, x)` корректно работает в четвёртой четверти. | |
-| `TLS-UTIL-013` | ` ` | `Atan2(y, x)` корректно работает на положительной полуоси `Ox`. | |
-| `TLS-UTIL-014` | ` ` | `Atan2(y, x)` корректно работает на отрицательной полуоси `Ox`. | |
-| `TLS-UTIL-015` | ` ` | `Atan2(y, x)` корректно работает на положительной полуоси `Oy`. | |
-| `TLS-UTIL-016` | ` ` | `Atan2(y, x)` корректно работает на отрицательной полуоси `Oy`. | |
-| `TLS-UTIL-017` | ` ` | `Abs(x)` возвращает `0` для значений, попадающих в нулевую окрестность по `Eps`. | |
-| `TLS-UTIL-018` | ` ` | `Abs(x)` возвращает положительное значение для отрицательного аргумента вне окрестности нуля. | |
-| `TLS-UTIL-019` | ` ` | `GetCombinations(n, k)` перечисляет все комбинации без повторов в лексикографическом порядке. | |
-| `TLS-UTIL-020` | ` ` | `GetCombinations(n, 1)` возвращает все одноэлементные комбинации. | |
-| `TLS-UTIL-021` | ` ` | `GetCombinations(n, n)` возвращает ровно одну комбинацию, содержащую все индексы. | |
+| `TLS-UTIL-001` | `x` | Константы `Zero`, `HalfOne`, `One`, `MinusOne`, `Two`, `Six` имеют ожидаемые значения для `double`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-002` | `x` | Константы `PI`, `HalfPI` и `PI2` согласованы между собой. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-003` | `x` | `InitTNumArray(k)` создаёт массив длины `k`, заполненный нулями. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-004` | `x` | `InitTNum2DArray(row, col)` создаёт двумерный массив нужного размера, заполненный нулями. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-005` | `x` | `Sign(x)` согласован с `CMP(x)` для отрицательных, нулевых и положительных значений. | [`ToolsComparisonsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs) |
+| `TLS-UTIL-006` | `x` | `Swap(ref a, ref b)` меняет местами значения для value type. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-007` | `x` | `Swap(ref a, ref b)` меняет местами ссылки для reference type. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-008` | `x` | `Atan2(0, 0)` возвращает `0`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-009` | `x` | `Atan2(y, x)` корректно работает в первой четверти. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-010` | `x` | `Atan2(y, x)` корректно работает во второй четверти. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-011` | `x` | `Atan2(y, x)` корректно работает в третьей четверти. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-012` | `x` | `Atan2(y, x)` корректно работает в четвёртой четверти. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-013` | `x` | `Atan2(y, x)` корректно работает на положительной полуоси `Ox`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-014` | `x` | `Atan2(y, x)` корректно работает на отрицательной полуоси `Ox`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-015` | `x` | `Atan2(y, x)` корректно работает на положительной полуоси `Oy`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-016` | `x` | `Atan2(y, x)` корректно работает на отрицательной полуоси `Oy`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-017` | `x` | `Abs(x)` возвращает `0` для значений, попадающих в нулевую окрестность по `Eps`. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-018` | `x` | `Abs(x)` возвращает положительное значение для отрицательного аргумента вне окрестности нуля. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-019` | `x` | `GetCombinations(n, k)` перечисляет все комбинации без повторов в лексикографическом порядке. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-020` | `x` | `GetCombinations(n, 1)` возвращает все одноэлементные комбинации. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
+| `TLS-UTIL-021` | `x` | `GetCombinations(n, n)` возвращает ровно одну комбинацию, содержащую все индексы. | [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) |
 
 ## Gaps
 
-- Нет явной фиксации диапазона значений `Atan2`.
-- Нет прямых сценариев на корректность порядка перечисления комбинаций.
-- Нет прямых сценариев на массивы нулевой длины, если такие случаи считаются вне контракта.
+- Нет.
 
 ## Notes
 

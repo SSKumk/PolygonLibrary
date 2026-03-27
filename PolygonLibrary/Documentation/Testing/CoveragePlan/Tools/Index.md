@@ -20,12 +20,13 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Comparisons | ` ` | Сценарии ещё не размечены по фактическому покрытию. |
-| Math and Utilities | ` ` | Сценарии ещё не размечены по фактическому покрытию. |
+| Comparisons | `x` | Есть отдельный прямой набор на `Eps`, сравнения, `CMP` и `TNumComparer`. |
+| Math and Utilities | `x` | Есть отдельный прямой набор на константы, массивы, `Swap`, `Atan2`, `Abs` и `GetCombinations`. |
 
 ## Existing Test Sources
 
-Выделенного `ToolsTests.cs` в проекте нет. Часть поведения косвенно проверяется почти всеми базовыми тестами, но явная привязка сценариев к тестам ещё не выполнена.
+- [`ToolsComparisonsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs)
+- [`ToolsMathAndUtilitiesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs)
 
 ## Notes
 

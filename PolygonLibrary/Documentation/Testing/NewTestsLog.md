@@ -65,3 +65,13 @@
   - прямого legacy-файла не было; раньше покрытие было только косвенным через [`BentlyOttmannTests.cs`](../../Tests/BentlyOttmannTests.cs)
 - Note:
   - для `SegmentPair` добавлен короткий прямой unit-like набор вместо косвенной проверки через большой sweep-line сценарий; по дороге класс был возвращён в активную сборку `CGLibrary`
+
+### Tools
+
+- New tests:
+  - [`ToolsComparisonsTests.cs`](../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs) (управление `Eps`, производная `EpsG`, приближённые сравнения, `CMP`, `Sign` и `TNumComparer`)
+  - [`ToolsMathAndUtilitiesTests.cs`](../../Tests/DoubleGeometry/Basics/Tools/ToolsMathAndUtilitiesTests.cs) (числовые константы, инициализация массивов, `Swap`, `Atan2`, `Abs`, `GetCombinations`)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - для `Tools` добавлен первый прямой базовый набор, который фиксирует численные границы по `Eps`, а не только косвенное использование через другие классы
