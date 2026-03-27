@@ -25,8 +25,8 @@
 | 3 | `Intersection` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Intersection`, legacy `ConvexPolygonIntersectionTests.cs` исключён из компиляции. |
 | 4 | `SegmentPair` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/SegmentPair` отдельным unit-like набором. |
 | 5 | `Tools` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Tools` прямым базовым набором на численные контракты. |
-| 6 | `Vector` | `in_progress` | База для общей линейной алгебры. |
-| 7 | `Matrix` | `pending` | Следом за `Vector`. |
+| 6 | `Vector` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector`, legacy `SharedTests/VectorTests.cs` исключён из компиляции. |
+| 7 | `Matrix` | `in_progress` | Следом за `Vector`. |
 | 8 | `LinearBasis` | `pending` | Опирается на `Vector` и `Matrix`. |
 | 9 | `AffineBasis` | `pending` | Опирается на `LinearBasis`. |
 | 10 | `HyperPlane` | `pending` | Опирается на базисы и векторы. |

@@ -24,18 +24,23 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction and Identity | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Comparison and Formatting | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Arithmetic | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Geometry | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Factories and Generation | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
+| Construction and Identity | `x` | Перенесён прямой набор на конструкторы, доступ к координатам и copy/no-copy семантику. |
+| Comparison and Formatting | `x` | Перенесён прямой набор на сравнение, `Equals`, форматирование и инвариантную культуру. |
+| Arithmetic | `x` | Перенесён прямой набор на операторы, `Sum`, линейные комбинации и affine operations. |
+| Geometry | `x` | Перенесён прямой набор на длину, нормировку, углы, проекции и взаимное расположение. |
+| Factories and Generation | `x` | Перенесён прямой набор на стандартные фабрики и генераторы с фиксированным seed. |
 
 ## Existing Test Sources
 
 Потенциальные источники текущего покрытия:
 
 - [`VectorTests.cs`](../../../../Tests/SharedTests/VectorTests.cs)
-- [`VectorsTests.cs`](../../../../Tests/Double-Tests/VectorsTests.cs)
+- [`VectorAssert.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorAssert.cs)
+- [`VectorConstructionAndIdentityTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorConstructionAndIdentityTests.cs)
+- [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs)
+- [`VectorArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorArithmeticTests.cs)
+- [`VectorGeometryTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorGeometryTests.cs)
+- [`VectorFactoriesAndGenerationTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorFactoriesAndGenerationTests.cs)
 
 ## Notes
 

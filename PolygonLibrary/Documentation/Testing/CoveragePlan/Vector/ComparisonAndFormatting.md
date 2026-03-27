@@ -12,23 +12,22 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `VEC-CMP-001` | ` ` | `CompareTo` возвращает `0` для векторов, совпадающих с точностью `Eps`. | |
-| `VEC-CMP-002` | ` ` | `CompareTo` использует лексикографический порядок по координатам. | |
-| `VEC-CMP-003` | ` ` | `CompareTo` считает `null` меньшим, чем любой реальный вектор. | |
-| `VEC-CMP-004` | ` ` | Оператор `==` согласован с `CompareTo == 0`. | |
-| `VEC-CMP-005` | ` ` | Оператор `!=` согласован с `CompareTo != 0`. | |
-| `VEC-CMP-006` | ` ` | Операторы `<`, `<=`, `>` и `>=` согласованы с `CompareTo`. | |
-| `VEC-CMP-007` | ` ` | `Equals(object)` возвращает `true` для эквивалентного `Vector`. | |
-| `VEC-CMP-008` | ` ` | `Equals(object)` возвращает `false` для объекта другого типа. | |
-| `VEC-CMP-009` | ` ` | `ToString()` использует круглые скобки и запятую как разделитель. | |
-| `VEC-CMP-010` | ` ` | `ToStringBraceAndDelim` применяет пользовательские скобки и разделитель. | |
-| `VEC-CMP-011` | ` ` | `ToStringBraceAndDelim` корректно работает при отсутствии открывающей или закрывающей скобки. | |
-| `VEC-CMP-012` | ` ` | Строковое представление использует инвариантную культуру и не зависит от локали процесса. | |
+| `VEC-CMP-001` | `x` | `CompareTo` возвращает `0` для векторов, совпадающих с точностью `Eps`. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-002` | `x` | `CompareTo` использует лексикографический порядок по координатам. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-003` | `x` | `CompareTo` считает `null` меньшим, чем любой реальный вектор. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-004` | `x` | Оператор `==` согласован с `CompareTo == 0`. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-005` | `x` | Оператор `!=` согласован с `CompareTo != 0`. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-006` | `x` | Операторы `<`, `<=`, `>` и `>=` согласованы с `CompareTo`. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-007` | `x` | `Equals(object)` возвращает `true` для эквивалентного `Vector`. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-008` | `x` | `Equals(object)` возвращает `false` для объекта другого типа. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-009` | `x` | `ToString()` использует круглые скобки и запятую как разделитель. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-010` | `x` | `ToStringBraceAndDelim` применяет пользовательские скобки и разделитель. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-011` | `x` | `ToStringBraceAndDelim` корректно работает при отсутствии открывающей или закрывающей скобки. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
+| `VEC-CMP-012` | `x` | Строковое представление использует инвариантную культуру и не зависит от локали процесса. | [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) |
 
 ## Gaps
 
-- Нет изолированного покрытия строкового формата.
-- Не зафиксировано, как именно сравнение ведёт себя около `Eps`.
+- Нет.
 
 ## Notes
 

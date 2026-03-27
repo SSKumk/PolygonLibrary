@@ -75,3 +75,17 @@
   - отдельного прямого legacy-файла не было
 - Note:
   - для `Tools` добавлен первый прямой базовый набор, который фиксирует численные границы по `Eps`, а не только косвенное использование через другие классы
+
+### Vector
+
+- New tests:
+  - [`VectorAssert.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorAssert.cs) (локальные helper-ы для создания и сравнения `Vector`)
+  - [`VectorConstructionAndIdentityTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorConstructionAndIdentityTests.cs) (конструкторы, copy/no-copy семантика, доступ к координатам, массивные представления и базовые инварианты)
+  - [`VectorComparisonAndFormattingTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs) (лексикографическое сравнение, операторы, `Equals`, `GetHashCode`, строковое представление и инвариантная культура)
+  - [`VectorArithmeticTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorArithmeticTests.cs) (арифметические операторы, скалярное произведение, `Sum`, линейные комбинации, `MulByNumAndAdd`, `AffMul`)
+  - [`VectorGeometryTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorGeometryTests.cs) (длины, нормировка, углы, параллельность, ортогональность, `OuterProduct`, `SubVector`, `LiftUp`, `ProjectTo2DAffineSpace`)
+  - [`VectorFactoriesAndGenerationTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorFactoriesAndGenerationTests.cs) (стандартные фабрики и детерминированные сценарии для генераторов)
+- Legacy:
+  - [`VectorTests.cs`](../../Tests/SharedTests/VectorTests.cs)
+- Note:
+  - сохранены полезные диагностические сообщения из legacy-набора для нормировки, скалярного произведения и граничных сценариев `Angle`; дополнительно закрыты прямые сценарии, которых раньше не было, для `IEnumerable<int>`, `Vector2D`, явного приведения к массиву, `Sum` и генераторов
