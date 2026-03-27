@@ -15,15 +15,17 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction and Comparison | ` ` | Прямого активного покрытия в собираемом тестовом проекте нет. |
+| Construction and Comparison | `x` | Есть прямой unit-like набор на нормализацию порядка, `CompareTo` и `SortedSet`. |
 
 ## Existing Test Sources
 
-- [`BentlyOttmannTests.cs`](../../../../Tests/BentlyOttmannTests.cs) - использование в `SortedSet<SegmentPair>`, но файл сейчас исключён из сборки тестового проекта.
+- [`SegmentPairConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/SegmentPair/SegmentPairConstructionAndComparisonTests.cs)
+- [`BentlyOttmannTests.cs`](../../../../Tests/BentlyOttmannTests.cs) - историческое косвенное использование в `SortedSet<SegmentPair>`, но файл сейчас исключён из сборки тестового проекта.
 
 ## Notes
 
 - Несмотря на компактность класса, для sweep-line алгоритмов ошибки в нормализации порядка здесь очень неприятны, так что отдельные маленькие тесты всё равно нужны.
+- При миграции выяснилось, что `SegmentPair.cs` лежал в дереве, но не был подключён к `CGLibrary.csproj`; перед тестированием класс пришлось вернуть в активную сборку библиотеки.
 
 
 

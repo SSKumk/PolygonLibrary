@@ -56,3 +56,12 @@
   - [`ConvexPolygonIntersectionTests.cs`](../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
 - Note:
   - сохранены исторические диагностические сообщения `Intersection..` и вынесен отдельный недостающий тест на `null`-аргументы
+
+### SegmentPair
+
+- New tests:
+  - [`SegmentPairConstructionAndComparisonTests.cs`](../../Tests/DoubleGeometry/Basics/SegmentPair/SegmentPairConstructionAndComparisonTests.cs) (нормализация порядка пары, `CompareTo` и совместимость с `SortedSet`)
+- Legacy:
+  - прямого legacy-файла не было; раньше покрытие было только косвенным через [`BentlyOttmannTests.cs`](../../Tests/BentlyOttmannTests.cs)
+- Note:
+  - для `SegmentPair` добавлен короткий прямой unit-like набор вместо косвенной проверки через большой sweep-line сценарий; по дороге класс был возвращён в активную сборку `CGLibrary`
