@@ -231,3 +231,17 @@
   - [`FaceLatticeTests.cs`](../../Tests/SharedTests/FaceLatticeTests.cs)
 - Note:
   - legacy-набор был сосредоточен почти целиком на `FLNode`; при миграции добавлен отдельный прямой слой на сам контейнер `FaceLattice`
+
+### ConvexPolytop
+
+- New tests:
+  - [`ConvexPolytopAssert.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopAssert.cs) (helper-ы для создания `Vector` и сравнения множеств вершин политопа)
+  - [`ConvexPolytopTestData.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTestData.cs) (базовые данные для unit-square в `Vrep`, `Hrep` и простых матричных преобразований)
+  - [`ConvexPolytopConstructionAndRepresentationTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs) (прямые фабрики из `Vrep`/`Hrep`/`FLrep`, lazy-переходы, `WhichRep`, `fVector`, `InnerPoint`)
+  - [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs) (базовые фабрики `Zero`, `Cube01_*`, `RectAxisParallel`, `Ball_*` и метрики диаметра)
+  - [`ConvexPolytopContainmentAndNearestPointTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopContainmentAndNearestPointTests.cs) (`Contains*`, `NearestPoint` и текущие `NotImplementedException`-ветки)
+  - [`ConvexPolytopTransformsAndOverridesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs) (преобразования `Shift`/`Rotate`/`LiftUp`/`Scale`/`SectionByHyperPlane` и overrides)
+- Legacy:
+  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
+- Note:
+  - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами обязательного минимума и будут разбираться следующими классами backlog
