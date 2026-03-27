@@ -38,8 +38,8 @@
 | 16 | `ConvexPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/ConvexPolygon`, legacy `ConvexPolygon*` и `PolygonExtremeTests.cs` исключены из компиляции. |
 | 17 | `FaceLattice` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/FaceLattice`, legacy `SharedTests/FaceLatticeTests.cs` исключён из компиляции. |
 | 18 | `ConvexPolytop` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/ConvexPolytop` прямым unit-like набором; legacy-источники остаются у алгоритмических классов. |
-| 19 | `HrepToFLrep` | `in_progress` | Преобразование представлений. |
-| 20 | `GiftWrapping` | `pending` | Алгоритм поверх базовых геометрических сущностей. |
+| 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
+| 20 | `GiftWrapping` | `in_progress` | Алгоритм поверх базовых геометрических сущностей. |
 | 21 | `MinkowskiSum` | `pending` | Алгоритмический уровень. |
 | 22 | `MinkowskiDiff` | `pending` | Алгоритмический уровень. |
 | 23 | `CauchyMatrix` | `pending` | Отдельный вычислительный объект; можно переносить после базовой линейной алгебры. |

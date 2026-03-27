@@ -245,3 +245,12 @@
   - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
 - Note:
   - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами обязательного минимума и будут разбираться следующими классами backlog
+
+### HrepToFLrep
+
+- New tests:
+  - [`HrepToFLrepCurrentContractTests.cs`](../../Tests/DoubleGeometry/Polyhedra/HrepToFLrep/HrepToFLrepCurrentContractTests.cs) (текущее публичное поведение `HrepToFLrep_Geometric`: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - здесь сознательно зафиксирован именно текущий наблюдаемый контракт неработающего метода, а не гипотетическая успешная конвертация
