@@ -27,8 +27,8 @@
 | 5 | `Tools` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Tools` прямым базовым набором на численные контракты. |
 | 6 | `Vector` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector`, legacy `SharedTests/VectorTests.cs` исключён из компиляции. |
 | 7 | `Matrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Matrix`, legacy `SharedTests/MatrixTests.cs` исключён из компиляции. |
-| 8 | `LinearBasis` | `in_progress` | Опирается на `Vector` и `Matrix`. |
-| 9 | `AffineBasis` | `pending` | Опирается на `LinearBasis`. |
+| 8 | `LinearBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/LinearBasis`, legacy `SharedTests/LinearBasisTests.cs` исключён из компиляции. |
+| 9 | `AffineBasis` | `in_progress` | Опирается на `LinearBasis`. |
 | 10 | `HyperPlane` | `pending` | Опирается на базисы и векторы. |
 | 11 | `Polyline` | `pending` | Базовая 2D-полигональная сущность. |
 | 12 | `BasicPolygon` | `pending` | Низкоуровневый полигональный слой. |

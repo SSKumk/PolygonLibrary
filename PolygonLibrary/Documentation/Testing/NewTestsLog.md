@@ -104,3 +104,17 @@
   - [`MatrixTests.cs`](../../Tests/SharedTests/MatrixTests.cs)
 - Note:
   - сохранены содержательные диагностические сообщения из legacy-набора для copy/no-copy сценариев, `ToString` и эталонных случаев `ToRREF`; заодно coverage-план приведён к реальному API `TakeRows`, `TakeCols` и `TakeSubMatrix`
+
+### LinearBasis
+
+- New tests:
+  - [`LinearBasisAssert.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisAssert.cs) (проверка ортонормированности и структурного равенства базисов)
+  - [`LinearBasisConstructionTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisConstructionTests.cs) (конструкторы, копирование, слияние базисов и базовые инварианты)
+  - [`LinearBasisMutationTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisMutationTests.cs) (`LinearBasisMutable`, `AddVector`, `AddVectors` и детерминированный сценарий добавления)
+  - [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) (проекции, `Contains`, ортогональное дополнение, `OrthonormalVector` и текущий контракт `Orthonormalize`)
+  - [`LinearBasisComparisonAndSpanTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisComparisonAndSpanTests.cs) (`Equals`, `CompareTo`, перечисление и `SpanSameSpace`)
+  - [`LinearBasisGenerationTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisGenerationTests.cs) (фабрики `GenLinearBasis` и их инварианты)
+- Legacy:
+  - [`LinearBasisTests.cs`](../../Tests/SharedTests/LinearBasisTests.cs)
+- Note:
+  - сохранены полезные диагностические сообщения для пустого базиса, копирования и геометрических сравнений; при переносе отдельно зафиксировано, что публичный `Orthonormalize(Vector)` пока остаётся `todo` и сейчас бросает `NotImplementedException`
