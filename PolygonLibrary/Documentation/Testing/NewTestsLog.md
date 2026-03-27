@@ -33,3 +33,15 @@
   - [`VectorsTests.cs`](../../Tests/Double-Tests/VectorsTests.cs)
 - Note:
   - сохранены исторические поясняющие сообщения и группировка сценариев для `AngleTest` и `IsBetweenTest`
+
+### Segment
+
+- New tests:
+  - [`SegmentAssert.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentAssert.cs) (ассерты для `Vector2D` и геометрии результата пересечения)
+  - [`SegmentConstructionAndGeometryTests.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentConstructionAndGeometryTests.cs) (конструкторы, геометрические свойства, сравнение, `Equals`, `ToString`)
+  - [`SegmentPointQueriesTests.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentPointQueriesTests.cs) (точечные запросы, `ContainsPoint`, `IsEndPoint`, `IsInnerPoint`, `ComputeAtPoint`)
+  - [`SegmentIntersectionTests.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentIntersectionTests.cs) (пересечение отрезков, `CrossInfo`, типы и позиции точек пересечения)
+- Legacy:
+  - [`SegmentCrossTests.cs`](../../Tests/Double-Tests/SegmentCrossTests.cs)
+- Note:
+  - сохранён исторический текст сообщений из `SegmentContainsPointTest`; старый закомментированный черновик по `Intersect` заменён активным системным набором тестов

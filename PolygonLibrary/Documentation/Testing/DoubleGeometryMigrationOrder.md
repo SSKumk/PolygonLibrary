@@ -21,7 +21,7 @@
 | --- | --- | --- | --- |
 | 0 | `Line2D` | `closed` | Пилотный перенос уже выполнен до фиксации общего backlog. |
 | 1 | `Vector2D` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector2D`, legacy `VectorsTests.cs` исключён из компиляции. |
-| 2 | `Segment` | `in_progress` | Собран контекст по coverage plan и legacy `SegmentCrossTests.cs`. |
+| 2 | `Segment` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Segment`, legacy `SegmentCrossTests.cs` исключён из компиляции. |
 | 3 | `Intersection` | `pending` | Нормально переносить рядом с `Segment`. |
 | 4 | `SegmentPair` | `pending` | Связанный небольшой объект после `Segment` и `Intersection`. |
 | 5 | `Tools` | `pending` | Общие численные и геометрические utility-контракты. |

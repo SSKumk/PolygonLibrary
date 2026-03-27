@@ -19,14 +19,18 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction and Geometry | ` ` | Явная разметка по этим сценариям ещё не сделана. |
-| Point Queries | `~` | Есть прямой тест на `ContainsPoint`, остальное не размечено. |
-| Intersection | ` ` | Активного прямого покрытия у текущего test project почти нет. |
+| Construction and Geometry | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Segment`. |
+| Point Queries | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Segment`. |
+| Intersection | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Segment`. |
 
 ## Existing Test Sources
 
-- [`SegmentCrossTests.cs`](../../../../Tests/Double-Tests/SegmentCrossTests.cs) - прямой тест на `ContainsPoint`.
+- [`SegmentConstructionAndGeometryTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentConstructionAndGeometryTests.cs)
+- [`SegmentPointQueriesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentPointQueriesTests.cs)
+- [`SegmentIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentIntersectionTests.cs)
 - [`BentlyOttmannTests.cs`](../../../../Tests/BentlyOttmannTests.cs) - косвенное использование `Segment` и `SegmentPair`, но файл исключён из компиляции тестового проекта.
+
+Legacy-источник [`SegmentCrossTests.cs`](../../../../Tests/Double-Tests/SegmentCrossTests.cs) больше не участвует в активной компиляции после переноса.
 
 ## Notes
 
