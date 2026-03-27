@@ -1,8 +1,8 @@
-# Vector2D
+﻿# Vector2D
 
 ## Scope
 
-Класс [`CGLibrary/Basics/Vector2D.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\CGLibrary\Basics\Vector2D.cs) задаёт двумерный специализированный вектор с 2D-геометрическими операциями:
+Класс [`CGLibrary/Basics/Vector2D.cs`](../../../../../CGLibrary/Basics/Vector2D.cs) задаёт двумерный специализированный вектор с 2D-геометрическими операциями:
 
 - координаты `x`, `y` и полярный угол;
 - арифметику, скалярное и псевдоскалярное произведения;
@@ -11,9 +11,9 @@
 
 ## Topics
 
-- [`ConstructionAndComparison.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector2D\ConstructionAndComparison.md) - конструкторы, сравнение, доступ к координатам, строковое представление.
-- [`ArithmeticAndAngles.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector2D\ArithmeticAndAngles.md) - арифметика, расстояния, повороты, углы и полярные координаты.
-- [`RelationsAndCombinations.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector2D\RelationsAndCombinations.md) - взаимное расположение, `IsBetween`, линейные комбинации, приведение из `Vector`.
+- [`ConstructionAndComparison.md`](ConstructionAndComparison.md) - конструкторы, сравнение, доступ к координатам, строковое представление.
+- [`ArithmeticAndAngles.md`](ArithmeticAndAngles.md) - арифметика, расстояния, повороты, углы и полярные координаты.
+- [`RelationsAndCombinations.md`](RelationsAndCombinations.md) - взаимное расположение, `IsBetween`, линейные комбинации, приведение из `Vector`.
 
 ## Current Coverage Summary
 
@@ -27,8 +27,12 @@
 
 Потенциальный источник текущего покрытия:
 
-- [`VectorsTests.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Tests\Double-Tests\VectorsTests.cs)
+- [`VectorsTests.cs`](../../../../Tests/Double-Tests/VectorsTests.cs)
 
 ## Notes
 
 - `Vector2D` частично дублирует идеи `Vector`, но имеет собственный 2D-контракт: его лучше документировать отдельно, а не наследовать сценарии по умолчанию.
+
+
+
+

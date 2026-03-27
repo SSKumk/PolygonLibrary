@@ -30,6 +30,12 @@
   ...
 ```
 
+## Ссылки
+
+- внутри `Documentation/Testing` используются только относительные ссылки;
+- ссылки на исходники и тесты тоже пишутся относительными от текущего `.md`-файла;
+- абсолютные пути вида `F:\...` в этой документации не используются.
+
 ## `Index.md`
 
 `Index.md` должен содержать:
@@ -84,8 +90,8 @@
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
 | `OBJ-TOPIC-001` | ` ` | Описание сценария. | |
-| `OBJ-TOPIC-002` | `x` | Описание сценария. | [SomeTests.cs](/abs/path/to/file.cs):42 |
-| `OBJ-TOPIC-003` | `~` | Описание сценария. | [SomeTests.cs](/abs/path/to/file.cs):57 |
+| `OBJ-TOPIC-002` | `x` | Описание сценария. | [SomeTests.cs](../../../Tests/SharedTests/SomeTests.cs#L42) |
+| `OBJ-TOPIC-003` | `~` | Описание сценария. | [SomeTests.cs](../../../Tests/SharedTests/SomeTests.cs#L57) |
 | `OBJ-TOPIC-004` | `-` | Сценарий не входит в обязательный минимум. | |
 
 ## Gaps
@@ -146,13 +152,13 @@
 Хорошо:
 
 ```md
-[Line2DTests.cs](/abs/path/Tests/SharedTests/Line2DTests.cs):42
+[Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L42)
 ```
 
 или
 
 ```md
-[Line2DTests.cs](/abs/path/Tests/SharedTests/Line2DTests.cs):42, [Line2DTests.cs](/abs/path/Tests/SharedTests/Line2DTests.cs):57
+[Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L42), [Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L57)
 ```
 
 ## Почему формат подходит для больших классов

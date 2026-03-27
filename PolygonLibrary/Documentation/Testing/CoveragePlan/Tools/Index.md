@@ -1,8 +1,8 @@
-# Tools
+﻿# Tools
 
 ## Scope
 
-Класс [`CGLibrary/Toolkit/Tools.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\CGLibrary\Toolkit\Tools.cs) задаёт базовые числовые соглашения библиотеки:
+Класс [`CGLibrary/Toolkit/Tools.cs`](../../../../../CGLibrary/Toolkit/Tools.cs) задаёт базовые числовые соглашения библиотеки:
 
 - глобальную точность `Eps` и производную точность `EpsG`;
 - приближённые сравнения чисел;
@@ -13,8 +13,8 @@
 
 ## Topics
 
-- [`Comparisons.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Tools\Comparisons.md) - точность, сравнения и компаратор.
-- [`MathAndUtilities.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Tools\MathAndUtilities.md) - константы, инициализация, `Atan2`, `Abs`, `Swap`, комбинации.
+- [`Comparisons.md`](Comparisons.md) - точность, сравнения и компаратор.
+- [`MathAndUtilities.md`](MathAndUtilities.md) - константы, инициализация, `Atan2`, `Abs`, `Swap`, комбинации.
 
 ## Current Coverage Summary
 
@@ -31,3 +31,7 @@
 
 - Для `Tools` особенно важно отделять прямое покрытие контракта от косвенного использования в других тестах.
 - При последующей разметке стоит отдавать приоритет сценариям, которые напрямую фиксируют граничное поведение около `Eps`.
+
+
+
+

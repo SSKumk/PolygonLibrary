@@ -1,8 +1,8 @@
-# Matrix
+﻿# Matrix
 
 ## Scope
 
-Класс [`CGLibrary/Basics/Matrix.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\CGLibrary\Basics\Matrix.cs) задаёт матричный слой библиотеки:
+Класс [`CGLibrary/Basics/Matrix.cs`](../../../../../CGLibrary/Basics/Matrix.cs) задаёт матричный слой библиотеки:
 
 - неизменяемые и изменяемые матрицы;
 - базовую арифметику;
@@ -14,12 +14,12 @@
 
 ## Topics
 
-- [`ConstructionAndAccess.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\ConstructionAndAccess.md) - конструкторы, размеры, индексаторы, приведения.
-- [`ComparisonAndFormatting.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\ComparisonAndFormatting.md) - равенство, сравнение, строковое представление.
-- [`Arithmetic.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\Arithmetic.md) - арифметика и умножения.
-- [`StructureAndExtraction.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\StructureAndExtraction.md) - склейка, извлечение строк, столбцов, подматриц и транспонирование.
-- [`LinearOperations.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\LinearOperations.md) - линейные функции, `ToRREF`, специальные фабрики.
-- [`Mutable.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Matrix\Mutable.md) - контракт `MatrixMutable`.
+- [`ConstructionAndAccess.md`](ConstructionAndAccess.md) - конструкторы, размеры, индексаторы, приведения.
+- [`ComparisonAndFormatting.md`](ComparisonAndFormatting.md) - равенство, сравнение, строковое представление.
+- [`Arithmetic.md`](Arithmetic.md) - арифметика и умножения.
+- [`StructureAndExtraction.md`](StructureAndExtraction.md) - склейка, извлечение строк, столбцов, подматриц и транспонирование.
+- [`LinearOperations.md`](LinearOperations.md) - линейные функции, `ToRREF`, специальные фабрики.
+- [`Mutable.md`](Mutable.md) - контракт `MatrixMutable`.
 
 ## Current Coverage Summary
 
@@ -36,9 +36,13 @@
 
 Потенциальный источник текущего покрытия:
 
-- [`MatrixTests.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Tests\SharedTests\MatrixTests.cs)
+- [`MatrixTests.cs`](../../../../Tests/SharedTests/MatrixTests.cs)
 
 ## Notes
 
 - Для `Matrix` особенно важно фиксировать не только результат, но и размерность результата.
 - Большую часть сценариев удобно строить на маленьких матрицах `1x1`, `2x2`, `2x3`, `3x2`.
+
+
+
+

@@ -1,8 +1,8 @@
-# Vector
+﻿# Vector
 
 ## Scope
 
-Класс [`CGLibrary/Basics/Vector.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\CGLibrary\Basics\Vector.cs) описывает общий многомерный вектор и задаёт базовый линейно-алгебраический контракт для остального ядра:
+Класс [`CGLibrary/Basics/Vector.cs`](../../../../../CGLibrary/Basics/Vector.cs) описывает общий многомерный вектор и задаёт базовый линейно-алгебраический контракт для остального ядра:
 
 - хранение координат и размерности;
 - лексикографическое сравнение;
@@ -14,11 +14,11 @@
 
 ## Topics
 
-- [`ConstructionAndIdentity.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector\ConstructionAndIdentity.md) - конструкторы, размерность, доступ к координатам, идентичность объекта.
-- [`ComparisonAndFormatting.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector\ComparisonAndFormatting.md) - сравнение, равенство, преобразование в строку и массив.
-- [`Arithmetic.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector\Arithmetic.md) - арифметические операции и линейные комбинации.
-- [`Geometry.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector\Geometry.md) - длина, нормировка, углы, проекции, взаимное расположение.
-- [`FactoriesAndGeneration.md`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Documentation\Testing\CoveragePlan\Vector\FactoriesAndGeneration.md) - стандартные фабрики и генерация случайных векторов.
+- [`ConstructionAndIdentity.md`](ConstructionAndIdentity.md) - конструкторы, размерность, доступ к координатам, идентичность объекта.
+- [`ComparisonAndFormatting.md`](ComparisonAndFormatting.md) - сравнение, равенство, преобразование в строку и массив.
+- [`Arithmetic.md`](Arithmetic.md) - арифметические операции и линейные комбинации.
+- [`Geometry.md`](Geometry.md) - длина, нормировка, углы, проекции, взаимное расположение.
+- [`FactoriesAndGeneration.md`](FactoriesAndGeneration.md) - стандартные фабрики и генерация случайных векторов.
 
 ## Current Coverage Summary
 
@@ -34,10 +34,14 @@
 
 Потенциальные источники текущего покрытия:
 
-- [`VectorTests.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Tests\SharedTests\VectorTests.cs)
-- [`VectorsTests.cs`](F:\Works\IMM\Аспирантура\_PolygonLibrary\PolygonLibrary\Tests\Double-Tests\VectorsTests.cs)
+- [`VectorTests.cs`](../../../../Tests/SharedTests/VectorTests.cs)
+- [`VectorsTests.cs`](../../../../Tests/Double-Tests/VectorsTests.cs)
 
 ## Notes
 
 - При дальнейшей разметке полезно отделять truly generic-сценарии от сценариев, критичных именно для `double` и `Eps`.
 - Для `Vector` важны не только happy-path проверки, но и инварианты после цепочек операций.
+
+
+
+
