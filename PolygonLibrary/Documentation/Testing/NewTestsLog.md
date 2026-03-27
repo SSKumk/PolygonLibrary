@@ -45,3 +45,14 @@
   - [`SegmentCrossTests.cs`](../../Tests/Double-Tests/SegmentCrossTests.cs)
 - Note:
   - сохранён исторический текст сообщений из `SegmentContainsPointTest`; старый закомментированный черновик по `Intersect` заменён активным системным набором тестов
+
+### Intersection
+
+- New tests:
+  - [`ConvexPolygonIntersectionTestBase.cs`](../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionTestBase.cs) (общие тестовые данные, циклическое сравнение вершин и симметричная проверка `IntersectionPolygon`)
+  - [`ConvexPolygonIntersectionBasicCasesTests.cs`](../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBasicCasesTests.cs) (обычные непустые пересечения, симметрия результата и инвариантность к циклическому сдвигу вершин)
+  - [`ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs`](../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs) (вложение, пустое пересечение, касания, вырожденные пересечения и `null`-входы)
+- Legacy:
+  - [`ConvexPolygonIntersectionTests.cs`](../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
+- Note:
+  - сохранены исторические диагностические сообщения `Intersection..` и вынесен отдельный недостающий тест на `null`-аргументы

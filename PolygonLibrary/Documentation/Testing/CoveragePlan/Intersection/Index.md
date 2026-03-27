@@ -18,14 +18,14 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Basic Cases | `x` | Есть большой отдельный набор прямых тестов на пересечение многоугольников. |
-| Boundary and Degenerate Cases | `x` | В тестовом наборе уже много случаев касаний, пустых пересечений и вложения. |
+| Basic Cases | `x` | Сценарии перенесены в отдельный базовый набор для непустых пересечений. |
+| Boundary and Degenerate Cases | `x` | Граничные случаи, пустые пересечения и `null`-входы вынесены в отдельный файл. |
 
 ## Existing Test Sources
 
-- [`ConvexPolygonIntersectionTests.cs`](../../../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
-- [`ConvexPolygonIntersectionTests.cs`](../../../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
-- [`ConvexPolygonIntersectionTests.cs`](../../../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
+- [`ConvexPolygonIntersectionBasicCasesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBasicCasesTests.cs)
+- [`ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs)
+- [`ConvexPolygonIntersectionTestBase.cs`](../../../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionTestBase.cs)
 
 ## Notes
 
