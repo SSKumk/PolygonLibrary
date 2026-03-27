@@ -19,15 +19,15 @@
 
 | Order | Class | Status | Notes |
 | --- | --- | --- | --- |
-| 0 | `Line2D` | `closed` | Пилотный перенос уже выполнен до фиксации общего backlog. |
+| 0 | `Line2D` | `closed` | Пилотный перенос выполнен до фиксации общего backlog. |
 | 1 | `Vector2D` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector2D`, legacy `VectorsTests.cs` исключён из компиляции. |
 | 2 | `Segment` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Segment`, legacy `SegmentCrossTests.cs` исключён из компиляции. |
 | 3 | `Intersection` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Intersection`, legacy `ConvexPolygonIntersectionTests.cs` исключён из компиляции. |
 | 4 | `SegmentPair` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/SegmentPair` отдельным unit-like набором. |
 | 5 | `Tools` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Tools` прямым базовым набором на численные контракты. |
 | 6 | `Vector` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector`, legacy `SharedTests/VectorTests.cs` исключён из компиляции. |
-| 7 | `Matrix` | `in_progress` | Следом за `Vector`. |
-| 8 | `LinearBasis` | `pending` | Опирается на `Vector` и `Matrix`. |
+| 7 | `Matrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Matrix`, legacy `SharedTests/MatrixTests.cs` исключён из компиляции. |
+| 8 | `LinearBasis` | `in_progress` | Опирается на `Vector` и `Matrix`. |
 | 9 | `AffineBasis` | `pending` | Опирается на `LinearBasis`. |
 | 10 | `HyperPlane` | `pending` | Опирается на базисы и векторы. |
 | 11 | `Polyline` | `pending` | Базовая 2D-полигональная сущность. |
@@ -39,7 +39,7 @@
 | 17 | `FaceLattice` | `pending` | База для политопной структуры. |
 | 18 | `ConvexPolytop` | `pending` | Высокоуровневая политопная сущность. |
 | 19 | `HrepToFLrep` | `pending` | Преобразование представлений. |
-| 20 | `GiftWrapping` | `pending` | Алгоритм на поверх базовых геометрических сущностей. |
+| 20 | `GiftWrapping` | `pending` | Алгоритм поверх базовых геометрических сущностей. |
 | 21 | `MinkowskiSum` | `pending` | Алгоритмический уровень. |
 | 22 | `MinkowskiDiff` | `pending` | Алгоритмический уровень. |
 | 23 | `CauchyMatrix` | `pending` | Отдельный вычислительный объект; можно переносить после базовой линейной алгебры. |

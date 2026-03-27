@@ -8,20 +8,19 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `MAT-MUT-001` | ` ` | Конструктор `MatrixMutable(row, col, ar, needCopy)` создаёт изменяемую матрицу с тем же содержимым, что и базовый `Matrix`. | |
-| `MAT-MUT-002` | ` ` | Конструктор `MatrixMutable(Matrix m, true)` создаёт независимую изменяемую копию. | |
-| `MAT-MUT-003` | ` ` | Индексатор с `set` изменяет нужный элемент и не затрагивает остальные. | |
-| `MAT-MUT-004` | ` ` | `Transpose()` возвращает изменяемую транспонированную матрицу. | |
-| `MAT-MUT-005` | ` ` | `Eye(d)` создаёт изменяемую единичную матрицу. | |
-| `MAT-MUT-006` | ` ` | `SetSubMatrix(startRow, startCol, subMatrix)` вставляет блок в правильную позицию. | |
-| `MAT-MUT-007` | ` ` | `SetSubVector(startRow, startCol, vector)` вставляет столбец значений в правильную позицию. | |
-| `MAT-MUT-008` | ` ` | `SwapRowBlocks(m, d, k)` переносит первые `k` строк вниз и сохраняет относительный порядок строк. | |
-| `MAT-MUT-009` | ` ` | Оператор умножения двух `MatrixMutable` возвращает корректный изменяемый результат. | |
+| `MAT-MUT-001` | `x` | Конструктор `MatrixMutable(row, col, ar, needCopy)` создаёт изменяемую матрицу с тем же содержимым, что и базовый `Matrix`. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-002` | `x` | Конструктор `MatrixMutable(Matrix m, true)` создаёт независимую изменяемую копию. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-003` | `x` | Индексатор с `set` изменяет нужный элемент и не затрагивает остальные. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-004` | `x` | `Transpose()` возвращает изменяемую транспонированную матрицу. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-005` | `x` | `Eye(d)` создаёт изменяемую единичную матрицу. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-006` | `x` | `SetSubMatrix(startRow, startCol, subMatrix)` вставляет блок в правильную позицию. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-007` | `x` | `SetSubVector(startRow, startCol, vector)` вставляет столбец значений в правильную позицию. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-008` | `x` | `SwapRowBlocks(m, d, k)` переносит первые `k` строк вниз и сохраняет относительный порядок строк. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
+| `MAT-MUT-009` | `x` | Оператор умножения двух `MatrixMutable` возвращает корректный изменяемый результат. | [`MatrixMutableTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) |
 
 ## Gaps
 
-- Нет отдельного покрытия `SetSubMatrix` и `SetSubVector`.
-- Нет явной фиксации поведения `SwapRowBlocks`.
+- Нет.
 
 ## Notes
 

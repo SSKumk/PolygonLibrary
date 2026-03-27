@@ -8,23 +8,22 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `MAT-AR-001` | ` ` | Унарный минус меняет знак всех элементов матрицы. | |
-| `MAT-AR-002` | ` ` | Сложение одинаково размерных матриц выполняется покомпонентно. | |
-| `MAT-AR-003` | ` ` | Вычитание одинаково размерных матриц выполняется покомпонентно. | |
-| `MAT-AR-004` | ` ` | Умножение матрицы на скаляр слева умножает все элементы на число. | |
-| `MAT-AR-005` | ` ` | Умножение матрицы на скаляр справа эквивалентно левому умножению. | |
-| `MAT-AR-006` | ` ` | Деление матрицы на скаляр делит все элементы на число. | |
-| `MAT-AR-007` | ` ` | Умножение двух матриц даёт результат правильной размерности. | |
-| `MAT-AR-008` | ` ` | Умножение двух матриц вычисляется по стандартной формуле строка-на-столбец. | |
-| `MAT-AR-009` | ` ` | Умножение матрицы на вектор справа даёт корректный результат размера `Rows`. | |
-| `MAT-AR-010` | ` ` | `MultRowVectorByMatrix(v, m)` даёт корректный результат размера `Cols`. | |
-| `MAT-AR-011` | ` ` | `MultiplyTransposedByVector(v)` эквивалентно умножению `Transpose() * v` в простом эталонном примере. | |
-| `MAT-AR-012` | ` ` | `MultiplyBySelfTranspose()` возвращает симметричную матрицу `M * M^T`. | |
+| `MAT-AR-001` | `x` | Унарный минус меняет знак всех элементов матрицы. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-002` | `x` | Сложение одинаково размерных матриц выполняется покомпонентно. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-003` | `x` | Вычитание одинаково размерных матриц выполняется покомпонентно. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-004` | `x` | Умножение матрицы на скаляр слева умножает все элементы на число. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-005` | `x` | Умножение матрицы на скаляр справа эквивалентно левому умножению. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-006` | `x` | Деление матрицы на скаляр делит все элементы на число. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-007` | `x` | Умножение двух матриц даёт результат правильной размерности. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-008` | `x` | Умножение двух матриц вычисляется по стандартной формуле строка-на-столбец. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-009` | `x` | Умножение матрицы на вектор справа даёт корректный результат размера `Rows`. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
+| `MAT-AR-010` | `x` | `MultRowVectorByMatrix(v, m)` даёт корректный результат размера `Cols`. | [`MatrixLinearOperationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixLinearOperationsTests.cs) |
+| `MAT-AR-011` | `x` | `MultiplyTransposedByVector(v)` эквивалентно умножению `Transpose() * v` в эталонном примере. | [`MatrixLinearOperationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixLinearOperationsTests.cs) |
+| `MAT-AR-012` | `x` | `MultiplyBySelfTranspose()` возвращает симметричную матрицу `M * M^T` для квадратных и прямоугольных входов. | [`MatrixArithmeticTests.cs`](../../../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) |
 
 ## Gaps
 
-- Нет отдельного покрытия `MultiplyBySelfTranspose`.
-- Не зафиксирована согласованность разных форм умножения с эталонной формулой.
+- Нет.
 
 ## Notes
 

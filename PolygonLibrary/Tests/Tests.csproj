@@ -32,6 +32,7 @@
         <Compile Remove="Double-Tests\ConvexPolygonIntersectionTests.cs" />
         <Compile Remove="Double-Tests\SegmentCrossTests.cs" />
         <Compile Remove="Double-Tests\VectorsTests.cs" />
+        <Compile Remove="SharedTests\MatrixTests.cs" />
         <Compile Remove="SharedTests\VectorTests.cs" />
     </ItemGroup>
 

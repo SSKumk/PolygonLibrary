@@ -15,7 +15,7 @@
 
 - New tests:
   - [`Line2DAssert.cs`](../../Tests/DoubleGeometry/Basics/Line2D/Line2DAssert.cs) (`Vector2D`-ассерты и инварианты прямой)
-  - [`Line2DConstructionTests.cs`](../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) (конструкторы, фабрики, ориентация полуплоскости, инварианты)
+  - [`Line2DConstructionTests.cs`](../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs) (конструкторы, фабрики, ориентация полуплоскости и инварианты)
   - [`Line2DQueriesAndIntersectionTests.cs`](../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) (индексатор, `PassesThrough`, `Reorient`, пересечение прямых)
 - Legacy:
   - отдельного legacy-файла не было
@@ -88,4 +88,19 @@
 - Legacy:
   - [`VectorTests.cs`](../../Tests/SharedTests/VectorTests.cs)
 - Note:
-  - сохранены полезные диагностические сообщения из legacy-набора для нормировки, скалярного произведения и граничных сценариев `Angle`; дополнительно закрыты прямые сценарии, которых раньше не было, для `IEnumerable<int>`, `Vector2D`, явного приведения к массиву, `Sum` и генераторов
+  - сохранены полезные диагностические сообщения из legacy-набора для нормировки, скалярного произведения и граничных сценариев `Angle`; дополнительно закрыты прямые сценарии для `IEnumerable<int>`, `Vector2D`, явного приведения к массиву, `Sum` и генераторов
+
+### Matrix
+
+- New tests:
+  - [`MatrixAssert.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixAssert.cs) (локальные helper-ы для создания матриц и проверки RREF)
+  - [`MatrixConstructionAndAccessTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixConstructionAndAccessTests.cs) (конструкторы, copy/no-copy семантика, индексаторы и приведения)
+  - [`MatrixComparisonAndFormattingTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixComparisonAndFormattingTests.cs) (`Equals`, `CompareTo`, `GetHashCode` и `ToString`)
+  - [`MatrixArithmeticTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixArithmeticTests.cs) (арифметические операторы, умножения на матрицы и векторы, `MultiplyBySelfTranspose`)
+  - [`MatrixStructureAndExtractionTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixStructureAndExtractionTests.cs) (`hcat`, `vcat`, семейство `Take*` и `Transpose`)
+  - [`MatrixLinearOperationsTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixLinearOperationsTests.cs) (фабрики, генераторы, линейные функции и `ToRREF`)
+  - [`MatrixMutableTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) (контракт `MatrixMutable`, мутации, вставка блоков и умножение)
+- Legacy:
+  - [`MatrixTests.cs`](../../Tests/SharedTests/MatrixTests.cs)
+- Note:
+  - сохранены содержательные диагностические сообщения из legacy-набора для copy/no-copy сценариев, `ToString` и эталонных случаев `ToRREF`; заодно coverage-план приведён к реальному API `TakeRows`, `TakeCols` и `TakeSubMatrix`
