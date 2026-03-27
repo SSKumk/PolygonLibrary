@@ -154,3 +154,14 @@
   - [`PolylineTests.cs`](../../Tests/Double-Tests/PolylineTests.cs)
 - Note:
   - сохранены исторические диагностические сообщения `${i}th test: ...`; дополнительно добавлен прямой сценарий для clockwise-обхода и явные тесты на базовую геометрию класса
+
+### BasicPolygon
+
+- New tests:
+  - [`BasicPolygonTestProbes.cs`](../../Tests/DoubleGeometry/Polygons/BasicPolygon/BasicPolygonTestProbes.cs) (служебные наследники для прямой проверки базового абстрактного слоя)
+  - [`BasicPolygonConstructionTests.cs`](../../Tests/DoubleGeometry/Polygons/BasicPolygon/BasicPolygonConstructionTests.cs) (конструкторы по списку и массиву, copy/reference-семантика и начальная инициализация)
+  - [`BasicPolygonLazyAggregationTests.cs`](../../Tests/DoubleGeometry/Polygons/BasicPolygon/BasicPolygonLazyAggregationTests.cs) (ленивое восстановление `Vertices`, `Edges` и `Contours` из других представлений)
+- Legacy:
+  - прямого legacy-файла не было
+- Note:
+  - `BasicPolygon` закрыт прямым unit-like набором через тестовые наследники; абстрактные `Contains*` осознанно не считаются частью базового покрытия, пока не рассматриваются конкретные потомки

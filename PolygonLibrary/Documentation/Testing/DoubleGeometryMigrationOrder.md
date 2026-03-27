@@ -31,8 +31,8 @@
 | 9 | `AffineBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/AffineBasis`, legacy `SharedTests/AffineBasisTest.cs` исключён из компиляции. |
 | 10 | `HyperPlane` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/HyperPlane`, legacy `SharedTests/HyperPlaneTests.cs` исключён из компиляции. |
 | 11 | `Polyline` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/Polyline`, legacy `Double-Tests/PolylineTests.cs` исключён из компиляции. |
-| 12 | `BasicPolygon` | `in_progress` | Низкоуровневый полигональный слой. |
-| 13 | `PolygonTools` | `pending` | Вспомогательные polygon-операции. |
+| 12 | `BasicPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/BasicPolygon` прямым unit-like набором через тестовые наследники. |
+| 13 | `PolygonTools` | `in_progress` | Вспомогательные polygon-операции. |
 | 14 | `GammaPair` | `pending` | Вспомогательный объект для support-function логики. |
 | 15 | `SupportFunction` | `pending` | Опирается на `Vector2D`, `GammaPair`, polygon-сценарии. |
 | 16 | `ConvexPolygon` | `pending` | Основной 2D-объект более высокого уровня. |
