@@ -118,3 +118,16 @@
   - [`LinearBasisTests.cs`](../../Tests/SharedTests/LinearBasisTests.cs)
 - Note:
   - сохранены полезные диагностические сообщения для пустого базиса, копирования и геометрических сравнений; при переносе отдельно зафиксировано, что публичный `Orthonormalize(Vector)` пока остаётся `todo` и сейчас бросает `NotImplementedException`
+
+### AffineBasis
+
+- New tests:
+  - [`AffineBasisAssert.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisAssert.cs) (проверка ортонормированности линейной части аффинного базиса)
+  - [`AffineBasisConstructionTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisConstructionTests.cs) (конструкторы, copy/no-copy семантика, построение по точкам и инварианты)
+  - [`AffineBasisFactoriesAndMutationTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisFactoriesAndMutationTests.cs) (фабрики `FromVectors`, `FromPoints`, `GenAffineBasis` и `AffineBasisMutable.AddVector`)
+  - [`AffineBasisProjectionAndContainmentTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisProjectionAndContainmentTests.cs) (проекции, `ProjectPoints`, `ToOriginalCoords`, `CanonicalOrigin`, `Contains`, `OrthonormalVector`)
+  - [`AffineBasisComparisonAndEnumerationTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs) (`Equals`, `CompareTo`, `GetHashCode` и перечисление)
+- Legacy:
+  - [`AffineBasisTest.cs`](../../Tests/SharedTests/AffineBasisTest.cs)
+- Note:
+  - сохранены полезные диагностические сообщения для copy/no-copy сценариев, проекций и сравнений множеств точек; дополнительно явно зафиксированы контракты `CanonicalOrigin`, `GetHashCode` и запрет на `AffineBasis(origin, LinearBasisMutable, needCopy: false)`
