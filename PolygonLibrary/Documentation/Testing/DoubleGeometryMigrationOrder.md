@@ -32,8 +32,8 @@
 | 10 | `HyperPlane` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/HyperPlane`, legacy `SharedTests/HyperPlaneTests.cs` исключён из компиляции. |
 | 11 | `Polyline` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/Polyline`, legacy `Double-Tests/PolylineTests.cs` исключён из компиляции. |
 | 12 | `BasicPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/BasicPolygon` прямым unit-like набором через тестовые наследники. |
-| 13 | `PolygonTools` | `in_progress` | Вспомогательные polygon-операции. |
-| 14 | `GammaPair` | `pending` | Вспомогательный объект для support-function логики. |
+| 13 | `PolygonTools` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/PolygonTools`, legacy `Double-Tests/PolygonToolsTests.cs` исключён из компиляции. |
+| 14 | `GammaPair` | `in_progress` | Вспомогательный объект для support-function логики. |
 | 15 | `SupportFunction` | `pending` | Опирается на `Vector2D`, `GammaPair`, polygon-сценарии. |
 | 16 | `ConvexPolygon` | `pending` | Основной 2D-объект более высокого уровня. |
 | 17 | `FaceLattice` | `pending` | База для политопной структуры. |

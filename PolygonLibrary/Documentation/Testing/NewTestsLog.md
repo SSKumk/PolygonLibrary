@@ -165,3 +165,15 @@
   - прямого legacy-файла не было
 - Note:
   - `BasicPolygon` закрыт прямым unit-like набором через тестовые наследники; абстрактные `Contains*` осознанно не считаются частью базового покрытия, пока не рассматриваются конкретные потомки
+
+### PolygonTools
+
+- New tests:
+  - [`PolygonToolsAssert.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsAssert.cs) (общие проверки кардинальности контура и геометрии повёрнутого прямоугольника)
+  - [`PolygonToolsRectangleParallelTests.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsRectangleParallelTests.cs) (`RectangleParallel` для точки, segment-case и невырожденного прямоугольника с сохранением legacy-сообщений)
+  - [`PolygonToolsRectangleTurnedTests.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsRectangleTurnedTests.cs) (`RectangleTurned` для совпадающих, осе-диагональных и общих противоположных вершин с сохранением legacy-сообщений)
+  - [`PolygonToolsCircleAndEllipseTests.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs) (прямые фабричные сценарии для `Circle` и `Ellipse`, включая вырожденные полуоси)
+- Legacy:
+  - [`PolygonToolsTests.cs`](../../Tests/Double-Tests/PolygonToolsTests.cs)
+- Note:
+  - прямой legacy-набор на прямоугольники перенесён без потери диагностических текстов; для `Circle/Ellipse` добавлено новое прямое покрытие, которого раньше не было
