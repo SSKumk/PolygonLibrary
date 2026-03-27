@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`CGLibrary/Toolkit/Tools.cs`](../../../../../CGLibrary/Toolkit/Tools.cs) задаёт базовые числовые соглашения библиотеки:
+Класс [`CGLibrary/Toolkit/Tools.cs`](../../../../CGLibrary/Toolkit/Tools.cs) задаёт базовые числовые соглашения библиотеки:
 
 - глобальную точность `Eps` и производную точность `EpsG`;
 - приближённые сравнения чисел;

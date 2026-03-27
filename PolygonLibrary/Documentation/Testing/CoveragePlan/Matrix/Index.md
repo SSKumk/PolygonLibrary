@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`CGLibrary/Basics/Matrix.cs`](../../../../../CGLibrary/Basics/Matrix.cs) задаёт матричный слой библиотеки:
+Класс [`CGLibrary/Basics/Matrix.cs`](../../../../CGLibrary/Basics/Matrix.cs) задаёт матричный слой библиотеки:
 
 - неизменяемые и изменяемые матрицы;
 - базовую арифметику;
