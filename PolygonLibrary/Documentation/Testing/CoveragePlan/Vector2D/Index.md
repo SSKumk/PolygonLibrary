@@ -19,15 +19,19 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Construction and Comparison | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Arithmetic and Angles | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
-| Relations and Combinations | ` ` | Есть существующие тестовые файлы, но сценарии ещё не размечены. |
+| Construction and Comparison | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Vector2D`. |
+| Arithmetic and Angles | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Vector2D`. |
+| Relations and Combinations | `x` | Покрытие вынесено в `Tests/DoubleGeometry/Basics/Vector2D`. |
 
 ## Existing Test Sources
 
-Потенциальный источник текущего покрытия:
+Текущее покрытие:
 
-- [`VectorsTests.cs`](../../../../Tests/Double-Tests/VectorsTests.cs)
+- [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs)
+- [`Vector2DArithmeticAndAnglesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DArithmeticAndAnglesTests.cs)
+- [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs)
+
+Legacy-источник [`VectorsTests.cs`](../../../../Tests/Double-Tests/VectorsTests.cs) больше не участвует в активной компиляции после переноса.
 
 ## Notes
 

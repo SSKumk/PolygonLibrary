@@ -8,27 +8,26 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `V2D-CTOR-001` | ` ` | Конструктор по умолчанию создаёт нулевой вектор. | |
-| `V2D-CTOR-002` | ` ` | Координатный конструктор сохраняет переданные `x` и `y`. | |
-| `V2D-CTOR-003` | ` ` | Копирующий конструктор создаёт эквивалентный объект. | |
-| `V2D-CTOR-004` | ` ` | `Zero`, `E1` и `E2` имеют ожидаемые координаты. | |
-| `V2D-CTOR-005` | ` ` | Индексатор по `0` возвращает `x`. | |
-| `V2D-CTOR-006` | ` ` | Индексатор по `1` возвращает `y`. | |
-| `V2D-CTOR-007` | ` ` | `Length` и `Abs` совпадают как нормы вектора. | |
-| `V2D-CTOR-008` | ` ` | `IsZero` возвращает `true` для нулевого вектора. | |
-| `V2D-CTOR-009` | ` ` | `CompareToNoEps` использует точное лексикографическое сравнение без допуска. | |
-| `V2D-CTOR-010` | ` ` | `CompareTo` использует сравнение с учётом `Eps`. | |
-| `V2D-CTOR-011` | ` ` | Операторы `==` и `!=` согласованы с координатным сравнением по `Eps`. | |
-| `V2D-CTOR-012` | ` ` | Операторы `<`, `<=`, `>` и `>=` согласованы с `CompareTo`. | |
-| `V2D-CTOR-013` | ` ` | `ToString()` возвращает строку формата `(x;y)` с инвариантной культурой. | |
-| `V2D-CTOR-014` | ` ` | `PolarAngle` возвращает `0` для нулевого вектора согласно текущему контракту `Tools.Atan2`. | |
+| `V2D-CTOR-001` | `x` | Конструктор по умолчанию создаёт нулевой вектор. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-002` | `x` | Координатный конструктор сохраняет переданные `x` и `y`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-003` | `x` | Копирующий конструктор создаёт эквивалентный объект. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-004` | `x` | `Zero`, `E1` и `E2` имеют ожидаемые координаты. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-005` | `x` | Индексатор по `0` возвращает `x`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-006` | `x` | Индексатор по `1` возвращает `y`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-007` | `x` | `Length` и `Abs` совпадают как нормы вектора. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-008` | `x` | `IsZero` возвращает `true` для нулевого вектора. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-009` | `x` | `CompareToNoEps` использует точное лексикографическое сравнение без допуска. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-010` | `x` | `CompareTo` использует сравнение с учётом `Eps`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-011` | `x` | Операторы `==` и `!=` согласованы с координатным сравнением по `Eps`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-012` | `x` | Операторы `<`, `<=`, `>` и `>=` согласованы с `CompareTo`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-013` | `x` | `ToString()` возвращает строку формата `(x;y)` с инвариантной культурой. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
+| `V2D-CTOR-014` | `x` | `PolarAngle` возвращает `0` для нулевого вектора согласно текущему контракту `Tools.Atan2`. | [`Vector2DConstructionAndComparisonTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DConstructionAndComparisonTests.cs) |
 
 ## Gaps
 
-- Нет явного покрытия точного сравнения против сравнения по `Eps`.
-- Не зафиксировано строковое представление.
+- Обязательных gap-ов для текущего публичного контракта не осталось.
 
 ## Notes
 
 - Для сравнения полезно иметь пары точек, различающиеся меньше и больше `Eps`.
-- `PolarAngle` лучше отдельно проверять на осях и на нулевом векторе.
+- `PolarAngle` отдельно проверяется на осях и на нулевом векторе.

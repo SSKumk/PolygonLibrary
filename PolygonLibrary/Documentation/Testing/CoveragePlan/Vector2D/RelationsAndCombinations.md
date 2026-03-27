@@ -8,25 +8,23 @@
 
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
-| `V2D-REL-001` | ` ` | `AreParallel` возвращает `true` для сонаправленных и противонаправленных векторов. | |
-| `V2D-REL-002` | ` ` | `AreCodirected` возвращает `true` только для сонаправленных векторов. | |
-| `V2D-REL-003` | ` ` | `AreCounterdirected` возвращает `true` только для противонаправленных векторов. | |
-| `V2D-REL-004` | ` ` | `AreOrthogonal` возвращает `true` для ортогональных ненулевых векторов. | |
-| `V2D-REL-005` | ` ` | `AreOrthogonal` считает нулевой вектор ортогональным любому согласно текущему контракту. | |
-| `V2D-REL-006` | ` ` | `IsBetween(v1, v2)` возвращает `true` для вектора строго внутри конуса от `v1` к `v2`. | |
-| `V2D-REL-007` | ` ` | `IsBetween(v1, v2)` возвращает `false` для вектора на границе конуса. | |
-| `V2D-REL-008` | ` ` | `IsBetween(v1, v2)` возвращает `false` для вектора вне конуса. | |
-| `V2D-REL-009` | ` ` | Явное приведение из двумерного `Vector` переносит обе координаты без искажений. | |
-| `V2D-REL-010` | ` ` | `LinearCombination(p1, w1, p2, w2)` строит корректную комбинацию двух точек. | |
-| `V2D-REL-011` | ` ` | `LinearCombination(p1, w1, p2, w2, p3, w3)` строит корректную комбинацию трёх точек. | |
-| `V2D-REL-012` | ` ` | `LinearCombination(IEnumerable<Vector2D>, IEnumerable<TNum>)` суммирует пары точка-вес в порядке перечисления. | |
+| `V2D-REL-001` | `x` | `AreParallel` возвращает `true` для сонаправленных и противонаправленных векторов. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-002` | `x` | `AreCodirected` возвращает `true` только для сонаправленных векторов. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-003` | `x` | `AreCounterdirected` возвращает `true` только для противонаправленных векторов. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-004` | `x` | `AreOrthogonal` возвращает `true` для ортогональных ненулевых векторов. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-005` | `x` | `AreOrthogonal` считает нулевой вектор ортогональным любому согласно текущему контракту. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-006` | `x` | `IsBetween(v1, v2)` возвращает `true` для вектора строго внутри конуса от `v1` к `v2`. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-007` | `x` | `IsBetween(v1, v2)` возвращает `false` для вектора на границе конуса. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-008` | `x` | `IsBetween(v1, v2)` возвращает `false` для вектора вне конуса. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-009` | `x` | Явное приведение из двумерного `Vector` переносит обе координаты без искажений. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-010` | `x` | `LinearCombination(p1, w1, p2, w2)` строит корректную комбинацию двух точек. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-011` | `x` | `LinearCombination(p1, w1, p2, w2, p3, w3)` строит корректную комбинацию трёх точек. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
+| `V2D-REL-012` | `x` | `LinearCombination(IEnumerable<Vector2D>, IEnumerable<TNum>)` суммирует пары точка-вес в порядке перечисления. | [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) |
 
 ## Gaps
 
-- Нет отдельной фиксации поведения `IsBetween` на границах.
-- Нет прямого покрытия всех форм линейной комбинации.
+- Обязательных gap-ов для текущего публичного контракта не осталось.
 
 ## Notes
 
-- Для `IsBetween` стоит иметь компактный набор примеров, где угол конуса меньше `pi`, ровно `pi` и больше `pi`, если это релевантно текущему контракту.
-- При проверке enumerable-версии линейной комбинации важно контролировать соответствие количества точек и весов через фактическое поведение реализации, а не только ожидаемый математический контракт.
+- Исторический `IsBetweenTest` из legacy-файла сохранён с прежними группирующими комментариями и поясняющими сообщениями.
