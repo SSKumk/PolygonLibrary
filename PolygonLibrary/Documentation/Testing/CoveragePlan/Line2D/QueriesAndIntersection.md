@@ -11,36 +11,29 @@
 
 ## Scenarios
 
-| ID            | Status | Scenario                                                                              | Tests |
-|---------------|--------|---------------------------------------------------------------------------------------|-------|
-| `L2D-QRY-001` | ` `    | Индексатор возвращает `0` для точки, лежащей на прямой.                               |       |
-| `L2D-QRY-002` | ` `    | Индексатор возвращает положительное значение для точки в положительной полуплоскости. |       |
-| `L2D-QRY-003` | ` `    | Индексатор возвращает отрицательное значение для точки в отрицательной полуплоскости. |       |
-| `L2D-QRY-004` | ` `    | `PassesThrough` возвращает `true` для точки на прямой.                                |       |
-| `L2D-QRY-005` | ` `    | `PassesThrough` возвращает `false` для точки вне прямой.                              |       |
-| `L2D-QRY-006` | ` `    | `Reorient` создаёт геометрически ту же прямую.                                        |       |
-| `L2D-QRY-007` | ` `    | `Reorient` меняет знак коэффициентов и разворачивает ориентацию полуплоскостей.       |       |
-| `L2D-QRY-008` | ` `    | `Reorient().Reorient()` возвращает эквивалентную исходной прямую.                     |       |
-| `L2D-QRY-009` | ` `    | `Intersect` возвращает `SinglePoint` для пересекающихся прямых.                       |       |
-| `L2D-QRY-010` | ` `    | `Intersect` возвращает корректную точку пересечения для пересекающихся прямых.        |       |
-| `L2D-QRY-011` | ` `    | `Intersect` возвращает `Parallel` для различных параллельных прямых.                  |       |
-| `L2D-QRY-012` | ` `    | `Intersect` возвращает `Overlap` для совпадающих прямых.                              |       |
-| `L2D-QRY-013` | ` `    | `Intersect` симметричен по аргументам.                                                |       |
-| `L2D-QRY-014` | ` `    | Пересечение корректно работает для вертикальной и горизонтальной прямой.              |       |
-| `L2D-QRY-015` | ` `    | Пересечение корректно работает для двух наклонных прямых.                             |       |
-| `L2D-QRY-016` | ` `    | Пересечение корректно работает в случаях, чувствительных к `epsilon`.                 |       |
+| ID | Status | Scenario | Tests |
+| --- | --- | --- | --- |
+| `L2D-QRY-001` | `x` | Индексатор возвращает `0` для точки, лежащей на прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-002` | `x` | Индексатор возвращает положительное значение для точки в положительной полуплоскости. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-003` | `x` | Индексатор возвращает отрицательное значение для точки в отрицательной полуплоскости. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-004` | `x` | `PassesThrough` возвращает `true` для точки на прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-005` | `x` | `PassesThrough` возвращает `false` для точки вне прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-006` | `x` | `Reorient` создаёт геометрически ту же прямую. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-007` | `x` | `Reorient` меняет знак коэффициентов и разворачивает ориентацию полуплоскостей. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-008` | `x` | `Reorient().Reorient()` возвращает эквивалентную исходной прямую. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-009` | `x` | `Intersect` возвращает `SinglePoint` для пересекающихся прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-010` | `x` | `Intersect` возвращает корректную точку пересечения для пересекающихся прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-011` | `x` | `Intersect` возвращает `Parallel` для различных параллельных прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-012` | `x` | `Intersect` возвращает `Overlap` для совпадающих прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-013` | `x` | `Intersect` симметричен по аргументам. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-014` | `x` | Пересечение корректно работает для вертикальной и горизонтальной прямой. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-015` | `x` | Пересечение корректно работает для двух наклонных прямых. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
+| `L2D-QRY-016` | `x` | Пересечение корректно отражает epsilon-чувствительное поведение в почти совпадающих и почти параллельных случаях. | [`Line2DQueriesAndIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs) |
 
 ## Gaps
 
-- Нет прямых проверок поведения индексатора.
-- Нет тестов на сохранение геометрической эквивалентности после `Reorient`.
-- Нет тестов на все типы пересечения: одна точка, параллельность, совпадение.
+- Отдельные сценарии для вырожденных прямых здесь не фиксируются, потому что такой контракт в коде явно не описан.
 
 ## Notes
 
-- Для пересечения стоит иметь компактный набор эталонных примеров:
-  - горизонтальная + вертикальная;
-  - две пересекающиеся наклонные;
-  - параллельные;
-  - совпадающие.
-- В колонке `Tests` предполагаются ссылки на конкретные тестовые файлы и строки после появления явного покрытия.
+- Для пересечения полезно держать компактный набор эталонных случаев: горизонтальная и вертикальная прямая, две наклонные пересекающиеся прямые, различные параллельные прямые и совпадающие прямые.
