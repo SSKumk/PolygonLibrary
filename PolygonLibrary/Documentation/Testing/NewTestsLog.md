@@ -286,3 +286,13 @@
   - [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
 - Note:
   - сохранён смысл старого `cube - segment` набора, но сценарии сделаны компактными и синхронно проверяют обе реализации; legacy-файл исключён из активной компиляции
+
+### CauchyMatrix
+
+- New tests:
+  - [`CauchyMatrixAssert.cs`](../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixAssert.cs) (локальный helper для покомпонентного сравнения матриц с заданной численной точностью)
+  - [`CauchyMatrixTests.cs`](../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs) (единичная, нулевая, диагональная и нильпотентная матрицы, включая частичный шаг интегрирования)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - прямой слой на `CauchyMatrix` сделан через математически контролируемые случаи, без тяжёлых численных прогонов
