@@ -34,8 +34,8 @@
 | 12 | `BasicPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/BasicPolygon` прямым unit-like набором через тестовые наследники. |
 | 13 | `PolygonTools` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/PolygonTools`, legacy `Double-Tests/PolygonToolsTests.cs` исключён из компиляции. |
 | 14 | `GammaPair` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/GammaPair` прямым набором на конструкторы, сравнение и `CrossPairs`. |
-| 15 | `SupportFunction` | `in_progress` | Опирается на `Vector2D`, `GammaPair`, polygon-сценарии. |
-| 16 | `ConvexPolygon` | `pending` | Основной 2D-объект более высокого уровня. |
+| 15 | `SupportFunction` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/SupportFunction`, legacy `Double-Tests/SupportFunctionTests.cs` исключён из компиляции. |
+| 16 | `ConvexPolygon` | `in_progress` | Основной 2D-объект более высокого уровня. |
 | 17 | `FaceLattice` | `pending` | База для политопной структуры. |
 | 18 | `ConvexPolytop` | `pending` | Высокоуровневая политопная сущность. |
 | 19 | `HrepToFLrep` | `pending` | Преобразование представлений. |

@@ -33,6 +33,7 @@
         <Compile Remove="Double-Tests\PolygonToolsTests.cs" />
         <Compile Remove="Double-Tests\PolylineTests.cs" />
         <Compile Remove="Double-Tests\SegmentCrossTests.cs" />
+        <Compile Remove="Double-Tests\SupportFunctionTests.cs" />
         <Compile Remove="Double-Tests\VectorsTests.cs" />
         <Compile Remove="SharedTests\AffineBasisTest.cs" />
         <Compile Remove="SharedTests\HyperPlaneTests.cs" />

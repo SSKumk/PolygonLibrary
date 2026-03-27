@@ -188,3 +188,16 @@
   - прямого legacy-файла не было; релевантные косвенные сценарии жили в [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
 - Note:
   - сохранены исторические сообщения `Bad crossing ...`; параллельный случай сознательно не закреплён как mandatory, пока `CrossPairs` опирается на `Debug.Assert`
+
+### SupportFunction
+
+- New tests:
+  - [`SupportFunctionTestData.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionTestData.cs) (общие legacy-наборы `GammaPair`, эталонные точки и данные для `FindCone`)
+  - [`SupportFunctionProbe.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionProbe.cs) (служебный доступ к защищённому `CheckTriple`)
+  - [`SupportFunctionInitializationTests.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs) (инициализация из `GammaPair` и из точек, zero-normal filtering и `ToConvexify`)
+  - [`SupportFunctionEvaluationAndSearchTests.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionEvaluationAndSearchTests.cs) (`FuncVal`, `FindCone`, `ConicCombination` и явное сравнение implicit/explicit cone lookup)
+  - [`SupportFunctionCombinationAndConvexificationTests.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionCombinationAndConvexificationTests.cs) (`CombineFunctions`, `CheckTriple`, `ConvexifyFunctionWithInfo` и сохранённые legacy-сообщения)
+- Legacy:
+  - [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
+- Note:
+  - legacy-набор полностью разложен по темам, старые диагностические тексты сохранены; дополнительно добраны point/segment ctor и прямая выпуклификация, которых раньше не было

@@ -20,20 +20,20 @@
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Initialization | `~` | Есть прямые тесты на создание из массива пар; конструктор по точкам и часть краевых случаев ещё не размечены. |
-| Evaluation and Search | `x` | Есть прямые тесты на `FuncVal` и `FindCone`. |
-| Combination and Convexification | `~` | Есть прямой тест на `CombineFunctions`, но не на выпуклификацию. |
+| Initialization | `x` | Перенесён прямой набор на инициализацию из `GammaPair` и из точек. |
+| Evaluation and Search | `x` | Перенесён legacy-набор на `FuncVal` и `FindCone`, дополнен `ConicCombination`. |
+| Combination and Convexification | `x` | Перенесён `CombineFunctions`, добавлены прямые тесты на `CheckTriple` и `ConvexifyFunctionWithInfo`. |
 
 ## Existing Test Sources
 
 - [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs)
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs)
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs)
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs)
+- [`SupportFunctionInitializationTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs)
+- [`SupportFunctionEvaluationAndSearchTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionEvaluationAndSearchTests.cs)
+- [`SupportFunctionCombinationAndConvexificationTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionCombinationAndConvexificationTests.cs)
 
 ## Notes
 
-- `SupportFunction` тесно зависит от `GammaPair`, поэтому некоторые баги здесь будут выглядеть как баги сортировки/сравнения пар, и наоборот.
+- `SupportFunction` тесно зависит от `GammaPair`, поэтому прямой набор здесь нужен именно для отделения локальных ошибок функции от багов в сравнении/нормализации пар.
 
 
 
