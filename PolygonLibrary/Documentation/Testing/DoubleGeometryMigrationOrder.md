@@ -40,8 +40,9 @@
 | 18 | `ConvexPolytop` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/ConvexPolytop` прямым unit-like набором; legacy-источники остаются у алгоритмических классов. |
 | 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
 | 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `Double-Tests/GW_hDTests/GW_Tests.cs` исключён из компиляции. |
-| 21 | `MinkowskiSum` | `in_progress` | Алгоритмический уровень. |
-| 22 | `MinkowskiDiff` | `pending` | Алгоритмический уровень. |
+| 21 | `MinkowskiSum` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiSum`, legacy `MinkowskiSumTests.cs` исключён из компиляции. |
+| 22 | `MinkowskiDiff` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff`, legacy `MinkowskiDiffTests.cs` исключён из компиляции. |
+| 23 | `CauchyMatrix` | `in_progress` | Отдельный вычислительный объект; можно переносить после базовой линейной алгебры. |
 | 23 | `CauchyMatrix` | `pending` | Отдельный вычислительный объект; можно переносить после базовой линейной алгебры. |
 
 ## Workflow Reminder

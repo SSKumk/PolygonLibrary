@@ -266,3 +266,23 @@
   - [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs)
 - Note:
   - прямой слой на алгоритм вынесен отдельно, а тяжёлый randomized/regression legacy-набор исключён из активной компиляции как исторический
+
+### MinkowskiSum
+
+- New tests:
+  - [`MinkowskiSumTestData.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumTestData.cs) (короткие 2D-данные для точек, отрезков и квадратов)
+  - [`MinkowskiSumBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumBasicTests.cs) (`AlgSumPoints` и характерные 2D-сценарии `BySandipDas`/`ByConvexHull`)
+  - [`MinkowskiSumHighDimensionalTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumHighDimensionalTests.cs) (3D-контроль и `onlyHrep`-ветка `BySandipDas`)
+- Legacy:
+  - [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
+- Note:
+  - тяжёлые 4D/5D и article-based regression-сценарии оставлены вне обязательного минимума; legacy-файл исключён из активной компиляции
+
+### MinkowskiDiff
+
+- New tests:
+  - [`MinkowskiDiffCurrentTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffCurrentTests.cs) (helper-ы `FindExtrInCPOnVector_Naive` и `doSubtract`, а также текущие прямые случаи `Naive`/`Geometric`)
+- Legacy:
+  - [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- Note:
+  - сохранён смысл старого `cube - segment` набора, но сценарии сделаны компактными и синхронно проверяют обе реализации; legacy-файл исключён из активной компиляции
