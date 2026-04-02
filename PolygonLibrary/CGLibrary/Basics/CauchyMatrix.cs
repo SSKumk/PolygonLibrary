@@ -158,7 +158,9 @@ public partial class Geometry<TNum, TConv>
           flag      =  Tools.GE(TNum.Abs(t - tCur), dt);
         }
       }
-      mCur   = RungeKuttaStep(mCur, forward ? tCur - t : t - tCur);
+      // RungeKuttaStep integrates Phi' = -A * Phi, so its parameter is the
+      // negated physical time increment. For both directions this is tCur - t.
+      mCur   = RungeKuttaStep(mCur, tCur - t);
       _ms[t] = mCur;
     }
 
