@@ -45,7 +45,7 @@
   - Команда:
     - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.CauchyMatrix"`
   - Итог:
-    - `3` passed
+    - `4` passed
     - `1` failed
 
 ## Status Summary
@@ -60,7 +60,7 @@
 | `Tools` | `checked_clean` | `0` | `0` | Первичные падения оказались хрупкими тестовыми ожиданиями на границе `double`; целевой повторный прогон зелёный. |
 | `Vector` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `Matrix` | `checked_clean` | `0` | `0` | Собственные быстрые тесты проходят; сбой проявляется через `CauchyMatrix`. |
-| `CauchyMatrix` | `has_failures` | `0` | `1` | Базовый сбой выбора стартового узла снят; осталась погрешность диагонального случая на границе tolerance. |
+| `CauchyMatrix` | `has_failures` | `0` | `1` | Базовый сбой выбора стартового узла и backward partial-step сняты; осталась только точность диагонального случая. |
 | `LinearBasis` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `AffineBasis` | `checked_clean` | `0` | `0` | Первичное падение на `Equals(object)` исправлено; целевой повторный прогон зелёный. |
 | `HyperPlane` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
@@ -117,6 +117,7 @@
   - Причина была в выборе стартового узла интегрирования через `AVLDictionary`.
   - После локальной правки сняты `ZeroMatrix_ProducesIdentityForAnyInstant` и `NonMultipleInstant_UsesPartialRungeKuttaStepAndMatchesClosedFormForNilpotentMatrix`.
   - Для `NonMultipleInstant...` дополнительно выявился и был исправлен неверный знак остаточного шага в forward-ветке.
+  - Отдельный backward-partial сценарий был добавлен и помог выявить симметричную проблему со знаком остаточного шага для `t < T`; после исправления он проходит.
 
 ## ConvexPolygon
 
