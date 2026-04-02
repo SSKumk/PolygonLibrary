@@ -4,16 +4,17 @@
 
 Класс [`FaceLattice.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/ConvexPolytops/FaceLattice.cs) описывает face-lattice представление выпуклого политопа.
 
-В рамках обязательного минимума здесь покрываются:
+В рамках текущего полного покрытия здесь рассматриваются:
 
 - `FaceLattice` как контейнер уровней решётки;
 - `FLNode` как основная публичная единица лица и подграни;
 - базовые операции обхода, сравнения и преобразования вершин.
 
-Вне обязательного минимума пока остаются:
+Пока прямым набором ещё не закрыты:
 
 - internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP`;
-- отдельный прямой набор на `FLNodeSum`, поскольку в текущем backlog он не выделен как самостоятельный класс.
+- отдельный набор на `FLNodeSum`;
+- временный рабочий журнал обсуждения и решений: [`Worklog.temp.md`](Worklog.temp.md).
 
 ## Topics
 
@@ -26,7 +27,7 @@
 | --- | --- | --- |
 | Node Structure | `x` | Legacy-набор на `FLNode` перенесён в новую структуру и дополнен `GetHashCode`. |
 | Lattice and Transform | `x` | Добавлен прямой набор на сам `FaceLattice`. |
-| Internal Conversion Helpers | `-` | Не входит в обязательный минимум текущей миграции. |
+| Internal Conversion Helpers | `-` | Должны быть покрыты отдельным следующим шагом. |
 
 ## Existing Test Sources
 
@@ -35,4 +36,3 @@
 ## Notes
 
 - Исторический legacy-файл покрывал в основном `FLNode`, а не всю `FaceLattice`. В новой структуре это разделено явно.
-
