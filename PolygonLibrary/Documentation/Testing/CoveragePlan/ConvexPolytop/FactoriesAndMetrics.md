@@ -5,6 +5,7 @@
 Сценарии:
 
 - `Zero`, `Cube01_VRep`, `Cube01_HRep`, `RectAxisParallel`, `Ball_1`, `Ball_oo`;
+- `Sphere`, `Ellipsoid`, `Ball_2FuncCreator`;
 - `MinimalDiameter`, `MinDistBtwVs`.
 
 ## Scenarios
@@ -17,6 +18,13 @@
 | CPT-FAC-004 | x | `Ball_1` в 2D даёт ромб с вершинами на координатных осях. | [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L46) |
 | CPT-FAC-005 | x | `Ball_1` при ненулевом центре корректно сдвигает ромб вокруг заданной точки. | [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L63) |
 | CPT-FAC-006 | x | `Ball_oo` в 2D даёт осепараллельный квадрат. | [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L78) |
+| CPT-FAC-007 | x | `Ball_oo` при ненулевом центре корректно сдвигает квадрат вокруг заданной точки. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L9) |
+| CPT-FAC-008 | x | `Sphere` в 1D возвращает отрезок `center ± radius`. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L23) |
+| CPT-FAC-009 | x | `Sphere` в 2D при четырёх азимутальных делениях возвращает четыре кардинальные точки вокруг центра. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L35) |
+| CPT-FAC-010 | x | `Sphere` в 3D при `azimuthsDivisions = 4`, `polarDivision = 2` даёт шесть осевых вершин октаэдра. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L49) |
+| CPT-FAC-011 | x | `Ellipsoid` в 1D возвращает отрезок `center ± semiAxis`. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L66) |
+| CPT-FAC-012 | x | `Ellipsoid` в 2D при четырёх азимутальных делениях возвращает осевые вершины, масштабированные по полуосям. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L84) |
+| CPT-FAC-013 | x | `Ball_2FuncCreator` порождает ту же фабрику, что и прямой вызов `Sphere` с теми же параметрами сетки. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L102) |
 | CPT-MET-001 | x | `MinimalDiameter` и `MinDistBtwVs` возвращают минимальное попарное расстояние между вершинами. | [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L92) |
 
 ## Existing Tests
@@ -27,6 +35,6 @@
 
 ## Gaps
 
-- `SimplexRND`, `Cyclic`, `Sphere` и `Ellipsoid` пока оставлены за пределами активного слоя этого этапа.
+- `SimplexRND` и `Cyclic` пока оставлены за пределами активного слоя этого этапа.
 
 
