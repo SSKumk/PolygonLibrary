@@ -52,4 +52,17 @@ public class CauchyMatrixTests {
     CauchyMatrixAssert.AreEqual(cauchy[0.35], expected, 1e-12);
   }
 
+  [Test]
+  public void NegativeNonMultipleInstant_UsesPartialRungeKuttaStepAndMatchesClosedFormForNilpotentMatrix() {
+    Matrix a = new(new double[,] { { 0, 1 }, { 0, 0 } });
+    CauchyMatrix cauchy = new(a, 0.0, 0.1);
+
+    Matrix expected = new(new double[,] {
+      { 1, 0.35 },
+      { 0, 1 }
+    });
+
+    CauchyMatrixAssert.AreEqual(cauchy[-0.35], expected, 1e-12);
+  }
+
 }
