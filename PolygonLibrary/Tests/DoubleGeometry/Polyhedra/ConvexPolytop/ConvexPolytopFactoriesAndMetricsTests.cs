@@ -61,6 +61,21 @@ public class ConvexPolytopFactoriesAndMetricsTests {
   }
 
   [Test]
+  public void Ball1_WithNonZeroCenter_ShiftsDiamondAroundCenter() {
+    ConvexPolytop ball = ConvexPolytop.Ball_1(ConvexPolytopAssert.V(1, 1), 2);
+
+    ConvexPolytopAssert.AssertVertexSetEquals(
+      ball.Vrep,
+      [
+        ConvexPolytopAssert.V(3, 1),
+        ConvexPolytopAssert.V(-1, 1),
+        ConvexPolytopAssert.V(1, 3),
+        ConvexPolytopAssert.V(1, -1)
+      ]
+    );
+  }
+
+  [Test]
   public void BallInfinity_In2D_ReturnsAxisParallelSquare() {
     ConvexPolytop ball = ConvexPolytop.Ball_oo(Vector.Zero(2), 2);
 

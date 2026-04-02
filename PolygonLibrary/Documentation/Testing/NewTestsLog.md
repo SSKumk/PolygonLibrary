@@ -247,7 +247,7 @@
   - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
 - Note:
   - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
-  - позже в те же файлы добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, на `ToConvexPolygon(AffineBasis)`, на `Shift` / `Rotate` для `Hrep` и `FLrep`, на `Scale` для положительного и отрицательного коэффициента во всех трёх представлениях, а также базовый прямой слой для `Polar`, включая `FLrep`
+  - позже в те же файлы добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, на `ToConvexPolygon(AffineBasis)`, на `Shift` / `Rotate` для `Hrep` и `FLrep`, на `Scale` для положительного и отрицательного коэффициента во всех трёх представлениях, базовый прямой слой для `Polar`, включая `FLrep`, и отдельная проверка `Ball_1` для ненулевого центра
 
 ### GiftWrapping
 

@@ -676,9 +676,9 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolytop Ball_1(Vector center, TNum radius) {
       SortedSet<Vector> ball = new SortedSet<Vector>();
       for (int i = 1; i <= center.SpaceDim; i++) {
-        Vector e = radius * Vector.MakeOrth(center.SpaceDim, i) + center;
-        ball.Add(e);
-        ball.Add(-e);
+        Vector e = radius * Vector.MakeOrth(center.SpaceDim, i);
+        ball.Add(center + e);
+        ball.Add(center - e);
       }
 
       return CreateFromPoints(ball);
