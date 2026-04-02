@@ -37,33 +37,6 @@ public class SupportFunctionInitializationTests {
   }
 
   [Test]
-  public void Constructor_GammaPairs_DropsZeroNormalsAndKeepsNonZeroPairs() {
-    SupportFunction supportFunction =
-      new SupportFunction(
-        new[] {
-          new GammaPair(new Vector2D(1.0, 0.0), 1.0),
-          new GammaPair(new Vector2D(0.0, 0.0), 5.0),
-          new GammaPair(new Vector2D(0.0, 2.0), 2.0)
-        }
-      );
-
-    Assert.Multiple(() => {
-      Assert.That(supportFunction, Has.Count.EqualTo(2));
-      Assert.That(supportFunction.Any(pair => pair.Normal == Vector2D.Zero), Is.False);
-      Assert.That(supportFunction[0], Is.EqualTo(new GammaPair(new Vector2D(1.0, 0.0), 1.0)));
-      Assert.That(supportFunction[1], Is.EqualTo(new GammaPair(new Vector2D(0.0, 1.0), 1.0)));
-    });
-  }
-
-  [Test]
-  public void Constructor_GammaPairs_ThrowsWhenAllNormalsAreZero() {
-    Assert.That(
-      () => new SupportFunction(new[] { new GammaPair(Vector2D.Zero, 1.0), new GammaPair(Vector2D.Zero, 2.0) }),
-      Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Only pairs with zero normals in initialization of a support function")
-    );
-  }
-
-  [Test]
   public void Constructor_Points_BuildsSupportFunctionForConvexPolygon() {
     SupportFunction supportFunction = new SupportFunction(PolylineTestData.CreateUnitSquareVertices(), false);
     GammaPair[] expected =

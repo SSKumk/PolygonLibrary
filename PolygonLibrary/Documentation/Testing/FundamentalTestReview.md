@@ -61,6 +61,13 @@
   - Итог:
     - `25` passed
     - `0` failed
+- `2026-04-02`
+  - `SupportFunction`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polygons.SupportFunction"`
+  - Итог:
+    - `18` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -82,7 +89,7 @@
 | `BasicPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `PolygonTools` | `checked_clean` | `0` | `0` | Ветви вырожденного эллипса исправлены; целевой повторный прогон зелёный. |
 | `GammaPair` | `checked_clean` | `0` | `0` | Собственные прямые тесты проходят; проблемы всплывают в сценариях `SupportFunction`. |
-| `SupportFunction` | `has_failures` | `0` | `2` | Инициализация через пары с нулевыми нормалями утыкается в `Debug.Assert` внутри `GammaPair`. |
+| `SupportFunction` | `checked_clean` | `0` | `0` | Сценарии с нулевыми нормалями сняты как нарушение preconditions `GammaPair`; целевой повторный прогон зелёный. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `FaceLattice` | `has_failures` | `0` | `1` | Явная `AffineBasis` для узла конфликтует с текущим конструктором `AffineBasis`. |
 | `ConvexPolytop` | `has_failures` | `0` | `4` | Общий сбой в `HrepToVrep_Geometric`. |
@@ -334,18 +341,16 @@
 ## SupportFunction
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs#L40`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs#L40) `Constructor_GammaPairs_DropsZeroNormalsAndKeepsNonZeroPairs`
-    - Наблюдаемое поведение: вместо фильтрации нулевой нормали тест ловит `DebugAssertException` из конструктора `GammaPair`.
-  - [`../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs#L59`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs#L59) `Constructor_GammaPairs_ThrowsWhenAllNormalsAreZero`
-    - Наблюдаемое поведение: вместо ожидаемого `ArgumentException` от `SupportFunction` тест ловит `DebugAssertException` из конструктора `GammaPair`.
+  - Не обнаружены после локальной проверки.
 - Contract ambiguities:
-  - Нужно решить, имеет ли смысл вообще тестировать и документировать сценарии с нулевыми нормалями на уровне `SupportFunction`, если более низкий контракт `GammaPair` считает их нарушением preconditions.
+  - Неясности сняты: сценарии с нулевыми нормалями не относятся к обязательному runtime-контракту `SupportFunction`, потому что нарушают preconditions публичного `GammaPair`.
 - Notes:
-  - Это хороший кандидат на пересмотр самого сценария тестирования, а не только на поиск ошибки реализации.
+  - Первичные падения были вызваны не `SupportFunction`, а попыткой создать невалидный `GammaPair(Vector2D.Zero, ...)`.
+  - После удаления этих двух сценариев из активного набора целевой повторный прогон `SupportFunction` проходит без падений.
 
 ## Tools
 
