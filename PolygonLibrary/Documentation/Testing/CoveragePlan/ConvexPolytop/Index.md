@@ -26,6 +26,7 @@
 - [`ContainmentAndNearestPoint.md`](ContainmentAndNearestPoint.md) - `Contains*` и `NearestPoint`.
 - [`TransformsAndOverrides.md`](TransformsAndOverrides.md) - `Shift`, `Rotate`, `LiftUp`, `SectionByHyperPlane`, `Scale`, `Equals`.
 - [`RepresentationBranchMatrix.md`](RepresentationBranchMatrix.md) - вспомогательная матрица по веткам `Vrep` / `Hrep` / `FLrep` для методов с разной реализацией.
+- [`Polar.md`](Polar.md) - отдельный план покрытия для dual-оператора `Polar`.
 
 ## Current Coverage Summary
 
@@ -35,7 +36,8 @@
 | Factories and Metrics | `x` | Закрыты прямые фабрики и численные метрики малой стоимости. |
 | Containment and NearestPoint | `x` | Зафиксированы как рабочие, так и ещё не реализованные ветки. |
 | Transforms and Overrides | `x` | Базовые преобразования и общие контракты `Equals`/`GetHashCode` закрыты прямыми тестами, включая branch-specific ветки `Shift` / `Rotate` и масштабирование при положительном и отрицательном коэффициенте. |
-| IO, Polar and Advanced Builders | `-` | Оставлены вне активного слоя этой миграции. |
+| Polar | `~` | Закрыты базовые `Vrep` / `Hrep` / `FLrep` 2D-сценарии, `Polar(out shift)` и двойное преобразование; остаются более тонкие duality- и redundancy-вопросы. |
+| IO and Advanced Builders | `-` | Оставлены вне активного слоя этой миграции. |
 
 ## Existing Test Sources
 
