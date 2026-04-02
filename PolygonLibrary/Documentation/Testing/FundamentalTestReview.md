@@ -14,7 +14,7 @@
 - входит: `Tests/DoubleGeometry/Basics`, `Tests/DoubleGeometry/Polygons`, `Tests/DoubleGeometry/Polyhedra`;
 - не входит: `Tests/DoubleGeometry/Algorithms`, legacy-алгоритмы и любые долгие stress/perf-наборы.
 
-## Run Metadata
+## Initial Sweep Metadata
 
 - Дата ревизии: `2026-04-02`
 - Команда запуска:
@@ -23,6 +23,16 @@
   - `460` выполнено
   - `444` passed
   - `16` failed
+
+## Incremental Verification
+
+- `2026-04-02`
+  - `AffineBasis`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.AffineBasis"`
+  - Итог:
+    - `43` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -38,7 +48,7 @@
 | `Matrix` | `checked_clean` | `0` | `0` | Собственные быстрые тесты проходят; сбой проявляется через `CauchyMatrix`. |
 | `CauchyMatrix` | `has_failures` | `0` | `3` | Падения идут в `Matrix.op_Multiply` во время `RungeKuttaStep`. |
 | `LinearBasis` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
-| `AffineBasis` | `has_failures` | `0` | `1` | `Equals(object)` не выдерживает чужой тип. |
+| `AffineBasis` | `checked_clean` | `0` | `0` | Первичное падение на `Equals(object)` исправлено; целевой повторный прогон зелёный. |
 | `HyperPlane` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `Polyline` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `BasicPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
@@ -53,17 +63,16 @@
 ## AffineBasis
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs#L52`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs#L52) `Equals_NullOrDifferentType`
-    - Наблюдаемое поведение: `Equals(object)` бросает `InvalidCastException`, если передан объект чужого типа.
-    - Стек указывает на `CGLibrary/Basics/AffineBasis.cs:298`.
+  - Активных падений после локальной проверки не обнаружено.
 - Contract ambiguities:
   - Неясности нет: для `Equals(object)` ожидается безопасный `false`, а не исключение.
 - Notes:
-  - Это похоже на прямую ошибку реализации контракта сравнения, а не на спорное ожидание теста.
+  - На первичном полном прогоне падал [`../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs#L52`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs#L52) `Equals_NullOrDifferentType`.
+  - Исправление: добавлен typed `Equals(AffineBasis?)`, а `Equals(object?)` сведён к безопасной проверке типа.
 
 ## BasicPolygon
 

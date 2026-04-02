@@ -288,15 +288,18 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
+    /// Determines whether the specified affine basis represents the same affine subspace as the current instance.
+    /// </summary>
+    /// <param name="other">Affine basis to compare with this instance.</param>
+    /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
+    public bool Equals(AffineBasis? other) => other is not null && CompareTo(other) == 0;
+
+    /// <summary>
     /// Determines whether the specified object represents the same affine subspace as the current instance.
     /// </summary>
     /// <param name="obj">Object to compare with this affine basis.</param>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
-    public override bool Equals(object? obj) {
-      if (obj == null) { return false; }
-
-      return CompareTo((AffineBasis)obj) == 0;
-    }
+    public override bool Equals(object? obj) => obj is AffineBasis other && Equals(other);
 
     public override int GetHashCode() => throw new InvalidOperationException();
 

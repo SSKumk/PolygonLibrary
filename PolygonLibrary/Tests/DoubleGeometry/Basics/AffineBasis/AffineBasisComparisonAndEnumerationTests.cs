@@ -56,6 +56,15 @@ public class AffineBasisComparisonAndEnumerationTests {
   }
 
   [Test]
+  public void Equals_TypedOverload_NullAndEquivalentBasis() {
+    AffineBasis basis1 = new AffineBasis(V(0, 0), new LinearBasis(V(1, 1)));
+    AffineBasis basis2 = new AffineBasis(V(5, 5), new LinearBasis(V(-1, -1)));
+
+    Assert.That(basis1.Equals((AffineBasis?)null), Is.False);
+    Assert.That(basis1.Equals(basis2), Is.True);
+  }
+
+  [Test]
   public void CompareTo_Null_Returns1() {
     AffineBasis basis = new AffineBasis(V(1, 1, 1));
     Assert.That(basis.CompareTo(null), Is.EqualTo(1));
