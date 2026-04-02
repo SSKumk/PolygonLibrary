@@ -100,7 +100,6 @@
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `FaceLattice` | `checked_clean` | `0` | `0` | Zero-copy копирование из обычного `AffineBasis` согласовано с `FLNode`; целевой повторный прогон зелёный. |
 | `ConvexPolytop` | `has_failures` | `0` | `4` | Общий сбой в `HrepToVrep_Geometric`. |
-| `HrepToFLrep` | `has_failures` | `0` | `1` | Текущий наблюдаемый контракт уже не совпадает с ожиданием теста. |
 
 ## AffineBasis
 
@@ -211,21 +210,6 @@
   - Стоит помнить, что создание пары с нулевой нормалью в debug-режиме упирается в `Debug.Assert`; это всплывает в соседних тестах `SupportFunction`.
 - Notes:
   - Собственный unit-like набор проходит.
-
-## HrepToFLrep
-
-- Status:
-  - `has_failures`
-- Missing scenarios:
-  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
-- Failing tests:
-  - [`../../Tests/DoubleGeometry/Polyhedra/HrepToFLrep/HrepToFLrepCurrentContractTests.cs#L10`](../../Tests/DoubleGeometry/Polyhedra/HrepToFLrep/HrepToFLrepCurrentContractTests.cs#L10) `HrepToFLrepGeometric_ForBoundedUnitSquare_CurrentlyThrowsNotImplementedException`
-    - Наблюдаемое поведение: вместо ожидаемого `NotImplementedException` приходит `ArgumentException` с текстом `Found LinearBasisMutable in AffineBasis constructor!`.
-    - Стек указывает на `FLNode..ctor(..., AffineBasis)` внутри `HrepToFLrep_Geometric`.
-- Contract ambiguities:
-  - Здесь уже есть сдвиг текущего наблюдаемого контракта: тест описывает старое поведение, код до него больше не доходит.
-- Notes:
-  - Причина выглядит зависимой от `FaceLattice` / `AffineBasis`, а не изолированной внутри самого `HrepToFLrep`.
 
 ## HyperPlane
 

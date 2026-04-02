@@ -247,15 +247,6 @@
 - Note:
   - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами обязательного минимума и будут разбираться следующими классами backlog
 
-### HrepToFLrep
-
-- New tests:
-  - [`HrepToFLrepCurrentContractTests.cs`](../../Tests/DoubleGeometry/Polyhedra/HrepToFLrep/HrepToFLrepCurrentContractTests.cs) (текущее публичное поведение `HrepToFLrep_Geometric`: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае)
-- Legacy:
-  - отдельного прямого legacy-файла не было
-- Note:
-  - здесь сознательно зафиксирован именно текущий наблюдаемый контракт неработающего метода, а не гипотетическая успешная конвертация
-
 ### GiftWrapping
 
 - New tests:

@@ -14,7 +14,6 @@
 
 - internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP`;
 - отдельный набор на `FLNodeSum`;
-- временный рабочий журнал обсуждения и решений: [`Worklog.temp.md`](Worklog.temp.md).
 
 ## Topics
 
