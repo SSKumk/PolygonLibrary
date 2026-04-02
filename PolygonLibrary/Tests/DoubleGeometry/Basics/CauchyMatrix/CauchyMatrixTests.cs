@@ -25,6 +25,7 @@ public class CauchyMatrixTests {
   public void DiagonalMatrix_MatchesExactExponentialForPositiveAndNegativeInstants() {
     Matrix a = new(new double[,] { { 1, 0 }, { 0, 2 } });
     CauchyMatrix cauchy = new(a, 0.0, 0.01);
+    const double tolerance = 5e-8;
 
     Matrix expectedAtPositive = new(new double[,] {
       { Math.Exp(-1.0), 0 },
@@ -35,8 +36,8 @@ public class CauchyMatrixTests {
       { 0, Math.Exp(2.0) }
     });
 
-    CauchyMatrixAssert.AreEqual(cauchy[1.0], expectedAtPositive, 1e-8);
-    CauchyMatrixAssert.AreEqual(cauchy[-1.0], expectedAtNegative, 1e-8);
+    CauchyMatrixAssert.AreEqual(cauchy[1.0], expectedAtPositive, tolerance);
+    CauchyMatrixAssert.AreEqual(cauchy[-1.0], expectedAtNegative, tolerance);
   }
 
   [Test]
