@@ -10,15 +10,14 @@
 
 ## Current State
 
-- Текущий узкий прогон `FaceLattice`: `15` total, `14` passed, `1` failed.
-- Падает сценарий `Constructor_FromSubNodes_WithExplicitAffBasis`.
-- Текущее падение локализовано в связке `FLNode(.., AffineBasis)` -> `new AffineBasis(affBasis, false)` -> запрет `LinearBasisMutable` в `AffineBasis`.
+- Текущий узкий прогон `FaceLattice`: `17` total, `17` passed, `0` failed.
+- Сценарий `Constructor_FromSubNodes_WithExplicitAffBasis` закрыт через правку copy ctor `AffineBasis`.
 
 ## Agreed Positions
 
 ### AP-001 Empty Subnodes
 
-- Status: `open`
+- Status: `implemented_in_docs`
 - User position:
   - Пустой набор `sub` считается нарушением preconditions.
   - В release-ветке специально проверять это не нужно.
@@ -46,7 +45,7 @@
 
 ### AP-003 Equals vs CompareTo Consistency
 
-- Status: `open`
+- Status: `implemented_in_tests`
 - User position:
   - Можно писать тест на корректное согласование `Equals` и `CompareTo`.
   - Некорректное представление тут отдельно не определено.
@@ -59,7 +58,7 @@
 
 ### AP-004 FaceLattice Equality Ordering Robustness
 
-- Status: `open`
+- Status: `implemented_in_tests`
 - User position:
   - Добавить тест.
 - Assistant notes:
@@ -105,21 +104,17 @@
 
 ### GAP-001 Explicit AffineBasis Contract
 
-- Status: `open`
+- Status: `implemented_variant_1`
 - Observation:
   - `FLNode(IEnumerable<FLNode> sub, AffineBasis affBasis)` сейчас логически обещает "использовать переданный базис".
   - Фактически он падает на обычном `AffineBasis`, если внутри него mutable linear basis.
-- Why this matters:
-  - Это уже не просто непокрытый сценарий, а реальное расхождение между ожидаемым и фактическим контрактом.
-- Decision pending:
-  - Нужно отдельно согласовать, что должен означать этот конструктор:
-    - принимать любой `AffineBasis` и безопасно копировать;
-    - принимать только "безопасный" базис;
-    - или вообще не принимать внешний `AffineBasis` без специальной factory/validation-ветки.
 - Agreed direction:
   - Конструктор должен принимать "безопасный и верный" базис пространства, задаваемого `sub`.
 - Assistant notes:
-  - Это сдвигает вопрос из области "что он должен принимать" в область "как именно реализовать безопасное принятие такого базиса внутри `FLNode`".
+  - Реализован минимальный вариант:
+    - `AffineBasis(AffineBasis, needCopy: false)` разрешает zero-copy для обычного `AffineBasis`;
+    - тот же путь остаётся запрещённым для `AffineBasisMutable`.
+  - Более глубокое архитектурное разведение immutable/mutable слоёв вынесено в `todo.md`.
 
 ### GAP-002 Invalid Graph Scenarios
 
@@ -172,3 +167,7 @@
 ## Decision Log
 
 - `AP-005`: приоритет у скорости; `SortedSet` и быстрые set-операции сохраняются, структура пока считается immutable-by-convention.
+- `AP-001`: precondition про непустой `sub` зафиксирован в XML `FLNode(IEnumerable<FLNode> sub, ...)`.
+- `AP-003`: тест на согласованность `FLNode.Equals` и `CompareTo` для корректно построенных узлов добавлен.
+- `AP-004`: тест на инвариантность `FaceLattice.Equals` к эквивалентному порядку построения добавлен.
+- `GAP-001`: принят и реализован вариант 1: zero-copy копирование разрешено для обычного `AffineBasis`, но не для `AffineBasisMutable`.

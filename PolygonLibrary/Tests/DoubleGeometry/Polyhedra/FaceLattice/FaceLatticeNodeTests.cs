@@ -80,6 +80,22 @@ public class FaceLatticeNodeTests {
   }
 
   [Test]
+  public void Constructor_FromSubNodes_IsInvariantToSubnodeOrder() {
+    FLNode v0 = new(FaceLatticeAssert.V(0, 0));
+    FLNode v1 = new(FaceLatticeAssert.V(1, 0));
+
+    FLNode edgeForward = new([v0, v1]);
+    FLNode edgeBackward = new([v1, v0]);
+
+    Assert.Multiple(() => {
+      Assert.That(edgeForward, Is.EqualTo(edgeBackward), "Equivalent edges should not depend on the input sub-node order.");
+      Assert.That(edgeForward.CompareTo(edgeBackward), Is.EqualTo(0), "Equivalent edges should compare as equal.");
+      FaceLatticeAssert.AssertVectorsAreEqual(edgeForward.InnerPoint, edgeBackward.InnerPoint, "InnerPoint should not depend on the input sub-node order.");
+      Assert.That(edgeForward.Vertices.SetEquals(edgeBackward.Vertices), Is.True, "Vertex set should be invariant to the input sub-node order.");
+    });
+  }
+
+  [Test]
   public void Constructor_FromSubNodes_WithExplicitAffBasis() {
     FLNode v0 = new(FaceLatticeAssert.V(0, 0));
     FLNode v1 = new(FaceLatticeAssert.V(1, 0));
@@ -171,6 +187,29 @@ public class FaceLatticeNodeTests {
       Assert.That(v1.CompareTo(v0), Is.GreaterThan(0), "V(1,0) node > V(0,0) node.");
       Assert.That(edgeV0V0x.CompareTo(edgeV0V1), Is.LessThan(0));
       Assert.That(edgeV0V1.CompareTo(edgeV0V0x), Is.GreaterThan(0));
+    });
+  }
+
+  [Test]
+  public void Equals_And_CompareTo_AreConsistent_ForCorrectNodes() {
+    FLNode v00 = new(FaceLatticeAssert.V(0, 0));
+    FLNode v00Copy = new(FaceLatticeAssert.V(0, 0));
+    FLNode v10 = new(FaceLatticeAssert.V(1, 0));
+    FLNode v01 = new(FaceLatticeAssert.V(0, 1));
+    FLNode edge1 = new([v00, v10]);
+    FLNode edge1Equivalent = new([new FLNode(FaceLatticeAssert.V(1, 0)), new FLNode(FaceLatticeAssert.V(0, 0))]);
+    FLNode edge2 = new([v00, v01]);
+
+    FLNode[] nodes = [v00, v00Copy, v10, v01, edge1, edge1Equivalent, edge2];
+
+    Assert.Multiple(() => {
+      for (int i = 0; i < nodes.Length; i++) {
+        for (int j = 0; j < nodes.Length; j++) {
+          bool equals = nodes[i].Equals(nodes[j]);
+          bool compareEquals = nodes[i].CompareTo(nodes[j]) == 0;
+          Assert.That(compareEquals, Is.EqualTo(equals), $"Consistency failed for pair ({i}, {j}).");
+        }
+      }
     });
   }
 

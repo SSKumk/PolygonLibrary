@@ -291,8 +291,8 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Constructs a node based on its sub-nodes.
     /// </summary>
-    /// <param name="sub">The set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
-    /// <param name="affBasis">The affine space of the sub given explicitly.</param>
+    /// <param name="sub">The non-empty set of sub-nodes which is the set of sub-nodes of the node to be created.</param>
+    /// <param name="affBasis">The affine space of the sub given explicitly. It is assumed to be correct for the face defined by <paramref name="sub"/>.</param>
     public FLNode(IEnumerable<FLNode> sub, AffineBasis? affBasis = null) {
       Sub           = new SortedSet<FLNode>(sub);
       _nodeVertices = new SortedSet<Vector>(Sub.SelectMany(s => s._nodeVertices));

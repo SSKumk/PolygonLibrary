@@ -231,6 +231,7 @@
   - [`FaceLatticeTests.cs`](../../Tests/SharedTests/FaceLatticeTests.cs)
 - Note:
   - legacy-набор был сосредоточен почти целиком на `FLNode`; при миграции добавлен отдельный прямой слой на сам контейнер `FaceLattice`
+  - позднее в тот же набор добавлены сценарии на инвариантность к порядку `sub`, согласованность `Equals`/`CompareTo` и порядок построения эквивалентной решётки
 
 ### ConvexPolytop
 

@@ -19,6 +19,7 @@
 | FL-AGG-001 | x | `AllKfaces_ExceptTop` возвращает все грани ниже топа без самого политопа. | [`FaceLatticeStructureAndTransformTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs#L39) |
 | FL-TR-001 | x | `VertexTransform` преобразует вершины и сохраняет число уровней и количество узлов на каждом уровне. | [`FaceLatticeStructureAndTransformTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs#L52) |
 | FL-EQ-001 | x | `Equals` различает эквивалентную и геометрически сдвинутую решётку, а также разные по высоте решётки. | [`FaceLatticeStructureAndTransformTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs#L74) |
+| FL-EQ-002 | x | `Equals` инвариантен к эквивалентному порядку построения узлов внутри уровней. | [`FaceLatticeStructureAndTransformTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs) |
 | FL-OVR-001 | x | `GetHashCode` публично запрещён и бросает `InvalidOperationException`. | [`FaceLatticeStructureAndTransformTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs#L89) |
 
 ## Existing Tests

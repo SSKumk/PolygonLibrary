@@ -216,7 +216,19 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="affineBasis">The affine basis to be copied.</param>
     /// <param name="needCopy">Whether the affine basis should be copied.</param>
-    public AffineBasis(AffineBasis affineBasis, bool needCopy) : this(affineBasis.Origin, affineBasis._linearBasis, needCopy) {
+    public AffineBasis(AffineBasis affineBasis, bool needCopy) {
+      Origin = affineBasis.Origin;
+
+      if (needCopy) {
+        _linearBasis = new LinearBasisMutable(affineBasis._linearBasis, true);
+      }
+      else {
+        if (affineBasis is AffineBasisMutable) {
+          throw new ArgumentException("Found AffineBasisMutable in AffineBasis copy constructor!");
+        }
+        _linearBasis = affineBasis._linearBasis;
+      }
+
 #if DEBUG
       CheckCorrectness(this);
 #endif

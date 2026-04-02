@@ -80,11 +80,14 @@ public class FaceLatticeStructureAndTransformTests {
   public void Equals_UsesAffineStructureOfEachNonTopLevel() {
     FaceLattice lattice = FaceLatticeTestData.CreateTriangleLattice();
     FaceLattice same = FaceLatticeTestData.CreateTriangleLattice();
+    FaceLattice reordered = FaceLatticeTestData.CreateTriangleLatticeReordered();
     FaceLattice translated = lattice.VertexTransform(v => v + FaceLatticeAssert.V(1, 0));
     FaceLattice point = new(FaceLatticeAssert.V(0, 0));
 
     Assert.Multiple(() => {
       Assert.That(lattice, Is.EqualTo(same));
+      Assert.That(lattice, Is.EqualTo(reordered), "Equivalent lattices should not depend on construction order inside levels.");
+      Assert.That(reordered, Is.EqualTo(lattice), "Equality should remain symmetric for equivalent lattices built in different order.");
       Assert.That(lattice, Is.Not.EqualTo(translated));
       Assert.That(lattice, Is.Not.EqualTo(point));
       Assert.That(lattice, Is.Not.EqualTo(null));

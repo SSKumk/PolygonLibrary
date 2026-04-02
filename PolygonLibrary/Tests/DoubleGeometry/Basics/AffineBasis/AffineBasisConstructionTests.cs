@@ -163,4 +163,26 @@ public class AffineBasisConstructionTests {
     Assert.That(original.SubSpaceDim, Is.EqualTo(2), "Original SubSpaceDim should remain unchanged.");
   }
 
+  [Test]
+  public void Constructor_CopyConstructor_ImmutableSource_NeedCopyFalse_SharesLinearBasis() {
+    Vector origin = V(1, 2, 3);
+    AffineBasis original = new AffineBasis(origin, LinearBasis.GenLinearBasis(spaceDim: 3, subSpaceDim: 2));
+    AffineBasis copy = new AffineBasis(original, needCopy: false);
+
+    AreEqual(copy.Origin, original.Origin);
+    Assert.That(copy.LinBasis, Is.SameAs(original.LinBasis), "Immutable AffineBasis should allow zero-copy sharing of the internal linear basis.");
+    Assert.That(copy.SubSpaceDim, Is.EqualTo(original.SubSpaceDim));
+    Assert.That(copy, Is.EqualTo(original));
+  }
+
+  [Test]
+  public void Constructor_CopyConstructor_MutableSource_NeedCopyFalse_Throws() {
+    AffineBasisMutable original = new AffineBasisMutable(V(1, 2, 3), new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0)), needCopy: false);
+
+    Assert.Throws<ArgumentException>(
+      () => new AffineBasis(original, needCopy: false),
+      "Found AffineBasisMutable in AffineBasis copy constructor!"
+    );
+  }
+
 }

@@ -27,4 +27,21 @@ internal static class FaceLatticeTestData {
     ]);
   }
 
+  public static FaceLattice CreateTriangleLatticeReordered() {
+    FLNode v2 = new(FaceLatticeAssert.V(1, 1));
+    FLNode v1 = new(FaceLatticeAssert.V(2, 0));
+    FLNode v0 = new(FaceLatticeAssert.V(0, 0));
+
+    FLNode e20 = new([v2, v0]);
+    FLNode e01 = new([v1, v0]);
+    FLNode e12 = new([v2, v1]);
+    FLNode face = new([e20, e01, e12]);
+
+    return new FaceLattice([
+      new SortedSet<FLNode> { v2, v0, v1 },
+      new SortedSet<FLNode> { e20, e01, e12 },
+      new SortedSet<FLNode> { face }
+    ]);
+  }
+
 }

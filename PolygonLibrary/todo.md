@@ -19,6 +19,15 @@ TODO file
 
 1. [ ] LinearBasis: В одну операцию! MultiplyTransposeBySelf()
 
+1. [ ] AffineBasis / LinearBasis: Полностью развести immutable- и mutable-сущности.
+Средний приоритет.
+Что нужно продумать и сделать:
+- базовый `LinearBasis` и базовый `AffineBasis` должны опираться на реально immutable-внутреннее представление, а не на mutable-тип "по договорённости";
+- zero-copy сценарии с `needCopy: false` должны остаться доступны для быстрых путей, но без скрытого aliasing mutable-состояния;
+- `LinearBasisMutable` и `AffineBasisMutable` должны остаться отдельным явным mutable-слоем;
+- нужно пересмотреть copy ctor'ы, factory-методы и поля хранения (`_Basis`, `_linearBasis`), чтобы контракты типов и внутренняя реализация больше не расходились;
+- отдельно проверить влияние на `FaceLattice`, `HyperPlane` и другие места, где сейчас рассчитывается на дешёвое переиспользование базисов.
+
 1. [x]  ~~ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.~~
 
 1. [ ] ParamReader посмотреть, где надо использовать StringBuilder

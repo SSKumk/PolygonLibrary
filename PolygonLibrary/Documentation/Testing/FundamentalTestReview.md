@@ -68,6 +68,13 @@
   - Итог:
     - `18` passed
     - `0` failed
+- `2026-04-02`
+  - `AffineBasis` + `FaceLattice`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.AffineBasis|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice"`
+  - Итог:
+    - `62` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -91,7 +98,7 @@
 | `GammaPair` | `checked_clean` | `0` | `0` | Собственные прямые тесты проходят; проблемы всплывают в сценариях `SupportFunction`. |
 | `SupportFunction` | `checked_clean` | `0` | `0` | Сценарии с нулевыми нормалями сняты как нарушение preconditions `GammaPair`; целевой повторный прогон зелёный. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
-| `FaceLattice` | `has_failures` | `0` | `1` | Явная `AffineBasis` для узла конфликтует с текущим конструктором `AffineBasis`. |
+| `FaceLattice` | `checked_clean` | `0` | `0` | Zero-copy копирование из обычного `AffineBasis` согласовано с `FLNode`; целевой повторный прогон зелёный. |
 | `ConvexPolytop` | `has_failures` | `0` | `4` | Общий сбой в `HrepToVrep_Geometric`. |
 | `HrepToFLrep` | `has_failures` | `0` | `1` | Текущий наблюдаемый контракт уже не совпадает с ожиданием теста. |
 
@@ -180,17 +187,17 @@
 ## FaceLattice
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeNodeTests.cs#L83`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeNodeTests.cs#L83) `Constructor_FromSubNodes_WithExplicitAffBasis`
-    - Наблюдаемое поведение: `ArgumentException` с текстом `Found LinearBasisMutable in AffineBasis constructor!`.
-    - Стек проходит через `FLNode..ctor(IEnumerable<...> sub, AffineBasis affBasis)`.
+  - Не обнаружены после локальной проверки.
 - Contract ambiguities:
-  - Нужно уточнить, допускает ли этот конструктор произвольную переданную `AffineBasis`, если внутри неё сидит mutable-база.
+  - Открытым остаётся только более общий архитектурный вопрос о полном разведении immutable/mutable слоёв `AffineBasis` и `LinearBasis`.
 - Notes:
-  - Похожая проблема затрагивает и `HrepToFLrep`, то есть это не только локальная проблема узла.
+  - Проблема была локализована не в `FLNode`, а в copy ctor `AffineBasis(AffineBasis, needCopy: false)`.
+  - Принятое решение: zero-copy разрешён для копирования из обычного `AffineBasis`, но по-прежнему запрещён для `AffineBasisMutable`.
+  - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.AffineBasis|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice"` проходит: `62` passed, `0` failed.
 
 ## GammaPair
 
