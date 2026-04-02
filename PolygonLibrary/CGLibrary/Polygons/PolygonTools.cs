@@ -137,9 +137,9 @@ public partial class Geometry<TNum, TConv>
     public static ConvexPolygon Circle(TNum x, TNum y, TNum R, int n) => Circle(x, y, R, n, Tools.Zero);
 
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
+    /// Method for generating an approximation for an ellipse as an n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
-    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// If both semiaxes equal zero, a one-pointed polygon is generated.
     /// The polygon can be turned by some angle around the center.
     /// </summary>
     /// <param name="x">The abscissa of the center.</param>
@@ -169,9 +169,9 @@ public partial class Geometry<TNum, TConv>
         );
 
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
+    /// Method for generating an approximation for an ellipse as an n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
-    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// If both semiaxes equal zero, a one-pointed polygon is generated.
     /// </summary>
     /// <param name="x">The abscissa of the center.</param>
     /// <param name="y">The ordinate of the center.</param>
@@ -218,9 +218,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Method for generating an approximation for a ellipse as a n-polygon with vertices
+    /// Method for generating an approximation for an ellipse as an n-polygon with vertices
     /// uniformly distributed in angle. If one semiaxis equals zero, a segment is generated.
-    /// If the radius equals zero, a one-pointed polygon is generated.
+    /// If both semiaxes equal zero, a one-pointed polygon is generated.
     /// The polygon can be turned by some angle around the center and for some angle around zeroth vertex.
     /// </summary>
     /// <param name="x">The abscissa of the center.</param>
@@ -248,14 +248,14 @@ public partial class Geometry<TNum, TConv>
           (TNum sn, TNum cs) = TNum.SinCos(phi);
 
           return new ConvexPolygon
-            (new Vector2D[] { new Vector2D(x + a * cs, y + a * sn), new Vector2D(x - a * cs, y - a * sn) }, false);
+            (new Vector2D[] { new Vector2D(x - b * sn, y + b * cs), new Vector2D(x + b * sn, y - b * cs) }, false);
         }
       }
       if (Tools.EQ(b)) {
         (TNum sn, TNum cs) = TNum.SinCos(phi);
 
         return new ConvexPolygon
-          (new Vector2D[] { new Vector2D(x + b * sn, y + b * cs), new Vector2D(x - b * sn, y - b * cs) }, false);
+          (new Vector2D[] { new Vector2D(x + a * cs, y + a * sn), new Vector2D(x - a * cs, y - a * sn) }, false);
       }
 
       List<Vector2D> res    = new List<Vector2D>();

@@ -54,6 +54,13 @@
   - Итог:
     - `5` passed
     - `0` failed
+- `2026-04-02`
+  - `PolygonTools`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polygons.PolygonTools"`
+  - Итог:
+    - `25` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -73,7 +80,7 @@
 | `HyperPlane` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `Polyline` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `BasicPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
-| `PolygonTools` | `has_failures` | `0` | `2` | Вырожденный эллипс возвращает не ожидаемый повёрнутый отрезок. |
+| `PolygonTools` | `checked_clean` | `0` | `0` | Ветви вырожденного эллипса исправлены; целевой повторный прогон зелёный. |
 | `GammaPair` | `checked_clean` | `0` | `0` | Собственные прямые тесты проходят; проблемы всплывают в сценариях `SupportFunction`. |
 | `SupportFunction` | `has_failures` | `0` | `2` | Инициализация через пары с нулевыми нормалями утыкается в `Debug.Assert` внутри `GammaPair`. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
@@ -142,7 +149,7 @@
 ## ConvexPolytop
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
@@ -277,15 +284,13 @@
   - `has_failures`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
-- Failing tests:
-  - [`../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs#L65`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs#L65) `Ellipse_ZeroMinorSemiaxis_ReturnsSegmentAlongRotatedMajorAxis`
-    - Наблюдаемое поведение: вместо ожидаемых повёрнутых концов отрезка контур содержит две одинаковые вершины `<(1;-1)>`.
-  - [`../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs#L84`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs#L84) `Ellipse_ZeroMajorSemiaxis_ReturnsSegmentAlongRotatedMinorAxis`
-    - Наблюдаемое поведение: вместо ожидаемых повёрнутых концов отрезка контур содержит две одинаковые вершины `<(1;-1)>`.
-- Contract ambiguities:
-  - Надо отдельно решить, считается ли вырожденный эллипс официально поддержанным сценарием или это лишь полезное расширение текущего API.
-- Notes:
-  - Оба падения согласованны между собой и указывают на один и тот же вид деградации.
+  - Failing tests:
+    - Не обнаружены после локальной проверки.
+  - Contract ambiguities:
+    - Неясности сняты: XML-комментарии `PolygonTools.Ellipse` явно фиксируют, что при одной нулевой полуоси должен получаться segment.
+  - Notes:
+    - Корень сбоя был в двух ветвях `Ellipse`: при `a == 0` и `b == 0` длина отрезка ошибочно строилась по нулевой полуоси, из-за чего оба конца совпадали.
+    - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polygons.PolygonTools"` проходит: `25` passed, `0` failed.
 
 ## Polyline
 
