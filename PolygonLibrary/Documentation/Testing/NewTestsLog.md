@@ -1,4 +1,4 @@
-# New Tests Log
+﻿# New Tests Log
 
 Этот файл нужен как короткий журнал миграции: какие новые тестовые файлы появились для каждого класса и какой legacy-источник был заменён.
 
@@ -245,7 +245,8 @@
 - Legacy:
   - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
 - Note:
-  - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами обязательного минимума и будут разбираться следующими классами backlog
+  - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
+  - позже в те же файлы добавлены прямые сценарии на wrapper `NearestPoint(Vector)`, на `ToConvexPolygon(AffineBasis)` и на `Scale` для положительного и отрицательного коэффициента во всех трёх представлениях
 
 ### GiftWrapping
 
@@ -268,7 +269,7 @@
 - Legacy:
   - [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
 - Note:
-  - тяжёлые 4D/5D и article-based regression-сценарии оставлены вне обязательного минимума; legacy-файл исключён из активной компиляции
+  - тяжёлые 4D/5D и article-based regression-сценарии оставлены вне активного слоя; legacy-файл исключён из активной компиляции
 
 ### MinkowskiDiff
 
@@ -288,3 +289,4 @@
   - отдельного прямого legacy-файла не было
 - Note:
   - прямой слой на `CauchyMatrix` сделан через математически контролируемые случаи, без тяжёлых численных прогонов
+

@@ -1,10 +1,10 @@
-# MinkowskiDiff
+﻿# MinkowskiDiff
 
 ## Scope
 
 Класс [`MinkowskiDiff.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/MinkowskiDiff.cs) реализует разность Минковского через H-representation и поиск экстремальных вершин.
 
-В обязательный минимум миграции входят:
+В активный слой текущего этапа входят:
 
 - вспомогательные прямые функции `FindExtrInCPOnVector_Naive` и `doSubtract`;
 - `Naive` и `Geometric` на репрезентативных случаях `cube - segment`.
@@ -26,4 +26,5 @@
 ## Notes
 
 - Старый direct-набор на `MinkowskiDiff` был маленьким; новая структура сохранила его смысл и добавила явную проверку `Geometric`.
+
 

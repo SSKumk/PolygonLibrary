@@ -1,4 +1,4 @@
-# Current Algorithm
+﻿# Current Algorithm
 
 ## Scope
 
@@ -25,5 +25,6 @@
 
 ## Gaps
 
-- Sphere/cyclic и другие тяжёлые кейсы из legacy пока не входят в обязательный минимум.
+- Sphere/cyclic и другие тяжёлые кейсы из legacy пока не входят в активный слой.
+
 

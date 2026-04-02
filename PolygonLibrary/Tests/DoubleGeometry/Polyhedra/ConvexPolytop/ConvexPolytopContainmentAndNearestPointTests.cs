@@ -54,6 +54,20 @@ public class ConvexPolytopContainmentAndNearestPointTests {
   }
 
   [Test]
+  public void NearestPoint_ConvenienceOverload_DelegatesToOutParameterOverload() {
+    ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareFlrep();
+    Vector point = ConvexPolytopAssert.V(1.5, 0.25);
+
+    Vector nearestWithPosition = polytope.NearestPoint(point, out int position);
+    Vector nearest = polytope.NearestPoint(point);
+
+    Assert.Multiple(() => {
+      Assert.That(position, Is.EqualTo(1));
+      ConvexPolytopAssert.AssertVectorsAreEqual(nearest, nearestWithPosition);
+    });
+  }
+
+  [Test]
   public void NearestPoint_OnBorder_ReturnsSamePointAndZeroPosition() {
     ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareFlrep();
     Vector point = ConvexPolytopAssert.V(0, 0.5);

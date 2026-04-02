@@ -1,4 +1,4 @@
-# Transforms And Overrides
+﻿# Transforms And Overrides
 
 ## Scope
 
@@ -15,8 +15,10 @@
 | CPT-TR-002 | x | `LiftUp` поднимает политоп в большее пространство и ставит новую координату равной заданному значению. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L35) |
 | CPT-TR-003 | x | `SectionByHyperPlane` возвращает сечение политопа по гиперплоскости. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L47) |
 | CPT-TR-004 | x | `ShiftToOrigin` возвращает использованную внутреннюю точку и переносит политоп вокруг нуля. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L61) |
-| CPT-TR-005 | x | `Scale` с неотрицательным коэффициентом масштабирует политоп, а отрицательный коэффициент пока запрещён. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L79) |
-| CPT-OVR-001 | x | `WhichRepToString`, `Equals` и `GetHashCode` следуют текущим контрактам для разных репрезентаций. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L99) |
+| CPT-TR-005 | x | `Scale` относительно начала координат масштабирует политоп с ожидаемой геометрией. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L88) |
+| CPT-TR-006 | x | `Scale(k, origin)` для ненулевого `origin` масштабирует политоп именно относительно этой точки во всех трёх представлениях. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L107) |
+| CPT-TR-007 | x | `Scale(k, origin)` при отрицательном `k` отражает и масштабирует политоп относительно заданного центра во всех трёх представлениях. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L132) |
+| CPT-OVR-001 | x | `WhichRepToString`, `Equals` и `GetHashCode` следуют текущим контрактам для разных репрезентаций. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L199) |
 
 ## Existing Tests
 
@@ -25,5 +27,6 @@
 
 ## Gaps
 
-- `Polar` и IO-функции вынесены из обязательного минимума в отдельный будущий слой.
+- `Polar` и IO-функции вынесены из активного слоя в отдельный будущий слой.
+
 

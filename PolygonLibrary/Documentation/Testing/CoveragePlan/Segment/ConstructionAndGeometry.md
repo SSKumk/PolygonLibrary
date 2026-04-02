@@ -1,4 +1,4 @@
-# Segment Construction And Geometry
+﻿# Segment Construction And Geometry
 
 ## Scope
 
@@ -29,4 +29,5 @@
 
 ## Notes
 
-- Сценарий с совпадающими концами оставлен вне обязательного минимума как debug-precondition, а не как release-контракт.
+- Сценарий с совпадающими концами оставлен вне активного слоя как debug-precondition, а не как release-контракт.
+

@@ -1,4 +1,4 @@
-# High Dimensional And OnlyHrep
+﻿# High Dimensional And OnlyHrep
 
 ## Scope
 
@@ -20,5 +20,6 @@
 
 ## Gaps
 
-- 4D/5D regression-сценарии и picture-based кейсы остаются вне обязательного минимума.
+- 4D/5D regression-сценарии и picture-based кейсы остаются вне активного слоя.
+
 

@@ -1,4 +1,4 @@
-# Construction And Representations
+﻿# Construction And Representations
 
 ## Scope
 
@@ -7,7 +7,8 @@
 - `CreateFromPoints`, `CreateFromHalfSpaces`, `CreateFromFaceLattice`;
 - `WhichRep`, `Is*rep`, `SpaceDim`, `PolytopDim`;
 - lazy-доступ к `Vrep`, `Hrep`, `FLrep`, `fVector`, `InnerPoint`;
-- `GetInVrep`, `GetInHrep`, `GetInFLrep`.
+- `GetInVrep`, `GetInHrep`, `GetInFLrep`;
+- `ToConvexPolygon`.
 
 ## Scenarios
 
@@ -18,6 +19,8 @@
 | CPT-CTOR-003 | x | `CreateFromHalfSpaces` создаёт `Hrep`-политоп и делает доступными point queries. | [`ConvexPolytopConstructionAndRepresentationTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs#L37) |
 | CPT-CTOR-004 | x | `CreateFromFaceLattice` использует переданную решётку и корректно вычисляет `fVector`. | [`ConvexPolytopConstructionAndRepresentationTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs#L53) |
 | CPT-REP-001 | x | `GetInFLrep`, `GetInHrep` и `GetInVrep` строят эквивалентные политопы с нужным приоритетом представления. | [`ConvexPolytopConstructionAndRepresentationTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs#L69) |
+| CPT-REP-002 | x | `ToConvexPolygon` для 2D-политопа проектирует вершины в заданный аффинный базис. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L109) |
+| CPT-REP-003 | x | `ToConvexPolygon` для политопа размерности, отличной от 2, бросает `ArgumentException`. | [`ConvexPolytopTransformsAndOverridesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L136) |
 
 ## Existing Tests
 
@@ -26,5 +29,6 @@
 
 ## Gaps
 
-- `CreateFromReader` и связанные file-based сценарии сознательно не входят в обязательный минимум этого этапа.
+- `CreateFromReader` и связанные file-based сценарии сознательно не входят в активный слой этого этапа.
+
 

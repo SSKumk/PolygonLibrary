@@ -86,7 +86,7 @@ public class ConvexPolytopTransformsAndOverridesTests {
   }
 
   [Test]
-  public void Scale_FromOrigin_ScalesAllVertices_AndNegativeScaleIsRejected() {
+  public void Scale_FromOrigin_ScalesAllVertices() {
     ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareVrep();
 
     ConvexPolytop scaled = polytope.Scale(2, Vector.Zero(2));
@@ -101,8 +101,99 @@ public class ConvexPolytopTransformsAndOverridesTests {
           ConvexPolytopAssert.V(0, 2)
         ]
       );
-      Assert.That(() => polytope.Scale(-1, Vector.Zero(2)), Throws.TypeOf<NotImplementedException>());
     });
+  }
+
+  [Test]
+  public void Scale_FromNonZeroOrigin_ScalesRelativeToThatOrigin_ForAllRepresentations() {
+    Vector origin = ConvexPolytopAssert.V(1, 1);
+
+    ConvexPolytop[] polytopes = [
+      ConvexPolytopTestData.CreateUnitSquareVrep(),
+      ConvexPolytopTestData.CreateUnitSquareHrepOnly(),
+      ConvexPolytopTestData.CreateUnitSquareFlrep()
+    ];
+
+    foreach (ConvexPolytop polytope in polytopes) {
+      ConvexPolytop scaled = polytope.Scale(2, origin);
+
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        scaled.Vrep,
+        [
+          ConvexPolytopAssert.V(-1, -1),
+          ConvexPolytopAssert.V(1, -1),
+          ConvexPolytopAssert.V(1, 1),
+          ConvexPolytopAssert.V(-1, 1)
+        ]
+      );
+    }
+  }
+
+  [Test]
+  public void Scale_WithNegativeFactor_ReflectsAndScales_ForAllRepresentations() {
+    Vector origin = ConvexPolytopAssert.V(1, 1);
+
+    ConvexPolytop[] polytopes = [
+      ConvexPolytopTestData.CreateUnitSquareVrep(),
+      ConvexPolytopTestData.CreateUnitSquareHrepOnly(),
+      ConvexPolytopTestData.CreateUnitSquareFlrep()
+    ];
+
+    foreach (ConvexPolytop polytope in polytopes) {
+      ConvexPolytop scaled = polytope.Scale(-1, origin);
+
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        scaled.Vrep,
+        [
+          ConvexPolytopAssert.V(1, 1),
+          ConvexPolytopAssert.V(2, 1),
+          ConvexPolytopAssert.V(2, 2),
+          ConvexPolytopAssert.V(1, 2)
+        ]
+      );
+    }
+  }
+
+  [Test]
+  public void ToConvexPolygon_For2DPolytope_ProjectsVerticesIntoGivenAffineBasis() {
+    ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareVrep();
+    AffineBasis basis =
+      new(
+        [
+          Vector.Zero(2),
+          Vector.MakeOrth(2, 1),
+          Vector.MakeOrth(2, 2)
+        ]
+      );
+
+    ConvexPolygon polygon = polytope.ToConvexPolygon(basis);
+
+    Assert.That(
+      new SortedSet<Vector2D>(polygon.Vertices),
+      Is.EqualTo(
+        new SortedSet<Vector2D> {
+          new(0, 0),
+          new(1, 0),
+          new(1, 1),
+          new(0, 1)
+        }
+      )
+    );
+  }
+
+  [Test]
+  public void ToConvexPolygon_ForNonTwoDimensionalPolytope_ThrowsArgumentException() {
+    ConvexPolytop polytope = ConvexPolytop.Cube01_VRep(3);
+    AffineBasis basis =
+      new(
+        [
+          Vector.Zero(3),
+          Vector.MakeOrth(3, 1),
+          Vector.MakeOrth(3, 2)
+        ]
+      );
+
+    Assert.That(() => polytope.ToConvexPolygon(basis), Throws.TypeOf<ArgumentException>());
   }
 
   [Test]

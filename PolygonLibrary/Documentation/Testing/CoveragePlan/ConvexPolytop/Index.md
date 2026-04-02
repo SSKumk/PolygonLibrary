@@ -1,17 +1,17 @@
-# ConvexPolytop
+﻿# ConvexPolytop
 
 ## Scope
 
 Класс [`ConvexPolytop.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/ConvexPolytops/ConvexPolytop.cs) задаёт основной high-level контейнер для выпуклого политопа с поддержкой `Vrep`, `Hrep` и `FLrep`.
 
-В обязательный минимум текущей миграции входят:
+В активный слой текущего этапа входят:
 
 - прямые фабрики и переходы между представлениями;
 - базовые геометрические фабрики и простые численные метрики;
 - point queries и `NearestPoint` для тех веток, которые явно реализованы;
 - базовые геометрические преобразования и overrides.
 
-Вне обязательного минимума пока остаются:
+Вне активного слоя пока остаются:
 
 - `CreateFromReader` и `WriteIn`;
 - `Polar`;
@@ -25,6 +25,7 @@
 - [`FactoriesAndMetrics.md`](FactoriesAndMetrics.md) - базовые фабрики и простые метрики расстояния.
 - [`ContainmentAndNearestPoint.md`](ContainmentAndNearestPoint.md) - `Contains*` и `NearestPoint`.
 - [`TransformsAndOverrides.md`](TransformsAndOverrides.md) - `Shift`, `Rotate`, `LiftUp`, `SectionByHyperPlane`, `Scale`, `Equals`.
+- [`RepresentationBranchMatrix.md`](RepresentationBranchMatrix.md) - вспомогательная матрица по веткам `Vrep` / `Hrep` / `FLrep` для методов с разной реализацией.
 
 ## Current Coverage Summary
 
@@ -33,8 +34,8 @@
 | Construction and Representations | `x` | Добавлен прямой набор на три репрезентации и переходы между ними. |
 | Factories and Metrics | `x` | Закрыты прямые фабрики и численные метрики малой стоимости. |
 | Containment and NearestPoint | `x` | Зафиксированы как рабочие, так и ещё не реализованные ветки. |
-| Transforms and Overrides | `x` | Закрыты базовые преобразования и общие контракты `Equals`/`GetHashCode`. |
-| IO, Polar and Advanced Builders | `-` | Оставлены вне обязательного минимума этой миграции. |
+| Transforms and Overrides | `x` | Базовые преобразования и общие контракты `Equals`/`GetHashCode` закрыты прямыми тестами, включая масштабирование относительно ненулевого центра. |
+| IO, Polar and Advanced Builders | `-` | Оставлены вне активного слоя этой миграции. |
 
 ## Existing Test Sources
 
@@ -46,4 +47,5 @@
 ## Notes
 
 - Старое покрытие `ConvexPolytop` было размазано по алгоритмическим тестам. В новой структуре добавлен отдельный прямой unit-like слой именно на сам класс.
+
 

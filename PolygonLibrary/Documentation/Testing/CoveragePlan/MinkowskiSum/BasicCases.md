@@ -1,4 +1,4 @@
-# Basic Cases
+﻿# Basic Cases
 
 ## Scope
 
@@ -24,5 +24,6 @@
 
 ## Gaps
 
-- Большой перечень 2D/3D article-cases из legacy оставлен за пределами обязательного минимума.
+- Большой перечень 2D/3D article-cases из legacy оставлен за пределами активного слоя.
+
 

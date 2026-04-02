@@ -1,4 +1,4 @@
-# Fundamental Test Review
+﻿# Fundamental Test Review
 
 Этот файл нужен для ревизии фундаментального слоя `double` без алгоритмов.
 
@@ -75,6 +75,20 @@
   - Итог:
     - `62` passed
     - `0` failed
+- `2026-04-02`
+  - `ConvexPolytop`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+  - Итог:
+    - `26` passed
+    - `0` failed
+- `2026-04-02`
+  - `ConvexPolytop`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+  - Итог:
+    - `27` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -99,7 +113,7 @@
 | `SupportFunction` | `checked_clean` | `0` | `0` | Сценарии с нулевыми нормалями сняты как нарушение preconditions `GammaPair`; целевой повторный прогон зелёный. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `FaceLattice` | `checked_clean` | `0` | `0` | Zero-copy копирование из обычного `AffineBasis` согласовано с `FLNode`; целевой повторный прогон зелёный. |
-| `ConvexPolytop` | `has_failures` | `0` | `4` | Общий сбой в `HrepToVrep_Geometric`. |
+| `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; масштабирование относительно ненулевого центра закреплено прямым тестом. |
 
 ## AffineBasis
 
@@ -164,24 +178,15 @@
 - Status:
   - `checked_clean`
 - Missing scenarios:
-  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+  - Пока новых сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs#L71`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopConstructionAndRepresentationTests.cs#L71) `GetInRepresentations_ConstructEquivalentPolytopesWithRequestedPriority`
-    - Наблюдаемое поведение: `ArgumentOutOfRangeException`.
-    - Стек указывает на `ConvexPolytop.HrepToVrep_Geometric`.
-  - [`../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L21`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L21) `Cube01Factories_ProduceEquivalentCubes`
-    - Наблюдаемое поведение: `ArgumentOutOfRangeException`.
-    - Сбой происходит при сравнении через ленивое достроение представлений.
-  - [`../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L52`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L52) `SectionByHyperPlane_ForUnitSquare_ReturnsVerticalMidSegment`
-    - Наблюдаемое поведение: `ArgumentOutOfRangeException`.
-    - Стек снова указывает на `ConvexPolytop.HrepToVrep_Geometric`.
-  - [`../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L109`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs#L109) `WhichRepToString_EqualsAndGetHashCode_FollowCurrentRepresentationContracts`
-    - Наблюдаемое поведение: `ArgumentOutOfRangeException`.
-    - Сбой проявляется через `Equals`, который лениво требует `FLrep`.
+  - Не обнаружены после локальной проверки.
 - Contract ambiguities:
   - Не отмечены.
 - Notes:
-  - Это ещё один кластерный дефект: несколько разных публичных сценариев падают в одном и том же преобразовании `Hrep -> Vrep`.
+  - Кластерный сбой в `HrepToVrep_Geometric` оказался вызван остатками отладочного кода; после удаления `ConvexPolytop`-набор снова стал зелёным.
+  - Поверх исходного набора добавлены прямые сценарии на wrapper `NearestPoint(Vector)` и на `ToConvexPolygon(AffineBasis)`, включая guard для размерности, отличной от `2`.
+  - Семантика `Scale(k, origin)` для ненулевого `origin` подтверждена и исправлена: политоп действительно масштабируется относительно заданного центра.
 
 ## FaceLattice
 
@@ -393,3 +398,4 @@
   - полезно фиксировать случаи, где новый набор ожидает уже не то, что исторически ожидал legacy;
 - `Upstream dependency`
   - полезно явно отмечать, когда падение в классе на самом деле вызвано нижележащей зависимостью, чтобы не чинить один и тот же дефект в пяти местах.
+

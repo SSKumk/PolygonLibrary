@@ -1,4 +1,4 @@
-# Factories And Metrics
+﻿# Factories And Metrics
 
 ## Scope
 
@@ -25,5 +25,6 @@
 
 ## Gaps
 
-- `SimplexRND`, `Cyclic`, `Sphere` и `Ellipsoid` пока оставлены за пределами обязательного минимума этого этапа.
+- `SimplexRND`, `Cyclic`, `Sphere` и `Ellipsoid` пока оставлены за пределами активного слоя этого этапа.
+
 

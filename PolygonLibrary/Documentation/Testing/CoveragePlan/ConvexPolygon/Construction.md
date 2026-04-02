@@ -1,4 +1,4 @@
-# ConvexPolygon Construction
+﻿# ConvexPolygon Construction
 
 ## Scope
 
@@ -16,9 +16,10 @@
 
 ## Gaps
 
-- Явный сценарий с полностью неинициализированным polygon без вершин и без `SF` не входит в обязательный минимум: это не штатный способ создания `ConvexPolygon`.
+- Явный сценарий с полностью неинициализированным polygon без вершин и без `SF` не входит в активный слой: это не штатный способ создания `ConvexPolygon`.
 
 ## Notes
 
 - Старые smoke-тесты `CreateCPOfPointsTest*` и `CreateCPOfCFTest1` заменены на прямые проверки содержимого.
+
 

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 
 namespace CGLibrary;
@@ -1196,30 +1196,36 @@ public partial class Geometry<TNum, TConv>
     /// Creates a scaled version of the current polytope with respect to a given origin.
     /// The polytope is scaled by the given factor <paramref name="k"/>.
     /// </summary>
-    /// <param name="k">The scaling factor. Must be non-negative.</param>
+    /// <param name="k">The scaling factor. Can be any real number.</param>
     /// <param name="origin">The origin point for scaling.</param>
     /// <returns>
     /// A new <see cref="ConvexPolytop"/> that is a scaled version of the current polytope.
     /// </returns>
-    /// <exception cref="NotImplementedException">
-    /// Thrown when the scaling factor <paramref name="k"/> is negative, as this case is not supported for now.
-    /// </exception>
     public ConvexPolytop Scale(TNum k, Vector origin) {
-      if (Tools.LT(k)) {
-        throw new NotImplementedException("ConvexPolytop.Scale: Пока не умеем с отрицательным 'k'");
-      }
-
       if (IsFLrep) {
-        return CreateFromFaceLattice(FLrep.VertexTransform(v => (v - origin) * k));
+        return CreateFromFaceLattice(FLrep.VertexTransform(v => origin + (v - origin) * k));
       }
       if (IsVrep) {
-        return CreateFromPoints(Vrep.Select(v => (v - origin) * k));
+        return CreateFromPoints(Vrep.Select(v => origin + (v - origin) * k));
       }
 
-      // todo: проверить, работает ли
+      if (Tools.GE(k)) {
+        return CreateFromHalfSpaces
+          (Hrep.Select(hp => new HyperPlane(hp.Normal, (Tools.One - k) * origin * hp.Normal + hp.ConstantTerm * k)));
+      }
+
+      // For k < 0 the affine map reverses the inequality direction, so the normal must be flipped.
       return CreateFromHalfSpaces
-        (Hrep.Select(hp => new HyperPlane(hp.Normal, (Tools.One - k) * origin * hp.Normal + hp.ConstantTerm * k)));
-      // return CreateFromHalfSpaces(Hrep.Select(hp => new HyperPlane(new AffineBasis((hp.AffBasis.Origin-origin)*k, hp.AffBasis.LinBasis), ??? )));
+        (
+         Hrep.Select
+           (
+            hp => new HyperPlane
+              (
+               -hp.Normal
+             , -hp.ConstantTerm * k - (Tools.One - k) * origin * hp.Normal
+              )
+           )
+        );
     }
 
     /// <summary>
@@ -1436,55 +1442,6 @@ public partial class Geometry<TNum, TConv>
       // int[] bins = new int[28];
 // #endif
 
-      GaussSLE.Solve
-        (
-         new List<HyperPlane>()
-           {
-             HPs[319]
-           , HPs[368]
-           , HPs[380]
-           }
-       , GaussSLE.GaussChoice.All
-       , out TNum[]? nums1
-        );
-      var x1 = new Vector(nums1);
-      GaussSLE.Solve
-        (
-         new List<HyperPlane>()
-           {
-             HPs[308]
-           , HPs[368]
-           , HPs[380]
-           }
-       , GaussSLE.GaussChoice.All
-       , out TNum[]? nums2
-        );
-      var x2 = new Vector(nums2);
-      GaussSLE.Solve
-        (
-         new List<HyperPlane>()
-           {
-             HPs[308]
-           , HPs[319]
-           , HPs[380]
-           }
-       , GaussSLE.GaussChoice.All
-       , out TNum[]? nums3
-        );
-      var x3 = new Vector(nums3);
-      GaussSLE.Solve
-        (
-         new List<HyperPlane>()
-           {
-             HPs[308]
-           , HPs[319]
-           , HPs[368]
-           }
-       , GaussSLE.GaussChoice.All
-       , out TNum[]? nums4
-        );
-      var x4 = new Vector(nums4);
-
       SortedSet<Vector> Vs       = new SortedSet<Vector>(); // копим точки результата
       SortedSet<Vector> toRemove = new SortedSet<Vector>(); // метим точки к удалению
       int               d        = HPs.First().Normal.SpaceDim;
@@ -1625,38 +1582,6 @@ public partial class Geometry<TNum, TConv>
 
             // встречалась ли эта точка ранее (определяем набором гиперплоскостей)
             if (HPsings.Add(new SortedSet<int>(zNewActiveHPs.Select(hp => HP2ind[hp])))) {
-#if DEBUG
-              Vector debug1 =
-                new Vector
-                  (
-                   new TNum[]
-                     {
-                       TConv.FromDouble(-0.11672077723995719)
-                     , TConv.FromDouble(-0.034065725195791235)
-                     , TConv.FromDouble(1.4895504951987597)
-                     }
-                  );
-              Vector debug2 =
-                new Vector
-                  (
-                   new TNum[]
-                     {
-                       TConv.FromDouble(-0.11672071294872709)
-                     , TConv.FromDouble(-0.03406571234948039)
-                     , TConv.FromDouble(1.489550464970621)
-                     }
-                  );
-              if (zNew.Equals(debug1)) {
-                var x = 1;
-                var o = Tools.Eps;
-              }
-              Debug.Assert
-                (
-                 GaussSLE.Solve(zNewActiveHPs, GaussSLE.GaussChoice.All, out TNum[]? point)
-               , $"ConvexPolytop.Hrep2Vrep_Geometric: ActiveHPs doesn't describe a point!"
-                );
-              var xx = zNew - new Vector(point);
-#endif
               Vs.Add(zNew);
               process.Enqueue((zNew, zNewActiveHPs));
             }
