@@ -89,6 +89,13 @@
   - Итог:
     - `27` passed
     - `0` failed
+- `2026-04-02`
+  - `ConvexPolytop`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+  - Итог:
+    - `32` passed
+    - `0` failed
 
 ## Status Summary
 
@@ -113,7 +120,7 @@
 | `SupportFunction` | `checked_clean` | `0` | `0` | Сценарии с нулевыми нормалями сняты как нарушение preconditions `GammaPair`; целевой повторный прогон зелёный. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `FaceLattice` | `checked_clean` | `0` | `0` | Zero-copy копирование из обычного `AffineBasis` согласовано с `FLNode`; целевой повторный прогон зелёный. |
-| `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; масштабирование относительно ненулевого центра закреплено прямым тестом. |
+| `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; активная branch-specific матрица по `Vrep` / `Hrep` / `FLrep` закрыта. |
 
 ## AffineBasis
 
@@ -185,8 +192,9 @@
   - Не отмечены.
 - Notes:
   - Кластерный сбой в `HrepToVrep_Geometric` оказался вызван остатками отладочного кода; после удаления `ConvexPolytop`-набор снова стал зелёным.
-  - Поверх исходного набора добавлены прямые сценарии на wrapper `NearestPoint(Vector)` и на `ToConvexPolygon(AffineBasis)`, включая guard для размерности, отличной от `2`.
-  - Семантика `Scale(k, origin)` для ненулевого `origin` подтверждена и исправлена: политоп действительно масштабируется относительно заданного центра.
+  - Поверх исходного набора добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, `ToConvexPolygon(AffineBasis)` и representation-specific ветки `Shift` / `Rotate`.
+  - Семантика `Scale(k, origin)` подтверждена и исправлена для положительного и отрицательного коэффициента во всех трёх представлениях: политоп действительно масштабируется относительно заданного центра.
+  - По активному слою branch-specific матрица `Vrep` / `Hrep` / `FLrep` закрыта; вне неё сознательно остаётся только `Polar`.
 
 ## FaceLattice
 
@@ -284,16 +292,16 @@
 ## PolygonTools
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
-  - Failing tests:
-    - Не обнаружены после локальной проверки.
-  - Contract ambiguities:
-    - Неясности сняты: XML-комментарии `PolygonTools.Ellipse` явно фиксируют, что при одной нулевой полуоси должен получаться segment.
-  - Notes:
-    - Корень сбоя был в двух ветвях `Ellipse`: при `a == 0` и `b == 0` длина отрезка ошибочно строилась по нулевой полуоси, из-за чего оба конца совпадали.
-    - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polygons.PolygonTools"` проходит: `25` passed, `0` failed.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Неясности сняты: XML-комментарии `PolygonTools.Ellipse` явно фиксируют, что при одной нулевой полуоси должен получаться segment.
+- Notes:
+  - Корень сбоя был в двух ветвях `Ellipse`: при `a == 0` и `b == 0` длина отрезка ошибочно строилась по нулевой полуоси, из-за чего оба конца совпадали.
+  - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polygons.PolygonTools"` проходит: `25` passed, `0` failed.
 
 ## Polyline
 

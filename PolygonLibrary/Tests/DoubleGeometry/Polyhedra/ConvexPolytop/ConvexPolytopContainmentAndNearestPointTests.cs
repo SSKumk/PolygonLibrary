@@ -28,6 +28,16 @@ public class ConvexPolytopContainmentAndNearestPointTests {
   }
 
   [Test]
+  public void NearestPoint_ForVrepOnly_IsNotImplementedYet() {
+    ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareVrep();
+
+    Assert.That(
+      () => polytope.NearestPoint(ConvexPolytopAssert.V(1.5, 0.5)),
+      Throws.TypeOf<NotImplementedException>()
+    );
+  }
+
+  [Test]
   public void NearestPoint_ForStrictlyInteriorPointInFlrep_ReturnsNearestBoundaryProjection() {
     ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareFlrep();
     Vector point = ConvexPolytopAssert.V(0.1, 0.5);

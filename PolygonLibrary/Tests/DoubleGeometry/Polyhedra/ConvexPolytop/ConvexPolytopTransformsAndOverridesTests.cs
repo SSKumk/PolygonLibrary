@@ -36,6 +36,71 @@ public class ConvexPolytopTransformsAndOverridesTests {
   }
 
   [Test]
+  public void Shift_ForHrepAndFlrep_PreservesRepresentationSpecificBranchBehavior() {
+    ConvexPolytop hrep = ConvexPolytopTestData.CreateUnitSquareHrepOnly();
+    ConvexPolytop flrep = ConvexPolytopTestData.CreateUnitSquareFlrep();
+    Vector shift = ConvexPolytopAssert.V(2, -1);
+
+    ConvexPolytop hrepShifted = hrep.Shift(shift);
+    ConvexPolytop flrepShifted = flrep.Shift(shift);
+
+    Assert.Multiple(() => {
+      Assert.That(hrepShifted.WhichRep, Is.EqualTo(ConvexPolytop.Rep.Hrep));
+      Assert.That(flrepShifted.WhichRep, Is.EqualTo(ConvexPolytop.Rep.FLrep));
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        hrepShifted.Vrep,
+        [
+          ConvexPolytopAssert.V(2, -1),
+          ConvexPolytopAssert.V(3, -1),
+          ConvexPolytopAssert.V(3, 0),
+          ConvexPolytopAssert.V(2, 0)
+        ]
+      );
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        flrepShifted.Vrep,
+        [
+          ConvexPolytopAssert.V(2, -1),
+          ConvexPolytopAssert.V(3, -1),
+          ConvexPolytopAssert.V(3, 0),
+          ConvexPolytopAssert.V(2, 0)
+        ]
+      );
+    });
+  }
+
+  [Test]
+  public void Rotate_ForHrepAndFlrep_PreservesRepresentationSpecificBranchBehavior() {
+    ConvexPolytop hrep = ConvexPolytopTestData.CreateUnitSquareHrepOnly();
+    ConvexPolytop flrep = ConvexPolytopTestData.CreateUnitSquareFlrep();
+
+    ConvexPolytop hrepRotated = hrep.Rotate(ConvexPolytopTestData.Rotate90Counterclockwise);
+    ConvexPolytop flrepRotated = flrep.Rotate(ConvexPolytopTestData.Rotate90Counterclockwise);
+
+    Assert.Multiple(() => {
+      Assert.That(hrepRotated.WhichRep, Is.EqualTo(ConvexPolytop.Rep.Hrep));
+      Assert.That(flrepRotated.WhichRep, Is.EqualTo(ConvexPolytop.Rep.FLrep));
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        hrepRotated.Vrep,
+        [
+          ConvexPolytopAssert.V(0, 0),
+          ConvexPolytopAssert.V(0, -1),
+          ConvexPolytopAssert.V(1, -1),
+          ConvexPolytopAssert.V(1, 0)
+        ]
+      );
+      ConvexPolytopAssert.AssertVertexSetEquals(
+        flrepRotated.Vrep,
+        [
+          ConvexPolytopAssert.V(0, 0),
+          ConvexPolytopAssert.V(0, -1),
+          ConvexPolytopAssert.V(1, -1),
+          ConvexPolytopAssert.V(1, 0)
+        ]
+      );
+    });
+  }
+
+  [Test]
   public void LiftUp_AddsNewCoordinateWithGivenValue() {
     ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareVrep();
 

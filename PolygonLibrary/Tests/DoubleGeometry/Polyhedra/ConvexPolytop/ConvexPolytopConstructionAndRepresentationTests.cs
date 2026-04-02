@@ -68,6 +68,13 @@ public class ConvexPolytopConstructionAndRepresentationTests {
   }
 
   [Test]
+  public void InnerPoint_ForFlrep_UsesTopNodeInnerPoint() {
+    ConvexPolytop polytope = ConvexPolytopTestData.CreateUnitSquareFlrep();
+
+    ConvexPolytopAssert.AssertVectorsAreEqual(polytope.InnerPoint, polytope.FLrep.Top.InnerPoint);
+  }
+
+  [Test]
   public void GetInRepresentations_ConstructEquivalentPolytopesWithRequestedPriority() {
     ConvexPolytop vrep = ConvexPolytopTestData.CreateUnitSquareVrep();
     ConvexPolytop hrep = ConvexPolytopTestData.CreateUnitSquareHrepOnly();
