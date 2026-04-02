@@ -121,7 +121,14 @@ public partial class Geometry<TNum, TConv>
       bool forward = leftExists && (!rightExists || Tools.LT(TNum.Abs(leftVal.Key - t), TNum.Abs(rightVal.Key - t)));
 
       // Setting the initial values for the integration
-      if (forward) {
+      if (!leftExists && !rightExists) {
+        // AVLDictionary does not guarantee a valid Current for every search key;
+        // fall back to the guaranteed reference node stored in the constructor.
+        tCur = T;
+        mCur = _ms[T];
+        forward = Tools.GE(t, T);
+      }
+      else if (forward) {
         tCur = leftVal.Key;
         mCur = leftVal.Value;
       }
@@ -151,7 +158,7 @@ public partial class Geometry<TNum, TConv>
           flag      =  Tools.GE(TNum.Abs(t - tCur), dt);
         }
       }
-      mCur   = RungeKuttaStep(mCur, t - tCur);
+      mCur   = RungeKuttaStep(mCur, forward ? tCur - t : t - tCur);
       _ms[t] = mCur;
     }
 

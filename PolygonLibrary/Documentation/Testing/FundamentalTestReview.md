@@ -33,6 +33,20 @@
   - Итог:
     - `43` passed
     - `0` failed
+- `2026-04-02`
+  - `Tools`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.Tools"`
+  - Итог:
+    - `11` passed
+    - `0` failed
+- `2026-04-02`
+  - `CauchyMatrix`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Basics.CauchyMatrix"`
+  - Итог:
+    - `3` passed
+    - `1` failed
 
 ## Status Summary
 
@@ -43,10 +57,10 @@
 | `Segment` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `Intersection` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `SegmentPair` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
-| `Tools` | `has_failures` | `0` | `2` | Есть спор на границе `Tools.Eps` и по точному ожиданию для `EpsG`. |
+| `Tools` | `checked_clean` | `0` | `0` | Первичные падения оказались хрупкими тестовыми ожиданиями на границе `double`; целевой повторный прогон зелёный. |
 | `Vector` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `Matrix` | `checked_clean` | `0` | `0` | Собственные быстрые тесты проходят; сбой проявляется через `CauchyMatrix`. |
-| `CauchyMatrix` | `has_failures` | `0` | `3` | Падения идут в `Matrix.op_Multiply` во время `RungeKuttaStep`. |
+| `CauchyMatrix` | `has_failures` | `0` | `1` | Базовый сбой выбора стартового узла снят; осталась погрешность диагонального случая на границе tolerance. |
 | `LinearBasis` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `AffineBasis` | `checked_clean` | `0` | `0` | Первичное падение на `Equals(object)` исправлено; целевой повторный прогон зелёный. |
 | `HyperPlane` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
@@ -94,19 +108,15 @@
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L17`](../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L17) `ZeroMatrix_ProducesIdentityForAnyInstant`
-    - Наблюдаемое поведение: `NullReferenceException`.
-    - Стек: `Matrix.op_Multiply` -> `CauchyMatrix.RungeKuttaStep`.
   - [`../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L25`](../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L25) `DiagonalMatrix_MatchesExactExponentialForPositiveAndNegativeInstants`
-    - Наблюдаемое поведение: `NullReferenceException`.
-    - Стек: `Matrix.op_Multiply` -> `CauchyMatrix.RungeKuttaStep`.
-  - [`../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L43`](../../Tests/DoubleGeometry/Basics/CauchyMatrix/CauchyMatrixTests.cs#L43) `NonMultipleInstant_UsesPartialRungeKuttaStepAndMatchesClosedFormForNilpotentMatrix`
-    - Наблюдаемое поведение: `NullReferenceException`.
-    - Стек: `Matrix.op_Multiply` -> `CauchyMatrix.RungeKuttaStep`.
+    - Наблюдаемое поведение: диагональный случай расходится с точным `exp` на `1.94e-08` при tolerance `1e-08`.
 - Contract ambiguities:
-  - Не отмечены.
+  - Нужно решить, считать ли текущую точность RK4 при `dt = 0.01` достаточной для этого контракта, или тест должен давать больший допуск.
 - Notes:
-  - Все три падения сходятся в одну и ту же внутреннюю точку; вероятно, это не три независимые ошибки, а один общий дефект расчёта.
+  - Первичный `NullReferenceException` не был вырожденным случаем: он воспроизводился на первом же запросе `t > T` для свежего `CauchyMatrix`, когда в кэше была только опорная точка `(T, I)`.
+  - Причина была в выборе стартового узла интегрирования через `AVLDictionary`.
+  - После локальной правки сняты `ZeroMatrix_ProducesIdentityForAnyInstant` и `NonMultipleInstant_UsesPartialRungeKuttaStepAndMatchesClosedFormForNilpotentMatrix`.
+  - Для `NonMultipleInstant...` дополнительно выявился и был исправлен неверный знак остаточного шага в forward-ветке.
 
 ## ConvexPolygon
 
@@ -327,19 +337,16 @@
 ## Tools
 
 - Status:
-  - `has_failures`
+  - `checked_clean`
 - Missing scenarios:
   - Пока новых обязательных сценариев сверх coverage plan не выявлено.
 - Failing tests:
-  - [`../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L22`](../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L22) `EpsSetter_UpdatesEpsAndDerivedEpsG`
-    - Наблюдаемое поведение: `Tools.EpsG` вычисляется как `9.9999999999999991E-05`, а тест ждёт точное `1e-4`.
-  - [`../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L32`](../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L32) `EqualityAndInequality_UseStrictBoundaryAtEps`
-    - Наблюдаемое поведение: на границе `|a - b| == Eps` код считает значения равными.
+  - Активных падений после локальной проверки не обнаружено.
 - Contract ambiguities:
-  - Нужно явно зафиксировать, является ли граница `Eps` включительной или строгой.
-  - Нужно уточнить, должен ли тест на `EpsG` требовать точного битового равенства или только численную близость.
+  - Для `EQ`/`NE` граница уже фактически зафиксирована кодом как строгая: `EQ` использует `|a| < Eps`, а `NE` является отрицанием `EQ`.
 - Notes:
-  - Это выглядит скорее как несогласованность ожиданий теста с текущим численным контрактом, чем как явная ошибка в коде.
+  - На первичном полном прогоне падали [`../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L22`](../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L22) и [`../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L32`](../../Tests/DoubleGeometry/Basics/Tools/ToolsComparisonsTests.cs#L32).
+  - Исправление было только в тестах: ожидание для `EpsG` переведено с точного битового равенства на формульную/численно устойчивую проверку, а boundary-case для `EQ/NE` переписан без артефакта `1.0 + 1e-6`.
 
 ## Vector
 

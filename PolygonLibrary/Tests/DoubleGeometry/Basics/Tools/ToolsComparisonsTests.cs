@@ -24,23 +24,25 @@ public class ToolsComparisonsTests {
 
     Assert.Multiple(() => {
       Assert.That(Tools.Eps, Is.EqualTo(1e-6));
-      Assert.That(Tools.EpsG, Is.EqualTo(1e-4));
+      Assert.That(Tools.EpsG, Is.EqualTo(Tools.Eps * 100.0));
+      Assert.That(Tools.EpsG, Is.EqualTo(1e-4).Within(1e-15));
     });
   }
 
   [Test]
   public void EqualityAndInequality_UseStrictBoundaryAtEps() {
     Tools.Eps = 1e-6;
+    double eps = Tools.Eps;
 
     Assert.Multiple(() => {
-      Assert.That(Tools.EQ(0.5e-6), Is.True);
-      Assert.That(Tools.EQ(-0.5e-6), Is.True);
-      Assert.That(Tools.EQ(1e-6), Is.False);
-      Assert.That(Tools.EQ(-1e-6), Is.False);
-      Assert.That(Tools.EQ(1.0, 1.0 + 0.5e-6), Is.True);
-      Assert.That(Tools.EQ(1.0, 1.0 + 1e-6), Is.False);
-      Assert.That(Tools.NE(1.0, 1.0 + 0.5e-6), Is.False);
-      Assert.That(Tools.NE(1.0, 1.0 + 1e-6), Is.True);
+      Assert.That(Tools.EQ(0.5 * eps), Is.True);
+      Assert.That(Tools.EQ(-0.5 * eps), Is.True);
+      Assert.That(Tools.EQ(eps), Is.False);
+      Assert.That(Tools.EQ(-eps), Is.False);
+      Assert.That(Tools.EQ(0.0, 0.5 * eps), Is.True);
+      Assert.That(Tools.EQ(0.0, eps), Is.False);
+      Assert.That(Tools.NE(0.0, 0.5 * eps), Is.False);
+      Assert.That(Tools.NE(0.0, eps), Is.True);
     });
   }
 
