@@ -54,6 +54,7 @@ public partial class Geometry<TNum, TConv>
 
     /// <summary>
     /// Writes a named string value to the file in the format <c>fieldName = "value";</c>.
+    /// Supported special characters are escaped symmetrically to <see cref="ParamReader.ReadString(string)"/>.
     /// </summary>
     /// <example>
     /// <code>
@@ -62,7 +63,7 @@ public partial class Geometry<TNum, TConv>
     /// </example>
     /// <param name="fieldName">The name of the parameter.</param>
     /// <param name="mes">The string value to write. The value will be enclosed in double quotes in the output file.</param>
-    public void WriteString(string fieldName, string mes) => WriteLine($"{fieldName} = \"{mes}\";");
+    public void WriteString(string fieldName, string mes) => WriteLine($"{fieldName} = \"{EscapeString(mes)}\";");
 
     /// <summary>
     /// Writes a named one-dimensional array of numeric values.
@@ -132,5 +133,18 @@ public partial class Geometry<TNum, TConv>
             }
            )
         );
+
+    /// <summary>
+    /// Escapes special characters in a string according to the string grammar supported by <see cref="ParamReader"/>.
+    /// </summary>
+    /// <param name="mes">The source string.</param>
+    /// <returns>The escaped string ready to be placed inside a quoted literal.</returns>
+    private static string EscapeString(string mes)
+      => mes
+        .Replace("\\", "\\\\")
+        .Replace("\"", "\\\"")
+        .Replace("\n", "\\n")
+        .Replace("\r", "\\r")
+        .Replace("\t", "\\t");
   }
 }

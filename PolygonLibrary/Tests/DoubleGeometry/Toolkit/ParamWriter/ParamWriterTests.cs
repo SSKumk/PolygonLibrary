@@ -35,6 +35,34 @@ public class ParamWriterTests {
   }
 
   [Test]
+  public void WriteString_EscapesSpecialCharactersForRoundTrip() {
+    string path = CreateTempPath();
+    string value = "quote: \" slash: \\ newline:\n carriage:\r tab:\t";
+
+    try {
+      using (ParamWriter writer = new ParamWriter(path)) {
+        writer.WriteString("payload", value);
+      }
+
+      string content = File.ReadAllText(path, Encoding.UTF8);
+      ParamReader reader = new ParamReader(path);
+      string payload = reader.ReadString("payload");
+
+      Assert.Multiple(() => {
+        Assert.That(payload, Is.EqualTo(value));
+        Assert.That(content, Does.Contain("\\\""));
+        Assert.That(content, Does.Contain("\\\\"));
+        Assert.That(content, Does.Contain("\\n"));
+        Assert.That(content, Does.Contain("\\r"));
+        Assert.That(content, Does.Contain("\\t"));
+      });
+    }
+    finally {
+      File.Delete(path);
+    }
+  }
+
+  [Test]
   public void WriteArraysAndVectors_RoundTripNumericCollections() {
     string path = CreateTempPath();
 

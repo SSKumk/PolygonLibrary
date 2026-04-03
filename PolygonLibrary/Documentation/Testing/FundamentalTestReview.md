@@ -498,10 +498,11 @@
 - Failing tests:
   - Не обнаружены после локальной проверки.
 - Contract ambiguities:
-  - `WriteString` не экранирует кавычки, обратные слэши и управляющие символы; safe round-trip пока закреплён только для простых строк.
+  - Пока новых неоднозначностей по активному writer-слою не выявлено.
 - Notes:
   - Покрыты `WriteNumber`, `WriteString`, `Write1DArray`, `WriteVector`, `Write2DArray`, `WriteVectors`, `WriteHyperPlanes` и append-конструктор.
   - Проверка идёт через прямой round-trip с `ParamReader`, а не только через анализ сырых строк файла.
+  - `WriteString` теперь экранирует `"`, `\`, `\n`, `\r`, `\t` симметрично `ParamReader.ReadString`.
 
 ## GammaPair
 
