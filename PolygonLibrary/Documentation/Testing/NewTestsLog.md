@@ -242,6 +242,7 @@
   - [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs) (базовые фабрики `Zero`, `Cube01_*`, `RectAxisParallel`, `Ball_*` и метрики диаметра)
   - [`ConvexPolytopBallFactoriesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs) (вспомогательные шары `Ball_1`, `Ball_oo`, `Sphere`, `Ellipsoid`, `Ball_2FuncCreator`)
   - [`ConvexPolytopDistanceEpigraphTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopDistanceEpigraphTests.cs) (базовые эпиграфы расстояния до точки и до одноточечного политопа для `L1`, `Linf`, `L2`)
+  - [`ConvexPolytopHRedundancyTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopHRedundancyTests.cs) (базовая редукция избыточных полупространств через `HRedundancyByGW` и `CreateFromHalfSpaces(..., true)`)
   - [`ConvexPolytopContainmentAndNearestPointTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopContainmentAndNearestPointTests.cs) (`Contains*`, `NearestPoint` и текущие `NotImplementedException`-ветки)
   - [`ConvexPolytopTransformsAndOverridesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs) (преобразования `Shift`/`Rotate`/`LiftUp`/`Scale`/`SectionByHyperPlane` и overrides)
   - [`ConvexPolytopPolarTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs) (базовые `Polar`-сценарии для `Vrep`/`Hrep`, двойственное преобразование и `Polar(out shift)`)
@@ -249,7 +250,7 @@
   - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
   - Note:
     - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
-    - позже в набор добавлены отдельные прямые сценарии на все вспомогательные шары и эллипсоиды, базовый слой `Polar`, эпиграфы расстояния, а также проверки `InnerPoint`, `NearestPoint`, `Shift` / `Rotate` и `Scale`
+    - позже в набор добавлены отдельные прямые сценарии на все вспомогательные шары и эллипсоиды, базовый слой `Polar`, эпиграфы расстояния, редукцию `Hrep`, а также проверки `InnerPoint`, `NearestPoint`, `Shift` / `Rotate` и `Scale`
     - для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в `2D` параметр `polarDivision` не влияет на геометрию
     - для `Polar` отдельно закреплено, что `doUnRedundancy` сейчас влияет только на `Hrep`-ветку и в ней убирает лишние точки dual без изменения геометрии
 
