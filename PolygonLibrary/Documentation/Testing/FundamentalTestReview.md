@@ -145,6 +145,13 @@
   - Итог:
     - `5` passed
     - `0` failed
+- `2026-04-03`
+  - `ParamWriter`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Toolkit.ParamWriterTests"`
+  - Итог:
+    - `4` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -265,6 +272,7 @@
 | `Combinations` | `checked_clean` | `0` | `0` | Лексикографический контракт helper-класса `Combination` покрыт прямыми тестами. |
 | `Extensions` | `checked_clean` | `0` | `0` | Низкоуровневые helper-методы для коллекций покрыты прямыми тестами на корректных сценариях. |
 | `ParamReader` | `checked_clean` | `0` | `0` | Чтение параметрических файлов, sanitizing и геометрические helper-методы покрыты прямыми тестами. |
+| `ParamWriter` | `checked_clean` | `0` | `0` | Безопасный round-trip слой записи параметрических файлов покрыт прямыми тестами. |
 
 ## AffineBasis
 
@@ -480,6 +488,20 @@
 - Notes:
   - Legacy-сценарий чтения параметров перенесён в новый слой.
   - Дополнительно закреплены `PeakString`, `GetSanitizedData`, `ReadVector`, `ReadVectors`, `ReadHyperPlanes` и `ReadNumberLine`.
+
+## ParamWriter
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - `WriteString` не экранирует кавычки, обратные слэши и управляющие символы; safe round-trip пока закреплён только для простых строк.
+- Notes:
+  - Покрыты `WriteNumber`, `WriteString`, `Write1DArray`, `WriteVector`, `Write2DArray`, `WriteVectors`, `WriteHyperPlanes` и append-конструктор.
+  - Проверка идёт через прямой round-trip с `ParamReader`, а не только через анализ сырых строк файла.
 
 ## GammaPair
 

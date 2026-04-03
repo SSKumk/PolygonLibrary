@@ -378,3 +378,12 @@
 - Note:
   - legacy-набор перенесён без потери основного сценария, а поверх него добавлены прямые тесты на sanitizing и чтение геометрических объектов
 
+### ParamWriter
+
+- New tests:
+  - [`ParamWriterTests.cs`](../../Tests/DoubleGeometry/Toolkit/ParamWriter/ParamWriterTests.cs) (round-trip для чисел, строк, массивов, `Vector`, `HyperPlane` и append-конструктора)
+- Legacy:
+  - отдельного прямого legacy-набора не было
+- Note:
+  - закреплён безопасный round-trip слой `ParamWriter`; строковый escaping осознанно оставлен как отдельный незакрытый вопрос
+
