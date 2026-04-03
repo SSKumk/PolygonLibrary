@@ -786,7 +786,7 @@ public partial class Geometry<TNum, TConv>
     /// Following common convention, this method uses 'L2' to refer to the l_2 vector norm.
     /// </remarks>
     /// <param name="P">The polytope to which the distance is measured.</param>
-    /// <param name="scaleFactor">The radius of the Linf-ball and the height of the epigraph's upper base.</param>
+    /// <param name="scaleFactor">The radius of the L2-ball and the height of the epigraph's upper base.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
     /// <param name="polarDivision">The number of partitions at the zenith angle.</param>
     /// <returns>A polytope representing the distance to the polytope P in ball_2 norm.</returns>

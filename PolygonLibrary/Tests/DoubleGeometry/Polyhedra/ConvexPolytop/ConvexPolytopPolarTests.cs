@@ -89,4 +89,29 @@ public class ConvexPolytopPolarTests {
     });
   }
 
+  [Test]
+  public void PolarTrue_InHrepBranch_RemovesRedundantDualPointsButPreservesGeometry() {
+    List<HyperPlane> redundantSquareHrep =
+      [
+        new HyperPlane(ConvexPolytopAssert.V(1, 0), 2),
+        new HyperPlane(ConvexPolytopAssert.V(-1, 0), 2),
+        new HyperPlane(ConvexPolytopAssert.V(0, 1), 2),
+        new HyperPlane(ConvexPolytopAssert.V(0, -1), 2),
+        new HyperPlane(ConvexPolytopAssert.V(1, 0), 3),
+        new HyperPlane(ConvexPolytopAssert.V(-1, 0), 3)
+      ];
+    ConvexPolytop squareWithRedundantFacets = ConvexPolytop.CreateFromHalfSpaces(redundantSquareHrep);
+
+    ConvexPolytop dualWithoutCleanup = squareWithRedundantFacets.Polar();
+    ConvexPolytop dualWithCleanup = squareWithRedundantFacets.Polar(true);
+    ConvexPolytop expectedDual = ConvexPolytop.Ball_1(Vector.Zero(2), 0.5);
+
+    Assert.Multiple(() => {
+      Assert.That(dualWithoutCleanup.Vrep, Has.Count.EqualTo(6));
+      Assert.That(dualWithCleanup.Vrep, Has.Count.EqualTo(4));
+      ConvexPolytopAssert.AssertVertexSetEquals(dualWithCleanup.Vrep, expectedDual.Vrep);
+      Assert.That(dualWithoutCleanup.GetInHrep().Equals(dualWithCleanup.GetInHrep()), Is.True);
+    });
+  }
+
 }

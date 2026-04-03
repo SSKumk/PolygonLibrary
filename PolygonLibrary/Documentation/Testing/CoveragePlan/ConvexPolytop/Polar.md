@@ -20,6 +20,7 @@
   - для `Vrep` переводит вершины в гиперплоскости `new HyperPlane(v, 1)`;
   - для `Hrep` переводит гиперплоскости в точки `hp.Normal / hp.ConstantTerm`;
   - для `FLrep` строит двойственную решётку граней через обращение уровней.
+- Флаг `doUnRedundancy` в текущем коде реально влияет только на `Hrep`-ветку; для `Vrep` и `FLrep` он сейчас не меняет путь построения.
 - В `Hrep`-ветке есть чувствительное место: деление на `hp.ConstantTerm`.
 - В `FLrep`-ветке есть чувствительные места:
   - ориентация `HyperPlane(oldNode.AffBasis, (InnerPoint, false))`;
@@ -36,7 +37,7 @@
 | CPT-POL-004 | x | `Polar` для `FLrep` на базовом 2D-примере строит dual в `FLrep` с ожидаемой геометрией и `fVector`. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L60) |
 | CPT-POL-005 | x | `Polar(Polar(P))` восстанавливает исходный политоп для простого полноразмерного 2D-примера после допустимой нормализации представления. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L34) |
 | CPT-POL-006 | x | `Polar` согласован между `Vrep`, `Hrep` и `FLrep` для одного и того же центрированного квадрата. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L74) |
-| CPT-POL-007 |   | `doUnRedundancy` в `Hrep`-ветке не меняет геометрию результата, а влияет только на наличие лишних точек. | |
+| CPT-POL-007 | x | `doUnRedundancy` в `Hrep`-ветке не меняет геометрию результата, а влияет только на наличие лишних точек. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L92) |
 | CPT-POL-008 |   | Для политопа, у которого начало координат не находится внутри, `Polar(out shift)` сначала корректно переносит его в ноль и только потом строит dual. | |
 | CPT-POL-009 |   | Для осесимметричных эталонов (`Ball_1`, `Ball_oo`) `Polar` даёт ожидаемую парную норму: ромб ↔ квадрат. | |
 | CPT-POL-010 |   | Для вырожденных или граничных случаев, где `hp.ConstantTerm = 0`, поведение не закрепляется как нормальный runtime-контракт и должно быть отдельно специфицировано. | |

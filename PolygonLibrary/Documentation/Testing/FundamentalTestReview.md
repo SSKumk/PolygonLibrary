@@ -131,6 +131,21 @@
     - Итог:
       - `48` passed
       - `0` failed
+  - `2026-04-03`
+  - `ConvexPolytop`
+    - Команда:
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopDistanceEpigraphTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+    - Итог:
+      - `55` passed
+      - `0` failed
+  - `2026-04-03`
+  - `ConvexPolytop`
+    - Команда:
+      - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopPolarTests"`
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+    - Итог:
+      - `56` passed
+      - `0` failed
 
 ## Status Summary
 
@@ -230,7 +245,9 @@
     - Поверх исходного набора добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, `ToConvexPolygon(AffineBasis)` и representation-specific ветки `Shift` / `Rotate`.
     - Семантика `Scale(k, origin)` подтверждена и исправлена для положительного и отрицательного коэффициента во всех трёх представлениях: политоп действительно масштабируется относительно заданного центра.
     - По активному слою branch-specific матрица `Vrep` / `Hrep` / `FLrep` закрыта, включая базовый 2D-слой `Polar`.
-    - Для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в `2D` параметр `polarDivision` не влияет на геометрию; следующий тонкий слой вокруг `Polar` связан уже не с фабриками, а с duality и redundancy.
+    - Добавлен прямой слой на эпиграфы расстояния: базовая геометрия до точки и до одноточечного политопа для `L1` / `Linf` / `L2` теперь закреплена отдельными тестами.
+    - Для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в `2D` параметр `polarDivision` не влияет на геометрию.
+    - Для `Polar` отдельно закреплена текущая семантика `doUnRedundancy`: флаг реально влияет только на `Hrep`-ветку и там убирает лишние точки dual, не меняя геометрию результата.
   - Дополнительно исправлена формула `Ball_1(center, radius)` для ненулевого центра: раньше метод ошибочно добавлял `-e` вместо `center - e`.
   - Helper-ball слой теперь покрыт прямыми тестами для `Ball_1`, `Ball_oo`, `Sphere`, `Ellipsoid` и `Ball_2FuncCreator` на малых размерностях и смещённых центрах.
 
