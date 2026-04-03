@@ -154,6 +154,14 @@
     - Итог:
       - `58` passed
       - `0` failed
+  - `2026-04-03`
+  - `ConvexPolytop`
+    - Команда:
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopPolarTests"`
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+    - Итог:
+      - `61` passed
+      - `0` failed
 
 ## Status Summary
 
@@ -257,6 +265,7 @@
     - Добавлен прямой слой на редукцию `Hrep`: `HRedundancyByGW` и `CreateFromHalfSpaces(..., true)` теперь закреплены на простых 2D-примерах с лишними внешними ограничениями.
     - Для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в `2D` параметр `polarDivision` не влияет на геометрию.
     - Для `Polar` отдельно закреплена текущая семантика `doUnRedundancy`: флаг реально влияет только на `Hrep`-ветку и там убирает лишние точки dual, не меняя геометрию результата.
+    - Поверх базового `Polar`-слоя добавлены уже именно структурные проверки `FLrep`: incidence dual-решётки квадрата и восстановление `FaceLattice` после двойного dual-преобразования для квадрата и треугольника.
   - Дополнительно исправлена формула `Ball_1(center, radius)` для ненулевого центра: раньше метод ошибочно добавлял `-e` вместо `center - e`.
   - Helper-ball слой теперь покрыт прямыми тестами для `Ball_1`, `Ball_oo`, `Sphere`, `Ellipsoid` и `Ball_2FuncCreator` на малых размерностях и смещённых центрах.
 

@@ -41,6 +41,9 @@
 | CPT-POL-008 |   | Для политопа, у которого начало координат не находится внутри, `Polar(out shift)` сначала корректно переносит его в ноль и только потом строит dual. | |
 | CPT-POL-009 |   | Для осесимметричных эталонов (`Ball_1`, `Ball_oo`) `Polar` даёт ожидаемую парную норму: ромб ↔ квадрат. | |
 | CPT-POL-010 |   | Для вырожденных или граничных случаев, где `hp.ConstantTerm = 0`, поведение не закрепляется как нормальный runtime-контракт и должно быть отдельно специфицировано. | |
+| CPT-POL-011 | x | `Polar` для `FLrep` сохраняет корректную incidence-структуру на dual решётке квадрата: у вершин по две `Super`, у рёбер по две `Sub`, а все рёбра инцидентны только `Top`. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L117) |
+| CPT-POL-012 | x | `Polar(Polar(P))` для центрированного квадрата в `FLrep` восстанавливает не только геометрию, но и эквивалентную структуру `FaceLattice`. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L139) |
+| CPT-POL-013 | x | `Polar(Polar(P))` для центрированного треугольника в `FLrep` восстанавливает эквивалентную решётку граней и множество вершин. | [`ConvexPolytopPolarTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs#L152) |
 
 ## Open Questions
 
@@ -64,5 +67,6 @@
   - `Ball_1(0, r).GetInHrep() -> Polar() -> Ball_oo(0, 1 / r)`;
   - `Polar(Polar(P))` для центрированного квадрата;
   - `Polar(out shift)` для сдвинутого квадрата;
-  - базовая `FLrep`-ветка и согласованность `Vrep` / `Hrep` / `FLrep` на одном квадрате.
+  - базовая `FLrep`-ветка и согласованность `Vrep` / `Hrep` / `FLrep` на одном квадрате;
+  - структурное восстановление `FaceLattice` после двойственного преобразования для квадрата и треугольника.
 - Для `Polar(out shift)` пока сознательно не фиксируется приоритет представления результата: здесь важны сам сдвиг и геометрия dual, а не текущая lazy-materialized репрезентация объекта.

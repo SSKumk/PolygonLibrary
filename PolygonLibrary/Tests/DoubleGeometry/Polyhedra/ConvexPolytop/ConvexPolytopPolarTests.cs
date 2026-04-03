@@ -114,4 +114,64 @@ public class ConvexPolytopPolarTests {
     });
   }
 
+  [Test]
+  public void Polar_ForCenteredInfinityBallInFlrep_PreservesExpectedIncidenceStructure() {
+    ConvexPolytop square = ConvexPolytop.Ball_oo(Vector.Zero(2), 2).GetInFLrep();
+
+    FaceLattice dualLattice = square.Polar().FLrep;
+
+    Assert.Multiple(() => {
+      Assert.That(dualLattice[0], Has.Count.EqualTo(4));
+      Assert.That(dualLattice[1], Has.Count.EqualTo(4));
+      Assert.That(dualLattice.Top.Sub.Count, Is.EqualTo(4));
+
+      foreach (FLNode vertex in dualLattice[0]) {
+        Assert.That(vertex.Sub, Is.Empty);
+        Assert.That(vertex.Super.Count, Is.EqualTo(2), "Each vertex of a dual 2D polygon should belong to exactly two edges.");
+      }
+
+      foreach (FLNode edge in dualLattice[1]) {
+        Assert.That(edge.Sub.Count, Is.EqualTo(2), "Each edge should have two incident vertices.");
+        Assert.That(edge.Super.Count, Is.EqualTo(1), "Each edge should belong only to the top face.");
+        Assert.That(edge.Super.First(), Is.SameAs(dualLattice.Top));
+      }
+    });
+  }
+
+  [Test]
+  public void PolarTwice_ForCenteredFlrepSquare_RestoresFaceLatticeStructure() {
+    ConvexPolytop square = ConvexPolytop.Ball_oo(Vector.Zero(2), 2).GetInFLrep();
+
+    ConvexPolytop restored = square.Polar().Polar();
+
+    Assert.Multiple(() => {
+      Assert.That(restored.WhichRep, Is.EqualTo(ConvexPolytop.Rep.FLrep));
+      Assert.That(restored.FLrep.Equals(square.FLrep), Is.True);
+      Assert.That(restored.fVector, Is.EqualTo(square.fVector));
+    });
+  }
+
+  [Test]
+  public void PolarTwice_ForCenteredFlrepTriangle_RestoresFaceLatticeStructure() {
+    ConvexPolytop triangle =
+      ConvexPolytop.CreateFromPoints(
+        [
+          ConvexPolytopAssert.V(1, 0),
+          ConvexPolytopAssert.V(0, 1),
+          ConvexPolytopAssert.V(-1, -1)
+        ],
+        true
+      );
+
+    ConvexPolytop restored = triangle.Polar().Polar();
+
+    Assert.Multiple(() => {
+      Assert.That(triangle.WhichRep, Is.EqualTo(ConvexPolytop.Rep.FLrep));
+      Assert.That(restored.WhichRep, Is.EqualTo(ConvexPolytop.Rep.FLrep));
+      Assert.That(restored.FLrep.Equals(triangle.FLrep), Is.True);
+      Assert.That(restored.fVector, Is.EqualTo(triangle.fVector));
+      ConvexPolytopAssert.AssertVertexSetEquals(restored.Vrep, triangle.Vrep);
+    });
+  }
+
 }
