@@ -93,4 +93,27 @@ public class ConvexPolytopConstructionAndRepresentationTests {
     });
   }
 
+  [Test]
+  public void FindInitialVertex_Simplex_ReconstructsDegenerateVertexFromBasisAndReturnsFullActiveSet() {
+    List<HyperPlane> hps =
+      [
+        new(ConvexPolytopAssert.V(1, 0), 0),      // x <= 0
+        new(ConvexPolytopAssert.V(0, 1), 0),      // y <= 0
+        new(ConvexPolytopAssert.V(-1, -1), 0),    // x + y >= 0
+        new(ConvexPolytopAssert.V(-1, 0), 1),     // x >= -1
+        new(ConvexPolytopAssert.V(0, -1), 1)      // y >= -1
+      ];
+
+    Vector? vertex = ConvexPolytop.FindInitialVertex_Simplex(hps, out List<HyperPlane>? activeHPs);
+    List<HyperPlane> active = activeHPs!;
+
+    Assert.Multiple(() => {
+      Assert.That(vertex, Is.Not.Null);
+      Assert.That(activeHPs, Is.Not.Null);
+      ConvexPolytopAssert.AssertVectorsAreEqual(vertex!, ConvexPolytopAssert.V(0, 0));
+      Assert.That(active, Has.Count.EqualTo(3));
+      Assert.That(active.All(hp => hp.Contains(vertex!)), Is.True);
+    });
+  }
+
 }

@@ -1784,8 +1784,11 @@ public partial class Geometry<TNum, TConv>
     /// Finds the initial vertex of a convex polytope using the simplex method.
     /// </summary>
     /// <param name="HPs">The list of hyperplanes that defines the system of inequalities.</param>
-    /// <param name="activeHPs">The indices of the hyperplanes whose intersection forms the vertex.</param>
-    /// //todo -- !!!
+    /// <param name="activeHPs">
+    /// All hyperplanes active at the returned vertex.
+    /// Internally the vertex itself is first reconstructed from a basis-defining subset,
+    /// then the full active set is restored by filtering all hyperplanes through the point.
+    /// </param>
     /// <returns>The initial vertex.</returns>
     public static Vector? FindInitialVertex_Simplex(List<HyperPlane> HPs, out List<HyperPlane>? activeHPs) {
       SimplexMethod.SimplexMethodResult x = SimplexMethod.Solve(HPs, _ => Tools.One);
@@ -1797,7 +1800,7 @@ public partial class Geometry<TNum, TConv>
       }
 
       activeHPs = new List<HyperPlane>();
-      foreach (int i in x.ActiveInequalitiesID) {
+      foreach (int i in x.BasisInequalitiesID) {
         activeHPs.Add(HPs[i]);
       }
 
