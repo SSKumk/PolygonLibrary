@@ -124,6 +124,13 @@
   - Итог:
     - `5` passed
     - `0` failed
+- `2026-04-03`
+  - `Combinations`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Toolkit.CombinationTests"`
+  - Итог:
+    - `3` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -241,6 +248,7 @@
 | `FourierMotzkin` | `checked_clean` | `0` | `0` | Наивный контракт исключения переменной покрыт прямыми тестами; узкий прогон зелёный. |
 | `SimplexMethod` | `checked_clean` | `0` | `0` | Базовый контракт двухфазного симплекса покрыт прямыми тестами; узкий прогон зелёный. |
 | `RandomLC` | `checked_clean` | `0` | `0` | Детерминированный контракт генератора и фабрик случайных массивов покрыт прямыми тестами. |
+| `Combinations` | `checked_clean` | `0` | `0` | Лексикографический контракт helper-класса `Combination` покрыт прямыми тестами. |
 
 ## AffineBasis
 
@@ -412,6 +420,20 @@
 - Notes:
   - Покрыты `RandomLC.NextInt`, `RandomLC.NextDouble`, `GRandomLC.NextPrecise`, `GRandomLC.NextFromInt`, а также `GenArray` и `GenArrayInt`.
   - XML-комментарии синхронизированы с текущим диапазонным поведением методов.
+
+## Combinations
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Некорректные `n` и `k` не входят в runtime-контракт и остаются на уровне `Debug.Assert`.
+- Notes:
+  - Покрыты стартовое состояние `0..k-1`, полный лексикографический обход и завершение на максимальной комбинации.
+  - XML-комментарии дописаны и для private-состояния класса.
 
 ## GammaPair
 

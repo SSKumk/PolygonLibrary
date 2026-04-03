@@ -14,9 +14,19 @@ public partial class Geometry<TNum, TConv>
   /// </summary>
   public class Combination {
 
+    /// <summary>
+    /// The total number of source elements.
+    /// </summary>
     private readonly int _n;
+
+    /// <summary>
+    /// The length of the current combination.
+    /// </summary>
     private readonly int _k;
 
+    /// <summary>
+    /// The current zero-based state of the combination.
+    /// </summary>
     private readonly int[] _state;
 
     /// <summary>

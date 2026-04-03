@@ -350,3 +350,12 @@
 - Note:
   - закреплён именно текущий детерминированный контракт генератора при заданном `seed`, без проверки статистического качества последовательности
 
+### Combinations
+
+- New tests:
+  - [`CombinationTests.cs`](../../Tests/DoubleGeometry/Toolkit/Combinations/CombinationTests.cs) (инициализация, лексикографический обход и завершение перечисления сочетаний)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - закреплён zero-based текущий контракт helper-класса `Combination`, без включения debug-preconditions в runtime-слой
+
