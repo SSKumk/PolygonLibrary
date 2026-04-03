@@ -35,6 +35,8 @@
         <Compile Include="Geometry2D\Polygons\ConvexPolygons\SupportFunction.cs"/>
         <Compile Include="Geometry2D\Polygons\PolygonTools.cs"/>
         <Compile Include="Geometry2D\Polygons\Polyline.cs"/>
+        <Compile Include="GeometryND\Polyhedra\ConvexPolytop.cs"/>
+        <Compile Include="GeometryND\Polyhedra\FaceLattice.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPolytop.cs"/>
@@ -47,8 +49,6 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\HrepToFLrep.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiSum.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs"/>
-        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytop.cs"/>
-        <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\FaceLattice.cs"/>
         <Compile Include="Geometry2D\Segments\Segment.cs"/>
         <Compile Include="Geometry2D\Segments\SegmentPair.cs"/>
         <Compile Include="Toolkit\Combinations.cs"/>

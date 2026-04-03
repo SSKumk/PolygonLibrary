@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`ConvexPolytop.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/ConvexPolytops/ConvexPolytop.cs) задаёт основной high-level контейнер для выпуклого политопа с поддержкой `Vrep`, `Hrep` и `FLrep`.
+Класс [`ConvexPolytop.cs`](../../../../CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs) задаёт основной high-level контейнер для выпуклого политопа с поддержкой `Vrep`, `Hrep` и `FLrep`.
 
 В активный слой текущего этапа входят:
 

@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`FaceLattice.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/ConvexPolytops/FaceLattice.cs) описывает face-lattice представление выпуклого политопа.
+Класс [`FaceLattice.cs`](../../../../CGLibrary/GeometryND/Polyhedra/FaceLattice.cs) описывает face-lattice представление выпуклого политопа.
 
 В рамках текущего полного покрытия здесь рассматриваются:
 

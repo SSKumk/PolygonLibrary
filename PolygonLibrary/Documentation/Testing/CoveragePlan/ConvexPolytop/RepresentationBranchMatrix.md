@@ -2,7 +2,7 @@
 
 ## Scope
 
-Вспомогательная таблица по публичным методам [`ConvexPolytop.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/ConvexPolytops/ConvexPolytop.cs), у которых логика различается для `Vrep`, `Hrep` и `FLrep`.
+Вспомогательная таблица по публичным методам [`ConvexPolytop.cs`](../../../../CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), у которых логика различается для `Vrep`, `Hrep` и `FLrep`.
 
 Этот файл не заменяет основной coverage plan. Он нужен как быстрый ориентир, где уже есть прямые branch-specific тесты, а где пока покрыта только часть ветвей.
 
