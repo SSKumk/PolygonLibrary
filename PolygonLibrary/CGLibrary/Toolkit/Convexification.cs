@@ -210,16 +210,18 @@ public partial class Geometry<TNum, TConv>
     ///<param name="swarmOrig">An enumerable collection of plane-points.</param>
     ///<returns>A list of points of the convex hull in counter-clockwise order.</returns>
     public static List<Vector2D> GrahamHull(IEnumerable<Vector2D> swarmOrig) {
-      if (swarmOrig.Count() <= 1) {
+      List<Vector2D> swarm = swarmOrig.ToList();
+
+      if (swarm.Count <= 1) {
         List<Vector2D> res = new List<Vector2D>();
-        if (swarmOrig.Count() == 1) {
-          res.Add(swarmOrig.First());
+        if (swarm.Count == 1) {
+          res.Add(swarm[0]);
         }
 
         return res;
       }
 
-      Vector2D? origin = swarmOrig.Min();
+      Vector2D? origin = swarm.Min();
       Vector2D  l      = new Vector2D(Tools.Zero, Tools.MinusOne);
       Debug.Assert(origin is not null, "GrahamHull: swarmOrig.Min() is null!");
 
@@ -227,7 +229,7 @@ public partial class Geometry<TNum, TConv>
       SortedDictionary<TNum, Vector2D> swarmDict =
         new SortedDictionary<TNum, Vector2D>(numComparer) { { Tools.MinusOne, origin } };
 
-      foreach (Vector2D p in swarmOrig) {
+      foreach (Vector2D p in swarm) {
         if (p.Equals(origin)) {
           continue;
         }

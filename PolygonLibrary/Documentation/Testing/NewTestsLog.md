@@ -396,3 +396,14 @@
 - Note:
   - закреплён текущий helper-контракт `GetMd5Hash(string)` без расширения на другие алгоритмы или потоковые источники
 
+### Convexification
+
+- New tests:
+  - [`ConvexificationTests.cs`](../../Tests/DoubleGeometry/Toolkit/Convexification/ConvexificationTests.cs) (базовые оболочки квадрата, вырожденные наборы, коллинеарность и `GrahamHull` на обычном ленивом `IEnumerable`)
+- Legacy:
+  - [`QuickHullTests.cs`](../../Tests/Double-Tests/QuickHullTests.cs)
+  - [`ArcHullTests.cs`](../../Tests/Double-Tests/ArcHullTests.cs)
+  - [`GrahamScanTests.cs`](../../Tests/Double-Tests/GrahamScanTests.cs)
+- Note:
+  - legacy-смысл перенесён в компактный toolkit-набор; отдельным regression-сценарием закреплено раннее materialize-ение обычного ленивого `IEnumerable` в `GrahamHull`
+

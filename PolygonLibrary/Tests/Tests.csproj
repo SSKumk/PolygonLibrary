@@ -33,12 +33,15 @@
         <Compile Remove="Double-Tests\ConvexPolygonIntersectionTests.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonLegacyHelpers.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonTests.cs" />
+        <Compile Remove="Double-Tests\ArcHullTests.cs" />
+        <Compile Remove="Double-Tests\GrahamScanTests.cs" />
         <Compile Remove="Double-Tests\GW_hDTests\GW_Tests.cs" />
         <Compile Remove="Double-Tests\Minkowski-Tests\MinkowskiDiffTests.cs" />
         <Compile Remove="Double-Tests\Minkowski-Tests\MinkowskiSumTests.cs" />
         <Compile Remove="Double-Tests\PolygonToolsTests.cs" />
         <Compile Remove="Double-Tests\PolygonExtremeTests.cs" />
         <Compile Remove="Double-Tests\PolylineTests.cs" />
+        <Compile Remove="Double-Tests\QuickHullTests.cs" />
         <Compile Remove="Double-Tests\SegmentCrossTests.cs" />
         <Compile Remove="Double-Tests\SupportFunctionTests.cs" />
         <Compile Remove="Double-Tests\VectorsTests.cs" />

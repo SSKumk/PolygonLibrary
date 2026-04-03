@@ -543,6 +543,19 @@
 - Notes:
   - Закреплён текущий helper-контракт `GetMd5Hash(string)` на известных digest-значениях, включая UTF-8 строку.
 
+## Convexification
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Не отмечены.
+- Notes:
+  - Для `GrahamHull` зафиксирован важный regression-контракт: вход materialize-ится в список и потому больше не зависит от повторных `Count()/Min()` по обычному ленивому `IEnumerable`.
+
 ## Intersection
 
 - Status:
