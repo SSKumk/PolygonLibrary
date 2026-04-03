@@ -28,4 +28,4 @@
 
 ## Gaps
 
-- Internal-конструкторы из `FLNodeSum` и `BaseSubCP` пока ещё не выделены в отдельный тестовый набор.
+- Более сложные internal-конвертеры и higher-dimensional временные структуры пока не выделены в отдельный direct-layer.
