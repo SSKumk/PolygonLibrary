@@ -257,6 +257,16 @@
     - содержательные legacy-сценарии перенесены в новую структуру почти без изменения смысловых сообщений
     - дополнительно закреплены `RowWise`, `ColWise`, reuse instance API, `GetSolution(out Vector)` и немутирующий контракт array-factory
 
+### FourierMotzkin
+
+- New tests:
+  - [`FourierMotzkinTests.cs`](../../Tests/DoubleGeometry/Algorithms/FourierMotzkin/FourierMotzkinTests.cs) (наивное исключение переменной: upper/lower/neutral, 1-based индекс и пропуск нулевого результата)
+- Legacy:
+  - прямого legacy-набора не было
+  - Note:
+    - зафиксирован именно текущий наивный контракт без редукции избыточности
+    - заодно дописаны XML-комментарии в [`FourierMotzkin.cs`](../../CGLibrary/LinearMath/FourierMotzkin.cs)
+
 ### ConvexPolytop
 
 - New tests:

@@ -5,12 +5,35 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  /// <summary>
+  /// Naive Fourier-Motzkin elimination for systems of linear inequalities represented by <see cref="HyperPlane"/>.
+  /// </summary>
+  /// <remarks>
+  /// The implementation keeps the original ambient dimension in the resulting inequalities and simply zeroes
+  /// the eliminated variable coefficient. No redundancy removal or post-processing is performed.
+  /// </remarks>
   public class FourierMotzkin {
 
+    /// <summary>
+    /// Gets the current list of inequalities.
+    /// </summary>
     public List<HyperPlane> HPs { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FourierMotzkin"/> class from a list of inequalities.
+    /// </summary>
+    /// <param name="hPs">The inequalities to work with.</param>
     public FourierMotzkin(List<HyperPlane> hPs) { HPs = hPs; }
 
+    /// <summary>
+    /// Eliminates one variable using the naive Fourier-Motzkin combination rule.
+    /// </summary>
+    /// <param name="variableNum">One-based number of the variable to eliminate.</param>
+    /// <returns>
+    /// A new <see cref="FourierMotzkin"/> instance containing:
+    /// neutral inequalities copied as-is and all pairwise combinations of upper and lower bounds.
+    /// Zero inequalities produced by exact cancellation are skipped.
+    /// </returns>
     public FourierMotzkin EliminateVariableNaive(int variableNum) {
       int variableIndex = variableNum - 1;
 

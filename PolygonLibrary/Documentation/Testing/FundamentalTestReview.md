@@ -103,6 +103,13 @@
   - Итог:
     - `16` passed
     - `0` failed
+- `2026-04-03`
+  - `FourierMotzkin`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Algorithms.FourierMotzkinTests"`
+  - Итог:
+    - `4` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -217,6 +224,7 @@
 | `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; активная branch-specific матрица по `Vrep` / `Hrep` / `FLrep` закрыта. |
 | `Decomposition` | `checked_clean` | `0` | `0` | `QR`, `LQ` и обе full-update ветки покрыты прямыми тестами; узкий прогон зелёный. |
 | `GaussSLE` | `checked_clean` | `0` | `0` | Legacy-сценарии перенесены; instance API и все pivot choices покрыты прямыми тестами. |
+| `FourierMotzkin` | `checked_clean` | `0` | `0` | Наивный контракт исключения переменной покрыт прямыми тестами; узкий прогон зелёный. |
 
 ## AffineBasis
 
@@ -343,6 +351,20 @@
 - Notes:
   - Перенесены все содержательные legacy-сценарии на square, rectangular и factory-layer.
   - Дополнительно закреплены pivot choices `RowWise` и `ColWise`, reuse instance API через `SetSystem`/`SetGaussChoice`, `GetSolution(out Vector)` и немутирующий контракт array-factory.
+
+## FourierMotzkin
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Закрепляется именно текущая наивная семантика без редукции избыточности и без изменения размерности ambient space.
+- Notes:
+  - Покрыт `EliminateVariableNaive` на базовых сценариях: upper/lower/neutral, 1-based индекс устраняемой переменной и отбрасывание нулевого результирующего неравенства.
+  - Заодно дописаны XML-комментарии к классу и его публичному API.
 
 ## GammaPair
 
