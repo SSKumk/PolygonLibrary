@@ -247,6 +247,16 @@
     - это первый активный линейно-алгебраический алгоритмический слой в новой структуре
     - для `QR`/`LQ` закреплены инварианты разложения, а не конкретные знаки столбцов или строк ортогональной матрицы
 
+### GaussSLE
+
+- New tests:
+  - [`GaussSLETests.cs`](../../Tests/DoubleGeometry/Algorithms/GaussSLE/GaussSLETests.cs) (square/rectangular системы, все pivot choices, instance API, factory-методы и немутирующий array-factory)
+- Legacy:
+  - [`GaussSLETests.cs`](../../Tests/SharedTests/GaussSLETests.cs)
+  - Note:
+    - содержательные legacy-сценарии перенесены в новую структуру почти без изменения смысловых сообщений
+    - дополнительно закреплены `RowWise`, `ColWise`, reuse instance API, `GetSolution(out Vector)` и немутирующий контракт array-factory
+
 ### ConvexPolytop
 
 - New tests:

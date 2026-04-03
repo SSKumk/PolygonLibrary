@@ -96,6 +96,13 @@
   - Итог:
     - `9` passed
     - `0` failed
+- `2026-04-03`
+  - `GaussSLE`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Algorithms.GaussSLETests"`
+  - Итог:
+    - `16` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -209,6 +216,7 @@
 | `FaceLattice` | `checked_clean` | `0` | `0` | `FLNode`, `FLNodeSum`, контейнер и internal-конвертеры покрыты прямыми тестами; целевой повторный прогон зелёный. |
 | `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; активная branch-specific матрица по `Vrep` / `Hrep` / `FLrep` закрыта. |
 | `Decomposition` | `checked_clean` | `0` | `0` | `QR`, `LQ` и обе full-update ветки покрыты прямыми тестами; узкий прогон зелёный. |
+| `GaussSLE` | `checked_clean` | `0` | `0` | Legacy-сценарии перенесены; instance API и все pivot choices покрыты прямыми тестами. |
 
 ## AffineBasis
 
@@ -321,6 +329,20 @@
   - Это первый активный линейно-алгебраический алгоритмический блок в новой структуре после снятия общей заморозки для low-level linear algebra.
   - Прямыми тестами покрыты `QR_ByReflection`, `LQ_ByReflection`, `QR_FullUpdate` и `LQ_FullUpdate`.
   - Update-ветки проверяются через сохранение ортонормальности, изменение размерности базиса и обнуление координат за пределами нового базиса.
+
+## GaussSLE
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Проверяется только контракт на unique solution; семейства решений для underdetermined/singular систем в активный слой не входят.
+- Notes:
+  - Перенесены все содержательные legacy-сценарии на square, rectangular и factory-layer.
+  - Дополнительно закреплены pivot choices `RowWise` и `ColWise`, reuse instance API через `SetSystem`/`SetGaussChoice`, `GetSolution(out Vector)` и немутирующий контракт array-factory.
 
 ## GammaPair
 
