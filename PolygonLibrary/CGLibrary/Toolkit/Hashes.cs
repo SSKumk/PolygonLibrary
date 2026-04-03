@@ -6,7 +6,7 @@ namespace CGLibrary.Toolkit;
 /// <summary>
 /// Provides hash helpers used by the library infrastructure.
 /// </summary>
-public class Hashes {
+public static class Hashes {
 
   /// <summary>
   /// Computes the MD5 hash of the given input string.
