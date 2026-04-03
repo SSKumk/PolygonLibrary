@@ -3,6 +3,9 @@ using System.Text;
 
 namespace CGLibrary.Toolkit;
 
+/// <summary>
+/// Provides hash helpers used by the library infrastructure.
+/// </summary>
 public class Hashes {
 
   /// <summary>

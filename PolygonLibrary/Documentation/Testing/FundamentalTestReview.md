@@ -530,6 +530,19 @@
 - Notes:
   - Быстрый фундаментальный набор проходит.
 
+## Hashes
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены.
+- Contract ambiguities:
+  - Не отмечены.
+- Notes:
+  - Закреплён текущий helper-контракт `GetMd5Hash(string)` на известных digest-значениях, включая UTF-8 строку.
+
 ## Intersection
 
 - Status:

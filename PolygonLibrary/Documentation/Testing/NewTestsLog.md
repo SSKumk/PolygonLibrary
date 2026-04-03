@@ -385,5 +385,14 @@
 - Legacy:
   - отдельного прямого legacy-набора не было
 - Note:
-  - закреплён безопасный round-trip слой `ParamWriter`; строковый escaping осознанно оставлен как отдельный незакрытый вопрос
+  - закреплён безопасный round-trip слой `ParamWriter`; строковый escaping теперь симметричен `ParamReader.ReadString`
+
+### Hashes
+
+- New tests:
+  - [`HashesTests.cs`](../../Tests/DoubleGeometry/Toolkit/Hashes/HashesTests.cs) (известные MD5 digest-значения для пустой строки, ASCII и UTF-8 строки)
+- Legacy:
+  - отдельного прямого legacy-набора не было
+- Note:
+  - закреплён текущий helper-контракт `GetMd5Hash(string)` без расширения на другие алгоритмы или потоковые источники
 
