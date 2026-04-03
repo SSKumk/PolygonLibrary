@@ -500,7 +500,7 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
     /// <summary>
-    /// Constructs an instance of FLNode as an face.
+    /// Constructs an instance of <see cref="FLNodeSum"/> as a face.
     /// </summary>
     /// <param name="innerPoint">Inner point of the face.</param>
     /// <param name="aBasis">The affine basis of the face.</param>
@@ -529,13 +529,13 @@ public partial class Geometry<TNum, TConv>
       => dim > PolytopDim ? new SortedSet<FLNodeSum>() : GetLevel(dim);
 
     /// <summary>
-    /// Adds a given node to the set of super nodes for this node.
+    /// Adds a given node to the set of sub nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
     internal void AddSub(FLNodeSum node) => Sub.Add(node);
 
     /// <summary>
-    /// Adds a given node to the set of sub nodes for this node.
+    /// Adds a given node to the set of super nodes for this node.
     /// </summary>
     /// <param name="node">The node to be added.</param>
     internal void AddSuper(FLNodeSum node) => Super.Add(node);
@@ -593,7 +593,12 @@ public partial class Geometry<TNum, TConv>
 #region Overrides
     public override int GetHashCode() => throw new InvalidOperationException(); //HashCode.Combine(Vertices.Count);
 
-    //todo: xml
+    /// <summary>
+    /// The equality function for <see cref="FLNodeSum"/>.
+    /// Two nodes are considered equal when their affine spaces are equal.
+    /// </summary>
+    /// <param name="obj">Object to compare with this node.</param>
+    /// <returns><see langword="true"/> when <paramref name="obj"/> is a <see cref="FLNodeSum"/> with the same <see cref="AffBasis"/>.</returns>
     public override bool Equals(object? obj) {
       if (obj == null || this.GetType() != obj.GetType()) {
         return false;
@@ -604,7 +609,13 @@ public partial class Geometry<TNum, TConv>
       return this.AffBasis.Equals(other.AffBasis);
     }
 
-    //todo: xml
+    /// <summary>
+    /// Compares two <see cref="FLNodeSum"/> instances.
+    /// </summary>
+    /// <param name="other">The node to compare with.</param>
+    /// <returns>
+    /// Ordering is defined first by the subspace dimension and then by the affine basis comparison.
+    /// </returns>
     public int CompareTo(FLNodeSum? other) {
 
       if (other is null) { return 1; } // null < this (always)
@@ -616,10 +627,6 @@ public partial class Geometry<TNum, TConv>
       if (this.AffBasis.SubSpaceDim > other.AffBasis.SubSpaceDim) { // this > other
         return 1;
       }
-      if (this.InnerPoint.Equals(other.InnerPoint) && !this.AffBasis.Equals(other.AffBasis)) {
-        Console.WriteLine($"oops");
-      }
-
       return this.AffBasis.CompareTo(other.AffBasis);
     }
 #endregion
