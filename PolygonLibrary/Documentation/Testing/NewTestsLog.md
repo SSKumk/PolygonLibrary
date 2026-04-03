@@ -237,6 +237,16 @@
     - `FLNodeSum` теперь покрыт прямыми тестами отдельно от `FLNode`
     - internal-конвертеры `FaceLattice` теперь тоже закреплены прямыми тестами, не только косвенно через `GiftWrapping` и `MinkowskiSum`
 
+### Decomposition
+
+- New tests:
+  - [`DecompositionTests.cs`](../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs) (`QR_ByReflection`, `LQ_ByReflection`, `QR_FullUpdate`, `LQ_FullUpdate` на square/tall/wide и update-сценариях)
+- Legacy:
+  - прямого legacy-набора не было
+  - Note:
+    - это первый активный линейно-алгебраический алгоритмический слой в новой структуре
+    - для `QR`/`LQ` закреплены инварианты разложения, а не конкретные знаки столбцов или строк ортогональной матрицы
+
 ### ConvexPolytop
 
 - New tests:

@@ -89,6 +89,13 @@
   - Итог:
     - `24` passed
     - `0` failed
+- `2026-04-03`
+  - `Decomposition`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Algorithms.DecompositionTests"`
+  - Итог:
+    - `9` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -201,6 +208,7 @@
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
 | `FaceLattice` | `checked_clean` | `0` | `0` | `FLNode`, `FLNodeSum`, контейнер и internal-конвертеры покрыты прямыми тестами; целевой повторный прогон зелёный. |
 | `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; активная branch-specific матрица по `Vrep` / `Hrep` / `FLrep` закрыта. |
+| `Decomposition` | `checked_clean` | `0` | `0` | `QR`, `LQ` и обе full-update ветки покрыты прямыми тестами; узкий прогон зелёный. |
 
 ## AffineBasis
 
@@ -298,6 +306,21 @@
   - Принятое решение: zero-copy разрешён для копирования из обычного `AffineBasis`, но по-прежнему запрещён для `AffineBasisMutable`.
   - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLatticeNodeSumTests"` проходит: `24` passed, `0` failed.
   - Поверх публичного слоя теперь покрыты и `FLNodeSum`, и internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP` на малом треугольном примере.
+
+## Decomposition
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Конкретные знаки столбцов и строк ортогональной матрицы не фиксируются как контракт; закреплены только инварианты разложения.
+- Notes:
+  - Это первый активный линейно-алгебраический алгоритмический блок в новой структуре после снятия общей заморозки для low-level linear algebra.
+  - Прямыми тестами покрыты `QR_ByReflection`, `LQ_ByReflection`, `QR_FullUpdate` и `LQ_FullUpdate`.
+  - Update-ветки проверяются через сохранение ортонормальности, изменение размерности базиса и обнуление координат за пределами нового базиса.
 
 ## GammaPair
 
