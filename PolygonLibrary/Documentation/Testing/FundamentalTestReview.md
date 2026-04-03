@@ -82,6 +82,13 @@
   - Итог:
     - `19` passed
     - `0` failed
+- `2026-04-03`
+  - `FaceLattice + FLNodeSum`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLatticeNodeSumTests"`
+  - Итог:
+    - `24` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -192,7 +199,7 @@
 | `GammaPair` | `checked_clean` | `0` | `0` | Собственные прямые тесты проходят; проблемы всплывают в сценариях `SupportFunction`. |
 | `SupportFunction` | `checked_clean` | `0` | `0` | Сценарии с нулевыми нормалями сняты как нарушение preconditions `GammaPair`; целевой повторный прогон зелёный. |
 | `ConvexPolygon` | `checked_clean` | `0` | `0` | Быстрый фундаментальный набор проходит. |
-| `FaceLattice` | `checked_clean` | `0` | `0` | Публичный слой и internal-конвертеры покрыты прямыми тестами; целевой повторный прогон зелёный. |
+| `FaceLattice` | `checked_clean` | `0` | `0` | `FLNode`, `FLNodeSum`, контейнер и internal-конвертеры покрыты прямыми тестами; целевой повторный прогон зелёный. |
 | `ConvexPolytop` | `checked_clean` | `0` | `0` | Узкий набор зелёный; активная branch-specific матрица по `Vrep` / `Hrep` / `FLrep` закрыта. |
 
 ## AffineBasis
@@ -289,8 +296,8 @@
 - Notes:
   - Проблема была локализована не в `FLNode`, а в copy ctor `AffineBasis(AffineBasis, needCopy: false)`.
   - Принятое решение: zero-copy разрешён для копирования из обычного `AffineBasis`, но по-прежнему запрещён для `AffineBasisMutable`.
-  - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice"` проходит: `19` passed, `0` failed.
-  - Поверх публичного слоя теперь покрыты и internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP` на малом треугольном примере.
+  - Целевой повторный прогон `dotnet test Tests/Tests.csproj --no-build --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLattice|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.FaceLatticeNodeSumTests"` проходит: `24` passed, `0` failed.
+  - Поверх публичного слоя теперь покрыты и `FLNodeSum`, и internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP` на малом треугольном примере.
 
 ## GammaPair
 

@@ -226,6 +226,7 @@
   - [`FaceLatticeAssert.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeAssert.cs) (локальные helper-ы для создания и сравнения `Vector` в polyhedra-сценариях)
   - [`FaceLatticeTestData.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeTestData.cs) (построение треугольной иерархии `FLNode` и готовой тестовой решётки)
   - [`FaceLatticeNodeTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeNodeTests.cs) (конструкторы `FLNode`, уровни, `AllNonStrictSub`, сравнение и overrides с сохранением legacy-сообщений)
+  - [`FaceLatticeNodeSumTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeNodeSumTests.cs) (`FLNodeSum`: корректная треугольная иерархия, уровни, `AllNonStrictSub`, сравнение и overrides)
   - [`FaceLatticeStructureAndTransformTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs) (конструкторы `FaceLattice`, агрегаты, `AllKfaces_ExceptTop`, `VertexTransform`, `Equals`, `GetHashCode`)
   - [`FaceLatticeInternalConstructionTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeInternalConstructionTests.cs) (internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP` на малом треугольном примере)
 - Legacy:
@@ -233,6 +234,7 @@
   - Note:
     - legacy-набор был сосредоточен почти целиком на `FLNode`; при миграции добавлен отдельный прямой слой на сам контейнер `FaceLattice`
     - позднее в тот же набор добавлены сценарии на инвариантность к порядку `sub`, согласованность `Equals`/`CompareTo` и порядок построения эквивалентной решётки
+    - `FLNodeSum` теперь покрыт прямыми тестами отдельно от `FLNode`
     - internal-конвертеры `FaceLattice` теперь тоже закреплены прямыми тестами, не только косвенно через `GiftWrapping` и `MinkowskiSum`
 
 ### ConvexPolytop
