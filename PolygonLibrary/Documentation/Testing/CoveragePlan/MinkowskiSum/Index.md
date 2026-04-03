@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`MinkowskiSum.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/MinkowskiSum.cs) реализует сумму Минковского на уровне точек и политопов.
+Класс [`MinkowskiSum.cs`](../../../../CGLibrary/Algorithms/Polyhedra/MinkowskiSum.cs) реализует сумму Минковского на уровне точек и политопов.
 
 В активный слой текущего этапа входят:
 

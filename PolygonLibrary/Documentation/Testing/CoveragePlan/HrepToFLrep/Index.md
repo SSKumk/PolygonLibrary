@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`HrepToFLrep.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/HrepToFLrep.cs) содержит попытку геометрической конверсии из `Hrep` в `FaceLattice`.
+Класс [`HrepToFLrep.cs`](../../../../CGLibrary/Algorithms/Polyhedra/HrepToFLrep.cs) содержит попытку геометрической конверсии из `Hrep` в `FaceLattice`.
 
 На текущем этапе сам код прямо помечен как `!Не работает!`, а дальнейшая работа над ним перенесена в исследовательский backlog.
 

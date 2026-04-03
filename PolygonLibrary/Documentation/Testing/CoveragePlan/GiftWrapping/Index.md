@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`GiftWrapping.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/GiftWrapping/GiftWrapping.cs) реализует построение выпуклой оболочки и `FaceLattice` по swarm of points.
+Класс [`GiftWrapping.cs`](../../../../CGLibrary/Algorithms/Polyhedra/GiftWrapping/GiftWrapping.cs) реализует построение выпуклой оболочки и `FaceLattice` по swarm of points.
 
 В активный слой текущего этапа входят:
 

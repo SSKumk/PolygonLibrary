@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`MinkowskiDiff.cs`](../../../../CGLibrary/Polyhedra/ConvexPolyhedra/MinkowskiDiff.cs) реализует разность Минковского через H-representation и поиск экстремальных вершин.
+Класс [`MinkowskiDiff.cs`](../../../../CGLibrary/Algorithms/Polyhedra/MinkowskiDiff.cs) реализует разность Минковского через H-representation и поиск экстремальных вершин.
 
 В активный слой текущего этапа входят:
 
