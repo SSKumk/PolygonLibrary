@@ -341,3 +341,12 @@
 - Note:
   - прямой слой на `CauchyMatrix` сделан через математически контролируемые случаи, без тяжёлых численных прогонов
 
+### RandomLC
+
+- New tests:
+  - [`RandomLCTests.cs`](../../Tests/DoubleGeometry/Toolkit/RandomLC/RandomLCTests.cs) (детерминированность `RandomLC` / `GRandomLC` и генерация массивов `GenArray` / `GenArrayInt`)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - закреплён именно текущий детерминированный контракт генератора при заданном `seed`, без проверки статистического качества последовательности
+

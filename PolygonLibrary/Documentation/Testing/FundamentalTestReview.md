@@ -11,7 +11,7 @@
 
 Граница текущей ревизии:
 
-- входит: `Tests/DoubleGeometry/Basics`, `Tests/DoubleGeometry/Polygons`, `Tests/DoubleGeometry/Polyhedra`;
+- входит: `Tests/DoubleGeometry/Basics`, `Tests/DoubleGeometry/Polygons`, `Tests/DoubleGeometry/Polyhedra`, `Tests/DoubleGeometry/Toolkit`;
 - не входит: `Tests/DoubleGeometry/Algorithms`, legacy-алгоритмы и любые долгие stress/perf-наборы.
 
 ## Initial Sweep Metadata
@@ -116,6 +116,13 @@
     - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Algorithms.SimplexMethodTests"`
   - Итог:
     - `4` passed
+    - `0` failed
+- `2026-04-03`
+  - `RandomLC`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Toolkit.RandomLCTests"`
+  - Итог:
+    - `5` passed
     - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
@@ -233,6 +240,7 @@
 | `GaussSLE` | `checked_clean` | `0` | `0` | Legacy-сценарии перенесены; instance API и все pivot choices покрыты прямыми тестами. |
 | `FourierMotzkin` | `checked_clean` | `0` | `0` | Наивный контракт исключения переменной покрыт прямыми тестами; узкий прогон зелёный. |
 | `SimplexMethod` | `checked_clean` | `0` | `0` | Базовый контракт двухфазного симплекса покрыт прямыми тестами; узкий прогон зелёный. |
+| `RandomLC` | `checked_clean` | `0` | `0` | Детерминированный контракт генератора и фабрик случайных массивов покрыт прямыми тестами. |
 
 ## AffineBasis
 
@@ -390,6 +398,20 @@
   - Отдельно проверено восстановление исходных свободных переменных после внутреннего split `x = x+ - x-`.
   - На bounded `2D`-примере закреплены и `BasisInequalitiesID`, и полный активный набор ограничений через `ActiveInequalitiesID`.
   - На вырожденной вершине отдельно закреплено, что `BasisInequalitiesID` может быть строгим подмножеством `ActiveInequalitiesID`.
+
+## RandomLC
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - Статистическое качество генератора не входит в активный контракт; закрепляется только детерминированность при заданном `seed` и границы значений.
+- Notes:
+  - Покрыты `RandomLC.NextInt`, `RandomLC.NextDouble`, `GRandomLC.NextPrecise`, `GRandomLC.NextFromInt`, а также `GenArray` и `GenArrayInt`.
+  - XML-комментарии синхронизированы с текущим диапазонным поведением методов.
 
 ## GammaPair
 

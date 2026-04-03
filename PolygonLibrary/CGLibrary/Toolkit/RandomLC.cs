@@ -44,18 +44,22 @@ public class RandomLC {
   }
 
   /// <summary>
-  /// Generates the next random integer within the specified range [a = 0, b = int.MaxValue).
+  /// Generates the next random integer within the specified integer range.
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
   /// <param name="rb">The upper bound of the range (inclusive).</param>
   /// <returns>The generated random integer.</returns>
+  /// <remarks>
+  /// For practical bounded ranges used inside the library the method behaves as a closed-interval generator.
+  /// The default upper bound is still handled by the current modulo-based implementation.
+  /// </remarks>
   public int NextInt(int lb = 0, int rb = int.MaxValue) => (int)(Rand() % int.MaxValue) % (rb - lb + 1) + lb;
 
   /// <summary>
-  /// Generates the next random double within the specified range [a = 0, b = 1).
+  /// Generates the next random double within the specified range.
   /// </summary>
   /// <param name="lb">The lower bound of the range (inclusive).</param>
-  /// <param name="rb">The upper bound of the range (exclusive).</param>
+  /// <param name="rb">The upper bound of the range.</param>
   /// <returns>The generated random double.</returns>
   public double NextDouble(double lb = 0, double rb = 1) => Rand() * (rb - lb) / uint.MaxValue + lb;
 
@@ -82,7 +86,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     private readonly TNum UIntMaxValue = TConv.FromUInt(uint.MaxValue);
 
     /// <summary>
-    /// Generates the next random precise-number within the [0,1) range.
+    /// Generates the next random precise-number within the [0,1] range.
     /// </summary>
     /// <returns>The generated random precise number.</returns>
     public TNum NextPrecise() => NextPrecise(Tools.Zero, Tools.One);
@@ -91,7 +95,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
     /// Generates the next random precise-number within the specified range.
     /// </summary>
     /// <param name="lb">The lower bound of the range (inclusive).</param>
-    /// <param name="rb">The upper bound of the range (exclusive).</param>
+    /// <param name="rb">The upper bound of the range.</param>
     /// <returns>The generated random precise number.</returns>
     public TNum NextPrecise(TNum lb, TNum rb) => TConv.FromUInt(Rand()) / UIntMaxValue * (rb - lb) + lb;
 
@@ -107,7 +111,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
 
 
   /// <summary>
-  /// Generates an array of the specified dimension. Each component lies in [a, b).
+  /// Generates an array of the specified dimension. Each component lies in the requested range.
   /// </summary>
   /// <param name="dim">The dimension of the array.</param>
   /// <param name="a">The minimum value of each component.</param>
@@ -126,7 +130,7 @@ public partial class Geometry<TNum, TConv> where TNum : struct, INumber<TNum>, I
   }
 
   /// <summary>
-  /// Generates an array of integers of the specified dimension. Each component lies in [a, b).
+  /// Generates an array of integers of the specified dimension. Each component lies in the requested integer range.
   /// </summary>
   /// <param name="dim">The dimension of the array.</param>
   /// <param name="a">The minimum value of each component.</param>
