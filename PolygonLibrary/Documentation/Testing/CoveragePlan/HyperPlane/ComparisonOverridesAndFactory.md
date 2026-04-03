@@ -1,4 +1,4 @@
-﻿# HyperPlane Comparison Overrides And Factory
+# HyperPlane Comparison Overrides And Factory
 
 ## Scope
 

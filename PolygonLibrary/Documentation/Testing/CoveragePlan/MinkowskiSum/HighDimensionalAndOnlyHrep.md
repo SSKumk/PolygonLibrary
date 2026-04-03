@@ -1,4 +1,4 @@
-﻿# High Dimensional And OnlyHrep
+# High Dimensional And OnlyHrep
 
 ## Scope
 

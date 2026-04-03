@@ -1,4 +1,4 @@
-﻿# GiftWrapping
+# GiftWrapping
 
 ## Scope
 

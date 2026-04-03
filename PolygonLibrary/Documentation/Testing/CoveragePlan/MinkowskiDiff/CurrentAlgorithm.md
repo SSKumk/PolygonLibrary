@@ -1,4 +1,4 @@
-﻿# Current Algorithm
+# Current Algorithm
 
 ## Scope
 

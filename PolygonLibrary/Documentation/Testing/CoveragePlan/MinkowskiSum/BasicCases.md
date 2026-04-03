@@ -1,4 +1,4 @@
-﻿# Basic Cases
+# Basic Cases
 
 ## Scope
 

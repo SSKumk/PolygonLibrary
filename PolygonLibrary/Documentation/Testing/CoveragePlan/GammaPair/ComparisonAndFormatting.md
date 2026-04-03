@@ -1,4 +1,4 @@
-﻿# GammaPair Comparison And Formatting
+# GammaPair Comparison And Formatting
 
 ## Scope
 

@@ -1,4 +1,4 @@
-﻿# Intersection Boundary And Degenerate Cases
+# Intersection Boundary And Degenerate Cases
 
 ## Scope
 

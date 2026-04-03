@@ -1,8 +1,8 @@
-﻿# SupportFunction
+# SupportFunction
 
 ## Scope
 
-Класс [`SupportFunction.cs`](../../../../CGLibrary/Polygons/ConvexPolygons/SupportFunction.cs) описывает кусочно-линейную положительно однородную опорную функцию:
+Класс [`SupportFunction.cs`](../../../../CGLibrary/Geometry2D/Polygons/ConvexPolygons/SupportFunction.cs) описывает кусочно-линейную положительно однородную опорную функцию:
 
 - инициализацию из `GammaPair` или набора точек;
 - локализацию направления в конусе соседних нормалей;

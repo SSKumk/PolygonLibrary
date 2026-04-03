@@ -1,8 +1,8 @@
-﻿# GammaPair
+# GammaPair
 
 ## Scope
 
-Класс [`GammaPair.cs`](../../../../CGLibrary/Polygons/ConvexPolygons/GammaPair.cs) хранит пару `(normal; value)` для кусочно-линейной опорной функции и задаёт:
+Класс [`GammaPair.cs`](../../../../CGLibrary/Geometry2D/Polygons/ConvexPolygons/GammaPair.cs) хранит пару `(normal; value)` для кусочно-линейной опорной функции и задаёт:
 
 - хранение нормали и значения;
 - конструкторы с опциональной нормализацией;

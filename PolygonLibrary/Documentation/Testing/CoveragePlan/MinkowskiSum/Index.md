@@ -1,4 +1,4 @@
-﻿# MinkowskiSum
+# MinkowskiSum
 
 ## Scope
 

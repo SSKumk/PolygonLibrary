@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`ConvexPolygon.cs`](../../../../CGLibrary/Polygons/ConvexPolygons/ConvexPolygon.cs) описывает основной 2D-выпуклый полигон:
+Класс [`ConvexPolygon.cs`](../../../../CGLibrary/Geometry2D/Polygons/ConvexPolygons/ConvexPolygon.cs) описывает основной 2D-выпуклый полигон:
 
 - построение из вершин, `Vector` и `SupportFunction`;
 - ленивое согласование `Contour`, `Vertices`, `SF` и `Square`;

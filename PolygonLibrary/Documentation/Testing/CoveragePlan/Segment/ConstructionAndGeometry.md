@@ -1,4 +1,4 @@
-﻿# Segment Construction And Geometry
+# Segment Construction And Geometry
 
 ## Scope
 

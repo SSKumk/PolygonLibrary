@@ -1,8 +1,8 @@
-﻿# Intersection
+# Intersection
 
 ## Scope
 
-Файл [`Intersection.cs`](../../../../CGLibrary/Polygons/ConvexPolygons/Intersection.cs) содержит алгоритм `ConvexPolygon.IntersectionPolygon(P, Q)`:
+Файл [`Intersection.cs`](../../../../CGLibrary/Geometry2D/Polygons/ConvexPolygons/Intersection.cs) содержит алгоритм `ConvexPolygon.IntersectionPolygon(P, Q)`:
 
 - пересечение двух выпуклых многоугольников;
 - обработку входов `null`;

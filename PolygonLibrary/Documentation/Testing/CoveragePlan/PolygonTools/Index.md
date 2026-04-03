@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`PolygonTools.cs`](../../../../CGLibrary/Polygons/PolygonTools.cs) содержит фабрики простых выпуклых полигонов:
+Класс [`PolygonTools.cs`](../../../../CGLibrary/Geometry2D/Polygons/PolygonTools.cs) содержит фабрики простых выпуклых полигонов:
 
 - осе-параллельные прямоугольники;
 - повёрнутые прямоугольники;

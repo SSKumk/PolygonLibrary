@@ -1,8 +1,8 @@
-﻿# Line2D
+# Line2D
 
 ## Scope
 
-Класс [`CGLibrary/Basics/Line2D.cs`](../../../../CGLibrary/Basics/Line2D.cs) описывает прямую на плоскости в общем виде `Ax + By + C = 0` и хранит:
+Класс [`CGLibrary/Geometry2D/Line2D.cs`](../../../../CGLibrary/Geometry2D/Line2D.cs) описывает прямую на плоскости в общем виде `Ax + By + C = 0` и хранит:
 
 - коэффициенты общего уравнения;
 - направляющий вектор;

@@ -1,4 +1,4 @@
-﻿# Fundamental Test Review
+# Fundamental Test Review
 
 Этот файл нужен для ревизии фундаментального слоя `double` без алгоритмов.
 

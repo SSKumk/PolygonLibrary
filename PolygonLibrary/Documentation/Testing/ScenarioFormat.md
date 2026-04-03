@@ -1,4 +1,4 @@
-﻿# Scenario Format
+# Scenario Format
 
 Это эталонный формат для документов в `Documentation/Testing/CoveragePlan/`.
 

@@ -1,4 +1,4 @@
-﻿# Initialization And Degenerate Cases
+# Initialization And Degenerate Cases
 
 ## Scope
 

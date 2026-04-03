@@ -1,8 +1,8 @@
-﻿# SegmentPair
+# SegmentPair
 
 ## Scope
 
-Класс [`SegmentPair.cs`](../../../../CGLibrary/Segments/SegmentPair.cs) задаёт упорядоченную пару отрезков:
+Класс [`SegmentPair.cs`](../../../../CGLibrary/Geometry2D/Segments/SegmentPair.cs) задаёт упорядоченную пару отрезков:
 
 - автоматически сортирует два `Segment` в конструкторе;
 - поддерживает `CompareTo` для использования в `SortedSet` и похожих структурах.

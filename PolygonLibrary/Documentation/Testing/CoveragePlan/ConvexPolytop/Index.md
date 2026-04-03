@@ -1,4 +1,4 @@
-﻿# ConvexPolytop
+# ConvexPolytop
 
 ## Scope
 

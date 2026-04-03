@@ -15,27 +15,26 @@
     <ItemGroup>
         <Compile Remove="Class1.cs"/>
         <Compile Remove="_\**"/>
-        <Compile Remove="Polygons\Something\**"/>
         <Compile Include="Basics\AffineBasis.cs"/>
         <Compile Include="Basics\CauchyMatrix.cs"/>
         <Compile Include="Basics\HyperPlane.cs"/>
-        <Compile Include="Basics\Line2D.cs"/>
         <Compile Include="Basics\LinearBasis.cs"/>
         <Compile Include="Basics\Matrix.cs" />
         <Compile Include="Basics\Vector.cs"/>
         <Compile Include="Basics\Vector2D.cs"/>
+        <Compile Include="Geometry2D\Line2D.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="LinearMath\FourierMotzkin.cs"/>
         <Compile Include="LinearMath\GaussSLE.cs"/>
         <Compile Include="LinearMath\Decomposition.cs" />
         <Compile Include="LinearMath\SimplexMethod.cs"/>
-        <Compile Include="Polygons\BasicPolygon.cs"/>
-        <Compile Include="Polygons\ConvexPolygons\ConvexPolygon.cs"/>
-        <Compile Include="Polygons\ConvexPolygons\GammaPair.cs"/>
-        <Compile Include="Polygons\ConvexPolygons\Intersection.cs"/>
-        <Compile Include="Polygons\ConvexPolygons\SupportFunction.cs"/>
-        <Compile Include="Polygons\PolygonTools.cs"/>
-        <Compile Include="Polygons\Polyline.cs"/>
+        <Compile Include="Geometry2D\Polygons\BasicPolygon.cs"/>
+        <Compile Include="Geometry2D\Polygons\ConvexPolygons\ConvexPolygon.cs"/>
+        <Compile Include="Geometry2D\Polygons\ConvexPolygons\GammaPair.cs"/>
+        <Compile Include="Geometry2D\Polygons\ConvexPolygons\Intersection.cs"/>
+        <Compile Include="Geometry2D\Polygons\ConvexPolygons\SupportFunction.cs"/>
+        <Compile Include="Geometry2D\Polygons\PolygonTools.cs"/>
+        <Compile Include="Geometry2D\Polygons\Polyline.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\BaseSubCP.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\GiftWrapping.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\GiftWrapping\SubPolytop.cs"/>
@@ -50,8 +49,8 @@
         <Compile Include="Polyhedra\ConvexPolyhedra\MinkowskiDiff.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\ConvexPolytop.cs"/>
         <Compile Include="Polyhedra\ConvexPolyhedra\ConvexPolytops\FaceLattice.cs"/>
-        <Compile Include="Segments\Segment.cs"/>
-        <Compile Include="Segments\SegmentPair.cs"/>
+        <Compile Include="Geometry2D\Segments\Segment.cs"/>
+        <Compile Include="Geometry2D\Segments\SegmentPair.cs"/>
         <Compile Include="Toolkit\Combinations.cs"/>
         <Compile Include="Toolkit\Convexification.cs"/>
         <Compile Include="Toolkit\Extensions.cs"/>
@@ -64,12 +63,10 @@
 
     <ItemGroup>
         <EmbeddedResource Remove="_\**"/>
-        <EmbeddedResource Remove="Polygons\Something\**"/>
     </ItemGroup>
 
     <ItemGroup>
         <None Remove="_\**"/>
-        <None Remove="Polygons\Something\**"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -79,16 +76,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Segments\Bentley-Ottmann\BentleyOttmann.svg"/>
-        <Content Include="Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_old"/>
-        <Content Include="Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\BentleyOttmannRealizations.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\Event.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\EventQueue.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\InnerSegment.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\SegmentGroup.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\SweepLineSegmentComparer.cs_store"/>
-        <Content Include="Segments\Bentley-Ottmann\YStructure.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmann.svg"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_old"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannRealizations.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\Event.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\EventQueue.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\InnerSegment.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\SegmentGroup.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\SweepLineSegmentComparer.cs_store"/>
+        <Content Include="Geometry2D\Segments\Bentley-Ottmann\YStructure.cs_store"/>
     </ItemGroup>
 
 

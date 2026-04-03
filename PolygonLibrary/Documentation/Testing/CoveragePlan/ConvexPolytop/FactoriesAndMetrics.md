@@ -1,4 +1,4 @@
-﻿# Factories And Metrics
+# Factories And Metrics
 
 ## Scope
 

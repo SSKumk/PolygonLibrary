@@ -1,4 +1,4 @@
-﻿# HyperPlane Evaluation And Containment
+# HyperPlane Evaluation And Containment
 
 ## Scope
 

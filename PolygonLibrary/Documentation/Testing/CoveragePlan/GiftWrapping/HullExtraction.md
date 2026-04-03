@@ -1,4 +1,4 @@
-﻿# Hull Extraction
+# Hull Extraction
 
 ## Scope
 

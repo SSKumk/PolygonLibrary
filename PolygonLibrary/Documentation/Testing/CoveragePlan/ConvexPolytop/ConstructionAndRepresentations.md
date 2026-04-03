@@ -1,4 +1,4 @@
-﻿# Construction And Representations
+# Construction And Representations
 
 ## Scope
 

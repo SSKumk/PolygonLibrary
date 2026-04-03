@@ -1,4 +1,4 @@
-﻿# GammaPair CrossPairs
+# GammaPair CrossPairs
 
 ## Scope
 

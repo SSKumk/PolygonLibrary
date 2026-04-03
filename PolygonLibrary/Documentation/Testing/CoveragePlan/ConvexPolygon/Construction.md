@@ -1,4 +1,4 @@
-﻿# ConvexPolygon Construction
+# ConvexPolygon Construction
 
 ## Scope
 

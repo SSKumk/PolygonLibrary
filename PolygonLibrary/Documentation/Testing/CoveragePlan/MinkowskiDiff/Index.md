@@ -1,4 +1,4 @@
-﻿# MinkowskiDiff
+# MinkowskiDiff
 
 ## Scope
 

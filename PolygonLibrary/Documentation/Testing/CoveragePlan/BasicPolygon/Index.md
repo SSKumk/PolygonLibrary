@@ -2,7 +2,7 @@
 
 ## Scope
 
-Класс [`BasicPolygon.cs`](../../../../CGLibrary/Polygons/BasicPolygon.cs) задаёт базовый полигональный каркас:
+Класс [`BasicPolygon.cs`](../../../../CGLibrary/Geometry2D/Polygons/BasicPolygon.cs) задаёт базовый полигональный каркас:
 
 - хранение контуров, вершин и рёбер;
 - ленивое восстановление недостающих представлений;

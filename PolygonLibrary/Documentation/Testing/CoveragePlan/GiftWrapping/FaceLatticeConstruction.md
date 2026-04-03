@@ -1,4 +1,4 @@
-﻿# Face Lattice Construction
+# Face Lattice Construction
 
 ## Scope
 

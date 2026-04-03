@@ -1,4 +1,4 @@
-﻿# Intersection Basic Cases
+# Intersection Basic Cases
 
 ## Scope
 

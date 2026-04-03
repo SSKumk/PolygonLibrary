@@ -1,4 +1,4 @@
-﻿# HyperPlane Construction And Orientation
+# HyperPlane Construction And Orientation
 
 ## Scope
 

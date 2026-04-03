@@ -1,4 +1,4 @@
-﻿# HyperPlane
+# HyperPlane
 
 ## Scope
 

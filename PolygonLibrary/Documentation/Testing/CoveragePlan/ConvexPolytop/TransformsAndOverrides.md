@@ -1,4 +1,4 @@
-﻿# Transforms And Overrides
+# Transforms And Overrides
 
 ## Scope
 

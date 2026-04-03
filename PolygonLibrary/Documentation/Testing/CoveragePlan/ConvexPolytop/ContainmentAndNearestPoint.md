@@ -1,4 +1,4 @@
-﻿# Containment And NearestPoint
+# Containment And NearestPoint
 
 ## Scope
 
