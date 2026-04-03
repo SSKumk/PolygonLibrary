@@ -567,7 +567,7 @@ public partial class Geometry<TNum, TConv>
     /// <param name="radius">The radius of a sphere.</param>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle. Phi in [0, 2*Pi).</param>
     /// <param name="polarDivision">The number of partitions at a zenith angle. Theta in [0, Pi].
-    ///   thetaPoints should be greater than 2 for proper calculation.</param>
+    ///   This parameter affects the geometry starting from 3D; in 2D it is ignored.</param>
     /// <returns>A convex polytope as Vrep representing the sphere in hD.</returns>
     public static ConvexPolytop Sphere(Vector center, TNum radius, int azimuthsDivisions, int polarDivision)
       => Ellipsoid(azimuthsDivisions, polarDivision, center, Vector.Ones(center.SpaceDim) * radius);
@@ -576,7 +576,7 @@ public partial class Geometry<TNum, TConv>
     /// Makes a hD-ellipsoid as Vrep with given semi-axis.
     /// </summary>
     /// <param name="azimuthsDivisions">The number of partitions at each azimuthal angle.</param>
-    /// <param name="polarDivision">The number of partitions at a zenith angle.</param>
+    /// <param name="polarDivision">The number of partitions at a zenith angle. In 2D this parameter is ignored.</param>
     /// <param name="center">The center of an ellipsoid.</param>
     /// <param name="semiAxis">The vector where each coordinate represents the length of the corresponding semi-axis.</param>
     /// <returns>A convex polytope as Vrep representing the ellipsoid in hD.</returns>

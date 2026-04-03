@@ -117,13 +117,20 @@
   - Итог:
     - `46` passed
     - `0` failed
-- `2026-04-02`
+  - `2026-04-02`
   - `ConvexPolytop`
-  - Команда:
-    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopFactoriesAndMetricsTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopPolarTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopTransformsAndOverridesTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopConstructionAndRepresentationTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopContainmentAndNearestPointTests"`
-  - Итог:
-    - `39` passed
-    - `0` failed
+    - Команда:
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopFactoriesAndMetricsTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopPolarTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopTransformsAndOverridesTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopConstructionAndRepresentationTests|FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytopContainmentAndNearestPointTests"`
+    - Итог:
+      - `39` passed
+      - `0` failed
+  - `2026-04-03`
+  - `ConvexPolytop`
+    - Команда:
+      - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Polyhedra.ConvexPolytop"`
+    - Итог:
+      - `48` passed
+      - `0` failed
 
 ## Status Summary
 
@@ -218,12 +225,12 @@
   - Не обнаружены после локальной проверки.
 - Contract ambiguities:
   - Не отмечены.
-- Notes:
-  - Кластерный сбой в `HrepToVrep_Geometric` оказался вызван остатками отладочного кода; после удаления `ConvexPolytop`-набор снова стал зелёным.
-  - Поверх исходного набора добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, `ToConvexPolygon(AffineBasis)` и representation-specific ветки `Shift` / `Rotate`.
-  - Семантика `Scale(k, origin)` подтверждена и исправлена для положительного и отрицательного коэффициента во всех трёх представлениях: политоп действительно масштабируется относительно заданного центра.
-  - По активному слою branch-specific матрица `Vrep` / `Hrep` / `FLrep` закрыта; вне неё сознательно остаётся только `Polar`.
-  - Для `Polar` уже закрыт базовый 2D-слой по `Vrep` / `Hrep` / `FLrep`, включая `Polar(out shift)` и двойное преобразование; следующими остаются более тонкие вопросы duality и redundancy.
+  - Notes:
+    - Кластерный сбой в `HrepToVrep_Geometric` оказался вызван остатками отладочного кода; после удаления `ConvexPolytop`-набор снова стал зелёным.
+    - Поверх исходного набора добавлены прямые сценарии на `InnerPoint` для `FLrep`, wrapper `NearestPoint(Vector)`, `ToConvexPolygon(AffineBasis)` и representation-specific ветки `Shift` / `Rotate`.
+    - Семантика `Scale(k, origin)` подтверждена и исправлена для положительного и отрицательного коэффициента во всех трёх представлениях: политоп действительно масштабируется относительно заданного центра.
+    - По активному слою branch-specific матрица `Vrep` / `Hrep` / `FLrep` закрыта, включая базовый 2D-слой `Polar`.
+    - Для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в `2D` параметр `polarDivision` не влияет на геометрию; следующий тонкий слой вокруг `Polar` связан уже не с фабриками, а с duality и redundancy.
   - Дополнительно исправлена формула `Ball_1(center, radius)` для ненулевого центра: раньше метод ошибочно добавлял `-e` вместо `center - e`.
   - Helper-ball слой теперь покрыт прямыми тестами для `Ball_1`, `Ball_oo`, `Sphere`, `Ellipsoid` и `Ball_2FuncCreator` на малых размерностях и смещённых центрах.
 

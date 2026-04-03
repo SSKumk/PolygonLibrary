@@ -21,10 +21,12 @@
 | CPT-FAC-007 | x | `Ball_oo` при ненулевом центре корректно сдвигает квадрат вокруг заданной точки. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L9) |
 | CPT-FAC-008 | x | `Sphere` в 1D возвращает отрезок `center ± radius`. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L23) |
 | CPT-FAC-009 | x | `Sphere` в 2D при четырёх азимутальных делениях возвращает четыре кардинальные точки вокруг центра. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L35) |
-| CPT-FAC-010 | x | `Sphere` в 3D при `azimuthsDivisions = 4`, `polarDivision = 2` даёт шесть осевых вершин октаэдра. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L49) |
-| CPT-FAC-011 | x | `Ellipsoid` в 1D возвращает отрезок `center ± semiAxis`. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L66) |
-| CPT-FAC-012 | x | `Ellipsoid` в 2D при четырёх азимутальных делениях возвращает осевые вершины, масштабированные по полуосям. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L84) |
-| CPT-FAC-013 | x | `Ball_2FuncCreator` порождает ту же фабрику, что и прямой вызов `Sphere` с теми же параметрами сетки. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L102) |
+| CPT-FAC-010 | x | `Sphere` в 2D не зависит от `polarDivision`: при фиксированном `azimuthsDivisions` результат остаётся тем же. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L52) |
+| CPT-FAC-011 | x | `Sphere` в 3D при `azimuthsDivisions = 4`, `polarDivision = 2` даёт шесть осевых вершин октаэдра. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L60) |
+| CPT-FAC-012 | x | `Ellipsoid` в 1D возвращает отрезок `center ± semiAxis`. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L77) |
+| CPT-FAC-013 | x | `Ellipsoid` в 2D при четырёх азимутальных делениях возвращает осевые вершины, масштабированные по полуосям. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L95) |
+| CPT-FAC-014 | x | `Ellipsoid` в 2D не зависит от `polarDivision`: при фиксированном `azimuthsDivisions` результат остаётся тем же. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L113) |
+| CPT-FAC-015 | x | `Ball_2FuncCreator` порождает ту же фабрику, что и прямой вызов `Sphere` с теми же параметрами сетки. | [`ConvexPolytopBallFactoriesTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopBallFactoriesTests.cs#L131) |
 | CPT-MET-001 | x | `MinimalDiameter` и `MinDistBtwVs` возвращают минимальное попарное расстояние между вершинами. | [`ConvexPolytopFactoriesAndMetricsTests.cs`](../../../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopFactoriesAndMetricsTests.cs#L92) |
 
 ## Existing Tests
@@ -32,6 +34,7 @@
 - Старые алгоритмические тесты активно использовали эти фабрики как данность, но не документировали их прямым набором.
 - В новой структуре они закреплены отдельными unit-like сценариями малой стоимости.
 - Для `Ball_1` добавлен отдельный сценарий с ненулевым центром: именно он выявил и закрепил баг в формуле сдвига.
+- Для `Sphere` и `Ellipsoid` отдельно зафиксировано, что в 2D параметр `polarDivision` на геометрию не влияет.
 
 ## Gaps
 

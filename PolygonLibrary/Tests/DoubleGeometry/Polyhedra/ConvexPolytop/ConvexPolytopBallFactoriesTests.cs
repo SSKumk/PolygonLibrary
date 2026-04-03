@@ -50,6 +50,14 @@ public class ConvexPolytopBallFactoriesTests {
   }
 
   [Test]
+  public void Sphere_In2D_IgnoresPolarDivision() {
+    ConvexPolytop sphereLowPolar = ConvexPolytop.Sphere(ConvexPolytopAssert.V(1, 2), 2, 4, 1);
+    ConvexPolytop sphereHighPolar = ConvexPolytop.Sphere(ConvexPolytopAssert.V(1, 2), 2, 4, 7);
+
+    ConvexPolytopAssert.AssertVertexSetEquals(sphereLowPolar.Vrep, sphereHighPolar.Vrep);
+  }
+
+  [Test]
   public void Sphere_In3D_WithFourAzimuthsAndTwoPolarDivisions_ReturnsAxisOctahedron() {
     ConvexPolytop sphere = ConvexPolytop.Sphere(Vector.Zero(3), 2, 4, 2);
 
@@ -104,6 +112,26 @@ public class ConvexPolytopBallFactoriesTests {
         ConvexPolytopAssert.V(1, -3)
       ]
     );
+  }
+
+  [Test]
+  public void Ellipsoid_In2D_IgnoresPolarDivision() {
+    ConvexPolytop ellipsoidLowPolar =
+      ConvexPolytop.Ellipsoid(
+        4,
+        1,
+        ConvexPolytopAssert.V(1, 2),
+        ConvexPolytopAssert.V(3, 5)
+      );
+    ConvexPolytop ellipsoidHighPolar =
+      ConvexPolytop.Ellipsoid(
+        4,
+        7,
+        ConvexPolytopAssert.V(1, 2),
+        ConvexPolytopAssert.V(3, 5)
+      );
+
+    ConvexPolytopAssert.AssertVertexSetEquals(ellipsoidLowPolar.Vrep, ellipsoidHighPolar.Vrep);
   }
 
   [Test]
