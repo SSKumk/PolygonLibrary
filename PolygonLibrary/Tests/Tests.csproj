@@ -49,6 +49,7 @@
         <Compile Remove="SharedTests\MatrixTests.cs" />
         <Compile Remove="SharedTests\LinearBasisTests.cs" />
         <Compile Remove="SharedTests\VectorTests.cs" />
+        <Compile Remove="ToolkitTests\ParamReaderTest.cs" />
     </ItemGroup>
 
     <ItemGroup>

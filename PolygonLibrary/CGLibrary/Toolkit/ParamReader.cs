@@ -81,9 +81,9 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Calculates the MD5 hash of the file after cleaning it from comments and whitespace.
+    /// Returns the file content after removing comments and whitespace.
     /// </summary>
-    /// <returns>The MD5 hash as a hexadecimal string.</returns>
+    /// <returns>The sanitized file content as a single string.</returns>
     public string GetSanitizedData() {
       string cleaned = Regex.Replace(data, "//.*", "");
       cleaned = Regex.Replace(cleaned, @"/\*.*?\*/", "", RegexOptions.Singleline);

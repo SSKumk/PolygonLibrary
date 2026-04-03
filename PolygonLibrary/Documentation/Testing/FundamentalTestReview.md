@@ -138,6 +138,13 @@
   - Итог:
     - `9` passed
     - `0` failed
+- `2026-04-03`
+  - `ParamReader`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Toolkit.ParamReaderTests"`
+  - Итог:
+    - `5` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -257,6 +264,7 @@
 | `RandomLC` | `checked_clean` | `0` | `0` | Детерминированный контракт генератора и фабрик случайных массивов покрыт прямыми тестами. |
 | `Combinations` | `checked_clean` | `0` | `0` | Лексикографический контракт helper-класса `Combination` покрыт прямыми тестами. |
 | `Extensions` | `checked_clean` | `0` | `0` | Низкоуровневые helper-методы для коллекций покрыты прямыми тестами на корректных сценариях. |
+| `ParamReader` | `checked_clean` | `0` | `0` | Чтение параметрических файлов, sanitizing и геометрические helper-методы покрыты прямыми тестами. |
 
 ## AffineBasis
 
@@ -458,6 +466,20 @@
   - Для `EnumerableExtensions.ToSortedSet` дописан недостающий XML-комментарий.
   - Нормализация раннего возврата в `BinaryCyclicSearchByPredicate` исправлена и закреплена прямыми тестами для list- и array-веток.
   - Сигнатуры helper-методов, которые уже умели обрабатывать `null`, приведены к nullable-форме.
+
+## ParamReader
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - `GetSanitizedData` по текущему контракту удаляет whitespace глобально, включая пробелы внутри строковых литералов; это зафиксировано как наблюдаемая, а не идеализированная семантика.
+- Notes:
+  - Legacy-сценарий чтения параметров перенесён в новый слой.
+  - Дополнительно закреплены `PeakString`, `GetSanitizedData`, `ReadVector`, `ReadVectors`, `ReadHyperPlanes` и `ReadNumberLine`.
 
 ## GammaPair
 

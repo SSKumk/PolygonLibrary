@@ -369,3 +369,12 @@
 - Note:
   - закреплён безопасный helper-слой `Extensions`; подозрительный случай нормализации результата в `BinaryCyclicSearchByPredicate` вынесен как отдельная заметка, а не молча узаконен тестом
 
+### ParamReader
+
+- New tests:
+  - [`ParamReaderTests.cs`](../../Tests/DoubleGeometry/Toolkit/ParamReader/ParamReaderTests.cs) (legacy-сценарий чтения, `PeakString`, `GetSanitizedData`, геометрические объекты и `ReadNumberLine`)
+- Legacy:
+  - [`ParamReaderTest.cs`](../../Tests/ToolkitTests/ParamReaderTest.cs)
+- Note:
+  - legacy-набор перенесён без потери основного сценария, а поверх него добавлены прямые тесты на sanitizing и чтение геометрических объектов
+
