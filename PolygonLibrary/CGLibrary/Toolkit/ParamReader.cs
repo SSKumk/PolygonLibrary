@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using CGLibrary.Toolkit;
 
 namespace CGLibrary;
 
@@ -176,14 +175,7 @@ public partial class Geometry<TNum, TConv>
       // Reading and checking the name
       ReadNameAndPassEquivalence(name);
 
-      IEnumerable<T> objs = ReadArrayRow<T>(name, elemQnt);
-      IEnumerator<T> en   = objs.GetEnumerator();
-      T[]            res  = new T[elemQnt];
-      for (int i = 0; i < elemQnt; i++) {
-        en.MoveNext();
-        res[i] = en.Current;
-      }
-      en.Dispose();
+      T[] res = ReadArrayRow<T>(name, elemQnt).ToArray();
 
       state = State.ReadingTerminator;
       ReadTerminator(name, ";");
@@ -302,13 +294,10 @@ public partial class Geometry<TNum, TConv>
 
       for (int j = 0; j < rows; j++) {
         // Reading the coming row of the array
-        IEnumerable<T> objs = ReadArrayRow<T>(name, cols);
-        IEnumerator<T> en   = objs.GetEnumerator();
+        T[] objs = ReadArrayRow<T>(name, cols).ToArray();
         for (int i = 0; i < cols; i++) {
-          en.MoveNext();
-          res[j, i] = en.Current;
+          res[j, i] = objs[i];
         }
-        en.Dispose();
 
         // Passing the following symbol: comma or closing '}'
         state = State.ReadingTerminator;
