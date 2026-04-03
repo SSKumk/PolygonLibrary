@@ -444,6 +444,12 @@ public static class LinkedListExtensions {
 
 public static class EnumerableExtensions {
 
+  /// <summary>
+  /// Materializes an enumerable sequence as a sorted set.
+  /// </summary>
+  /// <typeparam name="T">The type of the sequence elements.</typeparam>
+  /// <param name="source">The source sequence.</param>
+  /// <returns>A sorted set built from the source sequence.</returns>
   public static SortedSet<T> ToSortedSet<T>(this IEnumerable<T> source) => new(source);
 
 }

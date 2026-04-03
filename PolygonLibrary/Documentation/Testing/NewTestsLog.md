@@ -359,3 +359,13 @@
 - Note:
   - закреплён zero-based текущий контракт helper-класса `Combination`, без включения debug-preconditions в runtime-слой
 
+### Extensions
+
+- New tests:
+  - [`ExtensionsListAndArrayTests.cs`](../../Tests/DoubleGeometry/Toolkit/Extensions/ExtensionsListAndArrayTests.cs) (поиск по предикату, циклический доступ и `Shuffle` для `List` и массивов)
+  - [`ExtensionsCollectionTests.cs`](../../Tests/DoubleGeometry/Toolkit/Extensions/ExtensionsCollectionTests.cs) (`Subsets`, `AllSubsets`, `LinkedList.CyclicShift` и `ToSortedSet`)
+- Legacy:
+  - отдельного прямого legacy-файла не было
+- Note:
+  - закреплён безопасный helper-слой `Extensions`; подозрительный случай нормализации результата в `BinaryCyclicSearchByPredicate` вынесен как отдельная заметка, а не молча узаконен тестом
+

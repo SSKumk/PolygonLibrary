@@ -131,6 +131,13 @@
   - Итог:
     - `3` passed
     - `0` failed
+- `2026-04-03`
+  - `Extensions`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Toolkit.Extensions"`
+  - Итог:
+    - `9` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -249,6 +256,7 @@
 | `SimplexMethod` | `checked_clean` | `0` | `0` | Базовый контракт двухфазного симплекса покрыт прямыми тестами; узкий прогон зелёный. |
 | `RandomLC` | `checked_clean` | `0` | `0` | Детерминированный контракт генератора и фабрик случайных массивов покрыт прямыми тестами. |
 | `Combinations` | `checked_clean` | `0` | `0` | Лексикографический контракт helper-класса `Combination` покрыт прямыми тестами. |
+| `Extensions` | `checked_clean` | `0` | `0` | Низкоуровневые helper-методы для коллекций покрыты прямыми тестами на корректных сценариях. |
 
 ## AffineBasis
 
@@ -434,6 +442,20 @@
 - Notes:
   - Покрыты стартовое состояние `0..k-1`, полный лексикографический обход и завершение на максимальной комбинации.
   - XML-комментарии дописаны и для private-состояния класса.
+
+## Extensions
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - В `BinaryCyclicSearchByPredicate` остаётся подозрительная ветка `pred(lower)`, которая возвращает ненормализованный `lower`; пока это только зафиксировано как заметка, без изменения кода.
+- Notes:
+  - Покрыты `BinarySearchByPredicate`, `BinaryCyclicSearchByPredicate`, `GetAtCyclic`, `Shuffle`, `Subsets`, `AllSubsets`, `LinkedList.CyclicShift` и `ToSortedSet`.
+  - Для `EnumerableExtensions.ToSortedSet` дописан недостающий XML-комментарий.
 
 ## GammaPair
 
