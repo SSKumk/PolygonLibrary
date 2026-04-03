@@ -387,7 +387,8 @@
 - Notes:
   - Закреплены все три публичных статуса результата: `Ok`, `NoSolution`, `Unlimited`.
   - Отдельно проверено восстановление исходных свободных переменных после внутреннего split `x = x+ - x-`.
-  - На bounded `2D`-примере закреплён активный набор ограничений через `ActiveInequalitiesID`.
+  - На bounded `2D`-примере закреплены и `BasisInequalitiesID`, и полный активный набор ограничений через `ActiveInequalitiesID`.
+  - На вырожденной вершине отдельно закреплено, что `BasisInequalitiesID` может быть строгим подмножеством `ActiveInequalitiesID`.
 
 ## GammaPair
 

@@ -82,4 +82,25 @@ public class SimplexMethodTests {
     });
   }
 
+  [Test]
+  public void Solve_DegenerateVertex_SeparatesBasisAndAllActiveInequalities() {
+    List<HyperPlane> hps =
+      [
+        new(V(1, 0), 0),     // x <= 0
+        new(V(0, 1), 0),     // y <= 0
+        new(V(-1, -1), 0)    // x + y >= 0
+      ];
+
+    SimplexMethod.SimplexMethodResult result = SimplexMethod.Solve(hps, _ => 1.0);
+
+    Assert.Multiple(() => {
+      Assert.That(result.Status, Is.EqualTo(SimplexMethod.SimplexMethodResultStatus.Ok));
+      Assert.That(result.Solution, Is.Not.Null);
+      AssertArraysAreEqual(new[] { 0.0, 0.0 }, result.Solution);
+      Assert.That(result.ActiveInequalitiesID.ToHashSet().SetEquals([0, 1, 2]), Is.True);
+      Assert.That(result.BasisInequalitiesID.All(result.ActiveInequalitiesID.Contains), Is.True);
+      Assert.That(result.BasisInequalitiesID.Count(), Is.LessThan(result.ActiveInequalitiesID.Count()));
+    });
+  }
+
 }

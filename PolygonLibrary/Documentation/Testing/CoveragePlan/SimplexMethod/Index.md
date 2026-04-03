@@ -7,7 +7,7 @@
 - статусы `Ok`, `NoSolution`, `Unlimited`;
 - корректность оптимального значения и решения;
 - свободные переменные через внутреннее разложение `x = x+ - x-`;
-- `ActiveInequalitiesID` для оптимального базисного решения.
+- `BasisInequalitiesID` и `ActiveInequalitiesID` для оптимального решения.
 
 ## Topics
 
@@ -19,7 +19,7 @@
 | Topic | Status | Notes |
 | --- | --- | --- |
 | Optimization Statuses | `x` | `Ok`, `NoSolution`, `Unlimited` и scenario с отрицательным optimum point покрыты прямыми тестами. |
-| Original Variables And Active Set | `x` | Проверяются восстановление исходных переменных после split и `ActiveInequalitiesID` на bounded примере. |
+| Original Variables And Active Set | `x` | Проверяются восстановление исходных переменных после split, полный active set и basis-vs-active distinction на вырожденной вершине. |
 
 ## Existing Test Sources
 

@@ -6,6 +6,15 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   // Ax <= b, A \in R^m x R^d; x \in R^d; b \in R^m
+  /// <summary>
+  /// Two-phase simplex method for linear programming problems of the form
+  /// <c>max c * x</c> subject to <c>A * x &lt;= b</c>.
+  /// </summary>
+  /// <remarks>
+  /// Original variables are treated as free variables via the internal split
+  /// <c>x = x+ - x-</c> with nonnegative parts. The public result is always mapped back
+  /// to the original variable space.
+  /// </remarks>
   public class SimplexMethod {
 
     private          TNum[,] _A;
@@ -15,13 +24,32 @@ public partial class Geometry<TNum, TConv>
     private readonly int     _dOrig;
     private readonly int     _m;
 
+    /// <summary>
+    /// Solves a linear programming problem given by a list of inequalities and an objective coefficient provider.
+    /// </summary>
+    /// <param name="HPs">The inequalities <c>A * x &lt;= b</c>.</param>
+    /// <param name="fc">Function returning coefficients of the objective vector <c>c</c>.</param>
+    /// <returns>The simplex result status, optimum value, optimum point and inequality sets.</returns>
     public static SimplexMethodResult Solve(List<HyperPlane> HPs, Func<int, TNum> fc) {
       return new SimplexMethod(HPs, fc).Solve();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SimplexMethod"/> class from a list of inequalities.
+    /// </summary>
+    /// <param name="HPs">The inequalities <c>A * x &lt;= b</c>.</param>
+    /// <param name="fc">Function returning coefficients of the objective vector <c>c</c>.</param>
     public SimplexMethod(List<HyperPlane> HPs, Func<int, TNum> fc) : this
       ((i, j) => HPs[i].Normal[j], HPs.Count, HPs.First().Normal.SpaceDim, i => HPs[i].ConstantTerm, fc) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SimplexMethod"/> class from coefficient generators.
+    /// </summary>
+    /// <param name="fA">Function returning coefficients of the matrix <c>A</c>.</param>
+    /// <param name="m">Number of inequalities.</param>
+    /// <param name="d">Dimension of the original variable space.</param>
+    /// <param name="fb">Function returning coefficients of the vector <c>b</c>.</param>
+    /// <param name="fc">Function returning coefficients of the objective vector <c>c</c>.</param>
     public SimplexMethod(Func<int, int, TNum> fA, int m, int d, Func<int, TNum> fb, Func<int, TNum> fc) {
       _m     = m;
       _dOrig = d;
@@ -46,8 +74,21 @@ public partial class Geometry<TNum, TConv>
       }
     }
 
+    /// <summary>
+    /// Solves the current linear programming problem.
+    /// </summary>
+    /// <returns>
+    /// The result status, optimum value, solution in the original variable space,
+    /// basis inequalities and all inequalities active at the optimum point.
+    /// </returns>
     public SimplexMethodResult Solve() {
-      (SimplexMethodResultStatus status, TNum value, TNum[]? x, IEnumerable<int> activeInequalities) = SimplexInAugmentForm();
+      (
+        SimplexMethodResultStatus status,
+        TNum value,
+        TNum[]? x,
+        IEnumerable<int> basisInequalities,
+        IEnumerable<int> activeInequalities
+      ) = SimplexInAugmentForm();
       if (status is not SimplexMethodResultStatus.Ok) {
         return new SimplexMethodResult(status);
       }
@@ -58,7 +99,7 @@ public partial class Geometry<TNum, TConv>
         res[i] = x![l] - x[l + 1];
       }
 
-      return new SimplexMethodResult(status, value, res, activeInequalities);
+      return new SimplexMethodResult(status, value, res, basisInequalities, activeInequalities);
     }
 
     // Ax = b, x >= 0
@@ -256,10 +297,11 @@ public partial class Geometry<TNum, TConv>
           );
       }
 
-      TNum[]           x         = CalcPoint(_b, _d - _m, B, id);
-      IEnumerable<int> activeInq = CalcActiveInequalities(N);
+      TNum[]           x                = CalcPoint(_b, _d - _m, B, id);
+      IEnumerable<int> basisInq         = CalcBasisInequalities(N);
+      IEnumerable<int> activeInqInPoint = CalcActiveInequalities(B, N, _b, id);
 
-      return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x, activeInq);
+      return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x, basisInq, activeInqInPoint);
     }
 
     private static TNum[] CalcPoint(TNum[] b, int k, HashSet<int> B, int[] id) {
@@ -273,14 +315,37 @@ public partial class Geometry<TNum, TConv>
       return x;
     }
 
-    private IEnumerable<int> CalcActiveInequalities(HashSet<int> N_optimal) {
-      // Принимаем множество небазисных переменных из оптимального решения
-      List<int> activeInq   = new List<int>();
+    private IEnumerable<int> CalcBasisInequalities(HashSet<int> N_optimal) {
+      List<int> basisInq    = new List<int>();
       int       slackVarInd = 2 * _dOrig; // Индекс начала столбцов слак-переменных
 
-      for (int i = 0; i < _m; i++, slackVarInd++) { // Итерируем по всем неравенствам (их _m штук)
-        if (N_optimal.Contains(slackVarInd)) {      // Проверяем, является ли слак-переменная небазисной в оптимальном решении
-          activeInq.Add(i);                         // Если да, то i-е неравенство активно
+      for (int i = 0; i < _m; i++, slackVarInd++) {
+        if (N_optimal.Contains(slackVarInd)) {
+          basisInq.Add(i);
+        }
+      }
+
+      return basisInq;
+    }
+
+    private IEnumerable<int> CalcActiveInequalities(HashSet<int> B_optimal, HashSet<int> N_optimal, TNum[] b, IList<int> id) {
+      List<int> activeInq   = new List<int>();
+      int       slackVarInd = 2 * _dOrig;
+
+      for (int i = 0; i < _m; i++, slackVarInd++) {
+        TNum slackValue;
+        if (N_optimal.Contains(slackVarInd)) {
+          slackValue = Tools.Zero;
+        }
+        else if (B_optimal.Contains(slackVarInd)) {
+          slackValue = b[id[slackVarInd]];
+        }
+        else {
+          continue;
+        }
+
+        if (Tools.EQ(slackValue)) {
+          activeInq.Add(i);
         }
       }
 
@@ -343,30 +408,69 @@ public partial class Geometry<TNum, TConv>
       B.Add(e);
     }
 
+    /// <summary>
+    /// Result of simplex optimization.
+    /// </summary>
     public class SimplexMethodResult {
 
+      /// <summary>
+      /// Gets the optimization status.
+      /// </summary>
       public SimplexMethodResultStatus Status { get; }
 
+      /// <summary>
+      /// Gets the optimum value of the objective function.
+      /// </summary>
       public TNum Value { get; }
 
+      /// <summary>
+      /// Gets the optimum point in the original variable space.
+      /// </summary>
       public TNum[]? Solution { get; } = null;
 
+      /// <summary>
+      /// Gets the indices of inequalities represented by nonbasic slack variables in the optimal tableau.
+      /// This is the basis-related subset of active inequalities.
+      /// </summary>
+      public IEnumerable<int> BasisInequalitiesID { get; } = Array.Empty<int>();
+
+      /// <summary>
+      /// Gets the indices of all inequalities active at the optimum point.
+      /// On degenerate vertices this set can be larger than <see cref="BasisInequalitiesID"/>.
+      /// </summary>
       public IEnumerable<int> ActiveInequalitiesID { get; } = Array.Empty<int>();
 
+      /// <summary>
+      /// Initializes a full simplex result.
+      /// </summary>
+      /// <param name="status">Optimization status.</param>
+      /// <param name="value">Optimum value.</param>
+      /// <param name="solution">Optimum point in the original variable space.</param>
+      /// <param name="basisInequalitiesId">Indices of basis-related inequalities.</param>
+      /// <param name="activeInequalitiesId">Indices of all active inequalities at the optimum point.</param>
       public SimplexMethodResult(
           SimplexMethodResultStatus status
         , TNum                      value
         , TNum[]?                   solution
+        , IEnumerable<int>          basisInequalitiesId
         , IEnumerable<int>          activeInequalitiesId
         ) {
         Status               = status;
         Value                = value;
         Solution             = solution;
+        BasisInequalitiesID  = basisInequalitiesId;
         ActiveInequalitiesID = activeInequalitiesId;
       }
 
+      /// <summary>
+      /// Initializes a simplex result that contains only a non-success status.
+      /// </summary>
+      /// <param name="status">Optimization status.</param>
       public SimplexMethodResult(SimplexMethodResultStatus status) { Status = status; }
 
+      /// <summary>
+      /// Deconstructs the result into status, optimum value, optimum point and all active inequalities.
+      /// </summary>
       public void Deconstruct(
           out SimplexMethodResultStatus status
         , out TNum                      value
@@ -379,8 +483,29 @@ public partial class Geometry<TNum, TConv>
         activeInequalities = ActiveInequalitiesID;
       }
 
+      /// <summary>
+      /// Deconstructs the result into status, optimum value, optimum point,
+      /// basis-related inequalities and all active inequalities.
+      /// </summary>
+      public void Deconstruct(
+          out SimplexMethodResultStatus status
+        , out TNum                      value
+        , out TNum[]?                   solution
+        , out IEnumerable<int>          basisInequalities
+        , out IEnumerable<int>          activeInequalities
+        ) {
+        status             = Status;
+        value              = Value;
+        solution           = Solution;
+        basisInequalities  = BasisInequalitiesID;
+        activeInequalities = ActiveInequalitiesID;
+      }
+
     }
 
+    /// <summary>
+    /// Optimization result status for the simplex method.
+    /// </summary>
     public enum SimplexMethodResultStatus { Ok, NoSolution, Unlimited }
 
   }
