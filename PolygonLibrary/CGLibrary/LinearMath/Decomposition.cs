@@ -5,6 +5,9 @@ public partial class Geometry<TNum, TConv>
   IFloatingPoint<TNum>, IFormattable
   where TConv : INumConvertor<TNum> {
 
+  /// <summary>
+  /// Matrix decomposition routines and incremental orthonormal-basis updates.
+  /// </summary>
   public class Decomposition {
 
     /// <summary>

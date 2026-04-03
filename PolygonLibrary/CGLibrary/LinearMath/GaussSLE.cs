@@ -37,6 +37,9 @@ public partial class Geometry<TNum, TConv>
     private readonly int[] _indARow;
     private readonly int[] _indACol;
     private readonly int[] _indB;
+    /// <summary>
+    /// Indicates whether the last call to <see cref="Solve"/> found a unique solution.
+    /// </summary>
     private          bool  isSuccess;
 #endregion
 

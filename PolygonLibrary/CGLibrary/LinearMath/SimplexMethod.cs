@@ -102,6 +102,13 @@ public partial class Geometry<TNum, TConv>
       return new SimplexMethodResult(status, value, res, basisInequalities, activeInequalities);
     }
 
+    /// <summary>
+    /// Solves the augmented nonnegative-variable form used internally by the two-phase simplex method.
+    /// </summary>
+    /// <returns>
+    /// Optimization status, optimum value in the augmented space, augmented-space point,
+    /// basis-related inequalities and all inequalities active at the optimum point.
+    /// </returns>
     // Ax = b, x >= 0
     private SimplexMethodResult SimplexInAugmentForm() {
       HashSet<int> N = new HashSet<int>();
@@ -304,6 +311,14 @@ public partial class Geometry<TNum, TConv>
       return new SimplexMethodResult(SimplexMethodResultStatus.Ok, v, x, basisInq, activeInqInPoint);
     }
 
+    /// <summary>
+    /// Restores the current point in the augmented nonnegative-variable space from the basis values.
+    /// </summary>
+    /// <param name="b">Current right-hand side values for basis rows.</param>
+    /// <param name="k">Number of non-slack variables in the augmented system.</param>
+    /// <param name="B">Current basis variable indices.</param>
+    /// <param name="id">Mapping from variable index to tableau row index.</param>
+    /// <returns>The point in the augmented variable space.</returns>
     private static TNum[] CalcPoint(TNum[] b, int k, HashSet<int> B, int[] id) {
       TNum[] x = Tools.InitTNumArray(k);
       for (int i = 0; i < k; i++) {
@@ -315,6 +330,11 @@ public partial class Geometry<TNum, TConv>
       return x;
     }
 
+    /// <summary>
+    /// Collects inequalities whose slack variables are nonbasic in the optimal tableau.
+    /// </summary>
+    /// <param name="N_optimal">Set of nonbasic variable indices at the optimum.</param>
+    /// <returns>Indices of basis-related active inequalities.</returns>
     private IEnumerable<int> CalcBasisInequalities(HashSet<int> N_optimal) {
       List<int> basisInq    = new List<int>();
       int       slackVarInd = 2 * _dOrig; // Индекс начала столбцов слак-переменных
@@ -328,6 +348,14 @@ public partial class Geometry<TNum, TConv>
       return basisInq;
     }
 
+    /// <summary>
+    /// Collects all inequalities active at the optimum point, including degenerate active constraints.
+    /// </summary>
+    /// <param name="B_optimal">Set of basis variable indices at the optimum.</param>
+    /// <param name="N_optimal">Set of nonbasic variable indices at the optimum.</param>
+    /// <param name="b">Current right-hand side values for basis rows.</param>
+    /// <param name="id">Mapping from variable index to tableau row index.</param>
+    /// <returns>Indices of all inequalities whose slack equals zero at the optimum point.</returns>
     private IEnumerable<int> CalcActiveInequalities(HashSet<int> B_optimal, HashSet<int> N_optimal, TNum[] b, IList<int> id) {
       List<int> activeInq   = new List<int>();
       int       slackVarInd = 2 * _dOrig;
@@ -352,6 +380,21 @@ public partial class Geometry<TNum, TConv>
       return activeInq;
     }
 
+    /// <summary>
+    /// Performs one simplex pivot step and updates the tableau data in place.
+    /// </summary>
+    /// <param name="N">Current set of nonbasic variable indices.</param>
+    /// <param name="B">Current set of basis variable indices.</param>
+    /// <param name="A">Current tableau matrix.</param>
+    /// <param name="b">Current right-hand side vector.</param>
+    /// <param name="c">Current reduced-cost row.</param>
+    /// <param name="ANew">Scratch matrix for the next tableau.</param>
+    /// <param name="bNew">Scratch right-hand side vector.</param>
+    /// <param name="cNew">Scratch reduced-cost row.</param>
+    /// <param name="id">Mapping from variable index to tableau row index.</param>
+    /// <param name="v">Current optimum value, updated by the pivot step.</param>
+    /// <param name="l">Leaving variable index.</param>
+    /// <param name="e">Entering variable index.</param>
     private static void Pivot(
         HashSet<int> N
       , HashSet<int> B
