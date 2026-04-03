@@ -267,6 +267,16 @@
     - зафиксирован именно текущий наивный контракт без редукции избыточности
     - заодно дописаны XML-комментарии в [`FourierMotzkin.cs`](../../CGLibrary/LinearMath/FourierMotzkin.cs)
 
+### SimplexMethod
+
+- New tests:
+  - [`SimplexMethodTests.cs`](../../Tests/DoubleGeometry/Algorithms/SimplexMethod/SimplexMethodTests.cs) (статусы `Ok`/`NoSolution`/`Unlimited`, восстановление свободных переменных и `ActiveInequalitiesID`)
+- Legacy:
+  - прямого legacy-набора не было
+  - Note:
+    - зафиксирован базовый контракт двухфазного симплекса для `Ax <= b` с внутренним split свободных переменных
+    - tie-breaking на дегенеративных задачах сознательно не закрепляется
+
 ### ConvexPolytop
 
 - New tests:

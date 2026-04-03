@@ -110,6 +110,13 @@
   - Итог:
     - `4` passed
     - `0` failed
+- `2026-04-03`
+  - `SimplexMethod`
+  - Команда:
+    - `dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.DoubleGeometry.Algorithms.SimplexMethodTests"`
+  - Итог:
+    - `4` passed
+    - `0` failed
 - `2026-04-02`
   - `ConvexPolytop`
   - Команда:
@@ -225,6 +232,7 @@
 | `Decomposition` | `checked_clean` | `0` | `0` | `QR`, `LQ` и обе full-update ветки покрыты прямыми тестами; узкий прогон зелёный. |
 | `GaussSLE` | `checked_clean` | `0` | `0` | Legacy-сценарии перенесены; instance API и все pivot choices покрыты прямыми тестами. |
 | `FourierMotzkin` | `checked_clean` | `0` | `0` | Наивный контракт исключения переменной покрыт прямыми тестами; узкий прогон зелёный. |
+| `SimplexMethod` | `checked_clean` | `0` | `0` | Базовый контракт двухфазного симплекса покрыт прямыми тестами; узкий прогон зелёный. |
 
 ## AffineBasis
 
@@ -365,6 +373,21 @@
 - Notes:
   - Покрыт `EliminateVariableNaive` на базовых сценариях: upper/lower/neutral, 1-based индекс устраняемой переменной и отбрасывание нулевого результирующего неравенства.
   - Заодно дописаны XML-комментарии к классу и его публичному API.
+
+## SimplexMethod
+
+- Status:
+  - `checked_clean`
+- Missing scenarios:
+  - Пока новых обязательных сценариев сверх coverage plan не выявлено.
+- Failing tests:
+  - Не обнаружены после локальной проверки.
+- Contract ambiguities:
+  - На дегенеративных bounded-задачах конкретный путь pivot-ов и конкретная оптимальная вершина не фиксируются как контракт.
+- Notes:
+  - Закреплены все три публичных статуса результата: `Ok`, `NoSolution`, `Unlimited`.
+  - Отдельно проверено восстановление исходных свободных переменных после внутреннего split `x = x+ - x-`.
+  - На bounded `2D`-примере закреплён активный набор ограничений через `ActiveInequalitiesID`.
 
 ## GammaPair
 
