@@ -245,7 +245,7 @@ public class GrahamScanTests
       , new Vector2D(-8.326672684688674E-17, 0.4332029766946106)
       };
 
-    List<Vector2D> res = Convexification.GrahamHull(S.Union(additionalPoints));
+    List<Vector2D> res = Convexification.GrahamHull(S.Concat(additionalPoints));
 
     Assert.That(new SortedSet<Vector2D>(res).SetEquals(S), "Sets are not equal!");
   }
