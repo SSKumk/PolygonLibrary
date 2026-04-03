@@ -452,10 +452,12 @@
 - Failing tests:
   - Не обнаружены после локальной проверки.
 - Contract ambiguities:
-  - В `BinaryCyclicSearchByPredicate` остаётся подозрительная ветка `pred(lower)`, которая возвращает ненормализованный `lower`; пока это только зафиксировано как заметка, без изменения кода.
+  - Пока новых неоднозначностей по активному helper-слою не выявлено.
 - Notes:
   - Покрыты `BinarySearchByPredicate`, `BinaryCyclicSearchByPredicate`, `GetAtCyclic`, `Shuffle`, `Subsets`, `AllSubsets`, `LinkedList.CyclicShift` и `ToSortedSet`.
   - Для `EnumerableExtensions.ToSortedSet` дописан недостающий XML-комментарий.
+  - Нормализация раннего возврата в `BinaryCyclicSearchByPredicate` исправлена и закреплена прямыми тестами для list- и array-веток.
+  - Сигнатуры helper-методов, которые уже умели обрабатывать `null`, приведены к nullable-форме.
 
 ## GammaPair
 

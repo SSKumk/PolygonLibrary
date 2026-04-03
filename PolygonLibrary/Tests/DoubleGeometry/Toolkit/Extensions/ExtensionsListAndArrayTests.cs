@@ -26,9 +26,11 @@ public class ExtensionsListAndArrayTests {
     List<int> values = new() { 7, 9, 1, 3, 5 };
 
     int wrappedIndex = values.BinaryCyclicSearchByPredicate(x => x >= 5, 2, 6);
+    int normalizedLowerIndex = values.BinaryCyclicSearchByPredicate(x => x >= 7, 5, 6);
 
     Assert.Multiple(() => {
       Assert.That(wrappedIndex, Is.EqualTo(4));
+      Assert.That(normalizedLowerIndex, Is.EqualTo(0));
       Assert.That(values.GetAtCyclic(-1), Is.EqualTo(5));
       Assert.That(values.GetAtCyclic(5), Is.EqualTo(7));
     });
@@ -39,6 +41,17 @@ public class ExtensionsListAndArrayTests {
     List<int> values = new();
 
     Assert.That(() => values.GetAtCyclic(0), Throws.TypeOf<ArgumentException>());
+  }
+
+  [Test]
+  public void ListBinaryHelpers_NullList_ReturnMinusOne() {
+    List<int>? values = null;
+
+    Assert.Multiple(() => {
+      Assert.That(values.BinarySearchByPredicate(x => x >= 0), Is.EqualTo(-1));
+      Assert.That(values.BinarySearchByPredicate(x => x >= 0, -5, 5), Is.EqualTo(-1));
+      Assert.That(values.BinaryCyclicSearchByPredicate(x => x >= 0, -5, 5), Is.EqualTo(-1));
+    });
   }
 
   [Test]
@@ -62,10 +75,23 @@ public class ExtensionsListAndArrayTests {
 
     int firstAtLeastFive = values.BinarySearchByPredicate(x => x >= 5);
     int wrappedIndex = cyclicValues.BinaryCyclicSearchByPredicate(x => x >= 5, 2, 6);
+    int normalizedLowerIndex = cyclicValues.BinaryCyclicSearchByPredicate(x => x >= 7, 5, 6);
 
     Assert.Multiple(() => {
       Assert.That(firstAtLeastFive, Is.EqualTo(2));
       Assert.That(wrappedIndex, Is.EqualTo(4));
+      Assert.That(normalizedLowerIndex, Is.EqualTo(0));
+    });
+  }
+
+  [Test]
+  public void ArrayBinaryHelpers_NullArray_ReturnMinusOne() {
+    int[]? values = null;
+
+    Assert.Multiple(() => {
+      Assert.That(values.BinarySearchByPredicate(x => x >= 0), Is.EqualTo(-1));
+      Assert.That(values.BinarySearchByPredicate(x => x >= 0, -5, 5), Is.EqualTo(-1));
+      Assert.That(values.BinaryCyclicSearchByPredicate(x => x >= 0, -5, 5), Is.EqualTo(-1));
     });
   }
 

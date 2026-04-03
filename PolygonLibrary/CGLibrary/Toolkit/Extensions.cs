@@ -20,7 +20,7 @@ public static class ListExtensions {
   /// obey the predicate and the complementary tail part of the list consists of
   /// elements that provide true to the predicate.
   /// </remarks>
-  public static int BinarySearchByPredicate<T>(this List<T> list, Predicate<T> pred) {
+  public static int BinarySearchByPredicate<T>(this List<T>? list, Predicate<T> pred) {
     if (list == null || list.Count == 0) {
       return -1;
     }
@@ -49,7 +49,7 @@ public static class ListExtensions {
   /// If <see cref="upper"/> is greater or equal to the size of the list, it is set to size - 1.
   /// If <see cref="lower"/> is greater than <see cref="upper"/>, the method returns -1.
   /// </remarks>
-  public static int BinarySearchByPredicate<T>(this List<T> list, Predicate<T> pred, int lower, int upper) {
+  public static int BinarySearchByPredicate<T>(this List<T>? list, Predicate<T> pred, int lower, int upper) {
     if (list == null) {
       return -1;
     }
@@ -123,7 +123,7 @@ public static class ListExtensions {
   /// in the final part of the list, which starts from <see cref="upper"/>, and cyclically
   /// passes to the initial part of the list, which finishes at <see cref="lower"/>.
   /// </remarks>
-  public static int BinaryCyclicSearchByPredicate<T>(this List<T> list, Predicate<T> pred, int lower, int upper) {
+  public static int BinaryCyclicSearchByPredicate<T>(this List<T>? list, Predicate<T> pred, int lower, int upper) {
     if (list == null) {
       return -1;
     }
@@ -133,7 +133,7 @@ public static class ListExtensions {
     }
 
     if (pred(list.GetAtCyclic(lower))) {
-      return lower;
+      return list.NormalizeIndex(lower);
     }
 
     lower = list.NormalizeIndex(lower);
@@ -164,7 +164,7 @@ public static class ListExtensions {
   /// <param name="i">The index</param>
   /// <exception cref="ArgumentNullException"></exception>
   /// <returns>The necessary element</returns>
-  public static T GetAtCyclic<T>(this List<T> list, int i) {
+  public static T GetAtCyclic<T>(this List<T>? list, int i) {
     ArgumentNullException.ThrowIfNull(list, "List.GetAtCyclic: a null list");
 
     if (list.Count == 0) {
@@ -266,7 +266,7 @@ public static class ArrayExtensions {
   /// obey the predicate and the complementary tail part of the array consists of
   /// elements that provide true to the predicate.
   /// </remarks>
-  public static int BinarySearchByPredicate<T>(this T[] array, Predicate<T> pred) {
+  public static int BinarySearchByPredicate<T>(this T[]? array, Predicate<T> pred) {
     if (array == null || array.Rank > 1 || array.Length == 0) {
       return -1;
     }
@@ -295,7 +295,7 @@ public static class ArrayExtensions {
   /// If <see cref="upper"/> is greater or equal to the size of the array, it is set to size - 1.
   /// If <see cref="lower"/> is greater than <see cref="upper"/>, the method returns -1.
   /// </remarks>
-  public static int BinarySearchByPredicate<T>(this T[] array, Predicate<T> pred, int lower, int upper) {
+  public static int BinarySearchByPredicate<T>(this T[]? array, Predicate<T> pred, int lower, int upper) {
     if (array == null || array.Rank > 1) {
       return -1;
     }
@@ -369,7 +369,7 @@ public static class ArrayExtensions {
   /// in the final part of the array, which starts from <see cref="upper"/>, and cyclically
   /// passes to the initial part of the array, which finishes at <see cref="lower"/>.
   /// </remarks>
-  public static int BinaryCyclicSearchByPredicate<T>(this T[] array, Predicate<T> pred, int lower, int upper) {
+  public static int BinaryCyclicSearchByPredicate<T>(this T[]? array, Predicate<T> pred, int lower, int upper) {
     if (array == null) {
       return -1;
     }
@@ -379,7 +379,7 @@ public static class ArrayExtensions {
     }
 
     if (pred(array.GetAtCyclic(lower))) {
-      return lower;
+      return array.NormalizeIndex(lower);
     }
 
     lower = array.NormalizeIndex(lower);
@@ -409,7 +409,7 @@ public static class ArrayExtensions {
   /// <param name="array">The array object</param>
   /// <param name="i">The index</param>
   /// <returns>The necessary element</returns>
-  private static T GetAtCyclic<T>(this IReadOnlyList<T> array, int i) {
+  private static T GetAtCyclic<T>(this IReadOnlyList<T>? array, int i) {
     ArgumentNullException.ThrowIfNull(array, "Array.GetAtCyclic: null array");
 
     if (array.Count == 0) {
@@ -432,7 +432,7 @@ public static class LinkedListExtensions {
   /// <example>2 4 1 5 --> 4 1 5 2</example>
   /// <param name="lst">The linked list to be cycled</param>
   /// <typeparam name="T">The type of elements in the linked list</typeparam>
-  public static void CyclicShift<T>(this LinkedList<T> lst) {
+  public static void CyclicShift<T>(this LinkedList<T>? lst) {
     ArgumentNullException.ThrowIfNull(lst, $"{lst} is null");
 
     T temp = lst.First();
