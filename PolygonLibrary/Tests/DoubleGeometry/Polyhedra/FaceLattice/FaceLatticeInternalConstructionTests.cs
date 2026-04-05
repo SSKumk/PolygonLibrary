@@ -70,7 +70,7 @@ public class FaceLatticeInternalConstructionTests {
 
     SubTwoDimensional triangle = new(new SortedSet<SubPoint> { s0, s1, s2 });
     SortedSet<BaseSubCP> level0 = new SortedSet<BaseSubCP>(triangle.Faces!.SelectMany(face => face.Faces!));
-    SortedSet<BaseSubCP> level1 = new SortedSet<BaseSubCP>(triangle.Faces);
+    SortedSet<BaseSubCP> level1 = new SortedSet<BaseSubCP>(triangle.Faces!);
     SortedSet<BaseSubCP> level2 = new SortedSet<BaseSubCP> { triangle };
 
     List<SortedSet<BaseSubCP>> levels =

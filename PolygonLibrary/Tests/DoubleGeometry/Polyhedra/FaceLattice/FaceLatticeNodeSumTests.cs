@@ -104,6 +104,7 @@ public class FaceLatticeNodeSumTests {
     FLNodeSum edgeB = new((p1 + p0) / 2.0, new AffineBasis([p1, p0]));
     FLNodeSum edgeC = new((p0 + p2) / 2.0, new AffineBasis([p0, p2]));
     FLNodeSum vertex = new(p0, new AffineBasis(p0));
+    int compareToNull = edgeA.CompareTo((FLNodeSum?)null);
 
     Assert.Multiple(() => {
       Assert.That(edgeA.Equals(edgeB), Is.True);
@@ -113,7 +114,7 @@ public class FaceLatticeNodeSumTests {
       Assert.That(vertex.CompareTo(edgeA), Is.LessThan(0));
       Assert.That(edgeA.CompareTo(vertex), Is.GreaterThan(0));
       Assert.That(edgeA.Equals(null), Is.False);
-      Assert.That(edgeA.CompareTo(null), Is.EqualTo(1));
+      Assert.That(compareToNull, Is.EqualTo(1));
     });
   }
 
