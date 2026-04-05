@@ -17,7 +17,7 @@
 - При разборе регрессий по статье в первую очередь нужно смотреть:
   - [`MinkowskiSumBasicTests.cs`](../../../../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumBasicTests.cs);
   - [`MinkowskiSumHighDimensionalTests.cs`](../../../../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumHighDimensionalTests.cs);
-  - legacy-набор [`MinkowskiSumTests.cs`](../../../../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), где уже отмечены article-based примеры.
+  - архивный legacy-набор [`MinkowskiSumTests.cs`](../../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), где исходно были отмечены article-based примеры.
 
 ## Замечания
 

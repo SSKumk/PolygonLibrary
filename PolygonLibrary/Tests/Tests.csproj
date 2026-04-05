@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Remove="Archive\**" />
         <Compile Remove="_Store\**" />
         <Compile Remove="BentlyOttmannTests.cs" />
         <Compile Remove="Double-Tests\ConvexPolygonCutTests.cs" />

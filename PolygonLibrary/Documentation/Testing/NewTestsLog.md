@@ -291,7 +291,7 @@
   - [`ConvexPolytopTransformsAndOverridesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs) (преобразования `Shift`/`Rotate`/`LiftUp`/`Scale`/`SectionByHyperPlane` и overrides)
   - [`ConvexPolytopPolarTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs) (базовые `Polar`-сценарии для `Vrep`/`Hrep`, двойственное преобразование и `Polar(out shift)`)
 - Legacy:
-  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
+  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
   - Note:
     - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
     - позже в набор добавлены отдельные прямые сценарии на все вспомогательные шары и эллипсоиды, базовый слой `Polar`, эпиграфы расстояния, редукцию `Hrep`, а также проверки `InnerPoint`, `NearestPoint`, `Shift` / `Rotate` и `Scale`
@@ -316,11 +316,13 @@
 - New tests:
   - [`MinkowskiSumTestData.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumTestData.cs) (короткие 2D-данные для точек, отрезков и квадратов)
   - [`MinkowskiSumBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumBasicTests.cs) (`AlgSumPoints` и характерные 2D-сценарии `BySandipDas`/`ByConvexHull`)
-  - [`MinkowskiSumHighDimensionalTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumHighDimensionalTests.cs) (3D-контроль и `onlyHrep`-ветка `BySandipDas`)
+  - [`MinkowskiSumHighDimensionalTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumHighDimensionalTests.cs) (3D-контроль, 3D-проверка `AlgSumPoints` и `onlyHrep`-ветка `BySandipDas`)
+  - [`MinkowskiSumRegressionTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumRegressionTests.cs) (`Simplex3D`, `Cube4D`, article-based 3D-пример и коммутативность)
+  - [`MinkowskiSumStressTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiSum/MinkowskiSumStressTests.cs) (representative `5D` stress-кейсы, affine-invariance и коммутативность)
 - Legacy:
-  - [`MinkowskiSumTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
+  - [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
 - Note:
-  - тяжёлые 4D/5D и article-based regression-сценарии оставлены вне активного слоя; legacy-файл исключён из активной компиляции
+  - в отдельный `Stress`-слой уже вынесены representative `5D` проверки; самые массовые combinatorial-переборы и остальной тяжёлый legacy-хвост всё ещё остаются вне активного слоя
 
 ### MinkowskiDiff
 
