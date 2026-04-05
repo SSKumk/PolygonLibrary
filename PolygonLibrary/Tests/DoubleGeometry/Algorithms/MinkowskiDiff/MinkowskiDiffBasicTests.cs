@@ -4,7 +4,7 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 namespace Tests.DoubleGeometry.Algorithms;
 
 [TestFixture]
-public class MinkowskiDiffCurrentTests {
+public class MinkowskiDiffBasicTests {
 
   [Test]
   public void FindExtrInCPOnVectorNaive_ReturnsVertexWithMaximumDotProduct() {

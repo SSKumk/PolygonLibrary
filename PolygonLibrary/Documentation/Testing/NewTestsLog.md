@@ -327,11 +327,12 @@
 ### MinkowskiDiff
 
 - New tests:
-  - [`MinkowskiDiffCurrentTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffCurrentTests.cs) (helper-ы `FindExtrInCPOnVector_Naive` и `doSubtract`, а также текущие прямые случаи `Naive`/`Geometric`)
+  - [`MinkowskiDiffBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffBasicTests.cs) (helper-ы `FindExtrInCPOnVector_Naive` и `doSubtract`, а также базовые случаи `cube - segment` для `Naive`/`Geometric`)
+  - [`MinkowskiDiffRegressionTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs) (`Sphere - segment` как regression-agreement слой для `Naive`/`Geometric`)
 - Legacy:
   - [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
 - Note:
-  - сохранён смысл старого `cube - segment` набора, но сценарии сделаны компактными и синхронно проверяют обе реализации; legacy-файл исключён из активной компиляции
+  - сохранён смысл старого `cube - segment` набора и перенесён `sphere`-сценарий; `cyclic` пока не включён в зелёный active-layer, потому что в `double` вскрывает реальную проблему `Geometric`
 
 ### CauchyMatrix
 

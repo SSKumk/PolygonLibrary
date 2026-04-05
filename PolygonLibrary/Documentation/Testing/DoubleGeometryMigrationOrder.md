@@ -41,7 +41,7 @@
 | 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
 | 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `Double-Tests/GW_hDTests/GW_Tests.cs` исключён из компиляции. |
 | 21 | `MinkowskiSum` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiSum`, legacy `MinkowskiSumTests.cs` исключён из компиляции. |
-| 22 | `MinkowskiDiff` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff`, legacy `MinkowskiDiffTests.cs` исключён из компиляции. |
+| 22 | `MinkowskiDiff` | `in_progress` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff` базовым и regression-слоем; `cyclic` остаётся открытым алгоритмическим вопросом для `Geometric`. |
 | 23 | `CauchyMatrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/CauchyMatrix` прямым математически контролируемым набором. |
 
 ## Workflow Reminder
