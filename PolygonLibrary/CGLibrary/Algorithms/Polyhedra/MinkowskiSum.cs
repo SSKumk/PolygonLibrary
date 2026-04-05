@@ -27,7 +27,7 @@ public partial class Geometry<TNum, TConv>
         }
       }
 
-      Debug.Assert(AB.SetEquals(ab), $"AlgSumEatSomePoints!");
+      Debug.Assert(AB.SetEquals(new SortedSet<Vector>(ab)), $"AlgSumEatSomePoints!");
 #endif
       return AB;
     }

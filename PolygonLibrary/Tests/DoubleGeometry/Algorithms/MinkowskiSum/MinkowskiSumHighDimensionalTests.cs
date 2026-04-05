@@ -7,6 +7,22 @@ namespace Tests.DoubleGeometry.Algorithms;
 public class MinkowskiSumHighDimensionalTests {
 
   [Test]
+  public void AlgSumPoints_Cube3D_DeduplicatesRepeatedPairwiseSumsWithoutLosingVertices() {
+    ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
+
+    SortedSet<Vector> sum = MinkowskiSum.AlgSumPoints(cube.Vrep, cube.Vrep);
+    SortedSet<Vector> expected = new SortedSet<Vector>();
+    foreach (Vector a in cube.Vrep) {
+      foreach (Vector b in cube.Vrep) {
+        expected.Add(a + b);
+      }
+    }
+
+    Assert.That(sum.SetEquals(expected), Is.True);
+    Assert.That(sum.Count, Is.EqualTo(27));
+  }
+
+  [Test]
   public void BySandipDas_Cube3DWithItself_EqualsConvexHullResult() {
     ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
 
