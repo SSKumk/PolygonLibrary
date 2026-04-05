@@ -409,3 +409,12 @@
 - Note:
   - legacy-смысл перенесён в компактный toolkit-набор; отдельным regression-сценарием закреплено раннее materialize-ение обычного ленивого `IEnumerable` в `GrahamHull`
 
+
+### TestInfrastructure
+
+- New tests:
+  - [`PolytopesGeneratorsTests.cs`](../../Tests/DoubleGeometry/TestInfrastructure/PolytopesGeneratorsTests.cs) (compact sanity checks for `Cube01`, `Simplex`, `SimplexRND`, `CyclicPolytop`, `Sphere_list`, `MakePointsOnSphere_3D`)
+- Legacy:
+  - отдельного прямого legacy-набора не было; эти helper'ы использовались через `GW_Tests`, `Minkowski*` и speed-сценарии
+- Note:
+  - это sanity-слой для общего генераторного helper-блока, а не полный domain-level coverage

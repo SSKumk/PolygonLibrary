@@ -73,8 +73,4 @@
         </Reference>
     </ItemGroup>
     
-    <ItemGroup>
-      <Folder Include="ToolsForTests\ConvexPolytopes\" />
-    </ItemGroup>
-
 </Project>
