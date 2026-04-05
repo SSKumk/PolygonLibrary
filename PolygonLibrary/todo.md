@@ -19,6 +19,19 @@ TODO file
 
 1. [ ] LinearBasis: В одну операцию! MultiplyTransposeBySelf()
 
+1. [ ] High priority. SimplexMethod / ConvexPolytop.FindInitialVertex_Simplex: гарантировать, что симплекс для H2V-восстановления возвращает именно вершину, а не произвольную точку оптимального лица.
+Пример, который сейчас ломается:
+- после вычитания точки `p = (0.1, 0.2, 0.3)` из тетраэдра `conv{0, e1, e2, e3}` получается система
+  - `x >= -0.1`
+  - `y >= -0.2`
+  - `z >= -0.3`
+  - `x + y + z <= 0.4`
+- `SimplexMethod.Solve(HPs, _ => 1)` возвращает допустимую оптимальную точку `(0.4, 0, 0)`, то есть точку на грани `x + y + z = 0.4`, а не вершину;
+- затем `FindInitialVertex_Simplex` пытается восстановить вершину по `BasisInequalitiesID`, получает только одну исходную грань и падает на `GaussSLE`.
+Что нужно обеспечить:
+- либо сам `SimplexMethod` должен возвращать vertex-solution;
+- либо должен появиться отдельный корректный vertex-mode, который используется в `ConvexPolytop.HrepToVrep_Geometric`.
+
 1. [ ] AffineBasis / LinearBasis: Полностью развести immutable- и mutable-сущности.
 Средний приоритет.
 Что нужно продумать и сделать:

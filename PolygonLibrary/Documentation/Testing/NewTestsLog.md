@@ -291,7 +291,7 @@
   - [`ConvexPolytopTransformsAndOverridesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs) (преобразования `Shift`/`Rotate`/`LiftUp`/`Scale`/`SectionByHyperPlane` и overrides)
   - [`ConvexPolytopPolarTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs) (базовые `Polar`-сценарии для `Vrep`/`Hrep`, двойственное преобразование и `Polar(out shift)`)
 - Legacy:
-  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/TestInfrastructure/TestsPolytopes.cs)
+  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Archive/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/TestInfrastructure/TestsPolytopes.cs)
   - Note:
     - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
     - позже в набор добавлены отдельные прямые сценарии на все вспомогательные шары и эллипсоиды, базовый слой `Polar`, эпиграфы расстояния, редукцию `Hrep`, а также проверки `InnerPoint`, `NearestPoint`, `Shift` / `Rotate` и `Scale`
@@ -307,7 +307,7 @@
   - [`GiftWrappingHullExtractionTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingHullExtractionTests.cs) (`WrapVRep` для квадрата, тетраэдра и куба с сохранением legacy-сообщения про множество вершин)
   - [`GiftWrappingFaceLatticeTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingFaceLatticeTests.cs) (`WrapFaceLattice` и `ConstructFL` для типовых 2D/3D оболочек)
 - Legacy:
-  - [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs)
+  - [`GW_Tests.cs`](../../Tests/Archive/Double-Tests/GW_hDTests/GW_Tests.cs)
 - Note:
   - прямой слой на алгоритм вынесен отдельно, а тяжёлый randomized/regression legacy-набор исключён из активной компиляции как исторический
 
@@ -327,12 +327,13 @@
 ### MinkowskiDiff
 
 - New tests:
-  - [`MinkowskiDiffBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffBasicTests.cs) (helper-ы `FindExtrInCPOnVector_Naive` и `doSubtract`, а также базовые случаи `cube - segment` для `Naive`/`Geometric`)
-  - [`MinkowskiDiffRegressionTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs) (`Sphere - segment` как regression-agreement слой для `Naive`/`Geometric`)
+  - [`MinkowskiDiffBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffBasicTests.cs) (helper-ы `FindExtrInCPOnVector_Naive` и `doSubtract`, а также точные `2D`/`3D` базовые случаи на `point` и `segment` для `Naive`/`Geometric`)
+  - [`MinkowskiDiffRegressionTests.cs`](../../Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs) (неосевые `2D`/`3D` случаи, `Sphere - segment` как agreement-слой и красные TODO-signal тесты на `tetrahedron - point` / `octahedron - point`)
+  - [`MinkowskiDiffCyclicResearchTests.cs`](../../Tests/DoubleGeometry/Research/MinkowskiDiff/MinkowskiDiffCyclicResearchTests.cs) (research-слой для `cyclic`, фиксирующий область применимости и численные срывы `Geometric` в `double`)
 - Legacy:
-  - [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+  - [`MinkowskiDiffTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
 - Note:
-  - сохранён смысл старого `cube - segment` набора и перенесён `sphere`-сценарий; `cyclic` пока не включён в зелёный active-layer, потому что в `double` вскрывает реальную проблему `Geometric`
+  - рабочий `2D`/`3D` слой перенесён в активные `Basic` и `Regression`; `cyclic` вынесен в research, а simplex-bug на `tetrahedron - point` и `octahedron - point` оставлен красными signal-тестами, чтобы не потерять задачу
 
 ### CauchyMatrix
 

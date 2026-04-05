@@ -76,4 +76,100 @@ public class MinkowskiDiffBasicTests {
     });
   }
 
+  [Test]
+  public void Naive_And_Geometric_ForSquareMinusPoint_ShiftSquareByNegativePoint() {
+    ConvexPolytop square = ConvexPolytop.Cube01_VRep(2);
+    Vector pointVector = new(new double[] { 0.25, 0.75 });
+    ConvexPolytop point = ConvexPolytop.CreateFromPoints([pointVector]);
+    ConvexPolytop expected = square.Shift(-pointVector);
+
+    ConvexPolytop? naive = MinkowskiDiff.Naive(square, point);
+    ConvexPolytop? geometric = MinkowskiDiff.Geometric(square, point);
+
+    Assert.Multiple(() => {
+      Assert.That(naive, Is.Not.Null);
+      Assert.That(geometric, Is.Not.Null);
+      Assert.That(naive, Is.EqualTo(expected));
+      Assert.That(geometric, Is.EqualTo(expected));
+    });
+  }
+
+  [Test]
+  public void Naive_And_Geometric_ForSquareMinusShortHorizontalSegment_ReturnExpectedRectangle() {
+    ConvexPolytop square = ConvexPolytop.Cube01_VRep(2);
+    ConvexPolytop segment = ConvexPolytop.CreateFromPoints([
+      Vector.Zero(2),
+      new Vector(new double[] { 0.5, 0.0 })
+    ]);
+    ConvexPolytop expected = ConvexPolytop.RectAxisParallel(
+      Vector.Zero(2),
+      new Vector(new double[] { 0.5, 1.0 })
+    );
+
+    ConvexPolytop? naive = MinkowskiDiff.Naive(square, segment);
+    ConvexPolytop? geometric = MinkowskiDiff.Geometric(square, segment);
+
+    Assert.Multiple(() => {
+      Assert.That(naive, Is.Not.Null);
+      Assert.That(geometric, Is.Not.Null);
+      Assert.That(naive, Is.EqualTo(expected));
+      Assert.That(geometric, Is.EqualTo(expected));
+    });
+  }
+
+  [Test]
+  public void Naive_And_Geometric_ForSquareMinusUnitHorizontalSegment_ReturnNullByCurrentContract() {
+    ConvexPolytop square = ConvexPolytop.Cube01_VRep(2);
+    ConvexPolytop segment = ConvexPolytop.CreateFromPoints([
+      Vector.Zero(2),
+      new Vector(new double[] { 1.0, 0.0 })
+    ]);
+
+    Assert.Multiple(() => {
+      Assert.That(MinkowskiDiff.Naive(square, segment), Is.Null);
+      Assert.That(MinkowskiDiff.Geometric(square, segment), Is.Null);
+    });
+  }
+
+  [Test]
+  public void Naive_And_Geometric_ForCubeMinusPoint_ShiftCubeByNegativePoint() {
+    ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
+    Vector pointVector = new(new double[] { 0.25, 0.5, 0.75 });
+    ConvexPolytop point = ConvexPolytop.CreateFromPoints([pointVector]);
+    ConvexPolytop expected = cube.Shift(-pointVector);
+
+    ConvexPolytop? naive = MinkowskiDiff.Naive(cube, point);
+    ConvexPolytop? geometric = MinkowskiDiff.Geometric(cube, point);
+
+    Assert.Multiple(() => {
+      Assert.That(naive, Is.Not.Null);
+      Assert.That(geometric, Is.Not.Null);
+      Assert.That(naive, Is.EqualTo(expected));
+      Assert.That(geometric, Is.EqualTo(expected));
+    });
+  }
+
+  [Test]
+  public void Naive_And_Geometric_ForCubeMinusShortAxisSegment_ReturnExpectedBox() {
+    ConvexPolytop cube = ConvexPolytop.Cube01_VRep(3);
+    ConvexPolytop segment = ConvexPolytop.CreateFromPoints([
+      Vector.Zero(3),
+      new Vector(new double[] { 0.0, 0.0, 0.5 })
+    ]);
+    ConvexPolytop expected = ConvexPolytop.RectAxisParallel(
+      Vector.Zero(3),
+      new Vector(new double[] { 1.0, 1.0, 0.5 })
+    );
+
+    ConvexPolytop? naive = MinkowskiDiff.Naive(cube, segment);
+    ConvexPolytop? geometric = MinkowskiDiff.Geometric(cube, segment);
+
+    Assert.Multiple(() => {
+      Assert.That(naive, Is.Not.Null);
+      Assert.That(geometric, Is.Not.Null);
+      Assert.That(naive, Is.EqualTo(expected));
+      Assert.That(geometric, Is.EqualTo(expected));
+    });
+  }
+
 }

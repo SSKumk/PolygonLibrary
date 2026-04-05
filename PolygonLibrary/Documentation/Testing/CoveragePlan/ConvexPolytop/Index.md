@@ -46,9 +46,9 @@
 
 ## Existing Test Sources
 
-- [`GW_Tests.cs`](../../../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs)
+- [`GW_Tests.cs`](../../../../Tests/Archive/Double-Tests/GW_hDTests/GW_Tests.cs)
 - [`MinkowskiSumTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
-- [`MinkowskiDiffTests.cs`](../../../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
 - [`TestsPolytopes.cs`](../../../../Tests/TestInfrastructure/TestsPolytopes.cs)
 
 ## Notes

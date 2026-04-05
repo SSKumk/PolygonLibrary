@@ -39,9 +39,9 @@
 | 17 | `FaceLattice` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/FaceLattice`, legacy `SharedTests/FaceLatticeTests.cs` исключён из компиляции. |
 | 18 | `ConvexPolytop` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/ConvexPolytop` прямым unit-like набором; legacy-источники остаются у алгоритмических классов. |
 | 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
-| 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `Double-Tests/GW_hDTests/GW_Tests.cs` исключён из компиляции. |
+| 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `Archive/Double-Tests/GW_hDTests/GW_Tests.cs` больше не участвует в активной компиляции. |
 | 21 | `MinkowskiSum` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiSum`, legacy `MinkowskiSumTests.cs` исключён из компиляции. |
-| 22 | `MinkowskiDiff` | `in_progress` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff` базовым и regression-слоем; `cyclic` остаётся открытым алгоритмическим вопросом для `Geometric`. |
+| 22 | `MinkowskiDiff` | `in_progress` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff` базовым и regression-слоем; `cyclic` вынесен в research, а `tetrahedron - point` / `octahedron - point` оставлены красными signal-тестами на simplex-bug. |
 | 23 | `CauchyMatrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/CauchyMatrix` прямым математически контролируемым набором. |
 
 ## Workflow Reminder

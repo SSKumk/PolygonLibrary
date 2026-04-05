@@ -7,28 +7,32 @@
 В активный слой текущего этапа входят:
 
 - helper-контракты `FindExtrInCPOnVector_Naive` и `doSubtract`;
-- `Naive` и `Geometric` на representative-сценариях `cube - segment`;
-- agreement `Naive == Geometric` на `sphere`.
+- точные `2D` и `3D` сценарии на вычитании точки и короткого осевого отрезка;
+- неосевые `2D` и `3D` regression-примеры;
+- agreement `Naive == Geometric` на `sphere`;
+- красные TODO-signal сценарии `tetrahedron - point` и `octahedron - point`, фиксирующие баг vertex-selection в simplex-пути `HrepToVrep_Geometric`.
 
 ## Topics
 
 - [`BasicCases.md`](BasicCases.md) - helper-ы и базовый `cube - segment`.
-- [`RegressionCases.md`](RegressionCases.md) - нетривиальные `sphere` и `cyclic`.
+- [`RegressionCases.md`](RegressionCases.md) - нетривиальные `2D`/`3D` случаи, signal-тесты на simplex-bug и заметки про `cyclic`.
 
 ## Current Coverage Summary
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Basic Cases | `x` | Зафиксированы helper-контракты и базовая геометрия `cube - segment`. |
-| Regression Cases | `x` | Перенесён `sphere`; `cyclic` вынесен в открытый алгоритмический вопрос. |
+| Basic Cases | `x` | Зафиксированы helper-контракты и точная базовая геометрия `2D`/`3D`. |
+| Regression Cases | `in_progress` | Перенесены неосевые и smooth `2D`/`3D` случаи; `cyclic` вынесен в research, а simplex-bug зафиксирован красными signal-тестами. |
 
 ## Existing Test Sources
 
-- [`MinkowskiDiffTests.cs`](../../../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
-- [`MinkowskiDiffTests.cs`](../../../../Tests/DoubleDouble-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/DoubleDouble-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- [`MinkowskiDiffCyclicResearchTests.cs`](../../../../Tests/DoubleGeometry/Research/MinkowskiDiff/MinkowskiDiffCyclicResearchTests.cs)
 
 ## Notes
 
 - Старый direct-набор на `MinkowskiDiff` был маленьким; новая структура сохраняет его смысл и отдельно фиксирует agreement `Naive` и `Geometric`.
 - `Cyclic` пока не входит в активный зелёный слой: в `double` он раскрывает реальную проблему `Geometric`, а не просто недостающий тест.
+- `tetrahedron - point` и `octahedron - point` теперь оставлены в активном слое как красные TODO-signal тесты, чтобы не потерять simplex-bug в `FindInitialVertex_Simplex`.
 - Отдельный `Stress` сейчас не требуется: heavy generator-based или combinatorial слоя в legacy нет.
