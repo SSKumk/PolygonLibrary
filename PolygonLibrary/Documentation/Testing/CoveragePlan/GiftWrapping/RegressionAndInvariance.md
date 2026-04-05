@@ -37,6 +37,7 @@
 | GW-REG-022 | x | `Cube4D` с inner points на `1D/2D/3D/4D`-уровнях сохраняет оболочку. | [`GiftWrappingRegressionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingRegressionTests.cs#L203) |
 | GW-REG-023 | x | Hand-crafted `Simplex4D` с точками на ребре и соседних `2D`-гранях сохраняет множество вершин. | [`GiftWrappingRegressionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingRegressionTests.cs#L210) |
 | GW-REG-024 | x | Hand-crafted `Simplex4D` с inner points на `1D` сохраняет множество вершин и после shuffle. | [`GiftWrappingRegressionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingRegressionTests.cs#L239) |
+| GW-REG-025 | x | Косой `3D`-параллелепипед инвариантен к перестановке входного swarm. | [`GiftWrappingRegressionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingRegressionTests.cs#L275) |
 
 ## Existing Tests
 

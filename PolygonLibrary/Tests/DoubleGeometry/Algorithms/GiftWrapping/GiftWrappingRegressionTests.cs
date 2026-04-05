@@ -288,4 +288,26 @@ public class GiftWrappingRegressionTests {
     AssertWrappedVerticesEqual(shuffled, simplex, "Simplex4D_InnerPointsIn_1D: The set of shuffled vertices must be equal.");
   }
 
+  [Test]
+  public void CreateFromPoints_ForSkewParallelepiped3D_IsShuffleInvariant() {
+    Vector origin = new(3);
+    Vector v1 = new(new double[] { 0.5, 1, 1 });
+    Vector v2 = new(new double[] { 1, 0.5, 1 });
+    Vector v3 = new(new double[] { 1, 1, 0.5 });
+
+    List<Vector> swarm =
+      [
+        origin,
+        origin + v1,
+        origin + v2,
+        origin + v3,
+        origin + v1 + v2,
+        origin + v1 + v3,
+        origin + v2 + v3,
+        origin + v1 + v2 + v3
+      ];
+
+    AssertShuffleInvariant(swarm, "SomeParallelogram");
+  }
+
 }
