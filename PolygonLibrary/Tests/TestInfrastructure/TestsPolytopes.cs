@@ -2,7 +2,7 @@
 using System.Numerics;
 using CGLibrary;
 
-namespace Tests.ToolsTests;
+namespace Tests.TestInfrastructure;
 
 public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,

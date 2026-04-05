@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using NUnit.Framework;
-using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
-using static Tests.ToolsTests.TestsBase<double, Tests.DConvertor>;
+using static Tests.TestInfrastructure.TestsPolytopes<double, Tests.DConvertor>;
+using static Tests.TestInfrastructure.TestsBase<double, Tests.DConvertor>;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
 namespace Tests.Double_Tests.Minkowski_Tests;

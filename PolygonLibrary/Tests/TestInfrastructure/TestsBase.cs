@@ -2,7 +2,7 @@
 using System.Numerics;
 using CGLibrary;
 
-namespace Tests.ToolsTests;
+namespace Tests.TestInfrastructure;
 
 public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
@@ -95,7 +95,7 @@ public class TestsBase<TNum, TConv> : Geometry<TNum, TConv>
     Debug.Assert
       (
        S.First().SpaceDim == rotation.Rows
-     , "ToolsForTests.Rotate: the dimension of points must be equal to the count of rotation rows."
+     , "TestInfrastructure.Rotate: the dimension of points must be equal to the count of rotation rows."
       );
 
     IEnumerable<Vector> rotated = S.Select(s => Matrix.MultRowVectorByMatrix(s, rotation));

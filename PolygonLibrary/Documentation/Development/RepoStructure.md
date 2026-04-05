@@ -22,7 +22,7 @@
 
 - `DoubleGeometry/` - новый основной слой тестов для `double`.
 - `SharedTests/` - legacy-слой, который постепенно вытесняется миграцией.
-- `ToolsForTests/` - генераторы тестовых данных и общие хелперы.
+- `TestInfrastructure/` - общий слой тестовой инфраструктуры, генераторов и affine-helper'ов для regression/stress.
 
 ## Documentation
 

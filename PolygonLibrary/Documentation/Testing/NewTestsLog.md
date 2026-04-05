@@ -291,7 +291,7 @@
   - [`ConvexPolytopTransformsAndOverridesTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopTransformsAndOverridesTests.cs) (преобразования `Shift`/`Rotate`/`LiftUp`/`Scale`/`SectionByHyperPlane` и overrides)
   - [`ConvexPolytopPolarTests.cs`](../../Tests/DoubleGeometry/Polyhedra/ConvexPolytop/ConvexPolytopPolarTests.cs) (базовые `Polar`-сценарии для `Vrep`/`Hrep`, двойственное преобразование и `Polar(out shift)`)
 - Legacy:
-  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/ToolsForTests/TestsPolytopes.cs)
+  - отдельного прямого legacy-файла не было; релевантные сценарии были размазаны по [`GW_Tests.cs`](../../Tests/Double-Tests/GW_hDTests/GW_Tests.cs), [`MinkowskiSumTests.cs`](../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs), [`MinkowskiDiffTests.cs`](../../Tests/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs) и [`TestsPolytopes.cs`](../../Tests/TestInfrastructure/TestsPolytopes.cs)
   - Note:
     - в прямой слой вынесены именно контракты самого `ConvexPolytop`; тяжёлые алгоритмические и IO-ветки оставлены за пределами активного слоя и будут разбираться следующими классами backlog
     - позже в набор добавлены отдельные прямые сценарии на все вспомогательные шары и эллипсоиды, базовый слой `Polar`, эпиграфы расстояния, редукцию `Hrep`, а также проверки `InnerPoint`, `NearestPoint`, `Shift` / `Rotate` и `Scale`

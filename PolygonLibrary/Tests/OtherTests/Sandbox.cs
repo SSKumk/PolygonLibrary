@@ -2,8 +2,8 @@
 using System.Globalization;
 using CGLibrary;
 using NUnit.Framework;
-using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.TestInfrastructure.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+using static Tests.TestInfrastructure.TestsBase<DoubleDouble.ddouble, Tests.DDConvertor>;
 using System.IO;
 using DoubleDouble;
 // using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;

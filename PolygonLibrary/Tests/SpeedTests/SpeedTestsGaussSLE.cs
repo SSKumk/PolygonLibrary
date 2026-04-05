@@ -5,7 +5,7 @@ using NUnit.Framework;
 using DoubleDouble;
 using static CGLibrary.Geometry<DoubleDouble.ddouble, Tests.DDConvertor>;
 using NUnit.Framework.Internal;
-using Tests.ToolsTests;
+using Tests.TestInfrastructure;
 
 namespace Tests.SpeedTests;
 

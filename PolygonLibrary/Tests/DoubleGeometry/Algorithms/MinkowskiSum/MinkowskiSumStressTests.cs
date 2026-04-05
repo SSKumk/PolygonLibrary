@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.Linq;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
+using static Tests.TestInfrastructure.TestsPolytopes<double, Tests.DConvertor>;
 
 namespace Tests.DoubleGeometry.Algorithms;
 
@@ -37,8 +37,8 @@ public class MinkowskiSumStressTests {
     ConvexPolytop direct = MinkowskiSum.BySandipDas(cube, simplex);
     ConvexPolytop reverse = MinkowskiSum.BySandipDas(simplex, cube);
 
-    Matrix rotation12 = Tests.ToolsTests.TestsBase<double, Tests.DConvertor>.MakeRotationMatrix(5, 1, 2, double.Pi / 4);
-    Matrix rotation35 = Tests.ToolsTests.TestsBase<double, Tests.DConvertor>.MakeRotationMatrix(5, 3, 5, double.Pi / 4);
+    Matrix rotation12 = Tests.TestInfrastructure.TestsBase<double, Tests.DConvertor>.MakeRotationMatrix(5, 1, 2, double.Pi / 4);
+    Matrix rotation35 = Tests.TestInfrastructure.TestsBase<double, Tests.DConvertor>.MakeRotationMatrix(5, 3, 5, double.Pi / 4);
     Vector shiftCube = new(new double[] { 1, 2, 3, 4, 5 });
     Vector shiftSimplex = new(new double[] { -2, 1, 0, 3, -1 });
 
