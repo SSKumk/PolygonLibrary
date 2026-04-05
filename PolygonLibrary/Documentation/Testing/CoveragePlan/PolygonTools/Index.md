@@ -25,10 +25,9 @@
 
 ## Existing Test Sources
 
-- [`PolygonToolsTests.cs`](../../../../Tests/Double-Tests/PolygonToolsTests.cs)
+- [`PolygonToolsTests.cs`](../../../../Tests/Archive/Double-Tests/PolygonToolsTests.cs)
 - косвенные сценарии в `ConvexPolygon*`, `PolygonExtremeTests.cs`
 
 ## Notes
 
 - Для `Circle` и `Ellipse` приоритет отдан собственным фабричным контрактам `PolygonTools`, а не косвенным сценариям потребителей.
-

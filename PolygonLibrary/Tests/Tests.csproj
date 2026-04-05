@@ -29,29 +29,6 @@
     <ItemGroup>
         <Compile Remove="Archive\**" />
         <Compile Remove="_Store\**" />
-        <Compile Remove="BentlyOttmannTests.cs" />
-        <Compile Remove="Double-Tests\ConvexPolygonCutTests.cs" />
-        <Compile Remove="Double-Tests\ConvexPolygonIntersectionTests.cs" />
-        <Compile Remove="Double-Tests\ConvexPolygonLegacyHelpers.cs" />
-        <Compile Remove="Double-Tests\ConvexPolygonTests.cs" />
-        <Compile Remove="Double-Tests\ArcHullTests.cs" />
-        <Compile Remove="Double-Tests\GrahamScanTests.cs" />
-        <Compile Remove="Double-Tests\Minkowski-Tests\MinkowskiSumTests.cs" />
-        <Compile Remove="Double-Tests\PolygonToolsTests.cs" />
-        <Compile Remove="Double-Tests\PolygonExtremeTests.cs" />
-        <Compile Remove="Double-Tests\PolylineTests.cs" />
-        <Compile Remove="Double-Tests\QuickHullTests.cs" />
-        <Compile Remove="Double-Tests\SegmentCrossTests.cs" />
-        <Compile Remove="Double-Tests\SupportFunctionTests.cs" />
-        <Compile Remove="Double-Tests\VectorsTests.cs" />
-        <Compile Remove="SharedTests\AffineBasisTest.cs" />
-        <Compile Remove="SharedTests\FaceLatticeTests.cs" />
-        <Compile Remove="SharedTests\GaussSLETests.cs" />
-        <Compile Remove="SharedTests\HyperPlaneTests.cs" />
-        <Compile Remove="SharedTests\MatrixTests.cs" />
-        <Compile Remove="SharedTests\LinearBasisTests.cs" />
-        <Compile Remove="SharedTests\VectorTests.cs" />
-        <Compile Remove="ToolkitTests\ParamReaderTest.cs" />
     </ItemGroup>
 
     <ItemGroup>

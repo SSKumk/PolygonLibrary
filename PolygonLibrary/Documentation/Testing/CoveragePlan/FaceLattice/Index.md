@@ -30,7 +30,7 @@
 
 ## Existing Test Sources
 
-- [`FaceLatticeTests.cs`](../../../../Tests/SharedTests/FaceLatticeTests.cs)
+- [`FaceLatticeTests.cs`](../../../../Tests/Archive/SharedTests/FaceLatticeTests.cs)
 
 ## Notes
 

@@ -28,9 +28,9 @@
 
 Надёжно релевантные текущие тесты:
 
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs) - создание `SupportFunction` из массива пар и сравнение результатов после сортировки/дедупликации.
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs) - ещё один сценарий сортировки и сравнения пар.
-- [`SupportFunctionTests.cs`](../../../../Tests/Double-Tests/SupportFunctionTests.cs) - прямые проверки `CrossPairs`.
+- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - создание `SupportFunction` из массива пар и сравнение результатов после сортировки/дедупликации.
+- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - ещё один сценарий сортировки и сравнения пар.
+- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - прямые проверки `CrossPairs`.
 - [`GammaPairConstructionAndEqualityTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairConstructionAndEqualityTests.cs)
 - [`GammaPairComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairComparisonAndFormattingTests.cs)
 - [`GammaPairCrossPairsTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairCrossPairsTests.cs)

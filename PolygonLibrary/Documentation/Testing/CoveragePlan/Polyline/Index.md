@@ -23,9 +23,8 @@
 
 ## Existing Test Sources
 
-- [`PolylineTests.cs`](../../../../Tests/Double-Tests/PolylineTests.cs)
+- [`PolylineTests.cs`](../../../../Tests/Archive/Double-Tests/PolylineTests.cs)
 
 ## Notes
 
 - Параметры `checkSimplicity` и `checkOrientation` пока не реализуют обещанную в комментариях валидацию, поэтому в coverage фиксируется только реально наблюдаемый текущий контракт.
-

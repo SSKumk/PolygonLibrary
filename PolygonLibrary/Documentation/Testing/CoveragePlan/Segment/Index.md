@@ -30,7 +30,7 @@
 - [`SegmentIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentIntersectionTests.cs)
 - [`BentlyOttmannTests.cs`](../../../../Tests/BentlyOttmannTests.cs) - косвенное использование `Segment` и `SegmentPair`, но файл исключён из компиляции тестового проекта.
 
-Legacy-источник [`SegmentCrossTests.cs`](../../../../Tests/Double-Tests/SegmentCrossTests.cs) больше не участвует в активной компиляции после переноса.
+Legacy-источник [`SegmentCrossTests.cs`](../../../../Tests/Archive/Double-Tests/SegmentCrossTests.cs) больше не участвует в активной компиляции после переноса.
 
 ## Notes
 

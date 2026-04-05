@@ -30,7 +30,7 @@
   - [`Vector2DArithmeticAndAnglesTests.cs`](../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DArithmeticAndAnglesTests.cs) (арифметика, нормы, повороты, углы, `FromPolar`)
   - [`Vector2DRelationsAndCombinationsTests.cs`](../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs) (отношения между векторами, `IsBetween`, линейные комбинации, приведение из `Vector`)
 - Legacy:
-  - [`VectorsTests.cs`](../../Tests/Double-Tests/VectorsTests.cs)
+  - [`VectorsTests.cs`](../../Tests/Archive/Double-Tests/VectorsTests.cs)
 - Note:
   - сохранены исторические поясняющие сообщения и группировка сценариев для `AngleTest` и `IsBetweenTest`
 
@@ -42,7 +42,7 @@
   - [`SegmentPointQueriesTests.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentPointQueriesTests.cs) (точечные запросы, `ContainsPoint`, `IsEndPoint`, `IsInnerPoint`, `ComputeAtPoint`)
   - [`SegmentIntersectionTests.cs`](../../Tests/DoubleGeometry/Basics/Segment/SegmentIntersectionTests.cs) (пересечение отрезков, `CrossInfo`, типы и позиции точек пересечения)
 - Legacy:
-  - [`SegmentCrossTests.cs`](../../Tests/Double-Tests/SegmentCrossTests.cs)
+  - [`SegmentCrossTests.cs`](../../Tests/Archive/Double-Tests/SegmentCrossTests.cs)
 - Note:
   - сохранён исторический текст сообщений из `SegmentContainsPointTest`; старый закомментированный черновик по `Intersect` заменён активным системным набором тестов
 
@@ -53,7 +53,7 @@
   - [`ConvexPolygonIntersectionBasicCasesTests.cs`](../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBasicCasesTests.cs) (обычные непустые пересечения, симметрия результата и инвариантность к циклическому сдвигу вершин)
   - [`ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs`](../../Tests/DoubleGeometry/Basics/Intersection/ConvexPolygonIntersectionBoundaryAndDegenerateCasesTests.cs) (вложение, пустое пересечение, касания, вырожденные пересечения и `null`-входы)
 - Legacy:
-  - [`ConvexPolygonIntersectionTests.cs`](../../Tests/Double-Tests/ConvexPolygonIntersectionTests.cs)
+  - [`ConvexPolygonIntersectionTests.cs`](../../Tests/Archive/Double-Tests/ConvexPolygonIntersectionTests.cs)
 - Note:
   - сохранены исторические диагностические сообщения `Intersection..` и вынесен отдельный недостающий тест на `null`-аргументы
 
@@ -86,7 +86,7 @@
   - [`VectorGeometryTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorGeometryTests.cs) (длины, нормировка, углы, параллельность, ортогональность, `OuterProduct`, `SubVector`, `LiftUp`, `ProjectTo2DAffineSpace`)
   - [`VectorFactoriesAndGenerationTests.cs`](../../Tests/DoubleGeometry/Basics/Vector/VectorFactoriesAndGenerationTests.cs) (стандартные фабрики и детерминированные сценарии для генераторов)
 - Legacy:
-  - [`VectorTests.cs`](../../Tests/SharedTests/VectorTests.cs)
+  - [`VectorTests.cs`](../../Tests/Archive/SharedTests/VectorTests.cs)
 - Note:
   - сохранены полезные диагностические сообщения из legacy-набора для нормировки, скалярного произведения и граничных сценариев `Angle`; дополнительно закрыты прямые сценарии для `IEnumerable<int>`, `Vector2D`, явного приведения к массиву, `Sum` и генераторов
 
@@ -101,7 +101,7 @@
   - [`MatrixLinearOperationsTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixLinearOperationsTests.cs) (фабрики, генераторы, линейные функции и `ToRREF`)
   - [`MatrixMutableTests.cs`](../../Tests/DoubleGeometry/Basics/Matrix/MatrixMutableTests.cs) (контракт `MatrixMutable`, мутации, вставка блоков и умножение)
 - Legacy:
-  - [`MatrixTests.cs`](../../Tests/SharedTests/MatrixTests.cs)
+  - [`MatrixTests.cs`](../../Tests/Archive/SharedTests/MatrixTests.cs)
 - Note:
   - сохранены содержательные диагностические сообщения из legacy-набора для copy/no-copy сценариев, `ToString` и эталонных случаев `ToRREF`; заодно coverage-план приведён к реальному API `TakeRows`, `TakeCols` и `TakeSubMatrix`
 
@@ -115,7 +115,7 @@
   - [`LinearBasisComparisonAndSpanTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisComparisonAndSpanTests.cs) (`Equals`, `CompareTo`, перечисление и `SpanSameSpace`)
   - [`LinearBasisGenerationTests.cs`](../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisGenerationTests.cs) (фабрики `GenLinearBasis` и их инварианты)
 - Legacy:
-  - [`LinearBasisTests.cs`](../../Tests/SharedTests/LinearBasisTests.cs)
+  - [`LinearBasisTests.cs`](../../Tests/Archive/SharedTests/LinearBasisTests.cs)
 - Note:
   - сохранены полезные диагностические сообщения для пустого базиса, копирования и геометрических сравнений; при переносе отдельно зафиксировано, что публичный `Orthonormalize(Vector)` пока остаётся `todo` и сейчас бросает `NotImplementedException`
 
@@ -128,7 +128,7 @@
   - [`AffineBasisProjectionAndContainmentTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisProjectionAndContainmentTests.cs) (проекции, `ProjectPoints`, `ToOriginalCoords`, `CanonicalOrigin`, `Contains`, `OrthonormalVector`)
   - [`AffineBasisComparisonAndEnumerationTests.cs`](../../Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisComparisonAndEnumerationTests.cs) (`Equals`, `CompareTo`, `GetHashCode` и перечисление)
 - Legacy:
-  - [`AffineBasisTest.cs`](../../Tests/SharedTests/AffineBasisTest.cs)
+  - [`AffineBasisTest.cs`](../../Tests/Archive/SharedTests/AffineBasisTest.cs)
 - Note:
   - сохранены полезные диагностические сообщения для copy/no-copy сценариев, проекций и сравнений множеств точек; дополнительно явно зафиксированы контракты `CanonicalOrigin`, `GetHashCode` и запрет на `AffineBasis(origin, LinearBasisMutable, needCopy: false)`
 
@@ -140,7 +140,7 @@
   - [`HyperPlaneEvaluationAndContainmentTests.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneEvaluationAndContainmentTests.cs) (`Eval`, `Contains*`, фильтрация и `AllAtOneSide`)
   - [`HyperPlaneComparisonOverridesAndFactoryTests.cs`](../../Tests/DoubleGeometry/Basics/HyperPlane/HyperPlaneComparisonOverridesAndFactoryTests.cs) (фабрика `Make3D_xyParallel`, `ToString`, `Equals`, `CompareTo`, `GetHashCode`)
 - Legacy:
-  - [`HyperPlaneTests.cs`](../../Tests/SharedTests/HyperPlaneTests.cs)
+  - [`HyperPlaneTests.cs`](../../Tests/Archive/SharedTests/HyperPlaneTests.cs)
 - Note:
   - сохранены полезные сообщения для ориентации, строкового формата и согласованности ленивой инициализации; дополнительно вынесен отдельный прямой тест на публичный контракт `GetHashCode`
 
@@ -151,7 +151,7 @@
   - [`PolylineConstructionAndGeometryTests.cs`](../../Tests/DoubleGeometry/Polygons/Polyline/PolylineConstructionAndGeometryTests.cs) (конструкторы, циклический индексатор, рёбра, площадь, пустая полилиния и `EdgeAngle`)
   - [`PolylineContainmentTests.cs`](../../Tests/DoubleGeometry/Polygons/Polyline/PolylineContainmentTests.cs) (`ContainsPoint` и `ContainsPointInside` для выпуклого и невыпуклого контура с сохранением legacy-сообщений)
 - Legacy:
-  - [`PolylineTests.cs`](../../Tests/Double-Tests/PolylineTests.cs)
+  - [`PolylineTests.cs`](../../Tests/Archive/Double-Tests/PolylineTests.cs)
 - Note:
   - сохранены исторические диагностические сообщения `${i}th test: ...`; дополнительно добавлен прямой сценарий для clockwise-обхода и явные тесты на базовую геометрию класса
 
@@ -174,7 +174,7 @@
   - [`PolygonToolsRectangleTurnedTests.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsRectangleTurnedTests.cs) (`RectangleTurned` для совпадающих, осе-диагональных и общих противоположных вершин с сохранением legacy-сообщений)
   - [`PolygonToolsCircleAndEllipseTests.cs`](../../Tests/DoubleGeometry/Polygons/PolygonTools/PolygonToolsCircleAndEllipseTests.cs) (прямые фабричные сценарии для `Circle` и `Ellipse`, включая вырожденные полуоси)
 - Legacy:
-  - [`PolygonToolsTests.cs`](../../Tests/Double-Tests/PolygonToolsTests.cs)
+  - [`PolygonToolsTests.cs`](../../Tests/Archive/Double-Tests/PolygonToolsTests.cs)
 - Note:
   - прямой legacy-набор на прямоугольники перенесён без потери диагностических текстов; для `Circle/Ellipse` добавлено новое прямое покрытие, которого раньше не было
 
@@ -185,7 +185,7 @@
   - [`GammaPairComparisonAndFormattingTests.cs`](../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairComparisonAndFormattingTests.cs) (`CompareTo`, `CompareTo(null)`, нормированное сравнение и `ToString`)
   - [`GammaPairCrossPairsTests.cs`](../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairCrossPairsTests.cs) (`CrossPairs` для legacy-набора непараллельных случаев, дробных пересечений и ненормированных нормалей)
 - Legacy:
-  - прямого legacy-файла не было; релевантные косвенные сценарии жили в [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
+  - прямого legacy-файла не было; релевантные косвенные сценарии жили в [`SupportFunctionTests.cs`](../../Tests/Archive/Double-Tests/SupportFunctionTests.cs)
 - Note:
   - сохранены исторические сообщения `Bad crossing ...`; параллельный случай сознательно не закреплён как mandatory, пока `CrossPairs` опирается на `Debug.Assert`
 
@@ -198,7 +198,7 @@
   - [`SupportFunctionEvaluationAndSearchTests.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionEvaluationAndSearchTests.cs) (`FuncVal`, `FindCone`, `ConicCombination` и явное сравнение implicit/explicit cone lookup)
   - [`SupportFunctionCombinationAndConvexificationTests.cs`](../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionCombinationAndConvexificationTests.cs) (`CombineFunctions`, `CheckTriple`, `ConvexifyFunctionWithInfo` и сохранённые legacy-сообщения)
 - Legacy:
-  - [`SupportFunctionTests.cs`](../../Tests/Double-Tests/SupportFunctionTests.cs)
+  - [`SupportFunctionTests.cs`](../../Tests/Archive/Double-Tests/SupportFunctionTests.cs)
 - Note:
   - legacy-набор полностью разложен по темам, старые диагностические тексты сохранены; дополнительно добраны point/segment ctor и прямая выпуклификация, которых раньше не было
 
@@ -213,10 +213,10 @@
   - [`ConvexPolygonRandomAndCutTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonRandomAndCutTests.cs) (случайные точки, барицентрические веса и прямой контракт `CutConvexPolygon`)
   - [`ConvexPolygonMinkowskiTests.cs`](../../Tests/DoubleGeometry/Polygons/ConvexPolygon/ConvexPolygonMinkowskiTests.cs) (операторы суммы и разности Минковского с переносом legacy-сценариев)
 - Legacy:
-  - [`ConvexPolygonTests.cs`](../../Tests/Double-Tests/ConvexPolygonTests.cs)
-  - [`ConvexPolygonCutTests.cs`](../../Tests/Double-Tests/ConvexPolygonCutTests.cs)
-  - [`ConvexPolygonLegacyHelpers.cs`](../../Tests/Double-Tests/ConvexPolygonLegacyHelpers.cs)
-  - [`PolygonExtremeTests.cs`](../../Tests/Double-Tests/PolygonExtremeTests.cs)
+  - [`ConvexPolygonTests.cs`](../../Tests/Archive/Double-Tests/ConvexPolygonTests.cs)
+  - [`ConvexPolygonCutTests.cs`](../../Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs)
+  - [`ConvexPolygonLegacyHelpers.cs`](../../Tests/Archive/Double-Tests/ConvexPolygonLegacyHelpers.cs)
+  - [`PolygonExtremeTests.cs`](../../Tests/Archive/Double-Tests/PolygonExtremeTests.cs)
 - Note:
   - smoke-only `CreateCP*` и `DoCutTest` заменены прямыми assertions; `IntersectionPolygon` сознательно не дублируется, потому что уже закрыт отдельным классом `Intersection`
 
@@ -230,7 +230,7 @@
   - [`FaceLatticeStructureAndTransformTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeStructureAndTransformTests.cs) (конструкторы `FaceLattice`, агрегаты, `AllKfaces_ExceptTop`, `VertexTransform`, `Equals`, `GetHashCode`)
   - [`FaceLatticeInternalConstructionTests.cs`](../../Tests/DoubleGeometry/Polyhedra/FaceLattice/FaceLatticeInternalConstructionTests.cs) (internal-конвертеры `ConstructFromFLNodeSum` и `ConstructFromBaseSubCP` на малом треугольном примере)
 - Legacy:
-  - [`FaceLatticeTests.cs`](../../Tests/SharedTests/FaceLatticeTests.cs)
+  - [`FaceLatticeTests.cs`](../../Tests/Archive/SharedTests/FaceLatticeTests.cs)
   - Note:
     - legacy-набор был сосредоточен почти целиком на `FLNode`; при миграции добавлен отдельный прямой слой на сам контейнер `FaceLattice`
     - позднее в тот же набор добавлены сценарии на инвариантность к порядку `sub`, согласованность `Equals`/`CompareTo` и порядок построения эквивалентной решётки
@@ -252,7 +252,7 @@
 - New tests:
   - [`GaussSLETests.cs`](../../Tests/DoubleGeometry/Algorithms/GaussSLE/GaussSLETests.cs) (square/rectangular системы, все pivot choices, instance API, factory-методы и немутирующий array-factory)
 - Legacy:
-  - [`GaussSLETests.cs`](../../Tests/SharedTests/GaussSLETests.cs)
+  - [`GaussSLETests.cs`](../../Tests/Archive/SharedTests/GaussSLETests.cs)
   - Note:
     - содержательные legacy-сценарии перенесены в новую структуру почти без изменения смысловых сообщений
     - дополнительно закреплены `RowWise`, `ColWise`, reuse instance API, `GetSolution(out Vector)` и немутирующий контракт array-factory
@@ -378,7 +378,7 @@
 - New tests:
   - [`ParamReaderTests.cs`](../../Tests/DoubleGeometry/Toolkit/ParamReader/ParamReaderTests.cs) (legacy-сценарий чтения, `PeakString`, `GetSanitizedData`, геометрические объекты и `ReadNumberLine`)
 - Legacy:
-  - [`ParamReaderTest.cs`](../../Tests/ToolkitTests/ParamReaderTest.cs)
+  - [`ParamReaderTest.cs`](../../Tests/Archive/ToolkitTests/ParamReaderTest.cs)
 - Note:
   - legacy-набор перенесён без потери основного сценария, а поверх него добавлены прямые тесты на sanitizing и чтение геометрических объектов
 
@@ -405,9 +405,9 @@
 - New tests:
   - [`ConvexificationTests.cs`](../../Tests/DoubleGeometry/Toolkit/Convexification/ConvexificationTests.cs) (базовые оболочки квадрата, вырожденные наборы, коллинеарность и `GrahamHull` на обычном ленивом `IEnumerable`)
 - Legacy:
-  - [`QuickHullTests.cs`](../../Tests/Double-Tests/QuickHullTests.cs)
-  - [`ArcHullTests.cs`](../../Tests/Double-Tests/ArcHullTests.cs)
-  - [`GrahamScanTests.cs`](../../Tests/Double-Tests/GrahamScanTests.cs)
+  - [`QuickHullTests.cs`](../../Tests/Archive/Double-Tests/QuickHullTests.cs)
+  - [`ArcHullTests.cs`](../../Tests/Archive/Double-Tests/ArcHullTests.cs)
+  - [`GrahamScanTests.cs`](../../Tests/Archive/Double-Tests/GrahamScanTests.cs)
 - Note:
   - legacy-смысл перенесён в компактный toolkit-набор; отдельным regression-сценарием закреплено раннее materialize-ение обычного ленивого `IEnumerable` в `GrahamHull`
 

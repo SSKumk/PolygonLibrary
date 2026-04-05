@@ -25,7 +25,7 @@
 
 ## Existing Test Sources
 
-- [`HyperPlaneTests.cs`](../../../../Tests/SharedTests/HyperPlaneTests.cs)
+- [`HyperPlaneTests.cs`](../../../../Tests/Archive/SharedTests/HyperPlaneTests.cs)
 
 ## Notes
 

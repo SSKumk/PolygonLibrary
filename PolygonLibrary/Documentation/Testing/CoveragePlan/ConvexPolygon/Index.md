@@ -32,12 +32,11 @@
 
 ## Existing Test Sources
 
-- [`ConvexPolygonTests.cs`](../../../../Tests/Double-Tests/ConvexPolygonTests.cs)
-- [`ConvexPolygonCutTests.cs`](../../../../Tests/Double-Tests/ConvexPolygonCutTests.cs)
-- [`ConvexPolygonLegacyHelpers.cs`](../../../../Tests/Double-Tests/ConvexPolygonLegacyHelpers.cs)
-- [`PolygonExtremeTests.cs`](../../../../Tests/Double-Tests/PolygonExtremeTests.cs)
+- [`ConvexPolygonTests.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonTests.cs)
+- [`ConvexPolygonCutTests.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs)
+- [`ConvexPolygonLegacyHelpers.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonLegacyHelpers.cs)
+- [`PolygonExtremeTests.cs`](../../../../Tests/Archive/Double-Tests/PolygonExtremeTests.cs)
 
 ## Notes
 
 - Старые `CreateCP*`-тесты были фактически smoke-only и не проверяли поведение. В новой структуре они заменены прямыми assertions на реальный контракт.
-
