@@ -310,4 +310,25 @@ public class GiftWrappingRegressionTests {
     AssertShuffleInvariant(swarm, "SomeParallelogram");
   }
 
+  [Test]
+  public void CreateFromPoints_ForArticleInspiredPolytope3D_PreservesVertexSet() {
+    List<Vector> swarm =
+      [
+        new(new double[] { 1, 0, 1 }),
+        new(new double[] { 1, 0, -1 }),
+        new(new double[] { 1.25, -1, 1 }),
+        new(new double[] { 1.25, -1, -1 }),
+        new(new double[] { 0.25, -1, 1 }),
+        new(new double[] { 0.25, -1, -1 }),
+        new(new double[] { -1, 0, 1 }),
+        new(new double[] { -1, 0, -1 }),
+        new(new double[] { -1.25, 1, 1 }),
+        new(new double[] { -1.25, 1, -1 }),
+        new(new double[] { -0.25, 1, 1 }),
+        new(new double[] { -0.25, 1, -1 })
+      ];
+
+    AssertWrappedVerticesEqual(swarm, swarm, "SomePolytop_3D: The set of vertices must be equal.");
+  }
+
 }
