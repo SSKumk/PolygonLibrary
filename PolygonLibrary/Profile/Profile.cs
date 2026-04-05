@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
-using Tests.ToolsTests;
+using Tests.TestInfrastructure;
 using LDG;
 using Tests;
 using Rationals;
@@ -9,8 +9,8 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 
 // using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
 
-// using static Tests.ToolsTests.TestsPolytopes<double, Tests.DConvertor>;
-// using static Tests.ToolsTests.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
+// using static Tests.TestInfrastructure.TestsPolytopes<double, Tests.DConvertor>;
+// using static Tests.TestInfrastructure.TestsPolytopes<DoubleDouble.ddouble, Tests.DDConvertor>;
 
 
 namespace Profile;

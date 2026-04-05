@@ -6,7 +6,7 @@ using Perfolizer.Horology;
 namespace Profile.Benchmarks;
 
 using static Geometry<ddouble, Tests.DDConvertor>;
-using static Tests.ToolsTests.TestsPolytopes<ddouble, Tests.DDConvertor>;
+using static Tests.TestInfrastructure.TestsPolytopes<ddouble, Tests.DDConvertor>;
 
 [ShortRunJob]
 [WarmupCount(1)]
