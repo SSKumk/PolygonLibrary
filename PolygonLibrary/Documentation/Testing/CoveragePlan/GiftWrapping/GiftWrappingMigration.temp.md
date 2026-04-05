@@ -11,15 +11,13 @@
 
 Не использовать:
 - как постоянную документацию покрытия;
-- как дублирование итоговых `Index.md` и тематических coverage-файлов.
+- как дублирование итогового `Index.md` и тематических coverage-файлов.
 
 ## Current State
 
 Сейчас в новом слое уже есть:
 - [`GiftWrappingTestData.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingTestData.cs)
-- [`GiftWrappingInitializationTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingInitializationTests.cs)
-- [`GiftWrappingHullExtractionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingHullExtractionTests.cs)
-- [`GiftWrappingFaceLatticeTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingFaceLatticeTests.cs)
+- [`GiftWrappingBasicTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingBasicTests.cs)
 
 Покрыто сейчас:
 - пустой swarm;
@@ -29,7 +27,7 @@
 - `WrapFaceLattice` / `ConstructFL` для типовых `2D/3D` случаев.
 
 Не покрыто как полноценный новый слой:
-- invariance/regression сценарии из legacy;
+- invariance/regression-сценарии из legacy;
 - heavy random/stress слой;
 - часть `4D+` hand-crafted случаев.
 
@@ -76,23 +74,30 @@
 ### Candidate Regression Layer
 
 Перенести в первую очередь:
-- `Cube3D`
-- `Cube3D_Rotated_Z45`
-- `Cube3D_Rotated`
-- `Cube3D_Shifted`
-- `Cube3D_Rotated_Shifted`
-- `Cube3D_withInnerPoints_On_1D`
-- `Cube3D_withInnerPoints_On_2D`
-- `Cube3D_withInnerPoints_On_3D`
-- `Cube3D_withInnerPoints_On_1D_2D`
-- `Cube3D_withInnerPoints_On_2D_3D`
-- `Cube3D_withInnerPoints_On_1D_2D_3D`
-- `Cube3D_Shuffled`
-- `Cube4D_Shuffled`
-- `Simplex3D_Shuffled`
-- `Simplex4D_Shuffled`
-- `Simplex4D_1DEdge_2DNeighborsPointsTest`
-- `Simplex4D_InnerPointsIn_1D`
+- `Cube3D` - done
+- `Cube3D_Rotated_Z45` - done
+- `Cube3D_Rotated` - done
+- `Cube3D_Shifted` - done
+- `Cube3D_Rotated_Shifted` - done
+- `Cube3D_withInnerPoints_On_1D` - done
+- `Cube3D_withInnerPoints_On_2D` - done
+- `Cube3D_withInnerPoints_On_3D` - done
+- `Cube3D_withInnerPoints_On_1D_2D` - done
+- `Cube3D_withInnerPoints_On_2D_3D` - done
+- `Cube3D_withInnerPoints_On_1D_2D_3D` - done
+- `Cube3D_Shuffled` - done
+- `Cube4D_Shuffled` - done
+- `Simplex3D_Shuffled` - done
+- `Simplex4D_Shuffled` - done
+- `Cube4D_withInnerPoints_On_1D` - done
+- `Cube4D_withInnerPoints_On_2D` - done
+- `Cube4D_withInnerPoints_On_3D` - done
+- `Cube4D_withInnerPoints_On_1D_2D` - done
+- `Cube4D_withInnerPoints_On_2D_3D` - done
+- `Cube4D_withInnerPoints_On_1D_2D_3D` - done
+- `Cube4D_withInnerPoints_On_1D_2D_3D_4D` - done
+- `Simplex4D_1DEdge_2DNeighborsPointsTest` - done
+- `Simplex4D_InnerPointsIn_1D` - done
 
 ### Candidate Stress Layer
 
@@ -106,29 +111,26 @@
 
 ## Open Questions
 
-- Нужно ли оставить отдельные файлы `Initialization`, `HullExtraction`, `FaceLattice`, или лучше слить их в `GiftWrappingBasicTests.cs`?
-- Нужно ли для `Regression` проверять только `Vrep`, или сразу возвращать legacy-проверки `Hrep` и `FLrep.NumberOfKFaces`?
+- Для `Regression` проверять только `Vrep`, или сразу возвращать legacy-проверки `Hrep` и `FLrep.NumberOfKFaces`?
 - Какой объём `Stress` считать активным слоем, а какой сразу отправлять в архив?
 - Нужно ли отдельно фиксировать shuffle-invariance как самостоятельную подтему?
 
 ## Current Observations
 
 - В [`GiftWrapping.cs`](../../../../CGLibrary/Algorithms/Polyhedra/GiftWrapping/GiftWrapping.cs) есть debug-хвост:
-  - `Console.WriteLine($"GW.Rem =  {toRemove.Count}.\\t");`
+  - `Console.WriteLine($"GW.Rem =  {toRemove.Count}.\t");`
 - В [`DoubleGeometryMigrationOrder.md`](../../../DoubleGeometryMigrationOrder.md) статус `GiftWrapping = closed` выглядит преждевременным относительно реального объёма legacy-набора.
 - Legacy `GW_Tests` в основном проверяет `ConvexPolytop.CreateFromPoints(..., true)`, а не только прямой API `GiftWrapping`.
 
 ## Next Steps
 
-1. Решить финальную структуру файлов нового слоя.
-2. Перенести минимальный regression-набор без изменения алгоритма.
-3. Синхронизировать coverage-документацию под новую структуру.
-4. Только потом отдельно выносить `Stress`.
-5. После завершения переноса архивировать legacy `GW_Tests`.
+1. Перенести минимальный regression-набор без изменения алгоритма.
+2. Синхронизировать coverage-документацию под новый regression-слой.
+3. Отдельно выделить `Stress`.
+4. После завершения переноса архивировать legacy `GW_Tests`.
 
 ## User Notes
 
-Пиши здесь свои мысли по очередным идеям, что переносить или что оставить за бортом.
+Пиши здесь свои мысли по очередным идеям, что переносить или что оставлять за бортом.
 
--
-
+- 

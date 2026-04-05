@@ -6,30 +6,28 @@
 
 В активный слой текущего этапа входят:
 
-- базовые ветки инициализации: пустой, точечный, линейный, симплициальный случай;
-- извлечение `Vrep` из swarm с внутренними точками;
-- построение `FaceLattice` для 2D и 3D типовых политопов.
+- базовый прямой контракт алгоритма на пустом, точечном и линейном случаях;
+- `WrapVRep` для типовых `2D/3D` наборов точек;
+- `WrapFaceLattice` и `ConstructFL` для типовых `2D/3D` политопов.
 
 Вне активного слоя пока остаются:
 
-- большой legacy stress-набор на случайные и тяжёлые входы;
-- многомерные pathological cases из старого `GW_Tests`;
-- производительные и отладочные сценарии из `SpeedTests`.
+- invariance/regression-сценарии из legacy `GW_Tests`;
+- многомерные hand-crafted cases;
+- heavy random/stress слои и производительные прогоны.
 
 ## Topics
 
-- [`InitializationAndDegenerateCases.md`](InitializationAndDegenerateCases.md) - пустой, точечный и линейный случаи.
-- [`HullExtraction.md`](HullExtraction.md) - `WrapVRep` для типовых наборов точек.
-- [`FaceLatticeConstruction.md`](FaceLatticeConstruction.md) - `ConstructFL` и `WrapFaceLattice`.
+- [`BasicCases.md`](BasicCases.md) - базовый прямой контракт `GiftWrapping`.
+- [`RegressionAndInvariance.md`](RegressionAndInvariance.md) - интеграционные regression-сценарии через `CreateFromPoints(..., true)`.
 
 ## Current Coverage Summary
 
 | Topic | Status | Comment |
 | --- | --- | --- |
-| Initialization and Degenerate Cases | `x` | Закрыты пустой, точечный и линейный сценарии. |
-| Hull Extraction | `x` | Зафиксированы прямые 2D/3D кейсы и ветка симплекса. |
-| Face Lattice Construction | `x` | Закрыты типовые 2D и 3D результаты по числу граней и вершинам. |
-| Randomized Stress Cases | `-` | Исключены из активного слоя и оставлены в истории. |
+| Basic Cases | `x` | Закрыты пустой, точечный, линейный, типовые `2D/3D` и базовые `FaceLattice`-сценарии. |
+| Regression and Invariance | `x` | Перенесён первый `Cube3D`-пакет: повороты, сдвиги и inner points. |
+| Stress | `-` | Heavy random и `4D+` генераторные серии ещё не выделены в новый stress-слой. |
 
 ## Existing Test Sources
 
@@ -37,6 +35,5 @@
 
 ## Notes
 
-- Старый `GW_Tests` смешивал прямые проверки обёртки с большими randomized/regression сценариями через `ConvexPolytop.CreateFromPoints(..., true)`. В новой структуре оставлен компактный прямой слой на сам `GiftWrapping`.
-
-
+- Старый `GW_Tests` смешивал прямые проверки алгоритма с большими randomized/regression-сценариями через `ConvexPolytop.CreateFromPoints(..., true)`.
+- На текущем шаге базовый слой сведён в один файл, чтобы дальше наращивать `Regression` и `Stress` отдельно.
