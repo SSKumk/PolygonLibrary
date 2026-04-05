@@ -253,6 +253,240 @@
 
 Пока явных задач низкого приоритета отдельно не выделено. Если нужно, сюда можно будет перенести косметические и не срочные доработки.
 
+## Code TODO Registry
+
+Этот раздел связывает `TODO`-пометки из `.cs`-кода с backlog-задачами.  
+Пометки из кода не удаляются; здесь фиксируется, как они обработаны.
+
+### Already Tracked By Active Tasks
+
+- [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs), line 85
+  - `todo: В одну операцию! MultiplyTransposeBySelf()`
+  - Статус: уже отражено в задаче `LinearBasis MultiplyTransposeBySelf`.
+
+- [`MinkowskiDiffRegressionTests.cs`](./Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs), lines 53 and 79
+  - `TODO high priority`
+  - Статус: уже отражено в задаче `Simplex vertex-solution for H2V recovery`.
+
+- [`HrepToFLrep.cs`](./CGLibrary/Algorithms/Polyhedra/HrepToFLrep.cs), lines 97 and 114
+  - `todo: потенциальная проблема Теперь мы сравниваем не векторы, но узлы`
+  - `todo: а в любом случае стоит собирать ребро?`
+  - Статус: входят в исследовательскую задачу `HrepToFLrep`.
+
+### New Medium Tasks From Code
+
+#### LinearBasis.Orthonormalize
+
+Статус: `open`
+
+Источник:
+- [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs), line 142
+
+Пометка в коде:
+- `throw new NotImplementedException("todo");`
+
+Что нужно сделать:
+- определить контракт `Orthonormalize(Vector v)`;
+- реализовать метод или явно понизить его до недоступного/internal API, если он не должен быть публичным;
+- проверить, как он должен вести себя для пустого базиса и для вектора из span базиса.
+
+#### Polyline constructor checks
+
+Статус: `open`
+
+Источник:
+- [`Polyline.cs`](./CGLibrary/Geometry2D/Polygons/Polyline.cs), line 135
+
+Пометка в коде:
+- `TODO: Write checks !!!`
+
+Что нужно сделать:
+- решить, какие именно проверки должны выполняться в конструкторе `Polyline(List<Vector2D> ps, PolylineOrientation orient, ...)`;
+- синхронизировать это с общим policy по preconditions;
+- при необходимости закрепить в XML и тестах.
+
+#### LDG PathHolder trajectory/tMin helper cleanup
+
+Статус: `open`
+
+Источник:
+- [`PathHolder.cs`](./LDG/PathHolder.cs), line 210
+
+Пометка в коде:
+- `todo: убрать эту штуку, для каких моментов мост есть, для тех и будем строить траектории.`
+
+Что нужно сделать:
+- пересмотреть логику `Load_tMin(int i)` и построения траекторий только для тех моментов, где мост реально существует;
+- увязать это с общей задачей по структуре LDG и вычислению мостов.
+
+#### ConvexPolytop non-full-dimensional H2V support
+
+Статус: `open`
+
+Источник:
+- [`ConvexPolytop.cs`](./CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), line 1434
+
+Пометка в коде:
+- `todo: научиться работать не с полноразмернымми многогранниками`
+
+Что нужно сделать:
+- решить, должен ли `HrepToVrep_Geometric` поддерживать неполноразмерные многогранники напрямую;
+- если да, то описать целевой контракт и связь с affine-reduction;
+- если нет, то закрепить ограничение жёстче в API и документации.
+
+### New Research / Architectural Tasks From Code
+
+#### Alternative H-representation algorithms for ConvexPolytop
+
+Статус: `research`
+
+Источник:
+- [`ConvexPolytop.cs`](./CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), line 218
+
+Пометка в коде:
+- `todo: Возможно стоит реализовать Double Description Method и/или Reverse Search Fukud-ы`
+
+Что нужно сделать:
+- отдельно оценить, нужен ли library-level альтернативный путь к `Hrep`;
+- не смешивать это с текущей стабилизацией `GiftWrapping`/`SimplexMethod`.
+
+### New Low-Priority Engineering Tasks From Code
+
+#### MatrixMutable transpose naming / in-place policy
+
+Статус: `open`
+
+Источник:
+- [`Matrix.cs`](./CGLibrary/Basics/Matrix.cs), line 1224
+
+Пометка в коде:
+- `todo: Transpose inplace нормально!`
+
+Что нужно сделать:
+- определиться, должен ли `MatrixMutable.Transpose()` быть in-place, иметь отдельную in-place версию или сохранить текущую семантику;
+- синхронизировать имя, XML и ожидания API.
+
+#### Line2D segment-dependent API
+
+Статус: `open`
+
+Источники:
+- [`Line2D.cs`](./CGLibrary/Geometry2D/Line2D.cs), lines 3 and 178
+
+Пометки в коде:
+- `TODO: Uncomment when segments are ready`
+
+Что нужно сделать:
+- решить, нужны ли сейчас закомментированные segment-dependent части `Line2D`;
+- либо вернуть их в живой код;
+- либо убрать legacy-комментарий, если направление больше неактуально.
+
+#### GammaPair comparator cleanup
+
+Статус: `open`
+
+Источник:
+- [`GammaPair.cs`](./CGLibrary/Geometry2D/Polygons/ConvexPolygons/GammaPair.cs), line 35
+
+Пометка в коде:
+- `todo: Debug.Assert(other != null, nameof(other) + " != null"); убрать такую дичь`
+
+Что нужно сделать:
+- убрать исторический comment-to-self;
+- привести `CompareTo` / null-handling к аккуратному и документированному виду.
+
+#### ConvexPolytop distance epigraph micro-check
+
+Статус: `open`
+
+Источник:
+- [`ConvexPolytop.cs`](./CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), line 899
+
+Пометка в коде:
+- `todo: кажется, что можно не проверять!`
+
+Что нужно сделать:
+- проверить, действительно ли `.Where(ContainsNonStrict)` лишний в этой ветке;
+- если да, удалить и зафиксировать reasoning тестом или комментарием.
+
+#### MinkowskiDiff callback naming
+
+Статус: `open`
+
+Источник:
+- [`MinkowskiDiff.cs`](./CGLibrary/Algorithms/Polyhedra/MinkowskiDiff.cs), line 106
+
+Пометка в коде:
+- `todo Как назвать?`
+
+Что нужно сделать:
+- дать осмысленное имя callback-параметру `doSubtract`, чтобы сигнатура `MinkDiff(...)` читалась без внутреннего знания алгоритма.
+
+#### BasicPolygon contours and vertex-order cleanup
+
+Статус: `open`
+
+Источники:
+- [`BasicPolygon.cs`](./CGLibrary/Geometry2D/Polygons/BasicPolygon.cs), line 33
+- [`BasicPolygon.cs`](./CGLibrary/Geometry2D/Polygons/BasicPolygon.cs), lines 104 and 131
+
+Пометки в коде:
+- `todo Привести к единообразному виду как в Segment`
+- `todo ???` у `Vertices.Sort()`
+
+Что нужно сделать:
+- привести `Contours` к более единообразному API;
+- решить, нужен ли детерминированный порядок вершин в соответствующих конструкторах или комментарии уже потеряли смысл.
+
+#### GiftWrapping cleanup / optimization notes
+
+Статус: `open`
+
+Источники:
+- [`GiftWrapping.cs`](./CGLibrary/Algorithms/Polyhedra/GiftWrapping/GiftWrapping.cs), line 280
+- [`GiftWrapping.cs`](./CGLibrary/Algorithms/Polyhedra/GiftWrapping/GiftWrapping.cs), line 384
+- [`GiftWrapping.cs`](./CGLibrary/Algorithms/Polyhedra/GiftWrapping/GiftWrapping.cs), line 519
+
+Пометки в коде:
+- `todo: norm?`
+- `todo: Может быть, что если после удаления точек их стало d+1, то создать симплекс и перестать овыпукляться?`
+- `todo !важная проверка!`
+
+Что нужно сделать:
+- проверить, какие из этих пометок ещё содержательны;
+- развести optimisation idea, debug-check и stale comment;
+- не менять алгоритм без отдельного решения, но убрать неясные хвосты.
+
+### Archival / Historical Notes From Code
+
+#### Archived Vector precondition policy discussion
+
+Статус: `archival-note`
+
+Источник:
+- [`Tests/Archive/SharedTests/VectorTests.cs`](./Tests/Archive/SharedTests/VectorTests.cs), lines 85, 114, 205, 309, 355, 448, 533
+
+Повторяющаяся пометка:
+- `todo: Надо ли делать throw или же Debug.Assert (как сейчас)`
+
+Смысл:
+- старый спор про runtime validation policy для `Vector`;
+- сейчас это уже не active test TODO, а историческая заметка.
+
+#### Archived ConvexPolygonCut testability note
+
+Статус: `archival-note`
+
+Источник:
+- [`Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs`](./Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs), line 11
+
+Пометка в коде:
+- `todo Придумать как тестировать`
+
+Смысл:
+- старый комментарий из уже архивированного набора;
+- как отдельная active-задача сейчас не поднимается.
+
 ## Closed History From Previous todo.md
 
 ### Visualization
