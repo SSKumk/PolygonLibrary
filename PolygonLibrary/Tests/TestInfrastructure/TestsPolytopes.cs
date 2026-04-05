@@ -4,56 +4,191 @@ using CGLibrary;
 
 namespace Tests.TestInfrastructure;
 
+/// <summary>
+/// Provides shared generators and canonical objects for polytope-related tests.
+/// </summary>
+/// <typeparam name="TNum">The numeric scalar type used by the geometry layer.</typeparam>
+/// <typeparam name="TConv">The numeric convertor used by the geometry layer.</typeparam>
 public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
   IFloatingPoint<TNum>
   where TConv : INumConvertor<TNum> {
 
 #region Pre-defined objects
+  /// <summary>
+  /// A canonical octahedron-like point set in 3D.
+  /// </summary>
   public static readonly List<Vector> Octahedron3D_list = MakePointsOnSphere_3D(2, 4, true, true);
+  /// <summary>
+  /// A canonical pyramid-like point set in 3D.
+  /// </summary>
   public static readonly List<Vector> Pyramid3D_list    = MakePointsOnSphere_3D(2, 4, true);
+  /// <summary>
+  /// A canonical 2D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> Simplex2D_list    = Simplex_list(2);
+  /// <summary>
+  /// A canonical 3D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> Simplex3D_list    = Simplex_list(3);
+  /// <summary>
+  /// A canonical 4D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> Simplex4D_list    = Simplex_list(4);
+  /// <summary>
+  /// A canonical 5D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> Simplex5D_list    = Simplex_list(5);
+  /// <summary>
+  /// A random full-dimensional 2D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> SimplexRND2D_list = SimplexRND_list(2);
+  /// <summary>
+  /// A random full-dimensional 3D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> SimplexRND3D_list = SimplexRND_list(3);
+  /// <summary>
+  /// A random full-dimensional 4D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> SimplexRND4D_list = SimplexRND_list(4);
+  /// <summary>
+  /// A random full-dimensional 5D simplex vertex set.
+  /// </summary>
   public static readonly List<Vector> SimplexRND5D_list = SimplexRND_list(5);
+  /// <summary>
+  /// A canonical 2D cube vertex set.
+  /// </summary>
   public static readonly List<Vector> Cube2D_list       = Cube_list(2);
+  /// <summary>
+  /// A canonical 3D cube vertex set.
+  /// </summary>
   public static readonly List<Vector> Cube3D_list       = Cube_list(3);
+  /// <summary>
+  /// A canonical 4D cube vertex set.
+  /// </summary>
   public static readonly List<Vector> Cube4D_list       = Cube_list(4);
+  /// <summary>
+  /// A canonical 5D cube vertex set.
+  /// </summary>
   public static readonly List<Vector> Cube5D_list       = Cube_list(5);
 
 
+  /// <summary>
+  /// A canonical 3D cube represented as a convex polytope.
+  /// </summary>
   public static readonly ConvexPolytop Cube3D       = ConvexPolytop.CreateFromPoints(Cube_list(3));
+  /// <summary>
+  /// A canonical 4D cube represented as a convex polytope.
+  /// </summary>
   public static readonly ConvexPolytop Cube4D       = ConvexPolytop.CreateFromPoints(Cube_list(4));
+  /// <summary>
+  /// A canonical 3D simplex represented as a convex polytope.
+  /// </summary>
   public static readonly ConvexPolytop Simplex3D    = ConvexPolytop.CreateFromPoints(Simplex(3, out _));
+  /// <summary>
+  /// A canonical 4D simplex represented as a convex polytope.
+  /// </summary>
   public static readonly ConvexPolytop Simplex4D    = ConvexPolytop.CreateFromPoints(Simplex(4, out _));
 
 
+  /// <summary>
+  /// A 45-degree rotation in the XY plane of 3D space.
+  /// </summary>
   public static readonly Matrix rotate3D_45XY = MakeRotationMatrix(3, 1, 2, TNum.Pi / TConv.FromInt(4));
+  /// <summary>
+  /// A 45-degree rotation in the XY plane of 4D space.
+  /// </summary>
   public static readonly Matrix rotate4D_45XY = MakeRotationMatrix(4, 1, 2, TNum.Pi / TConv.FromInt(4));
 #endregion
 
 #region Polytopes and Polytopes-list Factories
+  /// <summary>
+  /// Builds a canonical cube vertex set in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>The vertex set of the cube.</returns>
   public static List<Vector> Cube_list(int           dim) => Cube01(dim, out _);
+  /// <summary>
+  /// Builds a randomly rotated canonical cube vertex set in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>The rotated vertex set of the cube.</returns>
   private static List<Vector> CubeRotatedRND_list(int dim) => Rotate(Cube_list(dim), Matrix.GenONMatrix(dim));
+  /// <summary>
+  /// Builds a canonical simplex vertex set in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the simplex.</param>
+  /// <returns>The vertex set of the simplex.</returns>
   public static  List<Vector> Simplex_list(int        dim) => Simplex(dim, out _);
+  /// <summary>
+  /// Builds a random full-dimensional simplex vertex set in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the simplex.</param>
+  /// <returns>The vertex set of the random simplex.</returns>
   public static  List<Vector> SimplexRND_list(int     dim) => SimplexRND(dim, out _);
 
+  /// <summary>
+  /// Wraps a canonical cube into a gift-wrapping instance.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>A gift-wrapping instance over the canonical cube.</returns>
   private static GiftWrapping CubeGW(int         dim) => new GiftWrapping(Cube_list(dim));
+  /// <summary>
+  /// Wraps a randomly rotated canonical cube into a gift-wrapping instance.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>A gift-wrapping instance over the rotated cube.</returns>
   private static GiftWrapping CubeRotatedRND(int dim) => new GiftWrapping(CubeRotatedRND_list(dim));
+  /// <summary>
+  /// Wraps a canonical simplex into a gift-wrapping instance.
+  /// </summary>
+  /// <param name="dim">The dimension of the simplex.</param>
+  /// <returns>A gift-wrapping instance over the canonical simplex.</returns>
   public static  GiftWrapping Simplex(int        dim) => new GiftWrapping(Simplex(dim, out _));
+  /// <summary>
+  /// Wraps a random full-dimensional simplex into a gift-wrapping instance.
+  /// </summary>
+  /// <param name="dim">The dimension of the simplex.</param>
+  /// <returns>A gift-wrapping instance over the random simplex.</returns>
   private static GiftWrapping SimplexRND(int     dim) => new GiftWrapping(SimplexRND(dim, out _));
 
+  /// <summary>
+  /// Wraps a generated sphere point set into a gift-wrapping instance.
+  /// </summary>
+  /// <param name="dim">The ambient dimension.</param>
+  /// <param name="theta">The number of zenith divisions.</param>
+  /// <param name="phi">The number of azimuth divisions.</param>
+  /// <param name="radius">The sphere radius.</param>
+  /// <returns>A gift-wrapping instance over the generated sphere points.</returns>
   private static GiftWrapping Sphere(int dim, int theta, int phi, TNum radius)
     => new GiftWrapping(Sphere_list(dim, theta, phi, radius));
 
-
+  /// <summary>
+  /// Builds the face lattice of a canonical cube in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>The face lattice of the cube.</returns>
   public static FaceLattice CubeFL(int dim) => CubeGW(dim).ConstructFL();
+  /// <summary>
+  /// Builds the face lattice of a randomly rotated canonical cube in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the cube.</param>
+  /// <returns>The face lattice of the rotated cube.</returns>
   public static FaceLattice CubeRotatedRND_FL(int dim) => CubeRotatedRND(dim).ConstructFL();
+  /// <summary>
+  /// Builds the face lattice of a random full-dimensional simplex in the specified dimension.
+  /// </summary>
+  /// <param name="dim">The dimension of the simplex.</param>
+  /// <returns>The face lattice of the random simplex.</returns>
   public static FaceLattice SimplexFL(int dim) => SimplexRND(dim).ConstructFL();
+  /// <summary>
+  /// Builds the face lattice of a generated sphere point set.
+  /// </summary>
+  /// <param name="dim">The ambient dimension.</param>
+  /// <param name="theta">The number of zenith divisions.</param>
+  /// <param name="phi">The number of azimuth divisions.</param>
+  /// <param name="radius">The sphere radius.</param>
+  /// <returns>The face lattice of the generated sphere-based polytope.</returns>
   public static FaceLattice SphereFL(int dim, int theta, int phi, TNum radius) => Sphere(dim, theta, phi, radius).ConstructFL();
 #endregion
 
@@ -261,7 +396,7 @@ public class TestsPolytopes<TNum, TConv> : TestsBase<TNum, TConv>
   /// <param name="pDim">The dimension of the cyclic polytop.</param>
   /// <param name="amountOfPoints">The amount of vertices in cyclic polytop.</param>
   /// <param name="step">The step of increasing the moment on the moments curve. init = 1 + step.</param>
-  /// <returns></returns>
+  /// <returns>The vertex set of the cyclic polytope on the moment curve.</returns>
   public static List<Vector> CyclicPolytop(int pDim, int amountOfPoints, TNum step) {
     Debug.Assert
       (
