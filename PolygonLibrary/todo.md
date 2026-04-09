@@ -9,6 +9,8 @@
 
 `TODO.txt` пока сохраняется как legacy-source, но рабочим файлом считать нужно именно этот.
 
+Закрытые задачи ведутся отдельно в [`done.md`](./done.md).
+
 ## Приоритеты
 
 - `High` - блокирует корректность, ведёт к красным тестам или ломает базовый алгоритмический контракт.
@@ -18,37 +20,10 @@
 
 ## High Priority
 
-### Simplex vertex-solution for H2V recovery
+Сейчас явных открытых high-priority задач нет.
 
-Статус: `open`
-
-Суть:
-- [`SimplexMethod`](./CGLibrary/LinearMath/SimplexMethod.cs) / [`ConvexPolytop.FindInitialVertex_Simplex`](./CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs) должны гарантировать, что для `HrepToVrep_Geometric` возвращается именно вершина, а не произвольная точка оптимального лица.
-
-Контекст:
-- красные signal-тесты:
-  - [`MinkowskiDiffRegressionTests.cs`](./Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs)
-- описание наблюдаемого поведения:
-  - [`RegressionCases.md`](./Documentation/Testing/CoveragePlan/MinkowskiDiff/RegressionCases.md)
-- связанный код:
-  - [`SimplexMethod.cs`](./CGLibrary/LinearMath/SimplexMethod.cs)
-  - [`ConvexPolytop.cs`](./CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs)
-
-Пример, который сейчас ломается:
-- после вычитания точки `p = (0.1, 0.2, 0.3)` из тетраэдра `conv{0, e1, e2, e3}` получается система
-  - `x >= -0.1`
-  - `y >= -0.2`
-  - `z >= -0.3`
-  - `x + y + z <= 0.4`
-- `SimplexMethod.Solve(HPs, _ => 1)` возвращает допустимую оптимальную точку `(0.4, 0, 0)`, то есть точку на грани `x + y + z = 0.4`, а не вершину;
-- затем `FindInitialVertex_Simplex` пытается восстановить вершину по `BasisInequalitiesID`, получает только одну исходную грань и падает на `GaussSLE`.
-
-Что нужно обеспечить:
-- либо сам `SimplexMethod` должен возвращать `vertex-solution`;
-- либо должен появиться отдельный корректный `vertex-mode`, который используется в `ConvexPolytop.HrepToVrep_Geometric`.
-
-Исходная формулировка:
-- `High priority. SimplexMethod / ConvexPolytop.FindInitialVertex_Simplex: гарантировать, что симплекс для H2V-восстановления возвращает именно вершину, а не произвольную точку оптимального лица.`
+Последняя закрытая high-priority задача:
+- [`Simplex vertex-solution for H2V recovery`](./done.md)
 
 ## Medium Priority
 
@@ -264,14 +239,16 @@
   - `todo: В одну операцию! MultiplyTransposeBySelf()`
   - Статус: уже отражено в задаче `LinearBasis MultiplyTransposeBySelf`.
 
-- [`MinkowskiDiffRegressionTests.cs`](./Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs), lines 53 and 79
-  - `TODO high priority`
-  - Статус: уже отражено в задаче `Simplex vertex-solution for H2V recovery`.
-
 - [`HrepToFLrep.cs`](./CGLibrary/Algorithms/Polyhedra/HrepToFLrep.cs), lines 97 and 114
   - `todo: потенциальная проблема Теперь мы сравниваем не векторы, но узлы`
   - `todo: а в любом случае стоит собирать ребро?`
   - Статус: входят в исследовательскую задачу `HrepToFLrep`.
+
+### Already Tracked By Closed Tasks
+
+- [`MinkowskiDiffRegressionTests.cs`](./Tests/DoubleGeometry/Algorithms/MinkowskiDiff/MinkowskiDiffRegressionTests.cs), lines 53 and 79
+  - `TODO high priority`
+  - Статус: задача закрыта и перенесена в [`done.md`](./done.md), раздел `Simplex vertex-solution for H2V recovery`.
 
 ### New Medium Tasks From Code
 
@@ -486,36 +463,6 @@
 Смысл:
 - старый комментарий из уже архивированного набора;
 - как отдельная active-задача сейчас не поднимается.
-
-## Closed History From Previous todo.md
-
-### Visualization
-
-1. [x] ~~Модуль печати кадра в файл.~~
-1. [x] ~~Все настройки (цвет, размер, толщина) всех объектов.~~
-1. [x] ~~На каждом кадре выводим всю траекторию целиком, её сегменты соединяем цилиндрами.~~
-
-### CGLibrary
-
-1. [x] ~~AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF для LinearBasis и проекция 0 в качестве Origin.~~
-1. [x] ~~ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.~~
-1. [x] ~~TODO XML у методов ConvexPolytope DistanceTo...!~~
-1. [x] ~~Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/LDG/DataFormat.md)~~
-1. [x] ~~ParamReader -- научиться читать строку из чисел и превращать её в массив.~~
-
-### Markdown-файлы
-
-1. [x] ~~Описание файла [IO-многогранников](./Documentation/Development/LibPolytopeFormat.md)~~
-1. [x] ~~Надо ли в файл [многогранника](./Documentation/Development/LDG/IOFormat/Polytopes.md) добавлять поле `doRedundancy`, чтобы  исключать лишние объекты? Надо.~~
-1. [x] ~~Какие символы НЕ может включать в себя Имя_поля в стандартной записи.~~
-
-### Счёт примеров
-
-1. [x] ~~Заготовить файлы различных динамик~~
-1. [x] ~~простые движения 2D~~
-1. [x] ~~простые движения 3D~~
-1. [x] ~~простые движения 4D~~
-1. [x] ~~Заготовить файлы различных explicit sets~~
 
 ## Imported Notes From TODO.txt
 
