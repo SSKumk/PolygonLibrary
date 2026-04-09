@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using static Tests.DoubleGeometry.Basics.VectorAssert;
 
@@ -183,9 +183,9 @@ public class AffineBasisProjectionAndContainmentTests {
   }
 
   [Test]
-  public void Method_OrthonormalVector_DelegatesToLinearBasisComplement() {
+  public void Method_OrthogonalComplementVector_DelegatesToLinearBasisComplement() {
     AffineBasis basis = new AffineBasis(V(0, 0, 0, 0), new LinearBasis(V(1, 0, 0, 0)));
-    Vector ortho = basis.OrthonormalVector();
+    Vector ortho = basis.OrthogonalComplementVector();
 
     Assert.That(ortho.IsZero, Is.False);
     Assert.That(ortho.Length, Is.EqualTo(1.0).Within(Tools.Eps));
@@ -193,3 +193,4 @@ public class AffineBasisProjectionAndContainmentTests {
   }
 
 }
+

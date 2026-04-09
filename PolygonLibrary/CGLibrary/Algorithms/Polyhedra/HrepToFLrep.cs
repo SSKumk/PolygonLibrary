@@ -1,4 +1,4 @@
-namespace CGLibrary;
+﻿namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
@@ -42,7 +42,7 @@ public partial class Geometry<TNum, TConv>
             continue;
           } // Несколько гиперплоскостей "наложились", ребро не получим
 
-          Vector v = coEdgeLinSpace.OrthonormalVector();
+          Vector v = coEdgeLinSpace.OrthogonalComplementVector();
 
           // проверяем вектор v
           bool firstNonZeroProduct = true;
@@ -206,3 +206,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+

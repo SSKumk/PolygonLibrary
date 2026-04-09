@@ -471,9 +471,9 @@ public class LinearBasisTests {
   }
 
   [Test]
-  public void FindOrthonormalVector_PartialBasis() {
+  public void FindOrthogonalComplementVector_PartialBasis() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0, 0)); // Span e1 in 4D
-    Vector      ortho = basis.OrthonormalVector();
+    Vector      ortho = basis.OrthogonalComplementVector();
 
     Assert.That(ortho.IsZero, Is.False);
     Assert.That(ortho.Length, Is.EqualTo(1.0).Within(Tools.Eps));
@@ -481,10 +481,10 @@ public class LinearBasisTests {
   }
 
   [Test]
-  public void FindOrthonormalVector_FullBasis_ReturnsZero() {
+  public void FindOrthogonalComplementVector_FullBasis_ReturnsZero() {
     LinearBasis basis = new LinearBasis(3); // Full 3D basis
-    Vector      ortho = basis.OrthonormalVector();
-    Assert.That(ortho.IsZero, Is.True, "OrthonormalVector for a full basis should return a zero vector.");
+    Vector      ortho = basis.OrthogonalComplementVector();
+    Assert.That(ortho.IsZero, Is.True, "OrthogonalComplementVector for a full basis should return a zero vector.");
   }
 #endregion
 
@@ -821,3 +821,4 @@ public void CompareTo_Order_ByRREF()
 #endregion
 
 }
+

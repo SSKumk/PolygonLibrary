@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Globalization;
 
 
@@ -146,10 +146,13 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Finds an orthonormal vector that is orthogonal to the given basis, i.e., some vector from orthogonal complement space.
+    /// Returns a unit vector from the orthogonal complement of the affine basis direction space.
     /// </summary>
-    /// <returns>An orthonormal vector orthogonal to the basis. Returns the zero vector if the basis is full-dimensional.</returns>
-    public Vector OrthonormalVector() => _linearBasis.OrthonormalVector();
+    /// <returns>
+    /// A unit vector orthogonal to every direction vector of the affine basis.
+    /// Returns the zero vector if the affine basis is full-dimensional.
+    /// </returns>
+    public Vector OrthogonalComplementVector() => _linearBasis.OrthogonalComplementVector();
 #endregion
 
 #region Constructors
@@ -374,3 +377,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+

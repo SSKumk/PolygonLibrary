@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace CGLibrary;
 
@@ -56,7 +56,7 @@ public partial class Geometry<TNum, TConv>
           if (_normal is null) {
             Debug.Assert(_affBasis is not null, "HyperPlane.Normal: Affine basis is null. Can't construct the Normal.");
 
-            _normal = AffBasis.LinBasis.OrthonormalVector();
+            _normal = AffBasis.LinBasis.OrthogonalComplementVector();
 
 #if DEBUG
             CheckCorrectness(this);
@@ -345,3 +345,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+

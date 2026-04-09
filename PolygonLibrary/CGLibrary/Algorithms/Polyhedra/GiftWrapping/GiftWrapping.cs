@@ -1,4 +1,4 @@
-namespace CGLibrary;
+﻿namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
@@ -277,10 +277,10 @@ public partial class Geometry<TNum, TConv>
         Vector n = -Vector.MakeOrth(spaceDim, 1);
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
-          // Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthonormalVector(); //todo: norm?
+          // Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthogonalComplementVector(); //todo: norm?
           LinearBasisMutable lbm = new LinearBasisMutable(FinalV.LinBasis, needCopy: true);
           lbm.AddVector(n);
-          Vector e = lbm.OrthonormalVector();
+          Vector e = lbm.OrthogonalComplementVector();
 
           Vector?     r      = null; // нужен для процедуры Сварта (ниже)
           TNum        minCos = Tools.Two;
@@ -430,7 +430,7 @@ public partial class Geometry<TNum, TConv>
         // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
         AffineBasisMutable copyOfEdgeBasis = new AffineBasisMutable(edgeAffBasis, needCopy: true);
         copyOfEdgeBasis.AddVector(face.Normal);
-        Vector e = copyOfEdgeBasis.OrthonormalVector();
+        Vector e = copyOfEdgeBasis.OrthogonalComplementVector();
         if (Tools.LT(e * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
           e = -e;
         }
@@ -480,7 +480,7 @@ public partial class Geometry<TNum, TConv>
       /// <param name="planeBasis">The basis of the plane.</param>
       /// <returns>The outer normal vector.</returns>
       private Vector CalcOuterNormal(AffineBasis planeBasis) {
-        Vector n = planeBasis.LinBasis.OrthonormalVector();
+        Vector n = planeBasis.LinBasis.OrthogonalComplementVector();
         OrientNormal(ref n, planeBasis.Origin);
 
 #if DEBUG
@@ -530,3 +530,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+

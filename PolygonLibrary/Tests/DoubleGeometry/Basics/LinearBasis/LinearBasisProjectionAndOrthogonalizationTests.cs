@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using static CGLibrary.Geometry<double, Tests.DConvertor>;
 using static Tests.DoubleGeometry.Basics.LinearBasisAssert;
 using static Tests.DoubleGeometry.Basics.VectorAssert;
@@ -175,9 +175,9 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
   }
 
   [Test]
-  public void FindOrthonormalVector_PartialBasis() {
+  public void FindOrthogonalComplementVector_PartialBasis() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0, 0));
-    Vector ortho = basis.OrthonormalVector();
+    Vector ortho = basis.OrthogonalComplementVector();
 
     Assert.That(ortho.IsZero, Is.False);
     Assert.That(ortho.Length, Is.EqualTo(1.0).Within(Tools.Eps));
@@ -185,10 +185,10 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
   }
 
   [Test]
-  public void FindOrthonormalVector_FullBasis_ReturnsZero() {
+  public void FindOrthogonalComplementVector_FullBasis_ReturnsZero() {
     LinearBasis basis = new LinearBasis(3);
-    Vector ortho = basis.OrthonormalVector();
-    Assert.That(ortho.IsZero, Is.True, "OrthonormalVector for a full basis should return a zero vector.");
+    Vector ortho = basis.OrthogonalComplementVector();
+    Assert.That(ortho.IsZero, Is.True, "OrthogonalComplementVector for a full basis should return a zero vector.");
   }
 
   [Test]
@@ -238,3 +238,4 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
   }
 
 }
+

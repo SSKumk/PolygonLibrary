@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -97,10 +97,13 @@ public partial class Geometry<TNum, TConv>
       => new(MatrixMutable.SwapRowBlocks(_Basis, SpaceDim, SubSpaceDim), SpaceDim - SubSpaceDim);
 
     /// <summary>
-    /// Finds an orthonormal vector that is orthogonal to the given basis, i.e., some vector from orthogonal complement space.
+    /// Returns a unit vector from the orthogonal complement of the subspace spanned by this basis.
     /// </summary>
-    /// <returns>An orthonormal vector orthogonal to the basis. Returns the zero vector if the basis is full-dimensional.</returns>
-    public Vector OrthonormalVector() => FullDim ? Vector.Zero(SpaceDim) : _Basis.TakeRowVector(SubSpaceDim);
+    /// <returns>
+    /// A unit vector orthogonal to every vector of the current basis.
+    /// Returns the zero vector if the basis already spans the whole ambient space.
+    /// </returns>
+    public Vector OrthogonalComplementVector() => FullDim ? Vector.Zero(SpaceDim) : _Basis.TakeRowVector(SubSpaceDim);
 
     /// <summary>
     /// Projects a point onto the subspace with coordinates in the original space.
@@ -534,3 +537,4 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+

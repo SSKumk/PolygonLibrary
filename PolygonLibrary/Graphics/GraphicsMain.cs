@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
 using CGLibrary;
 using DoubleDouble;
@@ -185,7 +185,7 @@ public class Visualization<TNum, TConv>
   public static void AddToFacetList(List<VisTools.Facet> FList, Geometry<TNum, TConv>.ConvexPolytop polytop) {
     if (polytop.PolytopDim == 2) {
       var vertices = ToDList(polytop.Vrep);
-      FList.Add(new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.OrthonormalVector()));
+      FList.Add(new VisTools.Facet(vertices, new Geometry<double, DConvertor>.AffineBasis(vertices).LinBasis.OrthogonalComplementVector()));
     }
     else {
       foreach (Geometry<TNum, TConv>.FLNode F in polytop.FLrep.Lattice[2]) {
@@ -262,3 +262,4 @@ public class Visualization<TNum, TConv>
   }
 
 }
+
