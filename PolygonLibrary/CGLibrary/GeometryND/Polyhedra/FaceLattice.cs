@@ -303,7 +303,7 @@ public partial class Geometry<TNum, TConv>
         AffBasis = new AffineBasis(affBasis, false);
       }
       else {
-        AffineBasisMutable affine = new AffineBasisMutable(Sub.First().AffBasis, true);
+        AffineBasisMutable affine = new AffineBasisMutable(Sub.First().AffBasis);
         affine.AddVector(InnerPoint - Sub.First().InnerPoint);
         AffBasis = affine;
       }

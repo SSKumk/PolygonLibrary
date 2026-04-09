@@ -278,7 +278,7 @@ public partial class Geometry<TNum, TConv>
 
         while (FinalV.SubSpaceDim < spaceDim - 1) {
           // Vector e = new LinearBasis(FinalV.LinBasis, new LinearBasis(n)).OrthogonalComplementVector(); //todo: norm?
-          LinearBasisMutable lbm = new LinearBasisMutable(FinalV.LinBasis, needCopy: true);
+          LinearBasisMutable lbm = new LinearBasisMutable(FinalV.LinBasis);
           lbm.AddVector(n);
           Vector e = lbm.OrthogonalComplementVector();
 
@@ -428,7 +428,7 @@ public partial class Geometry<TNum, TConv>
         // берём базис ребра
         // и добавляем в него вектор нормали к грани, с которой мы перекатываемся, ничего не ортогонализируя!
         // получился базис размерности (d-1) у него берём ортогональное дополнение и объявляем искомым вектором
-        AffineBasisMutable copyOfEdgeBasis = new AffineBasisMutable(edgeAffBasis, needCopy: true);
+        AffineBasisMutable copyOfEdgeBasis = new AffineBasisMutable(edgeAffBasis);
         copyOfEdgeBasis.AddVector(face.Normal);
         Vector e = copyOfEdgeBasis.OrthogonalComplementVector();
         if (Tools.LT(e * (f - edgeAffBasis.Origin))) { // проверяем, чтобы он смотрел в уже построенную плоскость
@@ -530,4 +530,5 @@ public partial class Geometry<TNum, TConv>
   }
 
 }
+
 

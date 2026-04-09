@@ -192,6 +192,37 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
   }
 
   [Test]
+  public void FindOrthogonalComplementVector_CodimensionOneBasis_BelongsToComplementAndIsOrthogonalToBasis() {
+    LinearBasis basis = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
+    LinearBasis complement = basis.OrthogonalComplement();
+    Vector ortho = basis.OrthogonalComplementVector();
+
+    Assert.That(ortho.IsZero, Is.False);
+    Assert.That(ortho.Length, Is.EqualTo(1.0).Within(Tools.Eps));
+    Assert.That(ortho * basis[0], Is.EqualTo(0.0).Within(Tools.Eps));
+    Assert.That(ortho * basis[1], Is.EqualTo(0.0).Within(Tools.Eps));
+    Assert.That(complement.Contains(ortho), Is.True);
+  }
+
+  [Test]
+  public void FindOrthogonalComplement_ComplementOfComplement_SpansOriginalSpace() {
+    LinearBasis basis = new LinearBasis(V(1, 0, 0, 0), V(0, 1, 0, 0));
+
+    LinearBasis complement = basis.OrthogonalComplement();
+    LinearBasis complementOfComplement = complement.OrthogonalComplement();
+
+    Assert.That(complement.SpaceDim, Is.EqualTo(basis.SpaceDim));
+    Assert.That(complement.SubSpaceDim + basis.SubSpaceDim, Is.EqualTo(basis.SpaceDim));
+    Assert.That(complementOfComplement.SpanSameSpace(basis), Is.True);
+
+    foreach (Vector b in basis) {
+      foreach (Vector c in complement) {
+        Assert.That(b * c, Is.EqualTo(0.0).Within(Tools.Eps));
+      }
+    }
+  }
+
+  [Test]
   public void OrthonormalizeRND() {
     GRandomLC rnd = new GRandomLC(1234);
     LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);

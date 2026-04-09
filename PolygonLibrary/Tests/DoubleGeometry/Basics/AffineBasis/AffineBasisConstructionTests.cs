@@ -73,32 +73,17 @@ public class AffineBasisConstructionTests {
   }
 
   [Test]
-  public void Constructor_OriginAndLinearBasis_Mutable_NeedCopyTrue() {
+  public void Constructor_OriginAndLinearBasis_Mutable_CreatesIndependentCopy() {
     Vector origin = V(1, 1, 1);
     LinearBasisMutable linearBasis = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
-    AffineBasisMutable basis = new AffineBasisMutable(origin, linearBasis, needCopy: true);
+    AffineBasisMutable basis = new AffineBasisMutable(origin, linearBasis);
 
     AreEqual(basis.Origin, origin);
     Assert.That(basis.LinBasis, Is.EqualTo(linearBasis));
     Assert.That(basis.LinBasis, Is.Not.SameAs(linearBasis));
 
     linearBasis.AddVector(V(0, 0, 1));
-    Assert.That(basis.SubSpaceDim, Is.EqualTo(2), "Affine basis should not change when original LinearBasis is modified (NeedCopy=true).");
-    IsBasisOrthonormal(basis);
-  }
-
-  [Test]
-  public void Constructor_OriginAndLinearBasis_Mutable_NeedCopyFalse() {
-    Vector origin = V(1, 1, 1);
-    LinearBasisMutable linearBasis = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
-    AffineBasisMutable basis = new AffineBasisMutable(origin, linearBasis, needCopy: false);
-
-    AreEqual(basis.Origin, origin);
-    Assert.That(basis.LinBasis, Is.EqualTo(linearBasis));
-    Assert.That(basis.LinBasis, Is.SameAs(linearBasis));
-
-    linearBasis.AddVector(V(0, 0, 1));
-    Assert.That(basis.SubSpaceDim, Is.EqualTo(3), "Affine basis should change when original LinearBasis is modified (NeedCopy=false).");
+    Assert.That(basis.SubSpaceDim, Is.EqualTo(2), "Affine basis should not change when original LinearBasis is modified.");
     IsBasisOrthonormal(basis);
   }
 
@@ -151,7 +136,7 @@ public class AffineBasisConstructionTests {
     Vector origin = V(1, 2, 3);
     LinearBasis linearBasis = LinearBasis.GenLinearBasis(spaceDim: 3, subSpaceDim: 2);
     AffineBasis original = new AffineBasis(origin, linearBasis);
-    AffineBasisMutable copy = new AffineBasisMutable(original, true);
+    AffineBasisMutable copy = new AffineBasisMutable(original);
 
     AreEqual(copy.Origin, original.Origin);
     Assert.That(copy.LinBasis, Is.EqualTo(original.LinBasis), "Linear bases should be equal.");
@@ -177,7 +162,7 @@ public class AffineBasisConstructionTests {
 
   [Test]
   public void Constructor_CopyConstructor_MutableSource_NeedCopyFalse_Throws() {
-    AffineBasisMutable original = new AffineBasisMutable(V(1, 2, 3), new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0)), needCopy: false);
+    AffineBasisMutable original = new AffineBasisMutable(V(1, 2, 3), new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0)));
 
     Assert.Throws<ArgumentException>(
       () => new AffineBasis(original, needCopy: false),

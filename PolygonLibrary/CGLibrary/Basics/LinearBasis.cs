@@ -10,8 +10,17 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Orthonormal linear basis in d-dimensional space.
+  /// Represents an orthonormal basis of a linear subspace in the ambient space.
   /// </summary>
+  /// <remarks>
+  /// <para>
+  /// <see cref="LinearBasis"/> is the immutable variant of the type family.
+  /// Its internal storage is immutable after construction.
+  /// </para>
+  /// <para>
+  /// Use <see cref="LinearBasisMutable"/> when the basis must be extended incrementally.
+  /// </para>
+  /// </remarks>
   public class LinearBasis : IEnumerable<Vector>, IComparable<LinearBasis> {
 
 #region Data and Properties
@@ -21,7 +30,7 @@ public partial class Geometry<TNum, TConv>
     public int SpaceDim => _Basis.Cols;
 
     /// <summary>
-    /// Number of vectors in the basis.
+    /// Gets the dimension of the represented subspace.
     /// </summary>
     public int SubSpaceDim;
 
@@ -47,14 +56,14 @@ public partial class Geometry<TNum, TConv>
     public bool Empty => SubSpaceDim == 0;
 
     /// <summary>
-    /// Indexer to access the basis vectors by index.
-    /// Provides access to individual vectors in the basis.
+    /// Gets the basis vector with the specified index.
     /// </summary>
-    /// <param name="ind">Index to be accessed</param>
+    /// <param name="ind">Zero-based index of the basis vector.</param>
+    /// <returns>The corresponding orthonormal basis vector.</returns>
     public Vector this[int ind] {
       get
         {
-          if (ind < 0 || ind > SubSpaceDim) {
+          if (ind < 0 || ind >= SubSpaceDim) {
             throw new ArgumentException($"LinearBasis.this[]: Index should lie within [0, {SubSpaceDim}]. Found ind = {ind}");
           }
 
@@ -65,8 +74,11 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The matrix that stores the basis vectors in its rows.
+    /// Gets the matrix whose rows are the basis vectors.
     /// </summary>
+    /// <remarks>
+    /// The returned matrix is immutable and shares the internal immutable storage of this basis.
+    /// </remarks>
     public Matrix Basis {
       get
         {
@@ -79,22 +91,26 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// The projection matrix calculated as the product of the transposed basis matrix and the matrix itself.
-    /// <c>B^T*B</c>
+    /// Gets the orthogonal projector onto the represented subspace in ambient coordinates.
     /// </summary>
+    /// <remarks>
+    /// For the row-orthonormal basis matrix <c>B</c>, this matrix is <c>B^T * B</c>.
+    /// The value is cached lazily.
+    /// </remarks>
     public Matrix ProjMatrix => _projMatrix ??= Basis.Transpose() * Basis; // todo: В одну операцию! MultiplyTransposeBySelf()
 
-    private readonly MatrixMutable _Basis;
-    private          Matrix?       _projMatrix = null;
+    protected Matrix  _Basis;
+    protected Matrix? _projMatrix = null;
+    internal  Matrix  BasisStorage => _Basis;
 #endregion
 
 #region Functions
     /// <summary>
-    /// Finds the orthogonal complement of the given linear basis.
+    /// Builds an orthonormal basis of the orthogonal complement of the current subspace.
     /// </summary>
-    /// <returns>The orthogonal complement of the basis.</returns>
+    /// <returns>A basis spanning the orthogonal complement of the current basis.</returns>
     public LinearBasis OrthogonalComplement()
-      => new(MatrixMutable.SwapRowBlocks(_Basis, SpaceDim, SubSpaceDim), SpaceDim - SubSpaceDim);
+      => new(MatrixMutable.SwapRowBlocks(new MatrixMutable(_Basis, false), SpaceDim, SubSpaceDim), SpaceDim - SubSpaceDim);
 
     /// <summary>
     /// Returns a unit vector from the orthogonal complement of the subspace spanned by this basis.
@@ -106,17 +122,17 @@ public partial class Geometry<TNum, TConv>
     public Vector OrthogonalComplementVector() => FullDim ? Vector.Zero(SpaceDim) : _Basis.TakeRowVector(SubSpaceDim);
 
     /// <summary>
-    /// Projects a point onto the subspace with coordinates in the original space.
+    /// Projects a vector onto the represented subspace and returns the result in ambient coordinates.
     /// </summary>
-    /// <param name="v">The vector to be projected.</param>
-    /// <returns>The projected vector in the subspace.</returns>
+    /// <param name="v">The vector to project.</param>
+    /// <returns>The orthogonal projection of <paramref name="v"/> onto the represented subspace.</returns>
     public Vector ProjectVectorToSubSpace_in_OrigSpace(Vector v) => ProjMatrix * v;
 
     /// <summary>
-    /// Checks if the given vector belongs to the linear basis.
+    /// Determines whether the specified vector belongs to the represented subspace.
     /// </summary>
     /// <param name="v">The vector to check.</param>
-    /// <returns><c>True</c> if the vector is contained in the basis; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if <paramref name="v"/> lies in the subspace; otherwise, <c>false</c>.</returns>
     public bool Contains(Vector v) {
       Debug.Assert
         (
@@ -138,97 +154,64 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Orthonormalizes the given vector against the basis.
+    /// Orthonormalizes the given vector against the current basis.
     /// </summary>
     /// <param name="v">The input vector to orthonormalize.</param>
-    /// <returns>The resulting orthonormalized vector. If the basis is empty, returns a normalized vector.</returns>
+    /// <returns>The normalized component of <paramref name="v"/> orthogonal to the current subspace.</returns>
+    /// <exception cref="NotImplementedException">The operation is not implemented yet.</exception>
     public Vector Orthonormalize(Vector v) { throw new NotImplementedException("todo"); }
 
     /// <summary>
-    /// Adds the given vector to the basis. If the vector is zero or linearly dependent on the basis, it is not included.
+    /// Tries to extend the mutable orthonormal basis storage by the specified vector.
     /// </summary>
-    /// <param name="v">The vector to be potentially added.</param>
-    /// <returns><c>True</c> if the vector is added to the basis; otherwise, false.</returns>
-    protected bool AddVector(Vector v) {
-      Debug.Assert(v.SpaceDim == SpaceDim, "LQ_FullUpdate: Vector v must have the same dimension as currentQ.");
-
-      if (SubSpaceDim == SpaceDim || v.IsZero) { return false; }
-
-      Vector y = _Basis * v;
-
-      int    orthSize = SpaceDim - SubSpaceDim;
-      TNum[] orthData = new TNum[orthSize];
-      for (int k = 0; k < orthSize; k++) {
-        orthData[k] = y[SubSpaceDim + k];
-      }
-      Vector orthPart = new Vector(orthData);
-
-      TNum rho = orthPart.Length;
-      if (orthPart.IsZero) { return false; }
-
-      TNum[] houseData = orthPart.GetCopyAsArray();
-      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
-      if (Tools.EQ(orthPart[0], Tools.Zero)) {
-        sign = Tools.One;
-      }
-      houseData[0] += sign * rho;
-      Vector house = new Vector(houseData);
-
-      if (!house.IsZero) {
-        TNum   beta          = Tools.Two / house.Length2;
-        TNum[] projectionRow = new TNum[SpaceDim];
-        for (int col = 0; col < SpaceDim; col++) {
-          TNum dot = Tools.Zero;
-          for (int i = 0; i < orthSize; i++) {
-            dot += house[i] * _Basis[SubSpaceDim + i, col];
-          }
-          projectionRow[col] = dot;
-        }
-
-        for (int i = 0; i < orthSize; i++) {
-          int global_row_index = SubSpaceDim + i;
-          for (int col = 0; col < SpaceDim; col++) {
-            _Basis[global_row_index, col] -= beta * house[i] * projectionRow[col];
-          }
-        }
+    /// <param name="basis">Mutable orthonormal storage whose first <paramref name="subSpaceDim"/> rows are active basis vectors.</param>
+    /// <param name="subSpaceDim">Current active basis dimension. Increased by one when the vector is added.</param>
+    /// <param name="projMatrix">Cached projector associated with the mutable basis. Invalidated on mutation.</param>
+    /// <param name="v">The vector to be added if it is independent from the current subspace.</param>
+    /// <returns><c>true</c> if the vector increased the subspace dimension; otherwise, <c>false</c>.</returns>
+    protected static bool AddVectorInPlace(MatrixMutable basis, ref int subSpaceDim, ref Matrix? projMatrix, Vector v) {
+      int newSubSpaceDim = Decomposition.LQ_IncrementalUpdateCore(ref basis, subSpaceDim, v, alignNewBasisVectorWithInput: true);
+      if (newSubSpaceDim == subSpaceDim) {
+        return false;
       }
 
-
-      if (Tools.EQ(sign, Tools.One)) { // новый базисный вектор сонаправлен с v.
-        for (int j = 0; j < SpaceDim; j++) {
-          _Basis[SubSpaceDim, j] = -_Basis[SubSpaceDim, j];
-        }
-      }
-
-      SubSpaceDim += 1;
-      _projMatrix =  null;
+      subSpaceDim = newSubSpaceDim;
+      projMatrix  = null;
 
       return true;
     }
 
     /// <summary>
-    /// Adds a collection of vectors to the basis.
+    /// Tries to add all vectors from the sequence to the mutable basis storage.
     /// </summary>
-    /// <param name="Vs">The collection of vectors to add.</param>
-    protected void AddVectors(IEnumerable<Vector> Vs) {
+    /// <param name="basis">Mutable orthonormal storage whose first <paramref name="subSpaceDim"/> rows are active basis vectors.</param>
+    /// <param name="subSpaceDim">Current active basis dimension.</param>
+    /// <param name="projMatrix">Cached projector associated with the mutable basis. Invalidated on mutation.</param>
+    /// <param name="Vs">Vectors to process in order until the space becomes full-dimensional or the sequence ends.</param>
+    protected static void AddVectorsInPlace(
+        MatrixMutable       basis
+      , ref int             subSpaceDim
+      , ref Matrix?         projMatrix
+      , IEnumerable<Vector> Vs
+      ) {
       foreach (Vector v in Vs) {
-        AddVector(v);
-        if (FullDim) { break; }
+        AddVectorInPlace(basis, ref subSpaceDim, ref projMatrix, v);
+        if (subSpaceDim == basis.Cols) { break; }
       }
     }
 
     /// <summary>
-    /// Projects a given vector onto the linear basis in its coordinates. B * v
+    /// Projects a vector onto the represented subspace and returns its coordinates in this basis.
     /// </summary>
     /// <param name="v">The vector to project.</param>
-    /// <returns>The projected vector.</returns>
+    /// <returns>The coordinate vector of the orthogonal projection in the current basis.</returns>
     public Vector ProjectVectorToSubSpace(Vector v) => Basis * v;
 
     /// <summary>
-    /// Projects a given collection of vectors onto the linear basis.
+    /// Projects a sequence of vectors onto the represented subspace and returns their basis coordinates.
     /// </summary>
-    /// <param name="Swarm">The collection of vectors to project.</param>
-    /// <returns>The projected vectors as an enumerable collection.</returns>
+    /// <param name="Swarm">The vectors to project.</param>
+    /// <returns>The coordinate vectors of the orthogonal projections.</returns>
     public IEnumerable<Vector> ProjectVectorsToSubSpace(IEnumerable<Vector> Swarm) {
       foreach (Vector v in Swarm) {
         yield return ProjectVectorToSubSpace(v);
@@ -236,10 +219,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Maps a vector from the coordinate system of this basis to the original one.
+    /// Maps a coordinate vector in this basis back to ambient coordinates.
     /// </summary>
-    /// <param name="coords">The coordinates in this basis.</param>
-    /// <returns>The corresponding vector in the original coordinate system.</returns>
+    /// <param name="coords">Coordinates in the current basis.</param>
+    /// <returns>The corresponding ambient vector.</returns>
     public Vector ToOriginalCoords(Vector coords) => Basis.Transpose() * coords;
 
 
@@ -264,15 +247,19 @@ public partial class Geometry<TNum, TConv>
 
 #region Constructors
     /// <summary>
-    /// Constructs a linear basis with a single vector.
+    /// Constructs a one-dimensional basis spanned by the specified non-zero vector.
     /// </summary>
-    /// <param name="v">The vector to form the basis.</param>
+    /// <param name="v">A non-zero vector spanning the basis.</param>
     public LinearBasis(Vector v) {
       if (v.IsZero) {
         throw new ArgumentException("Cannot construct a linear basis from a zero vector.", nameof(v));
       }
-      _Basis = MatrixMutable.Eye(v.SpaceDim);
-      AddVector(v);
+      MatrixMutable basis       = MatrixMutable.Eye(v.SpaceDim);
+      int           subSpaceDim = 0;
+      Matrix?       projMatrix  = null;
+      AddVectorInPlace(basis, ref subSpaceDim, ref projMatrix, v);
+      _Basis      = new Matrix(basis, false);
+      SubSpaceDim = subSpaceDim;
 
 #if DEBUG
       CheckCorrectness();
@@ -280,16 +267,16 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a new linear basis with full dimension in a given space.
+    /// Constructs the standard full-dimensional orthonormal basis of the ambient space.
     /// </summary>
     /// <param name="spaceDim">The dimension of the space.</param>
     public LinearBasis(int spaceDim) : this(spaceDim, spaceDim) { }
 
     /// <summary>
-    /// Constructs a new linear basis with a specified space dimension and subspace dimension.
+    /// Constructs the standard coordinate basis of the specified subspace dimension.
     /// </summary>
-    /// <param name="spaceDim">The dimension of the space.</param>
-    /// <param name="subSpaceDim">The dimension of the linear subspace.</param>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="subSpaceDim">Number of leading standard basis vectors to include.</param>
     public LinearBasis(int spaceDim, int subSpaceDim) {
       Debug.Assert
         (
@@ -297,20 +284,23 @@ public partial class Geometry<TNum, TConv>
        , $"LinearBasis: The dimension of the vectors in basis must be greater or equal than basis subspace! Found spaceDim = {spaceDim} < subSpaceDim = {subSpaceDim}."
         );
 
-      _Basis      = MatrixMutable.Eye(spaceDim);
+      _Basis      = Matrix.Eye(spaceDim);
       SubSpaceDim = subSpaceDim;
     }
 
     /// <summary>
-    /// Constructs a linear basis using a set of vectors.
+    /// Constructs an orthonormal basis from the specified vectors.
     /// </summary>
-    /// <param name="spaceDim">The dimension of the space.</param>
-    /// <param name="Vs">The vectors to form the basis.</param>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="Vs">Vectors whose span defines the subspace.</param>
     public LinearBasis(int spaceDim, IEnumerable<Vector> Vs) {
-      _Basis      = MatrixMutable.Eye(spaceDim);
-      SubSpaceDim = 0;
+      MatrixMutable basis       = MatrixMutable.Eye(spaceDim);
+      int           subSpaceDim = 0;
+      Matrix?       projMatrix  = null;
 
-      AddVectors(Vs);
+      AddVectorsInPlace(basis, ref subSpaceDim, ref projMatrix, Vs);
+      _Basis      = new Matrix(basis, false);
+      SubSpaceDim = subSpaceDim;
 
 #if DEBUG
       CheckCorrectness();
@@ -318,18 +308,25 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Constructs a linear basis from a set of vectors.
+    /// Constructs an orthonormal basis from the specified vectors.
     /// </summary>
-    /// <param name="Vs">The vectors to form the basis.</param>
+    /// <param name="Vs">Vectors whose span defines the subspace.</param>
     public LinearBasis(params IEnumerable<Vector> Vs) : this(Vs.First().SpaceDim, Vs) { }
 
     /// <summary>
-    /// Copy constructor for the linear basis.
+    /// Constructs a linear basis from another basis.
     /// </summary>
     /// <param name="lb">The linear basis to copy.</param>
-    /// <param name="needCopy"></param>
+    /// <param name="needCopy">
+    /// If <c>true</c>, creates an independent copy.
+    /// If <c>false</c>, reuses the source storage only for immutable <see cref="LinearBasis"/> sources.
+    /// Zero-copy wrapping of <see cref="LinearBasisMutable"/> is not allowed here.
+    /// </param>
     public LinearBasis(LinearBasis lb, bool needCopy) {
-      _Basis      = new MatrixMutable(lb._Basis, needCopy);
+      if (!needCopy && lb is LinearBasisMutable) {
+        throw new ArgumentException("Found LinearBasisMutable in LinearBasis copy constructor!");
+      }
+      _Basis      = new Matrix(lb._Basis, needCopy);
       SubSpaceDim = lb.SubSpaceDim;
 #if DEBUG
       CheckCorrectness();
@@ -337,10 +334,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Merges two linear bases into one.
+    /// Constructs the orthonormal basis of the sum of two subspaces.
     /// </summary>
-    /// <param name="lb1">The first basis to merge.</param>
-    /// <param name="lb2">The second basis to merge.</param>
+    /// <param name="lb1">The first basis.</param>
+    /// <param name="lb2">The second basis.</param>
     public LinearBasis(LinearBasis lb1, LinearBasis lb2) {
       Debug.Assert
         (
@@ -349,23 +346,28 @@ public partial class Geometry<TNum, TConv>
         );
 
       if (lb1.Empty && lb2.Empty) {
-        _Basis = MatrixMutable.Eye(lb1.SpaceDim);
+        _Basis = Matrix.Eye(lb1.SpaceDim);
       }
       else {
+        MatrixMutable basis;
+        int           subSpaceDim;
+        Matrix?       projMatrix = null;
         if (lb1.SubSpaceDim > lb2.SubSpaceDim) {
-          _Basis      = new MatrixMutable(lb1._Basis, true);
-          SubSpaceDim = lb1.SubSpaceDim;
-          if (!FullDim) {
-            AddVectors(lb2);
+          basis       = new MatrixMutable(lb1._Basis, true);
+          subSpaceDim = lb1.SubSpaceDim;
+          if (subSpaceDim != lb1.SpaceDim) {
+            AddVectorsInPlace(basis, ref subSpaceDim, ref projMatrix, lb2);
           }
         }
         else {
-          _Basis      = new MatrixMutable(lb2._Basis, true);
-          SubSpaceDim = lb2.SubSpaceDim;
-          if (!FullDim) {
-            AddVectors(lb1);
+          basis       = new MatrixMutable(lb2._Basis, true);
+          subSpaceDim = lb2.SubSpaceDim;
+          if (subSpaceDim != lb2.SpaceDim) {
+            AddVectorsInPlace(basis, ref subSpaceDim, ref projMatrix, lb1);
           }
         }
+        _Basis      = new Matrix(basis, false);
+        SubSpaceDim = subSpaceDim;
       }
 
 
@@ -374,7 +376,12 @@ public partial class Geometry<TNum, TConv>
 #endif
     }
 
-    private LinearBasis(MatrixMutable basis, int subSpaceDim) {
+    /// <summary>
+    /// Initializes a basis directly from already prepared immutable storage.
+    /// </summary>
+    /// <param name="basis">Immutable orthonormal storage whose rows contain the basis and its orthogonal complement.</param>
+    /// <param name="subSpaceDim">Number of active basis rows.</param>
+    protected LinearBasis(Matrix basis, int subSpaceDim) {
       _Basis      = basis;
       SubSpaceDim = subSpaceDim;
     }
@@ -382,28 +389,30 @@ public partial class Geometry<TNum, TConv>
 
 #region Factories
     /// <summary>
-    /// Generates a full-dimensional linear basis for the specified dimension.
+    /// Generates a random full-dimensional orthonormal basis.
     /// </summary>
-    /// <param name="spaceDim">The dimension of the space and the basis.</param>
-    /// <param name="random">The random to be used. If null, the Random be used.</param>
-    /// <returns>A linear basis with the given dimension.</returns>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="random">Random generator. If <c>null</c>, the default generator is used.</param>
+    /// <returns>A random full-dimensional orthonormal basis.</returns>
     public static LinearBasis GenLinearBasis(int spaceDim, GRandomLC? random = null) => GenLinearBasis(spaceDim, spaceDim, random);
 
     /// <summary>
-    /// Generates a k-dimensional linear basis in the specified dimension.
+    /// Generates a random orthonormal basis of the specified subspace dimension.
     /// </summary>
-    /// <param name="spaceDim">The dimension of the space.</param>
-    /// <param name="subSpaceDim">The dimension of the basis.</param>
-    /// <param name="random">The random to be used. If null, the Random be used.</param>
-    /// <returns>A linear basis with the given dimension.</returns>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="subSpaceDim">Subspace dimension.</param>
+    /// <param name="random">Random generator. If <c>null</c>, the default generator is used.</param>
+    /// <returns>A random orthonormal basis.</returns>
     public static LinearBasis GenLinearBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null) {
-      LinearBasis lb = new LinearBasis(spaceDim, 0);
-      if (subSpaceDim == 0) { return lb; }
+      MatrixMutable basis      = MatrixMutable.Eye(spaceDim);
+      int           subDim     = 0;
+      Matrix?       projMatrix = null;
+      if (subSpaceDim == 0) { return new LinearBasis(new Matrix(basis, false), 0); }
       do {
-        lb.AddVector(Vector.GenVector(spaceDim, random));
-      } while (lb.SubSpaceDim != subSpaceDim);
+        AddVectorInPlace(basis, ref subDim, ref projMatrix, Vector.GenVector(spaceDim, random));
+      } while (subDim != subSpaceDim);
 
-      return lb;
+      return new LinearBasis(new Matrix(basis, false), subDim);
     }
 #endregion
 
@@ -411,9 +420,9 @@ public partial class Geometry<TNum, TConv>
     public override int GetHashCode() => throw new InvalidOperationException();
 
     /// <summary>
-    /// Returns a string representation of the basis as a list of basis vectors, each on a separate line.
+    /// Returns a string representation of the basis as a list of basis vectors.
     /// </summary>
-    /// <returns>A <see cref="string"/> containing all basis vectors separated by newline characters.</returns>
+    /// <returns>A newline-separated list of basis vectors.</returns>
     public override string ToString() {
       StringBuilder sb = new StringBuilder();
       foreach (Vector bvec in this) {
@@ -456,10 +465,10 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Two linear basics are equal if they span the same space.
+    /// Determines whether another object represents the same linear subspace.
     /// </summary>
-    /// <param name="obj">Object to compare with this linear basis.</param>
-    /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
+    /// <param name="obj">Object to compare with this basis.</param>
+    /// <returns><c>true</c> if the other object is a basis of the same subspace; otherwise, <c>false</c>.</returns>
     public override bool Equals(object? obj) {
       if (obj == null) { return false; }
       if (ReferenceEquals(this, obj)) { return true; }
@@ -489,9 +498,8 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Method to check then the linear basis is correct
+    /// Verifies the internal orthonormal representation of the basis.
     /// </summary>
-    /// <param name="linearBasis">Basis to be checked</param>
     public void CheckCorrectness() {
       if (!this.Empty) {
         if (this.SubSpaceDim > this[0].SpaceDim) {
@@ -513,28 +521,5 @@ public partial class Geometry<TNum, TConv>
     }
 
   }
-
-  public class LinearBasisMutable : LinearBasis {
-
-    public LinearBasisMutable(Vector                     v) : base(v) { }
-    public LinearBasisMutable(int                        spaceDim) : base(spaceDim) { }
-    public LinearBasisMutable(int                        spaceDim, int subSpaceDim) : base(spaceDim, subSpaceDim) { }
-    public LinearBasisMutable(int                        spaceDim, IEnumerable<Vector> Vs) : base(spaceDim, Vs) { }
-    public LinearBasisMutable(params IEnumerable<Vector> Vs) : base(Vs) { }
-    public LinearBasisMutable(LinearBasis                lb1, LinearBasis lb2) : base(lb1, lb2) { }
-    public LinearBasisMutable(LinearBasis                lb,  bool        needCopy) : base(lb, needCopy) { }
-
-
-    public new bool AddVector(Vector               v)  => base.AddVector(v);
-    public new void AddVectors(IEnumerable<Vector> vs) => base.AddVectors(vs);
-
-    public new static LinearBasisMutable GenLinearBasis(int spaceDim, int subSpaceDim, GRandomLC? random = null)
-      => new LinearBasisMutable(LinearBasis.GenLinearBasis(spaceDim, subSpaceDim, random), needCopy: false);
-
-    public new static LinearBasisMutable GenLinearBasis(int spaceDim, GRandomLC? random = null)
-      => new LinearBasisMutable(LinearBasis.GenLinearBasis(spaceDim, random), needCopy: false);
-
-  }
-
 }
 

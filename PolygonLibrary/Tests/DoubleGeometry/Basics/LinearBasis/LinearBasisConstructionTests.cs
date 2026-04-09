@@ -110,6 +110,42 @@ public class LinearBasisConstructionTests {
   }
 
   [Test]
+  public void Constructor_Copy_MutableSource_NeedCopyFalse_Throws() {
+    LinearBasisMutable basis = new LinearBasisMutable(V(1, 0, 0), V(0, 1, 0));
+
+    Assert.Throws<ArgumentException>(
+      () => new LinearBasis(basis, needCopy: false),
+      "Immutable LinearBasis should not share mutable storage."
+    );
+  }
+
+  [Test]
+  public void Indexer_OutOfRange_Throws() {
+    LinearBasis basis = new LinearBasis(3, 2);
+
+    Assert.Throws<ArgumentException>(() => {
+      var _ = basis[-1];
+    });
+
+    Assert.Throws<ArgumentException>(() => {
+      var _ = basis[2];
+    });
+  }
+
+  [Test]
+  public void Constructor_MutableCopy_ImmutableSource_DoesNotAliasOriginal() {
+    LinearBasis original = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
+    LinearBasisMutable copy = new LinearBasisMutable(original);
+
+    copy.AddVector(V(0, 0, 1));
+
+    Assert.That(original.SubSpaceDim, Is.EqualTo(2), "Mutable wrapper must materialize its own storage for immutable source.");
+    Assert.That(original.Contains(V(0, 0, 1)), Is.False, "Mutable wrapper must not change the original subspace.");
+    Assert.That(copy.SubSpaceDim, Is.EqualTo(3));
+    Assert.That(copy.Contains(V(0, 0, 1)), Is.True);
+  }
+
+  [Test]
   public void Constructor_Merge() {
     LinearBasis lb1 = new LinearBasis(V(1, 0, 0, 0));
     LinearBasis lb2 = new LinearBasis(V(0, 1, 0, 0));

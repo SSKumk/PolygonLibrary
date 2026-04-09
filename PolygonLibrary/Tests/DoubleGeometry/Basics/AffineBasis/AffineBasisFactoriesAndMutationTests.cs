@@ -47,7 +47,7 @@ public class AffineBasisFactoriesAndMutationTests {
   [Test]
   public void Method_AddVector() {
     Vector origin = V(1, 1, 1);
-    AffineBasisMutable basis = new AffineBasisMutable(origin, new LinearBasis(V(1, 0, 0)), false);
+    AffineBasisMutable basis = new AffineBasisMutable(origin, new LinearBasis(V(1, 0, 0)));
     Assert.That(basis.SubSpaceDim, Is.EqualTo(1));
 
     bool added1 = basis.AddVector(V(0, 5, 0));
@@ -72,6 +72,43 @@ public class AffineBasisFactoriesAndMutationTests {
     Assert.That(added4, Is.False);
     Assert.That(basis.SubSpaceDim, Is.EqualTo(3));
     IsBasisOrthonormal(basis);
+  }
+
+  [Test]
+  public void Constructor_FromPoints_MutableBasis_BuildsAffineHullAndRemainsMutable() {
+    Vector p1 = V(1, 1, 1);
+    Vector p2 = V(3, 1, 1);
+    Vector p3 = V(1, 4, 1);
+
+    AffineBasisMutable basis = new AffineBasisMutable(new List<Vector> { p1, p2, p3 });
+
+    AreEqual(basis.Origin, p1);
+    Assert.That(basis.SubSpaceDim, Is.EqualTo(2));
+    Assert.That(basis.Contains(p2), Is.True);
+    Assert.That(basis.Contains(p3), Is.True);
+
+    bool added = basis.AddVector(V(0, 0, 2));
+
+    Assert.That(added, Is.True);
+    Assert.That(basis.SubSpaceDim, Is.EqualTo(3));
+    Assert.That(basis.Contains(V(1, 1, 7)), Is.True);
+    IsBasisOrthonormal(basis);
+  }
+
+  [Test]
+  public void Constructor_FromImmutableAffineBasis_MutableCopy_DoesNotAliasOriginalContainmentOrProjection() {
+    AffineBasis original = new AffineBasis(V(1, 1, 1), new LinearBasis(V(1, 0, 0), V(0, 1, 0)));
+    Matrix originalProjection = original.LinBasis.ProjMatrix;
+
+    AffineBasisMutable copy = new AffineBasisMutable(original);
+    bool added = copy.AddVector(V(0, 0, 1));
+
+    Assert.That(added, Is.True);
+    Assert.That(copy.SubSpaceDim, Is.EqualTo(3));
+    Assert.That(original.SubSpaceDim, Is.EqualTo(2));
+    Assert.That(original.Contains(V(2, 3, 5)), Is.False, "Original affine basis should remain unchanged.");
+    Assert.That(copy.Contains(V(2, 3, 5)), Is.True);
+    Assert.That(original.LinBasis.ProjMatrix, Is.EqualTo(originalProjection));
   }
 
 }
