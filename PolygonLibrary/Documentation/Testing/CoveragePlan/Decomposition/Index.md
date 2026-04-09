@@ -1,13 +1,13 @@
-# Decomposition
+﻿# Decomposition
 
 ## Scope
 
 Сценарии для `Geometry<double, DConvertor>.Decomposition`:
 
-- `QR_ByReflection`;
-- `LQ_ByReflection`;
-- `QR_FullUpdate`;
-- `LQ_FullUpdate`.
+- `QR_ByHouseholder`;
+- `LQ_ByHouseholder`;
+- `QR_IncrementalUpdate`;
+- `LQ_IncrementalUpdate`.
 
 ## Topics
 
@@ -18,8 +18,8 @@
 
 | Topic | Status | Notes |
 | --- | --- | --- |
-| Factorizations | `x` | `QR_ByReflection` и `LQ_ByReflection` покрыты square/tall/wide сценариями с проверкой реконструкции и структуры. |
-| Incremental Updates | `x` | `QR_FullUpdate` и `LQ_FullUpdate` покрыты независимыми, зависимыми и нулевыми добавлениями. |
+| Factorizations | `x` | `QR_ByHouseholder` и `LQ_ByHouseholder` покрыты square/tall/wide и rank-deficient сценариями с проверкой реконструкции и структуры. |
+| Incremental Updates | `x` | `QR_IncrementalUpdate` и `LQ_IncrementalUpdate` покрыты независимыми, зависимыми, нулевыми и двухшаговыми сценариями. |
 
 ## Existing Test Sources
 
@@ -29,3 +29,4 @@
 
 - Для `QR` и `LQ` не фиксируется конкретный знак столбцов/строк `Q`, а только инварианты разложения.
 - Update-сценарии проверяются через сохранение ортонормальности и обнуление координат за пределами текущего базиса, а не через жёсткую конкретную матрицу.
+

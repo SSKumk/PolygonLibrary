@@ -1,4 +1,4 @@
-namespace CGLibrary;
+﻿namespace CGLibrary;
 
 public partial class Geometry<TNum, TConv>
   where TNum : struct, INumber<TNum>, ITrigonometricFunctions<TNum>, IPowerFunctions<TNum>, IRootFunctions<TNum>,
@@ -6,240 +6,385 @@ public partial class Geometry<TNum, TConv>
   where TConv : INumConvertor<TNum> {
 
   /// <summary>
-  /// Matrix decomposition routines and incremental orthonormal-basis updates.
+  /// Contains Householder-based matrix decomposition routines and orthogonal update primitives.
   /// </summary>
+  /// <remarks>
+  /// The class provides full QR and LQ decompositions together with incremental QR and LQ updates
+  /// of a square orthogonal matrix. All updates are implemented through Householder reflectors
+  /// acting on trailing rows or columns.
+  /// </remarks>
   public class Decomposition {
 
     /// <summary>
-    /// Performs the QR-decomposition of the given d x m matrix A using Householder reflections.
+    /// Stores the parameters of a Householder reflector acting on a trailing block.
     /// </summary>
-    /// <param name="A">The matrix A to be decomposed.</param>
+    /// <param name="House">The Householder vector <c>u</c>.</param>
+    /// <param name="Beta">The scalar coefficient in <c>H = I - beta * u * u^T</c>.</param>
+    /// <param name="Sign">The sign used when constructing the reflector.</param>
+    /// <param name="OrthSize">The size of the trailing block on which the reflector acts.</param>
+    private readonly record struct HouseholderData(Vector House, TNum Beta, TNum Sign, int OrthSize);
+
+    /// <summary>
+    /// Builds the Householder reflector that annihilates the trailing part of a vector.
+    /// </summary>
+    /// <param name="transformedVector">
+    /// Input vector whose coordinates starting from <paramref name="currentBasisDimension"/>
+    /// define the trailing part to be processed.
+    /// </param>
+    /// <param name="currentBasisDimension">
+    /// The prefix length that must remain unchanged.
+    /// Only coordinates with indices greater than or equal to this value participate in the reflector construction.
+    /// </param>
+    /// <param name="data">
+    /// On success, receives the Householder data for the trailing block.
+    /// On failure, receives the default value.
+    /// </param>
     /// <returns>
-    /// A tuple (Q, R) where A = Q * R.
-    /// Q is an d x d orthonormal matrix (Q^-1 = Q^T)
-    /// R is an d x m upper triangular matrix.</returns>
-    public static (Matrix Q, Matrix R) QR_ByReflection(Matrix A) {
+    /// <c>true</c> if the trailing part is non-zero and a reflector was constructed;
+    /// otherwise, <c>false</c>.
+    /// </returns>
+    private static bool TryBuildHouseholderFromTail(
+      Vector transformedVector,
+      int    currentBasisDimension,
+      out HouseholderData data
+    ) {
+      int orthSize = transformedVector.SpaceDim - currentBasisDimension;
+      TNum[] orthData = new TNum[orthSize];
+      for (int i = 0; i < orthSize; i++) {
+        orthData[i] = transformedVector[currentBasisDimension + i];
+      }
+      Vector orthPart = new Vector(orthData);
+      if (orthPart.IsZero) {
+        data = default;
+        return false;
+      }
+
+      TNum[] houseData = orthPart.GetCopyAsArray();
+      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
+      if (Tools.EQ(orthPart[0], Tools.Zero)) {
+        sign = Tools.One;
+      }
+
+      houseData[0] += sign * orthPart.Length;
+      Vector house = new Vector(houseData);
+      if (house.IsZero) {
+        data = default;
+        return false;
+      }
+
+      data = new HouseholderData(house, Tools.Two / house.Length2, sign, orthSize);
+
+      return true;
+    }
+
+    /// <summary>
+    /// Left-multiplies a trailing row block of a matrix by a Householder reflector.
+    /// </summary>
+    /// <param name="matrix">Matrix to be updated in place.</param>
+    /// <param name="startRow">
+    /// Index of the first affected row. Only rows from this index onward are transformed.
+    /// </param>
+    /// <param name="startCol">
+    /// Index of the first affected column. Only columns from this index onward are updated.
+    /// </param>
+    /// <param name="data">Householder reflector data for the active trailing block.</param>
+    /// <remarks>
+    /// Applies <c>H * A_sub</c>, where <c>H = I - beta * u * u^T</c> acts on the trailing row block.
+    /// </remarks>
+    private static void ApplyHouseholderFromLeftToSubmatrix(
+      ref MatrixMutable matrix,
+      int               startRow,
+      int               startCol,
+      HouseholderData   data
+    ) {
+      for (int col = startCol; col < matrix.Cols; col++) {
+        TNum dot = Tools.Zero;
+        for (int i = 0; i < data.OrthSize; i++) {
+          dot += data.House[i] * matrix[startRow + i, col];
+        }
+
+        for (int i = 0; i < data.OrthSize; i++) {
+          matrix[startRow + i, col] -= data.Beta * data.House[i] * dot;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Right-multiplies a trailing column block of a matrix by a Householder reflector.
+    /// </summary>
+    /// <param name="matrix">Matrix to be updated in place.</param>
+    /// <param name="startRow">
+    /// Index of the first affected row. Only rows from this index onward are updated.
+    /// </param>
+    /// <param name="startCol">
+    /// Index of the first affected column. Only columns from this index onward are transformed.
+    /// </param>
+    /// <param name="data">Householder reflector data for the active trailing block.</param>
+    /// <remarks>
+    /// Applies <c>A_sub * H</c>, where <c>H = I - beta * u * u^T</c> acts on the trailing column block.
+    /// </remarks>
+    private static void ApplyHouseholderFromRightToSubmatrix(
+      ref MatrixMutable matrix,
+      int               startRow,
+      int               startCol,
+      HouseholderData   data
+    ) {
+      for (int row = startRow; row < matrix.Rows; row++) {
+        TNum dot = Tools.Zero;
+        for (int j = 0; j < data.OrthSize; j++) {
+          dot += matrix[row, startCol + j] * data.House[j];
+        }
+
+        for (int j = 0; j < data.OrthSize; j++) {
+          matrix[row, startCol + j] -= dot * (data.Beta * data.House[j]);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Flips the sign of the leading row of the trailing block if requested by the reflector construction.
+    /// </summary>
+    /// <param name="currentQ">Square orthogonal matrix to be updated in place.</param>
+    /// <param name="currentBasisDimension">Index of the first row in the trailing block.</param>
+    /// <param name="sign">
+    /// Sign chosen during reflector construction.
+    /// The row is flipped only when this value equals <c>1</c>.
+    /// </param>
+    /// <remarks>
+    /// This helper is used only when a caller wants a fixed sign convention for the leading row
+    /// of the updated trailing block.
+    /// </remarks>
+    private static void AlignTrailingRowWithInput(
+      ref MatrixMutable currentQ,
+      int               currentBasisDimension,
+      TNum              sign
+    ) {
+      if (Tools.NE(sign, Tools.One)) { return; }
+
+      int d = currentQ.Rows;
+      for (int col = 0; col < d; col++) {
+        currentQ[currentBasisDimension, col] = -currentQ[currentBasisDimension, col];
+      }
+    }
+
+    /// <summary>
+    /// Computes the QR decomposition of a matrix by Householder reflections.
+    /// </summary>
+    /// <param name="A">Input matrix of size <c>d x m</c> with <c>d &gt;= m</c>.</param>
+    /// <returns>
+    /// A pair <c>(Q, R)</c> such that <c>A = Q * R</c>, where:
+    /// <list type="bullet">
+    /// <item><description><c>Q</c> is a square orthogonal matrix of size <c>d x d</c>,</description></item>
+    /// <item><description><c>R</c> is an upper-triangular matrix of size <c>d x m</c>.</description></item>
+    /// </list>
+    /// </returns>
+    /// <remarks>
+    /// The algorithm applies Householder reflections from the left to annihilate entries below the diagonal
+    /// and accumulates the same reflectors into the orthogonal factor <c>Q</c>.
+    /// </remarks>
+    public static (Matrix Q, Matrix R) QR_ByHouseholder(Matrix A) {
       int d = A.Rows;
       int m = A.Cols;
 
-      Debug.Assert(d >= m, "Decomposition.QR_ByReflection: Can't decompose the system which d < m.");
+      Debug.Assert(d >= m, "Decomposition.QR_ByHouseholder: Can't decompose the system which d < m.");
 
-      TNum[,] R = A;
-      TNum[,] Q = new TNum[d, d]; // Q = Eye
-      for (int i = 0; i < d; i++) {
-        for (int j = 0; j < d; j++) {
-          Q[i, j] = Tools.Zero;
-        }
-      }
-      for (int i = 0; i < d; i++) {
-        Q[i, i] = Tools.One;
-      }
+      MatrixMutable r = new MatrixMutable(A, true);
+      MatrixMutable q = MatrixMutable.Eye(d);
 
       int t = Math.Min(d - 1, m);
       for (int k = 0; k < t; k++) {
-        TNum[] v     = new TNum[d - k]; // Вектор Хаусхолдера
-        TNum   normX = Tools.Zero;
-        for (int i = 0; i < d - k; i++) {
-          v[i]  =  R[k + i, k];
-          normX += v[i] * v[i];
-        }
-        normX = TNum.Sqrt(normX);
+        Vector column = r.TakeColumnVector(k);
+        if (!TryBuildHouseholderFromTail(column, k, out HouseholderData data)) { continue; }
 
-        if (Tools.NE(normX)) {
-          int sign = TNum.Sign(v[0]) == 0 ? 1 : TNum.Sign(v[0]);
-          v[0] += TConv.FromInt(sign) * normX; //v = x + sign(x_1)*||x||*e1.
-
-          // Вычисляем beta = 2/(v^T * v) (нормировка)
-          TNum vTv = Tools.Zero;
-          foreach (TNum s in v) { vTv += s * s; }
-          TNum beta = Tools.Two / vTv;
-
-          // Основное свойство матриц Хаусхолдера
-          // P = I - beta*v*v^T, A - matrix
-          // PA = A - (beta*v)(v^T*A)
-          // AP = A - (Av)(beta*v)^T
-
-          // Меняем R. Столбцы до k-го уже посчитаны. Их менять не нужно. Ко всем остальным надо применить преобразование P*R_k
-          for (int j = k; j < m; j++) { //
-            TNum vTr = Tools.Zero;
-            for (int i = 0; i < d - k; i++) { // v^T*R
-              vTr += v[i] * R[k + i, j];
-            }
-
-            for (int i = 0; i < d - k; i++) {
-              R[k + i, j] -= beta * v[i] * vTr; // R - (beta*v)(v^T*R)
-            }
-          }
-
-          // Меняем Q.
-          for (int j = 0; j < d; j++) {
-            TNum vTq = Tools.Zero;
-            for (int i = 0; i < d - k; i++) { // v^T*Q
-              vTq += v[i] * Q[j, k + i];
-            }
-
-            for (int i = 0; i < d - k; i++) {
-              Q[j, k + i] -= beta * v[i] * vTq; // R - (beta*v)(v^T*Q)
-            }
-          }
-        }
+        ApplyHouseholderFromLeftToSubmatrix(ref r, k, k, data);
+        ApplyHouseholderFromRightToSubmatrix(ref q, 0, k, data);
       }
 
-      Matrix q = new Matrix(Q);
-      Matrix r = new Matrix(R);
+      Matrix qRes = new Matrix(q, false);
+      Matrix rRes = new Matrix(r, false);
 
-      Debug.Assert((q * r).Equals(A), $"Decomposition.QR_ByReflection: Q*R != A");
+      Debug.Assert((qRes * rRes).Equals(A), $"Decomposition.QR_ByHouseholder: Q*R != A");
 
 
-      return (q, r);
+      return (qRes, rRes);
     }
 
 
     /// <summary>
-    /// Performs the LQ-decomposition of the given m×d matrix A using Householder reflections.
+    /// Computes the LQ decomposition of a matrix by Householder reflections.
     /// </summary>
-    /// <param name="A">The matrix A to be decomposed.</param>
+    /// <param name="A">Input matrix of size <c>m x d</c>.</param>
     /// <returns>
-    /// A tuple (L, Q) where A = L * Q.
-    /// Q is an d x d orthonormal matrix (Q^-1 = Q^T).
-    /// L is an m x d lower triangular matrix.</returns>
-    public static (Matrix L, Matrix Q) LQ_ByReflection(Matrix A) {
-      (Matrix Q_T, Matrix R_T) = QR_ByReflection(A.Transpose());
-
-      return (R_T.Transpose(), Q_T.Transpose());
-    }
-
-    /// <summary>
-    /// Adds vector <paramref name="v"/> to the orthonormal basis represented by <paramref name="currentQ"/>
-    /// using a QR decomposition update via Householder reflections.
-    /// </summary>
-    /// <param name="currentQ">The current orthogonal d×d matrix. Updated in-place if <paramref name="v"/> is independent.</param>
-    /// <param name="currentBasisDimension">Number of basis vectors already in <paramref name="currentQ"/> (0 ≤ value ≤ d).</param>
-    /// <param name="v">The vector to add.</param>
-    /// <returns>
-    /// <c>currentBasisDimension + 1</c> if <paramref name="v"/> is linearly independent; otherwise, returns <paramref name="currentBasisDimension"/>.
+    /// A pair <c>(L, Q)</c> such that <c>A = L * Q</c>, where:
+    /// <list type="bullet">
+    /// <item><description><c>L</c> is a lower-triangular matrix of size <c>m x d</c>,</description></item>
+    /// <item><description><c>Q</c> is a square orthogonal matrix of size <c>d x d</c>.</description></item>
+    /// </list>
     /// </returns>
-    public static int QR_FullUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v) {
+    /// <remarks>
+    /// The algorithm applies Householder reflections from the right to annihilate entries above the diagonal
+    /// and accumulates the same reflectors into the orthogonal factor <c>Q</c>.
+    /// </remarks>
+    public static (Matrix L, Matrix Q) LQ_ByHouseholder(Matrix A) {
+      int m = A.Rows;
+      int d = A.Cols;
+
+      MatrixMutable l = new MatrixMutable(A, true);
+      MatrixMutable q = MatrixMutable.Eye(d);
+
+      int t = Math.Min(m, d - 1);
+      for (int k = 0; k < t; k++) {
+        Vector row = l.TakeRowVector(k);
+        if (!TryBuildHouseholderFromTail(row, k, out HouseholderData data)) { continue; }
+
+        ApplyHouseholderFromRightToSubmatrix(ref l, k, k, data);
+        ApplyHouseholderFromLeftToSubmatrix(ref q, k, 0, data);
+      }
+
+      Matrix lRes = new Matrix(l, false);
+      Matrix qRes = new Matrix(q, false);
+
+      Debug.Assert((lRes * qRes).Equals(A), $"Decomposition.LQ_ByHouseholder: L*Q != A");
+
+      return (lRes, qRes);
+    }
+
+    /// <summary>
+    /// Updates a square orthogonal matrix so that a given vector has zero trailing coordinates
+    /// after right multiplication by the updated matrix.
+    /// </summary>
+    /// <param name="currentQ">
+    /// Square orthogonal matrix of size <c>d x d</c>. It is modified in place when the update succeeds.
+    /// </param>
+    /// <param name="currentBasisDimension">
+    /// Prefix length that is considered fixed.
+    /// Only the trailing columns starting from this index may change.
+    /// </param>
+    /// <param name="v">
+    /// Input vector of dimension <c>d</c>. After a successful update, the coordinates of
+    /// <paramref name="v"/> in the updated orthogonal system are zero from
+    /// <paramref name="currentBasisDimension"/> + 1 onward.
+    /// </param>
+    /// <returns>
+    /// <paramref name="currentBasisDimension"/> + 1 if the trailing part of the transformed vector is non-zero;
+    /// otherwise, returns <paramref name="currentBasisDimension"/>.
+    /// </returns>
+    /// <remarks>
+    /// The update applies a Householder reflector to the trailing columns of <paramref name="currentQ"/>
+    /// so that the transformed vector has zero coordinates after the new active position.
+    /// </remarks>
+    public static int QR_IncrementalUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v) {
       int d = currentQ.Rows;
 
-      Debug.Assert(currentQ.Rows == currentQ.Cols, "QR_FullUpdate: currentQ must be a square matrix.");
-      Debug.Assert(v.SpaceDim == d, "QR_FullUpdate: Vector v must have the same dimension as currentQ.");
-      // currentBasisDimension - это количество уже существующих векторов в базисе.
-      // Может быть от 0 (пустой базис) до d (базис полон).
+      Debug.Assert(currentQ.Rows == currentQ.Cols, "QR_IncrementalUpdate: currentQ must be a square matrix.");
+      Debug.Assert(v.SpaceDim == d, "QR_IncrementalUpdate: Vector v must have the same dimension as currentQ.");
       Debug.Assert
         (
          currentBasisDimension >= 0 && currentBasisDimension <= d
-       , "QR_FullUpdate: currentBasisDimension must be between 0 and d (inclusive)."
+       , "QR_IncrementalUpdate: currentBasisDimension must be between 0 and d (inclusive)."
         );
 
       if (currentBasisDimension == d || v.IsZero) { return currentBasisDimension; }
 
 
       Vector y = Matrix.MultRowVectorByMatrix(v, currentQ);
-
-      int    orthSize = d - currentBasisDimension;
-      TNum[] orthData = new TNum[orthSize];
-      for (int i = 0; i < orthSize; i++) {
-        orthData[i] = y[currentBasisDimension + i];
-      }
-      Vector orthPart = new Vector(orthData);
-
-      TNum rho = orthPart.Length;
-      if (orthPart.IsZero) { return currentBasisDimension; }
-
-
-      TNum[] houseData = orthPart.GetCopyAsArray();
-      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
-      if (Tools.EQ(orthPart[0], Tools.Zero)) {
-        sign = Tools.One;
-      }
-      houseData[0] += sign * rho;
-      Vector house = new Vector(houseData);
-
-      if (house.IsZero) {
-        return currentBasisDimension + 1;
+      if (!TryBuildHouseholderFromTail(y, currentBasisDimension, out HouseholderData data)) {
+        return currentBasisDimension;
       }
 
-      TNum beta = Tools.Two / house.Length2;
-      for (int row = 0; row < d; row++) {
-        TNum dot = Tools.Zero;
-        for (int j = 0; j < orthSize; j++) { dot += currentQ[row, currentBasisDimension + j] * house[j]; }
-        for (int j = 0; j < orthSize; j++) { currentQ[row, currentBasisDimension + j] -= dot * (beta * house[j]); }
-      }
+      ApplyHouseholderFromRightToSubmatrix(ref currentQ, 0, currentBasisDimension, data);
 
       return currentBasisDimension + 1;
     }
 
 
     /// <summary>
-    /// Adds vector (representing a row) <paramref name="v"/> to the orthonormal basis
-    /// represented by the first <paramref name="currentBasisDimension"/> rows of <paramref name="currentQ"/>
-    /// using an LQ decomposition update via Householder reflections.
+    /// Updates a square orthogonal matrix so that a given vector has zero trailing coordinates
+    /// after left multiplication by the updated matrix.
     /// </summary>
-    /// <param name="currentQ">The current orthogonal d×d matrix. Its rows are updated in-place if <paramref name="v"/> is independent.</param>
-    /// <param name="currentBasisDimension">Number of basis vectors (rows) already in <paramref name="currentQ"/> (0 ≤ value ≤ d).</param>
-    /// <param name="v">The d×1 column vector that semantically represents the row to add.</param>
+    /// <param name="currentQ">
+    /// Square orthogonal matrix of size <c>d x d</c>. It is modified in place when the update succeeds.
+    /// </param>
+    /// <param name="currentBasisDimension">
+    /// Prefix length that is considered fixed.
+    /// Only the trailing rows starting from this index may change.
+    /// </param>
+    /// <param name="v">
+    /// Input vector of dimension <c>d</c>. After a successful update, the coordinates of
+    /// <paramref name="v"/> in the updated orthogonal system are zero from
+    /// <paramref name="currentBasisDimension"/> + 1 onward.
+    /// </param>
+    /// <param name="alignNewBasisVectorWithInput">
+    /// If <c>true</c>, applies an additional sign convention to the leading row of the trailing block
+    /// after the Householder update.
+    /// </param>
     /// <returns>
-    /// <c>currentBasisDimension + 1</c> if <paramref name="v"/> is linearly independent from the current basis rows;
+    /// <paramref name="currentBasisDimension"/> + 1 if the trailing part of the transformed vector is non-zero;
     /// otherwise, returns <paramref name="currentBasisDimension"/>.
-    /// If update occurs, <paramref name="currentQ"/> is modified.
     /// </returns>
-    public static int LQ_FullUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v) {
-      int d = currentQ.Rows; // Размерность пространства d
+    /// <remarks>
+    /// This is the row-wise counterpart of <see cref="QR_IncrementalUpdate(ref MatrixMutable, int, Vector)"/>.
+    /// It applies a Householder reflector to the trailing rows of <paramref name="currentQ"/>.
+    /// The optional sign alignment is an additional convention layer on top of the algebraic update.
+    /// </remarks>
+    internal static int LQ_IncrementalUpdateCore(
+      ref MatrixMutable currentQ,
+      int               currentBasisDimension,
+      Vector            v,
+      bool              alignNewBasisVectorWithInput
+    ) {
+      int d = currentQ.Rows;
 
-      // --- Предусловия ---
-      Debug.Assert(currentQ.Rows == currentQ.Cols, "LQ_FullUpdate: currentQ must be a square matrix.");
-      Debug.Assert(v.SpaceDim == d, "LQ_FullUpdate: Vector v must have the same dimension as currentQ.");
+      Debug.Assert(currentQ.Rows == currentQ.Cols, "LQ_IncrementalUpdate: currentQ must be a square matrix.");
+      Debug.Assert(v.SpaceDim == d, "LQ_IncrementalUpdate: Vector v must have the same dimension as currentQ.");
       Debug.Assert
         (
          currentBasisDimension >= 0 && currentBasisDimension <= d
-       , "LQ_FullUpdate: currentBasisDimension must be between 0 and d (inclusive)."
+       , "LQ_IncrementalUpdate: currentBasisDimension must be between 0 and d (inclusive)."
         );
 
       if (currentBasisDimension == d || v.IsZero) { return currentBasisDimension; }
 
       Vector y = currentQ * v;
-
-      int    orthSize = d - currentBasisDimension;
-      TNum[] orthData = new TNum[orthSize];
-      for (int k = 0; k < orthSize; k++) {
-        orthData[k] = y[currentBasisDimension + k];
-      }
-      Vector orthPart = new Vector(orthData);
-
-      TNum rho = orthPart.Length;
-      if (orthPart.IsZero) { return currentBasisDimension; }
-
-      TNum[] houseData = orthPart.GetCopyAsArray();
-      TNum   sign      = TConv.FromInt(Tools.Sign(orthPart[0]));
-      if (Tools.EQ(orthPart[0], Tools.Zero)) {
-        sign = Tools.One;
-      }
-      houseData[0] += sign * rho;
-      Vector house = new Vector(houseData);
-
-      if (house.IsZero) { return currentBasisDimension + 1; }
-
-      TNum   beta          = Tools.Two / house.Length2;
-      TNum[] projectionRow = new TNum[d];
-      for (int col = 0; col < d; col++) {
-        TNum dot = Tools.Zero;
-        for (int i = 0; i < orthSize; i++) {
-          dot += house[i] * currentQ[currentBasisDimension + i, col];
-        }
-        projectionRow[col] = dot;
+      if (!TryBuildHouseholderFromTail(y, currentBasisDimension, out HouseholderData data)) {
+        return currentBasisDimension;
       }
 
-      for (int i = 0; i < orthSize; i++)  {
-        int global_row_index = currentBasisDimension + i;
-        for (int col = 0; col < d; col++) {
-          currentQ[global_row_index, col] -= beta * house[i] * projectionRow[col];
-        }
+      ApplyHouseholderFromLeftToSubmatrix(ref currentQ, currentBasisDimension, 0, data);
+      if (alignNewBasisVectorWithInput) {
+        AlignTrailingRowWithInput(ref currentQ, currentBasisDimension, data.Sign);
       }
 
       return currentBasisDimension + 1;
     }
 
+    /// <summary>
+    /// Updates a square orthogonal matrix so that a given vector has zero trailing coordinates
+    /// after left multiplication by the updated matrix.
+    /// </summary>
+    /// <param name="currentQ">
+    /// Square orthogonal matrix of size <c>d x d</c>. It is modified in place when the update succeeds.
+    /// </param>
+    /// <param name="currentBasisDimension">
+    /// Prefix length that is considered fixed.
+    /// Only the trailing rows starting from this index may change.
+    /// </param>
+    /// <param name="v">
+    /// Input vector of dimension <c>d</c>. After a successful update, the coordinates of
+    /// <paramref name="v"/> in the updated orthogonal system are zero from
+    /// <paramref name="currentBasisDimension"/> + 1 onward.
+    /// </param>
+    /// <returns>
+    /// <paramref name="currentBasisDimension"/> + 1 if the trailing part of the transformed vector is non-zero;
+    /// otherwise, returns <paramref name="currentBasisDimension"/>.
+    /// </returns>
+    /// <remarks>
+    /// This public wrapper performs the algebraic LQ update without any extra sign convention.
+    /// </remarks>
+    public static int LQ_IncrementalUpdate(ref MatrixMutable currentQ, int currentBasisDimension, Vector v)
+      => LQ_IncrementalUpdateCore(ref currentQ, currentBasisDimension, v, alignNewBasisVectorWithInput: false);
+
   }
 
 }
+

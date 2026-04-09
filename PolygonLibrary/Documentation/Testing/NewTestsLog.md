@@ -1,4 +1,4 @@
-# New Tests Log
+﻿# New Tests Log
 
 Этот файл нужен как короткий журнал миграции: какие новые тестовые файлы появились для каждого класса и какой legacy-источник был заменён.
 
@@ -240,7 +240,7 @@
 ### Decomposition
 
 - New tests:
-  - [`DecompositionTests.cs`](../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs) (`QR_ByReflection`, `LQ_ByReflection`, `QR_FullUpdate`, `LQ_FullUpdate` на square/tall/wide и update-сценариях)
+  - [`DecompositionTests.cs`](../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs) (`QR_ByHouseholder`, `LQ_ByHouseholder`, `QR_IncrementalUpdate`, `LQ_IncrementalUpdate` на square/tall/wide и update-сценариях)
 - Legacy:
   - прямого legacy-набора не было
   - Note:
@@ -420,3 +420,4 @@
   - отдельного прямого legacy-набора не было; эти helper'ы использовались через `GW_Tests`, `Minkowski*` и speed-сценарии
 - Note:
   - это sanity-слой для общего генераторного helper-блока, а не полный domain-level coverage
+
