@@ -4,10 +4,10 @@
 
 Этот файл сводит вместе:
 - активные задачи из прежнего `todo.md`;
-- legacy-заметки из [`TODO.txt`](./TODO.txt);
+- legacy-заметки из удалённого `TODO.txt`;
 - важный контекст и ссылки на код, тесты и документацию.
 
-`TODO.txt` пока сохраняется как legacy-source, но рабочим файлом считать нужно именно этот.
+Рабочим backlog-файлом считать нужно именно этот.
 
 Закрытые задачи ведутся отдельно в [`done.md`](./done.md).
 
@@ -125,7 +125,7 @@
 - coverage:
   - [`Documentation/Testing/CoveragePlan/FaceLattice/Index.md`](./Documentation/Testing/CoveragePlan/FaceLattice/Index.md)
 
-Исходная формулировка из [`TODO.txt`](./TODO.txt):
+Исходная формулировка из legacy `TODO.txt`:
 - `FaceLattice.Equals()`
 
 ### LDG folder structure and bridge-computation workflow
@@ -144,7 +144,7 @@
 - формат одного "примера" и связь между динамикой, `P`, `Q` и терминальным объектом;
 - формат связи и состав файлов для explicit / Minkowski / function / epigraph сценариев.
 
-Исходные формулировки из [`TODO.txt`](./TODO.txt):
+Исходные формулировки из legacy `TODO.txt`:
 - `12.2024 Вычисление мостов`
 - `Структура папок LDG`
 - `Подумать о формате файла связи`
@@ -464,9 +464,9 @@
 - старый комментарий из уже архивированного набора;
 - как отдельная active-задача сейчас не поднимается.
 
-## Imported Notes From TODO.txt
+## Imported Notes From Legacy TODO.txt
 
-Ниже сохранён исходный текст из [`TODO.txt`](./TODO.txt), чтобы не потерять старые формулировки.
+Ниже сохранён импортированный текст бывшего `TODO.txt`, чтобы не потерять старые формулировки после удаления исходного файла.
 
 ```text
 *) FaceLattice.Equals()
