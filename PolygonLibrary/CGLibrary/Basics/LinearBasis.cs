@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace CGLibrary;
@@ -154,12 +153,32 @@ public partial class Geometry<TNum, TConv>
     }
 
     /// <summary>
-    /// Orthonormalizes the given vector against the current basis.
+    /// Returns the normalized component of the specified vector orthogonal to the represented subspace.
     /// </summary>
-    /// <param name="v">The input vector to orthonormalize.</param>
-    /// <returns>The normalized component of <paramref name="v"/> orthogonal to the current subspace.</returns>
-    /// <exception cref="NotImplementedException">The operation is not implemented yet.</exception>
-    public Vector Orthonormalize(Vector v) { throw new NotImplementedException("todo"); }
+    /// <param name="v">The vector to orthonormalize against the current basis.</param>
+    /// <returns>
+    /// The unit vector obtained by normalizing the residual <c>v - proj(v)</c>.
+    /// Returns the zero vector if <paramref name="v"/> is zero or already belongs to the represented subspace.
+    /// </returns>
+    public Vector Orthonormalize(Vector v) {
+      Debug.Assert
+        (
+         SpaceDim == v.SpaceDim
+       , $"LinearBasis.Orthonormalize: The dimension of the vector must be equal to the dimension of the basis vectors! Found: {v.SpaceDim}"
+        );
+
+      if (v.IsZero || FullDim) {
+        return Vector.Zero(SpaceDim);
+      }
+
+      if (Empty) {
+        return v.Normalize();
+      }
+
+      Vector residual = v - ToOriginalCoords(ProjectVectorToSubSpace(v));
+
+      return residual.IsZero ? Vector.Zero(SpaceDim) : residual.Normalize();
+    }
 
     /// <summary>
     /// Tries to extend the mutable orthonormal basis storage by the specified vector.

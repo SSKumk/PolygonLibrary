@@ -2,7 +2,7 @@
 
 ## Scope
 
-Этот файл покрывает проекции, `Contains`, ортогональное дополнение, `OrthonormalVector` и текущий наблюдаемый контракт `Orthonormalize`.
+Этот файл покрывает проекции, `Contains`, ортогональное дополнение, `OrthogonalComplementVector()` и контракт `Orthonormalize(Vector)`.
 
 ## Scenarios
 
@@ -16,14 +16,13 @@
 | `LB-PROJ-006` | `x` | `ProjectVectorToSubSpace` возвращает координаты в базисе нужной размерности. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
 | `LB-PROJ-007` | `x` | `ProjectVectorsToSubSpace` корректно проецирует набор векторов. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
 | `LB-PROJ-008` | `x` | `OrthogonalComplement()` возвращает корректное ортогональное дополнение для частичного, полного и пустого базиса. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
-| `LB-PROJ-009` | `x` | `OrthonormalVector()` возвращает ортонормированный вектор из дополнения либо нулевой вектор для полного базиса. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
-| `LB-PROJ-010` | `x` | `Orthonormalize(Vector)` в текущей реализации остаётся неготовым API и бросает `NotImplementedException`. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
-| `LB-PROJ-011` | `x` | Детерминированные сценарии на проекции и ортогональное дополнение с фиксированным генератором сохраняются при переносе. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-009` | `x` | `OrthogonalComplementVector()` возвращает единичный вектор из ортогонального дополнения либо нулевой вектор для полного базиса. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-010` | `x` | `Orthonormalize(Vector)` для вектора, уже лежащего в подпространстве, возвращает нулевой вектор. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-011` | `x` | `Orthonormalize(Vector)` для ортогонального вектора возвращает его нормализованную версию. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-012` | `x` | `Orthonormalize(Vector)` для общего вектора возвращает нормализованный остаток `v - proj(v)`, ортогональный базису. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-013` | `x` | `Orthonormalize(Vector)` для пустого базиса возвращает нормализованный входной вектор, а для полного базиса и нулевого вектора возвращает ноль. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
+| `LB-PROJ-014` | `x` | Детерминированные и случайные сценарии на проекции, ортогональное дополнение и `Orthonormalize(Vector)` сохраняют инварианты единичной длины и ортогональности. | [`LinearBasisProjectionAndOrthogonalizationTests.cs`](../../../../Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisProjectionAndOrthogonalizationTests.cs) |
 
 ## Gaps
 
-- По текущему публичному API обязательных gap-ов нет, но `Orthonormalize(Vector)` остаётся функционально не реализованным.
-
-## Notes
-
-- Здесь сознательно зафиксирован именно текущий наблюдаемый контракт `Orthonormalize`, а не желаемое будущее поведение.
+- Нужно отдельно проверить численную устойчивость `Orthonormalize(Vector)` на почти зависимых входах и решить, достаточно ли текущей прямой реализации через `v - proj(v)`.

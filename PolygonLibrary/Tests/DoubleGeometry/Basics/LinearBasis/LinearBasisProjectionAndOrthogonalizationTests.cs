@@ -110,31 +110,50 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
   [Test]
   public void Orthonormalize_VectorOrthogonal() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0));
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(V(0, 5, 0)));
+    Vector orth = basis.Orthonormalize(V(0, 5, 0));
+
+    AreEqual(orth, V(0, 1, 0));
   }
 
   [Test]
   public void Orthonormalize_VectorInSubspace() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0), V(0, 1, 0));
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(V(3, 4, 0)));
+    Vector orth = basis.Orthonormalize(V(3, 4, 0));
+
+    Assert.That(orth.IsZero, Is.True);
   }
 
   [Test]
   public void Orthonormalize_GeneralVector() {
     LinearBasis basis = new LinearBasis(V(1, 0, 0));
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(V(3, 4, 0)));
+    Vector orth = basis.Orthonormalize(V(3, 4, 5));
+
+    Assert.That(orth.Length, Is.EqualTo(1.0).Within(Tools.Eps));
+    Assert.That(orth * basis[0], Is.EqualTo(0.0).Within(Tools.Eps));
+    AreEqual(orth, V(0, 4, 5).Normalize());
   }
 
   [Test]
   public void Orthonormalize_AgainstEmptyBasis() {
     LinearBasis basis = new LinearBasis(3, 0);
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(V(3, 4, 0)));
+    Vector orth = basis.Orthonormalize(V(3, 4, 0));
+
+    AreEqual(orth, V(3, 4, 0).Normalize());
   }
 
   [Test]
   public void Orthonormalize_AgainstFullBasis() {
     LinearBasis basis = new LinearBasis(3);
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(V(1, 2, 3)));
+    Vector orth = basis.Orthonormalize(V(1, 2, 3));
+
+    Assert.That(orth.IsZero, Is.True);
+  }
+
+  [Test]
+  public void Orthonormalize_ZeroVector_ReturnsZero() {
+    LinearBasis basis = new LinearBasis(V(1, 0, 0));
+
+    Assert.That(basis.Orthonormalize(Vector.Zero(3)).IsZero, Is.True);
   }
 
   [Test]
@@ -227,8 +246,14 @@ public class LinearBasisProjectionAndOrthogonalizationTests {
     GRandomLC rnd = new GRandomLC(1234);
     LinearBasis basis = LinearBasis.GenLinearBasis(5, 3, rnd);
     Vector v = Vector.GenVector(5, rnd);
+    Vector orth = basis.Orthonormalize(v);
 
-    Assert.Throws<NotImplementedException>(() => basis.Orthonormalize(v));
+    if (!orth.IsZero) {
+      Assert.That(orth.Length, Is.EqualTo(1.0).Within(Tools.Eps));
+      foreach (Vector b in basis) {
+        Assert.That(orth * b, Is.EqualTo(0.0).Within(1e-9));
+      }
+    }
   }
 
   [Test]
