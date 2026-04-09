@@ -1786,8 +1786,8 @@ public partial class Geometry<TNum, TConv>
     /// <param name="HPs">The list of hyperplanes that defines the system of inequalities.</param>
     /// <param name="activeHPs">
     /// All hyperplanes active at the returned vertex.
-    /// Internally the vertex itself is first reconstructed from a basis-defining subset,
-    /// then the full active set is restored by filtering all hyperplanes through the point.
+    /// The method starts from the simplex optimum and the simplex basis hyperplanes,
+    /// then refines that point along the corresponding optimal face until a vertex is reached.
     /// </param>
     /// <returns>The initial vertex.</returns>
     public static Vector? FindInitialVertex_Simplex(List<HyperPlane> HPs, out List<HyperPlane>? activeHPs) {
@@ -1804,19 +1804,102 @@ public partial class Geometry<TNum, TConv>
         activeHPs.Add(HPs[i]);
       }
 
-      bool solExist = GaussSLE.Solve(activeHPs, GaussSLE.GaussChoice.All, out TNum[]? res);
-
-      if (!solExist) {
-        throw new ArgumentException
-          (
-           "ConvexPolytop.HrepToVrep_Geometric: Gauss-Jordan elimination failed to find a solution for the system of equations derived from the active hyperplanes. This indicates an inconsistency."
-          );
-      }
-
-      Vector initVertex = new Vector(res!, false);
+      Vector initVertex = RefineOptimalPointToVertex(HPs, new Vector(x.Solution, false), activeHPs);
       activeHPs = HPs.Where(hp => hp.Contains(initVertex)).ToList();
 
       return initVertex;
+    }
+
+    /// <summary>
+    /// Refines a simplex optimum point to a vertex by moving along the face induced by the simplex basis hyperplanes.
+    /// </summary>
+    /// <param name="HPs">All hyperplanes of the polytope.</param>
+    /// <param name="point">The current feasible point, typically returned by the simplex method.</param>
+    /// <param name="basisHPs">
+    /// The simplex basis hyperplanes that define the current face used for refinement.
+    /// The list is updated in place as new hyperplanes are discovered.
+    /// </param>
+    /// <returns>A vertex of the polytope.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the refinement cannot find a next hyperplane or cannot reconstruct a unique vertex
+    /// from the accumulated basis hyperplanes.
+    /// </exception>
+    private static Vector RefineOptimalPointToVertex(List<HyperPlane> HPs, Vector point, List<HyperPlane> basisHPs) {
+      LinearBasisMutable normalsBasis = new LinearBasisMutable(point.SpaceDim, basisHPs.Select(hp => hp.Normal));
+
+      while (!normalsBasis.FullDim) {
+        Vector direction = normalsBasis.OrthogonalComplementVector();
+
+        HyperPlane?       nextHP         = null;
+        List<HyperPlane>? tiedHyperplanes = null;
+        TNum              minAlpha       = Tools.Zero;
+        bool              foundNext      = false;
+        foreach (HyperPlane hp in HPs) {
+          if (basisHPs.Contains(hp)) {
+            continue;
+          }
+
+          TNum denominator = hp.Normal * direction;
+          if (!Tools.GT(denominator)) {
+            continue;
+          }
+
+          TNum numerator = hp.ConstantTerm - hp.Normal * point;
+          if (!Tools.GT(numerator)) {
+            continue;
+          }
+
+          TNum alpha = numerator / denominator;
+          if (!Tools.GT(alpha)) {
+            continue;
+          }
+
+          if (!foundNext || Tools.LT(alpha, minAlpha)) {
+            minAlpha        = alpha;
+            nextHP          = hp;
+            tiedHyperplanes = [hp];
+            foundNext       = true;
+          }
+          else if (Tools.EQ(alpha, minAlpha)) {
+            tiedHyperplanes!.Add(hp);
+          }
+        }
+
+        if (!foundNext || nextHP is null || tiedHyperplanes is null) {
+          throw new ArgumentException
+            (
+             "ConvexPolytop.RefineOptimalPointToVertex: Failed to find the next hyperplane while refining a simplex optimum to a vertex."
+            );
+        }
+
+        foreach (HyperPlane hp in tiedHyperplanes) {
+          if (!normalsBasis.Contains(hp.Normal)) {
+            nextHP = hp;
+
+            break;
+          }
+        }
+
+        point = Vector.MulByNumAndAdd(direction, minAlpha, point);
+        basisHPs.Add(nextHP);
+
+        if (!normalsBasis.AddVector(nextHP.Normal)) {
+          throw new ArgumentException
+            (
+             "ConvexPolytop.RefineOptimalPointToVertex: The selected hyperplane did not increase the rank of the basis normals."
+            );
+        }
+      }
+
+      bool solExist = GaussSLE.Solve(basisHPs, GaussSLE.GaussChoice.All, out TNum[]? res);
+      if (!solExist) {
+        throw new ArgumentException
+          (
+           "ConvexPolytop.RefineOptimalPointToVertex: Gauss-Jordan elimination failed to reconstruct a unique vertex from the refined basis hyperplanes."
+          );
+      }
+
+      return new Vector(res!, false);
     }
 
     /// <summary>
