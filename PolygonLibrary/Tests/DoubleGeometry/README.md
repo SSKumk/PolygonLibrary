@@ -27,6 +27,7 @@
 - Полные правила миграции и активного слоя фиксируются в [`../../Documentation/Testing/README.md`](../../Documentation/Testing/README.md).
 - Порядок закрытия классов фиксируется в [`../../Documentation/Testing/DoubleGeometryMigrationOrder.md`](../../Documentation/Testing/DoubleGeometryMigrationOrder.md).
 - Формат coverage-документов фиксируется в [`../../Documentation/Testing/ScenarioFormat.md`](../../Documentation/Testing/ScenarioFormat.md).
+- Новые тесты и новые смысловые сценарии должны сопровождаться обновлением `Documentation/Testing/CoveragePlan/...`.
 
 ## Локальная структура
 
