@@ -7,13 +7,21 @@ public partial class Geometry<TNum, TConv>
 
   // Ax <= b, A \in R^m x R^d; x \in R^d; b \in R^m
   /// <summary>
-  /// Two-phase simplex method for linear programming problems of the form
-  /// <c>max c * x</c> subject to <c>A * x &lt;= b</c>.
+  /// Solves linear programming problems of the form <c>max c * x</c> subject to <c>A * x &lt;= b</c>
+  /// by a two-phase simplex method.
   /// </summary>
   /// <remarks>
-  /// Original variables are treated as free variables via the internal split
-  /// <c>x = x+ - x-</c> with nonnegative parts. The public result is always mapped back
-  /// to the original variable space.
+  /// Internally the solver represents original variables through the split
+  /// <c>x = x+ - x-</c> with <c>x+ &gt;= 0</c> and <c>x- &gt;= 0</c>, and then applies simplex
+  /// to the corresponding augmented nonnegative-variable problem.
+  /// The public result is always mapped back to the original <c>x</c>-space.
+  /// Therefore the method guarantees an optimum of the original linear program, but in the general case
+  /// it does not guarantee that the returned optimum point is a vertex of the original feasible polyhedron:
+  /// it can be the projection of an augmented-space basic feasible solution onto a higher-dimensional
+  /// optimal face in the original space.
+  /// If the original problem itself already contains nonnegativity constraints <c>x &gt;= 0</c>
+  /// for all original variables, then the split degenerates to the classical simplex case and an attained
+  /// optimum corresponds to a basic feasible solution, i.e. to a vertex of the original feasible polyhedron.
   /// </remarks>
   public class SimplexMethod {
 
@@ -29,7 +37,10 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="HPs">The inequalities <c>A * x &lt;= b</c>.</param>
     /// <param name="fc">Function returning coefficients of the objective vector <c>c</c>.</param>
-    /// <returns>The simplex result status, optimum value, optimum point and inequality sets.</returns>
+    /// <returns>
+    /// The simplex result status, optimum value, an optimum point in the original variable space
+    /// and inequality sets describing the returned optimum point.
+    /// </returns>
     public static SimplexMethodResult Solve(List<HyperPlane> HPs, Func<int, TNum> fc) {
       return new SimplexMethod(HPs, fc).Solve();
     }
@@ -79,7 +90,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <returns>
     /// The result status, optimum value, solution in the original variable space,
-    /// basis inequalities and all inequalities active at the optimum point.
+    /// basis inequalities and all inequalities active at the returned optimum point.
+    /// The returned solution is not required to be a vertex of the original feasible polyhedron.
     /// </returns>
     public SimplexMethodResult Solve() {
       (
@@ -467,19 +479,29 @@ public partial class Geometry<TNum, TConv>
       public TNum Value { get; }
 
       /// <summary>
-      /// Gets the optimum point in the original variable space.
+      /// Gets an optimum point in the original variable space.
+      /// In the general case this point is not guaranteed to be a vertex of the original feasible
+      /// polyhedron, because it is obtained by projecting an augmented-space basic feasible solution
+      /// from the internal split representation.
+      /// If the original problem includes <c>x &gt;= 0</c> for all original variables, then the returned
+      /// optimum corresponds to a vertex of the original feasible polyhedron.
       /// </summary>
       public TNum[]? Solution { get; } = null;
 
       /// <summary>
       /// Gets the indices of inequalities represented by nonbasic slack variables in the optimal tableau.
-      /// This is the basis-related subset of active inequalities.
+      /// This is the basis-related subset of inequalities active at the returned optimum point.
+      /// In the general case this set reflects the augmented optimal basis and is not guaranteed to define
+      /// a vertex in the original variable space.
       /// </summary>
       public IEnumerable<int> BasisInequalitiesID { get; } = Array.Empty<int>();
 
       /// <summary>
-      /// Gets the indices of all inequalities active at the optimum point.
+      /// Gets the indices of all inequalities active at the returned optimum point in the original space.
       /// On degenerate vertices this set can be larger than <see cref="BasisInequalitiesID"/>.
+      /// If the returned optimum lies on a higher-dimensional optimal face, this set can be smaller
+      /// than the dimension of the original space and therefore insufficient to reconstruct an
+      /// original-space vertex without additional processing.
       /// </summary>
       public IEnumerable<int> ActiveInequalitiesID { get; } = Array.Empty<int>();
 
