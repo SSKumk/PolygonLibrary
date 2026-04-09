@@ -7,6 +7,7 @@
 В активный слой текущего этапа входят:
 
 - прямые фабрики и переходы между представлениями;
+- `FindInitialVertex_Simplex` как локальный шаг восстановления вершины по `Hrep`;
 - базовые геометрические фабрики и простые численные метрики;
 - базовые эпиграфы расстояния до точки и до политопа для малых контрольных примеров;
 - базовая редукция избыточных полупространств;
@@ -18,11 +19,12 @@
 - `CreateFromReader` и `WriteIn`;
 - `Polar`;
 - большие генераторы `SimplexRND`, `Cyclic`, `Sphere`, `Ellipsoid`;
-- низкоуровневые конвертеры `HrepToVrep_*`, `FindInitialVertex_*`, `FindClosePairs_Naive`, `MergePoints`.
+- низкоуровневые конвертеры `HrepToVrep_*`, `FindInitialVertex_Naive`, `FindClosePairs_Naive`, `MergePoints`.
 
 ## Topics
 
 - [`ConstructionAndRepresentations.md`](ConstructionAndRepresentations.md) - построение из `Vrep`, `Hrep`, `FLrep`, lazy-переходы и агрегаты.
+- [`InitialVertexRecovery.md`](InitialVertexRecovery.md) - восстановление стартовой вершины по `Hrep` через simplex-based seed.
 - [`FactoriesAndMetrics.md`](FactoriesAndMetrics.md) - базовые фабрики и простые метрики расстояния.
 - [`DistanceEpigraph.md`](DistanceEpigraph.md) - эпиграфы расстояния до точки и до политопа для базовых норм.
 - [`HRedundancy.md`](HRedundancy.md) - удаление избыточных полупространств на базовых 2D-примерах.
@@ -36,13 +38,14 @@
 | Topic | Status | Comment |
 | --- | --- | --- |
 | Construction and Representations | `x` | Добавлен прямой набор на три репрезентации и переходы между ними. |
+| Initial Vertex Recovery | `x` | Закрыты simplex-based сценарии доуточнения optimal-face точки до вершины и сценарии с вырожденной вершиной. |
 | Factories and Metrics | `x` | Закрыты прямые фабрики и численные метрики малой стоимости. |
 | Distance Epigraph | `x` | Закрыт базовый слой эпиграфов расстояния до точки и до одноточечного политопа для `L1` / `Linf` / `L2`. |
 | HRedundancy | `x` | Закрыты базовые сценарии удаления избыточных полупространств для центрированного и сдвинутого квадрата. |
 | Containment and NearestPoint | `x` | Зафиксированы как рабочие, так и ещё не реализованные ветки. |
 | Transforms and Overrides | `x` | Базовые преобразования и общие контракты `Equals`/`GetHashCode` закрыты прямыми тестами, включая branch-specific ветки `Shift` / `Rotate` и масштабирование при положительном и отрицательном коэффициенте. |
 | Polar | `~` | Закрыты базовые `Vrep` / `Hrep` / `FLrep` 2D-сценарии, `Polar(out shift)` и двойное преобразование; остаются более тонкие duality- и redundancy-вопросы. |
-| IO and Advanced Builders | `-` | Оставлены вне активного слоя этой миграции. |
+| IO and Advanced Builders | `~` | `FindInitialVertex_Simplex` уже вынесен в активный слой; более тяжёлые low-level builders и `HrepToVrep_*` остаются вне него. |
 
 ## Existing Test Sources
 
