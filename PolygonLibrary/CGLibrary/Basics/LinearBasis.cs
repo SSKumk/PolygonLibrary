@@ -17,6 +17,11 @@ public partial class Geometry<TNum, TConv>
   /// Its internal storage is immutable after construction.
   /// </para>
   /// <para>
+  /// The basis is stored row-wise inside a full orthogonal operator:
+  /// the first <see cref="SubSpaceDim"/> rows are active basis vectors,
+  /// and the remaining rows span the orthogonal complement.
+  /// </para>
+  /// <para>
   /// Use <see cref="LinearBasisMutable"/> when the basis must be extended incrementally.
   /// </para>
   /// </remarks>
@@ -76,7 +81,11 @@ public partial class Geometry<TNum, TConv>
     /// Gets the matrix whose rows are the basis vectors.
     /// </summary>
     /// <remarks>
-    /// The returned matrix is immutable and shares the internal immutable storage of this basis.
+    /// The returned matrix is an immutable wrapper over the first <see cref="SubSpaceDim"/> rows
+    /// of the internally stored orthogonal operator.
+    /// No data copy is made.
+    /// For immutable <see cref="LinearBasis"/> instances the shared storage stays immutable after construction;
+    /// <see cref="LinearBasisMutable"/> can expose the same data through an immutable wrapper.
     /// </remarks>
     public Matrix Basis {
       get
@@ -98,8 +107,21 @@ public partial class Geometry<TNum, TConv>
     /// </remarks>
     public Matrix ProjMatrix => _projMatrix ??= Basis.Transpose() * Basis; // todo: В одну операцию! MultiplyTransposeBySelf()
 
+    /// <summary>
+    /// Stores the full orthogonal operator whose first <see cref="SubSpaceDim"/> rows are active basis vectors
+    /// and whose remaining rows span the orthogonal complement.
+    /// </summary>
     protected Matrix  _Basis;
+
+    /// <summary>
+    /// Lazily cached orthogonal projector <c>B^T * B</c> for the active row-basis matrix <c>B</c>.
+    /// Invalidated whenever mutable descendants change the active basis.
+    /// </summary>
     protected Matrix? _projMatrix = null;
+
+    /// <summary>
+    /// Exposes the stored orthogonal operator for internal constructors that need zero-copy reuse.
+    /// </summary>
     internal  Matrix  BasisStorage => _Basis;
 #endregion
 
@@ -159,7 +181,8 @@ public partial class Geometry<TNum, TConv>
     /// <returns>
     /// The unit vector produced by the same incremental <c>LQ</c>-update machinery that is used
     /// when extending a basis by a new independent vector.
-    /// Returns the zero vector if <paramref name="v"/> is zero or already belongs to the represented subspace.
+    /// Returns the zero vector if <paramref name="v"/> is zero, if the basis is already full-dimensional,
+    /// or if the trailing component is treated as numerically zero by the current comparison policy.
     /// </returns>
     public Vector Orthonormalize(Vector v) {
       Debug.Assert
@@ -447,6 +470,12 @@ public partial class Geometry<TNum, TConv>
 #endregion
 
 #region Overrides
+    /// <summary>
+    /// Hashing is intentionally unavailable because basis equality is defined through canonicalized subspace comparison
+    /// rather than through a stable stored representation.
+    /// </summary>
+    /// <returns>Never returns normally.</returns>
+    /// <exception cref="InvalidOperationException">Always thrown.</exception>
     public override int GetHashCode() => throw new InvalidOperationException();
 
     /// <summary>

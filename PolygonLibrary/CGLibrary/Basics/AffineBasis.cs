@@ -64,8 +64,16 @@ public partial class Geometry<TNum, TConv>
     /// <summary>
     /// Gets the direction basis of the affine subspace.
     /// </summary>
+    /// <remarks>
+    /// The returned object is the direction-basis instance stored by this affine basis.
+    /// <see cref="AffineBasis"/> stores immutable <see cref="LinearBasis"/>;
+    /// <see cref="AffineBasisMutable"/> can expose a mutable subtype through the same property.
+    /// </remarks>
     public LinearBasis LinBasis => _linearBasis;
 
+    /// <summary>
+    /// Stores the direction basis of the affine subspace.
+    /// </summary>
     protected LinearBasis _linearBasis;
 #endregion
 
@@ -333,15 +341,18 @@ public partial class Geometry<TNum, TConv>
     /// <returns><c>True</c> if they are equal, else <c>False</c>.</returns>
     public override bool Equals(object? obj) => obj is AffineBasis other && Equals(other);
 
-    public override int GetHashCode() => throw new InvalidOperationException();
-
-    /// <summary>
-    /// Returns an enumerator that iterates through the linear basis of an affine basis as an IEnumerable.
-    /// </summary>
     /// <summary>
     /// Returns an enumerator over the direction basis vectors.
     /// </summary>
     public IEnumerator GetEnumerator() { return LinBasis.GetEnumerator(); }
+
+    /// <summary>
+    /// Hashing is intentionally unavailable because affine-space equality is defined through canonical comparison
+    /// of the direction space and the canonical origin rather than through a stable stored representation.
+    /// </summary>
+    /// <returns>Never returns normally.</returns>
+    /// <exception cref="InvalidOperationException">Always thrown.</exception>
+    public override int GetHashCode() => throw new InvalidOperationException();
 
     /// <summary>
     /// Verifies the consistency of the affine basis.
