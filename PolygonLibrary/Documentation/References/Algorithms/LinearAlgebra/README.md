@@ -16,6 +16,10 @@
   Объект: подробная заметка про `QR_ByHouseholder`, `LQ_ByHouseholder`, `QR_IncrementalUpdate` и `LQ_IncrementalUpdate`.
   Когда использовать: когда нужно понять математическую постановку, Householder-механику и связь между полными разложениями и инкрементальными обновлениями в `Decomposition`.
 
+- [`QRStability.md`](./QRStability.md)
+  Объект: короткая заметка про численные границы применимости `QR_ByHouseholder` при текущем `Tools.Eps`.
+  Когда использовать: когда нужно быстро понять, где QR ещё годится как factorization, но уже плохо годится как rank-revealing procedure.
+
 - [`OrthonormalizeStability.md`](./OrthonormalizeStability.md)
   Объект: короткая заметка про численную устойчивость `LinearBasis.Orthonormalize` и про отличие projector-based и `LQ`-подходов.
   Когда использовать: когда нужно быстро понять, почему текущая projector-based формула плохо ведёт себя на почти зависимых входах с большим span-компонентом.
