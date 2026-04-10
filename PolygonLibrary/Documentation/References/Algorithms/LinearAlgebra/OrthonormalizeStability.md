@@ -8,7 +8,7 @@
 
 ## Проблема
 
-Текущая реализация `Orthonormalize(Vector v)` использует projector-based формулу:
+Исторически `Orthonormalize(Vector v)` использовал projector-based формулу:
 
 ```text
 residual = v - B^T (B v),
@@ -21,7 +21,7 @@ q = normalize(residual).
 
 Сравнивались две схемы:
 
-- current projector-based `v - B^T(Bv)`;
+- historical projector-based `v - B^T(Bv)`;
 - `LQ`-based вариант через `Decomposition.LQ_IncrementalUpdate(...)`.
 
 Во втором варианте берётся полный ортогональный оператор, составленный из:
@@ -58,6 +58,8 @@ n in span(B)^⊥, ||n|| = 1.
 ## Вывод
 
 Если `Orthonormalize` используется как строитель нового направления при росте базиса, `LQ`-подход предпочтительнее projector-based формулы.
+
+Именно поэтому production-реализация переведена на `LQ`, а historical projector-based вариант сохранён только в research-слое как воспроизводимый baseline.
 
 ## Воспроизводимость
 

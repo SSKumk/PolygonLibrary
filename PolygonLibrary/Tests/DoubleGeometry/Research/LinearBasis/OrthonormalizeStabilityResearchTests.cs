@@ -12,7 +12,7 @@ public class OrthonormalizeStabilityResearchTests {
   public void Orthonormalize_UnitScaleCodimensionOneCase_BothVariantsRemainAccurate() {
     ResearchCase c = CreateCase(spaceDim: 10, subSpaceDim: 9, spanScale: 1.0, eps: 1e-6, seed: 910u);
 
-    double projectorError = ComputeDirectionError(c.Basis.Orthonormalize(c.Input), c.ExpectedDirection);
+    double projectorError = ComputeDirectionError(OrthonormalizeViaProjector(c.Basis, c.Input), c.ExpectedDirection);
     double lqError        = ComputeDirectionError(OrthonormalizeViaLQ(c.Basis, c.Input), c.ExpectedDirection);
 
     Assert.Multiple(() => {
@@ -27,7 +27,7 @@ public class OrthonormalizeStabilityResearchTests {
     // большой компонент в span и маленькая ортогональная добавка.
     ResearchCase c = CreateCase(spaceDim: 10, subSpaceDim: 9, spanScale: 1e8, eps: 1e-6, seed: 911u);
 
-    double projectorError = ComputeDirectionError(c.Basis.Orthonormalize(c.Input), c.ExpectedDirection);
+    double projectorError = ComputeDirectionError(OrthonormalizeViaProjector(c.Basis, c.Input), c.ExpectedDirection);
     double lqError        = ComputeDirectionError(OrthonormalizeViaLQ(c.Basis, c.Input), c.ExpectedDirection);
 
     Assert.Multiple(() => {
@@ -41,7 +41,7 @@ public class OrthonormalizeStabilityResearchTests {
     // Усиленный сценарий той же проблемы в более высокой размерности.
     ResearchCase c = CreateCase(spaceDim: 30, subSpaceDim: 29, spanScale: 1e8, eps: 1e-7, seed: 912u);
 
-    double projectorError = ComputeDirectionError(c.Basis.Orthonormalize(c.Input), c.ExpectedDirection);
+    double projectorError = ComputeDirectionError(OrthonormalizeViaProjector(c.Basis, c.Input), c.ExpectedDirection);
     double lqError        = ComputeDirectionError(OrthonormalizeViaLQ(c.Basis, c.Input), c.ExpectedDirection);
 
     Assert.Multiple(() => {
@@ -71,6 +71,20 @@ public class OrthonormalizeStabilityResearchTests {
     }
 
     return spanScale * sum.Normalize();
+  }
+
+  private static VectorType OrthonormalizeViaProjector(LinearBasisType basis, VectorType input) {
+    if (input.IsZero || basis.FullDim) {
+      return Vector.Zero(basis.SpaceDim);
+    }
+
+    if (basis.Empty) {
+      return input.Normalize();
+    }
+
+    VectorType residual = input - basis.ToOriginalCoords(basis.ProjectVectorToSubSpace(input));
+
+    return residual.IsZero ? Vector.Zero(basis.SpaceDim) : residual.Normalize();
   }
 
   private static VectorType OrthonormalizeViaLQ(LinearBasisType basis, VectorType input) {

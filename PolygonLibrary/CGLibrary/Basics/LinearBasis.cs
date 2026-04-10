@@ -157,7 +157,8 @@ public partial class Geometry<TNum, TConv>
     /// </summary>
     /// <param name="v">The vector to orthonormalize against the current basis.</param>
     /// <returns>
-    /// The unit vector obtained by normalizing the residual <c>v - proj(v)</c>.
+    /// The unit vector produced by the same incremental <c>LQ</c>-update machinery that is used
+    /// when extending a basis by a new independent vector.
     /// Returns the zero vector if <paramref name="v"/> is zero or already belongs to the represented subspace.
     /// </returns>
     public Vector Orthonormalize(Vector v) {
@@ -175,9 +176,19 @@ public partial class Geometry<TNum, TConv>
         return v.Normalize();
       }
 
-      Vector residual = v - ToOriginalCoords(ProjectVectorToSubSpace(v));
+      MatrixMutable orthogonalOperator = new MatrixMutable(_Basis, true);
+      int newSubSpaceDim =
+        Decomposition.LQ_IncrementalUpdateCore
+          (
+           ref orthogonalOperator
+         , SubSpaceDim
+         , v
+         , alignNewBasisVectorWithInput: true
+          );
 
-      return residual.IsZero ? Vector.Zero(SpaceDim) : residual.Normalize();
+      return newSubSpaceDim == SubSpaceDim
+               ? Vector.Zero(SpaceDim)
+               : orthogonalOperator.TakeRowVector(SubSpaceDim);
     }
 
     /// <summary>
@@ -540,5 +551,5 @@ public partial class Geometry<TNum, TConv>
     }
 
   }
-}
 
+}
