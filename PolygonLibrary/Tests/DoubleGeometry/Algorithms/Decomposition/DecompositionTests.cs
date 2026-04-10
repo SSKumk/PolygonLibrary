@@ -43,6 +43,51 @@ public class DecompositionTests {
     }
   }
 
+  private static double MaxAbsDiff(Matrix left, Matrix right) {
+    double maxDiff = 0.0;
+    for (int row = 0; row < left.Rows; row++) {
+      for (int col = 0; col < left.Cols; col++) {
+        maxDiff = Math.Max(maxDiff, Math.Abs(left[row, col] - right[row, col]));
+      }
+    }
+
+    return maxDiff;
+  }
+
+  private static double MaxTriangularLeakage(Matrix triangularFactor, bool isUpperTriangular) {
+    double maxLeak = 0.0;
+
+    if (isUpperTriangular) {
+      for (int row = 0; row < triangularFactor.Rows; row++) {
+        for (int col = 0; col < Math.Min(row, triangularFactor.Cols); col++) {
+          maxLeak = Math.Max(maxLeak, Math.Abs(triangularFactor[row, col]));
+        }
+      }
+    }
+    else {
+      for (int row = 0; row < triangularFactor.Rows; row++) {
+        for (int col = row + 1; col < triangularFactor.Cols; col++) {
+          maxLeak = Math.Max(maxLeak, Math.Abs(triangularFactor[row, col]));
+        }
+      }
+    }
+
+    return maxLeak;
+  }
+
+  private static Matrix Rotation3D(int axis1, int axis2, double angle) {
+    MatrixMutable rotation = MatrixMutable.Eye(3);
+    double        c        = Math.Cos(angle);
+    double        s        = Math.Sin(angle);
+
+    rotation[axis1, axis1] = c;
+    rotation[axis1, axis2] = -s;
+    rotation[axis2, axis1] = s;
+    rotation[axis2, axis2] = c;
+
+    return new Matrix(rotation, false);
+  }
+
   [Test]
   public void QR_ByHouseholder_SquareMatrix_SatisfiesFactorizationInvariants() {
     Matrix a = M(new[] { 12.0, -51.0, 4.0 }, new[] { 6.0, 167.0, -68.0 }, new[] { -4.0, 24.0, -41.0 });
@@ -83,6 +128,67 @@ public class DecompositionTests {
       AssertOrthonormal(q, "Rank-deficient QR");
       AssertUpperTriangular(r, "Rank-deficient QR");
       AreEqual(q * r, a, "Q * R should reconstruct rank-deficient A.");
+    });
+  }
+
+  [Test]
+  public void QR_ByHouseholderWithDiagnostics_ReturnsPivotMagnitudesRelativePivotsAndNumericRank() {
+    Matrix a = M(new[] { 3.0, -2.0 }, new[] { 0.0, 1.0 }, new[] { 0.0, 0.0 });
+
+    (Matrix q, Matrix r, Decomposition.FactorizationDiagnostics diagnostics) = Decomposition.QR_ByHouseholderWithDiagnostics(a);
+
+    Assert.Multiple(() => {
+      AssertOrthonormal(q, "QR diagnostics");
+      AssertUpperTriangular(r, "QR diagnostics");
+      AreEqual(q * r, a, "Q * R should reconstruct A for QR diagnostics.");
+      Assert.That(diagnostics.NumericRank, Is.EqualTo(2));
+      Assert.That(Tools.EQ(diagnostics.PivotMagnitudes[0], 3.0), Is.True);
+      Assert.That(Tools.EQ(diagnostics.PivotMagnitudes[1], 1.0), Is.True);
+      Assert.That(Tools.EQ(diagnostics.RelativePivots[0], 1.0), Is.True);
+      Assert.That(Tools.EQ(diagnostics.RelativePivots[1], 1.0 / 3.0), Is.True);
+    });
+  }
+
+  [Test]
+  public void QR_ByHouseholderWithFullDiagnostics_ReportsQualityMetricsConsistentWithReturnedFactors() {
+    Matrix q0 = Rotation3D(0, 1, Math.PI / 4) * Rotation3D(1, 2, Math.PI / 6);
+    Matrix r0 = M(new[] { 3.0, -2.0 }, new[] { 0.0, 1.0 }, new[] { 0.0, 0.0 });
+    Matrix a  = (q0 * r0) * 1e-8;
+
+    (Matrix q, Matrix r, Decomposition.FullFactorizationDiagnostics diagnostics) = Decomposition.QR_ByHouseholderWithFullDiagnostics(a);
+
+    Assert.Multiple(() => {
+      AreEqual(q * r, a, "Q * R should reconstruct the near-Tools.Eps QR input.");
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.ReconstructionError, MaxAbsDiff(q * r, a)),
+        Is.True
+      );
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.OrthogonalityError, MaxAbsDiff(q.Transpose() * q, Matrix.Eye(q.Cols))),
+        Is.True
+      );
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.TriangularLeakage, MaxTriangularLeakage(r, isUpperTriangular: true)),
+        Is.True
+      );
+    });
+  }
+
+  [Test]
+  public void QR_ByHouseholderWithFullDiagnostics_ScaleBelowToolsEps_DegeneratesToIdentityAndOriginalMatrix() {
+    Matrix q0 = Rotation3D(0, 1, Math.PI / 4) * Rotation3D(1, 2, Math.PI / 6);
+    Matrix r0 = M(new[] { 3.0, -2.0 }, new[] { 0.0, 1.0 }, new[] { 0.0, 0.0 });
+    Matrix a  = (q0 * r0) * 1e-9;
+
+    (Matrix q, Matrix r, Decomposition.FullFactorizationDiagnostics diagnostics) = Decomposition.QR_ByHouseholderWithFullDiagnostics(a);
+
+    Assert.Multiple(() => {
+      AreEqual(q, Matrix.Eye(3), "Below Tools.Eps the orthogonal factor should stay at identity.");
+      AreEqual(r, a, "Below Tools.Eps the triangular factor should remain equal to the input matrix.");
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.TriangularLeakage, MaxTriangularLeakage(r, isUpperTriangular: true)),
+        Is.True
+      );
     });
   }
 
@@ -147,6 +253,47 @@ public class DecompositionTests {
   }
 
   [Test]
+  public void LQ_ByHouseholderWithDiagnostics_ReturnsPivotMagnitudesRelativePivotsAndNumericRank() {
+    Matrix a = M(new[] { 2.0, 0.0, 0.0 }, new[] { 1.0, 0.5, 0.0 });
+
+    (Matrix l, Matrix q, Decomposition.FactorizationDiagnostics diagnostics) = Decomposition.LQ_ByHouseholderWithDiagnostics(a);
+
+    Assert.Multiple(() => {
+      AssertOrthonormal(q, "LQ diagnostics");
+      AssertLowerTriangular(l, "LQ diagnostics");
+      AreEqual(l * q, a, "L * Q should reconstruct A for LQ diagnostics.");
+      Assert.That(diagnostics.NumericRank, Is.EqualTo(2));
+      Assert.That(Tools.EQ(diagnostics.PivotMagnitudes[0], 2.0), Is.True);
+      Assert.That(Tools.EQ(diagnostics.PivotMagnitudes[1], 0.5), Is.True);
+      Assert.That(Tools.EQ(diagnostics.RelativePivots[0], 1.0), Is.True);
+      Assert.That(Tools.EQ(diagnostics.RelativePivots[1], 0.25), Is.True);
+    });
+  }
+
+  [Test]
+  public void LQ_ByHouseholderWithFullDiagnostics_WellConditionedCase_ReportsSmallQualityErrors() {
+    Matrix a = M(new[] { 1.0, 2.0, 3.0 }, new[] { 4.0, 5.0, 6.0 });
+
+    (Matrix l, Matrix q, Decomposition.FullFactorizationDiagnostics diagnostics) = Decomposition.LQ_ByHouseholderWithFullDiagnostics(a);
+
+    Assert.Multiple(() => {
+      AreEqual(l * q, a, "L * Q should reconstruct the well-conditioned LQ input.");
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.ReconstructionError, MaxAbsDiff(l * q, a)),
+        Is.True
+      );
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.OrthogonalityError, MaxAbsDiff(q.Transpose() * q, Matrix.Eye(q.Cols))),
+        Is.True
+      );
+      Assert.That(
+        Tools.EQ(diagnostics.QualityDiagnostics.TriangularLeakage, MaxTriangularLeakage(l, isUpperTriangular: false)),
+        Is.True
+      );
+    });
+  }
+
+  [Test]
   public void QR_IncrementalUpdate_IndependentVector_ExtendsBasisAndZeroesTailCoordinates() {
     MatrixMutable currentQ = MatrixMutable.Eye(3);
     Vector v = V(1, 2, 2);
@@ -176,6 +323,29 @@ public class DecompositionTests {
       Assert.That(afterDependent, Is.EqualTo(basisDim));
       Assert.That(afterZero, Is.EqualTo(basisDim));
       AreEqual(new Matrix(currentQ, true), snapshot, "Dependent and zero vectors should not modify currentQ.");
+    });
+  }
+
+  [Test]
+  public void QR_IncrementalUpdateWithDiagnostics_ReturnsRhoForAcceptedAndRejectedSteps() {
+    MatrixMutable currentQ = MatrixMutable.Eye(3);
+    Vector basisVector = V(1, 2, 2);
+
+    (int basisDim, Decomposition.IncrementalUpdateDiagnostics accepted) =
+      Decomposition.QR_IncrementalUpdateWithDiagnostics(ref currentQ, 0, basisVector);
+    Matrix snapshot = new Matrix(currentQ, true);
+    (int afterDependent, Decomposition.IncrementalUpdateDiagnostics rejected) =
+      Decomposition.QR_IncrementalUpdateWithDiagnostics(ref currentQ, basisDim, basisVector * 3.0);
+
+    Assert.Multiple(() => {
+      Assert.That(basisDim, Is.EqualTo(1));
+      Assert.That(accepted.Accepted, Is.True);
+      Assert.That(Tools.EQ(accepted.Rho, 1.0), Is.True);
+      Assert.That(Tools.EQ(accepted.TrailingNorm, basisVector.Length), Is.True);
+      Assert.That(afterDependent, Is.EqualTo(basisDim));
+      Assert.That(rejected.Accepted, Is.False);
+      Assert.That(Tools.EQ(rejected.Rho), Is.True);
+      AreEqual(new Matrix(currentQ, true), snapshot, "Rejected QR diagnostic step should not modify currentQ.");
     });
   }
 
@@ -230,6 +400,29 @@ public class DecompositionTests {
       Assert.That(afterDependent, Is.EqualTo(basisDim));
       Assert.That(afterZero, Is.EqualTo(basisDim));
       AreEqual(new Matrix(currentQ, true), snapshot, "Dependent and zero vectors should not modify currentQ.");
+    });
+  }
+
+  [Test]
+  public void LQ_IncrementalUpdateWithDiagnostics_ReturnsRhoForAcceptedAndRejectedSteps() {
+    MatrixMutable currentQ = MatrixMutable.Eye(3);
+    Vector basisVector = V(2, 1, 2);
+
+    (int basisDim, Decomposition.IncrementalUpdateDiagnostics accepted) =
+      Decomposition.LQ_IncrementalUpdateWithDiagnostics(ref currentQ, 0, basisVector);
+    Matrix snapshot = new Matrix(currentQ, true);
+    (int afterDependent, Decomposition.IncrementalUpdateDiagnostics rejected) =
+      Decomposition.LQ_IncrementalUpdateWithDiagnostics(ref currentQ, basisDim, basisVector * 5.0);
+
+    Assert.Multiple(() => {
+      Assert.That(basisDim, Is.EqualTo(1));
+      Assert.That(accepted.Accepted, Is.True);
+      Assert.That(Tools.EQ(accepted.Rho, 1.0), Is.True);
+      Assert.That(Tools.EQ(accepted.TrailingNorm, basisVector.Length), Is.True);
+      Assert.That(afterDependent, Is.EqualTo(basisDim));
+      Assert.That(rejected.Accepted, Is.False);
+      Assert.That(Tools.EQ(rejected.Rho), Is.True);
+      AreEqual(new Matrix(currentQ, true), snapshot, "Rejected LQ diagnostic step should not modify currentQ.");
     });
   }
 

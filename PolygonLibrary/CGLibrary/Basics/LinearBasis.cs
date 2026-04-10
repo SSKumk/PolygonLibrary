@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using System.Text;
 
 namespace CGLibrary;
@@ -26,6 +27,11 @@ public partial class Geometry<TNum, TConv>
   /// </para>
   /// </remarks>
   public class LinearBasis : IEnumerable<Vector>, IComparable<LinearBasis> {
+    private enum IncrementalStabilitySeverity {
+      None,
+      PotentiallyBad,
+      DefinitelyBad
+    }
 
 #region Data and Properties
     /// <summary>
@@ -127,6 +133,84 @@ public partial class Geometry<TNum, TConv>
 
 #region Functions
     /// <summary>
+    /// Relative threshold used by DEBUG-only diagnostics to mark accepted incremental updates as close to collapse.
+    /// </summary>
+    private static TNum DebugPotentiallyBadRhoThreshold => TConv.FromInt(100) * Tools.Eps;
+
+    /// <summary>
+    /// Formats a scalar for DEBUG diagnostic messages.
+    /// </summary>
+    /// <param name="value">Value to format.</param>
+    /// <returns>A culture-invariant diagnostic string.</returns>
+    private static string FormatDebugNumber(TNum value) => TConv.ToDouble(value).ToString("G17", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Classifies the numerical health of a single incremental update step for DEBUG-only reporting.
+    /// </summary>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="currentBasisDimension">Current active basis dimension before the step.</param>
+    /// <param name="diagnostics">Diagnostics reported by the underlying incremental LQ update.</param>
+    /// <returns>The corresponding DEBUG-only severity level.</returns>
+    private static IncrementalStabilitySeverity ClassifyIncrementalDiagnostics(
+      int                                        spaceDim,
+      int                                        currentBasisDimension,
+      Decomposition.IncrementalUpdateDiagnostics diagnostics
+    ) {
+      if (currentBasisDimension == spaceDim || Tools.EQ(diagnostics.InputNorm)) {
+        return IncrementalStabilitySeverity.None;
+      }
+
+      if (!diagnostics.Accepted) {
+        return IncrementalStabilitySeverity.DefinitelyBad;
+      }
+
+      return Tools.LE(diagnostics.Rho, DebugPotentiallyBadRhoThreshold)
+               ? IncrementalStabilitySeverity.PotentiallyBad
+               : IncrementalStabilitySeverity.None;
+    }
+
+    /// <summary>
+    /// Emits a DEBUG-only warning when an incremental LQ step is close to, or already beyond, the current numerical threshold.
+    /// </summary>
+    /// <param name="operation">Operation name used in the diagnostic message.</param>
+    /// <param name="spaceDim">Ambient space dimension.</param>
+    /// <param name="currentBasisDimension">Current active basis dimension before the step.</param>
+    /// <param name="diagnostics">Diagnostics reported by the underlying incremental LQ update.</param>
+    [Conditional("DEBUG")]
+    private static void ReportIncrementalDiagnosticsWarning(
+      string                                     operation,
+      int                                        spaceDim,
+      int                                        currentBasisDimension,
+      Decomposition.IncrementalUpdateDiagnostics diagnostics
+    ) {
+      IncrementalStabilitySeverity severity =
+        ClassifyIncrementalDiagnostics(spaceDim, currentBasisDimension, diagnostics);
+
+      if (severity == IncrementalStabilitySeverity.None) {
+        return;
+      }
+
+      string severityLabel = severity == IncrementalStabilitySeverity.DefinitelyBad
+                               ? "definitely bad for the current numerical policy"
+                               : "potentially bad";
+
+      string explanation = severity == IncrementalStabilitySeverity.DefinitelyBad
+                             ? "The trailing component was rejected as numerically zero, so the current LQ-update can no longer distinguish this step from exact dependence. The vector may be exactly dependent, or it may carry an independent component below the current threshold."
+                             : "The new direction was still accepted, but rho = ||tail|| / ||v|| is already close to the rejection threshold. Accepted steps with rho <= 100 * Tools.Eps are numerically fragile and can easily collapse under small perturbations.";
+
+      Debug.WriteLine
+        (
+         $"[LinearBasis DEBUG] {operation}: {severityLabel}. "
+       + $"subSpaceDim={currentBasisDimension}, spaceDim={spaceDim}, "
+       + $"inputNorm={FormatDebugNumber(diagnostics.InputNorm)}, "
+       + $"trailingNorm={FormatDebugNumber(diagnostics.TrailingNorm)}, "
+       + $"rho={FormatDebugNumber(diagnostics.Rho)}, "
+       + $"Tools.Eps={FormatDebugNumber(Tools.Eps)}. "
+       + explanation
+        );
+    }
+
+    /// <summary>
     /// Builds an orthonormal basis of the orthogonal complement of the current subspace.
     /// </summary>
     /// <returns>A basis spanning the orthogonal complement of the current basis.</returns>
@@ -200,14 +284,15 @@ public partial class Geometry<TNum, TConv>
       }
 
       MatrixMutable orthogonalOperator = new MatrixMutable(_Basis, true);
-      int newSubSpaceDim =
-        Decomposition.LQ_IncrementalUpdateCore
+      (int newSubSpaceDim, Decomposition.IncrementalUpdateDiagnostics diagnostics) =
+        Decomposition.LQ_IncrementalUpdateCoreWithDiagnostics
           (
            ref orthogonalOperator
          , SubSpaceDim
          , v
          , alignNewBasisVectorWithInput: true
           );
+      ReportIncrementalDiagnosticsWarning("LinearBasis.Orthonormalize", SpaceDim, SubSpaceDim, diagnostics);
 
       return newSubSpaceDim == SubSpaceDim
                ? Vector.Zero(SpaceDim)
@@ -223,7 +308,9 @@ public partial class Geometry<TNum, TConv>
     /// <param name="v">The vector to be added if it is independent from the current subspace.</param>
     /// <returns><c>true</c> if the vector increased the subspace dimension; otherwise, <c>false</c>.</returns>
     protected static bool AddVectorInPlace(MatrixMutable basis, ref int subSpaceDim, ref Matrix? projMatrix, Vector v) {
-      int newSubSpaceDim = Decomposition.LQ_IncrementalUpdateCore(ref basis, subSpaceDim, v, alignNewBasisVectorWithInput: true);
+      (int newSubSpaceDim, Decomposition.IncrementalUpdateDiagnostics diagnostics) =
+        Decomposition.LQ_IncrementalUpdateCoreWithDiagnostics(ref basis, subSpaceDim, v, alignNewBasisVectorWithInput: true);
+      ReportIncrementalDiagnosticsWarning("LinearBasis.AddVectorInPlace", basis.Cols, subSpaceDim, diagnostics);
       if (newSubSpaceDim == subSpaceDim) {
         return false;
       }
