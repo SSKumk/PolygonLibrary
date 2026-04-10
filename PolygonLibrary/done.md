@@ -11,6 +11,57 @@
 
 ## Recently Closed
 
+### LinearBasis cheap incremental RREF
+
+Статус: `closed`
+
+Дата закрытия:
+- `2026-04-10`
+
+Что было решено:
+- Пункт закрыт как нецелевой после отдельного исследования цепочки `CompareTo` / `Equals` и comparison key'ов для `LinearBasis`.
+- `RREF` оставлен как on-demand canonical form в [`LinearBasis.CompareTo`](./CGLibrary/Basics/LinearBasis.cs), а не как основное или инкрементально поддерживаемое состояние.
+- Исследование показало, что альтернативы на том же уровне (`projector`-key, geometric equality) дают только локальные улучшения и не меняют численный класс поведения.
+- Основной bottleneck сидит выше: в построении самого `LinearBasis` и в текущей absolute zero-policy через `Tools.Eps`, а не в отсутствии incremental `RREF`.
+
+Подтверждение:
+- production:
+  - [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs)
+- documentation:
+  - [`Documentation/References/Algorithms/LinearAlgebra/BasisEqualityStability.md`](./Documentation/References/Algorithms/LinearAlgebra/BasisEqualityStability.md)
+  - [`Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md`](./Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md)
+
+Результат:
+- Задача "дёшево обновлять и хранить `RREF`" снята как не оправдавшая себя по результатам исследования.
+
+### Immutable / mutable split for AffineBasis and LinearBasis
+
+Статус: `closed`
+
+Дата закрытия:
+- `2026-04-10`
+
+Что было сделано:
+- Immutable `LinearBasis` и `AffineBasis` теперь явно запрещают zero-copy wrapping mutable-источников через `needCopy: false`.
+- Mutable `LinearBasisMutable` и `AffineBasisMutable` всегда материализуют собственное mutable storage и больше не маскируются под immutable shared-state.
+- Контракты хранения и различие между immutable/mutable вариантами зафиксированы в XML и в algorithm note.
+
+Подтверждение:
+- production:
+  - [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs)
+  - [`LinearBasisMutable.cs`](./CGLibrary/Basics/LinearBasisMutable.cs)
+  - [`AffineBasis.cs`](./CGLibrary/Basics/AffineBasis.cs)
+  - [`AffineBasisMutable.cs`](./CGLibrary/Basics/AffineBasisMutable.cs)
+- tests:
+  - [`LinearBasisConstructionTests.cs`](./Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisConstructionTests.cs)
+  - [`LinearBasisMutationTests.cs`](./Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisMutationTests.cs)
+  - [`AffineBasisConstructionTests.cs`](./Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisConstructionTests.cs)
+- documentation:
+  - [`Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md`](./Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md)
+
+Результат:
+- Split между immutable и mutable basis-типами считается завершённым и снят с активного backlog.
+
 ### Simplex vertex-solution for H2V recovery
 
 Статус: `closed`

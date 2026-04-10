@@ -27,18 +27,6 @@
 
 ## Medium Priority
 
-### LinearBasis cheap incremental RREF
-
-Статус: `open`
-
-Контекст:
-- [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs)
-- coverage:
-  - [`Documentation/Testing/CoveragePlan/LinearBasis/Index.md`](./Documentation/Testing/CoveragePlan/LinearBasis/Index.md)
-
-Исходная формулировка:
-- `LinearBasis: RREF научиться "дёшево" обновлять (и вообще хранить) при добавлении очередного вектора.`
-
 ### LinearBasis MultiplyTransposeBySelf
 
 Статус: `open`
@@ -48,27 +36,6 @@
 
 Исходная формулировка:
 - `LinearBasis: В одну операцию! MultiplyTransposeBySelf()`
-
-### Immutable / mutable split for AffineBasis and LinearBasis
-
-Статус: `open`
-
-Контекст:
-- [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs)
-- [`AffineBasis.cs`](./CGLibrary/Basics/AffineBasis.cs)
-- потенциально затрагивает:
-  - [`FaceLattice.cs`](./CGLibrary/GeometryND/Polyhedra/FaceLattice.cs)
-  - [`HyperPlane.cs`](./CGLibrary/Basics/HyperPlane.cs)
-
-Что нужно продумать и сделать:
-- базовый `LinearBasis` и базовый `AffineBasis` должны опираться на реально immutable-внутреннее представление, а не на mutable-тип "по договорённости";
-- zero-copy сценарии с `needCopy: false` должны остаться доступны для быстрых путей, но без скрытого aliasing mutable-состояния;
-- `LinearBasisMutable` и `AffineBasisMutable` должны остаться отдельным явным mutable-слоем;
-- нужно пересмотреть copy ctor'ы, factory-методы и поля хранения (`_Basis`, `_linearBasis`), чтобы контракты типов и внутренняя реализация больше не расходились;
-- отдельно проверить влияние на `FaceLattice`, `HyperPlane` и другие места, где сейчас рассчитывается на дешёвое переиспользование базисов.
-
-Исходная формулировка:
-- `AffineBasis / LinearBasis: Полностью развести immutable- и mutable-сущности.`
 
 ### Разобраться с картинками и визуальными артефактами
 
