@@ -4,6 +4,10 @@
 
 ## Навигация
 
+- [`BasisEqualityStability.md`](./BasisEqualityStability.md)
+  Объект: короткая заметка про current `Equals` у `LinearBasis` / `AffineBasis` и про исследование geometric alternative.
+  Когда использовать: когда нужно быстро понять, стоит ли отвязывать equality от `CompareTo` и что показало минимальное 3D-исследование.
+
 - [`QRLQHouseholderDecomposition.md`](./QRLQHouseholderDecomposition.md)
   Объект: подробная заметка про `QR_ByHouseholder`, `LQ_ByHouseholder`, `QR_IncrementalUpdate` и `LQ_IncrementalUpdate`.
   Когда использовать: когда нужно понять математическую постановку, Householder-механику и связь между полными разложениями и инкрементальными обновлениями в `Decomposition`.
