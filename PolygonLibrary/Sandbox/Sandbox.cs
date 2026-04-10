@@ -133,5 +133,4 @@ class Sandbox {
     //
     // Visualization<double, DConvertor>.ReadAndDrawPolytopePLY(temp, diff_f);
   }
-
 }
