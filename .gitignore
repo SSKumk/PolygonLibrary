@@ -37,6 +37,9 @@
 .*.lb
 
 *.tmp
+!/.tmp/
+/.tmp/*
+!/.tmp/README.md
 
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
