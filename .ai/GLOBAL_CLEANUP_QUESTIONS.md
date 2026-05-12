@@ -17,12 +17,13 @@
 Контекст:
 
 - `PolygonLibrary/`
-- `Materials/`
-- `LDG_Convex_2D/`
-- `AVLUtils/`
-- `Настя/`
-- `_Archives/`
-- `_Reminiscence/`
+- `dependencies/AVLUtils/`
+- `references/Materials/`
+- `legacy/LDG_Convex_2D/`
+- `legacy/Nastya/`
+- `legacy/Reminiscence/`
+- `archives/old-snapshots/`
+- целевой путь `active/CGLibrary/`
 
 Что нужно решить:
 
@@ -68,9 +69,10 @@
 
 Контекст:
 
-- `_Archives/`
-- `_Reminiscence/`
-- `Настя/`
+- `archives/old-snapshots/`
+- `legacy/Reminiscence/`
+- `legacy/Nastya/`
+- `legacy/LDG_Convex_2D/`
 - архивные тесты;
 - старые solution/project-файлы;
 - старые IDE/test-result файлы.

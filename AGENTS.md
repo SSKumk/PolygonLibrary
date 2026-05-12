@@ -1,10 +1,11 @@
 # AGENTS
 
-Этот репозиторий содержит активный проект `PolygonLibrary` и исторические материалы вокруг него.
+Этот репозиторий содержит активный проект `PolygonLibrary`, его внешнюю зависимость и исторические материалы вокруг него.
 
 ## Перед работой
 
 - Основная рабочая папка: `PolygonLibrary/`.
+- Внешняя зависимость активного проекта: `dependencies/AVLUtils/`.
 - Перед изменениями в активном проекте читать `PolygonLibrary/README.md`.
 - Для правил документации читать `PolygonLibrary/Documentation/DocumentationConventions.md`.
 - Для правил разработки читать `PolygonLibrary/Documentation/Development/README.md`.
