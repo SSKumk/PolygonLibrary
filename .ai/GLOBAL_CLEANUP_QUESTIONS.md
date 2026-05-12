@@ -16,14 +16,13 @@
 
 Контекст:
 
-- `PolygonLibrary/`
+- `active/CGLibrary/`
 - `dependencies/AVLUtils/`
 - `references/Materials/`
 - `legacy/LDG_Convex_2D/`
 - `legacy/Nastya/`
 - `legacy/Reminiscence/`
 - `archives/old-snapshots/`
-- целевой путь `active/CGLibrary/`
 
 Что нужно решить:
 
@@ -40,7 +39,7 @@
 
 - должен ли корневой README объяснять границу между активным проектом и историческими материалами;
 - какие ссылки должны быть в корневом README;
-- чем он отличается от `PolygonLibrary/README.md` и `AGENTS.md`.
+- чем он отличается от `active/CGLibrary/README.md` и `AGENTS.md`.
 
 ### 3. Назначение `.ai/`
 

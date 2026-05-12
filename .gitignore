@@ -54,7 +54,7 @@
 *.synctex.gz
 *.synctex.gz(busy)
 *.pdfsync
-PolygonLibrary/inspectcode.xml
+active/CGLibrary/inspectcode.xml
 *.plt
 *.bat
-/PolygonLibrary/BenchmarkDotNet.Artifacts/results
+/active/CGLibrary/BenchmarkDotNet.Artifacts/results

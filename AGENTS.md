@@ -1,15 +1,15 @@
 # AGENTS
 
-Этот репозиторий содержит активный проект `PolygonLibrary`, его внешнюю зависимость и исторические материалы вокруг него.
+Этот репозиторий содержит активный проект `CGLibrary`, его внешнюю зависимость и исторические материалы вокруг него.
 
 ## Перед работой
 
-- Основная рабочая папка: `PolygonLibrary/`.
+- Основная рабочая папка: `active/CGLibrary/`.
 - Внешняя зависимость активного проекта: `dependencies/AVLUtils/`.
-- Перед изменениями в активном проекте читать `PolygonLibrary/README.md`.
-- Для правил документации читать `PolygonLibrary/Documentation/DocumentationConventions.md`.
-- Для правил разработки читать `PolygonLibrary/Documentation/Development/README.md`.
-- Для структуры репозитория читать `PolygonLibrary/Documentation/Development/RepoStructure.md`.
+- Перед изменениями в активном проекте читать `active/CGLibrary/README.md`.
+- Для правил документации читать `active/CGLibrary/Documentation/DocumentationConventions.md`.
+- Для правил разработки читать `active/CGLibrary/Documentation/Development/README.md`.
+- Для структуры репозитория читать `active/CGLibrary/Documentation/Development/RepoStructure.md`.
 
 ## Локальные скиллы
 
