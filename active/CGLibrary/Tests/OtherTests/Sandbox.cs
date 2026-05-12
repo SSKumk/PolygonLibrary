@@ -17,7 +17,7 @@ namespace Tests.OtherTests;
 public class Sandbox {
 
   private static readonly string pathData =
-    "F:/Works/IMM/Аспирантура/_PolygonLibrary/CGLibrary/Tests/OtherTests/LDG_computations/Other/";
+    "F:/Works/IMM/Аспирантура/_PolygonLibrary/active/CGLibrary/Tests/OtherTests/LDG_computations/Other/";
 
   [Test]
   public void Sandboxx() {

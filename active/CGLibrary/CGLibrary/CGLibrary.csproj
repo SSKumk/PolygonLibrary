@@ -73,7 +73,7 @@
 
     <ItemGroup>
         <Reference Include="AVLUtils">
-            <HintPath>..\..\dependencies\AVLUtils\AVLUtils\bin\Release\net8.0\AVLUtils.dll</HintPath>
+            <HintPath>..\..\..\dependencies\AVLUtils\AVLUtils\bin\Release\net8.0\AVLUtils.dll</HintPath>
         </Reference>
     </ItemGroup>
 
