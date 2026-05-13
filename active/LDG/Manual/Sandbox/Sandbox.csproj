@@ -7,11 +7,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\CGLibrary\CGLibrary.csproj"/>
-        <ProjectReference Include="..\..\LDG\LDG\LDG.csproj"/>
-        <ProjectReference Include="..\Graphics\Graphics.csproj"/>
+        <ProjectReference Include="..\..\..\CGLibrary\CGLibrary\CGLibrary.csproj"/>
+        <ProjectReference Include="..\..\LDG\LDG.csproj"/>
+        <ProjectReference Include="..\..\Visualization\Graphics\Graphics.csproj"/>
         <Reference Include="DoubleDouble">
-            <HintPath>..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
+            <HintPath>..\..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
 
