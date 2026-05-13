@@ -42,13 +42,16 @@
 Статус: `open`
 
 Контекст:
-- текущие материалы для визуальной проверки живут здесь:
-  - [`Tests/Double-Tests/Minkowski-Tests/3D-pictures`](./Tests/Double-Tests/Minkowski-Tests/3D-pictures)
-  - [`Tests/DoubleDouble-Tests/Minkowski-Tests/3D-pictures`](./Tests/DoubleDouble-Tests/Minkowski-Tests/3D-pictures)
+- текущие неразобранные визуальные материалы в активном тестовом слое:
+  - [`Tests/Figurs for algorithms/Minkowski`](./Tests/Figurs%20for%20algorithms/Minkowski)
+  - [`Tests/Figurs for algorithms/SegmentCrossFigures`](./Tests/Figurs%20for%20algorithms/SegmentCrossFigures)
+- уже вынесенные материалы:
+  - [`Research/PolygonIntersection2D/References/ConvexIntersectionFigures`](./Research/PolygonIntersection2D/References/ConvexIntersectionFigures)
+  - [`../../legacy/PolygonLibrary/Tests`](../../legacy/PolygonLibrary/Tests)
 
 Что имеется в виду:
-- отдельно решить судьбу `3D-pictures` и похожих файлов, которые сейчас используются для визуальной проверки результатов "глазами";
-- понять, должны ли они жить в `Tests`, в `Documentation/References` или в отдельном слое visual-regression материалов;
+- отдельно решить судьбу оставшихся папок в `Tests/Figurs for algorithms`;
+- для каждого набора выбрать место: `Research`, `legacy`, активные тестовые fixtures или удаление;
 - зафиксировать для них понятный статус, чтобы они не выглядели случайным хвостом миграции.
 
 Исходная формулировка:
@@ -66,32 +69,18 @@
 
 Что имеется в виду:
 - ещё раз пройтись по `Tests` и убедиться, что там не осталось лишних исторических директорий, случайных файлов и неочевидных хвостов;
-- проверить, не нужно ли дополнительно упорядочить `Archive`, `SpeedTests`, `Figurs for algorithms` и другие служебные слои;
+- проверить, не нужно ли дополнительно упорядочить `Archive`, `Figurs for algorithms`, `ToolkitTests`, `_Store` и другие служебные слои;
 - после этого зафиксировать целевую чистую структуру `Tests`, чтобы новые хвосты больше не накапливались.
 
 Исходная формулировка:
 - `Средний приоритет. Аккуратно дочистить структуру папки Tests.`
-
-### Дочистить Profile
-
-Статус: `open`
-
-Контекст:
-- [`Profile/`](./Profile)
-- [`Documentation/Development/AlgorithmMaterialsPolicy.md`](./Documentation/Development/AlgorithmMaterialsPolicy.md)
-
-Что имеется в виду:
-- считать `Profile` основным местом для performance-замеров и benchmark-сценариев;
-- сверить старые `Tests/SpeedTests` с существующими benchmark-ами;
-- перенести в `Profile` только ещё полезные сценарии;
-- удалить из тестового проекта performance-прогоны, которые уже перекрыты `Profile`.
 
 ### Проверки совместимости численных типов
 
 Статус: `open`
 
 Контекст:
-- старые `Tests/Double-Tests` и `Tests/DoubleDouble-Tests` после уборки должны уйти из активных тестов в исторический слой;
+- старые `Double-Tests` и `DoubleDouble-Tests` вынесены в [`../../legacy/PolygonLibrary/Tests`](../../legacy/PolygonLibrary/Tests);
 - будущая проверка должна быть оформлена как отдельный проект или отдельный явный слой, а не как набор случайных старых данных.
 
 Что имеется в виду:
