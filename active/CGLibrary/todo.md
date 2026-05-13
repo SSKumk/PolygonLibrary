@@ -37,24 +37,6 @@
 Исходная формулировка:
 - `LinearBasis: В одну операцию! MultiplyTransposeBySelf()`
 
-### Дочистить структуру папки Tests
-
-Статус: `open`
-
-Контекст:
-- текущая структура:
-  - [`Tests/Archive/README.md`](./Tests/Archive/README.md)
-  - [`Tests/TestInfrastructure/README.md`](./Tests/TestInfrastructure/README.md)
-  - [`Documentation/Development/RepoStructure.md`](./Documentation/Development/RepoStructure.md)
-
-Что имеется в виду:
-- ещё раз пройтись по `Tests` и убедиться, что там не осталось лишних исторических директорий, случайных файлов и неочевидных хвостов;
-- разобрать `Archive`: снять или перепривязать документационные ссылки, затем удалить или перенести исторические файлы по отдельным решениям;
-- после этого зафиксировать целевую чистую структуру `Tests`, чтобы новые хвосты больше не накапливались.
-
-Исходная формулировка:
-- `Средний приоритет. Аккуратно дочистить структуру папки Tests.`
-
 ### Проверки совместимости численных типов
 
 Статус: `open`
@@ -74,6 +56,7 @@
 
 Контекст:
 - историческая заготовка перенесена в [`../../legacy/PolygonLibrary/CGLibrary/Geometry2D/Segments/Bentley-Ottmann`](../../legacy/PolygonLibrary/CGLibrary/Geometry2D/Segments/Bentley-Ottmann)
+- исторический reference-тест перенесён в [`../../legacy/PolygonLibrary/Tests/LegacyMisc/BentlyOttmannTests.cs`](../../legacy/PolygonLibrary/Tests/LegacyMisc/BentlyOttmannTests.cs)
 - активный слой отрезков:
   - [`Segment.cs`](./CGLibrary/Geometry2D/Segments/Segment.cs)
   - [`SegmentPair.cs`](./CGLibrary/Geometry2D/Segments/SegmentPair.cs)
@@ -423,7 +406,7 @@
 Статус: `archival-note`
 
 Источник:
-- [`Tests/Archive/SharedTests/VectorTests.cs`](./Tests/Archive/SharedTests/VectorTests.cs), lines 85, 114, 205, 309, 355, 448, 533
+- удалённый архивный `VectorTests.cs`, lines 85, 114, 205, 309, 355, 448, 533
 
 Повторяющаяся пометка:
 - `todo: Надо ли делать throw или же Debug.Assert (как сейчас)`
@@ -437,7 +420,7 @@
 Статус: `archival-note`
 
 Источник:
-- [`Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs`](./Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs), line 11
+- удалённый архивный `ConvexPolygonCutTests.cs`, line 11
 
 Пометка в коде:
 - `todo Придумать как тестировать`

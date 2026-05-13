@@ -31,12 +31,8 @@
 - [`Vector2DArithmeticAndAnglesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DArithmeticAndAnglesTests.cs)
 - [`Vector2DRelationsAndCombinationsTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector2D/Vector2DRelationsAndCombinationsTests.cs)
 
-Legacy-источник [`VectorsTests.cs`](../../../../Tests/Archive/Double-Tests/VectorsTests.cs) больше не участвует в активной компиляции после переноса.
+Legacy-источник ``VectorsTests.cs`` больше не участвует в активной компиляции после переноса.
 
 ## Notes
 
 - `Vector2D` частично дублирует идеи `Vector`, но имеет собственный 2D-контракт: его лучше документировать отдельно, а не наследовать сценарии по умолчанию.
-
-
-
-

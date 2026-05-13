@@ -28,13 +28,10 @@
 - [`SegmentConstructionAndGeometryTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentConstructionAndGeometryTests.cs)
 - [`SegmentPointQueriesTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentPointQueriesTests.cs)
 - [`SegmentIntersectionTests.cs`](../../../../Tests/DoubleGeometry/Basics/Segment/SegmentIntersectionTests.cs)
-- [`BentlyOttmannTests.cs`](../../../../Tests/BentlyOttmannTests.cs) - косвенное использование `Segment` и `SegmentPair`, но файл исключён из компиляции тестового проекта.
+- [`BentlyOttmannTests.cs`](../../../../../../legacy/PolygonLibrary/Tests/LegacyMisc/BentlyOttmannTests.cs) - историческое косвенное использование `Segment` и `SegmentPair`, но файл сейчас находится в legacy и не входит в активный тестовый проект.
 
-Legacy-источник [`SegmentCrossTests.cs`](../../../../Tests/Archive/Double-Tests/SegmentCrossTests.cs) больше не участвует в активной компиляции после переноса.
+Legacy-источник ``SegmentCrossTests.cs`` больше не участвует в активной компиляции после переноса.
 
 ## Notes
 
 - Для `Segment` в первую очередь не хватает системного покрытия `Intersect`, несмотря на наличие закомментированного черновика тестов.
-
-
-

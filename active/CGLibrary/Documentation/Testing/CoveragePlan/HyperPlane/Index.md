@@ -25,11 +25,8 @@
 
 ## Existing Test Sources
 
-- [`HyperPlaneTests.cs`](../../../../Tests/Archive/SharedTests/HyperPlaneTests.cs)
+- ``HyperPlaneTests.cs``
 
 ## Notes
 
 - По `HyperPlane` уже есть редкий для репозитория хороший уровень прямого покрытия, так что здесь можно опираться на реальные тесты без натяжек.
-
-
-

@@ -25,7 +25,7 @@
 
 ## Existing Test Sources
 
-- [`PolygonToolsTests.cs`](../../../../Tests/Archive/Double-Tests/PolygonToolsTests.cs)
+- ``PolygonToolsTests.cs``
 - косвенные сценарии в `ConvexPolygon*`, `PolygonExtremeTests.cs`
 
 ## Notes

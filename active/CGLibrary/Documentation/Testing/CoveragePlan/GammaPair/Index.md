@@ -28,9 +28,9 @@
 
 Надёжно релевантные текущие тесты:
 
-- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - создание `SupportFunction` из массива пар и сравнение результатов после сортировки/дедупликации.
-- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - ещё один сценарий сортировки и сравнения пар.
-- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) - прямые проверки `CrossPairs`.
+- ``SupportFunctionTests.cs`` - создание `SupportFunction` из массива пар и сравнение результатов после сортировки/дедупликации.
+- ``SupportFunctionTests.cs`` - ещё один сценарий сортировки и сравнения пар.
+- ``SupportFunctionTests.cs`` - прямые проверки `CrossPairs`.
 - [`GammaPairConstructionAndEqualityTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairConstructionAndEqualityTests.cs)
 - [`GammaPairComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairComparisonAndFormattingTests.cs)
 - [`GammaPairCrossPairsTests.cs`](../../../../Tests/DoubleGeometry/Polygons/GammaPair/GammaPairCrossPairsTests.cs)
@@ -39,7 +39,3 @@
 
 - Для `GammaPair` теперь есть собственный прямой набор, поэтому косвенные сценарии `SupportFunction` остаются только как дополнительный фон.
 - Параллельный случай `CrossPairs` не включён в активный слой, потому что реализация всё ещё опирается на `Debug.Assert`, а не на стабильный runtime-`throw`.
-
-
-
-

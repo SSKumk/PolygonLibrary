@@ -32,7 +32,7 @@
 
 Исторический источник покрытия:
 
-- [`AffineBasisTest.cs`](../../../../Tests/Archive/SharedTests/AffineBasisTest.cs)
+- ``AffineBasisTest.cs``
 
 ## Notes
 

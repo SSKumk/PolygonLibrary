@@ -32,10 +32,10 @@
 
 ## Existing Test Sources
 
-- [`ConvexPolygonTests.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonTests.cs)
-- [`ConvexPolygonCutTests.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonCutTests.cs)
-- [`ConvexPolygonLegacyHelpers.cs`](../../../../Tests/Archive/Double-Tests/ConvexPolygonLegacyHelpers.cs)
-- [`PolygonExtremeTests.cs`](../../../../Tests/Archive/Double-Tests/PolygonExtremeTests.cs)
+- ``ConvexPolygonTests.cs``
+- ``ConvexPolygonCutTests.cs``
+- ``ConvexPolygonLegacyHelpers.cs``
+- ``PolygonExtremeTests.cs``
 
 ## Notes
 

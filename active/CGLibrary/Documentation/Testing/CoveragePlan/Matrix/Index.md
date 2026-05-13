@@ -36,7 +36,7 @@
 
 Исторический источник покрытия:
 
-- [`MatrixTests.cs`](../../../../Tests/Archive/SharedTests/MatrixTests.cs)
+- ``MatrixTests.cs``
 
 ## Notes
 

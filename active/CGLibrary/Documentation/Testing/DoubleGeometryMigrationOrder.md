@@ -25,21 +25,21 @@
 | 3 | `Intersection` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Intersection`, legacy `ConvexPolygonIntersectionTests.cs` исключён из компиляции. |
 | 4 | `SegmentPair` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/SegmentPair` отдельным unit-like набором. |
 | 5 | `Tools` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Tools` прямым базовым набором на численные контракты. |
-| 6 | `Vector` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector`, legacy [`VectorTests.cs`](../../Tests/Archive/SharedTests/VectorTests.cs) архивирован. |
-| 7 | `Matrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Matrix`, legacy [`MatrixTests.cs`](../../Tests/Archive/SharedTests/MatrixTests.cs) архивирован. |
-| 8 | `LinearBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/LinearBasis`, legacy [`LinearBasisTests.cs`](../../Tests/Archive/SharedTests/LinearBasisTests.cs) архивирован. |
-| 9 | `AffineBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/AffineBasis`, legacy [`AffineBasisTest.cs`](../../Tests/Archive/SharedTests/AffineBasisTest.cs) архивирован. |
-| 10 | `HyperPlane` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/HyperPlane`, legacy [`HyperPlaneTests.cs`](../../Tests/Archive/SharedTests/HyperPlaneTests.cs) архивирован. |
-| 11 | `Polyline` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/Polyline`, legacy [`PolylineTests.cs`](../../Tests/Archive/Double-Tests/PolylineTests.cs) архивирован. |
+| 6 | `Vector` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Vector`, legacy ``VectorTests.cs`` архивирован. |
+| 7 | `Matrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/Matrix`, legacy ``MatrixTests.cs`` архивирован. |
+| 8 | `LinearBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/LinearBasis`, legacy ``LinearBasisTests.cs`` архивирован. |
+| 9 | `AffineBasis` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/AffineBasis`, legacy ``AffineBasisTest.cs`` архивирован. |
+| 10 | `HyperPlane` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/HyperPlane`, legacy ``HyperPlaneTests.cs`` архивирован. |
+| 11 | `Polyline` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/Polyline`, legacy ``PolylineTests.cs`` архивирован. |
 | 12 | `BasicPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/BasicPolygon` прямым unit-like набором через тестовые наследники. |
-| 13 | `PolygonTools` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/PolygonTools`, legacy [`PolygonToolsTests.cs`](../../Tests/Archive/Double-Tests/PolygonToolsTests.cs) архивирован. |
+| 13 | `PolygonTools` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/PolygonTools`, legacy ``PolygonToolsTests.cs`` архивирован. |
 | 14 | `GammaPair` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/GammaPair` прямым набором на конструкторы, сравнение и `CrossPairs`. |
-| 15 | `SupportFunction` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/SupportFunction`, legacy [`SupportFunctionTests.cs`](../../Tests/Archive/Double-Tests/SupportFunctionTests.cs) архивирован. |
+| 15 | `SupportFunction` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/SupportFunction`, legacy ``SupportFunctionTests.cs`` архивирован. |
 | 16 | `ConvexPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/ConvexPolygon`, legacy `ConvexPolygon*` и `PolygonExtremeTests.cs` исключены из компиляции. |
-| 17 | `FaceLattice` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/FaceLattice`, legacy [`FaceLatticeTests.cs`](../../Tests/Archive/SharedTests/FaceLatticeTests.cs) архивирован. |
+| 17 | `FaceLattice` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/FaceLattice`, legacy ``FaceLatticeTests.cs`` архивирован. |
 | 18 | `ConvexPolytop` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/ConvexPolytop` прямым unit-like набором; legacy-источники остаются у алгоритмических классов. |
 | 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
-| 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `Archive/Double-Tests/GW_hDTests/GW_Tests.cs` больше не участвует в активной компиляции. |
+| 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `legacy/PolygonLibrary/Tests/Double-Tests/GW_hDTests/GW_Tests.cs` больше не участвует в активной компиляции. |
 | 21 | `MinkowskiSum` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiSum`, legacy `MinkowskiSumTests.cs` исключён из компиляции. |
 | 22 | `MinkowskiDiff` | `in_progress` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff` базовым и regression-слоем; `cyclic` вынесен в research, а `tetrahedron - point` / `octahedron - point` оставлены красными signal-тестами на simplex-bug. |
 | 23 | `CauchyMatrix` | `closed` | Перенесён в `Tests/DoubleGeometry/Basics/CauchyMatrix` прямым математически контролируемым набором. |

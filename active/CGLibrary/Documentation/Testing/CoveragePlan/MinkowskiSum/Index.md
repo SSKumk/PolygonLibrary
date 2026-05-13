@@ -38,10 +38,8 @@
 
 ## Existing Test Sources
 
-- [`MinkowskiSumTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
+- ``MinkowskiSumTests.cs``
 
 ## Notes
 
 - Старый файл содержал и прямые unit-like кейсы, и очень тяжёлые размерностные regression-наборы. В новой структуре оставлен компактный обязательный слой на сам алгоритм.
-
-

@@ -34,7 +34,7 @@
 
 Исторический источник покрытия:
 
-- [`LinearBasisTests.cs`](../../../../Tests/Archive/SharedTests/LinearBasisTests.cs)
+- ``LinearBasisTests.cs``
 
 ## Notes
 

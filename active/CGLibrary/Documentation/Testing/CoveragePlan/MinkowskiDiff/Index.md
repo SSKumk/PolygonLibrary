@@ -26,8 +26,8 @@
 
 ## Existing Test Sources
 
-- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
-- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/DoubleDouble-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- ``MinkowskiDiffTests.cs``
+- ``MinkowskiDiffTests.cs``
 - [`MinkowskiDiffCyclicResearchTests.cs`](../../../../Tests/DoubleGeometry/Research/MinkowskiDiff/MinkowskiDiffCyclicResearchTests.cs)
 
 ## Notes

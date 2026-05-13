@@ -26,7 +26,7 @@
 
 ## Existing Test Sources
 
-- [`SupportFunctionTests.cs`](../../../../Tests/Archive/Double-Tests/SupportFunctionTests.cs)
+- ``SupportFunctionTests.cs``
 - [`SupportFunctionInitializationTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionInitializationTests.cs)
 - [`SupportFunctionEvaluationAndSearchTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionEvaluationAndSearchTests.cs)
 - [`SupportFunctionCombinationAndConvexificationTests.cs`](../../../../Tests/DoubleGeometry/Polygons/SupportFunction/SupportFunctionCombinationAndConvexificationTests.cs)
@@ -34,6 +34,3 @@
 ## Notes
 
 - `SupportFunction` тесно зависит от `GammaPair`, поэтому прямой набор здесь нужен именно для отделения локальных ошибок функции от багов в сравнении/нормализации пар.
-
-
-

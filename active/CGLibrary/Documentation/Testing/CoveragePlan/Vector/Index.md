@@ -34,7 +34,7 @@
 
 Потенциальные источники текущего покрытия:
 
-- [`VectorTests.cs`](../../../../Tests/Archive/SharedTests/VectorTests.cs)
+- ``VectorTests.cs``
 - [`VectorAssert.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorAssert.cs)
 - [`VectorConstructionAndIdentityTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorConstructionAndIdentityTests.cs)
 - [`VectorComparisonAndFormattingTests.cs`](../../../../Tests/DoubleGeometry/Basics/Vector/VectorComparisonAndFormattingTests.cs)
@@ -46,7 +46,3 @@
 
 - При дальнейшей разметке полезно отделять truly generic-сценарии от сценариев, критичных именно для `double` и `Eps`.
 - Для `Vector` важны не только happy-path проверки, но и инварианты после цепочек операций.
-
-
-
-

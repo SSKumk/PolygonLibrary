@@ -49,9 +49,9 @@
 
 ## Existing Test Sources
 
-- [`GW_Tests.cs`](../../../../Tests/Archive/Double-Tests/GW_hDTests/GW_Tests.cs)
-- [`MinkowskiSumTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiSumTests.cs)
-- [`MinkowskiDiffTests.cs`](../../../../Tests/Archive/Double-Tests/Minkowski-Tests/MinkowskiDiffTests.cs)
+- ``GW_Tests.cs``
+- ``MinkowskiSumTests.cs``
+- ``MinkowskiDiffTests.cs``
 - [`TestsPolytopes.cs`](../../../../Tests/TestInfrastructure/TestsPolytopes.cs)
 
 ## Notes
@@ -59,5 +59,3 @@
 - Старое покрытие `ConvexPolytop` было размазано по алгоритмическим тестам. В новой структуре добавлен отдельный прямой unit-like слой именно на сам класс.
 - По текущему активному слою branch-specific матрица для `Vrep` / `Hrep` / `FLrep` закрыта.
 - Отдельными малыми слоями уже закреплены `Polar`, distance-epigraph API и базовая редукция `Hrep`; вне активного слоя остаются только более тяжёлые high-dimensional и algorithmic ветки.
-
-
