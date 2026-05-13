@@ -23,6 +23,7 @@
 
 - `DoubleGeometry/` - основной активный слой тестов для `double`.
 - `Archive/` - архивный слой старых тестов, не участвующих в активной компиляции.
+- `Manual/` - ручные `[Explicit]`-песочницы для локальных проверок через NUnit runner.
 - `TestInfrastructure/` - общая тестовая инфраструктура, генераторы и helper-слой для regression/stress.
 
 ## Documentation

@@ -11,15 +11,13 @@ using static CGLibrary.Geometry<double, Tests.DConvertor>;
 // using static CGLibrary.Geometry<Rationals.Rational, Tests.RConvertor>;
 
 
-namespace Tests.OtherTests;
+namespace Tests.Manual;
 
 [TestFixture]
 public class Sandbox {
 
-  private static readonly string pathData =
-    "F:/Works/IMM/Аспирантура/_PolygonLibrary/active/CGLibrary/Tests/OtherTests/LDG_computations/Other/";
-
   [Test]
+  [Explicit("Manual sandbox for ad-hoc checks. Do not run in regular test suites.")]
   public void Sandboxx() {
     Console.WriteLine($"{double.Acos(0.999999999)}");
 
