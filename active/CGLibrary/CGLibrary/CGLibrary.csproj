@@ -77,18 +77,4 @@
         </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmann.svg"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_old"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannBasic.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\BentleyOttmannRealizations.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\Event.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\EventQueue.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\InnerSegment.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\SegmentGroup.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\SweepLineSegmentComparer.cs_store"/>
-        <Content Include="Geometry2D\Segments\Bentley-Ottmann\YStructure.cs_store"/>
-    </ItemGroup>
-
-
 </Project>

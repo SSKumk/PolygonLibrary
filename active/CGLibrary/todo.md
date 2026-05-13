@@ -72,6 +72,24 @@
 Исходная формулировка:
 - `Средний приоритет. Аккуратно дочистить структуру папки Tests.`
 
+### Реализовать алгоритм Bentley-Ottmann
+
+Статус: `open`
+
+Контекст:
+- историческая заготовка перенесена в [`../../legacy/PolygonLibrary/CGLibrary/Geometry2D/Segments/Bentley-Ottmann`](../../legacy/PolygonLibrary/CGLibrary/Geometry2D/Segments/Bentley-Ottmann)
+- активный слой отрезков:
+  - [`Segment.cs`](./CGLibrary/Geometry2D/Segments/Segment.cs)
+  - [`SegmentPair.cs`](./CGLibrary/Geometry2D/Segments/SegmentPair.cs)
+
+Что имеется в виду:
+- реализовать sweep-line алгоритм Bentley-Ottmann для пересечений отрезков;
+- сначала описать целевой контракт и место алгоритма в активной структуре;
+- после реализации добавить тесты в активный `DoubleGeometry`-слой и coverage-документы.
+
+Исходная формулировка:
+- `Реализовать алгоритм Бентли-Оттмана.`
+
 ### Visualization / Bridges / Trajectories factory methods
 
 Статус: `open`
