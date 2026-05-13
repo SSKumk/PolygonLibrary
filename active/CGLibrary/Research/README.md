@@ -37,3 +37,9 @@
 ## Связанные правила
 
 - [`../Documentation/Development/AlgorithmMaterialsPolicy.md`](../Documentation/Development/AlgorithmMaterialsPolicy.md)
+
+## Темы
+
+- [`PolygonIntersection2D/README.md`](./PolygonIntersection2D/README.md)
+  Объект: материалы по пересечению выпуклых 2D-многоугольников.
+  Когда использовать: когда нужны reference-картинки и привязка к тестам `ConvexPolygonIntersection*`.

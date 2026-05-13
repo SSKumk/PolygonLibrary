@@ -53,6 +53,16 @@ public class GaussBench {
     gaussSLE.Solve();
   }
 
+  [Benchmark]
+  public void GaussSolveFlatArray() {
+    _ = GaussSLE.Solve(A, b, GaussSLE.GaussChoice.RowWise, out ddouble[]? _);
+  }
+
+  [Benchmark]
+  public void GaussSolveFunctionAccess() {
+    _ = GaussSLE.Solve(AFunc, bFunc, k, k, GaussSLE.GaussChoice.RowWise, out ddouble[]? _);
+  }
+
   // public class Program {
   //
   //   public static void Main(string[] args) {
