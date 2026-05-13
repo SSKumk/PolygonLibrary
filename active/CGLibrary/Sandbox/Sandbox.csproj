@@ -11,7 +11,7 @@
         <ProjectReference Include="..\LDG\LDG.csproj"/>
         <ProjectReference Include="..\Graphics\Graphics.csproj"/>
         <Reference Include="DoubleDouble">
-            <HintPath>..\DoubleDouble.dll</HintPath>
+            <HintPath>..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
 

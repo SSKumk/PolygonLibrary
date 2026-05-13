@@ -11,10 +11,10 @@
         <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
         <ProjectReference Include="..\LDG\LDG.csproj" />
         <Reference Include="DoubleDouble">
-            <HintPath>..\DoubleDouble.dll</HintPath>
+            <HintPath>..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
         </Reference>
         <Reference Include="Rationals">
-            <HintPath>..\Rationals.dll</HintPath>
+            <HintPath>..\..\..\dependencies\Binaries\Rationals.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>
