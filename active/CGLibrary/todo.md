@@ -37,26 +37,6 @@
 Исходная формулировка:
 - `LinearBasis: В одну операцию! MultiplyTransposeBySelf()`
 
-### Разобраться с картинками и визуальными артефактами
-
-Статус: `open`
-
-Контекст:
-- текущие неразобранные визуальные материалы в активном тестовом слое:
-  - [`Tests/Figurs for algorithms/Minkowski`](./Tests/Figurs%20for%20algorithms/Minkowski)
-  - [`Tests/Figurs for algorithms/SegmentCrossFigures`](./Tests/Figurs%20for%20algorithms/SegmentCrossFigures)
-- уже вынесенные материалы:
-  - [`Research/PolygonIntersection2D/References/ConvexIntersectionFigures`](./Research/PolygonIntersection2D/References/ConvexIntersectionFigures)
-  - [`../../legacy/PolygonLibrary/Tests`](../../legacy/PolygonLibrary/Tests)
-
-Что имеется в виду:
-- отдельно решить судьбу оставшихся папок в `Tests/Figurs for algorithms`;
-- для каждого набора выбрать место: `Research`, `legacy`, активные тестовые fixtures или удаление;
-- зафиксировать для них понятный статус, чтобы они не выглядели случайным хвостом миграции.
-
-Исходная формулировка:
-- `Средний приоритет. Разобраться с картинками и визуальными артефактами в репозитории.`
-
 ### Дочистить структуру папки Tests
 
 Статус: `open`
@@ -69,7 +49,7 @@
 
 Что имеется в виду:
 - ещё раз пройтись по `Tests` и убедиться, что там не осталось лишних исторических директорий, случайных файлов и неочевидных хвостов;
-- проверить, не нужно ли дополнительно упорядочить `Archive`, `Figurs for algorithms`, `ToolkitTests`, `_Store` и другие служебные слои;
+- разобрать `Archive`: снять или перепривязать документационные ссылки, затем удалить или перенести исторические файлы по отдельным решениям;
 - после этого зафиксировать целевую чистую структуру `Tests`, чтобы новые хвосты больше не накапливались.
 
 Исходная формулировка:
