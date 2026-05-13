@@ -72,7 +72,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\dependencies\AVLUtils\AVLUtils\AVLUtils.csproj" />
+        <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\..\dependencies\AVLUtils\AVLUtils\AVLUtils.csproj" />
     </ItemGroup>
 
 </Project>

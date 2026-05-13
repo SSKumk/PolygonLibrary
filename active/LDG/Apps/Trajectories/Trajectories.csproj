@@ -5,16 +5,14 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Trajectories</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CGLibrary\CGLibrary.csproj" />
-        <ProjectReference Include="..\..\LDG\LDG\LDG.csproj" />
+        <ProjectReference Include="..\..\..\CGLibrary\CGLibrary\CGLibrary.csproj" />
+        <ProjectReference Include="..\..\LDG\LDG.csproj"/>
         <Reference Include="DoubleDouble">
-            <HintPath>..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
-        </Reference>
-        <Reference Include="Rationals">
-            <HintPath>..\..\..\dependencies\Binaries\Rationals.dll</HintPath>
+            <HintPath>..\..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>
