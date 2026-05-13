@@ -90,8 +90,8 @@
 | ID | Status | Scenario | Tests |
 | --- | --- | --- | --- |
 | `OBJ-TOPIC-001` | ` ` | Описание сценария. | |
-| `OBJ-TOPIC-002` | `x` | Описание сценария. | [SomeTests.cs](../../../Tests/SharedTests/SomeTests.cs#L42) |
-| `OBJ-TOPIC-003` | `~` | Описание сценария. | [SomeTests.cs](../../../Tests/SharedTests/SomeTests.cs#L57) |
+| `OBJ-TOPIC-002` | `x` | Описание сценария. | [Line2DConstructionTests.cs](../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs#L42) |
+| `OBJ-TOPIC-003` | `~` | Описание сценария. | [Line2DQueriesAndIntersectionTests.cs](../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs#L57) |
 | `OBJ-TOPIC-004` | `-` | Сценарий не входит в активный слой. | |
 
 ## Gaps
@@ -152,13 +152,13 @@
 Хорошо:
 
 ```md
-[Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L42)
+[Line2DConstructionTests.cs](../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs#L42)
 ```
 
 или
 
 ```md
-[Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L42), [Line2DTests.cs](../../../Tests/SharedTests/Line2DTests.cs#L57)
+[Line2DConstructionTests.cs](../../Tests/DoubleGeometry/Basics/Line2D/Line2DConstructionTests.cs#L42), [Line2DQueriesAndIntersectionTests.cs](../../Tests/DoubleGeometry/Basics/Line2D/Line2DQueriesAndIntersectionTests.cs#L57)
 ```
 
 ## Как трактовать вырожденные входы
