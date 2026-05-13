@@ -1,12 +1,14 @@
 # AGENTS
 
-Этот репозиторий содержит активный проект `CGLibrary`, его внешнюю зависимость и исторические материалы вокруг него.
+Этот репозиторий содержит активные проекты `CGLibrary` и `LDG`, внешние зависимости и исторические материалы вокруг них.
 
 ## Перед работой
 
-- Основная рабочая папка: `active/CGLibrary/`.
+- Основная рабочая папка геометрической библиотеки: `active/CGLibrary/`.
+- Основная рабочая папка LDG-проекта: `active/LDG/`.
 - Внешняя зависимость активного проекта: `dependencies/AVLUtils/`.
 - Перед изменениями в активном проекте читать `active/CGLibrary/README.md`.
+- Перед изменениями в LDG-проекте читать `active/LDG/README.md`.
 - Для правил документации читать `active/CGLibrary/Documentation/DocumentationConventions.md`.
 - Для правил разработки читать `active/CGLibrary/Documentation/Development/README.md`.
 - Для структуры репозитория читать `active/CGLibrary/Documentation/Development/RepoStructure.md`.

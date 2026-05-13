@@ -8,7 +8,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\CGLibrary\CGLibrary.csproj"/>
-        <ProjectReference Include="..\LDG\LDG.csproj"/>
+        <ProjectReference Include="..\..\LDG\LDG\LDG.csproj"/>
         <ProjectReference Include="..\Graphics\Graphics.csproj"/>
         <Reference Include="DoubleDouble">
             <HintPath>..\..\..\dependencies\Binaries\DoubleDouble.dll</HintPath>

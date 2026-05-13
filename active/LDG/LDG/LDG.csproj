@@ -6,6 +6,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\CGLibrary\CGLibrary.csproj"/>
+        <ProjectReference Include="..\..\CGLibrary\CGLibrary\CGLibrary.csproj"/>
     </ItemGroup>
 </Project>
