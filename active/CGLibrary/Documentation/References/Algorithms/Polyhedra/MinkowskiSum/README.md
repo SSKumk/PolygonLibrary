@@ -4,7 +4,7 @@
 
 ## Источники
 
-- [`!) 2021г. S. Das, S. Swami. A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.pdf`](./!)%202021%D0%B3.%20S.%20Das,%20S.%20Swami.%20A%20Worst-Case%20Optimal%20Algorithm%20to%20Compute%20the%20Minkowski%20Sum%20of%20Convex%20Polytopes.pdf)
+- [`!) 2021г. S. Das, S. Swami. A Worst-Case Optimal Algorithm to Compute the Minkowski Sum of Convex Polytopes.pdf`](./!%29%202021%D0%B3.%20S.%20Das,%20S.%20Swami.%20A%20Worst-Case%20Optimal%20Algorithm%20to%20Compute%20the%20Minkowski%20Sum%20of%20Convex%20Polytopes.pdf)
   Объект: рабочая статья по алгоритму суммы Минковского, на который ссылается реализация `BySandipDas`.
   Когда использовать: когда нужно сверять шаги алгоритма, леммы и theorem-based условия с кодом `MinkowskiSum`.
 

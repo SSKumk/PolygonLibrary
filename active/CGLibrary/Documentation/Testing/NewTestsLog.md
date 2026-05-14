@@ -303,9 +303,9 @@
 
 - New tests:
   - [`GiftWrappingTestData.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingTestData.cs) (базовые 2D/3D swarm-наборы, включая внутренние точки и линейный случай)
-  - [`GiftWrappingInitializationTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingInitializationTests.cs) (пустой, точечный и линейный случаи инициализации)
-  - [`GiftWrappingHullExtractionTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingHullExtractionTests.cs) (`WrapVRep` для квадрата, тетраэдра и куба с сохранением legacy-сообщения про множество вершин)
-  - [`GiftWrappingFaceLatticeTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingFaceLatticeTests.cs) (`WrapFaceLattice` и `ConstructFL` для типовых 2D/3D оболочек)
+  - [`GiftWrappingBasicTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingBasicTests.cs) (пустой, точечный и линейный случаи, `WrapVRep`, `WrapFaceLattice` и `ConstructFL`)
+  - [`GiftWrappingRegressionTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingRegressionTests.cs) (регрессионные сценарии `CreateFromPoints` для кубов, симплексов, shuffle-инвариантности и article-inspired случая)
+  - [`GiftWrappingStressTests.cs`](../../Tests/DoubleGeometry/Algorithms/GiftWrapping/GiftWrappingStressTests.cs) (представительные stress-сценарии для кубов и симплексов)
 - Legacy:
   - ``GW_Tests.cs``
 - Note:

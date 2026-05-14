@@ -2,7 +2,7 @@
 
 ## Scope
 
-- [`../../../CGLibrary/Toolkit/Combinations.cs`](../../../CGLibrary/Toolkit/Combinations.cs)
+- [`../../../../CGLibrary/Toolkit/Combinations.cs`](../../../../CGLibrary/Toolkit/Combinations.cs)
   Объект: helper-класс `Combination` для перебора `k`-сочетаний из `n` элементов.
   Когда использовать: когда нужно проверить инициализацию внутреннего состояния и лексикографический переход `Next()`.
 

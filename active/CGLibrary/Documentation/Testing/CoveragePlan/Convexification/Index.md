@@ -2,7 +2,7 @@
 
 ## Scope
 
-- [`../../../CGLibrary/Algorithms/ConvexHull2D/Convexification.cs`](../../../CGLibrary/Algorithms/ConvexHull2D/Convexification.cs)
+- [`../../../../CGLibrary/Algorithms/ConvexHull2D/Convexification.cs`](../../../../CGLibrary/Algorithms/ConvexHull2D/Convexification.cs)
   Объект: 2D helper-алгоритмы выпукления `QuickHull2D`, `ArcHull2D`, `GrahamHull` и вспомогательный `IsLeft`.
   Когда использовать: когда нужно проверить базовые контракты построения выпуклой оболочки и важные различия между тремя реализациями.
 

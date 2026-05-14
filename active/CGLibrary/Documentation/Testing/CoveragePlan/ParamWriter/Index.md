@@ -2,7 +2,7 @@
 
 ## Scope
 
-- [`../../../CGLibrary/Toolkit/ParamWriter.cs`](../../../CGLibrary/Toolkit/ParamWriter.cs)
+- [`../../../../CGLibrary/Toolkit/ParamWriter.cs`](../../../../CGLibrary/Toolkit/ParamWriter.cs)
   Объект: writer параметрических файлов библиотеки.
   Когда использовать: когда нужно проверить форматирование и round-trip для чисел, массивов и геометрических объектов.
 

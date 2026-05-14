@@ -2,7 +2,7 @@
 
 ## Scope
 
-- [`../../../CGLibrary/Toolkit/Extensions.cs`](../../../CGLibrary/Toolkit/Extensions.cs)
+- [`../../../../CGLibrary/Toolkit/Extensions.cs`](../../../../CGLibrary/Toolkit/Extensions.cs)
   Объект: helper-расширения для `List`, массивов, `LinkedList` и `IEnumerable`.
   Когда использовать: когда нужно проверить поиск по предикату, циклический доступ, перестановки, генерацию подмножеств и materialization helper-ы.
 

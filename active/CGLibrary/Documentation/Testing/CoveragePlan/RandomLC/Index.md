@@ -2,7 +2,7 @@
 
 ## Scope
 
-- [`../../../CGLibrary/Toolkit/RandomLC.cs`](../../../CGLibrary/Toolkit/RandomLC.cs)
+- [`../../../../CGLibrary/Toolkit/RandomLC.cs`](../../../../CGLibrary/Toolkit/RandomLC.cs)
   Объект: линейный конгруэнтный генератор `RandomLC`, его типизированный слой `GRandomLC` и генераторы массивов.
   Когда использовать: когда нужно проверить детерминированность, диапазоны значений и вспомогательные фабрики случайных массивов.
 
