@@ -38,7 +38,7 @@
 | 16 | `ConvexPolygon` | `closed` | Перенесён в `Tests/DoubleGeometry/Polygons/ConvexPolygon`, legacy `ConvexPolygon*` и `PolygonExtremeTests.cs` исключены из компиляции. |
 | 17 | `FaceLattice` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/FaceLattice`, legacy ``FaceLatticeTests.cs`` архивирован. |
 | 18 | `ConvexPolytop` | `closed` | Перенесён в `Tests/DoubleGeometry/Polyhedra/ConvexPolytop` прямым unit-like набором; legacy-источники остаются у алгоритмических классов. |
-| 19 | `HrepToFLrep` | `closed` | Перенесён прямым текущим контрактом: `null` без стартовой вершины и `NotImplementedException` на ограниченном случае. |
+| 19 | `HrepToFLrep` | `closed` | Выведен из активного coverage-слоя; дальнейшая работа ведётся как research-задача в `todo.md`. |
 | 20 | `GiftWrapping` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/GiftWrapping`, legacy `legacy/PolygonLibrary/Tests/Double-Tests/GW_hDTests/GW_Tests.cs` больше не участвует в активной компиляции. |
 | 21 | `MinkowskiSum` | `closed` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiSum`, legacy `MinkowskiSumTests.cs` исключён из компиляции. |
 | 22 | `MinkowskiDiff` | `in_progress` | Перенесён в `Tests/DoubleGeometry/Algorithms/MinkowskiDiff` базовым и regression-слоем; `cyclic` вынесен в research, а `tetrahedron - point` / `octahedron - point` оставлены красными signal-тестами на simplex-bug. |
@@ -53,5 +53,5 @@
 5. Обновить `Documentation/Testing/CoveragePlan/...`.
 6. Исключить legacy-файл из активной компиляции, если он больше не нужен.
 7. Проверить обычную сборку `Tests.csproj` без запуска долгих тестов.
-8. Обновить `Documentation/Testing/NewTestsLog.md`.
+8. Обновить ближайшие `README.md`, `CoveragePlan` и `todo.md`, если статус класса или открытые хвосты изменились.
 9. После закрытия класса сделать отдельный коммит.

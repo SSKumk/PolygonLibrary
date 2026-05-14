@@ -111,8 +111,6 @@ Backlog активного слоя `CGLibrary`.
 
 Контекст:
 - [`HrepToFLrep.cs`](./CGLibrary/Algorithms/Polyhedra/HrepToFLrep.cs)
-- coverage:
-  - [`Documentation/Testing/CoveragePlan/HrepToFLrep/Index.md`](./Documentation/Testing/CoveragePlan/HrepToFLrep/Index.md)
 
 Что имеется в виду:
 - текущий `HrepToFLrep_Geometric` явно помечен как неработающий и не должен сейчас рассматриваться как active-fix target;
