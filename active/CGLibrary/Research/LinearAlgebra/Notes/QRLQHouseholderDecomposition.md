@@ -1,4 +1,4 @@
-﻿# QR / LQ By Householder Reflections
+# QR / LQ By Householder Reflections
 
 ## Постановка
 

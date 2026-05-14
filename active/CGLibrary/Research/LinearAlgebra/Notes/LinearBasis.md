@@ -3,8 +3,8 @@
 Короткая заметка про представление и алгоритмический смысл `LinearBasis`.
 
 Связанный код:
-- [`../../../../CGLibrary/Basics/LinearBasis.cs`](../../../../CGLibrary/Basics/LinearBasis.cs)
-- [`../../../../CGLibrary/Basics/LinearBasisMutable.cs`](../../../../CGLibrary/Basics/LinearBasisMutable.cs)
+- [`../../../CGLibrary/Basics/LinearBasis.cs`](../../../CGLibrary/Basics/LinearBasis.cs)
+- [`../../../CGLibrary/Basics/LinearBasisMutable.cs`](../../../CGLibrary/Basics/LinearBasisMutable.cs)
 - [`./OrthonormalizeStability.md`](./OrthonormalizeStability.md)
 
 ## Назначение

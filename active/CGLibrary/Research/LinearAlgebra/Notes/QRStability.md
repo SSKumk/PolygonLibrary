@@ -3,7 +3,7 @@
 Эта заметка фиксирует минимальный вывод по численной устойчивости `Decomposition.QR_ByHouseholder(...)` при текущей absolute zero-policy через `Tools.Eps`.
 
 Связанный код:
-- [`../../../../CGLibrary/LinearMath/Decomposition.cs`](../../../../CGLibrary/LinearMath/Decomposition.cs)
+- [`../../../CGLibrary/LinearMath/Decomposition.cs`](../../../CGLibrary/LinearMath/Decomposition.cs)
 - [`QRLQHouseholderDecomposition.md`](./QRLQHouseholderDecomposition.md)
 
 ## Что исследовалось
@@ -156,5 +156,5 @@ cond_2(B(delta)) = sqrt(lambda_+ / lambda_-)
 
 Минимальный воспроизводимый набор сохранён в research-слое:
 
-- [`../../../../Tests/DoubleGeometry/Research/Decomposition/README.md`](../../../../Tests/DoubleGeometry/Research/Decomposition/README.md)
-- [`../../../../Tests/DoubleGeometry/Research/Decomposition/QRStabilityResearchTests.cs`](../../../../Tests/DoubleGeometry/Research/Decomposition/QRStabilityResearchTests.cs)
+- [`../../../Tests/DoubleGeometry/Research/Decomposition/README.md`](../../../Tests/DoubleGeometry/Research/Decomposition/README.md)
+- [`../../../Tests/DoubleGeometry/Research/Decomposition/QRStabilityResearchTests.cs`](../../../Tests/DoubleGeometry/Research/Decomposition/QRStabilityResearchTests.cs)

@@ -1,7 +1,7 @@
 # Simplex Optimal Face Refinement
 
 Алгоритм используется как post-processing после `SimplexMethod` в
-[`ConvexPolytop.cs`](../../../../../CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), когда нужно получить не просто optimum-точку, а вершину исходного многогранника.
+[`ConvexPolytop.cs`](../../../CGLibrary/GeometryND/Polyhedra/ConvexPolytop.cs), когда нужно получить не просто optimum-точку, а вершину исходного многогранника.
 
 ## Постановка
 

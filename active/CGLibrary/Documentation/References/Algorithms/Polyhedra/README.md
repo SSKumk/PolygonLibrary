@@ -15,7 +15,3 @@
 - [`MinkowskiDiff/README.md`](./MinkowskiDiff/README.md)
   Объект: reference-слой для алгоритма разности Минковского.
   Когда использовать: когда нужно положить статью по `MinkowskiDiff` или связать внешний источник с текущей реализацией.
-
-- [`InitialVertexRecovery/README.md`](./InitialVertexRecovery/README.md)
-  Объект: reference-слой для восстановления стартовой вершины по `Hrep` из simplex-based seed.
-  Когда использовать: когда нужно описать или уточнить алгоритм `FindInitialVertex_Simplex` / `RefineOptimalPointToVertex`.

@@ -3,8 +3,8 @@
 Короткая заметка про численную устойчивость `Equals` у `LinearBasis` и `AffineBasis`.
 
 Связанный код:
-- [`../../../../CGLibrary/Basics/LinearBasis.cs`](../../../../CGLibrary/Basics/LinearBasis.cs)
-- [`../../../../CGLibrary/Basics/AffineBasis.cs`](../../../../CGLibrary/Basics/AffineBasis.cs)
+- [`../../../CGLibrary/Basics/LinearBasis.cs`](../../../CGLibrary/Basics/LinearBasis.cs)
+- [`../../../CGLibrary/Basics/AffineBasis.cs`](../../../CGLibrary/Basics/AffineBasis.cs)
 
 ## Что сравнивалось
 
@@ -54,5 +54,5 @@ Current `Equals` оставлен без изменений.
 
 Минимальный воспроизводимый набор сохранён в research-слое:
 
-- [`../../../../Tests/DoubleGeometry/Research/LinearBasis/README.md`](../../../../Tests/DoubleGeometry/Research/LinearBasis/README.md)
-- [`../../../../Tests/DoubleGeometry/Research/LinearBasis/EqualsStabilityResearchTests.cs`](../../../../Tests/DoubleGeometry/Research/LinearBasis/EqualsStabilityResearchTests.cs)
+- [`../../../Tests/DoubleGeometry/Research/LinearBasis/README.md`](../../../Tests/DoubleGeometry/Research/LinearBasis/README.md)
+- [`../../../Tests/DoubleGeometry/Research/LinearBasis/EqualsStabilityResearchTests.cs`](../../../Tests/DoubleGeometry/Research/LinearBasis/EqualsStabilityResearchTests.cs)

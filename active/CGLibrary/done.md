@@ -28,8 +28,8 @@
 - production:
   - [`LinearBasis.cs`](./CGLibrary/Basics/LinearBasis.cs)
 - documentation:
-  - [`Documentation/References/Algorithms/LinearAlgebra/BasisEqualityStability.md`](./Documentation/References/Algorithms/LinearAlgebra/BasisEqualityStability.md)
-  - [`Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md`](./Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md)
+  - [`Research/LinearAlgebra/Notes/BasisEqualityStability.md`](./Research/LinearAlgebra/Notes/BasisEqualityStability.md)
+  - [`Research/LinearAlgebra/Notes/LinearBasis.md`](./Research/LinearAlgebra/Notes/LinearBasis.md)
 
 Результат:
 - Задача "дёшево обновлять и хранить `RREF`" снята как не оправдавшая себя по результатам исследования.
@@ -57,7 +57,7 @@
   - [`LinearBasisMutationTests.cs`](./Tests/DoubleGeometry/Basics/LinearBasis/LinearBasisMutationTests.cs)
   - [`AffineBasisConstructionTests.cs`](./Tests/DoubleGeometry/Basics/AffineBasis/AffineBasisConstructionTests.cs)
 - documentation:
-  - [`Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md`](./Documentation/References/Algorithms/LinearAlgebra/LinearBasis.md)
+  - [`Research/LinearAlgebra/Notes/LinearBasis.md`](./Research/LinearAlgebra/Notes/LinearBasis.md)
 
 Результат:
 - Split между immutable и mutable basis-типами считается завершённым и снят с активного backlog.
@@ -85,7 +85,7 @@
 - coverage:
   - [`Documentation/Testing/CoveragePlan/ConvexPolytop/InitialVertexRecovery.md`](./Documentation/Testing/CoveragePlan/ConvexPolytop/InitialVertexRecovery.md)
 - algorithm note:
-  - [`Documentation/References/Algorithms/Polyhedra/InitialVertexRecovery/SimplexOptimalFaceRefinement.md`](./Documentation/References/Algorithms/Polyhedra/InitialVertexRecovery/SimplexOptimalFaceRefinement.md)
+  - [`Research/InitialVertexRecovery/Notes/SimplexOptimalFaceRefinement.md`](./Research/InitialVertexRecovery/Notes/SimplexOptimalFaceRefinement.md)
 
 Коммиты:
 - `9e8b948` `Refine simplex optimum to a polytope vertex`

@@ -40,6 +40,14 @@
 
 ## Темы
 
+- [`LinearAlgebra/README.md`](./LinearAlgebra/README.md)
+  Объект: внутренние алгоритмические заметки по `LinearBasis`, `Decomposition` и их stability/diagnostic-поведению.
+  Когда использовать: когда нужно восстановить контекст по текущим low-level решениям линейной алгебры без обращения к внешнему reference-слою.
+
+- [`InitialVertexRecovery/README.md`](./InitialVertexRecovery/README.md)
+  Объект: материалы по восстановлению стартовой вершины по `Hrep` через simplex-based seed.
+  Когда использовать: когда нужно разобрать `FindInitialVertex_Simplex` / `RefineOptimalPointToVertex` и связанные с ними observations.
+
 - [`PolygonIntersection2D/README.md`](./PolygonIntersection2D/README.md)
   Объект: материалы по пересечению выпуклых 2D-многоугольников.
   Когда использовать: когда нужны reference-картинки и привязка к тестам `ConvexPolygonIntersection*`.

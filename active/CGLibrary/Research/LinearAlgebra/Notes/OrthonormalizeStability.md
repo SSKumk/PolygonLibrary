@@ -3,7 +3,7 @@
 Эта заметка фиксирует минимальный вывод по численной устойчивости `LinearBasis.Orthonormalize`.
 
 Связанный код:
-- [`../../../../CGLibrary/Basics/LinearBasis.cs`](../../../../CGLibrary/Basics/LinearBasis.cs)
+- [`../../../CGLibrary/Basics/LinearBasis.cs`](../../../CGLibrary/Basics/LinearBasis.cs)
 - [`QRLQHouseholderDecomposition.md`](./QRLQHouseholderDecomposition.md)
 
 ## Проблема
@@ -65,5 +65,5 @@ n in span(B)^⊥, ||n|| = 1.
 
 Минимальный воспроизводимый набор сохранён в research-слое:
 
-- [`../../../../Tests/DoubleGeometry/Research/LinearBasis/README.md`](../../../../Tests/DoubleGeometry/Research/LinearBasis/README.md)
-- [`../../../../Tests/DoubleGeometry/Research/LinearBasis/OrthonormalizeStabilityResearchTests.cs`](../../../../Tests/DoubleGeometry/Research/LinearBasis/OrthonormalizeStabilityResearchTests.cs)
+- [`../../../Tests/DoubleGeometry/Research/LinearBasis/README.md`](../../../Tests/DoubleGeometry/Research/LinearBasis/README.md)
+- [`../../../Tests/DoubleGeometry/Research/LinearBasis/OrthonormalizeStabilityResearchTests.cs`](../../../Tests/DoubleGeometry/Research/LinearBasis/OrthonormalizeStabilityResearchTests.cs)

@@ -3,9 +3,9 @@
 Короткая заметка про diagnostic-API в `Decomposition` и про то, как эти данные используются в `LinearBasis`.
 
 Связанный код:
-- [`../../../../CGLibrary/LinearMath/Decomposition.cs`](../../../../CGLibrary/LinearMath/Decomposition.cs)
-- [`../../../../CGLibrary/Basics/LinearBasis.cs`](../../../../CGLibrary/Basics/LinearBasis.cs)
-- [`../../../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs`](../../../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs)
+- [`../../../CGLibrary/LinearMath/Decomposition.cs`](../../../CGLibrary/LinearMath/Decomposition.cs)
+- [`../../../CGLibrary/Basics/LinearBasis.cs`](../../../CGLibrary/Basics/LinearBasis.cs)
+- [`../../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs`](../../../Tests/DoubleGeometry/Algorithms/Decomposition/DecompositionTests.cs)
 
 ## Что добавлено
 
