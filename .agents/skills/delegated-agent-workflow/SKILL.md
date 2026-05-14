@@ -1,6 +1,6 @@
 ---
 name: delegated-agent-workflow
-description: Use when the user asks to use subagents or a repository task is medium/large enough to delegate: broad reading, inventory, migration, implementation, cleanup, review, and commit preparation. Routes broad reading to gpt-5.4-mini and non-small implementation to gpt-5.3-codex, while keeping final responsibility on the main agent.
+description: Use when the user asks to use subagents or a repository task is medium/large enough to delegate: broad reading, inventory, migration, implementation, cleanup, review, and commits. Routes broad reading to gpt-5.4-mini, non-small implementation to gpt-5.3-codex, and trusted commit-only work to gpt-5.4 medium, while keeping final responsibility on the main agent.
 ---
 
 # Delegated Agent Workflow
@@ -14,7 +14,7 @@ description: Use when the user asks to use subagents or a repository task is med
 - не перегружать основной контекст большим чтением проекта;
 - отделять исследование от реализации;
 - поручать немалые кодовые изменения специализированному исполнителю;
-- сохранять ответственность за итог, проверку и коммиты за главным агентом.
+- сохранять ответственность за итог и проверку за главным агентом.
 
 Главное правило: **сабагент помогает, но не принимает финальное решение**.
 
@@ -36,7 +36,7 @@ description: Use when the user asks to use subagents or a repository task is med
 - принимать архитектурные решения вместо главного агента;
 - менять границы задачи без разрешения;
 - откатывать чужие изменения;
-- коммитить;
+- коммитить, кроме явно выданного trusted commit-этапа для `gpt-5.4` medium;
 - превращать временные рабочие материалы в постоянную документацию без решения главного агента.
 
 Главный агент обязан:
@@ -47,6 +47,7 @@ description: Use when the user asks to use subagents or a repository task is med
 - обновить нужные постоянные `.md` файлы;
 - запустить разрешённые проверки;
 - принять решение, можно ли завершать задачу или нужен следующий этап.
+- самому выполнить коммит или поручить отдельный trusted commit-этап `gpt-5.4` medium после проверки.
 
 ## Delegation Triggers
 
@@ -153,6 +154,27 @@ description: Use when the user asks to use subagents or a repository task is med
 - оценка риска и объёма;
 - при необходимости рабочий отчёт в `.tmp`.
 
+### `gpt-5.4` medium — trusted commits
+
+Использовать для коммитов, если пользователь явно разрешил коммитить и состояние уже проверено главным агентом.
+
+Подходит для:
+
+- посмотреть `git status`;
+- посмотреть нужный `git diff`;
+- убедиться, что `.tmp` и случайные файлы не попадают в коммит;
+- разбить уже подготовленные изменения на смысловые коммиты;
+- создать коммиты с короткими точными сообщениями.
+
+Не подходит для:
+
+- принятия архитектурных решений;
+- самостоятельного расширения области изменений;
+- коммита непроверенного результата другого сабагента;
+- исправления найденных проблем без отдельной задачи.
+
+Trusted commit-агент получает только коммит-этап. Он не должен менять файлы, кроме случаев, когда главный агент явно поручил минимальную техническую правку перед коммитом.
+
 ### `gpt-5.3-codex` — implementation
 
 Использовать для реализации ограниченного этапа.
@@ -249,11 +271,13 @@ description: Use when the user asks to use subagents or a repository task is med
 
 ## Commits
 
-Сабагенты не коммитят.
+Сабагенты не коммитят по умолчанию.
+
+Исключение: `gpt-5.4` medium может получить отдельный trusted commit-этап, если пользователь разрешил коммиты и главный агент уже проверил состояние.
 
 Главный агент коммитит только если коммиты явно разрешены пользователем или уже разрешены правилами текущего рабочего процесса.
 
-Перед коммитом главный агент обязан:
+Перед коммитом главный агент или trusted commit-агент обязан:
 
 - посмотреть `git status`;
 - при необходимости посмотреть `git diff`;
@@ -261,6 +285,8 @@ description: Use when the user asks to use subagents or a repository task is med
 - убедиться, что изменения разбиты на смысловые порции;
 - запустить разрешённые проверки или указать, почему они не запускались;
 - проверить, что постоянные `.md` файлы обновлены при изменении структуры или правил.
+
+Если коммит поручен trusted commit-агенту, главный агент после него проверяет итоговый `git status` и список созданных коммитов.
 
 Если проверка нашла миграционную проблему, главный агент исправляет её сам или выделяет отдельный ограниченный этап.
 
