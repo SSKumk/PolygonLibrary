@@ -16,7 +16,7 @@ Type = "S";  // способ задания многогранника
 
 ### CGLibrary
 
-Многогранник записан в формате библиотеки см. [здесь](../../LibPolytopeFormat.md)
+Многогранник записан в формате библиотеки см. [здесь](../../../CGLibrary/Documentation/Development/LibPolytopeFormat.md)
 
 ```
 Type = "CGLibrary";

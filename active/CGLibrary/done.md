@@ -109,13 +109,12 @@
 1. [x] ~~AffineBasis: Возможно ли привести их к какому-то каноническому виду? -- Да, можно. Это RREF для LinearBasis и проекция 0 в качестве Origin.~~
 1. [x] ~~ConvexPolytop: Избавиться от привязки к InnerPoint во всяких сравнениях.~~
 1. [x] ~~TODO XML у методов ConvexPolytope DistanceTo...!~~
-1. [x] ~~Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](./Documentation/Development/LDG/DataFormat.md)~~
+1. [x] ~~Внести в ParamReader ReadBool(). Подумать над форматом в файл  [Формата!](../LDG/Documentation/DataFormat.md)~~
 1. [x] ~~ParamReader -- научиться читать строку из чисел и превращать её в массив.~~
 
 ### Markdown-файлы
 
 1. [x] ~~Описание файла [IO-многогранников](./Documentation/Development/LibPolytopeFormat.md)~~
-1. [x] ~~Надо ли в файл [многогранника](./Documentation/Development/LDG/IOFormat/Polytopes.md) добавлять поле `doRedundancy`, чтобы  исключать лишние объекты? Надо.~~
 1. [x] ~~Какие символы НЕ может включать в себя Имя_поля в стандартной записи.~~
 
 ### Счёт примеров
