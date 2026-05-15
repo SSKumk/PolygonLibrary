@@ -1,0 +1,14 @@
+DynamicsName = "Simple Motion 3D # [0, 10] # 0.1";
+FPName = "2D-Circle";
+Scale = false;
+Shift = false;
+Rotate = false;
+SPName = "3D-Cube";
+Scale = false;
+Shift = false;
+Rotate = false;
+TSName = "3D-Cube";
+Scale = false;
+Shift = false;
+Rotate = false;
+Comment = "Простые движения в 3D";

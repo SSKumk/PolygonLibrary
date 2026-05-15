@@ -1,0 +1,4 @@
+Type = "Generator";
+GeneratorType = "Sphere";
+Dim               = 2;
+AzimuthsDivisions = 30;

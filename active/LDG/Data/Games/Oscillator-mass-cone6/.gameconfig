@@ -1,0 +1,15 @@
+DynamicsName = "Oscillator 0.5 mass 2D # [0, 10] # 0.1";
+FPName = "1D-Segment";
+Scale = false;
+Shift = false;
+Rotate = false;
+SPName = "1D-Segment";
+Scale = true;
+Value = 0.9;
+Shift = false;
+Rotate = false;
+TSName = "Epigraph_DistToZero # 2D";
+Scale = false;
+Shift = false;
+Rotate = false;
+Comment = "Трёхмерный осциллятор. С терминальным множеством в виде надграфика функции платы расстояние до нуля.";

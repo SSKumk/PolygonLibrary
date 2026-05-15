@@ -1,0 +1,6 @@
+Name = "Optimal + Optimal # на грани 2";
+t0 = 0;
+T  = 10;
+x0 = {-1.1195813659540708,0.0876965724425174,1.3269287269958363};
+FPControl = "Optimal";
+SPControl = "Optimal";

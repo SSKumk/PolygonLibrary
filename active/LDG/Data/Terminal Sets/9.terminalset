@@ -1,0 +1,5 @@
+TSType    = "Epigraph";
+Type      = "DistToPointByUnitBall";
+ScaleFactor = 2;
+Point = {0,0,0};
+UnitBall = "3D-Prism_hex";

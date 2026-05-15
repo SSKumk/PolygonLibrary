@@ -1,0 +1,6 @@
+Name = "Optimal + Optimal # сверху снаружи";
+t0 = 0;
+T  = 10;
+x0 = {0.5,0.5,3};
+FPControl = "Optimal";
+SPControl = "Optimal";

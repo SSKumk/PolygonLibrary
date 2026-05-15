@@ -1,0 +1,7 @@
+TSType    = "Epigraph";
+Type      = "DistToPointByNorm";
+ScaleFactor = 2;
+Point = {0,0};
+BallType  = "Ball_2";
+AzimuthsDivisions = 4;
+PolarDivision     = -1; // в 2д случае не важно чему равно это поле

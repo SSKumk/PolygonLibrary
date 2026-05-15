@@ -1,0 +1,16 @@
+DynamicsName = "Oscillator3D # 0.5 mass # [0, 10] # 0.1";
+FPName = "1D-Segment";
+Scale = false;
+Shift = false;
+Rotate = false;
+SPName = "1D-Segment";
+Scale = true;
+Value = 0.9;
+Shift = false;
+Rotate = false;
+TSName = "3D-Cone6";
+Scale = true;
+Value = 2;
+Shift = false;
+Rotate = false;
+Comment = "Честный трёхмерный осциллятор (без подъёма в 3д динамики системы). С терминальным множеством в виде надграфика функции платы расстояние до нуля.";
