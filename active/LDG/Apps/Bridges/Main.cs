@@ -10,7 +10,7 @@ namespace Bridges;
 class Program {
 
   static void Main(string[] args) {
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\LDG\\";
+    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\active\\LDG\\Data\\";
     // string ldgDir = "E:\\Work\\LDG\\";
 
     // double eps = double.Parse("1e-5");
@@ -19,7 +19,7 @@ class Program {
     // Rational eps = Rational.Parse("1/10000000000000000");
 
 
-    string problem = "Oscillator-triangle";
+    string problem = "SimpleMotion.Test2";
 
 
     // string problem = "Oscillator-circle30";
