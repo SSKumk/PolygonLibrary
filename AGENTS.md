@@ -4,14 +4,14 @@
 
 ## Перед работой
 
-- Основная рабочая папка геометрической библиотеки: `active/CGLibrary/`.
-- Основная рабочая папка LDG-проекта: `active/LDG/`.
+- Основная рабочая папка геометрической библиотеки: `projects/CGLibrary/`.
+- Основная рабочая папка LDG-проекта: `projects/LDG/`.
 - Внешняя зависимость активного проекта: `dependencies/AVLUtils/`.
-- Перед изменениями в активном проекте читать `active/CGLibrary/README.md`.
-- Перед изменениями в LDG-проекте читать `active/LDG/README.md`.
-- Для правил документации читать `active/CGLibrary/Documentation/DocumentationConventions.md`.
-- Для правил разработки читать `active/CGLibrary/Documentation/Development/README.md`.
-- Для структуры репозитория читать `active/CGLibrary/Documentation/Development/RepoStructure.md`.
+- Перед изменениями в активном проекте читать `projects/CGLibrary/README.md`.
+- Перед изменениями в LDG-проекте читать `projects/LDG/README.md`.
+- Для правил документации читать `projects/CGLibrary/Documentation/DocumentationConventions.md`.
+- Для правил разработки читать `projects/CGLibrary/Documentation/Development/README.md`.
+- Для структуры репозитория читать `projects/CGLibrary/Documentation/Development/RepoStructure.md`.
 
 ## Локальные скиллы
 

@@ -12,7 +12,7 @@ public class Sandbox {
 
   private static readonly string pathData =
     // "E:\\Work\\CGLibrary\\CGLibrary\\Tests\\OtherTests\\LDG_Computations\\";
-    "F:/Works/IMM/Аспирантура/_PolygonLibrary/active/CGLibrary/Tests/OtherTests/LDG_computations/";
+    "F:/Works/IMM/Аспирантура/_PolygonLibrary/projects/CGLibrary/Tests/OtherTests/LDG_computations/";
 
   [Params(3)]
   public int spaceDim;

@@ -1,6 +1,6 @@
 # Profile
 
-Папка для LDG-ориентированных profiling/benchmark-сценариев, вынесенных из `active/CGLibrary/Profile`.
+Папка для LDG-ориентированных profiling/benchmark-сценариев, вынесенных из `projects/CGLibrary/Profile`.
 
 ## Навигация
 

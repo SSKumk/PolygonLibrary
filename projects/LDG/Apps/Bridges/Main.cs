@@ -10,7 +10,7 @@ namespace Bridges;
 class Program {
 
   static void Main(string[] args) {
-    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\active\\LDG\\Data\\";
+    string ldgDir = "F:\\Works\\IMM\\Аспирантура\\_PolygonLibrary\\projects\\LDG\\Data\\";
     // string ldgDir = "E:\\Work\\LDG\\";
 
     // double eps = double.Parse("1e-5");
